@@ -1,0 +1,804 @@
+/* =========================================================
+   CUSTOM THEME - Berry Premium Soft (Sky Blue Luxury)
+   ========================================================= */
+
+:root {
+  /* SKY BLUE palette */
+  --accent: #38bdf8; /* Sky Blue */
+  --accent-2: #0ea5e9; /* Cyan Blue */
+  --accent-3: #2563eb; /* Royal Blue */
+  --soft-bg: #ffffff;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+}
+
+/* Background lebih premium (ambient sky gradient) */
+body {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.14), transparent 42%),
+    radial-gradient(circle at 85% 5%, rgba(14, 165, 233, 0.14), transparent 48%),
+    radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.1), transparent 48%), var(--soft-bg) !important;
+  color: var(--text-main);
+}
+
+/* Header glass lebih mewah */
+.pc-header {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+/* Sidebar glossy */
+.pc-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(56, 189, 248, 0.08)
+  ) !important;
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 6px 0 22px rgba(15, 23, 42, 0.05);
+}
+
+/* Brand title */
+.pc-sidebar .b-title {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--accent-2) !important;
+}
+
+/* Sidebar link */
+.pc-navbar .pc-link {
+  padding: 12px 14px !important;
+  margin: 3px 8px !important;
+  border-radius: 14px !important;
+  transition: all 0.25s ease;
+  color: var(--text-main) !important;
+}
+
+.pc-navbar .pc-link:hover {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(14, 165, 233, 0.12)) !important;
+  transform: translateX(4px);
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.18);
+}
+
+.pc-navbar .pc-link:hover .pc-micon i {
+  color: var(--accent-2) !important;
+}
+
+/* Active menu lebih luxury + glow */
+.pc-navbar .pc-item.active > .pc-link {
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0.26),
+    rgba(14, 165, 233, 0.18),
+    rgba(37, 99, 235, 0.12)
+  ) !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  color: var(--accent-2) !important;
+  box-shadow:
+    0 14px 28px rgba(56, 189, 248, 0.2),
+    0 0 0 4px rgba(56, 189, 248, 0.1);
+}
+
+.pc-navbar .pc-item.active > .pc-link .pc-micon i {
+  color: var(--accent-2) !important;
+}
+
+/* Card lebih floating */
+.card,
+.pc-container .card {
+  background: var(--card-bg);
+  border-radius: 18px !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08) !important;
+  transition: all 0.25s ease;
+}
+
+.card:hover,
+.pc-container .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Page header lebih fancy */
+.page-header {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 16px !important;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+}
+
+/* Breadcrumb link */
+.breadcrumb-item a {
+  color: var(--accent-2) !important;
+  font-weight: 700;
+}
+
+/* =========================================================
+   BERRY PREMIUM - ALERT UPGRADE
+   ========================================================= */
+
+.alert {
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  font-weight: 700;
+}
+
+.alert:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+}
+
+/* Success */
+.alert-success {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #065f46 !important;
+}
+
+.alert-success:before {
+  background: linear-gradient(180deg, #34d399, #10b981);
+}
+
+/* Danger */
+.alert-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #7f1d1d !important;
+}
+
+.alert-danger:before {
+  background: linear-gradient(180deg, #fb7185, #ef4444);
+}
+
+/* Warning */
+.alert-warning {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #7c2d12 !important;
+}
+
+.alert-warning:before {
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+}
+
+/* Close button (Bootstrap 3/4 style) */
+.alert .close {
+  opacity: 0.9 !important;
+  font-size: 22px !important;
+  margin-top: -2px;
+}
+
+/* Icon di alert lama (kalau ada) */
+.alert i,
+.alert .fa,
+.alert .ti {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* =========================================================
+   BERRY PREMIUM BUTTON PACK (Gradient + Glow)
+   primary / success / info / warning / danger
+   ========================================================= */
+
+/* Base style biar semua tombol konsisten */
+.btn {
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  font-weight: 700 !important;
+  transition: all 0.22s ease !important;
+}
+
+/* Hover & active universal feel */
+.btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+.btn:active {
+  transform: translateY(0px);
+  filter: brightness(0.95);
+}
+
+/* =========================================
+   PRIMARY (Sky Blue)
+   ========================================= */
+.btn-primary {
+  border: none !important;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.22) !important;
+}
+.btn-primary:hover {
+  box-shadow: 0 18px 30px rgba(56, 189, 248, 0.3) !important;
+}
+.btn-primary:focus {
+  box-shadow:
+    0 0 0 4px rgba(56, 189, 248, 0.18),
+    0 18px 30px rgba(56, 189, 248, 0.24) !important;
+}
+
+/* =========================================
+   SUCCESS (Green Premium)
+   ========================================= */
+.btn-success {
+  border: none !important;
+  background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.22) !important;
+}
+.btn-success:hover {
+  box-shadow: 0 18px 30px rgba(34, 197, 94, 0.3) !important;
+}
+.btn-success:focus {
+  box-shadow:
+    0 0 0 4px rgba(34, 197, 94, 0.18),
+    0 18px 30px rgba(34, 197, 94, 0.24) !important;
+}
+
+/* =========================================
+   INFO (Cyan / Aqua)
+   ========================================= */
+.btn-info {
+  border: none !important;
+  background: linear-gradient(90deg, #06b6d4, #22d3ee) !important;
+  box-shadow: 0 12px 24px rgba(34, 211, 238, 0.2) !important;
+}
+.btn-info:hover {
+  box-shadow: 0 18px 30px rgba(34, 211, 238, 0.3) !important;
+}
+.btn-info:focus {
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.18),
+    0 18px 30px rgba(34, 211, 238, 0.24) !important;
+}
+
+/* =========================================
+   WARNING (Gold / Amber)
+   ========================================= */
+.btn-warning {
+  border: none !important;
+  color: #ffffff !important; /* biar teks kebaca */
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+  box-shadow: 0 12px 24px rgba(245, 158, 11, 0.2) !important;
+}
+.btn-warning:hover {
+  box-shadow: 0 18px 30px rgba(245, 158, 11, 0.3) !important;
+}
+.btn-warning:focus {
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.18),
+    0 18px 30px rgba(245, 158, 11, 0.24) !important;
+}
+
+/* =========================================
+   DANGER (Red Premium)
+   ========================================= */
+.btn-danger {
+  border: none !important;
+  background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.2) !important;
+}
+.btn-danger:hover {
+  box-shadow: 0 18px 30px rgba(239, 68, 68, 0.3) !important;
+}
+.btn-danger:focus {
+  box-shadow:
+    0 0 0 4px rgba(239, 68, 68, 0.18),
+    0 18px 30px rgba(239, 68, 68, 0.24) !important;
+}
+
+/* =========================================================
+   OUTLINE VERSION (buat tombol action yang lebih clean)
+   ========================================================= */
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-info,
+.btn-outline-warning,
+.btn-outline-danger {
+  background: transparent !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-shadow: none !important;
+}
+
+.btn-outline-primary {
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  color: #0ea5e9 !important;
+}
+.btn-outline-primary:hover {
+  background: rgba(56, 189, 248, 0.12) !important;
+  box-shadow: 0 10px 18px rgba(56, 189, 248, 0.16) !important;
+}
+
+.btn-outline-success {
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  color: #16a34a !important;
+}
+.btn-outline-success:hover {
+  background: rgba(34, 197, 94, 0.12) !important;
+  box-shadow: 0 10px 18px rgba(34, 197, 94, 0.16) !important;
+}
+
+.btn-outline-info {
+  border-color: rgba(34, 211, 238, 0.55) !important;
+  color: #06b6d4 !important;
+}
+.btn-outline-info:hover {
+  background: rgba(34, 211, 238, 0.12) !important;
+  box-shadow: 0 10px 18px rgba(34, 211, 238, 0.16) !important;
+}
+
+.btn-outline-warning {
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  color: #f59e0b !important;
+}
+.btn-outline-warning:hover {
+  background: rgba(245, 158, 11, 0.12) !important;
+  box-shadow: 0 10px 18px rgba(245, 158, 11, 0.16) !important;
+}
+
+.btn-outline-danger {
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  color: #dc2626 !important;
+}
+.btn-outline-danger:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  box-shadow: 0 10px 18px rgba(239, 68, 68, 0.16) !important;
+}
+
+/* Small button (buat action di datatable) */
+.btn.btn-sm {
+  padding: 6px 10px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+}
+
+/* Input & Select premium */
+.form-control,
+.select2-container--default .select2-selection--single {
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  padding: 10px 12px !important;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.select2-container--default .select2-selection--single:focus {
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.14) !important;
+}
+
+/* Table modern */
+.table {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.table thead th {
+  background: rgba(56, 189, 248, 0.1) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+  font-weight: 800;
+}
+
+.table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.06) !important;
+}
+
+/* Footer lebih subtle */
+.pc-footer {
+  background: transparent !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   FIX SUBMENU INDENT + HILANGKAN GARIS CONNECTOR
+   ========================================================= */
+
+/* 1) Hilangkan garis vertikal / melintang (tree line) di submenu */
+.pc-navbar .pc-submenu:before,
+.pc-navbar .pc-submenu > li:before,
+.pc-navbar .pc-submenu > li:after,
+.pc-navbar .pc-item.pc-hasmenu > .pc-link:before,
+.pc-navbar .pc-item.pc-hasmenu > .pc-link:after {
+  display: none !important;
+  content: none !important;
+}
+
+/* 2) Biar submenu lebih masuk ke dalam */
+.pc-navbar .pc-submenu {
+  padding-left: 22px !important; /* makin masuk */
+  margin-left: 6px !important;
+  border-left: 0 !important; /* kalau ada border garis */
+}
+
+/* 3) Rapihin item submenu (posisi ikon & teks) */
+.pc-navbar .pc-submenu .pc-link {
+  padding: 10px 14px !important;
+  margin: 3px 10px !important;
+  border-radius: 12px !important;
+}
+
+/* 4) Ikon submenu jangan ketabrak */
+.pc-navbar .pc-submenu .pc-micon {
+  width: 26px !important;
+  min-width: 26px !important;
+  margin-right: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 6) Optional: submenu lebih clean */
+.pc-navbar .pc-submenu .pc-item.active > .pc-link {
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.16) !important;
+}
+
+/* =========================================================
+   BERRY PREMIUM - DATATABLES UPGRADE (Sky Blue)
+   ========================================================= */
+
+/* Wrapper spacing biar rapih */
+.dataTables_wrapper {
+  padding-top: 6px;
+}
+
+/* Search box */
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+  font-weight: 700;
+  color: #334155;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  padding: 8px 12px !important;
+  outline: none !important;
+  transition: all 0.2s ease;
+  margin-left: 8px !important;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: rgba(56, 189, 248, 0.75) !important;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Length select */
+.dataTables_wrapper .dataTables_length select {
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  padding: 6px 10px !important;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.dataTables_wrapper .dataTables_length select:focus {
+  border-color: rgba(56, 189, 248, 0.75) !important;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Table style */
+table.dataTable {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+}
+
+table.dataTable thead th {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(14, 165, 233, 0.08)) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+  font-weight: 900;
+  color: #0f172a !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+table.dataTable tbody td {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+  vertical-align: middle !important;
+}
+
+table.dataTable tbody tr:hover {
+  background: rgba(56, 189, 248, 0.06) !important;
+}
+
+/* Sorting icons biar halus */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  background-size: 10px 10px !important;
+  opacity: 0.9;
+}
+
+/* Info text (Showing X entries) */
+.dataTables_wrapper .dataTables_info {
+  color: rgba(51, 65, 85, 0.85) !important;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+/* =========================================================
+   DATATABLES PAGINATION - COMPACT PREMIUM
+   ========================================================= */
+
+/* wrapper pagination */
+.dataTables_wrapper .dataTables_paginate {
+  margin-top: 12px !important;
+}
+
+/* Responsive small screen */
+@media (max-width: 768px) {
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_length {
+    float: none !important;
+    text-align: left !important;
+    margin-bottom: 10px;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 8px !important;
+  }
+}
+
+/* =========================================================
+   SWEETALERT v1 PREMIUM LOOK
+   ========================================================= */
+.sweet-alert {
+  border-radius: 18px !important;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18) !important;
+}
+
+.sweet-alert h2 {
+  font-weight: 900 !important;
+}
+
+.sweet-alert button.confirm {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
+  box-shadow: 0 14px 26px rgba(14, 165, 233, 0.25) !important;
+}
+
+.sweet-alert button.cancel {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  background: linear-gradient(90deg, #fe8b8b, #e90e0e) !important;
+  box-shadow: 0 14px 26px rgba(233, 14, 14, 0.25) !important;
+}
+
+/* =========================================================
+   BERRY PREMIUM - ACTION BUTTON + STATUS BADGE
+   ========================================================= */
+
+/* Wrapper tombol action biar rapih */
+.dt-actions,
+.action-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tombol icon (edit/delete/view) */
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px !important;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06) !important;
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+.btn-icon i {
+  font-size: 16px;
+}
+
+/* Hover efek mewah */
+.btn-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 26px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Variant tombol */
+.btn-icon-edit {
+  color: #0284c7 !important; /* sky blue */
+  border-color: rgba(2, 132, 199, 0.25) !important;
+}
+
+.btn-icon-edit:hover {
+  background: rgba(56, 189, 248, 0.1) !important;
+  box-shadow: 0 18px 28px rgba(56, 189, 248, 0.22) !important;
+}
+
+.btn-icon-delete {
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.btn-icon-delete:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  box-shadow: 0 18px 28px rgba(239, 68, 68, 0.18) !important;
+}
+
+.btn-icon-view {
+  color: #10b981 !important; /* emerald */
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-icon-view:hover {
+  background: rgba(16, 185, 129, 0.1) !important;
+  box-shadow: 0 18px 28px rgba(16, 185, 129, 0.18) !important;
+}
+
+/* Tooltip mini (optional) */
+.btn-icon[title] {
+  position: relative;
+}
+
+/* =========================================================
+   STATUS BADGE PREMIUM
+   ========================================================= */
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* dot indicator */
+.badge-status:before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Active */
+.badge-status.active {
+  color: #065f46 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+}
+
+.badge-status.active:before {
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+}
+
+/* Inactive */
+.badge-status.inactive {
+  color: #7f1d1d !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.badge-status.inactive:before {
+  background: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+}
+
+/* =========================================================
+   DATATABLES ACTION COLUMN WIDTH FIX
+   ========================================================= */
+td.dt-action-col {
+  width: 160px;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+/* =========================================================
+   TOGGLE BUTTON SWITCH
+   ========================================================= */
+.toggle-switch {
+  position: relative;
+  width: 90px;
+  height: 34px;
+  display: inline-block;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #dc3545;
+  transition: all 0.4s;
+  border-radius: 34px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: '';
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: all 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #28a745;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(56px);
+}
+
+.toggle-slider:after {
+  content: 'Non-Aktif';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 1;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.toggle-switch input:checked + .toggle-slider:after {
+  content: 'Aktif';
+  right: auto;
+  left: 12px;
+}
+
+.client-apps-empty {
+  color: #999;
+  font-style: italic;
+  font-size: 13px;
+}

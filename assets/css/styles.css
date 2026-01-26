@@ -1,0 +1,5 @@
+/*Menu Editor*/
+.sortable li.mjs-nestedSortable-leaf div {
+  background: transparent -moz-linear-gradient(center top, #fff 0%, #f6f6f6 85%, #bcccbc 100%) repeat
+    scroll 0% 0% !important;
+}
