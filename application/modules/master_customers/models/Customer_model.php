@@ -78,7 +78,7 @@ class Customer_model extends BF_Model
     }
     function generate_Category($kode = '')
     {
-        $query = $this->db->query("SELECT MAX(id_category_customer) as max_id FROM child_customer_category");
+        $query = $this->db->query("SELECT MAX(id_category) as max_id FROM master_category_customer");
         $row = $query->row_array();
         $thn = date('y');
         $max_id = $row['max_id'];
@@ -88,15 +88,15 @@ class Customer_model extends BF_Model
         return $idcust;
     }
 
-    public function get_data($table, $where_field = '', $where_value = '')
+    public function get_data($table, $field, $value)
     {
-        if ($where_field != '' && $where_value != '') {
-            $query = $this->db->get_where($table, array($where_field => $where_value));
+        if ($value === NULL) {
+            $this->db->where("{$field} IS NULL", null, false);
         } else {
-            $query = $this->db->get($table);
+            $this->db->where($field, $value);
         }
 
-        return $query->result();
+        return $this->db->get($table)->result();
     }
 
     public function getCustomer()

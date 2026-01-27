@@ -417,6 +417,17 @@ body {
    FIX SUBMENU INDENT + HILANGKAN GARIS CONNECTOR
    ========================================================= */
 
+/* 0) Kecilkan font menu & submenu dikit */
+.pc-navbar .pc-link .pc-mtext {
+  font-size: 13px !important; /* parent menu */
+  line-height: 1.25 !important;
+}
+
+.pc-navbar .pc-submenu .pc-link .pc-mtext {
+  font-size: 12px !important; /* submenu */
+  line-height: 1.25 !important;
+}
+
 /* 1) Hilangkan garis vertikal / melintang (tree line) di submenu */
 .pc-navbar .pc-submenu:before,
 .pc-navbar .pc-submenu > li:before,
@@ -427,21 +438,38 @@ body {
   content: none !important;
 }
 
-/* 2) Biar submenu lebih masuk ke dalam */
-.pc-navbar .pc-submenu {
-  padding-left: 22px !important; /* makin masuk */
-  margin-left: 6px !important;
-  border-left: 0 !important; /* kalau ada border garis */
+/* 2) HILANGKAN TITIK/BULLET yang muncul setelah icon (umumnya pseudo-element) */
+.pc-navbar .pc-submenu .pc-item > .pc-link:before,
+.pc-navbar .pc-submenu .pc-item > .pc-link:after,
+.pc-navbar .pc-submenu .pc-mtext:before,
+.pc-navbar .pc-submenu .pc-mtext:after,
+.pc-navbar .pc-submenu .pc-item:before,
+.pc-navbar .pc-submenu .pc-item:after {
+  content: none !important;
+  display: none !important;
 }
 
-/* 3) Rapihin item submenu (posisi ikon & teks) */
+/* 2b) Antisipasi kalau itu bullet bawaan <ul>/<li> (list-style) */
+.pc-navbar .pc-submenu,
+.pc-navbar .pc-submenu li {
+  list-style: none !important;
+}
+
+/* 3) Biar submenu lebih masuk ke dalam */
+.pc-navbar .pc-submenu {
+  padding-left: 22px !important;
+  margin-left: 6px !important;
+  border-left: 0 !important;
+}
+
+/* 4) Rapihin item submenu (posisi ikon & teks) */
 .pc-navbar .pc-submenu .pc-link {
-  padding: 10px 14px !important;
+  padding: 8px 12px !important; /* sedikit lebih compact */
   margin: 3px 10px !important;
   border-radius: 12px !important;
 }
 
-/* 4) Ikon submenu jangan ketabrak */
+/* 5) Ikon submenu jangan ketabrak */
 .pc-navbar .pc-submenu .pc-micon {
   width: 26px !important;
   min-width: 26px !important;
@@ -451,7 +479,7 @@ body {
   justify-content: center !important;
 }
 
-/* 6) Optional: submenu lebih clean */
+/* 6) Optional: submenu lebih clean (active) */
 .pc-navbar .pc-submenu .pc-item.active > .pc-link {
   box-shadow: 0 10px 20px rgba(56, 189, 248, 0.16) !important;
 }
@@ -503,7 +531,7 @@ body {
 
 /* Table style */
 table.dataTable {
-  border-radius: 16px !important;
+  border-radius: 14px !important;
   overflow: hidden !important;
   border: 1px solid rgba(15, 23, 42, 0.06) !important;
 }
@@ -513,13 +541,13 @@ table.dataTable thead th {
   border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
   font-weight: 900;
   color: #0f172a !important;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
 }
 
 table.dataTable tbody td {
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
   vertical-align: middle !important;
 }
 

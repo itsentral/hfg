@@ -39,8 +39,7 @@ class Master_customers extends Admin_Controller
 		$this->auth->restrict($this->viewPermission);
 		$session = $this->session->userdata('app_session');
 		$this->template->page_icon('fa fa-users');
-		$deleted = 'active';
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $deleted);
+		$category = $this->Customer_model->get_data('master_category_customer', 'deleted_by', NULL);
 		$customer 			= $this->Customer_model->getCustomer();
 		$data = [
 			'customer' => $customer,
@@ -53,8 +52,7 @@ class Master_customers extends Admin_Controller
 	public function add()
 	{
 		$this->auth->restrict($this->viewPermission);
-		$aktif = 'active';
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer');
 		$prov = $this->Customer_model->get_data('prov');
 		$karyawan = $this->db->get_where('employee', array('department' => 2, 'deleted' => "N"))->result();
 		$payment_terms = $this->db->get_where('list_help', array('group_by' => 'top invoice', 'sts' => "Y"))->result();
@@ -74,13 +72,12 @@ class Master_customers extends Admin_Controller
 	public function edit($id)
 	{
 		$this->auth->restrict($this->viewPermission);
-		$aktif = 'active';
 		$cus = $this->db->get_where('master_customers', array('id_customer' => $id))->result();
 		$pic = $this->db->get_where('child_customer_pic', array('id_customer' => $id))->result();
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$exis = $this->db->get_where('child_customer_existing', array('id_customer' => $id))->result();
 		$rate = $this->db->get_where('child_customer_rate', array('id_customer' => $id))->result();
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer', 'status', 1);
 		$prov = $this->Customer_model->get_data('prov');
 		$kabkot = $this->Customer_model->get_data('kabkot');
 		$kec = $this->Customer_model->get_data('kec');
@@ -251,7 +248,7 @@ class Master_customers extends Admin_Controller
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$exis = $this->db->get_where('child_customer_existing', array('id_customer' => $id))->result();
 		$rate = $this->db->get_where('child_customer_rate', array('id_customer' => $id))->result();
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer', 'status', 1);
 		$prov = $this->Customer_model->get_data('prov');
 		$kabkot = $this->Customer_model->get_data('kabkot');
 		$kec = $this->Customer_model->get_data('kec');
@@ -382,7 +379,7 @@ class Master_customers extends Admin_Controller
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$exis = $this->db->get_where('child_customer_existing', array('id_customer' => $id))->result();
 		$rate = $this->db->get_where('child_customer_rate', array('id_customer' => $id))->result();
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer', 'status', 1);
 		$prov = $this->Customer_model->get_data('prov');
 		$kabkot = $this->Customer_model->get_data('kabkot');
 		$kec = $this->Customer_model->get_data('kec');
@@ -417,7 +414,7 @@ class Master_customers extends Admin_Controller
 		$cate = $this->db->get_where('child_category_customer', array('id_customer' => $id))->result();
 		$exis = $this->db->get_where('child_customer_existing', array('id_customer' => $id))->result();
 		$rate = $this->db->get_where('child_customer_rate', array('id_customer' => $id))->result();
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer', 'status', 1);
 		$prov = $this->Customer_model->get_data('prov');
 		$kabkot = $this->Customer_model->get_data('kabkot');
 		$kec = $this->Customer_model->get_data('kec');
@@ -444,16 +441,20 @@ class Master_customers extends Admin_Controller
 	public function EditCategory($id)
 	{
 		$this->auth->restrict($this->viewPermission);
-		$session = $this->session->userdata('app_session');
-		$this->template->page_icon('fa fa-edit');
-		$category = $this->db->get_where('child_customer_category', array('id_category_customer' => $id))->result();
+
+		$category = $this->db
+			->get_where('master_category_customer', ['id_category' => $id])
+			->row();
+
 		$data = [
 			'category' => $category,
 		];
+
+		$this->template->title('Edit Category');
 		$this->template->set('results', $data);
-		$this->template->title('Edit Customer');
-		$this->template->render('edit_category');
+		$this->template->render('add_category');
 	}
+
 	public function ViewCategory($id)
 	{
 		$this->auth->restrict($this->viewPermission);
@@ -489,7 +490,7 @@ class Master_customers extends Admin_Controller
 		$session = $this->session->userdata('app_session');
 		$this->template->page_icon('fa fa-pencil');
 		$aktif = 'active';
-		$category = $this->Customer_model->get_data('child_customer_category', 'activation', $aktif);
+		$category = $this->Customer_model->get_data('master_category_customer', 'status', 1);
 		$prov = $this->Customer_model->get_data('prov');
 		$karyawan = $this->db->get_where('employee', array('department' => 2, 'deleted' => "N"))->result();
 		$payment_terms = $this->db->get_where('list_help', array('group_by' => 'top invoice', 'sts' => "Y"))->result();
@@ -565,25 +566,23 @@ class Master_customers extends Admin_Controller
 	{
 		$this->auth->restrict($this->deletePermission);
 		$id = $this->input->post('id');
-		// print_r($id);
-		// exit();
+
 		$data = [
-			'activation' 		=> 'inactive',
 			'deleted_by' 	=> $this->auth->user_id()
 		];
 		$this->db->trans_begin();
-		$this->db->where('id_category_customer', $id)->update("child_customer_category", $data);
+		$this->db->where('id_category', $id)->update("master_category_customer", $data);
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Gagal Delete Item. Thanks ...',
 				'status'	=> 0
 			);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
-				'pesan'		=> 'Success Save Item. Thanks ...',
+				'pesan'		=> 'Success Delete Item. Thanks ...',
 				'status'	=> 1
 			);
 		}
@@ -649,37 +648,110 @@ class Master_customers extends Admin_Controller
 	}
 	public function saveNewCategory()
 	{
+		// izin add / edit (sesuaikan kalau mau dipisah)
 		$this->auth->restrict($this->addPermission);
+
 		$post = $this->input->post();
-		$code = $this->Customer_model->generate_Category();
+		$id_category = $post['id_category'] ?? null;
+
 		$this->db->trans_begin();
-		$data = [
-			'id_category_customer'		=> $code,
-			'name_category_customer'	=> $post['name_category_customer'],
-			'customer_code'				=> $post['customer_code'],
-			'activation'				=> 'active',
-			'created_on'				=> date('Y-m-d H:i:s'),
-			'created_by'				=> $this->auth->user_id()
-		];
 
-		$insert = $this->db->insert("child_customer_category", $data);
+		// =========================
+		// MODE EDIT
+		// =========================
+		if (!empty($id_category)) {
 
+			$data = [
+				'name_category' => $post['name_category'],
+				'modified_on'    => date('Y-m-d H:i:s'),
+				'modified_by'    => $this->auth->user_id()
+			];
+
+			$this->db->where('id_category', $id_category);
+			$this->db->update('master_category_customer', $data);
+
+			$pesan = 'Success Update Category. Thanks ...';
+		}
+		// =========================
+		// MODE ADD
+		// =========================
+		else {
+
+			$code = $this->Customer_model->generate_Category();
+
+			$data = [
+				'id_category'   => $code,
+				'name_category' => $post['name_category'],
+				'status'        => 1,
+				'created_on'    => date('Y-m-d H:i:s'),
+				'created_by'    => $this->auth->user_id()
+			];
+
+			$this->db->insert('master_category_customer', $data);
+
+			$pesan = 'Success Save Category. Thanks ...';
+		}
+
+		// =========================
+		// COMMIT / ROLLBACK
+		// =========================
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
-			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
-				'status'	=> 0
-			);
+			$status = [
+				'pesan'  => 'Gagal menyimpan data. Silakan coba lagi.',
+				'status' => 0
+			];
 		} else {
 			$this->db->trans_commit();
-			$status	= array(
-				'pesan'		=> 'Success Save Item. Thanks ...',
-				'status'	=> 1
-			);
+			$status = [
+				'pesan'  => $pesan,
+				'status' => 1
+			];
 		}
 
 		echo json_encode($status);
 	}
+
+	public function toggle_status_category()
+	{
+		$this->auth->restrict($this->managePermission);
+
+		$id = $this->input->post('id');
+		$current_status = $this->input->post('status');
+
+		$new_status = ($current_status == 1) ? 0 : 1;
+
+		$dataProcess = ['status' => $new_status];
+
+		$this->db->trans_start();
+
+		$this->db->where('id_category', $id);
+		$this->db->update('master_category_customer', $dataProcess);
+
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) {
+			$keterangan = "GAGAL, ubah status category customer";
+			$status = 0;
+		} else {
+			$status_text = ($new_status == 1) ? 'Aktif' : 'Non-Aktif';
+			$keterangan = "SUKSES, ubah status category customer menjadi $status_text";
+			$status = 1;
+		}
+
+		$nm_hak_akses = $this->managePermission;
+		$kode_universal = $id;
+		$jumlah = 1;
+		$sql = $this->db->last_query();
+		simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+
+		echo json_encode([
+			'status' => $status,
+			'new_status' => $new_status,
+			'message' => $keterangan
+		]);
+	}
+
 	public function saveNewcustomer()
 	{
 		$this->auth->restrict($this->addPermission);
@@ -1427,7 +1499,7 @@ class Master_customers extends Admin_Controller
 			'modified_by'		=> $this->auth->user_id()
 		];
 
-		$this->db->where('id_category_customer', $post['id_category_customer'])->update("child_customer_category", $data);
+		$this->db->where('id_category_customer', $post['id_category_customer'])->update("master_category_customer", $data);
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
