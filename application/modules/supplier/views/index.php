@@ -5,20 +5,6 @@ $ENABLE_VIEW    = has_permission('Master_Supplier.View');
 $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 ?>
 
-<style>
-	/* Paksa modal bisa scroll */
-	#dialog-popup .modal-content {
-		max-height: calc(100vh - 60px);
-	}
-
-	#dialog-popup .modal-body {
-		max-height: calc(100vh - 220px);
-		/* header+footer kira2 */
-		overflow-y: auto !important;
-		-webkit-overflow-scrolling: touch;
-	}
-</style>
-
 <div class="card shadow-sm border-0">
 	<div class="card-header bg-white">
 		<div class="d-flex flex-column flex-md-row gap-2 align-items-md-center">

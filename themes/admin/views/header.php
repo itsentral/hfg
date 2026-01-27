@@ -96,6 +96,20 @@
       if (loader) loader.remove();
     }, 6000);
   </script>
+
+  <style>
+    /* Paksa modal bisa scroll */
+    #dialog-popup .modal-content {
+      max-height: calc(100vh - 60px);
+    }
+
+    #dialog-popup .modal-body {
+      max-height: calc(100vh - 220px);
+      /* header+footer kira2 */
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
 </head>
 
 <body>
