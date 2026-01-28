@@ -158,6 +158,8 @@ class App_pr_material extends Admin_Controller
 
     public function detail_planning($so_number = null)
     {
+        $post = $this->input->post();
+        $so_number = $post['so_number'];
         // Ambil header
         $header = $this->db
             ->select('a.*, b.due_date, c.name_customer')
@@ -213,7 +215,6 @@ class App_pr_material extends Admin_Controller
             'GET_LEVEL4'      => $GET_LEVEL4,
             'GET_STOK_PUSAT'  => $get_stok_pusat
         ];
-
         $this->template->page_icon('fa fa-cart-plus');
         $this->template->title('Detail Purchase Request : ' . $so_number);
         $this->template->render('detail_planning', $data);

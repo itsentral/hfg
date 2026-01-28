@@ -85,19 +85,20 @@
 
         $(document).on('click', '.detail', function() {
             const so_number = $(this).data('so_number');
+            console.log(so_number); // Pastikan ini menampilkan 'SPR26010001'
 
-            $("#head_title").html("<b>Detail</b>");
+            $("#head_title").html("<b>Detail Request</b>");
 
             $.ajax({
                 type: 'POST',
-                url: base_url + active_controller + 'detail',
+                url: base_url + active_controller + 'detail_planning',
                 data: {
                     so_number: so_number
                 },
                 success: function(html) {
                     $("#ModalView").html(html);
 
-                    // show BS5 modal
+                    // Tampilkan modal Bootstrap 5
                     const modalEl = document.getElementById('dialog-popup');
                     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                     modal.show();

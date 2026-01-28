@@ -156,13 +156,13 @@ class App_pr_material_model extends BF_Model
     private function _get_approval_status($row)
     {
         if ($row['sts_reject3'] === '1') {
-            return "<div align='left'><span class='badge bg-red'>Rejected by Management</span></div>";
+            return "<div class='text-start'><span class='badge bg-danger'>Rejected by Management</span></div>";
         }
 
         if ($row['app_3'] === '1') {
-            return "<div align='left'><span class='badge bg-green'>Approved</span></div>";
+            return "<div class='text-start'><span class='badge bg-success'>Approved</span></div>";
         }
 
-        return "<div align='left'><span class='badge bg-blue'>Waiting Approval Management</span></div>";
+        return "<div class='text-start'><span class='badge bg-primary'>Waiting Approval Management</span></div>";
     }
 }
