@@ -219,7 +219,7 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 								';
 
 						if ($record->pr_non_depart == '1') {
-							echo '<td>' . strtoupper('PR PRODUCT / ' . $record->no_pr) . '</td>';
+							echo '<td>' . strtoupper('PR MATERIAL / ' . $record->no_pr) . '</td>';
 						} else if ($record->pr_asset == '1') {
 							echo '<td>' . strtoupper('PR ASSET / ' . $record->no_pr) . '</td>';
 						} else {
