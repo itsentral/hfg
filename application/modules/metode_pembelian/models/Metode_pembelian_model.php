@@ -218,7 +218,7 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper($row['departemen']) . "</div>";
-			if ($row['category'] == 'pr product') {
+			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {
 				$warna = '#ff1ab3';
@@ -328,7 +328,7 @@ class Metode_pembelian_model extends BF_Model
                     a.created_date AS tgl_buat
                 FROM material_planning_base_on_produksi a
                 LEFT JOIN users b ON b.id_user = a.created_by
-                WHERE a.category IN ('pr product')
+                WHERE a.category IN ('pr material')
                   AND a.metode_pembelian IS NOT NULL
                   AND TRIM(a.metode_pembelian) <> ''
                   AND EXISTS (
@@ -359,7 +359,7 @@ class Metode_pembelian_model extends BF_Model
                     a.created_date AS tgl_buat
                 FROM material_planning_base_on_produksi a
                 LEFT JOIN users b ON b.id_user = a.created_by
-                WHERE a.category IN ('pr product','pr stok')
+                WHERE a.category IN ('pr material','pr stok')
                   AND a.metode_pembelian IS NOT NULL
                   AND TRIM(a.metode_pembelian) <> ''
                   AND EXISTS (
@@ -648,7 +648,7 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
 
 			$list_barang = '';
-			if ($row['category'] == 'pr product' || $row['category'] == 'pr stok') {
+			if ($row['category'] == 'pr material' || $row['category'] == 'pr stok') {
 				if ($row['category'] == 'pr stok') {
 					$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty');
 					$this->db->from('material_planning_base_on_produksi_detail a');
@@ -685,7 +685,7 @@ class Metode_pembelian_model extends BF_Model
 			endforeach;
 			$nestedData[]	= "<div align='left'>" . $list_barang . "</div>";
 
-			if ($row['category'] == 'pr product') {
+			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {
 				$warna = '#a19012';
@@ -781,7 +781,7 @@ class Metode_pembelian_model extends BF_Model
 							a.tgl_so as tgl_pr,
 							b.nm_lengkap as request_by,
 							a.created_date as request_date,
-							IF(a.category = "pr stok", "pr stok", "pr product") as category,
+							IF(a.category = "pr stok", "pr stok", "pr material") as category,
 							a.so_number as so_number
 						FROM
 							material_planning_base_on_produksi a
@@ -804,13 +804,13 @@ class Metode_pembelian_model extends BF_Model
 							a.tgl_so as tgl_pr,
 							b.nm_lengkap as request_by,
 							a.created_date as request_date,
-							IF(a.category = "pr stok", "pr stok", "pr product") as category,
+							IF(a.category = "pr stok", "pr stok", "pr material") as category,
 							a.so_number as so_number
 						FROM
 							material_planning_base_on_produksi a
 							LEFT JOIN users b ON b.id_user = a.created_by
 						WHERE
-							a.category IN ("pr product") AND
+							a.category IN ("pr material") AND
 							a.metode_pembelian IS NULL AND
 							a.close_pr IS NULL
 							AND (
@@ -829,13 +829,13 @@ class Metode_pembelian_model extends BF_Model
 					a.tgl_so as tgl_pr,
 					b.nm_lengkap as request_by,
 					a.created_date as request_date,
-					IF(a.category = "pr stok", "pr stok", "pr product") as category,
+					IF(a.category = "pr stok", "pr stok", "pr material") as category,
 					a.so_number as so_number
 				FROM
 					material_planning_base_on_produksi a
 					LEFT JOIN users b ON b.id_user = a.created_by
 				WHERE
-					a.category IN ("pr product", "pr stok") AND
+					a.category IN ("pr material", "pr stok") AND
 					a.close_pr IS NULL AND
 					a.metode_pembelian IS NULL AND (
 						a.no_pr LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR

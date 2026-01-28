@@ -183,7 +183,7 @@
 								showConfirmButton: false,
 								allowOutsideClick: false
 							});
-							window.location.href = base_url + active_controller + '/pr';
+							window.location.href = base_url + active_controller + '/index_pr';
 						} else {
 							swal({
 								title: "Save Failed!",
