@@ -94,23 +94,31 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
     </div>
     <!-- /.card-body -->
     <!-- modal -->
-    <div class="modal fade" id="ModalView2" style='overflow-y: auto;'>
-        <div class="modal-dialog" style='width:85%; '>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="head_title2"></h4>
-                </div>
-                <div class="modal-body" id="view2">
-                </div>
-                <div class="modal-footer">
-                    <div class="text-center">
-                        <?php
-                        echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'value' => 'Save', 'content' => '<i class="fa fa-save"></i> Save', 'id' => 'saveINMaterial')) . ' ';
-                        ?>
+    <div class="modal fade" id="ModalView2">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" style='overflow-y: auto;'>
+            <div class="modal-content" style='width:100%;'>
+                <form action="#" method="POST" id="form_adjustment" enctype="multipart/form-data" autocomplete='off'>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="head_title2">
+                            <i class="fa fa-users me-2"></i> Data Supplier
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
+
+                    <div class="modal-body" id="view2">
+                        ...
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveINMaterial">
+                            <i class="ti ti-device-floppy me-1"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+                            <i class="ti ti-x me-1"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -219,7 +227,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
             },
             cache: false,
             success: function(data) {
-                $("#ModalView2").modal();
+                $("#ModalView2").modal('show');
                 $("#view2").html(data);
             },
             error: function() {
