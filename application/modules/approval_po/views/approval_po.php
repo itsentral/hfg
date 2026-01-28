@@ -4,19 +4,19 @@ $ENABLE_MANAGE  = has_permission('Purchase_Request.Manage');
 $ENABLE_VIEW    = has_permission('Purchase_Request.View');
 $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 ?>
-<div class="box box-primary">
-	<div class="box-body">
+<div class="card shadow-sm">
+	<div class="card-header bg-white d-flex justify-content-center">
+		<div>
+			<h3>Form Purchase Order</h3>
+		</div>
+	</div>
+	<div class="card-body">
 		<form id="data-form" method="post">
 			<!-- <input type="hidden" name="so_number" value="<?= implode(',', $results['param']) ?>"> -->
 			<input type="hidden" name="no_po" value="<?= $results['header_po']->no_po ?>">
 			<div class="col-sm-12">
-				<div class="input_fields_wrap2">
-					<div class="row">
-						<center><label for="customer">
-								<h3>Purchase Order</h3>
-							</label></center>
-						<div class="col-sm-12">
-							<!-- <div class="col-sm-6">
+				<div class="form-group row mb-3">
+					<!-- <div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
 										<label for="id_customer">Supplier</label>
@@ -31,254 +31,252 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									</div>
 								</div>
 							</div> -->
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Local / Import</label>
-									</div>
-									<div class="col-md-8" id="ubahloi">
-										<select id="loi" name="loi" class="form-control select" onchange="get_kurs()" disabled>
-											<option value="">--Pilih--</option>
-											<option value="Import" <?= ($results['header_po']->loi == 'Import') ? 'selected' : null ?>>Import</option>
-											<option value="Lokal" <?= ($results['header_po']->loi == 'Lokal') ? 'selected' : null ?>>Lokal</option>
-										</select>
-									</div>
-								</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Local / Import</label>
 							</div>
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="">Department</label>
-									</div>
-									<div class="col-md-8" id="">
-										<input type="text" name="" id="" class="form-control" value="<?= $results['nm_depart'] ?>" readonly>
-									</div>
-								</div>
+							<div class="col-md-8" id="ubahloi">
+								<select id="loi" name="loi" class="form-control select" onchange="get_kurs()" disabled>
+									<option value="">--Pilih--</option>
+									<option value="Import" <?= ($results['header_po']->loi == 'Import') ? 'selected' : null ?>>Import</option>
+									<option value="Lokal" <?= ($results['header_po']->loi == 'Lokal') ? 'selected' : null ?>>Lokal</option>
+								</select>
 							</div>
 						</div>
-						<div class="col-sm-12">
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="customer">NO.PO</label>
-									</div>
-									<div class="col-md-8" hidden>
-										<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= (isset($results['header_po'])) ? $results['header_po']->no_po : null ?>">
-									</div>
-									<div class="col-md-8">
-										<input type="text" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= (isset($results['header_po'])) ? $results['header_po']->no_surat : null ?>">
-									</div>
-								</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="">Department</label>
 							</div>
-							<div class="col-sm-6" id="">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="customer">Delivery Date</label>
-									</div>
-									<div class="col-md-8">
-										<input type="date" name="" id="" class="form-control" value="<?= $results['header_po']->delivery_date ?>" readonly>
-									</div>
-								</div>
+							<div class="col-md-8" id="">
+								<input type="text" name="" id="" class="form-control" value="<?= $results['nm_depart'] ?>" readonly>
 							</div>
 						</div>
-						<div class="col-sm-12">
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="customer">Tanggal PO</label>
-									</div>
-									<div class="col-md-8">
-										<input type="text" class="form-control" id="tanggal" value="<?= (isset($results['header_po'])) ? $results['header_po']->tanggal : null ?>" onkeyup readonly name="tanggal">
-									</div>
-								</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3">
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="customer">NO.PO</label>
 							</div>
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Mata Uang</label>
-									</div>
-									<div class="col-md-8">
-										<select id="matauang" name="matauang" class='form-control input-md chosen-select' disabled>
-											<option value="">- Mata Uang -</option>
-											<?php foreach ($results['mata_uang'] as $mata_uang) {
-												$selected = '';
-												if (isset($results['header_po']) && $mata_uang->kode == $results['header_po']->matauang) {
-													$selected = 'selected';
-												}
-											?>
-												<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
-											<?php } ?>
-										</select>
-									</div>
-								</div>
+							<div class="col-md-8" hidden>
+								<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= (isset($results['header_po'])) ? $results['header_po']->no_po : null ?>">
+							</div>
+							<div class="col-md-8">
+								<input type="text" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= (isset($results['header_po'])) ? $results['header_po']->no_surat : null ?>">
 							</div>
 						</div>
-						<div class="col-sm-12">
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="customer">Payment Term</label>
-									</div>
-									<div class="col-md-8">
-										<input type="text" class="form-control" id="term" onkeyup required name="term" value="<?= (isset($results['header_po'])) ? $results['header_po']->term : null ?>" readonly>
-									</div>
-								</div>
+					</div>
+					<div class="col-sm-6" id="">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="customer">Delivery Date</label>
 							</div>
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Supplier</label>
-									</div>
-									<div class="col-md-8">
-										<select id="supplier" name="supplier" class='form-control input-md chosen-select' disabled>
-											<option value="">- Supplier -</option>
-											<?php foreach ($results['list_supplier'] as $supplier) {
-												$selected = '';
-												if (isset($results['header_po']) && $supplier->kode_supplier == $results['header_po']->id_suplier) {
-													$selected = 'selected';
-												}
-											?>
-												<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
-											<?php } ?>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-6" hidden>
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">PR</label>
-									</div>
-									<div class="col-md-8">
-										<select id="no_pr" name="no_pr" class='form-control input-md chosen-select' required>
-											<option value="0">List Empty</option>
-										</select>
-									</div>
-								</div>
+							<div class="col-md-8">
+								<input type="date" name="" id="" class="form-control" value="<?= $results['header_po']->delivery_date ?>" readonly>
 							</div>
 						</div>
-
-						<div class="col-md-12">
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Keterangan</label>
-									</div>
-									<div class="col-md-8">
-										<textarea name="keterangan" id="" class="form-control"><?= $results['header_po']->note ?></textarea>
-									</div>
-								</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3">
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="customer">Tanggal PO</label>
 							</div>
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Alamat</label>
-									</div>
-									<div class="col-md-8">
-										<textarea name="delivery_address" id="" class="form-control"><?= $results['header_po']->delivery_address ?></textarea>
-									</div>
-								</div>
+							<div class="col-md-8">
+								<input type="text" class="form-control" id="tanggal" value="<?= (isset($results['header_po'])) ? $results['header_po']->tanggal : null ?>" onkeyup readonly name="tanggal">
 							</div>
 						</div>
-
-						<div class="col-sm-12" hidden>
-							<div class="col-sm-6">
-								<div class="form-group row">
-									<div class="col-md-4">
-										<label for="id_customer">Price Method</label>
-									</div>
-									<div class="col-md-8">
-										<select id="cif" name="cif" class="form-control select" required>
-											<option value="">--Pilih--</option>
-											<option value="CIF">CIF</option>
-											<option value="FOB">FOB</option>
-											<option value="LOCO">LOCO</option>
-											<option value="DDU">DDU</option>
-											<option value="FRANCO">FRANCO</option>
-										</select>
-									</div>
-								</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Mata Uang</label>
+							</div>
+							<div class="col-md-8">
+								<select id="matauang" name="matauang" class='form-control input-md chosen-select' disabled>
+									<option value="">- Mata Uang -</option>
+									<?php foreach ($results['mata_uang'] as $mata_uang) {
+										$selected = '';
+										if (isset($results['header_po']) && $mata_uang->kode == $results['header_po']->matauang) {
+											$selected = 'selected';
+										}
+									?>
+										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
+									<?php } ?>
+								</select>
 							</div>
 						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3">
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="customer">Payment Term</label>
+							</div>
+							<div class="col-md-8">
+								<input type="text" class="form-control" id="term" onkeyup required name="term" value="<?= (isset($results['header_po'])) ? $results['header_po']->term : null ?>" readonly>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Supplier</label>
+							</div>
+							<div class="col-md-8">
+								<select id="supplier" name="supplier" class='form-control input-md chosen-select' disabled>
+									<option value="">- Supplier -</option>
+									<?php foreach ($results['list_supplier'] as $supplier) {
+										$selected = '';
+										if (isset($results['header_po']) && $supplier->kode_supplier == $results['header_po']->id_suplier) {
+											$selected = 'selected';
+										}
+									?>
+										<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6" hidden>
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">PR</label>
+							</div>
+							<div class="col-md-8">
+								<select id="no_pr" name="no_pr" class='form-control input-md chosen-select' required>
+									<option value="0">List Empty</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
 
-						<div class="col-sm-12">
-							<div class="col-sm-12">
-								<div class="form-group row">
-									<div class="table-responsive">
-										<table id="example" class='table table-bordered table-striped'>
-											<thead>
-												<tr class='bg-blue'>
-													<th style=" min-width: 200px;">Item</th>
-													<th style="min-width: 150px;">Kode Produk</th>
-													<th style="min-width: 100px;" hidden>Width</th>
-													<th style="min-width: 100px;" hidden>Length</th>
-													<th style="min-width: 75px;">Qty PR</th>
-													<th style="min-width: 75px;">PO Qty</th>
-													<th style="min-width: 100px;">Unit Measurement</th>
-													<th style="min-width: 75px;">Unit Packing</th>
-													<th style="min-width: 100px;" hidden>Rate LME</th>
-													<th style="min-width: 100px;" hidden>Alloy Price</th>
-													<th style="min-width: 100px;" hidden>Fab Cost</th>
-													<th style="min-width: 150px;">Harga Satuan</th>
-													<th style="min-width: 100px;" hidden>Disc %</th>
-													<th style="min-width: 100px;" hidden>Biaya Kirim</th>
-													<th style="min-width: 150px;">Total Harga</th>
-													<th style="min-width: 150px;">Nilai Discount</th>
-													<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
-													<th style="min-width: 150px;">Sub Total</th>
-													<th style="min-width: 100px;">Note</th>
-												</tr>
-											</thead>
-											<tbody>
-												<?php
-												// if ($results['getitemso']) {
-												$n = 1;
-												// print_r($results['getitemso']);
-												// exit;
-												// print_r($value . "<br>");
-												$key = 0;
-												foreach ($results['getitemso'] as $value) {
+				<div class="form-group row mb-3">
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Keterangan</label>
+							</div>
+							<div class="col-md-8">
+								<textarea name="keterangan" id="" class="form-control"><?= $results['header_po']->note ?></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Alamat</label>
+							</div>
+							<div class="col-md-8">
+								<textarea name="delivery_address" id="" class="form-control"><?= $results['header_po']->delivery_address ?></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
 
-													$get_trans_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->id])->num_rows();
-
-													// echo '<tr><td>' . $value->nm_material . '</td></tr>';
-
-													$no = $n++;
-													$key++;
-
-													$disabled = '';
-													// $disabled = ($loi == 'Import') ? '' : 'readonly';
-													// $disabled2 = ($loi == 'Import') ? 'readonly' : '';
-													// $idmat = $value->idmaterial;
-													// $harga 	= $this->db->query("SELECT * FROM ms_product_pricelist WHERE id_category3 = '$idmat'")->row();
-
-													// $stock = $this->db->query("SELECT * FROM stock_material WHERE id_category3 = '$idmat'")->row();
-
-													// $avl 	 =	$stock->qty_free;
-													$po    = $value->qty;
-
-													$total = $value->hargasatuan * $value->qty;
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Price Method</label>
+							</div>
+							<div class="col-md-8">
+								<select id="cif" name="cif" class="form-control select" required>
+									<option value="">--Pilih--</option>
+									<option value="CIF">CIF</option>
+									<option value="FOB">FOB</option>
+									<option value="LOCO">LOCO</option>
+									<option value="DDU">DDU</option>
+									<option value="FRANCO">FRANCO</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
 
 
-													// if ($value->status_app !== 'Y') {
+				<div class="table-responsive mb-3">
+					<table id="example" class='table table-bordered table-striped'>
+						<thead>
+							<tr class='bg-blue'>
+								<th style=" min-width: 200px;">Item</th>
+								<th style="min-width: 150px;">Kode Produk</th>
+								<th style="min-width: 100px;" hidden>Width</th>
+								<th style="min-width: 100px;" hidden>Length</th>
+								<th style="min-width: 75px;">Qty PR</th>
+								<th style="min-width: 75px;">PO Qty</th>
+								<th style="min-width: 100px;">Unit Measurement</th>
+								<th style="min-width: 75px;">Unit Packing</th>
+								<th style="min-width: 100px;" hidden>Rate LME</th>
+								<th style="min-width: 100px;" hidden>Alloy Price</th>
+								<th style="min-width: 100px;" hidden>Fab Cost</th>
+								<th style="min-width: 150px;">Harga Satuan</th>
+								<th style="min-width: 100px;" hidden>Disc %</th>
+								<th style="min-width: 100px;" hidden>Biaya Kirim</th>
+								<th style="min-width: 150px;">Total Harga</th>
+								<th style="min-width: 150px;">Nilai Discount</th>
+								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
+								<th style="min-width: 150px;">Sub Total</th>
+								<th style="min-width: 100px;">Note</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							// if ($results['getitemso']) {
+							$n = 1;
+							// print_r($results['getitemso']);
+							// exit;
+							// print_r($value . "<br>");
+							$key = 0;
+							foreach ($results['getitemso'] as $value) {
 
-													$get_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->idpr])->row();
-													// if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
-													$status = "<div class='badge bg-green'>Done PO</div>";
-													if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
-														$status = "<div class='badge bg-red'>Outstanding PO</div>";
-													}
+								$get_trans_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->id])->num_rows();
 
-													$idpr = (!empty($value->idpr)) ? $value->idpr : '';
-													$no_pr = (!empty($value->no_pr)) ? $value->no_pr : '';
-													$tipe_pr = (!empty($value->tipe_pr)) ? $value->tipe_pr : '';
-													$id_material = (!empty($value->id_material)) ? $value->id_material : '';
-													$nm_material1 = (!empty($value->nm_material1)) ? $value->nm_material1 : '';
-													$description = (!empty($value->description)) ? $value->description : '';
-													$width = (!empty($value->width)) ? $value->width : 0;
-													$length = (!empty($value->length)) ? $value->length : 0;
-													$total_weight = (!empty($value->totalweight)) ? $value->totalweight : 0;
-													echo "
+								// echo '<tr><td>' . $value->nm_material . '</td></tr>';
+
+								$no = $n++;
+								$key++;
+
+								$disabled = '';
+								// $disabled = ($loi == 'Import') ? '' : 'readonly';
+								// $disabled2 = ($loi == 'Import') ? 'readonly' : '';
+								// $idmat = $value->idmaterial;
+								// $harga 	= $this->db->query("SELECT * FROM ms_product_pricelist WHERE id_category3 = '$idmat'")->row();
+
+								// $stock = $this->db->query("SELECT * FROM stock_material WHERE id_category3 = '$idmat'")->row();
+
+								// $avl 	 =	$stock->qty_free;
+								$po    = $value->qty;
+
+								$total = $value->hargasatuan * $value->qty;
+
+
+								// if ($value->status_app !== 'Y') {
+
+								$get_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->idpr])->row();
+								// if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
+								$status = "<div class='badge bg-green'>Done PO</div>";
+								if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
+									$status = "<div class='badge bg-red'>Outstanding PO</div>";
+								}
+
+								$idpr = (!empty($value->idpr)) ? $value->idpr : '';
+								$no_pr = (!empty($value->no_pr)) ? $value->no_pr : '';
+								$tipe_pr = (!empty($value->tipe_pr)) ? $value->tipe_pr : '';
+								$id_material = (!empty($value->id_material)) ? $value->id_material : '';
+								$nm_material1 = (!empty($value->nm_material1)) ? $value->nm_material1 : '';
+								$description = (!empty($value->description)) ? $value->description : '';
+								$width = (!empty($value->width)) ? $value->width : 0;
+								$length = (!empty($value->length)) ? $value->length : 0;
+								$total_weight = (!empty($value->totalweight)) ? $value->totalweight : 0;
+								echo "
 													<tr>
 														<td>  " . $value->nm_material . $value->nm_material1 . "
 																<input type='hidden' id='dt_id_" . $key . "' name='dt[" . $key . "][id]' value='" . $value->id . "'>
@@ -320,7 +318,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_alloyprice_" . $key . "' " . $disabled . " data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' name='dt[" . $key . "][alloyprice]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_fabcost_" . $key . "' " . $disabled . " name='dt[" . $key . "][fabcost]' onkeyup='HitAmmount(" . $key . ")'></td>
-														<td><input type='text' class='form-control text-right input-sm auto_num' id='dt_hargasatuan_" . $key . "' name='dt[" . $key . "][hargasatuan]' onkeyup='HitAmmount(" . $key . ")' value='" . $value->hargasatuan . "'></td>
+														<td><input type='text' class='form-control text-end input-sm auto_num' id='dt_hargasatuan_" . $key . "' name='dt[" . $key . "][hargasatuan]' onkeyup='HitAmmount(" . $key . ")' value='" . $value->hargasatuan . "'></td>
 														<td hidden>
 															<select class='form-control input-sm' id='dt_ppn_" . $key . "' name='dt[" . $key . "][ppn]' onchange='CariPPN(" . $key . ")'>
 																<option value=''>SELECT</option>
@@ -331,16 +329,16 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 													
-														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total) . "'></td>
+														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-end auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total) . "'></td>
 														
 														<td>
 															<div class='input-group input-group-sm' style='margin-bottom:6px;'>
 																<input type='text' name='dt[" . $key . "][disc_persen]' class='form-control input-sm auto_num disc_persen'
 																	id='disc_persen_" . $key . "' data-key='" . $key . "' value='" . $value->persen_disc . "'>
-																<span class='input-group-addon'>%</span>
+																<span class='input-group-text'>%</span>
 															</div>
 															<div class='input-group input-group-sm'>
-																<span class='input-group-addon'>Rp</span>
+																<span class='input-group-text'>Rp</span>
 																<input type='text' name='dt[" . $key . "][disc_num]' class='form-control input-sm auto_num disc_num'
 																	id='disc_num_" . $key . "' data-key='" . $key . "' value='" . number_format($value->nilai_disc) . "'>
 															</div>
@@ -349,252 +347,246 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='Nilai PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn : null) . "'>
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn_persen : null) . "'>
 														</td>
-														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total - $value->nilai_disc + $value->ppn) . "'></td>
+														<td><input type='text' class='form-control input-sm text-end auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total - $value->nilai_disc + $value->ppn) . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
 										 			</tr>
 												";
-												}
-												?>
-											</tbody>
-											<tfoot>
-												<tr>
-													<td class="text-right" colspan="9"><b>Total</b></th>
-													<td colspan="2">
-														<input readonly type="text" class="form-control auto_num text-right" id="totalinppn" value="<?= number_format($results['header_po']->subtotal) ?>" required name="totalinppn">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>Diskon Khusus</b></th>
-													<td colspan="2">
-														<input type="text" class="form-control text-right auto_num" id="diskonkhusus" value="<?= number_format($results['header_po']->diskon_khusus) ?>" name="diskonkhusus">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>Total (Exclude PPn)</b></td>
-													<td colspan="2">
-														<input readonly type="text" class="form-control auto_num text-right" id="totalexppn" value="<?= number_format($results['header_po']->total_exclude_ppn) ?>" required name="totalexppn">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>DPP</b></td>
-													<td colspan="2">
-														<input readonly type="text" class="form-control auto_num text-right" id="dpp" value="<?= number_format($results['header_po']->total_dpp) ?>" required name="dpp">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>PPn</b></td>
-													<td colspan="2">
-														<input readonly type="text" class="form-control auto_num text-right" id="ppn" value="<?= number_format($results['header_po']->total_ppn) ?>" required name="ppn">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>Biaya Kirim</b></td>
-													<td colspan="2">
-														<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-														<input type="text" class="form-control auto_num text-right" id="kirim" value="<?= $results['header_po']->taxtotal ?>" required name="kirim">
-													</td>
-												</tr>
-												<tr>
-													<td class="text-right" colspan="9"><b>Total Order</b></td>
-													<td colspan="2">
-														<input readonly type="text" class="form-control text-right" id="subtotal" value="<?= number_format($results['header_po']->total_include_ppn) ?>" required name="subtotal">
-													</td>
-												</tr>
-											</tfoot>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-12" hidden>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="customer">Expect Date</label>
-								</div>
-								<div class="col-md-8">
-									<input type="text" class="form-control" id="expect_tanggal" required name="expect_tanggal" readonly>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-2">
-									<label for="customer">Note</label>
-								</div>
-								<div class="col-md-10">
-									<input type="text" class="form-control" id="note_ket" name="note_ket">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-12" hidden>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Sub Total</label>
-								</div>
-								<div class="col-md-8" id="ForHarga">
-									<input readonly type="text" class="form-control" id="hargatotal" value="<?= number_format($total_harga) ?>" required name="hargatotal">
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-6" hidden>
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="">Keterangan</label>
-								</div>
-								<div class="col-md-8" id="">
-									<textarea name="" id="" cols="30" rows="5" class="form-control" readonly><?= $results['header_po']->note ?></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-12" hidden>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Total Discount</label>
-								</div>
-								<div class="col-md-1 text-right">
-									<span>(%)</span> <br><br>
-									<span>($)</span>
-								</div>
-								<div class="col-md-7" id="ForHarga">
-									<input type="text" class="form-control auto_num" id="persendisc" onkeyup required name="persendisc" onblur="cariTotal()" placeholder="Persen Disc (%)" value="<?= $results['header_po']->persen_disc ?>" readonly>
-									<input type="text" class="form-control auto_num" id="totaldisc" onkeyup required name="totaldisc" onblur="cariTotal()" placeholder="Nilai Disc" value="<?= $results['header_po']->nilai_disc ?>" readonly>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Biaya Kirim</label>
-								</div>
-								<div class="col-md-8" id="ForTax">
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td class="text-end" colspan="9"><b>Total</b></th>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= number_format($results['header_po']->subtotal) ?>" required name="totalinppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>Diskon Khusus</b></th>
+								<td colspan="2">
+									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= number_format($results['header_po']->diskon_khusus) ?>" name="diskonkhusus">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>Total (Exclude PPn)</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= number_format($results['header_po']->total_exclude_ppn) ?>" required name="totalexppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>DPP</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= number_format($results['header_po']->total_dpp) ?>" required name="dpp">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>PPn</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= number_format($results['header_po']->total_ppn) ?>" required name="ppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>Biaya Kirim</b></td>
+								<td colspan="2">
 									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-									<input type="text" class="form-control" id="kirim" value="<?= number_format($results['header_po']->taxtotal, 2) ?>" readonly name="kirim">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-12" hidden>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Total PPN</label>
-								</div>
-								<div class="col-md-1 text-right">
-									<span>(%)</span> <br><br>
-									<span>($)</span>
-								</div>
-								<div class="col-md-7" id="ForHarga">
-									<input type="text" class="form-control auto_num" id="persenppn" onkeyup required name="persenppn" onblur="cariTotal()" placeholder="Persen PPN (%)" value="<?= $results['header_po']->total_ppn_persen ?>" readonly>
-									<input type="text" class="form-control auto_num" id="totalppn" onkeyup required name="totalppn" onblur="cariTotal()" placeholder="Nilai PPN" value="<?= $results['header_po']->total_ppn ?>" readonly>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Total Order</label>
-								</div>
-								<div class="col-md-8" id="ForSum">
-									<input readonly type="text" class="form-control" id="subtotal" value="<?= number_format($total_harga_ppn + $results['header_po']->total_ppn + $results['header_po']->taxtotal) ?>" onkeyup required name="subtotal">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-12" hidden>
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="id_customer">Discount</label>
-								</div>
-								<div class="col-md-8" id="ForDiskon">
-									<input readonly type="text" class="form-control" id="diskontotal" onkeyup required name="diskontotal">
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-sm-12">
-						<div class="col-sm-6">
-							<div class="form-group row">
-								<div class="col-md-4">
-									<label for="">Reject Reason</label>
-								</div>
-								<div class="col-md-8">
-									<textarea name="reject_reason" id="" class="form-control form-control-sm reject_reason"></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-sm-12">
-						<div class="row">
-							<div class="col-sm-12">
-								<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
-
-								<table class="table table-bordered">
-									<thead class="bg-blue">
-										<tr>
-											<th class="text-center">Group TOP</th>
-											<th class="text-center">Progress (%)</th>
-											<th class="text-center">Value</th>
-											<th class="text-center">Keterangan</th>
-										</tr>
-									</thead>
-									<tbody class="list_tbody_top">
-										<?php
-										$no = 1;
-										foreach ($results['list_top'] as $item_top) {
-											echo '<tr class="top_' . $no . '">';
-
-											echo '<td>';
-											echo '<select name="group_top_' . $no . '">';
-											foreach ($results['list_group_top'] as $item_group_top) {
-												$selected = '';
-												if ($item_group_top->id == $item_top->group_top) {
-													$selected = 'selected';
-												}
-												echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
-											}
-											echo '</select>';
-											echo '</td>';
-
-											echo '<td>';
-											echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
-											echo '</td>';
-
-											echo '<td class="text-right">';
-											echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
-											echo '</td>';
-
-											echo '<td>';
-											echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
-											echo '</td>';
-
-											echo '</tr>';
-
-											$no++;
-										}
-										?>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-					<center>
-						<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i> Approve</button>
-						<button type="submit" class="btn btn-danger btn-sm" name="save" id="reject-com"><i class="fa fa-ban"></i> Reject</button>
-						<a href="<?= base_url('approval_po') ?>" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i> Back</a>
-					</center>
+									<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['header_po']->taxtotal ?>" required name="kirim">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="9"><b>Total Order</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= number_format($results['header_po']->total_include_ppn) ?>" required name="subtotal">
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
+
+				<div class="form-group row mb-3">
+					<div class="col-sm-12">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="">Reject Reason</label>
+							</div>
+							<div class="col-md-8">
+								<textarea name="reject_reason" id="" class="form-control form-control-sm reject_reason"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
+				<table class="table table-bordered">
+					<thead class="bg-blue">
+						<tr>
+							<th class="text-center">Group TOP</th>
+							<th class="text-center">Progress (%)</th>
+							<th class="text-center">Value</th>
+							<th class="text-center">Keterangan</th>
+						</tr>
+					</thead>
+					<tbody class="list_tbody_top">
+						<?php
+						$no = 1;
+						foreach ($results['list_top'] as $item_top) {
+							echo '<tr class="top_' . $no . '">';
+
+							echo '<td>';
+							echo '<select name="group_top_' . $no . '">';
+							foreach ($results['list_group_top'] as $item_group_top) {
+								$selected = '';
+								if ($item_group_top->id == $item_top->group_top) {
+									$selected = 'selected';
+								}
+								echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+							}
+							echo '</select>';
+							echo '</td>';
+
+							echo '<td>';
+							echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
+							echo '</td>';
+
+							echo '<td class="text-end">';
+							echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+							echo '</td>';
+
+							echo '<td>';
+							echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
+							echo '</td>';
+
+							echo '</tr>';
+
+							$no++;
+						}
+						?>
+					</tbody>
+				</table>
+
+
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="customer">Expect Date</label>
+							</div>
+							<div class="col-md-8">
+								<input type="text" class="form-control" id="expect_tanggal" required name="expect_tanggal" readonly>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-2">
+								<label for="customer">Note</label>
+							</div>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="note_ket" name="note_ket">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Sub Total</label>
+							</div>
+							<div class="col-md-8" id="ForHarga">
+								<input readonly type="text" class="form-control" id="hargatotal" value="<?= number_format($total_harga) ?>" required name="hargatotal">
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6" hidden>
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="">Keterangan</label>
+							</div>
+							<div class="col-md-8" id="">
+								<textarea name="" id="" cols="30" rows="5" class="form-control" readonly><?= $results['header_po']->note ?></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Total Discount</label>
+							</div>
+							<div class="col-md-1 text-end">
+								<span>(%)</span> <br><br>
+								<span>($)</span>
+							</div>
+							<div class="col-md-7" id="ForHarga">
+								<input type="text" class="form-control auto_num" id="persendisc" onkeyup required name="persendisc" onblur="cariTotal()" placeholder="Persen Disc (%)" value="<?= $results['header_po']->persen_disc ?>" readonly>
+								<input type="text" class="form-control auto_num" id="totaldisc" onkeyup required name="totaldisc" onblur="cariTotal()" placeholder="Nilai Disc" value="<?= $results['header_po']->nilai_disc ?>" readonly>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Biaya Kirim</label>
+							</div>
+							<div class="col-md-8" id="ForTax">
+								<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
+								<input type="text" class="form-control" id="kirim" value="<?= number_format($results['header_po']->taxtotal, 2) ?>" readonly name="kirim">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Total PPN</label>
+							</div>
+							<div class="col-md-1 text-end">
+								<span>(%)</span> <br><br>
+								<span>($)</span>
+							</div>
+							<div class="col-md-7" id="ForHarga">
+								<input type="text" class="form-control auto_num" id="persenppn" onkeyup required name="persenppn" onblur="cariTotal()" placeholder="Persen PPN (%)" value="<?= $results['header_po']->total_ppn_persen ?>" readonly>
+								<input type="text" class="form-control auto_num" id="totalppn" onkeyup required name="totalppn" onblur="cariTotal()" placeholder="Nilai PPN" value="<?= $results['header_po']->total_ppn ?>" readonly>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Total Order</label>
+							</div>
+							<div class="col-md-8" id="ForSum">
+								<input readonly type="text" class="form-control" id="subtotal" value="<?= number_format($total_harga_ppn + $results['header_po']->total_ppn + $results['header_po']->taxtotal) ?>" onkeyup required name="subtotal">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-3" hidden>
+					<div class="col-sm-6">
+						<div class="form-group row">
+							<div class="col-md-4">
+								<label for="id_customer">Discount</label>
+							</div>
+							<div class="col-md-8" id="ForDiskon">
+								<input readonly type="text" class="form-control" id="diskontotal" onkeyup required name="diskontotal">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-12 text-center mb-3">
+					<button type="submit" class="btn btn-success" name="save" id="simpan-com"><i class="fa fa-save"></i> Approve</button>
+					<button type="submit" class="btn btn-danger" name="save" id="reject-com"><i class="fa fa-ban"></i> Reject</button>
+					<a href="<?= base_url('approval_po') ?>" class="btn btn-default"><i class="fa fa-arrow-left"></i> Back</a>
+				</div>
+
 			</div>
 		</form>
 	</div>
+</div>
 </div>
 
 
