@@ -1,26 +1,31 @@
 <?php
 // cek currency
 ?>
-<div class="col-md-12 mb-3">
-    <table>
-        <tr>
-            <td>No PO</td>
-            <td>:</td>
-            <td> <?= $no_surat ?></td>
-        </tr>
-        <tr>
-            <td>No PR</td>
-            <td>:</td>
-            <td> <?= $no_pr ?></td>
-        </tr>
-        <tr>
-            <td>Incoming Date</td>
-            <td>:</td>
-            <td>
-                <input type="date" name="incoming_date" id="" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
-            </td>
-        </tr>
-    </table>
+<div class="col-md-6 mb-3">
+    <div class="form-group row mb-2">
+        <div class="col-md-3">
+            <label>Nomor PO</label>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" readonly value="<?= $no_surat ?>">
+        </div>
+    </div>
+    <div class="form-group row mb-2">
+        <div class="col-md-3">
+            <label>Nomor PR</label>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control" readonly value="<?= $no_pr ?>">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label>Incoming Date</label>
+        </div>
+        <div class="col-md-9">
+            <input type="date" name="incoming_date" id="" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>" required>
+        </div>
+    </div>
 </div>
 
 <input type="hidden" name='no_po' id='no_po' value='<?= $no_po; ?>'>
@@ -37,11 +42,11 @@ if (!empty($no_ros)) {
 ?>
 <input type="hidden" name='total_freight' id='total_freight' value='<?= $total_freight; ?>'>
 
-<?php
-$Noo = 0;
-foreach ($result_header as $header_item) {
-?>
-    <div class="table-responsive">
+<div class="table-responsive">
+    <?php
+    $Noo = 0;
+    foreach ($result_header as $header_item) {
+    ?>
         <table class="table table-striped table-bordered table-responsive" width="100%">
             <thead id='head_table'>
                 <tr>
@@ -113,7 +118,7 @@ foreach ($result_header as $header_item) {
                                 echo "<td align='center'>" . $valx['unit_measure'] . "</td>";
                                 echo "<td align='right' class='belumDiterima'>" . number_format(($valx['qty'] - $ttl_qty_incoming_check), 2) . "</td>";
                                 echo "<td align='right' class='belumDiterima'>" . number_format($ttl_qty_ng, 2) . "</td>";
-                                echo "<td align='center'><input type='text' name='addInMat[$Noo][qty_in]' data-no='$No' class='form-control input-sm text-right maskM qtyDiterima'></td>";
+                                echo "<td align='center'><input type='text' required name='addInMat[$Noo][qty_in]' data-no='$No' class='form-control input-sm text-right maskM qtyDiterima'></td>";
                                 echo "<td align='center'><input type='text' name='addInMat[$Noo][keterangan]' data-no='$No' class='form-control input-sm text-left'></td>";
                                 echo "</tr>";
 
@@ -142,10 +147,10 @@ foreach ($result_header as $header_item) {
                 ?>
             </tbody>
         </table>
-    </div>
-<?php
-}
-?>
+    <?php
+    }
+    ?>
+</div>
 
 <div class="form-group row">
     <div class="col-md-3">

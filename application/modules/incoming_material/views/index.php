@@ -25,105 +25,102 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
     }
 </style>
 
-<form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="col-md-12">
-                <input type="hidden" id='tandax' name='tandax'>
-                <div class='in_ipp'>
-                    <div class='form-group row mb-3'>
-                        <label class='label-control col-sm-2'><b>Supplier</b></label>
-                        <div class="col-md-4">
-                            <select name="supplier" id="" class="form-control select2 choose_supplier">
-                                <option value="">- Select Supplier -</option>
-                                <?php
-                                foreach ($list_supplier as $item) {
-                                    echo '<option value="' . $item->kode_supplier . '">' . $item->nama . '</option>';
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
+<!-- <form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data"> -->
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="col-md-12">
+            <input type="hidden" id='tandax' name='tandax'>
+            <div class='in_ipp'>
+                <div class='form-group row mb-3'>
+                    <label class='label-control col-sm-2'><b>Supplier</b></label>
+                    <div class="col-md-4">
+                        <select name="supplier" id="" class="form-control select2 choose_supplier">
+                            <option value="">- Select Supplier -</option>
                             <?php
-                            echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:left;', 'value' => 'Process', 'content' => '<i class="fa fa-refresh"></i> Process', 'id' => 'modalDetail')) . ' ';
+                            foreach ($list_supplier as $item) {
+                                echo '<option value="' . $item->kode_supplier . '">' . $item->nama . '</option>';
+                            }
                             ?>
-                        </div>
+                        </select>
                     </div>
-                    <div class="form-group row">
-                        <label class="label-control col-sm-2"><b>No PO</b></label>
+                    <div class="col-md-6">
+                        <?php
+                        echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-success', 'style' => 'min-width:100px; float:left;', 'value' => 'Process', 'content' => '<i class="fas fa-sign-in-alt"></i> Process', 'id' => 'modalDetail')) . ' ';
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="label-control col-sm-2"><b>No PO</b></label>
 
-                        <div class="col-md-4">
-                            <div class="table-fixed-header"> <!-- area scroll -->
-                                <table class="table table-bordered table-sm mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">NO. PO</th>
-                                            <th class="text-center">No. PR</th>
-                                            <th class="text-center">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="list_no_po">
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="col-md-4">
+                        <div class="table-fixed-header"> <!-- area scroll -->
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">NO. PO</th>
+                                        <th class="text-center">No. PR</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list_no_po">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
-                <hr>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="example1" width='100%'>
-                        <thead>
-                            <tr>
-                                <th class="text-center">No</th>
-                                <th class="text-center">No Trans</th>
-                                <th class="text-center">No PR</th>
-                                <th class="text-center">Supplier</th>
-                                <th class="text-center">Sum Material</th>
-                                <th class="text-center">Receiver</th>
-                                <th class="text-center">Incoming Date</th>
-                                <th class="text-center">Option</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+        </div>
+        <div class="col-md-12">
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="example1" width='100%'>
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th class="text-center">No Trans</th>
+                            <th class="text-center">No PR</th>
+                            <th class="text-center">Supplier</th>
+                            <th class="text-center">Sum Material</th>
+                            <th class="text-center">Receiver</th>
+                            <th class="text-center">Incoming Date</th>
+                            <th class="text-center">Option</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.card-body -->
+<!-- modal -->
+<div class="modal fade" id="ModalView2">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 95%; width: 95%; overflow-y: auto;">
+        <div class="modal-content">
+            <form id="data-form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="head_title2"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
+
+                <div class="modal-body" id="view2">
+                    <!-- Konten modal akan dimasukkan di sini -->
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-device-floppy me-1"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i> Cancel
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    <!-- /.card-body -->
-    <!-- modal -->
-    <div class="modal fade" id="ModalView2">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable" style='overflow-y: auto;'>
-            <div class="modal-content" style='width:100%;'>
-                <form action="#" method="POST" id="form_adjustment" enctype="multipart/form-data" autocomplete='off'>
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="head_title2">
-                            <i class="fa fa-users me-2"></i> Data Supplier
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body" id="view2">
-                        ...
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="saveINMaterial">
-                            <i class="ti ti-device-floppy me-1"></i> Save
-                        </button>
-                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
-                            <i class="ti ti-x me-1"></i> Cancel
-                        </button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-    <!-- modal -->
-</form>
+</div>
+<!-- modal -->
+<!-- </form> -->
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <script>
     $(document).ready(function() {
@@ -244,174 +241,162 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
         });
     });
 
-    $(document).on('click', '#processAjust', function() {
-        var gudang_before = $('#gudang_before').val();
-        var no_ipp = $('#no_ipp').val();
-        var gudang_after = $('#gudang_after').val();
+    // $(document).on('click', '#processAjust', function() {
+    //     var gudang_before = $('#gudang_before').val();
+    //     var no_ipp = $('#no_ipp').val();
+    //     var gudang_after = $('#gudang_after').val();
 
-        if (no_ipp == '0') {
-            swal({
-                title: "Error Message!",
-                text: 'IPP Not Select, please input first ...',
-                type: "warning"
-            });
-            $('#processAjust').prop('disabled', false);
-            return false;
-        }
+    //     if (no_ipp == '0') {
+    //         swal({
+    //             title: "Error Message!",
+    //             text: 'IPP Not Select, please input first ...',
+    //             type: "warning"
+    //         });
+    //         $('#processAjust').prop('disabled', false);
+    //         return false;
+    //     }
 
-        if (gudang_before == '0') {
-            swal({
-                title: "Error Message!",
-                text: 'Origin Warehouse Not Select, please input first ...',
-                type: "warning"
-            });
-            $('#processAjust').prop('disabled', false);
-            return false;
-        }
+    //     if (gudang_before == '0') {
+    //         swal({
+    //             title: "Error Message!",
+    //             text: 'Origin Warehouse Not Select, please input first ...',
+    //             type: "warning"
+    //         });
+    //         $('#processAjust').prop('disabled', false);
+    //         return false;
+    //     }
 
-        if (gudang_after == '0') {
-            swal({
-                title: "Error Message!",
-                text: 'Destination Warehouse Not Select, please input first ...',
-                type: "warning"
-            });
-            $('#processAjust').prop('disabled', false);
-            return false;
-        }
+    //     if (gudang_after == '0') {
+    //         swal({
+    //             title: "Error Message!",
+    //             text: 'Destination Warehouse Not Select, please input first ...',
+    //             type: "warning"
+    //         });
+    //         $('#processAjust').prop('disabled', false);
+    //         return false;
+    //     }
 
+    //     swal({
+    //             title: "Are you sure?",
+    //             text: "You will not be able to process again this data!",
+    //             type: "warning",
+    //             showCancelButton: true,
+    //             confirmButtonClass: "btn-danger",
+    //             confirmButtonText: "Yes, Process it!",
+    //             cancelButtonText: "No, cancel process!",
+    //             closeOnConfirm: false,
+    //             closeOnCancel: false
+    //         },
+    //         function(isConfirm) {
+    //             if (isConfirm) {
+
+    //                 var formData = new FormData($('#form_proses_bro')[0]);
+    //                 $.ajax({
+    //                     url: base_url + active_controller + '/process_adjustment',
+    //                     type: "POST",
+    //                     data: formData,
+    //                     cache: false,
+    //                     dataType: 'json',
+    //                     processData: false,
+    //                     contentType: false,
+    //                     success: function(data) {
+    //                         if (data.status == 1) {
+    //                             swal({
+    //                                 title: "Save Success!",
+    //                                 text: data.pesan,
+    //                                 type: "success",
+    //                                 timer: 7000,
+    //                                 showCancelButton: false,
+    //                                 showConfirmButton: false,
+    //                                 allowOutsideClick: false
+    //                             });
+    //                             window.location.href = base_url + active_controller + '/material_adjustment';
+    //                         } else if (data.status == 0) {
+    //                             swal({
+    //                                 title: "Save Failed!",
+    //                                 text: data.pesan,
+    //                                 type: "warning",
+    //                                 timer: 7000,
+    //                                 showCancelButton: false,
+    //                                 showConfirmButton: false,
+    //                                 allowOutsideClick: false
+    //                             });
+    //                         }
+    //                     },
+    //                     error: function() {
+    //                         swal({
+    //                             title: "Error Message !",
+    //                             text: 'An Error Occured During Process. Please try again..',
+    //                             type: "warning",
+    //                             timer: 7000,
+    //                             showCancelButton: false,
+    //                             showConfirmButton: false,
+    //                             allowOutsideClick: false
+    //                         });
+    //                     }
+    //                 });
+    //             } else {
+    //                 swal("Cancelled", "Data can be process again :)", "error");
+    //                 return false;
+    //             }
+    //         });
+    // });
+
+    $(document).on('submit', '#data-form', function(e) {
+        e.preventDefault();
+        console.log('anjing')
         swal({
-                title: "Are you sure?",
-                text: "You will not be able to process again this data!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-            function(isConfirm) {
-                if (isConfirm) {
+            title: "Are you sure?",
+            text: "You will not be able to process again this data!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, Process it!",
+            cancelButtonText: "No, cancel process!",
+            closeOnConfirm: true,
+            closeOnCancel: false
+        }, function(isConfirm) {
+            if (!isConfirm) {
+                swal("Cancelled", "Data can be process again :)", "error");
+                return;
+            }
+            var form_data = new FormData($('#data-form')[0]);
 
-                    var formData = new FormData($('#form_proses_bro')[0]);
-                    $.ajax({
-                        url: base_url + active_controller + '/process_adjustment',
-                        type: "POST",
-                        data: formData,
-                        cache: false,
-                        dataType: 'json',
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data.status == 1) {
-                                swal({
-                                    title: "Save Success!",
-                                    text: data.pesan,
-                                    type: "success",
-                                    timer: 7000,
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    allowOutsideClick: false
-                                });
-                                window.location.href = base_url + active_controller + '/material_adjustment';
-                            } else if (data.status == 0) {
-                                swal({
-                                    title: "Save Failed!",
-                                    text: data.pesan,
-                                    type: "warning",
-                                    timer: 7000,
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    allowOutsideClick: false
-                                });
-                            }
-                        },
-                        error: function() {
-                            swal({
-                                title: "Error Message !",
-                                text: 'An Error Occured During Process. Please try again..',
-                                type: "warning",
-                                timer: 7000,
-                                showCancelButton: false,
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        }
+            $.ajax({
+                type: 'POST',
+                url: base_url + active_controller + '/process_in_material',
+                dataType: "json",
+                data: form_data,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if (res.status == '1') {
+                        swal({
+                            title: "Success",
+                            text: res.pesan,
+                            type: "success"
+                        }, function() {
+                            window.location.reload(true);
+                        });
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: res.pesan,
+                            type: "error"
+                        });
+                    }
+                },
+                error: function() {
+                    swal({
+                        title: "Error",
+                        text: "An error occurred while processing the data.",
+                        type: "error"
                     });
-                } else {
-                    swal("Cancelled", "Data can be process again :)", "error");
-                    return false;
                 }
             });
+        });
     });
 
-    $(document).on('click', '#saveINMaterial', function() {
-
-        swal({
-                title: "Are you sure?",
-                text: "You will not be able to process again this data!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-            function(isConfirm) {
-                if (isConfirm) {
-
-                    var formData = new FormData($('#form_adjustment')[0]);
-                    $.ajax({
-                        url: base_url + active_controller + '/process_in_material',
-                        type: "POST",
-                        data: formData,
-                        cache: false,
-                        dataType: 'json',
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data.status == 1) {
-                                swal({
-                                    title: "Save Success!",
-                                    text: data.pesan,
-                                    type: "success",
-                                    timer: 7000,
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    allowOutsideClick: false
-                                });
-                                window.location.href = base_url + active_controller;
-                            } else if (data.status == 0) {
-                                swal({
-                                    title: "Save Failed!",
-                                    text: data.pesan,
-                                    type: "warning",
-                                    timer: 7000,
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    allowOutsideClick: false
-                                });
-                            }
-                        },
-                        error: function() {
-                            swal({
-                                title: "Error Message !",
-                                text: 'An Error Occured During Process. Please try again..',
-                                type: "warning",
-                                timer: 7000,
-                                showCancelButton: false,
-                                showConfirmButton: false,
-                                allowOutsideClick: false
-                            });
-                        }
-                    });
-                } else {
-                    swal("Cancelled", "Data can be process again :)", "error");
-                    return false;
-                }
-            });
-    });
 
     $(document).on('click', '#moveMat', function() {
 

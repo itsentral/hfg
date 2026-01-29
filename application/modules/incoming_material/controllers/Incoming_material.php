@@ -77,7 +77,174 @@ class Incoming_material extends Admin_Controller
 
     public function process_in_material()
     {
-        $this->Incoming_material_model->process_in_material();
+        $data            = $this->input->post();
+
+        $data_session    = $this->session->userdata;
+        $dateTime        = date('Y-m-d H:i:s');
+        $no_po           = $data['no_po'];
+        $incoming_date   = $data['incoming_date'];
+
+        $addInMat        = $data['addInMat'];
+
+        $Ym              = date('ym');
+
+        $table = 'dt_trans_po';
+
+
+        $ArrUpdate         = array();
+        $ArrInList         = array();
+        $ArrDeatil         = array();
+        $ArrDeatilAdj     = array();
+        $ArrHist         = array();
+        $SumMat = 0;
+        $SumRisk = 0;
+
+
+        $ArrInsertH = array(
+            'no_ipp'             => $no_po,
+            'category'           => 'incoming material',
+            'jumlah_mat'         => $SumMat + $SumRisk,
+            'kd_gudang_dari'     => 'PURCHASE',
+            // 'note' => $note,
+            'created_by'         => $this->auth->user_id(),
+            'created_date'       => $dateTime
+        );
+
+        $ArrHeader2 = array(
+            'status' => 'COMPLETE',
+        );
+
+        $ArrHeader2x = array(
+            'status' => 'COMPLETE',
+            'total_material_in' => $SumMat + $SumRisk
+        );
+
+        $ArrHeader3 = array(
+            'status' => 'IN PARSIAL',
+        );
+
+        $this->db->trans_begin();
+
+        $generate_id = $this->db->query("SELECT MAX(kode_trans) AS max_id FROM tr_incoming_check WHERE kode_trans LIKE '%TRS1-" . date('m-y') . "%'")->row();
+        $kodeBarang = $generate_id->max_id;
+        $urutan = (int) substr($kodeBarang, 11, 5);
+        $urutan++;
+        $tahun = date('m-y');
+        $huruf = "TRS1-";
+        $kodecollect = $huruf . $tahun . sprintf("%06s", $urutan);
+
+        $jumlah_mat = 0;
+        $valid = 1;
+        foreach ($addInMat as $val => $valx) {
+            $qtyIN         = str_replace(',', '', $valx['qty_in']);
+            $qty_sisa = $valx['qty_sisa'];
+
+            if ($qtyIN > $qty_sisa) {
+                $valid = 2;
+            } else {
+                $get_trans_po = $this->db->get_where('dt_trans_po', ['id' => $valx['id']])->row();
+                if ($qtyIN > 0) {
+                    $this->db->insert('tr_incoming_check_detail', [
+                        'kode_trans'        => $kodecollect,
+                        'no_ipp'            => $no_po,
+                        'id_po_detail'      => $valx['id'],
+                        'id_material_req'   => $get_trans_po->idmaterial,
+                        'id_material'       => $get_trans_po->idmaterial,
+                        'nm_material'       => $get_trans_po->namamaterial,
+                        'harga'             => $get_trans_po->hargasatuan,
+                        'qty_order'         => $qtyIN,
+                        'keterangan'        => $valx['keterangan']
+                    ]);
+                }
+
+                $update_qty_in = $this->db->update('dt_trans_po', [
+                    'qty_in' => ($get_trans_po->qty_in + $qtyIN),
+                    'keterangan' => $valx['keterangan']
+                ], [
+                    'id' => $valx['id']
+                ]);
+
+                $jumlah_mat += $qtyIN;
+            }
+        }
+
+        $config['upload_path'] = './uploads/incoming_material'; //path folder
+        $config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
+        $config['max_size'] = 100000000; // Maximum file size in kilobytes (2MB).
+        $config['encrypt_name'] = TRUE; // Encrypt the uploaded file's name.
+        $config['remove_spaces'] = TRUE; // Remove spaces from the file name.
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        $upload_incoming = '';
+
+        $files = $_FILES['file_incoming_material'];
+        $file_count = count($files['name']);
+        for ($i = 0; $i < $file_count; $i++) {
+            $_FILES['file_incoming_material']['name'] = $files['name'][$i];
+            $_FILES['file_incoming_material']['type'] = $files['type'][$i];
+            $_FILES['file_incoming_material']['tmp_name'] = $files['tmp_name'][$i];
+            $_FILES['file_incoming_material']['error'] = $files['error'][$i];
+            $_FILES['file_incoming_material']['size'] = $files['size'][$i];
+
+            if (!$this->upload->do_upload('file_incoming_material')) {
+                // If upload fails, display error
+                $error = array('error' => $this->upload->display_errors());
+                // print_r($error);
+            } else {
+                $data_upload_incoming = $this->upload->data();
+                $upload_incoming = $upload_incoming . '|' . 'uploads/incoming_material/' . $data_upload_incoming['file_name'];
+            }
+        }
+
+        $row = $this->db->select('subtotal')
+            ->from('tr_purchase_order')
+            ->where('no_po', $no_po)
+            ->limit(1)
+            ->get()
+            ->row();
+
+        $subtotal = $row ? $row->subtotal : null;
+
+        $this->db->insert('tr_incoming_check', [
+            'kode_trans'                => $kodecollect,
+            'tanggal'                   => $incoming_date,
+            'no_ipp'                    => $no_po,
+            'category'                  => 'incoming material',
+            'jumlah_mat'                => $jumlah_mat,
+            'id_gudang_dari'            => 1,
+            'kd_gudang_dari'            => 'PUS',
+            'id_gudang_ke'              => 1,
+            'kd_gudang_ke'              => 'PUS',
+            'file_incoming_material'    => $upload_incoming,
+            'total_harga_material'       => $subtotal,
+            'created_by'                => $this->auth->user_id(),
+            'created_date'              => date('Y-m-d H:i:s')
+        ]);
+
+        $checkSumQty = $this->db->query("SELECT SUM(qty) as total_qty, SUM(qty_in) AS qty_terkirim FROM dt_trans_po WHERE no_po = '" . $no_po . "'")->row();
+
+        if ($this->db->trans_status() === FALSE || $valid > 1) {
+            $this->db->trans_rollback();
+
+            $msg = 'Save process failed. Please try again later ...';
+            if ($valid == '2') {
+                $msg = 'Maaf, qty pengiriman melebihi qty yang belum dikirim !';
+            }
+            $Arr_Data    = array(
+                'pesan'        => $msg,
+                'status'    => 0
+            );
+        } else {
+            $this->db->trans_commit();
+            $Arr_Data    = array(
+                'pesan'        => 'Save process success. Thanks ...',
+                'status'    => 1
+            );
+            // history($histHlp);
+        }
+        // echo json_encode($Arr_Data);
     }
 
     public function incoming_list_po()
