@@ -67,10 +67,7 @@ class Material_master extends Admin_Controller
     }
     if ($this->input->post()) {
       $post = $this->input->post();
-      echo '<pre>';
-      print_r($post);
-      echo '</pre>';
-      die();
+
       $generate_id = $this->Material_master_model->generate_id();
 
       $id         = $post['id'];
@@ -89,11 +86,11 @@ class Material_master extends Admin_Controller
       $warna            = $post['warna'];
 
       $id_unit_packing  = $post['id_unit_packing'];
-      $id_unit_other    = $post['id_unit_other'];
+      // $id_unit_other    = $post['id_unit_other'];
       $id_unit          = $post['id_unit'];
       $id_supplier      = $post['id_supplier'];
       $konversi         = str_replace(',', '', $post['konversi']);
-      $konversi_other   = str_replace(',', '', $post['konversi_other']);
+      // $konversi_other   = str_replace(',', '', $post['konversi_other']);
 
       $max_stok     = str_replace(',', '', $post['max_stok']);
       $min_stok     = str_replace(',', '', $post['min_stok']);
@@ -123,8 +120,8 @@ class Material_master extends Admin_Controller
         'id_unit_packing'  => $id_unit_packing,
         'id_unit'  => $id_unit,
         'konversi'  => $konversi,
-        'id_unit_other'  => $id_unit_other,
-        'konversi_other'  => $konversi_other,
+        // 'id_unit_other'  => $id_unit_other,
+        // 'konversi_other'  => $konversi_other,
         'length'      => $length,
         'max_stok'    => $max_stok,
         'min_stok'    => $min_stok,
@@ -136,6 +133,11 @@ class Material_master extends Admin_Controller
         $last_by    => $this->id_user,
         $last_date  => $this->datetime
       ];
+
+      // echo '<pre>';
+      // print_r($dataProcess1);
+      // echo '</pre>';
+      // die();
 
       //UPLOAD DOCUMENT
       $dataProcess2 = [];
