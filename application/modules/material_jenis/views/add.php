@@ -13,11 +13,11 @@ $nama     = (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
 
 <div class="form-group row mb-3">
 	<div class="col-md-3">
-		<label for="code_lv1">Material Type <span class='text-danger'>*</span></label>
+		<label for="code_lv1">Jenis Logam <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-9">
 		<select name="code_lv1" id="code_lv1" class="form-control chosen-select" required>
-			<option value="0">Select Material Type</option>
+			<option value="0">Select Jenis Logam</option>
 			<?php
 			foreach ($listLevel1 as $key => $value) {
 				$selected = ($code_lv1 == $value['code_lv1']) ? 'selected' : '';

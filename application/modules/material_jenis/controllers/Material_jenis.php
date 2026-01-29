@@ -48,7 +48,7 @@ class Material_jenis extends Admin_Controller
 
     history("View index material jenis");
     $this->template->set($data);
-    $this->template->title('Material Jenis');
+    $this->template->title('Boron / Non Boron');
     $this->template->render('index');
   }
 

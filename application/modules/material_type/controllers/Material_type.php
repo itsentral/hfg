@@ -46,7 +46,7 @@ class Material_type extends Admin_Controller
 
     history("View index material type");
     $this->template->set($data);
-    $this->template->title('Material Type');
+    $this->template->title('Jenis Logam');
     $this->template->render('index');
   }
 

@@ -38,11 +38,11 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="code_lv1">Material Type <span class='text-danger'>*</span></label>
+		<label for="code_lv1">Jenis Logam <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-10">
-		<select name="code_lv1" id="code_lv1" class="form-control chosen-select" required>
-			<option value="0">Select Material Type</option>
+		<select name="code_lv1" id="code_lv1" class="form-control chosen-select" required onchange="generateNama()">
+			<option value="0">Select Jenis Logam</option>
 			<?php
 			foreach ($listLevel1 as $key => $value) {
 				$selected = ($code_lv1 == $value['code_lv1']) ? 'selected' : '';
@@ -55,19 +55,19 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="code_lv2">Material Category <span class='text-danger'>*</span></label>
+		<label for="code_lv2">Slithed / Non Slithed <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-10">
-		<select name="code_lv2" id="code_lv2" class="form-control chosen-select" required>
+		<select name="code_lv2" id="code_lv2" class="form-control chosen-select" required onchange="generateNama()">
 			<?php
 			if (!empty($id) && !empty($listLevel2)) {
-				echo "<option value='0'>Select Material Category</option>";
+				echo "<option value='0'>Select Slithed / Non Slithed</option>";
 				foreach ($listLevel2 as $key => $value) {
 					$selected = ($code_lv2 == $value['code_lv2']) ? 'selected' : '';
 					echo "<option value='" . $value['code_lv2'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
 				}
 			} else {
-				echo "<option value='0'>Select Material Category</option>";
+				echo "<option value='0'>Select Slithed / Non Slithed</option>";
 			}
 			?>
 		</select>
@@ -76,19 +76,19 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="code_lv3">Material Jenis <span class='text-danger'>*</span></label>
+		<label for="code_lv3">Boron / Non Boron <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-10">
-		<select name="code_lv3" id="code_lv3" class="form-control chosen-select" required>
+		<select name="code_lv3" id="code_lv3" class="form-control chosen-select" required onchange="generateNama()">
 			<?php
 			if (!empty($id) && !empty($listLevel3)) {
-				echo "<option value='0'>Select Material Jenis</option>";
+				echo "<option value='0'>Select Boron / Non Boron</option>";
 				foreach ($listLevel3 as $key => $value) {
 					$selected = ($code_lv3 == $value['code_lv3']) ? 'selected' : '';
 					echo "<option value='" . $value['code_lv3'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
 				}
 			} else {
-				echo "<option value='0'>Select Material Jenis</option>";
+				echo "<option value='0'>Select Boron / Non Boron</option>";
 			}
 			?>
 		</select>
@@ -97,7 +97,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="nama">Material Master <span class='text-danger'>*</span></label>
+		<label for="nama">Nama Material <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-10">
 		<input type="hidden" class="form-control" id="id" name="id" value="<?= $id; ?>">
@@ -110,18 +110,71 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="code">Material Code</label>
+		<label for="code">HS Code</label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control" id="code" name="code" value="<?= $code; ?>" placeholder="Material Code">
+		<select name="hs_code" id="hs_code" class="form-control chosen-select">
+			<option value="" disabled selected>Select HS Code</option>
+		</select>
 	</div>
 	<div class="col-md-2">
-		<label for="trade_name">Trade Name</label>
+		<label for="trade_name">Nama Lain</label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control" id="trade_name" name="trade_name" value="<?= $trade_name; ?>" placeholder="Trade Name">
+		<input type="text" class="form-control" id="trade_name" name="trade_name" value="<?= $trade_name; ?>" placeholder="Alias">
 	</div>
 </div>
+
+
+<div class="form-group row mb-3">
+	<div class="col-md-2">
+		<label>Width <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control maskM" id="width" name="width" placeholder="Width" onkeyup="generateNama()">
+	</div>
+	<div class="col-md-2">
+		<label>Coating <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control" id="coating" name="coating" placeholder="Coating">
+	</div>
+</div>
+
+<div class="form-group row mb-3">
+	<div class="col-md-2">
+		<label>Thickness <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control maskM" id="thickness" name="thickness" placeholder="Thickness" onkeyup="generateNama()">
+	</div>
+	<div class="col-md-2">
+		<label>Warna <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control" id="warna" name="warna" placeholder="Warna">
+	</div>
+</div>
+
+<!-- <div class="form-group row mb-3">
+	<div class="col-md-2">
+		<label for="id_unit_other">Other Unit <span class='text-danger'>*</span> / Conversion <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-2">
+		<select id="id_unit_other" name="id_unit_other" class="form-control chosen-select" required>
+			<option value="0">Select An Option</option>
+			<?php foreach ($satuan as $value) {
+				$sel = ($value->id == $id_unit_other) ? 'selected' : '';
+			?>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->code)) ?></option>
+			<?php } ?>
+		</select>
+	</div>
+	<div class="col-md-2">
+		<input type="text" id="konversi_other" name="konversi_other" class="form-control maskM" placeholder="Conversion" value="<?= $konversi_other; ?>">
+	</div>
+</div> -->
+
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
@@ -152,25 +205,6 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper($value->code) ?></option>
 			<?php } ?>
 		</select>
-	</div>
-</div>
-
-<div class="form-group row mb-3">
-	<div class="col-md-2">
-		<label for="id_unit_other">Other Unit <span class='text-danger'>*</span> / Conversion <span class='text-danger'>*</span></label>
-	</div>
-	<div class="col-md-2">
-		<select id="id_unit_other" name="id_unit_other" class="form-control chosen-select" required>
-			<option value="0">Select An Option</option>
-			<?php foreach ($satuan as $value) {
-				$sel = ($value->id == $id_unit_other) ? 'selected' : '';
-			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->code)) ?></option>
-			<?php } ?>
-		</select>
-	</div>
-	<div class="col-md-2">
-		<input type="text" id="konversi_other" name="konversi_other" class="form-control maskM" placeholder="Conversion" value="<?= $konversi_other; ?>">
 	</div>
 </div>
 
@@ -329,4 +363,19 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		});
 		$('.maskM').autoNumeric();
 	});
+
+	function generateNama() {
+		// Ambil nilai dari setiap dropdown dan input
+		var jenisLogam = $("#code_lv1 option:selected").text().trim();
+		var slithed = $("#code_lv2 option:selected").text().trim();
+		var boron = $("#code_lv3 option:selected").text().trim();
+		var thickness = $("#thickness").val().trim();
+		var width = $("#width").val().trim();
+
+		// Gabungkan semua nilai sesuai format yang diinginkan
+		var nama = jenisLogam + " " + slithed + " " + boron + " " + thickness + "-" + width;
+
+		// Set hasil gabungan ke dalam kolom nama
+		$("#nama").val(nama);
+	}
 </script>

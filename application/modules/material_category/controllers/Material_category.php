@@ -47,7 +47,7 @@ class Material_category extends Admin_Controller
 
     history("View index material category");
     $this->template->set($data);
-    $this->template->title('Material Category');
+    $this->template->title('Slithed / Non Slithed');
     $this->template->render('index');
   }
 

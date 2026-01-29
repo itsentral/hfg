@@ -20,9 +20,9 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 				<thead class="table-light">
 					<tr>
 						<th>#</th>
-						<th>Type</th>
-						<th>Category</th>
-						<th>Jenis</th>
+						<th>Jenis Logam</th>
+						<th>Slithed / Non Slithed</th>
+						<th>Boron / Non Boron</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>

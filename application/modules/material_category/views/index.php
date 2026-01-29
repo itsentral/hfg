@@ -20,8 +20,8 @@ $ENABLE_DELETE  = has_permission('Material_Category.Delete');
 				<thead class="table-light">
 					<tr>
 						<th>#</th>
-						<th> Type</th>
-						<th> Category</th>
+						<th>Jenis Logam</th>
+						<th>Slithed / Non Slithed</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>

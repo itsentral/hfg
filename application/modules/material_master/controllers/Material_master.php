@@ -77,8 +77,12 @@ class Material_master extends Admin_Controller
       $status     =  1;
       $nama       = $post['nama'];
 
-      $code             = $post['code'];
+      $hs_code          = $post['hs_code'];
       $trade_name       = $post['trade_name'];
+      $width            = str_replace(',', '', $post['width']);
+      $coating          = $post['coating'];
+      $thickness        = str_replace(',', '', $post['thickness']);
+      $warna            = $post['warna'];
 
       $id_unit_packing  = $post['id_unit_packing'];
       $id_unit_other    = $post['id_unit_other'];
@@ -106,8 +110,12 @@ class Material_master extends Admin_Controller
         'code_lv3'  => $code_lv3,
         'code_lv4'  => $code_lv4,
         'nama'      => $nama,
-        'code'  => $code,
+        'hs_code'  => $hs_code,
         'trade_name'  => $trade_name,
+        'width'  => $width,
+        'thickness'  => $thickness,
+        'coating'  => $coating,
+        'warna'  => $warna,
         'id_unit_packing'  => $id_unit_packing,
         'id_unit'  => $id_unit,
         'konversi'  => $konversi,
