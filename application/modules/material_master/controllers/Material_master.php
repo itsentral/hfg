@@ -67,6 +67,10 @@ class Material_master extends Admin_Controller
     }
     if ($this->input->post()) {
       $post = $this->input->post();
+      echo '<pre>';
+      print_r($post);
+      echo '</pre>';
+      die();
       $generate_id = $this->Material_master_model->generate_id();
 
       $id         = $post['id'];

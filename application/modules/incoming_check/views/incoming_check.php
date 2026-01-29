@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
 <style>
 	.chosen-container-active .chosen-single {
 		border: none;
@@ -20,9 +19,9 @@
 	}
 </style>
 <form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data" autocomplete='off'>
-	<div class="box box-primary">
+	<div class="card">
 
-		<div class="box-body">
+		<div class="card-body">
 			<div class="table-responsive">
 				<table id="example1" width='100%' class="table table-bordered table-striped" width='100%'>
 					<thead>
@@ -71,7 +70,6 @@
 	<!-- modal -->
 </form>
 
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
 <script>
 	$(document).ready(function() {
 		var no_po = $('#no_po').val();

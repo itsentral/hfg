@@ -115,6 +115,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 	<div class="col-md-4">
 		<select name="hs_code" id="hs_code" class="form-control chosen-select">
 			<option value="" disabled selected>Select HS Code</option>
+			<option value="002299">002299</option>
 		</select>
 	</div>
 	<div class="col-md-2">
