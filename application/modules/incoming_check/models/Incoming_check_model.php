@@ -65,27 +65,6 @@ class Incoming_check_model extends BF_Model
         $this->load->view('incoming_material', $data);
     }
 
-    public function index_incoming_check()
-    {
-
-        $data_Group            = $this->db->get('groups');
-        $data_gudang        = $this->db->query("SELECT * FROM warehouse WHERE sts_ajust = 'N' ORDER BY urut ASC")->result_array();
-        $list_po            = $this->db->query("SELECT * FROM tr_incoming_check WHERE deleted IS NULL")->result_array();
-        // $no_ipp                = $this->db->query("SELECT no_ipp FROM warehouse_planning_header WHERE sts_close='N' ")->result_array();
-
-        $data = array(
-            'title'            => 'Warehouse Material >> Gudang Pusat >> Incoming Check',
-            'action'        => 'index',
-            'row_group'        => $data_Group,
-            'data_gudang'    => $data_gudang,
-            'list_po'        => $list_po,
-            // 'no_ipp'        => $no_ipp
-        );
-        history('View Incoming Check Material');
-        $this->template->page_icon('fa fa-check-square-o');
-        $this->template->render('incoming_check', $data);
-    }
-
     public function modal_detail_adjustment()
     {
         $kode_trans = $this->uri->segment(3);
@@ -3868,10 +3847,10 @@ class Incoming_check_model extends BF_Model
             $nestedData[]    = "<div align='left'>" . $row['checker'] . "</div>";
             $nestedData[]    = "<div align='right'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
             $status = "WAITING INSPECTION";
-            $warna = 'blue';
+            $warna = 'primary';
             if ($row['checked'] == 'Y') {
                 $status = "CHECKED";
-                $warna = 'green';
+                $warna = 'successs';
                 // if ((int) get_incoming_sum_material($row['kode_trans']) > (int) ($row['ttl_qty_oke'] + $row['ttl_qty_rusak'])) {
                 //     $status = "PARSIAL CHECK";
                 //     $warna = 'orange';
@@ -3884,7 +3863,7 @@ class Incoming_check_model extends BF_Model
 
             $print    = "&nbsp;<a href='" . base_url('incoming_check/print_incoming2/' . $row['kode_trans'] . '/check') . "' target='_blank' class='btn btn-sm btn-warning' title='Print'><i class='fa fa-print'></i></a>";
             if (($get_checked_val['qty_check'] < $get_sum_material->jumlah_mat_check) && $row['checked'] == 'N' && $has_manage == '1') {
-                $plus    = "&nbsp;<button type='button' class='btn btn-sm btn-info check' title='Check Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-check'></i></button>";
+                $plus    = "&nbsp;<button type='button' class='btn btn-sm btn-success check' title='Check Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-check'></i></button>";
             }
             $download_qr = '';
             $check_incoming_checked = $this->db->get_where('tr_checked_incoming_detail', ['kode_trans' => $row['kode_trans'], 'sts' => '1'])->result();
@@ -3892,12 +3871,12 @@ class Incoming_check_model extends BF_Model
                 $download_qr = '<button type="button" class="btn btn-sm btn-success download_qr" data-kode_trans="' . $row['kode_trans'] . '" title="Download QR"><i class="fa fa-download"></i></button>';
             }
 
-            $nestedData[]    = "<div align='left'>
-									<button type='button' class='btn btn-sm btn-primary detailAjust' title='Detail' data-tanda='check' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>
-                                    " . $print . "
-									" . $plus . "
+            $nestedData[]    = "
+            " . $plus . "
+            " . $print . "
+            <button type='button' class='btn btn-sm btn-primary detailAjust' title='Detail' data-tanda='check' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>
                                     " . $download_qr . "
-									</div>";
+						        ";
             $data[] = $nestedData;
             $urut1++;
             $urut2++;
@@ -3935,7 +3914,7 @@ class Incoming_check_model extends BF_Model
             LEFT JOIN tr_checked_incoming_detail e ON e.kode_trans = a.kode_trans
             LEFT JOIN users f ON f.id_user = e.created_by
             WHERE 1 = 1
-            AND a.category = "incoming product"
+            AND a.category = "incoming material"
             AND (
             a.kode_trans LIKE "%' . $this->db->escape_like_str($like_value) . '%"
             OR b.no_surat LIKE "%' . $this->db->escape_like_str($like_value) . '%"

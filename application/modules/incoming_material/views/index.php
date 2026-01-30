@@ -57,7 +57,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Material.Delete');
                             <table class="table table-bordered table-sm mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">NO. PO</th>
+                                        <th class="text-center">No. PO</th>
                                         <th class="text-center">No. PR</th>
                                         <th class="text-center">Action</th>
                                     </tr>

@@ -26,7 +26,22 @@ class Incoming_check extends Admin_Controller
 
 	public function index()
 	{
-		$this->Incoming_check_model->index_incoming_check();
+		$data_Group            = $this->db->get('groups');
+		$data_gudang        = $this->db->query("SELECT * FROM warehouse WHERE sts_ajust = 'N' ORDER BY urut ASC")->result_array();
+		$list_po            = $this->db->query("SELECT * FROM tr_incoming_check WHERE deleted IS NULL")->result_array();
+		// $no_ipp                = $this->db->query("SELECT no_ipp FROM warehouse_planning_header WHERE sts_close='N' ")->result_array();
+
+		$data = array(
+			'title'            => 'Warehouse Material >> Gudang Pusat >> Incoming Check',
+			'action'        => 'index',
+			'row_group'        => $data_Group,
+			'data_gudang'    => $data_gudang,
+			'list_po'        => $list_po,
+			// 'no_ipp'        => $no_ipp
+		);
+		history('View Incoming Check Material');
+		$this->template->page_icon('fa fa-check-square-o');
+		$this->template->render('incoming_check', $data);
 	}
 
 	//==========================================================================================================================
