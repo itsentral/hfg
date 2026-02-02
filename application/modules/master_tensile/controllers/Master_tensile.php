@@ -22,7 +22,7 @@ class Master_tensile extends Admin_Controller
 	{
 		$this->auth->restrict($this->viewPermission);
 
-		$data = $this->db->get_where('ms_tensile', array('deleted' => 'N'))->result();
+		$data = $this->db->get_where('ms_tensile', ['deleted' => 'N'])->result();
 
 		history("View data tensile");
 		$this->template->set('results', $data);
