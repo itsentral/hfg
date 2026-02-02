@@ -202,6 +202,8 @@ class Material_master extends Admin_Controller
       $code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : 0;
 
       $satuan     = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
+      $coating     = $this->db->get_where('ms_coating', array('deleted_date' => NULL))->result();
+      $tensile     = $this->db->get_where('ms_tensile', array('deleted_date' => NULL))->result();
       $satuan_packing = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'packing'))->result();
       $supplier = $this->db->get_where('new_supplier', array('deleted_date' => NULL))->result();
 
@@ -211,6 +213,8 @@ class Material_master extends Admin_Controller
         'listLevel2' => (!empty(get_list_inventory_lv2('material')[$code_lv1])) ? get_list_inventory_lv2('material')[$code_lv1] : array(),
         'listLevel3' => (!empty(get_list_inventory_lv3('material')[$code_lv1][$code_lv2])) ? get_list_inventory_lv3('material')[$code_lv1][$code_lv2] : array(),
         'satuan' => $satuan,
+        'coating' => $coating,
+        'tensile' => $tensile,
         'satuan_packing' => $satuan_packing,
         'supplier' => $supplier,
       ];

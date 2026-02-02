@@ -10,6 +10,10 @@ $code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : '';
 $code_lv3 = (!empty($listData[0]->code_lv3)) ? $listData[0]->code_lv3 : '';
 $code_lv4 = (!empty($listData[0]->code_lv4)) ? $listData[0]->code_lv4 : '';
 $nama     = (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
+$id_coating          = (!empty($listData[0]->id_coating)) ? $listData[0]->id_coating : '';
+$id_tensile          = (!empty($listData[0]->id_tensile)) ? $listData[0]->id_tensile : '';
+$hscode          = (!empty($listData[0]->hscode)) ? $listData[0]->hscode : '';
+
 
 $code       = (!empty($listData[0]->code)) ? $listData[0]->code : '';
 $trade_name = (!empty($listData[0]->trade_name)) ? $listData[0]->trade_name : '';
@@ -22,7 +26,11 @@ $id_unit          = (!empty($listData[0]->id_unit)) ? $listData[0]->id_unit : ''
 $id_unit_other    = (!empty($listData[0]->id_unit_other)) ? $listData[0]->id_unit_other : '';
 $konversi_other   = (!empty($listData[0]->konversi_other)) ? $listData[0]->konversi_other : '';
 
+$thickness = (!empty($listData[0]->thickness)) ? $listData[0]->thickness : '';
+$width = (!empty($listData[0]->width)) ? $listData[0]->width : '';
+$hardness = (!empty($listData[0]->hardness)) ? $listData[0]->hardness : '';
 $length = (!empty($listData[0]->length)) ? $listData[0]->length : '';
+$warna = (!empty($listData[0]->warna)) ? $listData[0]->warna : '';
 $wide   = (!empty($listData[0]->wide)) ? $listData[0]->wide : '';
 $high   = (!empty($listData[0]->high)) ? $listData[0]->high : '';
 $cub    = (!empty($listData[0]->cub)) ? $listData[0]->cub : '';
@@ -110,10 +118,10 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="code">HS Code</label>
+		<label for="code">HS Code <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select name="hs_code" id="hs_code" class="form-control chosen-select">
+		<select name="hs_code" id="hs_code" class="form-control chosen-select" required>
 			<option value="" disabled selected>Select HS Code</option>
 			<option value="002299">002299</option>
 		</select>
@@ -132,13 +140,20 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Width <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control maskM" id="width" name="width" placeholder="Width" onkeyup="generateNama()">
+		<input type="text" class="form-control maskM" id="width" name="width" value="<?= $width ?>" placeholder="Width" onkeyup="generateNama()">
 	</div>
 	<div class="col-md-2">
 		<label>Coating <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control" id="coating" name="coating" placeholder="Coating">
+		<select id="coating" name="coating" class="form-control chosen-select" required>
+			<option value="0">Select An Option</option>
+			<?php foreach ($coating as $value) {
+				$sel = ($value->id == $id_coating) ? 'selected' : '';
+			?>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
+			<?php } ?>
+		</select>
 	</div>
 </div>
 
@@ -147,13 +162,35 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Thickness <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control maskM" id="thickness" name="thickness" placeholder="Thickness" onkeyup="generateNama()">
+		<input type="text" class="form-control maskM" id="thickness" name="thickness" value="<?= $thickness ?>" placeholder="Thickness" onkeyup="generateNama()">
 	</div>
 	<div class="col-md-2">
-		<label>Warna <span class='text-danger'>*</span></label>
+		<label>Warna</label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control" id="warna" name="warna" placeholder="Warna">
+		<input type="text" class="form-control" id="warna" name="warna" value="<?= $warna ?>" placeholder="Warna">
+	</div>
+</div>
+
+<div class="form-group row mb-3">
+	<div class="col-md-2">
+		<label>Hardness <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control" id="hardness" name="hardness" value="<?= $hardness ?>" placeholder="Hardness">
+	</div>
+	<div class="col-md-2">
+		<label>Tensile <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<select id="tensile" name="tensile" class="form-control chosen-select" required>
+			<option value="0">Select An Option</option>
+			<?php foreach ($tensile as $value) {
+				$sel = ($value->id == $id_tensile) ? 'selected' : '';
+			?>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
+			<?php } ?>
+		</select>
 	</div>
 </div>
 
