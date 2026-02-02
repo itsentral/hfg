@@ -20,7 +20,7 @@ $ENABLE_DELETE  = has_permission('Master_tensile.Delete');
 				<thead class="table-light">
 					<tr>
 						<th>#</th>
-						<th>Unit Name</th>
+						<th>Tensile Name</th>
 						<th>Action</th>
 					</tr>
 				</thead>
