@@ -81,9 +81,12 @@ class Material_master extends Admin_Controller
       $hs_code          = $post['hs_code'];
       $trade_name       = $post['trade_name'];
       $width            = str_replace(',', '', $post['width']);
-      $coating          = $post['coating'];
+      $id_coating       = $post['id_coating'];
+      $id_tensile       = $post['id_tensile'];
       $thickness        = str_replace(',', '', $post['thickness']);
       $warna            = $post['warna'];
+      $hardness         = $post['hardness'];
+      $no_accurate      = $post['no_accurate'];
 
       $id_unit_packing  = $post['id_unit_packing'];
       // $id_unit_other    = $post['id_unit_other'];
@@ -115,8 +118,11 @@ class Material_master extends Admin_Controller
         'trade_name'  => $trade_name,
         'width'  => $width,
         'thickness'  => $thickness,
-        'coating'  => $coating,
+        'id_coating'  => $id_coating,
+        'id_tensile'  => $id_tensile,
         'warna'  => $warna,
+        'hardness'  => $hardness,
+        'no_accurate'  => $no_accurate,
         'id_unit_packing'  => $id_unit_packing,
         'id_unit'  => $id_unit,
         'konversi'  => $konversi,

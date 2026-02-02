@@ -31,6 +31,7 @@ $width = (!empty($listData[0]->width)) ? $listData[0]->width : '';
 $hardness = (!empty($listData[0]->hardness)) ? $listData[0]->hardness : '';
 $length = (!empty($listData[0]->length)) ? $listData[0]->length : '';
 $warna = (!empty($listData[0]->warna)) ? $listData[0]->warna : '';
+$no_accurate = (!empty($listData[0]->no_accurate)) ? $listData[0]->no_accurate : '';
 $wide   = (!empty($listData[0]->wide)) ? $listData[0]->wide : '';
 $high   = (!empty($listData[0]->high)) ? $listData[0]->high : '';
 $cub    = (!empty($listData[0]->cub)) ? $listData[0]->cub : '';
@@ -146,7 +147,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Coating <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select id="coating" name="coating" class="form-control chosen-select" required>
+		<select id="id_coating" name="id_coating" class="form-control chosen-select" required>
 			<option value="0">Select An Option</option>
 			<?php foreach ($coating as $value) {
 				$sel = ($value->id == $id_coating) ? 'selected' : '';
@@ -183,7 +184,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Tensile <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select id="tensile" name="tensile" class="form-control chosen-select" required>
+		<select id="id_tensile" name="id_tensile" class="form-control chosen-select" required>
 			<option value="0">Select An Option</option>
 			<?php foreach ($tensile as $value) {
 				$sel = ($value->id == $id_tensile) ? 'selected' : '';
@@ -191,6 +192,16 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
 			<?php } ?>
 		</select>
+	</div>
+</div>
+
+
+<div class="form-group row mb-3">
+	<div class="col-md-2">
+		<label>No. Accurate <span class='text-danger'>*</span></label>
+	</div>
+	<div class="col-md-4">
+		<input type="text" class="form-control" id="no_accurate" name="no_accurate" value="<?= $no_accurate ?>" placeholder="No. Accurate">
 	</div>
 </div>
 
