@@ -65,10 +65,10 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 				<thead class="table-light">
 					<tr>
 						<th>#</th>
-						<th>Type</th>
-						<th>Category</th>
-						<th>Jenis</th>
-						<th>Nama</th>
+						<th>Jenis Logam</th>
+						<th>Slitted / Mother Coil</th>
+						<th>Boron / Non Boron</th>
+						<th>Nama Material</th>
 						<th>Status</th>
 						<th width="7%">Action</th>
 					</tr>

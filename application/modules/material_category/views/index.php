@@ -21,7 +21,7 @@ $ENABLE_DELETE  = has_permission('Material_Category.Delete');
 					<tr>
 						<th>#</th>
 						<th>Jenis Logam</th>
-						<th>Slithed / Non Slithed</th>
+						<th>Slitted / Mother Coil</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
