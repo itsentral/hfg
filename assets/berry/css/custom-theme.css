@@ -392,7 +392,7 @@ body {
 
 /* Table modern */
 .table {
-  border-radius: 14px !important;
+  border-radius: 12px !important;
   overflow: hidden;
 }
 
@@ -411,6 +411,46 @@ body {
   background: transparent !important;
   border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
   color: var(--text-muted);
+}
+
+/* rapat */
+.input-group {
+  gap: 0 !important;
+}
+
+/* text addon tidak turun */
+.input-group-text {
+  white-space: nowrap;
+}
+
+/* reset: tengah-tengah dibuat kotak */
+.input-group > .form-control,
+.input-group > .form-select,
+.input-group > .input-group-text {
+  border-radius: 0 !important;
+}
+
+/* ujung kiri tetap rounded */
+.input-group > :first-child {
+  border-top-left-radius: 12px !important;
+  border-bottom-left-radius: 12px !important;
+}
+
+/* ujung kanan tetap rounded */
+.input-group > :last-child {
+  border-top-right-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+}
+
+/* hilangkan double border hanya di sambungan (bukan elemen pertama) */
+.input-group > :not(:first-child) {
+  border-left: 0 !important;
+}
+
+/* opsional: biar "Current" lebarnya enak */
+.input-group > .input-group-text:first-child {
+  min-width: 80px;
+  justify-content: center;
 }
 
 /* =========================================================

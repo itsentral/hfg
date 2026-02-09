@@ -88,17 +88,16 @@ class Customer_model extends BF_Model
         return $idcust;
     }
 
-    public function get_data($table, $field, $value)
+    public function get_data($table, $where_field = '', $where_value = '')
     {
-        if ($value === NULL) {
-            $this->db->where("{$field} IS NULL", null, false);
+        if ($where_field != '' && $where_value != '') {
+            $query = $this->db->get_where($table, array($where_field => $where_value));
         } else {
-            $this->db->where($field, $value);
+            $query = $this->db->get($table);
         }
 
-        return $this->db->get($table)->result();
+        return $query->result();
     }
-
     public function getCustomer()
     {
         $this->db->select('a.*, c.kabkot nama_kota, d.nm_karyawan as nama_karyawan');

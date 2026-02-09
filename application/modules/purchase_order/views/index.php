@@ -27,7 +27,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 						<th>No Incoming</th>
 						<th>Tanggal PO</th>
 						<th>Progress PO</th>
-						<th>PO</th>
+						<!-- <th>PO</th> -->
 						<th>Vendor</th>
 						<th>Harga PO</th>
 						<th>Revisi</th>
@@ -48,7 +48,35 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 							$numb++;
 
 							$no_pr = [];
-							$get_no_pr = $this->db->query("...")->result();
+							$get_no_pr = $this->db->query("SELECT
+								b.no_pr as no_pr
+							FROM
+								material_planning_base_on_produksi_detail a
+								JOIN material_planning_base_on_produksi b ON b.so_number = a.so_number
+							WHERE
+								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND (aa.tipe IS NULL OR aa.tipe = ''))
+							GROUP BY b.no_pr
+
+							UNION ALL 
+
+							SELECT
+								b.no_pr as no_pr
+							FROM
+								rutin_non_planning_detail a
+								JOIN rutin_non_planning_header b ON b.no_pengajuan = a.no_pengajuan
+							WHERE
+								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND aa.tipe = 'pr depart')
+							GROUP BY b.no_pr
+
+							UNION ALL
+
+							SELECT
+								a.no_pr as no_pr
+							FROM
+								asset_planning a
+							WHERE
+								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND aa.tipe = 'pr asset')
+							GROUP BY a.no_pr")->result();
 							foreach ($get_no_pr as $item_pr) {
 								$no_pr[] = $item_pr->no_pr;
 							}
@@ -64,11 +92,11 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								<td class="text-center">
 									<?php
 									if ($record->status == '1') {
-										echo "<span class='badge bg-blue'>Waiting</span>";
+										echo "<span class='badge bg-primary'>Waiting</span>";
 									} elseif ($record->status == '2') {
-										echo "<span class='badge bg-green'>Approved</span>";
+										echo "<span class='badge bg-success'>Approved</span>";
 									} else {
-										echo "<span class='badge bg-red'>Closed</span>";
+										echo "<span class='badge bg-danger'>Closed</span>";
 									}
 									?>
 								</td>

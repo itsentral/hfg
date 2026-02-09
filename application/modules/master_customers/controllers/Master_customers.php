@@ -52,7 +52,7 @@ class Master_customers extends Admin_Controller
 	public function add()
 	{
 		$this->auth->restrict($this->viewPermission);
-		$category = $this->Customer_model->get_data('master_category_customer');
+		$category = $this->Customer_model->get_data('master_category_customer', 'deleted_by', NULL);
 		$prov = $this->Customer_model->get_data('prov');
 		$karyawan = $this->db->get_where('employee', array('department' => 2, 'deleted' => "N"))->result();
 		$payment_terms = $this->db->get_where('list_help', array('group_by' => 'top invoice', 'sts' => "Y"))->result();

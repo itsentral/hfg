@@ -887,6 +887,9 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                     <div class="d-flex justify-content-center gap-2">
                         <?php if (empty($results['mode']) || $results['mode'] !== 'view') : ?>
+                            <button type="button" class="btn btn-secondary" onclick="history.back()">
+                                <i class="fa fa-arrow-left me-1"></i> Kembali
+                            </button>
                             <button type="submit" class="btn btn-success" name="save" id="simpan-com">
                                 <i class="fa fa-save me-1"></i> Simpan
                             </button>
@@ -980,7 +983,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<td align="left">';
             Template += '<input type="text" class="form-control input-sm" name="data1[' + loop + '][position_pic]" id="data1_' + loop + '_position_pic" label="FALSE" div="FALSE">';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_payment').append(Template);
         });
@@ -999,12 +1002,12 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
             Template += '<option value="">--pilih--</option>';
             Template += '<?php foreach ($results['category'] as $category) { ?>';
-            Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower($category->name_category_customer)) ?></option>';
+            Template += '<option value="<?= $category->name_category ?>"><?= ucfirst(strtolower($category->name_category)) ?></option>';
             Template += '<?php } ?>';
             Template += '</select>';
             Template += '</td>';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_category').append(Template);
         });
@@ -1028,7 +1031,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<td align="left">';
             Template += '<input type="text" class="form-control input-sm" name="data3[' + loop + '][existing_telp]" id="data3_' + loop + '_existing_telp" label="FALSE" div="FALSE">';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem3(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem3(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_existing').append(Template);
         });
