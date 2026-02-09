@@ -78,7 +78,7 @@ class Material_master extends Admin_Controller
       $status     =  1;
       $nama       = $post['nama'];
 
-      $hs_code          = $post['hs_code'];
+      $hscode           = $post['hscode'];
       $trade_name       = $post['trade_name'];
       $width            = str_replace(',', '', $post['width']);
       $id_coating       = $post['id_coating'];
@@ -114,7 +114,7 @@ class Material_master extends Admin_Controller
         'code_lv3'  => $code_lv3,
         'code_lv4'  => $code_lv4,
         'nama'      => $nama,
-        'hs_code'  => $hs_code,
+        'hscode'  => $hscode,
         'trade_name'  => $trade_name,
         'width'  => $width,
         'thickness'  => $thickness,
@@ -208,6 +208,7 @@ class Material_master extends Admin_Controller
       $code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : 0;
 
       $satuan     = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
+      $hscodes     = $this->db->get_where('hscode', array('deleted_at' => NULL))->result_array();
       $coating     = $this->db->get_where('ms_coating', array('deleted_date' => NULL))->result();
       $tensile     = $this->db->get_where('ms_tensile', array('deleted_date' => NULL))->result();
       $satuan_packing = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'packing'))->result();
@@ -218,6 +219,7 @@ class Material_master extends Admin_Controller
         'listLevel1' => get_list_inventory_lv1('material'),
         'listLevel2' => (!empty(get_list_inventory_lv2('material')[$code_lv1])) ? get_list_inventory_lv2('material')[$code_lv1] : array(),
         'listLevel3' => (!empty(get_list_inventory_lv3('material')[$code_lv1][$code_lv2])) ? get_list_inventory_lv3('material')[$code_lv1][$code_lv2] : array(),
+        'hscodes' => $hscodes,
         'satuan' => $satuan,
         'coating' => $coating,
         'tensile' => $tensile,

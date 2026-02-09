@@ -10,9 +10,9 @@ $code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : '';
 $code_lv3 = (!empty($listData[0]->code_lv3)) ? $listData[0]->code_lv3 : '';
 $code_lv4 = (!empty($listData[0]->code_lv4)) ? $listData[0]->code_lv4 : '';
 $nama     = (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
-$id_coating          = (!empty($listData[0]->id_coating)) ? $listData[0]->id_coating : '';
-$id_tensile          = (!empty($listData[0]->id_tensile)) ? $listData[0]->id_tensile : '';
-$hscode          = (!empty($listData[0]->hscode)) ? $listData[0]->hscode : '';
+$id_coating        	= (!empty($listData[0]->id_coating)) ? $listData[0]->id_coating : '';
+$id_tensile     	= (!empty($listData[0]->id_tensile)) ? $listData[0]->id_tensile : '';
+$hscode          	= (!empty($listData[0]->hscode)) ? $listData[0]->hscode : '';
 
 
 $code       = (!empty($listData[0]->code)) ? $listData[0]->code : '';
@@ -70,13 +70,13 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<select name="code_lv2" id="code_lv2" class="form-control chosen-select" required onchange="generateNama()">
 			<?php
 			if (!empty($id) && !empty($listLevel2)) {
-				echo "<option value='0'>Select Slithed / Non Slithed</option>";
+				echo "<option value='0'>Select Slithed / Mother Coil</option>";
 				foreach ($listLevel2 as $key => $value) {
 					$selected = ($code_lv2 == $value['code_lv2']) ? 'selected' : '';
 					echo "<option value='" . $value['code_lv2'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
 				}
 			} else {
-				echo "<option value='0'>Select Slithed / Non Slithed</option>";
+				echo "<option value='0'>Select Slithed / Mother Coil</option>";
 			}
 			?>
 		</select>
@@ -122,9 +122,19 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label for="code">HS Code <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select name="hs_code" id="hs_code" class="form-control chosen-select" required>
-			<option value="" disabled selected>Select HS Code</option>
-			<option value="002299">002299</option>
+		<select name="hscode" id="hscode" class="form-control chosen-select" required>
+			<?php
+
+			if (!empty($hscodes)) {
+				echo "<option value='0'>Select HS Code</option>";
+				foreach ($hscodes as $key => $value) {
+					$selected = ($hscode == $value['id']) ? 'selected' : '';
+					echo "<option value='" . $value['id'] . "' " . $selected . ">" . $value['origin_code'] . "</option>";
+				}
+			} else {
+				echo "<option value='0'>Select HS Code</option>";
+			}
+			?>
 		</select>
 	</div>
 	<div class="col-md-2">
@@ -147,7 +157,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Coating <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select id="id_coating" name="id_coating" class="form-control chosen-select" required>
+		<select id="id_coating" name="id_coating" class="form-control chosen-select" onchange="generateNama()" required>
 			<option value="0">Select An Option</option>
 			<?php foreach ($coating as $value) {
 				$sel = ($value->id == $id_coating) ? 'selected' : '';
@@ -169,7 +179,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Warna</label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control" id="warna" name="warna" value="<?= $warna ?>" placeholder="Warna">
+		<input type="text" class="form-control" id="warna" name="warna" value="<?= $warna ?>" onkeyup="generateNama()" placeholder="Warna">
 	</div>
 </div>
 
@@ -184,7 +194,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Tensile <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<select id="id_tensile" name="id_tensile" class="form-control chosen-select" required>
+		<select id="id_tensile" name="id_tensile" class="form-control chosen-select" onchange="generateNama()" required>
 			<option value="0">Select An Option</option>
 			<?php foreach ($tensile as $value) {
 				$sel = ($value->id == $id_tensile) ? 'selected' : '';
@@ -420,9 +430,12 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		var boron = $("#code_lv3 option:selected").text().trim();
 		var thickness = $("#thickness").val().trim();
 		var width = $("#width").val().trim();
+		var coating = $("#id_coating option:selected").text().trim();
+		var tensile = $("#id_tensile option:selected").text().trim();
+		var warna = $("#warna").val().trim();
 
 		// Gabungkan semua nilai sesuai format yang diinginkan
-		var nama = jenisLogam + " " + slithed + " " + boron + " " + thickness + "-" + width;
+		var nama = jenisLogam + " " + slithed + " " + boron + " " + thickness + "-" + width + "-" + coating + " - " + tensile + " - " + warna;
 
 		// Set hasil gabungan ke dalam kolom nama
 		$("#nama").val(nama);

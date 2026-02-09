@@ -16,7 +16,7 @@
                                 <label>ID HS Code</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="id" placeholder="ID HS Code" readonly>
+                                <input type="text" class="form-control" name="id" placeholder="ID HS Code" value="<?= isset($hs) ? $hs->id : null; ?>" readonly>
                             </div>
                         </div>
                     </div>
@@ -71,13 +71,13 @@
                                 <div class="row mt-2">
                                     <div class="col-4">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="ls_yes" name="ls" value="Ya" required>
+                                            <input class="form-check-input" type="radio" id="ls_yes" name="ls" value="Y" <?= isset($hs) && ($hs->ls == "Y") ? 'checked' : ''; ?> required>
                                             <label class="form-check-label" for="ls">Aktif</label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="ls_no" name="ls" value="Tidak" required>
+                                            <input class="form-check-input" type="radio" id="ls_no" name="ls" value="N" <?= isset($hs) && ($hs->ls == "N") ? 'checked' : ''; ?> required>
                                             <label class="form-check-label" for="ls">Non Aktif</label>
                                         </div>
                                     </div>
@@ -120,13 +120,13 @@
                                     <div class="row">
                                         <div class="col-2 mt-2">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" id="ppn_yes" name="ppn" value="Y" required>
+                                                <input class="form-check-input" type="radio" id="ppn_yes" name="ppn" value="Y" <?= isset($hs) && ($hs->ppn == "Y") ? 'checked' : ''; ?> required>
                                                 <label class="form-check-label" for="ppn">Yes</label>
                                             </div>
                                         </div>
                                         <div class="col-2 mt-2">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" id="ppn_no" name="ppn" value="N" required>
+                                                <input class="form-check-input" type="radio" id="ppn_no" name="ppn" value="N" <?= isset($hs) && ($hs->ppn == "N") ? 'checked' : ''; ?> required>
                                                 <label class="form-check-label" for="ppn">No</label>
                                             </div>
                                         </div>
@@ -292,13 +292,13 @@
                                 <div class="row mt-2">
                                     <div class="col-4">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="aktif" name="status" value="Ya" required>
+                                            <input class="form-check-input" type="radio" id="aktif" name="status" value="1" <?= isset($hs) && ($hs->status == 1) ? 'checked' : ''; ?> required>
                                             <label class="form-check-label" for="status">Aktif</label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="inaktif" name="status" value="Tidak" required>
+                                            <input class="form-check-input" type="radio" id="inaktif" name="status" value="0" <?= isset($hs) && ($hs->status == 0) ? 'checked' : ''; ?> required>
                                             <label class="form-check-label" for="status">Non Aktif</label>
                                         </div>
                                     </div>
@@ -346,7 +346,7 @@
                                                         class="form-select form-select-sm select country-select"
                                                         required>
                                                         <option value=""></option>
-                                                        <?php foreach ($results['countries'] as $country) { ?>
+                                                        <?php foreach ($countries as $country) { ?>
                                                             <option value="<?= $country->id; ?>" <?= ($country->id == $originData['origin_id']) ? 'selected' : ''; ?>>
                                                                 <?= $country->country_code . ' - ' . $country->name ?>
                                                             </option>
@@ -431,7 +431,7 @@
                                         <td>
                                             <select name="origin_bm[1][country_id]" class="form-select form-select-sm select country-select" required>
                                                 <option value=""></option>
-                                                <?php foreach ($results['countries'] as $country) { ?>
+                                                <?php foreach ($countries as $country) { ?>
                                                     <option value="<?= $country->id; ?>"><?= $country->country_code . ' - ' . $country->name; ?></option>
                                                 <?php } ?>
                                             </select>
@@ -581,10 +581,10 @@
     </div>
 </div>
 
-<script type="application/json" id="c   ountries-data">
+<script type="application/json" id="countries-data">
     <?= json_encode(array_map(function ($c) {
         return ['id' => $c->id, 'country_code' => $c->country_code, 'name' => $c->name];
-    }, $results['countries'])); ?>
+    }, $countries)); ?>
 </script>
 
 <script>

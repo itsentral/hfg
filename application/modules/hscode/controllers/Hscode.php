@@ -39,12 +39,37 @@ class Hscode extends Admin_Controller
 
         $countries = $this->Hscode_model->get_data('countries');
 
-        $data = [
+        $this->template->set([
             'countries' => $countries,
-        ];
-
-        $this->template->set('results', $data);
+        ]);
         $this->template->title('Add HS Code');
+        $this->template->render('add');
+    }
+
+    public function edit($id)
+    {
+        $this->auth->restrict($this->managePermission);
+        $hs             = $this->db->get_where('hscode', ['id' => $id])->row();
+        $countries      = $this->Hscode_model->get_data('countries');
+        $requirements   = $this->db->get_where('hscode_requirement', ['hscode_id' => $hs->id])->result_array();
+        $ArrRQ          = [];
+
+        $origins = $this->db->get_where('hscode_origin', ['hscode_id' => $id])->result_array();
+        foreach ($origins as &$origin) {
+            $origin['details'] = $this->db->get_where('hscode_bm_origin', ['hscode_origin_id' => $origin['id']])->result_array();
+        }
+
+        foreach ($requirements as $rq) {
+            $ArrRQ[$rq['type']][] = $rq;
+        }
+
+        $this->template->set([
+            'hs' => $hs,
+            'countries' => $countries,
+            'ArrRQ' => $ArrRQ,
+            'origins' => $origins,
+        ]);
+        $this->template->title('Edit HS Code');
         $this->template->render('add');
     }
 
@@ -165,6 +190,43 @@ class Hscode extends Admin_Controller
                 'status' => 1,
             ];
             $keterangan = 'SUCCESS save data Customer ' . $data['id'] . ', HS Code name : ' . $data['description'];
+            $status = 1;
+            $nm_hak_akses = $this->addPermission;
+            $kode_universal = $data['id'];
+            $jumlah = 1;
+            $sql = $this->db->last_query();
+        }
+        simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+        echo json_encode($return);
+    }
+
+    public function delete()
+    {
+        $id = $this->input->post('id');
+        $data = $this->db->get_where('hscode', ['id' => $id])->row_array();
+
+        $this->db->trans_begin();
+        $sql = $this->db->update('hscode', ['status' => '0', 'deleted_at' => date('Y-m-d H:i:s'), 'deleted_by' => $this->auth->user_id()], ['id' => $id]);
+        $errMsg = $this->db->error()['message'];
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            $keterangan = 'FAILD ' . $errMsg;
+            $status = 0;
+            $nm_hak_akses = $this->addPermission;
+            $kode_universal = $data['id'];
+            $jumlah = 1;
+            $sql = $this->db->last_query();
+            $return = [
+                'msg' => 'Failed delete data HS Codes. Please try again. ' . $errMsg,
+                'status' => 0,
+            ];
+        } else {
+            $this->db->trans_commit();
+            $return = [
+                'msg' => 'Delete data HS Codes.',
+                'status' => 1,
+            ];
+            $keterangan = 'Delete data HS Codes ' . $data['id'] . ', HS Codes name : ' . $data['description'];
             $status = 1;
             $nm_hak_akses = $this->addPermission;
             $kode_universal = $data['id'];

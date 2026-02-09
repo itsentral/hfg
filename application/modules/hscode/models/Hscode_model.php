@@ -109,9 +109,9 @@ class Hscode_model extends CI_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $view = '<button type="button" class="btn-icon btn-icon-view" data-toggle="tooltip" title="View" data-id="' . $row['id'] . '"><i class="fa fa-eye"></i></button>';
-            $edit = '<button type="button" class="btn-icon btn-icon-edit" data-toggle="tooltip" title="Edit" data-id="' . $row['id'] . '"><i class="fa fa-edit"></i></button>';
-            $delete = '<button type="button" class="btn-icon btn-icon-delete" data-toggle="tooltip" title="Delete" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i></button>';
+            $view = '<a href="' . base_url('hscode/view/') . $row['id'] . '" class="btn-icon btn-icon-view view" data-toggle="tooltip" title="View" data-id="' . $row['id'] . '"><i class="fa fa-eye"></i></a>';
+            $edit = '<a href="' . base_url('hscode/edit/') . $row['id'] . '" class="btn-icon btn-icon-edit edit" data-toggle="tooltip" title="Edit"><i class="fa fa-edit"></i></a>';
+            $delete = '<a class="btn-icon btn-icon-delete delete" data-toggle="tooltip" title="Delete" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i></a>';
             $buttons = $view;
 
             if (has_permission($this->managePermission)) {

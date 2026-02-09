@@ -14,18 +14,18 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 
 			<!-- FILTERS -->
 			<div class="row g-2 flex-grow-1">
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<select name="level1" id="level1" class="form-control select2">
-						<option value="0">ALL MATERIAL TYPE</option>
+						<option value="0">JENIS LOGAM</option>
 						<?php foreach ($get_level_1 as $key => $value) : ?>
 							<option value="<?= $value['code_lv1']; ?>"><?= strtoupper($value['nama']); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
 
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<select name="level2" id="level2" class="form-control select2">
-						<option value="0">ALL MATERIAL CATEGORY</option>
+						<option value="0">SLITHED/MOTHER COIL</option>
 						<?php foreach ($get_level_2 as $key => $value) : ?>
 							<option value="<?= $value['code_lv2']; ?>"><?= strtoupper($value['nama']); ?></option>
 						<?php endforeach; ?>
@@ -34,7 +34,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 
 				<div class="col-md-4">
 					<select name="level3" id="level3" class="form-control select2">
-						<option value="0">ALL MATERIAL JENIS</option>
+						<option value="0">BORON/NON BORON</option>
 						<?php foreach ($get_level_3 as $key => $value) : ?>
 							<option value="<?= $value['code_lv3']; ?>"><?= strtoupper($value['nama']); ?></option>
 						<?php endforeach; ?>
@@ -47,10 +47,10 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 			<!-- ACTION BUTTONS -->
 			<div class="d-flex gap-2 ms-auto">
 				<?php if ($ENABLE_ADD) : ?>
-					<a class="btn btn-success add" href="javascript:void(0)" title="Add">
+					<a class="btn btn-md btn-success add" href="javascript:void(0)" title="Add">
 						<i class="fa fa-plus me-1"></i>Add
 					</a>
-					<a class="btn btn-info" href="<?= base_url('material_master/download_excel'); ?>" target="_blank" title="Download">
+					<a class="btn btn-md btn-info" href="<?= base_url('material_master/download_excel'); ?>" target="_blank" title="Download">
 						<i class="fa fa-excel me-1"></i>Excel
 					</a>
 				<?php endif; ?>

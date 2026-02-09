@@ -29,7 +29,7 @@ $nama     = (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
 
 <div class="form-group row mb-3">
 	<div class="col-md-3">
-		<label for="nama">Material Category <span class='text-danger'>*</span></label>
+		<label for="nama">Slithed/Mother Coil <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-9">
 		<input type="hidden" class="form-control" id="id" name="id" value="<?= $id; ?>">
