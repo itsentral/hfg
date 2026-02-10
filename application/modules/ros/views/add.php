@@ -29,7 +29,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
     <div class="card-body">
         <form action="" method="post" id="frm-data" enctype="multipart/form-data">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <h5 class="mb-0 fw-bold">Form Return of Shipment</h5>
+                <h5 class="mb-0 fw-bold">Form Report of Shipment</h5>
                 <span class="text-muted small">(*) wajib diisi</span>
             </div>
             <hr class="mt-2">
