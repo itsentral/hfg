@@ -47,13 +47,12 @@
 	</div>
 	<!-- /.box -->
 	<!-- modal -->
-	<div class="modal fade" id="ModalView2" style='overflow-y: auto;'>
-		<div class="modal-dialog" style='width:95%; '>
+	<div class="modal fade" id="ModalView2">
+		<div class="modal-dialog" style="max-width: 95%; width: 95%; overflow-y: auto;">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="head_title2"></h4>
+					<h5 class="modal-title" id="head_title2"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="view2">
 				</div>

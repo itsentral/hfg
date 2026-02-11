@@ -3850,13 +3850,13 @@ class Incoming_check_model extends BF_Model
             $warna = 'primary';
             if ($row['checked'] == 'Y') {
                 $status = "CHECKED";
-                $warna = 'successs';
+                $warna = 'success';
                 // if ((int) get_incoming_sum_material($row['kode_trans']) > (int) ($row['ttl_qty_oke'] + $row['ttl_qty_rusak'])) {
                 //     $status = "PARSIAL CHECK";
                 //     $warna = 'orange';
                 // }
             }
-            $nestedData[]    = "<div align='left'><span class='badge bg-" . $warna . "'>" . $status . "</span></div>";
+            $nestedData[]    = "<div align='left'><span class='badge rounded-pill bg-" . $warna . "'>" . $status . "</span></div>";
             $plus    = "";
 
 

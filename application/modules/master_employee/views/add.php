@@ -66,7 +66,7 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
 
                 <div class="col-md-6">
                     <label class="form-label">Date of Birth</label>
-                    <input type="text" class="form-control datepicker" readonly name="tgl_lahir" value="<?= $tgl_lahir ?>">
+                    <input type="date" class="form-control" name="tgl_lahir" value="<?= $tgl_lahir ?>">
                 </div>
 
                 <div class="col-md-6">
@@ -171,12 +171,6 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
         $('select').select2({
             width: '100%'
         });
-        $('.datepicker').datepicker({
-            dateFormat: 'yy-mm-dd',
-            changeMonth: true,
-            changeYear: true,
-            maxDate: '+0d'
-        })
     })
 
     $(document).on('click', '#back', function() {

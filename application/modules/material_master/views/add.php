@@ -237,10 +237,10 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 
 <div class="form-group row mb-3">
 	<div class="col-md-2">
-		<label for="id_unit_packing">Packing Unit <span class='text-danger'>*</span> / Conversion <span class='text-danger'>*</span></label>
+		<label for="id_unit_packing">Packing Unit / Conversion </label>
 	</div>
 	<div class="col-md-2">
-		<select id="id_unit_packing" name="id_unit_packing" class="form-control chosen-select" required>
+		<select id="id_unit_packing" name="id_unit_packing" class="form-control chosen-select">
 			<option value="0">Select An Option</option>
 			<?php foreach ($satuan_packing as $value) {
 				$sel = ($value->id == $id_unit_packing) ? 'selected' : '';
@@ -253,10 +253,10 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<input type="text" id="konversi" name="konversi" class="form-control maskM" placeholder="Conversion" value="<?= $konversi; ?>">
 	</div>
 	<div class="col-md-2">
-		<label for="id_unit">Unit Measurement <span class='text-danger'>*</span></label>
+		<label for="id_unit">Unit Measurement</label>
 	</div>
 	<div class="col-md-4">
-		<select id="id_unit" name="id_unit" class="form-control chosen-select" required>
+		<select id="id_unit" name="id_unit" class="form-control chosen-select">
 			<option value="0">Select An Option</option>
 			<?php foreach ($satuan as $value) {
 				$sel = ($value->id == $id_unit) ? 'selected' : '';

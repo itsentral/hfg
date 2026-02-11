@@ -52,7 +52,7 @@ endforeach;
                         <div class="metric-value"><?= $count_transport ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="transportasi">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="transportasi">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>
@@ -71,7 +71,7 @@ endforeach;
                         <div class="metric-value"><?= $count_kasbon ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="kasbon">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="kasbon">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>
@@ -90,7 +90,7 @@ endforeach;
                         <div class="metric-value"><?= $count_expense ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="expense">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="expense">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>
@@ -109,7 +109,7 @@ endforeach;
                         <div class="metric-value"><?= $count_periodik ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="periodik">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="periodik">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>
@@ -128,7 +128,7 @@ endforeach;
                         <div class="metric-value"><?= $count_pembayaran_po ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="pembayaran_po">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="pembayaran_po">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>
@@ -147,7 +147,7 @@ endforeach;
                         <div class="metric-value"><?= $count_direct_payment ?></div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-sm btn-icon-view btn_view_req" data-val="direct_payment">
+                        <button type="button" class="btn btn-sm btn-icon-edit btn_view_req" data-val="direct_payment">
                             <i class="fa fa-eye"></i> View
                         </button>
                     </div>

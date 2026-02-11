@@ -62,7 +62,7 @@
 
                     echo "<tr>";
                     echo "<td align='center'>" . $No . "</td>";
-                    echo "<td align='center'>" . $valx['code_product'] . "</td>";
+                    echo "<td align='center'>" . $valx['code_material'] . "</td>";
                     echo "<td align='center'>" . $valx['namamaterial'] . "</td>";
                     echo "<td align='center'>" . ucfirst($valx['unit_measure']) . "</td>";
                     echo "<td align='center'>" . number_format($valx['qty'], 2) . "</td>";
