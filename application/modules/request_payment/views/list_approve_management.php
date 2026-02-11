@@ -61,7 +61,7 @@ endforeach;
 
             <div class="col-md-2 col-sm-6">
                 <div class="panel panel-metric">
-                    <div class="panel-heading bg-yellow">
+                    <div class="panel-heading bg-warning">
                         <div class="heading-wrap">
                             <i class="fa fa-credit-card heading-icon"></i>
                             <span>Kasbon</span>
@@ -99,7 +99,7 @@ endforeach;
 
             <div class="col-md-2 col-sm-6">
                 <div class="panel panel-metric">
-                    <div class="panel-heading bg-red">
+                    <div class="panel-heading bg-danger">
                         <div class="heading-wrap">
                             <i class="fas fa-business-time heading-icon"></i>
                             <span>Periodik</span>
@@ -173,7 +173,7 @@ endforeach;
                                 <th class="text-center">Nilai Pengajuan</th>
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -193,21 +193,21 @@ endforeach;
 
                                     if ($item_transportasi->status == '0' || empty($get_sts_payment)) {
                                         if ($item_transportasi->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                            echo '<span class="badge rounded-pill bg-danger">Rejected</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill bg-info">Open</label>';
                                         }
                                     } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
+                                        echo '<span class="badge rounded-pill bg-warning">Process</label>';
                                     } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
+                                        echo '<span class="badge rounded-pill bg-secondary">Close</label>';
                                     } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '<span class="badge rounded-pill bg-secondary"><span class="text-muted">Undefined</span></label>';
                                     }
                                     echo '</td>';
                                     echo '<td>';
                                     if ($ENABLE_MANAGE) : ?>
-                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_transportasi->tipe . '&id=' . $item_transportasi->id . '&nilai=' . $item_transportasi->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a></div>
+                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_transportasi->tipe . '&id=' . $item_transportasi->id . '&nilai=' . $item_transportasi->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fas fa-check-double">&nbsp;</i>Approve</a></div>
                                         <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_transportasi->id ?>"> -->
                             <?php endif;
                                     echo '</td>';
@@ -235,7 +235,7 @@ endforeach;
                                 <th class="text-center">Nilai Pengajuan</th>
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -263,16 +263,16 @@ endforeach;
 
                                     if ($item_kasbon->status == '0' || empty($get_sts_payment)) {
                                         if ($item_kasbon->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                            echo '<span class="badge rounded-pill bg-danger">Rejected</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill  bg-info">Open</label>';
                                         }
                                     } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
+                                        echo '<span class="badge rounded-pill  bg-warning">Process</label>';
                                     } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
+                                        echo '<span class="badge rounded-pill  bg-danger">Close</label>';
                                     } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '<span class="badge rounded-pill  bg-secondary"><span class="text-muted">Undefined</span></label>';
                                     }
                                     echo '</td>';
                                     echo '<td>';
@@ -287,7 +287,7 @@ endforeach;
                                         $approve_url = base_url($this->uri->segment(1) . '/approval_payment?' . $approve_query);
 
                                         echo '<a href="' . $approve_url . '" name="save" class="btn btn-primary btn-sm">';
-                                        echo '<i class="fa fa-check-square-o"></i>&nbsp;Approve';
+                                        echo '<i class="fas fa-check-double"></i>&nbsp;Approve';
                                         echo '</a>';
                                     }
 
@@ -331,7 +331,7 @@ endforeach;
                                 <th class="text-center">Nilai Pengajuan</th>
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -360,22 +360,22 @@ endforeach;
 
                                         if ($item_expense->status == '0' || empty($get_sts_payment)) {
                                             if ($item_expense->status == '9') {
-                                                echo '<label class="label bg-orange">Rejected</label>';
+                                                echo '<span class="badge rounded-pill  bg-danger">Rejected</label>';
                                             } else {
-                                                echo '<label class="label bg-aqua">Open</label>';
+                                                echo '<span class="badge rounded-pill  bg-info">Open</label>';
                                             }
                                         } elseif ($get_sts_payment['status'] == 1) {
-                                            echo '<label class="label bg-yellow">Process</label>';
+                                            echo '<span class="badge rounded-pill  bg-warning">Process</label>';
                                         } elseif ($get_sts_payment['status'] == 2) {
-                                            echo '<label class="label bg-red">Close</label>';
+                                            echo '<span class="badge rounded-pill  bg-danger">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                            echo '<span class="badge rounded-pill  bg-secondary"><span class="text-muted">Undefined</span></label>';
                                         }
                                         echo '</td>';
                                         echo '<td>';
                                         echo '
                                                 <div class="text-center">
-                                                    <a href="' . base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah) . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
+                                                    <a href="' . base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah) . '" class="btn btn-sm btn-primary"><i class="fas fa-check-double">&nbsp;</i>Approve</a>
                                                 </div>
                                             ';
                                         echo '</td>';
@@ -403,7 +403,7 @@ endforeach;
                                 <th class="text-center">Nilai Pengajuan</th>
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -423,21 +423,21 @@ endforeach;
 
                                     if ($item_periodik->status == '0' || empty($get_sts_payment)) {
                                         if ($item_periodik->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                            echo '<span class="badge rounded-pill  bg-danger">Rejected</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill  bg-info">Open</label>';
                                         }
                                     } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
+                                        echo '<span class="badge rounded-pill  bg-warning">Process</label>';
                                     } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
+                                        echo '<span class="badge rounded-pill  bg-danger">Close</label>';
                                     } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '<span class="badge rounded-pill  bg-secondary"><span class="text-muted">Undefined</span></label>';
                                     }
                                     echo '</td>';
                                     echo '<td>';
                                     if ($ENABLE_MANAGE) : ?>
-                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_periodik->tipe . '&id=' . $item_periodik->id . '&nilai=' . $item_periodik->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a></div>
+                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_periodik->tipe . '&id=' . $item_periodik->id . '&nilai=' . $item_periodik->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fas fa-check-double">&nbsp;</i>Approve</a></div>
                                         <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_periodik->id ?>"> -->
                             <?php endif;
                                     echo '</td>';
@@ -466,7 +466,7 @@ endforeach;
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Keterangan PO</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center" width="100">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -514,21 +514,21 @@ endforeach;
 
                                         if ($item_expense->status == '0' || empty($get_sts_payment)) {
                                             if ($item_expense->status == '9') {
-                                                echo '<label class="label bg-orange">Rejected</label>';
+                                                echo '<span class="badge rounded-pill  bg-danger">Rejected</label>';
                                             } else {
-                                                echo '<label class="label bg-aqua">Open</label>';
+                                                echo '<span class="badge rounded-pill  bg-info">Open</label>';
                                             }
                                         } elseif ($get_sts_payment['status'] == 1) {
-                                            echo '<label class="label bg-yellow">Process</label>';
+                                            echo '<span class="badge rounded-pill  bg-warning">Process</label>';
                                         } elseif ($get_sts_payment['status'] == 2) {
-                                            echo '<label class="label bg-red">Close</label>';
+                                            echo '<span class="badge rounded-pill  bg-danger">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                            echo '<span class="badge rounded-pill  bg-secondary"><span class="text-muted">Undefined</span></label>';
                                         }
                                         echo '</td>';
                                         echo '<td>';
                                         if ($ENABLE_MANAGE) : ?>
-                                            <a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a>
+                                            <a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fas fa-check-double"></i></a>
 
                                             <a href="javascript:void(0);" class="btn btn-sm btn-info view_receive_invoice" data-id_invoice="<?= $item_expense->no_doc ?>"><i class="fa fa-eye"></i></a>
                                             <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_expense->id ?>"> -->
@@ -558,7 +558,7 @@ endforeach;
                                 <th class="text-center">Nilai Pengajuan</th>
                                 <th class="text-center">Tanggal Pembayaran</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" width="150px">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -579,22 +579,22 @@ endforeach;
 
                                     if ($item_dp->status == '0' || empty($get_sts_payment)) {
                                         if ($item_dp->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                            echo '<span class="badge rounded-pill  bg-danger">Rejected</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill  bg-info">Open</label>';
                                         }
                                     } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
+                                        echo '<span class="badge rounded-pill  bg-warning">Process</label>';
                                     } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
+                                        echo '<span class="badge rounded-pill  bg-danger">Close</label>';
                                     } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '<span class="badge rounded-pill  bg-secondary"><span class="text-muted">Undefined</span></label>';
                                     }
                                     echo '</td>';
                                     echo '<td>';
                                     // if ($ENABLE_MANAGE) 
                                     if ($ENABLE_MANAGE) : ?>
-                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_dp->tipe . '&id=' . $item_dp->id . '&nilai=' . $item_dp->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a></div>
+                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_dp->tipe . '&id=' . $item_dp->id . '&nilai=' . $item_dp->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fas fa-check-double">&nbsp;</i>Approve</a></div>
                             <?php
                                     endif;
                                     echo '</td>';
@@ -863,7 +863,7 @@ endforeach;
         background: linear-gradient(135deg, #0bb07b, #0aa36d);
     }
 
-    .bg-yellow {
+    .bg-warning {
         background: linear-gradient(135deg, #f9a10a, #f08c00);
     }
 
@@ -871,7 +871,7 @@ endforeach;
         background: linear-gradient(135deg, #1e74d6, #125db5);
     }
 
-    .bg-red {
+    .bg-danger {
         background: linear-gradient(135deg, #e25555, #d13d3d);
     }
 

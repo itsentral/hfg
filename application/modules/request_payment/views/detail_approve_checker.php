@@ -60,8 +60,8 @@ if ($type == 'expense') {
 <!-- <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
 <div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
 <?= form_open($this->uri->uri_string(), array('id' => 'frm_data', 'name' => 'frm_data', 'role' => 'form', 'class' => 'form-horizontal')); ?>
-<div class="box">
-	<div class="box-body">
+<div class="card">
+	<div class="card-body">
 
 		<div class="row">
 			<input type="hidden" name="id" value="<?= $header->id; ?>">
@@ -533,39 +533,34 @@ if ($type == 'expense') {
 					</tr>
 				</tfoot>
 			</table>
-			<div class="col-md-4">
+		</div>
+
+		<div class="row mb-2">
+			<div class="col-md-12">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="3">Info Transfer</th>
+							<th class="text-center" colspan="6">Info Transfer</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>Bank</td>
-							<td class="text-center" style="min-width: 50px;">:</td>
-							<td class="text-right"><?= $bank_id ?></td>
-						</tr>
-						<tr>
-							<td>Account Number</td>
-							<td class="text-center" style="min-width: 50px;">:</td>
-							<td class="text-right"><?= $accnumber ?></td>
-						</tr>
-						<tr>
-							<td>Account Name</td>
-							<td class="text-center" style="min-width: 50px;">:</td>
-							<td class="text-right"><?= $accname ?></td>
+							<td class="text-center" width="10%"><b>Bank</b></td>
+							<td class="text-right" width="10%"><?= $bank_id ?></td>
+							<td class="text-center" width="15%"><b>Account Number</b></td>
+							<td class="text-right" width="15%"><?= $accnumber ?></td>
+							<td class="text-center" width="15%"><b>Account Name</b></td>
+							<td class="text-right" width="15%"><?= $accname ?></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			<div class="col-md-8"></div>
-			<div class="col-md-12"></div>
-			<div class="">
-				<button type="button" class="btn btn-success btn-sm text-right pull-right" id="process"><i class="fa fa-save">&nbsp;</i>Process</button>
-				<button type="button" class="btn btn-danger btn-sm text-right pull-right" style="margin-right: 0.5em;" id="reject"><i class="fa fa-close">&nbsp;</i>Reject</button>
-				<a href="<?= base_url($this->uri->segment(1) . '/list_approve_checker'); ?>" class="btn btn-default btn-sm pull-right" style="margin-right: 0.5em;"><i class="fa fa-reply">&nbsp;</i>Back</a>
-			</div>
+		</div>
+
+		<div class="text-center">
+			<a href="<?= base_url($this->uri->segment(1) . '/list_approve_checker'); ?>" class="btn btn-secondary btn-md" style="margin-right: 0.5em;"><i class="fa fa-reply">&nbsp;</i>Back</a>
+			<button type="button" class="btn btn-danger btn-md" style="margin-right: 0.5em;" id="reject"><i class="fas fa-ban">&nbsp;</i>Reject</button>
+			<button type="button" class="btn btn-success btn-md" id="process"><i class="fas fa-check-double">&nbsp;</i>Approve</button>
 		</div>
 	</div>
 	<!-- <div> &nbsp;<button type="button" id="btnxls" class="btn btn-default">Export Excel</button><br /><br /></div> -->

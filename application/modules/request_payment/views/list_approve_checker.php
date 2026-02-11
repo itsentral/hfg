@@ -62,7 +62,7 @@ endforeach;
 
                 <div class="col-md-2 col-sm-6">
                     <div class="panel panel-metric">
-                        <div class="panel-heading bg-yellow">
+                        <div class="panel-heading bg-warning">
                             <div class="heading-wrap">
                                 <i class="fa fa-credit-card heading-icon"></i>
                                 <span>Kasbon</span>
@@ -100,7 +100,7 @@ endforeach;
 
                 <div class="col-md-2 col-sm-6">
                     <div class="panel panel-metric">
-                        <div class="panel-heading bg-red">
+                        <div class="panel-heading bg-secondary">
                             <div class="heading-wrap">
                                 <i class="fas fa-business-time heading-icon"></i>
                                 <span>Periodik</span>
@@ -164,61 +164,63 @@ endforeach;
                         <h3>Transportasi</h3>
                         <!-- <span class="text-muted small">(*) wajib diisi</span> -->
                     </div>
-                    <table class="table table-bordered" id="table_transportasi" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokument</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data as $item_transportasi) :
-                                if ($item_transportasi->tipe == 'transport') {
-                                    echo '<tr>';
-                                    echo '<td>' . $item_transportasi->no_doc . '</td>';
-                                    echo '<td>' . $item_transportasi->nama . '</td>';
-                                    echo '<td>' . $item_transportasi->tgl_doc . '</td>';
-                                    echo '<td>' . $item_transportasi->keperluan . '</td>';
-                                    echo '<td>' . $item_transportasi->tipe . '</td>';
-                                    echo '<td class="text-right">' . number_format($item_transportasi->jumlah) . '</td>';
-                                    echo '<td>' . $item_transportasi->tanggal . '</td>';
-                                    echo '<td>';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_transportasi->no_doc, 'ids' => $item_transportasi->ids])->row_array();
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_transportasi" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokument</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data as $item_transportasi) :
+                                    if ($item_transportasi->tipe == 'transport') {
+                                        echo '<tr>';
+                                        echo '<td>' . $item_transportasi->no_doc . '</td>';
+                                        echo '<td>' . $item_transportasi->nama . '</td>';
+                                        echo '<td>' . $item_transportasi->tgl_doc . '</td>';
+                                        echo '<td>' . $item_transportasi->keperluan . '</td>';
+                                        echo '<td>' . $item_transportasi->tipe . '</td>';
+                                        echo '<td class="text-right">' . number_format($item_transportasi->jumlah) . '</td>';
+                                        echo '<td>' . $item_transportasi->tanggal . '</td>';
+                                        echo '<td>';
+                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_transportasi->no_doc, 'ids' => $item_transportasi->ids])->row_array();
 
-                                    if ($item_transportasi->status == '0' || empty($get_sts_payment)) {
-                                        if ($item_transportasi->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                        if ($item_transportasi->status == '0' || empty($get_sts_payment)) {
+                                            if ($item_transportasi->status == '9') {
+                                                echo '<span class="badge rounded-pill bg-warning">Rejected</label>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-info">Open</label>';
+                                            }
+                                        } elseif ($get_sts_payment['status'] == 1) {
+                                            echo '<span class="badge rounded-pill bg-warning">Process</label>';
+                                        } elseif ($get_sts_payment['status'] == 2) {
+                                            echo '<span class="badge rounded-pill bg-secondary">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill bg-gray"><span class="text-muted">Undefined</span></label>';
                                         }
-                                    } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
-                                    } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
-                                    } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '</td>';
+                                        echo '<td class="text-center">';
+                                        if ($ENABLE_MANAGE) : ?>
+                                            <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_transportasi->tipe . '&id=' . $item_transportasi->id . '&nilai=' . $item_transportasi->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
+                                            <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_transportasi->id ?>"> -->
+                                <?php endif;
+                                        echo '</td>';
+                                        echo '</tr>';
                                     }
-                                    echo '</td>';
-                                    echo '<td class="text-center">';
-                                    if ($ENABLE_MANAGE) : ?>
-                                        <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_transportasi->tipe . '&id=' . $item_transportasi->id . '&nilai=' . $item_transportasi->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
-                                        <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_transportasi->id ?>"> -->
-                            <?php endif;
-                                    echo '</td>';
-                                    echo '</tr>';
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-12 list_kasbon" style="display: none;">
                     <hr class="mt-2">
@@ -226,92 +228,94 @@ endforeach;
                         <h3>Kasbon</h3>
                         <a href="<?= base_url('approval_request_payment/export_excel_kasbon_checker/?tingkat=1') ?>" class="btn btn-sm btn-success"><i class="fa fa-files"></i> Export Excel</a>
                     </div>
-                    <table class="table table-bordered" id="table_kasbon" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokument</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data_kasbon as $item_kasbon) :
-                                if ($item_kasbon->tipe == 'kasbon') {
-                                    $get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $item_kasbon->no_doc))->row();
-                                    $get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $item_kasbon->no_doc])->result();
-                                    $no_kasbon = (!empty($get_kasbon->no_kasbon_consultant)) ? $get_kasbon->no_kasbon_consultant : $item_kasbon->no_doc;
-                                    echo '<tr>';
-                                    echo '<td>' . $no_kasbon . '</td>';
-                                    echo '<td>' . $item_kasbon->nama . '</td>';
-                                    echo '<td>' . $item_kasbon->tgl_doc . '</td>';
-                                    echo '<td>' . $item_kasbon->keperluan . '</td>';
-                                    echo '<td>' . $item_kasbon->tipe . '</td>';
-                                    echo '<td class="text-right">' . number_format($item_kasbon->jumlah) . '</td>';
-                                    echo '<td>' . $item_kasbon->tanggal . '</td>';
-                                    echo '<td>';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_kasbon->no_doc, 'ids' => $item_kasbon->ids])->row_array();
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_kasbon" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokument</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data_kasbon as $item_kasbon) :
+                                    if ($item_kasbon->tipe == 'kasbon') {
+                                        $get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $item_kasbon->no_doc))->row();
+                                        $get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $item_kasbon->no_doc])->result();
+                                        $no_kasbon = (!empty($get_kasbon->no_kasbon_consultant)) ? $get_kasbon->no_kasbon_consultant : $item_kasbon->no_doc;
+                                        echo '<tr>';
+                                        echo '<td>' . $no_kasbon . '</td>';
+                                        echo '<td>' . $item_kasbon->nama . '</td>';
+                                        echo '<td>' . $item_kasbon->tgl_doc . '</td>';
+                                        echo '<td>' . $item_kasbon->keperluan . '</td>';
+                                        echo '<td>' . $item_kasbon->tipe . '</td>';
+                                        echo '<td class="text-right">' . number_format($item_kasbon->jumlah) . '</td>';
+                                        echo '<td>' . $item_kasbon->tanggal . '</td>';
+                                        echo '<td>';
+                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_kasbon->no_doc, 'ids' => $item_kasbon->ids])->row_array();
 
-                                    if ($item_kasbon->status == '0' || empty($get_sts_payment)) {
-                                        if ($item_kasbon->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                        if ($item_kasbon->status == '0' || empty($get_sts_payment)) {
+                                            if ($item_kasbon->status == '9') {
+                                                echo '<span class="badge rounded-pill bg-warning">Rejected</label>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-info">Open</label>';
+                                            }
+                                        } elseif ($get_sts_payment['status'] == 1) {
+                                            echo '<span class="badge rounded-pill bg-warning">Process</label>';
+                                        } elseif ($get_sts_payment['status'] == 2) {
+                                            echo '<span class="badge rounded-pill bg-secondary">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill bg-gray"><span class="text-muted">Undefined</span></label>';
                                         }
-                                    } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
-                                    } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
-                                    } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '</td>';
+
+                                        echo '<td>';
+                                        echo '<div class="text-center">';
+                                        if ($item_kasbon->status !== '2' && count($get_req_payment) > 0 && $get_req_payment[0]->app_checker === null) {
+
+                                            $approve_query = http_build_query([
+                                                'type'  => $item_kasbon->tipe,
+                                                'id'    => $item_kasbon->id,
+                                                'nilai' => $item_kasbon->jumlah,
+                                            ]);
+                                            $approve_url = base_url($this->uri->segment(1) . '/approval_payment_checker?' . $approve_query);
+
+                                            echo '<a href="' . $approve_url . '" name="save" class="btn btn-primary btn-sm">';
+                                            echo '<i class="fa fa-check-square-o"></i>&nbsp;Approve';
+                                            echo '</a>';
+                                        }
+
+                                        if (count($get_req_payment) > 0 && !is_null($get_req_payment[0]->app_checker)) {
+                                            $no_doc_safe = urlencode(str_replace('/', '|', $item_kasbon->no_doc));
+
+                                            $print_url = base_url('approval_request_payment/print_kasbon/' . $no_doc_safe);
+                                            $view_url  = base_url('kasbon/view_kasbon/' . $no_doc_safe);
+
+                                            echo '<a href="' . $print_url . '" class="btn btn-info btn-sm" target="_blank" title="Print PDF">';
+                                            echo '<i class="fa fa-print"></i>&nbsp;Print';
+                                            echo '</a> ';
+
+                                            echo '<a href="' . $view_url . '" class="btn btn-secondary btn-sm" target="_blank" title="View Kasbon">';
+                                            echo '<i class="fa fa-eye"></i>&nbsp;View';
+                                            echo '</a>';
+                                        }
+                                        echo '</div>';
+                                        echo '</td>';
+
+                                        echo '</tr>';
                                     }
-                                    echo '</td>';
-
-                                    echo '<td>';
-                                    echo '<div class="text-center">';
-                                    if ($item_kasbon->status !== '2' && count($get_req_payment) > 0 && $get_req_payment[0]->app_checker === null) {
-
-                                        $approve_query = http_build_query([
-                                            'type'  => $item_kasbon->tipe,
-                                            'id'    => $item_kasbon->id,
-                                            'nilai' => $item_kasbon->jumlah,
-                                        ]);
-                                        $approve_url = base_url($this->uri->segment(1) . '/approval_payment_checker?' . $approve_query);
-
-                                        echo '<a href="' . $approve_url . '" name="save" class="btn btn-primary btn-sm">';
-                                        echo '<i class="fa fa-check-square-o"></i>&nbsp;Approve';
-                                        echo '</a>';
-                                    }
-
-                                    if (count($get_req_payment) > 0 && !is_null($get_req_payment[0]->app_checker)) {
-                                        $no_doc_safe = urlencode(str_replace('/', '|', $item_kasbon->no_doc));
-
-                                        $print_url = base_url('approval_request_payment/print_kasbon/' . $no_doc_safe);
-                                        $view_url  = base_url('kasbon/view_kasbon/' . $no_doc_safe);
-
-                                        echo '<a href="' . $print_url . '" class="btn btn-info btn-sm" target="_blank" title="Print PDF">';
-                                        echo '<i class="fa fa-print"></i>&nbsp;Print';
-                                        echo '</a> ';
-
-                                        echo '<a href="' . $view_url . '" class="btn btn-secondary btn-sm" target="_blank" title="View Kasbon">';
-                                        echo '<i class="fa fa-eye"></i>&nbsp;View';
-                                        echo '</a>';
-                                    }
-                                    echo '</div>';
-                                    echo '</td>';
-
-                                    echo '</tr>';
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-12 list_expense" style="display: none;">
                     <hr class="mt-2">
@@ -319,293 +323,300 @@ endforeach;
                         <h3>Expense</h3>
                         <a href="<?= base_url('approval_request_payment/export_excel_expense_checker/?tingkat=1') ?>" class="btn btn-sm btn-success"><i class="fa fa-files"></i> Export Excel</a>
                     </div>
-                    <table class="table table-bordered" id="table_expense" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokument</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data as $item_expense) :
-                                if ($item_expense->tipe == 'expense') {
-                                    $tipe = ucfirst($item_expense->tipe);
-                                    $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
-                                    $get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $item_kasbon->no_doc])->result();
-                                    if ($get_expense['exp_inv_po'] == '1') {
-                                        $tipe = 'Pembayaran PO';
-                                    }
-                                    if (strpos($item_expense->no_doc, 'ROS') === true) {
-                                        $tipe = 'Pembayaran PIB';
-                                    }
-                                    if (strpos($item_expense->no_doc, 'ER-') !== false || strpos($item_expense->no_doc, 'ROS-') !== false) {
-                                        echo '<tr>';
-                                        echo '<td>' . $item_expense->no_doc . '</td>';
-                                        echo '<td>' . $item_expense->nama . '</td>';
-                                        echo '<td>' . $item_expense->tgl_doc . '</td>';
-                                        echo '<td>' . $item_expense->keperluan . '</td>';
-                                        echo '<td>' . $tipe . '</td>';
-                                        echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
-                                        echo '<td>' . $item_expense->tanggal . '</td>';
-                                        echo '<td>';
-                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
-
-                                        if ($item_expense->status == '0' || empty($get_sts_payment)) {
-                                            if ($item_expense->status == '9') {
-                                                echo '<label class="label bg-orange">Rejected</label>';
-                                            } else {
-                                                echo '<label class="label bg-aqua">Open</label>';
-                                            }
-                                        } elseif ($get_sts_payment['status'] == 1) {
-                                            echo '<label class="label bg-yellow">Process</label>';
-                                        } elseif ($get_sts_payment['status'] == 2) {
-                                            echo '<label class="label bg-red">Close</label>';
-                                        } else {
-                                            echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_expense" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokument</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data as $item_expense) :
+                                    if ($item_expense->tipe == 'expense') {
+                                        $tipe = ucfirst($item_expense->tipe);
+                                        $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
+                                        $get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $item_kasbon->no_doc])->result();
+                                        if ($get_expense['exp_inv_po'] == '1') {
+                                            $tipe = 'Pembayaran PO';
                                         }
-                                        echo '</td>';
-                                        echo '<td>';
-                                        if ($ENABLE_MANAGE or $get_sts_payment['status'] < 1 && count($get_req_payment) > 0 && $get_req_payment->app_checker === null) {
-                                            echo '
+                                        if (strpos($item_expense->no_doc, 'ROS') === true) {
+                                            $tipe = 'Pembayaran PIB';
+                                        }
+                                        if (strpos($item_expense->no_doc, 'ER-') !== false || strpos($item_expense->no_doc, 'ROS-') !== false) {
+                                            echo '<tr>';
+                                            echo '<td>' . $item_expense->no_doc . '</td>';
+                                            echo '<td>' . $item_expense->nama . '</td>';
+                                            echo '<td>' . $item_expense->tgl_doc . '</td>';
+                                            echo '<td>' . $item_expense->keperluan . '</td>';
+                                            echo '<td>' . $tipe . '</td>';
+                                            echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
+                                            echo '<td>' . $item_expense->tanggal . '</td>';
+                                            echo '<td>';
+                                            $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
+
+                                            if ($item_expense->status == '0' || empty($get_sts_payment)) {
+                                                if ($item_expense->status == '9') {
+                                                    echo '<span class="badge rounded-pill bg-warning">Rejected</label>';
+                                                } else {
+                                                    echo '<span class="badge rounded-pill bg-info">Open</label>';
+                                                }
+                                            } elseif ($get_sts_payment['status'] == 1) {
+                                                echo '<span class="badge rounded-pill bg-warning">Process</label>';
+                                            } elseif ($get_sts_payment['status'] == 2) {
+                                                echo '<span class="badge rounded-pill bg-secondary">Close</label>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-gray"><span class="text-muted">Undefined</span></label>';
+                                            }
+                                            echo '</td>';
+                                            echo '<td>';
+                                            if ($ENABLE_MANAGE or $get_sts_payment['status'] < 1 && count($get_req_payment) > 0 && $get_req_payment->app_checker === null) {
+                                                echo '
                                                 <div class="text-center">
                                                     <a href="' . base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah) . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
                                                 </div>
                                             ';
+                                            }
+                                            echo '</td>';
+                                            echo '</tr>';
                                         }
-                                        echo '</td>';
-                                        echo '</tr>';
                                     }
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-12 list_periodik" style="display: none;">
                     <hr class="mt-2">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h3>Periodik</h3>
                     </div>
-                    <table class="table table-bordered" id="table_periodik" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokument</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data as $item_periodik) :
-                                if ($item_periodik->tipe == 'periodik') {
-                                    echo '<tr>';
-                                    echo '<td>' . $item_periodik->no_doc . '</td>';
-                                    echo '<td>' . $item_periodik->nama . '</td>';
-                                    echo '<td>' . $item_periodik->tgl_doc . '</td>';
-                                    echo '<td>' . $item_periodik->keperluan . '</td>';
-                                    echo '<td>' . $item_periodik->tipe . '</td>';
-                                    echo '<td class="text-right">' . number_format($item_periodik->jumlah) . '</td>';
-                                    echo '<td>' . $item_periodik->tanggal . '</td>';
-                                    echo '<td>';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_periodik->no_doc, 'ids' => $item_periodik->ids])->row_array();
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_periodik" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokument</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data as $item_periodik) :
+                                    if ($item_periodik->tipe == 'periodik') {
+                                        echo '<tr>';
+                                        echo '<td>' . $item_periodik->no_doc . '</td>';
+                                        echo '<td>' . $item_periodik->nama . '</td>';
+                                        echo '<td>' . $item_periodik->tgl_doc . '</td>';
+                                        echo '<td>' . $item_periodik->keperluan . '</td>';
+                                        echo '<td>' . $item_periodik->tipe . '</td>';
+                                        echo '<td class="text-right">' . number_format($item_periodik->jumlah) . '</td>';
+                                        echo '<td>' . $item_periodik->tanggal . '</td>';
+                                        echo '<td>';
+                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_periodik->no_doc, 'ids' => $item_periodik->ids])->row_array();
 
-                                    if ($item_periodik->status == '0' || empty($get_sts_payment)) {
-                                        if ($item_periodik->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                        if ($item_periodik->status == '0' || empty($get_sts_payment)) {
+                                            if ($item_periodik->status == '9') {
+                                                echo '<span class="badge rounded-pill bg-warning">Rejected</label>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-info">Open</label>';
+                                            }
+                                        } elseif ($get_sts_payment['status'] == 1) {
+                                            echo '<span class="badge rounded-pill bg-warning">Process</label>';
+                                        } elseif ($get_sts_payment['status'] == 2) {
+                                            echo '<span class="badge rounded-pill bg-secondary">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill bg-secondary"><span class="text-muted">Undefined</span></label>';
                                         }
-                                    } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
-                                    } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
-                                    } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '</td>';
+                                        echo '<td>';
+                                        if ($ENABLE_MANAGE) : ?>
+                                            <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_periodik->tipe . '&id=' . $item_periodik->id . '&nilai=' . $item_periodik->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a></div>
+                                            <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_periodik->id ?>"> -->
+                                <?php endif;
+                                        echo '</td>';
+                                        echo '</tr>';
                                     }
-                                    echo '</td>';
-                                    echo '<td>';
-                                    if ($ENABLE_MANAGE) : ?>
-                                        <div class="text-center"><a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_periodik->tipe . '&id=' . $item_periodik->id . '&nilai=' . $item_periodik->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a></div>
-                                        <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_periodik->id ?>"> -->
-                            <?php endif;
-                                    echo '</td>';
-                                    echo '</tr>';
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-12 list_pembayaran_po" style="display: none;">
                     <hr class="mt-2">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h3>Pembayaran PO</h3>
                     </div>
-                    <table class="table table-bordered" id="table_pembayaran_po" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokumen</th>
-                                <th class="text-center">No Invoice</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Keterangan PO</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center" width="100">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data as $item_expense) :
-                                $no_invoice = (isset($list_no_invoice[$item_expense->no_doc])) ? $list_no_invoice[$item_expense->no_doc] : '';
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_pembayaran_po" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokumen</th>
+                                    <th class="text-center">No Invoice</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Keterangan PO</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center" width="150px">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data as $item_expense) :
+                                    $no_invoice = (isset($list_no_invoice[$item_expense->no_doc])) ? $list_no_invoice[$item_expense->no_doc] : '';
 
-                                if ($item_expense->tipe == 'expense') {
-                                    $tipe = ucfirst($item_expense->tipe);
-                                    $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
-                                    if ($get_expense['exp_inv_po'] == '1') {
-                                        $tipe = 'Pembayaran PO';
-                                    }
-                                    if (strpos($item_expense->no_doc, 'ROS-') !== false) {
-                                        $tipe = 'Pembayaran PIB';
-                                    }
-
-
-                                    $exp_id_po = explode(',', $get_expense['id_po']);
-
-                                    $po_note = [];
-                                    $this->db->select('note');
-                                    $this->db->from('tr_purchase_order');
-                                    $this->db->where_in('no_surat', $exp_id_po);
-                                    $get_po_note = $this->db->get()->result();
-
-                                    foreach ($get_po_note as $item_po_note) {
-                                        $po_note[] = $item_po_note->note;
-                                    }
-
-                                    $po_note = implode(', ', $po_note);
-
-                                    if ($get_expense['exp_inv_po'] == '1') {
-                                        echo '<tr>';
-                                        echo '<td>' . $item_expense->no_doc . '</td>';
-                                        echo '<td>' . $no_invoice . '</td>';
-                                        echo '<td>' . $item_expense->nama . '</td>';
-                                        echo '<td>' . $item_expense->tgl_doc . '</td>';
-                                        echo '<td>' . $item_expense->keperluan . '</td>';
-                                        echo '<td>' . $tipe . '</td>';
-                                        echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
-                                        echo '<td>' . $item_expense->tanggal . '</td>';
-                                        echo '<td>' . $po_note . '</td>';
-                                        echo '<td>';
-                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
-
-                                        if ($item_expense->status == '0' || empty($get_sts_payment)) {
-                                            if ($item_expense->status == '9') {
-                                                echo '<label class="label bg-orange">Rejected</label>';
-                                            } else {
-                                                echo '<label class="label bg-aqua">Open</label>';
-                                            }
-                                        } elseif ($get_sts_payment['status'] == 1) {
-                                            echo '<label class="label bg-yellow">Process</label>';
-                                        } elseif ($get_sts_payment['status'] == 2) {
-                                            echo '<label class="label bg-red">Close</label>';
-                                        } else {
-                                            echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                    if ($item_expense->tipe == 'expense') {
+                                        $tipe = ucfirst($item_expense->tipe);
+                                        $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
+                                        if ($get_expense['exp_inv_po'] == '1') {
+                                            $tipe = 'Pembayaran PO';
                                         }
-                                        echo '</td>';
-                                        echo '<td class="text-center">';
-                                        if ($ENABLE_MANAGE) : ?>
-                                            <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i></a>
+                                        if (strpos($item_expense->no_doc, 'ROS-') !== false) {
+                                            $tipe = 'Pembayaran PIB';
+                                        }
 
-                                            <a href="javascript:void(0);" class="btn btn-sm btn-info view_receive_invoice" data-id_invoice="<?= $item_expense->no_doc ?>"><i class="fa fa-eye"></i></a>
-                            <?php endif;
-                                        echo '</td>';
-                                        echo '</tr>';
+
+                                        $exp_id_po = explode(',', $get_expense['id_po']);
+
+                                        $po_note = [];
+                                        $this->db->select('note');
+                                        $this->db->from('tr_purchase_order');
+                                        $this->db->where_in('no_surat', $exp_id_po);
+                                        $get_po_note = $this->db->get()->result();
+
+                                        foreach ($get_po_note as $item_po_note) {
+                                            $po_note[] = $item_po_note->note;
+                                        }
+
+                                        $po_note = implode(', ', $po_note);
+
+                                        if ($get_expense['exp_inv_po'] == '1') {
+                                            echo '<tr>';
+                                            echo '<td>' . $item_expense->no_doc . '</td>';
+                                            echo '<td>' . $no_invoice . '</td>';
+                                            echo '<td>' . $item_expense->nama . '</td>';
+                                            echo '<td>' . $item_expense->tgl_doc . '</td>';
+                                            echo '<td>' . $item_expense->keperluan . '</td>';
+                                            echo '<td>' . $tipe . '</td>';
+                                            echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
+                                            echo '<td>' . $item_expense->tanggal . '</td>';
+                                            echo '<td>' . $po_note . '</td>';
+                                            echo '<td>';
+                                            $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
+
+                                            if ($item_expense->status == '0' || empty($get_sts_payment)) {
+                                                if ($item_expense->status == '9') {
+                                                    echo '<span class="badge rounded-pill bg-danger">Rejected</span>';
+                                                } else {
+                                                    echo '<span class="badge rounded-pill bg-primary">Open</span>';
+                                                }
+                                            } elseif ($get_sts_payment['status'] == 1) {
+                                                echo '<span class="badge rounded-pill bg-warning">Process</span>';
+                                            } elseif ($get_sts_payment['status'] == 2) {
+                                                echo '<span class="badge rounded-pill bg-secondary">Close</span>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-secondary"><span class="text-muted">Undefined</span></span>';
+                                            }
+                                            echo '</td>';
+                                            echo '<td class="text-center">';
+                                            if ($ENABLE_MANAGE) : ?>
+                                                <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fas fa-check-double"></i></a>
+
+                                                <a href="javascript:void(0);" class="btn btn-sm btn-info view_receive_invoice" data-id_invoice="<?= $item_expense->no_doc ?>"><i class="fa fa-eye"></i></a>
+                                <?php endif;
+                                            echo '</td>';
+                                            echo '</tr>';
+                                        }
                                     }
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
                 <div class="col-md-12 list_direct_payment" style="display: none;">
                     <hr class="mt-2">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h3>Direct Payment</h3>
                     </div>
-                    <table class="table table-bordered" id="table_direct_payment" width="100%">
-                        <thead>
-                            <tr>
-                                <th class="text-center">No Dokument</th>
-                                <th class="text-center">Request By</th>
-                                <th class="text-center">Tanggal</th>
-                                <th class="text-center">Kepeluan</th>
-                                <th class="text-center">Tipe</th>
-                                <th class="text-center">Nilai Pengajuan</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($data as $item_dp) :
-                                if ($item_dp->tipe == 'direct_payment') {
-                                    echo '<tr>';
-                                    echo '<td>' . $item_dp->no_doc . '</td>';
-                                    echo '<td>' . $item_dp->nama . '</td>';
-                                    echo '<td>' . $item_dp->tgl_doc . '</td>';
-                                    echo '<td>' . $item_dp->keperluan . '</td>';
-                                    echo '<td>' . $item_dp->tipe . '</td>';
-                                    echo '<td class="text-right">' . number_format($item_dp->jumlah) . '</td>';
-                                    echo '<td>' . $item_dp->tanggal . '</td>';
-                                    echo '<td>';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_dp->no_doc, 'ids' => $item_dp->ids])->row_array();
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="table_direct_payment" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">No Dokument</th>
+                                    <th class="text-center">Request By</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Kepeluan</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nilai Pengajuan</th>
+                                    <th class="text-center">Tanggal Pembayaran</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                foreach ($data as $item_dp) :
+                                    if ($item_dp->tipe == 'direct_payment') {
+                                        echo '<tr>';
+                                        echo '<td>' . $item_dp->no_doc . '</td>';
+                                        echo '<td>' . $item_dp->nama . '</td>';
+                                        echo '<td>' . $item_dp->tgl_doc . '</td>';
+                                        echo '<td>' . $item_dp->keperluan . '</td>';
+                                        echo '<td>' . $item_dp->tipe . '</td>';
+                                        echo '<td class="text-right">' . number_format($item_dp->jumlah) . '</td>';
+                                        echo '<td>' . $item_dp->tanggal . '</td>';
+                                        echo '<td>';
+                                        $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_dp->no_doc, 'ids' => $item_dp->ids])->row_array();
 
-                                    if ($item_dp->status == '0' || empty($get_sts_payment)) {
-                                        if ($item_dp->status == '9') {
-                                            echo '<label class="label bg-orange">Rejected</label>';
+                                        if ($item_dp->status == '0' || empty($get_sts_payment)) {
+                                            if ($item_dp->status == '9') {
+                                                echo '<span class="badge rounded-pill bg-warning">Rejected</label>';
+                                            } else {
+                                                echo '<span class="badge rounded-pill bg-info">Open</label>';
+                                            }
+                                        } elseif ($get_sts_payment['status'] == 1) {
+                                            echo '<span class="badge rounded-pill bg-warning">Process</label>';
+                                        } elseif ($get_sts_payment['status'] == 2) {
+                                            echo '<span class="badge rounded-pill bg-secondary">Close</label>';
                                         } else {
-                                            echo '<label class="label bg-aqua">Open</label>';
+                                            echo '<span class="badge rounded-pill bg-gray"><span class="text-muted">Undefined</span></label>';
                                         }
-                                    } elseif ($get_sts_payment['status'] == 1) {
-                                        echo '<label class="label bg-yellow">Process</label>';
-                                    } elseif ($get_sts_payment['status'] == 2) {
-                                        echo '<label class="label bg-red">Close</label>';
-                                    } else {
-                                        echo '<label class="label bg-gray"><span class="text-muted">Undefined</span></label>';
+                                        echo '</td>';
+                                        echo '<td>';
+                                ?>
+
+                                        <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_dp->tipe . '&id=' . $item_dp->id . '&nilai=' . $item_dp->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
+
+                                <?php
+                                        echo '</td>';
+                                        echo '</tr>';
                                     }
-                                    echo '</td>';
-                                    echo '<td>';
-                            ?>
-
-                                    <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_dp->tipe . '&id=' . $item_dp->id . '&nilai=' . $item_dp->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
-
-                            <?php
-                                    echo '</td>';
-                                    echo '</tr>';
-                                }
-                            endforeach;
-                            ?>
-                        </tbody>
-                    </table>
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -867,7 +878,7 @@ endforeach;
         background: linear-gradient(135deg, #0bb07b, #0aa36d);
     }
 
-    .bg-yellow {
+    .bg-warning {
         background: linear-gradient(135deg, #f9a10a, #f08c00);
     }
 
@@ -875,7 +886,7 @@ endforeach;
         background: linear-gradient(135deg, #1e74d6, #125db5);
     }
 
-    .bg-red {
+    .bg-secondary {
         background: linear-gradient(135deg, #e25555, #d13d3d);
     }
 

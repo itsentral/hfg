@@ -100,6 +100,7 @@ class Request_payment extends Admin_Controller
 					'total_pph' => str_replace(',', '', $this->input->post('nilai_pph_' . $val)),
 					'link_doc' => $filenames
 				);
+
 				$idreq = $this->All_model->dataSave('request_payment', $data);
 				if ($tipe == 'transportasi') {
 					$this->All_model->dataUpdate('tr_transport_req', array('status' => 2), array('no_doc' => $no_doc));

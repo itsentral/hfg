@@ -732,7 +732,7 @@ class Request_payment_model extends BF_Model
 
             $checked = (count($check_added) > 0) ? 'checked' : '';
 
-            $input_tanggal_pembayaran = '<input type="date" class="form-control form-control-sm" name="tanggal_pembayaran_' . $item->no_dokumen . '">';
+            $input_tanggal_pembayaran = '<input type="date" class="form-control form-control-sm" name="tanggal_pembayaran_' . $item->no_dokumen . '" required>';
 
             $action = '<input type="checkbox" class="pilih_data" name="pilih[]" value="' . $item->no_dokumen . '" data-kategori="' . $item->kategori . '" ' . $checked . '>';
             $action .= '<input type="hidden" name="kategori_' . $item->no_dokumen . '" value="' . $item->kategori . '">';

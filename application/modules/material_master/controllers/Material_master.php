@@ -169,6 +169,10 @@ class Material_master extends Admin_Controller
 
       $ArrGudangNew = [
         'id_material' => $code_lv4,
+        'code_lv1' => $code_lv1,
+        'code_lv2' => $code_lv2,
+        'code_lv3' => $code_lv3,
+        'code_lv4' => $code_lv4,
         'nm_material' => $nama,
         'id_gudang' => 1,
         'kd_gudang' => 'PUS',
