@@ -40,7 +40,7 @@ class Master_tensile extends Admin_Controller
 			$datetime 	= date('Y-m-d H:i:s');
 
 			$id 		= $data['id'];
-			$nama     	= trim(strtolower($data['nama']));
+			$nama     	= $data['nama'];
 
 			$field_by   = (empty($id)) ? 'created_by' : 'updated_by';
 			$field_date = (empty($id)) ? 'created_date' : 'updated_date';
