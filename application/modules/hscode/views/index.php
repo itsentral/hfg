@@ -1,8 +1,8 @@
 <?php
-$ENABLE_ADD     = has_permission('Material_Type.Add');
-$ENABLE_MANAGE  = has_permission('Material_Type.Manage');
-$ENABLE_VIEW    = has_permission('Material_Type.View');
-$ENABLE_DELETE  = has_permission('Material_Type.Delete');
+$ENABLE_ADD     = has_permission('Hscode.Add');
+$ENABLE_MANAGE  = has_permission('Hscode.Manage');
+$ENABLE_VIEW    = has_permission('Hscode.View');
+$ENABLE_DELETE  = has_permission('Hscode.Delete');
 ?>
 
 <div class="card shadow-sm border-0">

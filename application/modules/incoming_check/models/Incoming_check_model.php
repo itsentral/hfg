@@ -872,6 +872,7 @@ class Incoming_check_model extends BF_Model
             'kredit'         =>  $total,
             'id_supplier'     => $id_vendor,
             'nama_supplier'   => $nama_vendor,
+            'no_request'   => $reff,
 
         );
         $this->db->insert('tr_kartu_hutang', $datahutang);

@@ -60,7 +60,7 @@ class Department extends Admin_Controller
       $post = $this->input->post();
 
       $id   = $post['id'];
-      $status = (!empty($id)) ? $post['status'] : 1;
+      // $status = (!empty($id)) ? $post['status'] : 1;
       $nama = $post['nama'];
 
       $last_by    = (!empty($id)) ? 'updated_by' : 'created_by';
@@ -69,7 +69,7 @@ class Department extends Admin_Controller
 
       $dataProcess = [
         'nama'      => $nama,
-        'status'    => $status,
+        // 'status'    => $status,
         $last_by    => $this->id_user,
         $last_date  => $this->datetime
       ];
