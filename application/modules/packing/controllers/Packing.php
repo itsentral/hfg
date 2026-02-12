@@ -3,13 +3,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  *
  */
-class Unit extends Admin_Controller
+class Packing extends Admin_Controller
 {
 	//Permission
-	protected $viewPermission 	= 'Master_Unit.View';
-	protected $addPermission  	= 'Master_Unit.Add';
-	protected $managePermission = 'Master_Unit.Manage';
-	protected $deletePermission = 'Master_Unit.Delete';
+	protected $viewPermission 	= 'Master_Unit_Packing.View';
+	protected $addPermission  	= 'Master_Unit_Packing.Add';
+	protected $managePermission = 'Master_Unit_Packing.Manage';
+	protected $deletePermission = 'Master_Unit_Packing.Delete';
 
 	public function __construct()
 	{
@@ -29,11 +29,11 @@ class Unit extends Admin_Controller
 		$session = $this->session->userdata('app_session');
 		$this->template->page_icon('fa fa-users');
 
-		$data = $this->db->get_where('ms_satuan', array('deleted' => 'N', 'category' => 'unit'))->result();
+		$data = $this->db->get_where('ms_satuan', array('deleted' => 'N', 'category' => 'packing'))->result();
 
 		history("View data satuan");
 		$this->template->set('results', $data);
-		$this->template->title('Unit Measurement');
+		$this->template->title('Unit Packing');
 		$this->template->render('index');
 	}
 
@@ -55,7 +55,7 @@ class Unit extends Admin_Controller
 			$field_hist = (empty($id)) ? 'Add' : 'Edit';
 
 			$ArrHeader = array(
-				'category'	=> 'unit',
+				'category'	=> 'packing',
 				'code'		=> $code,
 				'nama'		=> $nama,
 				$field_by	=> $username,
@@ -98,7 +98,7 @@ class Unit extends Admin_Controller
 			$data = [
 				'header' => $header,
 			];
-			$this->template->title('Add Unit Measurement');
+			$this->template->title('Add Unit Packing');
 			$this->template->page_icon('fa fa-edit');
 			$this->template->render('add', $data);
 		}
