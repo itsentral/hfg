@@ -102,38 +102,38 @@
                     <div class="col-md-6">
                         <div class="form-group row mb-2">
                             <div class="col-md-4">
-                                <label for="bm_mfn">BM MFN <span class="text-danger">*</span></label>
+                                <label for="bm_mfn">BM MFN </label>
                             </div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    <input type="number" step="0.01" class="form-control text-end" id="bm_mfn" name="bm_mfn" required value="<?= isset($hs) ? $hs->bm_mfn : '' ?>" placeholder="0" data-parsley-inputs data-parsley-errors-container="#error-bm_mfn">
+                                    <input type="number" step="0.01" class="form-control text-end" id="bm_mfn" name="bm_mfn" value="<?= isset($hs) ? $hs->bm_mfn : '' ?>" placeholder="0" data-parsley-inputs data-parsley-errors-container="#error-bm_mfn">
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group row mb-2">
                             <div class="col-md-4">
-                                <label for="ppn_yes">PPn <span class="text-danger">*</span></label>
+                                <label for="ppn_yes">PPn </label>
                             </div>
                             <div class="col-md-8">
                                 <div class="d-lg-flex justify-content-between align-items-center">
                                     <div class="row">
                                         <div class="col-2 mt-2">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" id="ppn_yes" name="ppn" value="Y" <?= isset($hs) && ($hs->ppn == "Y") ? 'checked' : ''; ?> required>
-                                                <label class="form-check-label" for="ppn">Yes</label>
+                                                <input class="form-check-input" type="radio" id="ppn_yes" name="ppn" value="Y" <?= isset($hs) && ($hs->ppn == "Y") ? 'checked' : ''; ?>>
+                                                <label class="form-check-label" for="ppn_yes">Yes</label>
                                             </div>
                                         </div>
                                         <div class="col-2 mt-2">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" id="ppn_no" name="ppn" value="N" <?= isset($hs) && ($hs->ppn == "N") ? 'checked' : ''; ?> required>
-                                                <label class="form-check-label" for="ppn">No</label>
+                                                <input class="form-check-input" type="radio" id="ppn_no" name="ppn" value="N" <?= isset($hs) && ($hs->ppn == "N") ? 'checked' : ''; ?>>
+                                                <label class="form-check-label" for="ppn_no">No</label>
                                             </div>
                                         </div>
                                         <div class="col-md-8">
                                             <div class="input-group">
                                                 <span class="input-group-text">Current</span>
-                                                <input type="number" step="0.01" class="form-control text-end" readonly value="<?= isset($def_ppn) && $def_ppn ? $def_ppn : 0; ?>">
+                                                <input type="number" step="0.01" id="current" class="form-control text-end" readonly value="<?= isset($def_ppn) && $def_ppn ? $def_ppn : 0; ?>">
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </div>
@@ -155,7 +155,7 @@
                         </div>
                         <div class="form-group row mb-2">
                             <div class="col-md-4">
-                                <label for="pph_api">PPH API <span class="text-danger">*</span></label>
+                                <label for="pph_api">PPH API </label>
                             </div>
                             <div class="col-md-8">
                                 <div class="input-group">
@@ -185,7 +185,7 @@
 
                                     <select class="custom-select"
                                         name="unit_cukai" aria-label="Unit cukai">
-                                        <option value=""></option>
+                                        <!-- <option value=""></option> -->
                                         <option value="kg" <?= isset($hs->unit_cukai) && $hs->unit_cukai == 'kg' ? 'selected' : ''; ?>>Kg</option>
                                         <option value="m" <?= isset($hs->unit_cukai) && $hs->unit_cukai == 'm'  ? 'selected' : ''; ?>>Meter</option>
                                         <option value="rp" <?= isset($hs->unit_cukai) && $hs->unit_cukai == 'rp' ? 'selected' : ''; ?>>Rp</option>
@@ -213,7 +213,7 @@
                                 <div class="input-group">
                                     <input type="number" step="0.01" name="bmad" id="bmad" class="form-control text-end" placeholder="0" value="<?= isset($hs) ? $hs->bmad : '0'; ?>">
                                     <select class="custom-select" name="unit_bmad">
-                                        <option value=""></option>
+                                        <!-- <option value=""></option> -->
                                         <option value="kg" <?= isset($hs->unit_bmad) && $hs->unit_bmad == 'kg' ? 'selected' : ''; ?>>Kg</option>
                                         <option value="m" <?= isset($hs->unit_bmad) && $hs->unit_bmad == 'm' ? 'selected' : ''; ?>>Meter</option>
                                         <option value="rp" <?= isset($hs->unit_bmad) && $hs->unit_bmad == 'rp' ? 'selected' : ''; ?>>Rp</option>
@@ -231,7 +231,7 @@
                                     <input type="number" step="0.01" class="form-control text-end" id="bmtp" value="<?= isset($hs) ? $hs->bmtp : ''; ?>" name="bmtp" placeholder="0">
 
                                     <select class="custom-select" name="unit_bmtp">
-                                        <option value=""></option>
+                                        <!-- <option value=""></option> -->
                                         <option value="kg" <?= isset($hs->bmtp) && $hs->unit_bmtp == 'kg' ? 'selected' : ''; ?>>Kg</option>
                                         <option value="m" <?= isset($hs->bmtp) && $hs->unit_bmtp == 'm' ? 'selected' : ''; ?>>Meter</option>
                                         <option value="rp" <?= isset($hs->bmtp) && $hs->unit_bmtp == 'rp' ? 'selected' : ''; ?>>Rp</option>
@@ -725,6 +725,20 @@
                 });
             });
         }
+
+        function togglePpnCurrent() {
+            const val = $('input[name="ppn"]:checked').val(); // Y / N
+            const isNo = (val === 'N');
+
+            $('#current').prop('readonly', isNo);
+
+            // Opsional: kalau No, set nilai jadi 0
+            if (isNo) {
+                $('#current').val(0);
+            }
+        }
+
+        $(document).on('change', 'input[name="ppn"]', togglePpnCurrent);
 
         // ===== Add Origin =====
         $(document).on('click', '#add-item-origin', function() {
