@@ -69,7 +69,20 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     <input type="date" class="form-control" name="tgl_lahir" value="<?= $tgl_lahir ?>">
                 </div>
 
-                <div class="col-md-6">
+                <div class='col-sm-4'>
+                    <label class='form-label'>Department</label>
+                    <select name='department' id='department' class='form-select'>
+                        <option value='0'>Select An Department</option>
+                        <?php
+                        foreach ($departmentx as $val => $valx) {
+                            $selected = ($valx['id'] == $department) ? 'selected' : '';
+                            echo "<option value='" . $valx['id'] . "' " . $selected . ">" . strtoupper($valx['nama']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label">Religion</label>
                     <select name="agama" class="form-select">
                         <option value="">Select Religion</option>
@@ -81,7 +94,7 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     </select>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Gender</label>
                     <select name="gender" class="form-select">
                         <option value="">Select Gender</option>
@@ -143,12 +156,12 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
 
                 <div class="col-md-6">
                     <label class="form-label">Join Date</label>
-                    <input type="text" class="form-control datepicker" readonly name="tgl_join" value="<?= $tgl_join ?>">
+                    <input type="date" class="form-control" name="tgl_join" value="<?= $tgl_join ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">End Date</label>
-                    <input type="text" class="form-control datepicker" readonly name="tgl_end" value="<?= $tgl_end ?>">
+                    <input type="date" class="form-control" name="tgl_end" value="<?= $tgl_end ?>">
                 </div>
 
             </div>
@@ -171,6 +184,7 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
         $('select').select2({
             width: '100%'
         });
+
     })
 
     $(document).on('click', '#back', function() {
