@@ -2,9 +2,9 @@
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
 <div class="card">
     <div class="card-header">
-        <a href="<?= base_url('pembayaran_material/payment_list') ?>" class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Back</a>
-        <button type="button" class="btn btn-sm btn-warning clear_choosed_payment"><i class="fa fa-refresh"></i> Clear Checked Payment</button>
-        <button type="button" class="btn btn-sm btn-success proses_payment"><i class="fa fa-check"></i> Proses</button>
+        <a href="<?= base_url('pembayaran_material/payment_list') ?>" class="btn btn-md btn-danger"><i class="fa fa-arrow-left"></i> Back</a>
+        <button type="button" class="btn btn-md btn-warning clear_choosed_payment"><i class="fas fa-sync-alt"></i> Clear Checked Payment</button>
+        <button type="button" class="btn btn-md btn-success proses_payment"><i class="fa fa-check"></i> Proses</button>
     </div>
     <div class="card-body">
         <table class="table table-bordered" id="table_list_req_payment">

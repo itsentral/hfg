@@ -1,6 +1,6 @@
 <div class="card">
 	<div class="card-header">
-		<button type="button" class="btn btn-md btn-success choose_payment">Payment</button>
+		<button type="button" class="btn btn-md btn-success choose_payment"><i class="fas fa-hand-holding-usd"></i> Payment</button>
 	</div>
 	<div class="card-body">
 		<!-- ✅ Tabs Bootstrap 5 -->
