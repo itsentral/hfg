@@ -54,15 +54,15 @@ class Master_employee extends Admin_Controller
 
 			$id					= $data['id'];
 			$nik				= $data['nik'];
-			$nm_karyawan		= strtolower($data['nm_karyawan']);
-			$no_ktp				= strtolower($data['no_ktp']);
-			$tmp_lahir			= strtolower($data['tmp_lahir']);
+			$nm_karyawan		= $data['nm_karyawan'];
+			$no_ktp				= $data['no_ktp'];
+			$tmp_lahir			= $data['tmp_lahir'];
 			$tgl_lahir			= (!empty($data['tgl_lahir'])) ? date('Y-m-d', strtotime($data['tgl_lahir'])) : NULL;
 			$gender				= $data['gender'];
 			$agama				= $data['agama'];
 			$department			= $data['department'];
-			$no_ponsel			= strtolower($data['no_ponsel']);
-			$email				= strtolower($data['email']);
+			$no_ponsel			= $data['no_ponsel'];
+			$email				= $data['email'];
 			$pendidikan			= $data['pendidikan'];
 			$ktp_kode_pos		= $data['ktp_kode_pos'];
 			$domisili_kode_pos	= $data['domisili_kode_pos'];

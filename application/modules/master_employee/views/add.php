@@ -125,12 +125,19 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     <textarea class="form-control" rows="3" name="domisili_alamat"><?= $domisili_alamat ?></textarea>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <label class="form-label">Contact Number</label>
+                    <?php
+                    echo form_input(array('id' => 'no_ponsel', 'name' => 'no_ponsel', 'class' => 'form-control input-md numberOnly', 'placeholder' => 'Contact Number'), $no_ponsel);
+                    ?>
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label">ID Card Postcode</label>
                     <input type="text" class="form-control numberOnly" name="ktp_kode_pos" value="<?= $ktp_kode_pos ?>">
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Domicile Postcode</label>
                     <input type="text" class="form-control numberOnly" name="domisili_kode_pos" value="<?= $domisili_kode_pos ?>">
                 </div>
