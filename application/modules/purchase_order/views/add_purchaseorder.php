@@ -6,11 +6,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 ?>
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 <div class="card shadow-sm">
-	<div class="card-header bg-white d-flex justify-content-center">
-		<div>
-			<h3>Form Purchase Order</h3>
-		</div>
-	</div>
+
 	<div class="card-body">
 		<form id="data-form" method="post">
 			<input type="hidden" name="so_number" value="<?= implode(',', $results['param']) ?>">

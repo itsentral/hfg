@@ -56,18 +56,18 @@ class Pr_material_model extends BF_Model
             $nestedData = [
                 "<div align='center'>{$nomor}</div>",
                 "<div align='left'>{$row['code_lv4']}</div>",
+                "<div align='left'>{$row['hscode']}</div>",
                 "<div align='left'>" . strtoupper($row['nm_material']) . "</div>",
                 "<div align='left'>{$row['category']}</div>",
                 "<div align='right'>" . number_format($row['qty_stock']) . "</div>",
-                "<div align='center'>{$satuan}</div>",
-                "<div align='center' class='konversi'>" . number_format($konversi, 2) . "</div>",
-                "<div align='right'>" . $row['weight'] . "</div>",
                 "<div align='right'>" . number_format($row['min_stok'], 2) . "</div>",
                 "<div align='right'>" . number_format($row['max_stok'], 2) . "</div>",
                 "<div align='right'>" . number_format($outstanding_pr, 2) . "</div>",
-                "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-right changeSave' style='width:100px;' value='{$purchase}'>",
-                "<div align='center' class='propose_packing'>" . number_format($purchase_pack, 2) . "</div>",
-                "<div align='center'>{$satuan}</div>",
+                "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
+                "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$purchase}'>",
+                "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
+                // "<div align='center' class='propose_packing'>" . number_format($purchase_pack, 2) . "</div>",
+                // "<div align='center'>{$satuan}</div>",
                 "<input type='text' name='keterangan' id='keterangan_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control input-sm changeSave' style='width:150px;' value='{$keterangan}'>",
             ];
 
@@ -95,6 +95,7 @@ class Pr_material_model extends BF_Model
         $this->db->select("
         a.code,
         a.id_unit,
+        a.hscode,
         a.code_lv4               AS code_lv4,
         a.nama                   AS nm_material,
         z.nama                   AS category,
@@ -307,7 +308,7 @@ class Pr_material_model extends BF_Model
 
         $close = '';
         if ($this->ENABLE_DELETE) {
-            $close = "<button type='button' class='btn btn-sm btn-danger close_pr_modal' data-so_number='{$row['so_number']}'><i class='fa fa-close'></i></button>";
+            $close = "<button type='button' class='btn btn-sm btn-danger close_pr_modal' data-so_number='{$row['so_number']}'><i class='fas fa-ban'></i></button>";
         }
 
         $aksi = ($row['reject_status'] == '1')

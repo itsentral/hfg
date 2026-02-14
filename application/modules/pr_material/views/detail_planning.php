@@ -37,8 +37,8 @@ if (!empty($header)) {
 	}
 }
 ?>
-<div class="box box-primary">
-	<div class="box-body">
+<div class="card">
+	<div class="card-body">
 		<form id="data-form" method="post" autocomplete="off"><br>
 			<input type="hidden" name='so_number' id='so_number' value='<?= $header[0]['so_number']; ?>'>
 			<div class="form-group row">
@@ -48,9 +48,12 @@ if (!empty($header)) {
 							<td width='20%'>No Request / SO</td>
 							<td width='1%'>:</td>
 							<td width='29%'><?= $header[0]['so_number']; ?></td>
-							<td width='20%'>Status</td>
+							<!-- <td width='20%'>Status</td>
 							<td width='1%'>:</td>
-							<td width='29%'><?= $status3 ?></td>
+							<td width='29%'><?= $status3 ?></td> -->
+							<td width='20%'>Keterangan</td>
+							<td width='1%'>:</td>
+							<td width='29%'><?= $keterangan_3 ?></td>
 						</tr>
 						<tr>
 							<td>No. PR</td>
@@ -61,22 +64,19 @@ if (!empty($header)) {
 							<td><?= $alasan_reject3 ?></td>
 						</tr>
 						<tr>
-							<td>Customer</td>
+							<!-- <td>Customer</td>
 							<td>:</td>
-							<td><?= $header[0]['name_customer']; ?></td>
-							<td>Keterangan</td>
-							<td>:</td>
-							<td><?= $keterangan_3 ?></td>
+							<td><?= $header[0]['name_customer']; ?></td> -->
+
 						</tr>
-						<?php
-						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
-						?>
+						<!-- <?php
+								$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
+								?>
 						<tr>
 							<td>Tgl Dibutuhkan</td>
 							<td>:</td>
 							<td><?= $tgl_dibutuhkan; ?></td>
-
-						</tr>
+						</tr> -->
 					</table>
 				</div>
 			</div>
@@ -139,7 +139,7 @@ if (!empty($header)) {
 			</div>
 			<div class="form-group row">
 				<div class="text-center">
-					<button type="button" class="btn btn-default" name="back" id="back"><i class="fa fa-reply"></i> Kembali</button>
+					<button type="button" class="btn btn-secondary" name="back" id="back"><i class="fas fa-arrow-left"></i> Kembali</button>
 				</div>
 			</div>
 		</form>

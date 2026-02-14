@@ -339,7 +339,7 @@ class Purchase_order extends Admin_Controller
 		];
 
 		$this->template->set('results', $data);
-		$this->template->title('Input Purchase Order');
+		$this->template->title('Edit Purchase Order');
 		$this->template->render('Edit');
 	}
 

@@ -115,7 +115,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									<?php endif; ?>
 
 									<?php if ($ENABLE_DELETE) : ?>
-										<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" title="Close PO"><i class="fa fa-close"></i></button>
+										<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" title="Close PO"><i class="fas fa-ban"></i></button>
 									<?php endif; ?>
 								</td>
 							</tr>

@@ -41,26 +41,30 @@
                 <table id="example1" class="table table-striped table-hover align-middle w-100">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center" rowspan="2" style="width:60px;">#</th>
-                            <th class="text-center" rowspan="2">Id Material</th>
-                            <th class="text-center" rowspan="2" style="min-width: 200px;">Material</th>
-                            <th class="text-center" rowspan="2">Category</th>
-                            <th class="text-center" colspan="4">Stock Free</th>
-                            <th class="text-center" rowspan="2">Min Stock</th>
-                            <th class="text-center" rowspan="2">Max Stock</th>
-                            <th class="text-center" rowspan="2">PR On Progress</th>
-                            <th class="text-center" colspan="2">Propose Request</th>
-                            <th class="text-center" rowspan="2">Packing Unit</th>
-                            <th class="text-center" rowspan="2">Keterangan</th>
+                            <th class="text-center" style="width:60px;">#</th>
+                            <th class="text-center">Id Material</th>
+                            <th class="text-center">HS Code</th>
+                            <th class="text-center" style="min-width: 200px;">Material</th>
+                            <th class="text-center">Category</th>
+                            <th class="text-center">Stock Free</th>
+                            <th class="text-center">Min Stock</th>
+                            <th class="text-center">Max Stock</th>
+                            <th class="text-center">Pending PO</th>
+                            <th class="text-center">Kebutuhan Forecast</th>
+                            <th class="text-center">Propose Request(Qty)</th>
+                            <!-- <th class="text-center">Packing Unit</th> -->
+                            <th class="text-center">Kuota Internal</th>
+                            <th class="text-center">Keterangan</th>
+
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <th class="text-center">Qty Pack</th>
                             <th class="text-center">Pack Unit</th>
                             <th class="text-center">Convertion</th>
                             <th class="text-center">Weight (Kg)</th>
                             <th class="text-center" style="width:110px;">Qty</th>
                             <th class="text-center" style="width:120px;">Qty Packing</th>
-                        </tr>
+                        </tr> -->
                     </thead>
                     <tbody></tbody>
                 </table>
