@@ -67,7 +67,7 @@ class App_pr_material_model extends BF_Model
                 "<div class='text-start'>" . ucwords(strtolower($nama_user)) . "</div>",
                 "<div class='text-start'>" . date('d-M-Y', strtotime($row['booking_date'])) . "</div>",
                 $status,
-                "<div class='text-end'>{$view_btn} {$approve_btn}</div>"
+                "<div class='text-center'>{$view_btn} {$approve_btn}</div>"
             ];
 
             $data[] = $nestedData;

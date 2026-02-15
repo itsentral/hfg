@@ -31,10 +31,7 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                     <label for="so_number" class="form-label"><b>No. Request/SO</b></label>
                     <input type="text" class="form-control" id="so_number" value="<?= $header[0]['so_number']; ?>" readonly>
                 </div>
-                <div class="col-md-6">
-                    <label for="due_date" class="form-label"><b>Due Date SO</b></label>
-                    <input type="text" class="form-control" id="due_date" value="<?= $due_date; ?>" readonly>
-                </div>
+
                 <div class="col-md-6">
                     <label for="no_pr" class="form-label"><b>No. PR</b></label>
                     <input type="text" class="form-control" id="no_pr" value="<?= $header[0]['no_pr']; ?>" readonly>
@@ -44,12 +41,17 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                     <input type="text" class="form-control" id="tgl_dibutuhkan" value="<?= $tgl_dibutuhkan; ?>" readonly>
                 </div>
                 <div class="col-md-6">
+                    <label for="tingkat_pr" class="form-label"><b>Tingkat PR</b></label>
+                    <input type="text" class="form-control" id="tingkat_pr" value="<?= ($header[0]['tingkat_pr'] == 2) ? 'Urgent' : 'Normal' ?>" readonly>
+                </div>
+
+                <div class="col-md-6" hidden>
                     <label for="name_customer" class="form-label"><b>Customer</b></label>
                     <input type="text" class="form-control" id="name_customer" value="<?= $header[0]['name_customer']; ?>" readonly>
                 </div>
-                <div class="col-md-6">
-                    <label for="tingkat_pr" class="form-label"><b>Tingkat PR</b></label>
-                    <input type="text" class="form-control" id="tingkat_pr" value="<?= ($header[0]['tingkat_pr'] == 2) ? 'Urgent' : 'Normal' ?>" readonly>
+                <div class="col-md-6" hidden>
+                    <label for="due_date" class="form-label"><b>Due Date SO</b></label>
+                    <input type="text" class="form-control" id="due_date" value="<?= $due_date; ?>" readonly>
                 </div>
             </div>
 

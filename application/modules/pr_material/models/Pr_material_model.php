@@ -52,6 +52,7 @@ class Pr_material_model extends BF_Model
             $purchase = $row['request'] ?: $qty_pr;
             $purchase_pack = ($konversi > 0 && $purchase > 0) ? $purchase / $konversi : 0;
             $keterangan = $row['keterangan'] ?? '';
+            $stock_awal = $row['max_stok'] - $row['qty_stock'];
 
             $nestedData = [
                 "<div align='center'>{$nomor}</div>",
@@ -60,12 +61,12 @@ class Pr_material_model extends BF_Model
                 "<div align='left'>" . strtoupper($row['nm_material']) . "</div>",
                 "<div align='left'>{$row['category']}</div>",
                 "<div align='right'>" . number_format($row['qty_stock']) . "</div>",
-                "<div align='right'>" . number_format($row['min_stok'], 2) . "</div>",
-                "<div align='right'>" . number_format($row['max_stok'], 2) . "</div>",
-                "<div align='right'>" . number_format($outstanding_pr, 2) . "</div>",
+                "<div align='right'>" . number_format($row['min_stok']) . "</div>",
+                "<div align='right'>" . number_format($row['max_stok']) . "</div>",
+                "<div align='right'>" . number_format($outstanding_pr) . "<input type='hidden' name='stock_awal' id='stock_awal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' value='{$stock_awal}'></div>",
                 "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
                 "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$purchase}'>",
-                "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
+                "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$row['kuota']}'>",
                 // "<div align='center' class='propose_packing'>" . number_format($purchase_pack, 2) . "</div>",
                 // "<div align='center'>{$satuan}</div>",
                 "<input type='text' name='keterangan' id='keterangan_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control input-sm changeSave' style='width:150px;' value='{$keterangan}'>",
@@ -99,16 +100,18 @@ class Pr_material_model extends BF_Model
         a.code_lv4               AS code_lv4,
         a.nama                   AS nm_material,
         z.nama                   AS category,
+        h.kuota_internal         AS kuota,
         COALESCE(b.qty_stock,0)  AS qty_stock,
         COALESCE(a.min_stok,0)   AS min_stok,
         COALESCE(a.max_stok,0)   AS max_stok,
         COALESCE(a.konversi,0)   AS konversi,
-        COALESCE(a.weight,0)   AS weight,
+        COALESCE(a.weight,0)    AS weight,
         COALESCE(a.request,0)    AS request,
         COALESCE(a.keterangan,'') AS keterangan
     ");
         $this->db->from('new_inventory_4 a');
         $this->db->join('new_inventory_1 z', 'a.code_lv1 = z.code_lv1', 'left');
+        $this->db->join('hscode h', 'h.id = a.hscode', 'left');
         $this->db->join('warehouse_stock b', 'a.code_lv4 = b.code_lv4 AND b.id_gudang = 1', 'left');
         $this->db->where('a.category', 'material');
         $this->db->where('a.deleted_date IS NULL');

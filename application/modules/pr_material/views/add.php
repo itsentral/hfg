@@ -26,9 +26,9 @@
                 </div>
 
                 <div class="col-md-7 text-md-end">
-                    <button type="button" class="btn btn-primary btn-sm" id="autoPropose">
+                    <!-- <button type="button" class="btn btn-primary btn-sm" id="autoPropose">
                         <i class="fa fa-magic me-1"></i> Set Auto Propose
-                    </button>
+                    </button> -->
                     <button type="button" class="btn btn-danger btn-sm ms-1" id="autoDelete">
                         <i class="fa fa-trash me-1"></i> Clear Purpose Request
                     </button>
@@ -46,7 +46,7 @@
                             <th class="text-center">HS Code</th>
                             <th class="text-center" style="min-width: 200px;">Material</th>
                             <th class="text-center">Category</th>
-                            <th class="text-center">Stock Free</th>
+                            <th class="text-center">Qty Stock</th>
                             <th class="text-center">Min Stock</th>
                             <th class="text-center">Max Stock</th>
                             <th class="text-center">Pending PO</th>
@@ -98,18 +98,23 @@
         $(document).on('change', '.changeSave', function() {
             var nomor = $(this).data('no');
             var id_material = $(this).data('id_material');
-            var purchase = ($('#purchase_' + nomor).val() || '').split(",").join("");
-            var keterangan = ($('#keterangan_' + nomor).val() || '').split(",").join("");
             var tanggal = $('#tgl_butuh').val();
+
+            var stock_awal = getNum(($('#stock_awal_' + nomor).val() || '').split(",").join(""));
+            var forecast = getNum(($('#forecast_' + nomor).val() || '').split(",").join(""));
+            var keterangan = $('#keterangan_' + nomor).val();
+
+            var total_purchase = stock_awal + forecast;
+
+            $('#purchase_' + nomor).val(number_format(total_purchase, 2));
 
             var HTML = $(this).parents('tr');
             var konversi = getNum((HTML.find('.konversi').text() || '').split(",").join(""));
             var propose_pack = 0;
 
-            if (konversi > 0 && purchase > 0) {
-                propose_pack = purchase / konversi;
+            if (konversi > 0 && total_purchase > 0) {
+                propose_pack = total_purchase / konversi;
             }
-
             HTML.find('.propose_packing').text(number_format(propose_pack, 2));
 
             $.ajax({
@@ -117,7 +122,8 @@
                 type: "POST",
                 data: {
                     "id_material": id_material,
-                    "purchase": purchase,
+                    "purchase": total_purchase, // Pastikan ini nilai terbaru
+                    "forecast": forecast,
                     "keterangan": keterangan,
                     "tanggal": tanggal
                 },
@@ -323,6 +329,7 @@
                 });
             });
         });
+
     });
 
     function DataTables() {
@@ -379,9 +386,8 @@
     }
 
     function getNum(val) {
-        val = (val || '').toString().replaceAll(',', '');
-        const n = parseFloat(val);
-        return isNaN(n) ? 0 : n;
+        if (isNaN(val) || val == "") return 0;
+        return parseFloat(val);
     }
 
     function number_format(number, decimals, dec_point, thousands_sep) {

@@ -30,7 +30,6 @@ class Pr_material extends Admin_Controller
     {
         $this->template->page_icon('fa fa-cubes');
         $this->template->title('Re-order Point Material');
-
         $this->template->render('add');
     }
 
@@ -52,11 +51,13 @@ class Pr_material extends Admin_Controller
         $purchase       = str_replace(',', '', $data['purchase']);
         $tanggal        = $data['tanggal'];
         $keterangan     = $data['keterangan'];
+        $forecast       = str_replace(',', '', $data['forecast']);
 
         $ArrHeader = array(
             'request'           => $purchase,
             'tgl_dibutuhkan'    => $tanggal,
             'keterangan'        => $keterangan,
+            'forecast'          => $forecast,
         );
 
         $this->db->trans_start();
@@ -121,6 +122,7 @@ class Pr_material extends Admin_Controller
             'id_customer'       => 'C100-2401002',
             'project'           => 'Pengisian Stok Material',
             'qty_propose'       => $SUM,
+            'forecast'          => $value['forecast'],
             'tgl_dibutuhkan'    => $value['tgl_dibutuhkan'],
             'created_by'        => $this->auth->user_id(),
             'created_date'      => date('Y-m-d H:i:s'),

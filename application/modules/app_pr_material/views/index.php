@@ -43,7 +43,7 @@
                         <th>Request By</th>
                         <th>Request Date</th>
                         <th>Status</th>
-                        <th style="width:160px;" class="text-end no-sort">Option</th>
+                        <th style="width:160px;" class="no-sort">Option</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
