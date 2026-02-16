@@ -154,20 +154,24 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             <div class="row mb-3">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" id="table-packing">
                             <thead>
                                 <tr>
                                     <th class="text-center">No.</th>
-                                    <th class="text-center">Nama Barang</th>
-                                    <th class="text-center">Unit Packing</th>
+                                    <th class="text-center" style="min-width: 200px;">Nama Barang</th>
+                                    <th class="text-center">Satuan</th>
                                     <th class="text-center">Currency</th>
                                     <th class="text-center">Price/Unit</th>
                                     <th class="text-center">Price/Unit (Rp)</th>
                                     <th class="text-center">Qty PO</th>
-                                    <th class="text-center">Delivered</th>
-                                    <th class="text-center">Sisa</th>
-                                    <th class="text-center">Qty Packing List</th>
-                                    <th class="text-center">Total Price (Rp)</th>
+                                    <th class="text-center" style="min-width: 100px;">Berat Kotor</th>
+                                    <th class="text-center" style="min-width: 100px;">Berat Bersih</th>
+                                    <th class="text-center" style="min-width: 100px;">Length</th>
+                                    <th class="text-center" style="min-width: 120px;">Biaya Masuk</th>
+                                    <th class="text-center" style="min-width: 120px;">Forwarding Cost</th>
+                                    <th class="text-center" style="min-width: 120px;">Nilai Total</th>
+                                    <th class="text-center" style="min-width: 200px;">No. Coil</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="list_detail_po">
@@ -191,15 +195,15 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                         echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
                                         echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
                                         echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                        echo '<td class="text-right">' . number_format($item['price_unit']) . '</td>';
-                                        echo '<td class="text-right">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
+                                        echo '<td class="text-end">' . number_format($item['price_unit']) . '</td>';
+                                        echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
                                         echo '<td class="text-center">' . $item['qty_po'] . '</td>';
                                         echo '<td class="text-center">' . number_format($nilai_pengurang, 2) . '</td>';
                                         echo '<td class="text-center">' . number_format($item['qty_packing_list'] - $nilai_pengurang, 2) . '</td>';
                                         echo '<td class="text-center">
-                                        <input type="text" name="qty_packing_list_' . $item['id_po_detail'] . '" id="" class="form-control form-control-sm auto_num text-right qty_packing_list" value="' . $item['qty_packing_list'] . '" data-id="' . $item['id_po_detail'] . '" data-harga_satuan="' . $item['price_unit'] . '">
+                                        <input type="text" name="qty_packing_list_' . $item['id_po_detail'] . '" id="" class="form-control form-control-sm auto_num text-end qty_packing_list" value="' . $item['qty_packing_list'] . '" data-id="' . $item['id_po_detail'] . '" data-harga_satuan="' . $item['price_unit'] . '">
                                     </td>';
-                                        echo '<td class="text-right total_price_' . $item['id_po_detail'] . '">' . number_format(($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']) . '</td>';
+                                        echo '<td class="text-end total_price_' . $item['id_po_detail'] . '">' . number_format(($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']) . '</td>';
                                         echo '</tr>';
 
                                         $ttl_price_detail += (($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']);
@@ -210,10 +214,10 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             </tbody>
                             <tbody>
                                 <tr>
-                                    <td colspan="10" align="right">
+                                    <td colspan="12" align="right">
                                         <b>Grand Total</b>
                                     </td>
-                                    <td align="right" class="ttl_price_detail_col"><?= number_format($ttl_price_detail, 2) ?></td>
+                                    <td align="right" colspan="2" class="ttl_price_detail_col" id="ttl_total_price"><?= number_format($ttl_price_detail, 2) ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -229,7 +233,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             <hr class="mt-2">
 
             <div class="row mb-3">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
@@ -245,7 +249,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     <td class="text-center">1</td>
                                     <td class="text-center">BM</td>
                                     <td class="">
-                                        <input type="text" name="cost_bm" id="" class="form-control form-control-sm input_bm text-right auto_num" value="<?= $cost_bm ?>">
+                                        <input type="text" name="cost_bm" id="cost_bm" class="form-control form-control-sm input_bm text-end auto_num" value="<?= $cost_bm ?>">
                                     </td>
                                     <td></td>
                                 </tr>
@@ -253,7 +257,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     <td class="text-center">2</td>
                                     <td class="text-center">PPN</td>
                                     <td class="">
-                                        <input type="text" name="cost_ppn" id="" class="form-control form-control-sm input_ppn text-right auto_num" value="<?= $cost_ppn ?>">
+                                        <input type="text" name="cost_ppn" id="" class="form-control form-control-sm input_ppn text-end auto_num" value="<?= $cost_ppn ?>">
                                     </td>
                                     <td></td>
                                 </tr>
@@ -261,7 +265,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     <td class="text-center">3</td>
                                     <td class="text-center">PPH</td>
                                     <td class="">
-                                        <input type="text" name="cost_pph" id="" class="form-control form-control-sm input_pph text-right auto_num" value="<?= $cost_pph ?>">
+                                        <input type="text" name="cost_pph" id="" class="form-control form-control-sm input_pph text-end auto_num" value="<?= $cost_pph ?>">
                                     </td>
                                     <td></td>
                                 </tr>
@@ -275,7 +279,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     echo '<td class="text-center">' . $no . '</td>';
                                     echo '<td class="text-center">' . $item['nm_item_pembiayaan'] . '</td>';
                                     echo '<td class="text-center">
-                                        <input type="text" name="" id="" class="form-control form-control-sm text-right auto_num cost_pib_custom cost_pib_custom_' . $item['id'] . '" data-id="' . $item['id'] . '" value="' . $item['nilai_cost'] . '">
+                                        <input type="text" name="" id="" class="form-control form-control-sm text-end auto_num cost_pib_custom cost_pib_custom_' . $item['id'] . '" data-id="' . $item['id'] . '" value="' . $item['nilai_cost'] . '">
                                     </td>';
                                     echo '<td class="text-center">
                                         <button type="button" class="btn btn-sm btn-danger del_custom_pib" data-id="' . $item['id'] . '"><i class="fa fa-trash"></i></button>
@@ -297,7 +301,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                         <input type="text" name="" id="" class="form-control form-control-sm biaya_name">
                                     </td>
                                     <td>
-                                        <input type="text" name="" id="" class="form-control form-control-sm auto_num text-right cost_biaya">
+                                        <input type="text" name="" id="" class="form-control form-control-sm auto_num text-end cost_biaya">
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-sm btn-success add_custom_pembiayaan">
@@ -311,18 +315,15 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     <td class="text-center" colspan="2">
                                         <b>TOTAL</b>
                                     </td>
-                                    <td class="text-right total_pib"><?= number_format($cost_bm + $cost_ppn + $cost_pph + $ttl_custom_pib) ?></td>
+                                    <td class="text-end total_pib"><?= number_format($cost_bm + $cost_ppn + $cost_pph + $ttl_custom_pib) ?></td>
                                     <td></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-md-4">
                             <label for="no_pengajuan_pib">Nomor Pengajuan PIB</label>
                         </div>
@@ -330,9 +331,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <input type="text" name="no_pengajuan_pib" id="no_pengajuan_pib" class="form-control form-control-sm" value="<?= $no_pengajuan_pib ?>">
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-md-4">
                             <label for="no_billing">Nomor Billing</label>
                         </div>
@@ -340,12 +339,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <input type="text" name="no_billing" id="no_billing" class="form-control form-control-sm" value="<?= $no_billing ?>">
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-md-4">
                             <label for="">Upload PIB</label>
                         </div>
@@ -426,9 +420,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             })();
                         </script>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group row">
+                    <div class="form-group row mb-3">
                         <div class="col-md-4">
                             <label for="">Keterangan</label>
                         </div>
@@ -438,6 +430,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                     </div>
                 </div>
             </div>
+
 
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="mb-0 fw-bold">Freight Cost Forecast</h5>
@@ -463,7 +456,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                         <input type="text" name="freight_cost_persen" id="" class="form-control auto_num form-control-sm freight_cost_persen" value="<?= $freight_cost_persen ?>">
                                         <input type="hidden" name="freight_cost" class="freight_cost">
                                     </td>
-                                    <td class="text-right freight_cost_val">
+                                    <td class="text-end freight_cost_val">
                                         <?php
                                         if ($freight_cost_persen > 0) {
                                             echo number_format($ttl_price_detail * $freight_cost_persen / 100);
@@ -739,91 +732,171 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
         });
     });
 
+    $(document).on('click', '.add-row-child', function() {
+        var id_po_detail = $(this).data('id');
+        var $row = $(this).closest('tr');
+
+        var newRow = `
+        <tr class="child-${id_po_detail}">
+            <td colspan="7"></td> <td><input type="text" name="dt[${id_po_detail}][berat_kotor][]" class="form-control auto_num text-end"></td>
+            <td><input type="text" name="dt[${id_po_detail}][berat_bersih][]" class="form-control auto_num text-end"></td>
+            <td><input type="text" name="dt[${id_po_detail}][length][]" class="form-control auto_num text-end"></td>
+            <td><input type="text" name="dt[${id_po_detail}][biaya_masuk][]" class="form-control auto_num text-end calculate"></td>
+            <td><input type="text" name="dt[${id_po_detail}][forwarding][]" class="form-control auto_num text-end calculate"></td>
+            <td><input type="text" name="dt[${id_po_detail}][total_nilai][]" class="form-control auto_num text-end calculate"></td>
+            <td><input type="text" name="dt[${id_po_detail}][no_coil][]" class="form-control"></td>
+            <td class="text-center"><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button></td>
+        </tr>
+    `;
+
+        // Masukkan baris baru tepat setelah baris material terakhir
+        var lastChild = $(`.child-${id_po_detail}`).last();
+        if (lastChild.length > 0) {
+            lastChild.after(newRow);
+        } else {
+            $row.after(newRow);
+        }
+
+        $('.auto_num').autoNumeric('init');
+    });
+
+    // Fungsi Kalkulasi (Per Baris & Update Tabel Bawah)
+    $(document).on('keyup change', '.calculate', function() {
+        var row = $(this).closest('tr');
+        var hargasatuan_rp = 0;
+
+        // 1. Ambil Harga Satuan RP (dari baris sendiri atau baris parent)
+        if (row.hasClass('row-material')) {
+            hargasatuan_rp = parseFloat(row.find('.hargasatuan_rp').text().replace(/,/g, '')) || 0;
+        } else {
+            var parentId = row.attr('class').split('-')[1];
+            hargasatuan_rp = parseFloat($(`.row-material[data-id="${parentId}"]`).find('.hargasatuan_rp').text().replace(/,/g, '')) || 0;
+        }
+
+        // 2. Kalkulasi Total per Baris
+        var biaya_masuk = parseFloat(row.find('input[name*="biaya_masuk"]').val().replace(/,/g, '')) || 0;
+        var forwarding = parseFloat(row.find('input[name*="forwarding"]').val().replace(/,/g, '')) || 0;
+
+        var total_baris = hargasatuan_rp + biaya_masuk + forwarding;
+
+        // Set Nilai Total di baris tersebut (jika kolom total adalah input, gunakan .val(), jika text gunakan .text())
+        var total_col = row.find('input[name*="total_nilai"], .total_material');
+        if (total_col.is('input')) {
+            total_col.val(total_baris).autoNumeric('set', total_baris);
+        } else {
+            total_col.text(total_baris.toLocaleString('en-US'));
+        }
+
+        // 3. SUM TOTAL UNTUK TABEL BAWAH (BM & GRAND TOTAL)
+        var sum_biaya_masuk = 0;
+        var sum_grand_total = 0;
+
+        // Loop semua baris yang punya class .calculate
+        $('tr').each(function() {
+            var bm = parseFloat($(this).find('input[name*="biaya_masuk"]').val()?.replace(/,/g, '')) || 0;
+            var total = 0;
+
+            // Ambil nilai total dari input atau dari text()
+            var total_el = $(this).find('input[name*="total_nilai"], .total_material');
+            if (total_el.is('input')) {
+                total = parseFloat(total_el.val().replace(/,/g, '')) || 0;
+            } else {
+                total = parseFloat(total_el.text().replace(/,/g, '')) || 0;
+            }
+
+            sum_biaya_masuk += bm;
+            sum_grand_total += total;
+        });
+
+        // Update Input BM di tabel bawah
+        $('#cost_bm').val(sum_biaya_masuk).autoNumeric('set', sum_biaya_masuk);
+
+        // Update Input Grand Total (di footer tabel atas)
+        $('.ttl_price_detail_col').text(sum_grand_total.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
+
+        $('.ttl_total_price').val(sum_grand_total).autoNumeric('set', sum_grand_total);
+    });
+
+    // Pastikan saat hapus baris, angka di bawah juga terupdate
+    $(document).on('click', '.remove-row', function() {
+        $(this).closest('tr').remove();
+        $('.calculate').first().trigger('change'); // Pancing kalkulasi ulang
+    });
+
     $(document).on('submit', '#frm-data', function(e) {
         e.preventDefault();
 
-        var kurs_pib = $('.kurs_pib').val();
-        if (kurs_pib == '' || kurs_pib == null) {
-            kurs_pib = 0;
-        } else {
-            kurs_pib = kurs_pib.split(',').join('');
-            kurs_pib = parseFloat(kurs_pib);
-        }
+        // Ambil Grand Total dari footer tabel yang sudah diupdate otomatis oleh fungsi .calculate
+        // Kita ambil dari text lalu bersihkan komanya
+        var grand_total_text = $('.ttl_price_detail_col').text().split(',').join('');
+        var ttl_price = parseFloat(grand_total_text) || 0;
 
-        var ttl_price = 0;
-        $('.qty_packing_list').each(function() {
-            var qty_pack = $(this).val();
-            var hargasatuan = $(this).data('harga_satuan');
+        // Tambahan: Validasi jika input BM di bawah masih kosong padahal di tabel atas ada isinya
+        var cost_bm = $('#cost_bm').val() ? parseFloat($('#cost_bm').val().split(',').join('')) : 0;
 
-            if (qty_pack == '' || qty_pack == null) {
-                qty_pack = 0;
-            } else {
-                qty_pack = qty_pack.split(',').join('');
-                qty_pack = parseFloat(qty_pack);
-            }
-
-            ttl_price += ((hargasatuan * kurs_pib) * qty_pack);
-        });
-
+        // Jika ttl_price masih 0, cek apakah ada input manual di kolom Biaya Masuk/Forwarding
         if (ttl_price <= 0) {
             swal({
                 title: 'Warning !',
-                text: 'Please input the data correctly before save !',
+                text: 'Please input the data correctly (Biaya Masuk/Forwarding/Qty) before save !',
                 type: 'warning'
             });
-        } else {
-            swal({
-                    title: "Warning !",
-                    text: "Data will be saved !",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Save",
-                    cancelButtonText: "Cancel",
-                    closeOnConfirm: false,
-                    closeOnCancel: true
-                },
-                function(isConfirm) {
-                    if (isConfirm) {
-                        // $('#simpanpenerimaan').hide();
-                        var formdata = new FormData($('#frm-data')[0]);
-                        $.ajax({
-                            type: 'POST',
-                            url: siteurl + active_controller + '/save_ros',
-                            data: formdata,
-                            cache: false,
-                            dataType: 'json',
-                            processData: false,
-                            contentType: false,
-                            success: function(result) {
-                                if (result.status == '1') {
-                                    swal({
-                                        title: 'Success !',
-                                        text: 'Success, ROS has been saved !',
-                                        type: 'success'
-                                    });
+            return false; // Berhenti di sini
+        }
 
-                                    window.location.href = siteurl + active_controller;
-                                } else {
-                                    swal({
-                                        title: 'Failed !',
-                                        text: result.msg,
-                                        type: 'error'
-                                    });
-                                }
-                            },
-                            error: function(result) {
+        // Jika sudah ada nilai, lanjutkan proses SweetAlert Save seperti biasa
+        swal({
+                title: "Warning !",
+                text: "Data will be saved !",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Save",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            },
+            function(isConfirm) {
+                if (isConfirm) {
+                    var formdata = new FormData($('#frm-data')[0]);
+                    $.ajax({
+                        type: 'POST',
+                        url: siteurl + active_controller + '/save_ros',
+                        data: formdata,
+                        cache: false,
+                        dataType: 'json',
+                        processData: false,
+                        contentType: false,
+                        success: function(result) {
+                            if (result.status == '1') {
                                 swal({
-                                    title: 'Error !',
-                                    text: 'Please try again later !',
+                                    title: 'Success !',
+                                    text: 'Success, ROS has been saved !',
+                                    type: 'success'
+                                });
+                                window.location.href = siteurl + active_controller;
+                            } else {
+                                swal({
+                                    title: 'Failed !',
+                                    text: result.msg,
                                     type: 'error'
                                 });
                             }
-                        });
-                    }
-                });
-        }
-    })
+                        },
+                        error: function() {
+                            swal({
+                                title: 'Error !',
+                                text: 'Please try again later !',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+    });
 
     function get_list_detail_po(no_po = null, kurs_pib = 1) {
         $.ajax({

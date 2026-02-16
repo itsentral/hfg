@@ -62,7 +62,7 @@ class Ros_model extends BF_Model
                 $nomor = $urut1 + $start_dari;
             }
 
-            $edit_btn = '<a href="ros/edit/' . $row['id'] . '" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>';
+            $edit_btn = '<a href="ros/edit/' . $row['id'] . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>';
             if (!$ENABLE_MANAGE || $row['sts'] !== '0') {
                 $edit_btn = '';
             }
@@ -72,25 +72,26 @@ class Ros_model extends BF_Model
                 $del_btn = '';
             }
 
-            $btn_req = '<button type="button" class="btn btn-sm btn-success req_payment" style="margin-left: 0.5rem;" title="Request Payment" data-no_ros="'.$row['id'].'"><i class="fa fa-arrow-up"></i></button>';
-            if($row['sts'] !== '0'){
+            $btn_req = '<button type="button" class="btn btn-sm btn-success req_payment" style="margin-left: 0.5rem;" title="Request Payment" data-no_ros="' . $row['id'] . '"><i class="fa fa-arrow-up"></i></button>';
+            if ($row['sts'] !== '0') {
                 $btn_req = '';
             }
 
-            $view_btn = '<a href="'.base_url('ros/view/'.$row['id'].'').'" class="btn btn-sm btn-info" style="margin-left: 0.5rem;"><i class="fa fa-eye"></i></a>';
+            $view_btn = '<a href="' . base_url('ros/view/' . $row['id'] . '') . '" class="btn btn-sm btn-info" style="margin-left: 0.5rem;"><i class="fa fa-eye"></i></a>';
+            $print_btn = '<button type="button" class="btn btn-sm btn-primary view_coil" data-id="' . $row['id'] . '" style="margin-left: 0.5rem;"><i class="fas fa-print"></i> Print QR</button>';
 
-            $sts = '<div class="badge bg-yellow">Draft</div>';
+            $sts = '<div class="badge rounded-pill bg-warning">Draft</div>';
             if ($row['sts'] == '1') {
-                $sts = '<div class="badge bg-green">Request Payment</div>';
+                $sts = '<div class="badge rounded-pill bg-success">Request Payment</div>';
             }
             $get_paid = $this->db->get_where('payment_approve', ['no_doc' => $row['id'], 'status' => 2])->result();
-            if(!empty($get_paid)) {
-                $sts = '<div class="badge bg-light-blue">Paid</div>';
+            if (!empty($get_paid)) {
+                $sts = '<div class="badge rounded-pill bg-info">Paid</div>';
             }
 
             $other_cost = 0;
             $get_other_cost = $this->db->select('IF(SUM(a.nilai_cost) IS NULL, 0, SUM(a.nilai_cost)) AS ttl_other_cost')->get_where('tr_ros_custom_pib a', ['a.no_ros' => $row['id']])->row();
-            if(!empty($get_other_cost)) {
+            if (!empty($get_other_cost)) {
                 $other_cost = $get_other_cost->ttl_other_cost;
             }
 
@@ -102,7 +103,7 @@ class Ros_model extends BF_Model
             $nestedData[]  = "<div align='center'>" . $row['no_pengajuan_pib'] . "</div>";
             $nestedData[]  = "<div align='center'>" . number_format($row['cost_bm'] + $row['cost_ppn'] + $row['cost_pph'] + $other_cost, 2) . "</div>";
             $nestedData[]  = "<div align='center'>" . $sts . "</div>";
-            $nestedData[]  = "<div align='center'>" . $edit_btn . $del_btn . $view_btn . $btn_req . "</div>";
+            $nestedData[]  = "<div align='center'>" . $edit_btn . $del_btn . $print_btn . "</div>";
 
             $data[] = $nestedData;
             $urut1++;

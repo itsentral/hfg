@@ -151,20 +151,26 @@ class Ros extends Admin_Controller
             }
 
             if (($item_po['qty'] - $nilai_pengurang) > 0) {
-                $hasil .= '<tr>';
-                $hasil .= '<td class="text-center">' . $no . '</td>';
+                // Di dalam loop foreach ($get_detail_po as $item_po)
+                $hasil .= '<tr class="row-material" data-id="' . $item_po['id'] . '">';
+                $hasil .= '<td class="text-center no-urut">' . $no . '</td>';
                 $hasil .= '<td class="text-center">' . $item_po['namamaterial'] . '</td>';
                 $hasil .= '<td class="text-center">' . ucfirst($item_po['unit_satuan']) . '</td>';
                 $hasil .= '<td class="text-center">' . $get_id_po['matauang'] . '</td>';
-                $hasil .= '<td class="text-right">' . number_format($item_po['hargasatuan']) . '</td>';
-                $hasil .= '<td class="text-right">' . number_format($item_po['hargasatuan'] * $post['kurs_pib']) . '</td>';
+                $hasil .= '<td class="text-end">' . number_format($item_po['hargasatuan']) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($item_po['hargasatuan'] * $post['kurs_pib']) . '</td>';
                 $hasil .= '<td class="text-center">' . number_format($item_po['qty']) . '</td>';
-                $hasil .= '<td class="text-center">' . number_format($nilai_pengurang) . '</td>';
-                $hasil .= '<td class="text-center">' . number_format($item_po['qty'] - $nilai_pengurang) . '</td>';
-                $hasil .= '<td class="text-center">
-                    <input type="text" name="qty_packing_list_' . $item_po['id'] . '" id="" class="form-control form-control-sm auto_num text-right qty_packing_list" data-id="' . $item_po['id'] . '" data-harga_satuan="' . $item_po['hargasatuan'] . '">
-                </td>';
-                $hasil .= '<td class="text-right total_price_' . $item_po['id'] . '"></td>';
+
+                // Kolom Input Pertama (Baris pertama untuk material ini)
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][berat_kotor][]" class="form-control auto_num text-end"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][berat_bersih][]" class="form-control auto_num text-end"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][length][]" class="form-control auto_num text-end"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][biaya_masuk][]" class="form-control auto_num text-end calculate"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][forwarding][]" class="form-control auto_num text-end calculate"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][total_nilai][]" class="form-control auto_num text-end calculate"></td>';
+                $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][no_coil][]" class="form-control"></td>';
+                // Tombol Tambah Baris untuk material spesifik ini
+                $hasil .= '<td class="text-center"><button type="button" class="btn btn-sm btn-primary add-row-child" data-id="' . $item_po['id'] . '"><i class="fa fa-plus"></i></button></td>';
                 $hasil .= '</tr>';
                 $no++;
 
@@ -323,41 +329,52 @@ class Ros extends Admin_Controller
                 'created_date' => date('Y-m-d H:i:s')
             ]);
 
-            $this->db->select('a.*');
+            // Ambil data detail PO untuk referensi (ID Material, Nama, Harga, dll)
+            $this->db->select('a.*, b.matauang');
             $this->db->from('dt_trans_po a');
             $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
             $this->db->where_in('b.no_surat', $post['no_po']);
             $get_po_detail = $this->db->get()->result_array();
 
             foreach ($get_po_detail as $po_detail) {
-                $mata_uang = '';
-                $get_po_curr = $this->db->select('matauang')->get_where('tr_purchase_order', ['no_po' => $po_detail['no_po']])->row_array();
-                if (!empty($get_po_curr)) {
-                    $mata_uang = $get_po_curr['matauang'];
-                }
+                $id_po_detail = $po_detail['id'];
 
-                $nilai_pengurang = 0;
-                $get_nilai_pengurang = $this->db->select('IF(SUM(a.qty_packing_list) IS NULL, 0, SUM(a.qty_packing_list)) AS nilai_pengurang')->from('tr_ros_detail a')->where('a.id_po_detail', $po_detail['id'])->get()->row_array();
-                if (!empty($get_nilai_pengurang)) {
-                    $nilai_pengurang = $get_nilai_pengurang['nilai_pengurang'];
-                }
+                // Cek apakah ada data input 'dt' untuk ID PO Detail ini
+                if (isset($post['dt'][$id_po_detail])) {
+                    $data_per_material = $post['dt'][$id_po_detail];
 
-                if (isset($post['qty_packing_list_' . $po_detail['id']])) {
-                    if (($po_detail['qty'] - $nilai_pengurang) < str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']])) {
-                        $valid = 2;
-                    } else {
-                        if (isset($post['qty_packing_list_' . $po_detail['id']]) && str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']]) !== '') {
+                    // Loop berdasarkan jumlah baris coil yang diinput (menggunakan indeks array berat_kotor sebagai acuan)
+                    foreach ($data_per_material['berat_kotor'] as $key => $val) {
+
+                        // Bersihkan format angka (hapus koma)
+                        $berat_kotor  = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
+                        $berat_bersih = str_replace(',', '', $data_per_material['berat_bersih'][$key]);
+                        $length       = str_replace(',', '', $data_per_material['length'][$key]);
+                        $biaya_masuk  = str_replace(',', '', $data_per_material['biaya_masuk'][$key]);
+                        $forwarding   = str_replace(',', '', $data_per_material['forwarding'][$key]);
+                        $total_nilai  = str_replace(',', '', $data_per_material['total_nilai'][$key]);
+                        $no_coil      = $data_per_material['no_coil'][$key];
+
+                        // Validasi sederhana: Jika berat kotor atau no coil diisi, maka simpan
+                        if ($berat_kotor > 0 || !empty($no_coil)) {
                             $this->db->insert('tr_ros_detail', [
-                                'id_po_detail' => $po_detail['id'],
-                                'no_ros' => $no_ros,
-                                'id_barang' => $po_detail['idmaterial'],
-                                'nm_barang' => $po_detail['namamaterial'],
-                                'currency' => $mata_uang,
-                                'price_unit' => $po_detail['hargasatuan'],
-                                'qty_po' => $po_detail['qty'],
-                                'qty_packing_list' => str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']]),
-                                'created_by' => $this->auth->user_id(),
-                                'created_on' => date('Y-m-d H:i:s')
+                                'no_ros'          => $no_ros,
+                                'id_po_detail'    => $id_po_detail,
+                                'id_barang'       => $po_detail['idmaterial'],
+                                'nm_barang'       => $po_detail['namamaterial'],
+                                'currency'        => $po_detail['matauang'],
+                                'price_unit'      => $po_detail['hargasatuan'],
+                                'qty_po'          => $po_detail['qty'],
+                                // Data Packing List (Coil)
+                                'berat_kotor'     => $berat_kotor,
+                                'berat_bersih'    => $berat_bersih,
+                                'length'          => $length,
+                                'biaya_masuk'     => $biaya_masuk,
+                                'forwarding_cost' => $forwarding,
+                                'total_nilai'     => $total_nilai,
+                                'no_coil'         => $no_coil,
+                                'created_by'      => $this->auth->user_id(),
+                                'created_on'      => date('Y-m-d H:i:s')
                             ]);
                         }
                     }
@@ -370,8 +387,6 @@ class Ros extends Admin_Controller
                 'no_ros' => $this->auth->user_id()
             ]);
         } else {
-
-
             $upload_pib = '';
 
             if ($this->upload->do_upload('upload_pib')) {
@@ -406,33 +421,57 @@ class Ros extends Admin_Controller
                 'id' => $post['no_ros']
             ]);
 
-            $this->db->select('a.*');
+            $this->db->delete('tr_ros_detail', ['no_ros' => $post['no_ros']]);
+
+            // Ambil data detail PO untuk referensi (ID Material, Nama, Harga, dll)
+            $this->db->select('a.*, b.matauang');
             $this->db->from('dt_trans_po a');
             $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
-            $this->db->where_in('b.no_surat', explode(',', $post['no_po']));
+            $this->db->where_in('b.no_surat', $post['no_po']);
             $get_po_detail = $this->db->get()->result_array();
 
-            $this->db->delete('tr_ros_detail', ['no_ros' => $post['no_ros']]);
             foreach ($get_po_detail as $po_detail) {
-                if (isset($post['qty_packing_list_' . $po_detail['id']]) && str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']]) !== '' && str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']]) > 0) {
-                    $mata_uang = '';
-                    $get_po_curr = $this->db->select('matauang')->get_where('tr_purchase_order', ['no_po' => $po_detail['no_po']])->row_array();
-                    if (!empty($get_po_curr)) {
-                        $mata_uang = $get_po_curr['matauang'];
-                    }
+                $id_po_detail = $po_detail['id'];
 
-                    $this->db->insert('tr_ros_detail', [
-                        'id_po_detail' => $po_detail['id'],
-                        'no_ros' => $post['no_ros'],
-                        'id_barang' => $po_detail['idmaterial'],
-                        'nm_barang' => $po_detail['namamaterial'],
-                        'currency' => $mata_uang,
-                        'price_unit' => $po_detail['hargasatuan'],
-                        'qty_po' => $po_detail['qty'],
-                        'qty_packing_list' => str_replace(',', '', $post['qty_packing_list_' . $po_detail['id']]),
-                        'created_by' => $this->auth->user_id(),
-                        'created_on' => date('Y-m-d H:i:s')
-                    ]);
+                // Cek apakah ada data input 'dt' untuk ID PO Detail ini
+                if (isset($post['dt'][$id_po_detail])) {
+                    $data_per_material = $post['dt'][$id_po_detail];
+
+                    // Loop berdasarkan jumlah baris coil yang diinput (menggunakan indeks array berat_kotor sebagai acuan)
+                    foreach ($data_per_material['berat_kotor'] as $key => $val) {
+
+                        // Bersihkan format angka (hapus koma)
+                        $berat_kotor  = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
+                        $berat_bersih = str_replace(',', '', $data_per_material['berat_bersih'][$key]);
+                        $length       = str_replace(',', '', $data_per_material['length'][$key]);
+                        $biaya_masuk  = str_replace(',', '', $data_per_material['biaya_masuk'][$key]);
+                        $forwarding   = str_replace(',', '', $data_per_material['forwarding'][$key]);
+                        $total_nilai  = str_replace(',', '', $data_per_material['total_nilai'][$key]);
+                        $no_coil      = $data_per_material['no_coil'][$key];
+
+                        // Validasi sederhana: Jika berat kotor atau no coil diisi, maka simpan
+                        if ($berat_kotor > 0 || !empty($no_coil)) {
+                            $this->db->insert('tr_ros_detail', [
+                                'no_ros'          => $post['no_ros'],
+                                'id_po_detail'    => $id_po_detail,
+                                'id_barang'       => $po_detail['idmaterial'],
+                                'nm_barang'       => $po_detail['namamaterial'],
+                                'currency'        => $po_detail['matauang'],
+                                'price_unit'      => $po_detail['hargasatuan'],
+                                'qty_po'          => $po_detail['qty'],
+                                // Data Packing List (Coil)
+                                'berat_kotor'     => $berat_kotor,
+                                'berat_bersih'    => $berat_bersih,
+                                'length'          => $length,
+                                'biaya_masuk'     => $biaya_masuk,
+                                'forwarding_cost' => $forwarding,
+                                'total_nilai'     => $total_nilai,
+                                'no_coil'         => $no_coil,
+                                'created_by'      => $this->auth->user_id(),
+                                'created_on'      => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
                 }
             }
         }
@@ -644,5 +683,106 @@ class Ros extends Admin_Controller
         }
 
         echo $hasil;
+    }
+
+    public function get_coil_list()
+    {
+        $id_ros = $this->input->post('id_ros');
+
+        // Ambil data detail dengan join ke PO detail untuk info master material
+        $this->db->select('a.*, b.qty as qty_order, m.nama as uom');
+        $this->db->from('tr_ros_detail a');
+        $this->db->join('dt_trans_po b', 'b.id = a.id_po_detail', 'left');
+        $this->db->join('new_inventory_4 i', 'i.code_lv4 = b.idmaterial', 'left');
+        $this->db->join('ms_satuan m', 'm.id = i.id_unit', 'left');
+        $this->db->where('a.no_ros', $id_ros);
+        $data = $this->db->get()->result_array();
+
+        // Grouping data berdasarkan id_po_detail
+        $groups = [];
+        foreach ($data as $row) {
+            $groups[$row['id_po_detail']][] = $row;
+        }
+
+        $html = '<div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="bg-gray">
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">No</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">Material</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">Qty Order</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">Uom</th>
+                        <th colspan="3" class="text-center bg-info">Packing List</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">
+                             Check List<br>
+                             <input type="checkbox" id="check_all_modal">
+                        </th>
+                    </tr>
+                    <tr class="bg-navy">
+                        <th class="text-center">No. Coil</th>
+                        <th class="text-center">Berat Kotor</th>
+                        <th class="text-center">Berat Bersih</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        if (!empty($groups)) {
+            $no = 1;
+            foreach ($groups as $id_po => $coils) {
+                $rowspan = count($coils);
+                foreach ($coils as $index => $coil) {
+                    $html .= '<tr>';
+
+                    // Hanya munculkan kolom material di baris pertama group (Rowspan)
+                    if ($index === 0) {
+                        $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $no . '</td>';
+                        $html .= '<td rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['nm_barang'] . '</td>';
+                        $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . number_format($coil['qty_order'], 2) . '</td>';
+                        $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['uom'] . '</td>';
+                    }
+
+                    // Detail Coil per baris
+                    $html .= '<td class="text-center">' . $coil['no_coil'] . '</td>';
+                    $html .= '<td class="text-right">' . number_format($coil['berat_kotor'], 2) . '</td>';
+                    $html .= '<td class="text-right">' . number_format($coil['berat_bersih'], 2) . '</td>';
+                    $html .= '<td class="text-center">
+                            <input type="checkbox" class="check_item_modal" value="' . $coil['id'] . '">
+                        </td>';
+
+                    $html .= '</tr>';
+                }
+                $no++;
+            }
+        } else {
+            $html .= '<tr><td colspan="8" class="text-center">No Data Available</td></tr>';
+        }
+
+        $html .= '</tbody></table></div>';
+
+        echo $html;
+    }
+
+    public function print_qr_multi($ids)
+    {
+        // $ids berisi string seperti "12-13-14"
+        $array_id = explode('-', $ids);
+
+        $this->db->select('a.*, b.nm_supplier, b.awb_bl_number, c.qty as qty_order');
+        $this->db->from('tr_ros_detail a');
+        $this->db->join('tr_ros b', 'b.id = a.no_ros', 'left');
+        $this->db->join('dt_trans_po c', 'c.id = a.id_po_detail', 'left');
+        $this->db->where_in('a.id', $array_id);
+        $data_coil = $this->db->get()->result_array();
+
+        if (empty($data_coil)) {
+            die("Data tidak ditemukan.");
+        }
+
+        $data = [
+            'results' => $data_coil
+        ];
+
+        // Load view khusus untuk cetak
+        $this->load->view('print_qr_label', $data);
     }
 }

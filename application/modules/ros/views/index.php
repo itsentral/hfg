@@ -53,6 +53,23 @@ $ENABLE_DELETE  = has_permission('ROS.Delete');
     </div>
 </div>
 
+<div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">List Packing List / Coil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal_body_print">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success btn-md" id="btn-print-action"><i class="fas fa-print"></i> Print Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
@@ -61,6 +78,49 @@ $ENABLE_DELETE  = has_permission('ROS.Delete');
 <script type="text/javascript">
     $(document).ready(function() {
         DataTables();
+    });
+
+    $(document).on('click', '.view_coil', function() {
+        var id_ros = $(this).data('id');
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + '/get_coil_list',
+            data: {
+                id_ros: id_ros
+            },
+            success: function(html) {
+                $('#modal_body_print').html(html);
+                $('#modalPrintQR').modal('show');
+            }
+        });
+    });
+
+    $(document).on('click', '#check_all_modal', function() {
+        $('.check_item_modal').prop('checked', this.checked);
+    });
+
+    // Pastikan jika satu item di-uncheck, header check_all juga uncheck
+    $(document).on('click', '.check_item_modal', function() {
+        if ($('.check_item_modal:checked').length == $('.check_item_modal').length) {
+            $('#check_all_modal').prop('checked', true);
+        } else {
+            $('#check_all_modal').prop('checked', false);
+        }
+    });
+
+    $(document).on('click', '#btn-print-action', function() {
+        var selected = [];
+        $('.check_item_modal:checked').each(function() {
+            selected.push($(this).val());
+        });
+
+        if (selected.length > 0) {
+            var ids = selected.join('-');
+            window.open(siteurl + active_controller + '/print_qr_multi/' + ids, '_blank');
+        } else {
+            swal('Warning', 'Pilih minimal satu coil untuk dicetak!', 'warning');
+        }
     });
 
     $(document).on('click', '.del_ros', function() {
