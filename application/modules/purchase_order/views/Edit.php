@@ -383,46 +383,46 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</tbody>
 							<tfoot>
 								<tr>
-									<td class="text-right" colspan="9"><b>Total</b></th>
+									<td class="text-end" colspan="9"><b>Total</b></th>
 									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-right" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
+										<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>Diskon Khusus</b></th>
+									<td class="text-end" colspan="9"><b>Diskon Khusus</b></th>
 									<td colspan="2">
-										<input type="text" class="form-control text-right auto_num" id="diskonkhusus" value="<?= $results['get_po']->diskon_khusus ?>" onblur="cariTotal()" name="diskonkhusus">
+										<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= $results['get_po']->diskon_khusus ?>" onblur="cariTotal()" name="diskonkhusus">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>Total (Exclude PPn)</b></td>
+									<td class="text-end" colspan="9"><b>Total (Exclude PPn)</b></td>
 									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-right" id="totalexppn" value="<?= $results['get_po']->total_exclude_ppn ?>" onkeyup required name="totalexppn">
+										<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= $results['get_po']->total_exclude_ppn ?>" onkeyup required name="totalexppn">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>DPP</b></td>
+									<td class="text-end" colspan="9"><b>DPP</b></td>
 									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-right" id="dpp" value="<?= $results['get_po']->total_dpp ?>" onkeyup required name="dpp">
+										<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= $results['get_po']->total_dpp ?>" onkeyup required name="dpp">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>PPn</b></td>
+									<td class="text-end" colspan="9"><b>PPn</b></td>
 									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-right" id="ppn" value="<?= $results['get_po']->total_ppn ?>" onkeyup required name="ppn">
+										<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= $results['get_po']->total_ppn ?>" onkeyup required name="ppn">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>Biaya Kirim</b></td>
+									<td class="text-end" colspan="9"><b>Biaya Kirim</b></td>
 									<td colspan="2">
 										<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-										<input type="text" class="form-control auto_num text-right" id="kirim" value="<?= $results['get_po']->taxtotal ?>" onblur="cariTotal()" required name="kirim">
+										<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['get_po']->taxtotal ?>" onblur="cariTotal()" required name="kirim">
 									</td>
 								</tr>
 								<tr>
-									<td class="text-right" colspan="9"><b>Total Order</b></td>
+									<td class="text-end" colspan="9"><b>Total Order</b></td>
 									<td colspan="2">
-										<input readonly type="text" class="form-control text-right" id="subtotal" value="<?= $results['get_po']->subtotal ?>" onkeyup required name="subtotal">
+										<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= $results['get_po']->subtotal ?>" onkeyup required name="subtotal">
 									</td>
 								</tr>
 							</tfoot>

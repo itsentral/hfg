@@ -154,7 +154,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<?php foreach ($results['list_supplier'] as $supplier) {
 										$selected = '';
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -204,7 +204,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-6">
+					<div class="col-sm-6" hidden>
 						<div class="form-group row">
 							<div class="col-md-4">
 								<label for="id_customer">Alamat</label>
@@ -224,11 +224,12 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<input type="checkbox" id="select_all" checked>
 								</th>
 								<th style="min-width: 200px;">Item</th>
-								<th style="min-width: 150px;">Kode Produk</th>
+								<th style="min-width: 150px;">HS Code</th>
+								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;" hidden>Width</th>
 								<th style="min-width: 100px;" hidden>Length</th>
-								<th style="min-width: 75px;">Qty PR</th>
-								<th style="min-width: 75px;">PO Qty</th>
+								<th style="min-width: 100px;">Qty PR</th>
+								<th style="min-width: 100px;">PO Qty</th>
 								<th style="min-width: 100px;">Unit Measurement</th>
 								<th style="min-width: 75px;">Unit Packing</th>
 								<th style="min-width: 100px;" hidden>Rate LME</th>
@@ -241,7 +242,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<th style="min-width: 150px;">Nilai Discount</th>
 								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
 								<th style="min-width: 150px;">Sub Total</th>
-								<th style="min-width: 100px;">Note</th>
+								<th style="min-width: 150px;">Deskripsi Item</th>
+								<th style="min-width: 150px;">Sisa Kuota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -315,6 +317,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<input type='hidden' class='form-control input-sm ch_ppn' id='dt_ch_ppn_" . $key . "'>
 													</td>
 
+													<td><input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly></td>
+													<td><input type='text' class='form-control input-sm autoNumeric3' id='dt_kuotainternal" . $key . "' name='dt[" . $key . "][kuota_internal]' value='" . $value->kuota_internal . "' readonly></td>
+
 													<td hidden>
 														<select class='form-control input-sm' id='dt_ppn_" . $key . "' name='dt[" . $key . "][ppn]' onchange='CariPPN(" . $key . ")'>
 															<option value=''>SELECT</option>
@@ -323,7 +328,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</select>
 													</td>
 												  
-												  	<td><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>
+												  	<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>
 												  	<td><input type='text' class='form-control input-sm text-center' id='dt_pr_" . $key . "' name='dt[" . $key . "][pr]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po)  . "' readonly ></td>
 														
 													<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][description]' id='dt_description_" . $key . "' value=''></td>
@@ -361,9 +366,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															<span class='input-group-text'>%</span>
 														</div>
 														<div class='input-group input-group-sm'>
-															<span class='input-group-text'>Rp</span>
 															<input type='text' name='dt[" . $key . "][disc_num]' class='form-control input-sm auto_num disc_num'
 																id='disc_num_" . $key . "' data-key='" . $key . "' placeholder='Nilai Disc (Rp)'>
+															<span class='input-group-text'>Rp</span>
 														</div>
 													</td>
 
@@ -374,6 +379,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 													
 													<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . $total . "'></td>
 													<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>
+													<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]'></td>
 											 	</tr>
 													";
 							}
@@ -381,50 +387,50 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						</tbody>
 						<tfoot>
 							<tr>
-								<td class="text-end" colspan="10"><b>Total</b></th>
+								<td class="text-end" colspan="12"><b>Total</b></th>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="totalinppn" onkeyup required name="totalinppn">
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="10"><b>Diskon Khusus</b></th>
+								<td class="text-end" colspan="12"><b>Diskon Khusus</b></th>
 								<td colspan="2">
 									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" onblur="cariTotal()" name="diskonkhusus">
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="10"><b>Total (Exclude PPn)</b></td>
+								<td class="text-end" colspan="12"><b>Total (Exclude PPn)</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="totalexppn" onkeyup required name="totalexppn">
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="10"><b>DPP</b></td>
+								<td class="text-end" colspan="12"><b>DPP</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="dpp" onkeyup required name="dpp">
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="10"><b>PPn</b></td>
+								<td class="text-end" colspan="12"><b>PPn</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="ppn" onkeyup required name="ppn">
 								</td>
 							</tr>
 							<!-- <tr>
-										<td class="text-end" colspan="10"><b>Keterangan</b></td>
+										<td class="text-end" colspan="12"><b>Keterangan</b></td>
 										<td colspan="2">
 											<textarea name="note" id="" class="form-control"></textarea>
 										</td>
 									</tr> -->
-							<tr>
-								<td class="text-end" colspan="10"><b>Biaya Kirim</b></td>
+							<tr hidden>
+								<td class="text-end" colspan="12"><b>Biaya Kirim</b></td>
 								<td colspan="2">
 									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
 									<input type="text" class="form-control auto_num text-end" id="kirim" onblur="cariTotal()" required name="kirim">
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="10"><b>Total Order</b></td>
+								<td class="text-end" colspan="12"><b>Total Order</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="subtotal" onkeyup required name="subtotal">
 								</td>
@@ -582,6 +588,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<th class="text-center">Progress (%)</th>
 									<th class="text-center">Value</th>
 									<th class="text-center">Keterangan</th>
+									<th class="text-center">Tipe Pembayaran</th>
+									<th class="text-center">Jatuh Tempo</th>
 									<th class="text-center">Action</th>
 								</tr>
 							</thead>
@@ -598,6 +606,98 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			</div>
 		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="modal_lc" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-info">
+				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" id="modal_row_index_hidden">
+				<input type="hidden" id="modal_id_supplier_hidden">
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Supplier</label>
+							<input type="text" id="modal_supplier_name" class="form-control" readonly>
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Credit</label>
+							<input type="text" id="no_credit" class="form-control" placeholder="Input No. Credit...">
+						</div>
+						<div class="form-group mb-2">
+							<label>Issue Date</label>
+							<input type="date" id="issue_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Expiry Date</label>
+							<input type="date" id="expiry_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Supplier Address</label>
+							<textarea id="modal_supplier_address" class="form-control" rows="3" readonly></textarea>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Value Contract</label>
+							<input type="number" id="value_contract" class="form-control" step="0.01">
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Tolerance + (%)</label>
+								<input type="number" id="tolerance_plus" class="form-control">
+							</div>
+							<div class="col-6">
+								<label>Tolerance - (%)</label>
+								<input type="number" id="tolerance_minus" class="form-control">
+							</div>
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Type Of LC</label>
+								<select id="type_of_lc" class="form-control">
+									<option value="At Sight">At Sight</option>
+									<option value="Usen">Usen</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<div id="group_usen_until" style="display:none;">
+									<label class="text-danger">Valid Usen Until</label>
+									<input type="date" id="valid_usen_until" class="form-control">
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group mb-2">
+							<label>Bank Sender / Receiver</label>
+							<div class="row">
+								<div class="col-6"><input type="text" id="bank_sender" class="form-control" placeholder="Sender"></div>
+								<div class="col-6"><input type="text" id="bank_receiver" class="form-control" placeholder="Receiver"></div>
+							</div>
+						</div>
+						<div class="form-group mb-2">
+							<label>Latest Date Of Shipment</label>
+							<input type="date" id="latest_shipment" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Sales Contract</label>
+							<input type="text" id="no_sales_contract" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+				<button type="button" id="btn_save_lc" class="btn btn-md btn-primary"><i class="fas fa-save"></i> Save Detail LC</button>
+			</div>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
@@ -816,6 +916,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			var currency = $('#select_curr').val()
 
 			var ttl_persen_top = 0;
+			var detail_lc_all = [];
 			$('.input_progress').each(function() {
 				var progress = $(this).val();
 				if (progress !== '') {
@@ -863,8 +964,17 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					},
 					function(isConfirm) {
 						if (isConfirm) {
-
 							var formData = new FormData($('#data-form')[0]);
+
+							$('.list_tbody_top tr').each(function(index) {
+								var row = $(this);
+								var lcData = row.attr('data-lc_detail');
+
+								if (lcData) {
+									formData.append('detail_lc[' + (index + 1) + ']', lcData);
+								}
+							});
+
 							var baseurl = siteurl + 'purchase_order/SaveNew';
 							$.ajax({
 								url: baseurl,
@@ -933,6 +1043,37 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			}
 		});
 
+	});
+
+	$(document).on('click', '#btn_save_lc', function() {
+		let rowIndex = $('#modal_row_index_hidden').val();
+
+		let targetRow = $('.list_tbody_top tr').eq(rowIndex);
+
+		let dataLC = {
+			no_credit: $('#no_credit').val(),
+			issue_date: $('#issue_date').val(),
+			expiry_date: $('#expiry_date').val(),
+			value_contract: $('#value_contract').val(),
+			type_of_lc: $('#type_of_lc').val(),
+			valid_usen_until: $('#valid_usen_until').val(),
+			bank_sender: $('#bank_sender').val(),
+			bank_receiver: $('#bank_receiver').val(),
+			latest_shipment: $('#latest_shipment').val(),
+			no_sales_contract: $('#no_sales_contract').val()
+		};
+
+		targetRow.attr('data-lc_detail', JSON.stringify(dataLC));
+
+		targetRow.css('background-color', '#e8f5e9');
+		targetRow.find('label[for="lc"]').html('LC <i class="fa fa-check-circle text-success"></i>');
+
+		swal("Berhasil", "Data LC telah tersimpan di baris ini.", "success");
+		$('#modal_lc').modal('hide');
+	});
+
+	$('.list_tbody_top tr').each(function(i) {
+		console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
 	});
 
 	$(document).on('change', '.cng_nilai_ppn', function() {
@@ -1074,6 +1215,19 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				Rows += '<textarea name="keterangan_top_' + num_top + '" class="form-control form-control-sm"></textarea>';
 				Rows += '</td>';
 
+				Rows += '<td class="">';
+				Rows += '<div class="form-check">';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="lc" name="tipe_bayar" value="lc"required><label class="form-check-label" for="lc">LC</label>';
+				Rows += '</div>';
+				Rows += '<div class="form-check">';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="tt" name="tipe_bayar" value="tt"required><label class="form-check-label" for="tt">TT</label>';
+				Rows += '</div>';
+				Rows += '</td>';
+
+				Rows += '<td class="">';
+				Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '">';
+				Rows += '</td>';
+
 				Rows += '<td class="text-center">';
 				Rows += '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' + num_top + '"><i class="fa fa-trash"></i></button>';
 				Rows += '</td>';
@@ -1092,6 +1246,39 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				});
 			}
 		});
+	});
+
+	$(document).on('change', '.check_bayar', function() {
+		let tipe = $(this).val();
+
+		if (tipe === 'lc') {
+			let idSupplier = $('#supplier').val();
+			let namaSupplier = $('#supplier option:selected').text();
+			let alamatSupplier = $('#supplier option:selected').data('address');
+
+			if (idSupplier === "") {
+				swal("Perhatian", "Silakan pilih Supplier terlebih dahulu di header form!", "warning");
+				$(this).prop('checked', false);
+				return false;
+			}
+
+			$('#modal_supplier_name').val(namaSupplier);
+			$('#modal_id_supplier_hidden').val(idSupplier);
+			$('#modal_supplier_address').val(alamatSupplier);
+
+			let rowIndex = $(this).closest('tr').index();
+			$('#modal_row_index_hidden').val(rowIndex);
+			$('#modal_lc').modal('show');
+		}
+	});
+
+	$(document).on('change', '#type_of_lc', function() {
+		if ($(this).val() === 'Usen') {
+			$('#group_usen_until').show();
+		} else {
+			$('#group_usen_until').hide();
+			$('#valid_usen_until').val(''); // reset jika pilih At Sight
+		}
 	});
 
 	$(document).on('change', '.input_progress', function() {
