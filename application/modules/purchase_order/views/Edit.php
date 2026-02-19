@@ -4,14 +4,13 @@ $ENABLE_MANAGE  = has_permission('Purchase_Request.Manage');
 $ENABLE_VIEW    = has_permission('Purchase_Request.View');
 $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 <div class="card">
 
 	<div class="card-body">
 		<form id="data-form" method="post">
 			<input type="hidden" name="no_po" value="<?= $results['get_po']->no_po ?>">
 			<div class="col-sm-12">
-
 				<div class="form-group row mb-3">
 					<!-- <div class="col-sm-6">
 								<div class="form-group row">
@@ -34,7 +33,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="id_customer">Local / Import</label>
 							</div>
 							<div class="col-md-8" id="ubahloi">
-								<select id="loi" name="loi" class="form-control select" onchange="get_kurs()" required>
+								<select id="loi" name="loi" class="form-control select2" onchange="get_kurs()" required>
 									<option value="">--Pilih--</option>
 									<option value="Import" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Import') ? 'selected' : null ?>>Import</option>
 									<option value="Lokal" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Lokal') ? 'selected' : null ?>>Lokal</option>
@@ -48,7 +47,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="id_customer">Department</label>
 							</div>
 							<div class="col-md-8" id="ubahloi">
-								<select id="select_department" name="dept[]" class="form-control" multiple required>
+								<select id="select_department" name="dept[]" class="form-control select2" multiple required>
 									<option value="">--Pilih--</option>
 									<?php
 									foreach ($results['list_department'] as $item) {
@@ -68,17 +67,16 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						</div>
 					</div>
 				</div>
+
 				<div class="form-group row mb-3">
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
 								<label for="customer">NO.PO</label>
 							</div>
-							<div class="col-md-8" hidden>
-								<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= $results['get_po']->no_po ?>">
-							</div>
 							<div class="col-md-8">
-								<input type="text" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= $results['get_po']->no_surat ?>">
+								<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= $results['get_po']->no_po ?>">
+								<input type="hidden" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= $results['get_po']->no_surat ?>">
 							</div>
 						</div>
 					</div>
@@ -88,7 +86,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="customer">Delivery Date</label>
 							</div>
 							<div class="col-md-8">
-								<input type="date" name="delivery_date" id="" class="form-control" value="<?= $results['get_po']->delivery_date ?>" required>
+								<input type="text" name="delivery_date" id="delivery_date" class="form-control" value="<?= $results['get_po']->delivery_date ?>" required>
 							</div>
 						</div>
 					</div>
@@ -107,21 +105,16 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="id_customer">Mata Uang</label>
+								<label for="id_customer">Currency</label>
 							</div>
-
-
 							<div class="col-md-8">
-								<select id="select_curr" name="matauang" class='form-control input-md' required>
-									<option value="">- Mata Uang -</option>
+								<select id="select_curr" name="matauang" class='form-control select2' required>
+									<option value="">- Currency -</option>
 									<?php foreach ($results['mata_uang'] as $mata_uang) {
 										$selected = '';
 										if ($results['get_po']->matauang == $mata_uang->kode) {
 											$selected = 'selected';
 										}
-
-
-
 									?>
 										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
 									<?php } ?>
@@ -138,7 +131,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="customer">Payment Term</label>
 							</div>
 							<div class="col-md-8">
-								<select id="term" name="term" class="form-control select" required>
+								<select id="term" name="term" class="form-control select2" required>
 									<option value="">-- Pilih --</option>
 									<?php foreach ($results['term'] as $term): ?>
 										<option value="<?= htmlspecialchars($term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
@@ -156,7 +149,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="id_customer">Supplier</label>
 							</div>
 							<div class="col-md-8">
-								<select id="supplier" name="supplier" class='form-control input-md' required>
+								<select id="supplier" name="supplier" class='form-control select2' required>
 									<option value="">- Supplier -</option>
 									<?php foreach ($results['list_supplier'] as $supplier) {
 										$selected = '';
@@ -164,7 +157,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											$selected = 'selected';
 										}
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -176,7 +169,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="id_customer">PR</label>
 							</div>
 							<div class="col-md-8">
-								<select id="no_pr" name="no_pr" class='form-control input-md chosen-select' required>
+								<select id="no_pr" name="no_pr" class='form-control select2' required>
 									<option value="0">List Empty</option>
 								</select>
 							</div>
@@ -195,7 +188,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-6">
+					<div class="col-sm-6" hidden>
 						<div class="form-group row">
 							<div class="col-md-4">
 								<label for="id_customer">Alamat</label>
@@ -228,82 +221,83 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				</div>
 
 
-				<div class="form-group row mb-3">
-					<div class="table-responsive" style="margin-bottom:10px;">
-						<table class='table table-bordered table-striped'>
-							<thead>
-								<tr class='bg-blue'>
-									<th style=" min-width: 200px;">Item</th>
-									<th style="min-width: 150px;">Kode Produk</th>
-									<th style="min-width: 100px;" hidden>Width</th>
-									<th style="min-width: 100px;" hidden>Length</th>
-									<th style="min-width: 75px;">Qty PR</th>
-									<th style="min-width: 75px;">PO Qty</th>
-									<th style="min-width: 100px;">Unit Measurement</th>
-									<th style="min-width: 75px;">Unit Packing</th>
-									<th style="min-width: 100px;" hidden>Rate LME</th>
-									<th style="min-width: 100px;" hidden>Alloy Price</th>
-									<th style="min-width: 100px;" hidden>Fab Cost</th>
-									<th style="min-width: 150px;">Harga Satuan</th>
-									<th style="min-width: 100px;" hidden>Disc %</th>
-									<th style="min-width: 100px;" hidden>Biaya Kirim</th>
-									<th style="min-width: 150px;">Total Harga</th>
-									<th style="min-width: 150px;">Nilai Discount</th>
-									<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
-									<th style="min-width: 150px;">Sub Total</th>
-									<th style="min-width: 100px;">Note</th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-								// if ($results['getitemso']) {
-								$n = 1;
-								// print_r($results['getitemso']);
-								// exit;
-								// print_r($value . "<br>");
-								$key = 0;
-								foreach ($results['getitemso'] as $value) {
+				<div class="table-responsive mb-3">
+					<table class='table table-bordered table-striped'>
+						<thead>
+							<tr class='bg-blue'>
+								<th style="min-width: 200px;">Item</th>
+								<th style="min-width: 150px;">HS Code</th>
+								<th style="min-width: 150px;">Kuota Internal</th>
+								<th style="min-width: 100px;" hidden>Width</th>
+								<th style="min-width: 100px;" hidden>Length</th>
+								<th style="min-width: 100px;">Qty PR</th>
+								<th style="min-width: 100px;">PO Qty</th>
+								<th style="min-width: 100px;">Unit Measurement</th>
+								<th style="min-width: 75px;">Unit Packing</th>
+								<th style="min-width: 100px;" hidden>Rate LME</th>
+								<th style="min-width: 100px;" hidden>Alloy Price</th>
+								<th style="min-width: 100px;" hidden>Fab Cost</th>
+								<th style="min-width: 150px;">Harga Satuan</th>
+								<th style="min-width: 100px;" hidden>Disc %</th>
+								<th style="min-width: 100px;" hidden>Biaya Kirim</th>
+								<th style="min-width: 150px;">Total Harga</th>
+								<th style="min-width: 150px;">Nilai Discount</th>
+								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
+								<th style="min-width: 150px;">Sub Total</th>
+								<th style="min-width: 150px;">Deskripsi Item</th>
+								<th style="min-width: 150px;">Sisa Kuota</th>z
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							// if ($results['getitemso']) {
+							$n = 1;
+							// print_r($results['getitemso']);
+							// exit;
+							// print_r($value . "<br>");
+							$key = 0;
+							foreach ($results['getitemso'] as $value) {
 
-									$get_trans_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->id])->num_rows();
+								$get_trans_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->id])->num_rows();
 
-									// echo '<tr><td>' . $value->nm_material . '</td></tr>';
+								// echo '<tr><td>' . $value->nm_material . '</td></tr>';
 
-									$no = $n++;
-									$key++;
+								$no = $n++;
+								$key++;
 
-									$disabled = '';
-									// $disabled = ($loi == 'Import') ? '' : 'readonly';
-									// $disabled2 = ($loi == 'Import') ? 'readonly' : '';
-									// $idmat = $value->idmaterial;
-									// $harga 	= $this->db->query("SELECT * FROM ms_product_pricelist WHERE id_category3 = '$idmat'")->row();
+								$disabled = '';
+								// $disabled = ($loi == 'Import') ? '' : 'readonly';
+								// $disabled2 = ($loi == 'Import') ? 'readonly' : '';
+								// $idmat = $value->idmaterial;
+								// $harga 	= $this->db->query("SELECT * FROM ms_product_pricelist WHERE id_category3 = '$idmat'")->row();
 
-									// $stock = $this->db->query("SELECT * FROM stock_material WHERE id_category3 = '$idmat'")->row();
+								// $stock = $this->db->query("SELECT * FROM stock_material WHERE id_category3 = '$idmat'")->row();
 
-									// $avl 	 =	$stock->qty_free;
-									$po    = $value->qty;
+								// $avl 	 =	$stock->qty_free;
+								$po    = $value->qty;
 
-									$total = $value->hargasatuan * $value->qty;
+								$total = $value->hargasatuan * $value->qty;
 
 
-									// if ($value->status_app !== 'Y') {
+								// if ($value->status_app !== 'Y') {
 
-									$get_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->idpr])->row();
-									// if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
-									$status = "<div class='badge bg-green'>Done PO</div>";
-									if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
-										$status = "<div class='badge bg-red'>Outstanding PO</div>";
-									}
+								$get_po = $this->db->get_where('dt_trans_po', ['idpr' => $value->idpr])->row();
+								// if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
+								$status = "<div class='badge bg-green'>Done PO</div>";
+								if ($get_po->qty == null || $get_po->qty > $value->propose_purchase) {
+									$status = "<div class='badge bg-red'>Outstanding PO</div>";
+								}
 
-									$idpr = (!empty($value->idpr)) ? $value->idpr : '';
-									$no_pr = (!empty($value->no_pr)) ? $value->no_pr : '';
-									$tipe_pr = (!empty($value->tipe_pr)) ? $value->tipe_pr : '';
-									$id_material = (!empty($value->id_material)) ? $value->id_material : '';
-									$nm_material1 = (!empty($value->nm_material1)) ? $value->nm_material1 : '';
-									$description = (!empty($value->description)) ? $value->description : '';
-									$width = (!empty($value->width)) ? $value->width : 0;
-									$length = (!empty($value->length)) ? $value->length : 0;
-									$total_weight = (!empty($value->totalweight)) ? $value->totalweight : 0;
-									echo "
+								$idpr = (!empty($value->idpr)) ? $value->idpr : '';
+								$no_pr = (!empty($value->no_pr)) ? $value->no_pr : '';
+								$tipe_pr = (!empty($value->tipe_pr)) ? $value->tipe_pr : '';
+								$id_material = (!empty($value->id_material)) ? $value->id_material : '';
+								$nm_material1 = (!empty($value->nm_material1)) ? $value->nm_material1 : '';
+								$description = (!empty($value->description)) ? $value->description : '';
+								$width = (!empty($value->width)) ? $value->width : 0;
+								$length = (!empty($value->length)) ? $value->length : 0;
+								$total_weight = (!empty($value->totalweight)) ? $value->totalweight : 0;
+								echo "
 													<tr>
 														<td>  " . $value->nm_material . $value->nm_material1 . "
 																<input type='hidden' id='dt_id_" . $key . "' name='dt[" . $key . "][id]' value='" . $value->id . "'>
@@ -320,8 +314,11 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 																<input type='hidden' class='form-control input-sm ch_jumlah' id='dt_ch_jumlah_" . $key . "' value='" . $value->harga_total . "'>
 																<input type='hidden' class='form-control input-sm ch_ppn' id='dt_ch_ppn_" . $key . "' value='" . $value->ppn . "'>
 														</td>
+
+														<td><input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly></td>
+														<td><input type='text' class='form-control input-sm autoNumeric3' id='dt_kuotainternal" . $key . "' name='dt[" . $key . "][kuota_internal]' value='" . $value->kuota_internal . "' readonly></td>
 											  
-														<td><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>
+														<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>
 													
 														<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][description]' id='dt_description_" . $key . "' value='" . $description . "'></td>
 													
@@ -359,15 +356,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . $total . "'></td>
 														
 														<td>
-															<div class='input-group input-group-sm' style='margin-bottom:6px;'>
+															<div class='input-group input-group-sm mb-2'>
 																<input type='text' name='dt[" . $key . "][disc_persen]' class='form-control input-sm auto_num disc_persen'
 																	id='disc_persen_" . $key . "' data-key='" . $key . "' value='" . $value->persen_disc . "'>
-																<span class='input-group-addon'>%</span>
+																<span class='input-group-text'>%</span>
 															</div>
 															<div class='input-group input-group-sm'>
-																<span class='input-group-addon'>Rp</span>
 																<input type='text' name='dt[" . $key . "][disc_num]' class='form-control input-sm auto_num disc_num'
 																	id='disc_num_" . $key . "' data-key='" . $key . "' value='" . $value->nilai_disc . "'>
+																<span class='input-group-text'>Rp</span>
 															</div>
 														</td>
 														<td hidden>
@@ -376,58 +373,58 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . ($total - $value->nilai_disc + $value->ppn) . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
+														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]'></td>
 										 			</tr>
 												";
-								}
-								?>
-							</tbody>
-							<tfoot>
-								<tr>
-									<td class="text-end" colspan="9"><b>Total</b></th>
-									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>Diskon Khusus</b></th>
-									<td colspan="2">
-										<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= $results['get_po']->diskon_khusus ?>" onblur="cariTotal()" name="diskonkhusus">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>Total (Exclude PPn)</b></td>
-									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= $results['get_po']->total_exclude_ppn ?>" onkeyup required name="totalexppn">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>DPP</b></td>
-									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= $results['get_po']->total_dpp ?>" onkeyup required name="dpp">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>PPn</b></td>
-									<td colspan="2">
-										<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= $results['get_po']->total_ppn ?>" onkeyup required name="ppn">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>Biaya Kirim</b></td>
-									<td colspan="2">
-										<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-										<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['get_po']->taxtotal ?>" onblur="cariTotal()" required name="kirim">
-									</td>
-								</tr>
-								<tr>
-									<td class="text-end" colspan="9"><b>Total Order</b></td>
-									<td colspan="2">
-										<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= $results['get_po']->subtotal ?>" onkeyup required name="subtotal">
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td class="text-end" colspan="11"><b>Total</b></th>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>Diskon Khusus</b></th>
+								<td colspan="2">
+									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= $results['get_po']->diskon_khusus ?>" onblur="cariTotal()" name="diskonkhusus">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>Total (Exclude PPn)</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= $results['get_po']->total_exclude_ppn ?>" onkeyup required name="totalexppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>DPP</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= $results['get_po']->total_dpp ?>" onkeyup required name="dpp">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>PPn</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= $results['get_po']->total_ppn ?>" onkeyup required name="ppn">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>Biaya Kirim</b></td>
+								<td colspan="2">
+									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
+									<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['get_po']->taxtotal ?>" onblur="cariTotal()" required name="kirim">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-end" colspan="11"><b>Total Order</b></td>
+								<td colspan="2">
+									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= $results['get_po']->subtotal ?>" onkeyup required name="subtotal">
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 
 				<div class="form-group row mb-3" hidden>
@@ -537,77 +534,206 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 						</div>
 					</div> -->
-				<div class="col-sm-12">
-					<div class="row">
-						<div class="col-sm-12">
-							<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
-							<button type="button" class="btn btn-sm btn-primary add_top">
-								<i class="fa fa-plus"></i> Add TOP
-							</button>
-							<table class="table table-bordered">
-								<thead class="bg-blue">
-									<tr>
-										<th class="text-center">Group TOP</th>
-										<th class="text-center">Progress (%)</th>
-										<th class="text-center">Value</th>
-										<th class="text-center">Keterangan</th>
-										<th class="text-center">Action</th>
-									</tr>
-								</thead>
-								<tbody class="list_tbody_top">
-									<?php
-									$no = 1;
-									foreach ($results['list_top'] as $item_top) {
-										echo '<tr class="top_' . $no . '">';
+				<hr>
+				<div class="form-group row mb-3">
+					<div class="col-sm-12">
+						<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
+						<button type="button" class="btn btn-sm btn-primary add_top mb-3">
+							<i class="fa fa-plus"></i> Add TOP
+						</button>
+						<table class="table table-bordered">
+							<thead class="bg-blue">
+								<tr>
+									<th class="text-center">Group TOP</th>
+									<th class="text-center">Progress (%)</th>
+									<th class="text-center">Value</th>
+									<th class="text-center">Keterangan</th>
+									<th class="text-center">Tipe Pembayaran</th>
+									<th class="text-center">Jatuh Tempo</th>
+									<th class="text-center">Action</th>
+								</tr>
+							</thead>
+							<tbody class="list_tbody_top">
+								<?php
+								$no = 1;
+								foreach ($results['list_top'] as $item_top) {
+									$checked_lc = ($item_top->tipe_bayar == 'lc') ? 'checked' : '';
+									$checked_tt = ($item_top->tipe_bayar == 'tt') ? 'checked' : '';
+									$display_btn_lc = ($item_top->tipe_bayar == 'lc') ? '' : 'display:none;';
 
-										echo '<td>';
-										echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
-										foreach ($results['list_group_top'] as $item_group_top) {
-											$selected = '';
-											if ($item_group_top->id == $item_top->group_top) {
-												$selected = 'selected';
-											}
-											echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+									echo '<tr class="top_' . $no . '">';
+
+									echo '<td>';
+									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
+									foreach ($results['list_group_top'] as $item_group_top) {
+										$selected = '';
+										if ($item_group_top->id == $item_top->group_top) {
+											$selected = 'selected';
 										}
-										echo '</select>';
-										echo '</td>';
-
-										echo '<td>';
-										echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
-										echo '</td>';
-
-										echo '<td class="text-right">';
-										echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
-										echo '</td>';
-
-										echo '<td>';
-										echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
-										echo '</td>';
-
-										echo '<td class="text-center">';
-										echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
-										echo '</td>';
-
-										echo '</tr>';
-
-										$no++;
+										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
 									}
-									?>
-								</tbody>
-							</table>
-						</div>
+									echo '</select>';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
+									echo '</td>';
+
+									echo '<td class="text-right">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<div class="form-check">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '">';
+									echo '<label class="form-check-label" for="lc_' . $no . '">LC</label>';
+									echo '</div>';
+									echo '<div class="form-check">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '">';
+									echo '<label class="form-check-label" for="tt_' . $no . '">TT</label>';
+									echo '</div>';
+
+									// Tombol untuk buka modal LC
+									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> Detail LC</button>';
+
+									// --- INPUT HIDDEN UNTUK DATA LC (DARI TABEL tr_po_detail_lc) ---
+									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
+									echo '<input type="hidden" name="issue_date_' . $no . '" value="' . $item_top->issue_date . '">';
+									echo '<input type="hidden" name="expiry_date_' . $no . '" value="' . $item_top->expiry_date . '">';
+									echo '<input type="hidden" name="value_contract_' . $no . '" value="' . $item_top->value_contract . '">';
+									echo '<input type="hidden" name="tolerance_plus_' . $no . '" value="' . $item_top->tolerance_plus . '">';
+									echo '<input type="hidden" name="tolerance_minus_' . $no . '" value="' . $item_top->tolerance_minus . '">';
+									echo '<input type="hidden" name="type_of_lc_' . $no . '" value="' . $item_top->type_of_lc . '">';
+									echo '<input type="hidden" name="valid_usen_until_' . $no . '" value="' . $item_top->valid_usen_until . '">';
+									echo '<input type="hidden" name="bank_sender_' . $no . '" value="' . $item_top->bank_sender . '">';
+									echo '<input type="hidden" name="bank_receiver_' . $no . '" value="' . $item_top->bank_receiver . '">';
+									echo '<input type="hidden" name="latest_shipment_' . $no . '" value="' . $item_top->latest_shipment . '">';
+									echo '<input type="hidden" name="no_sales_contract_' . $no . '" value="' . $item_top->no_sales_contract . '">';
+									echo '</td>';
+
+									echo '<td class="">';
+									echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $item_top->jatuh_tempo . '">';
+									echo '</td>';
+
+									echo '<td class="text-center">';
+									echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
+									echo '</td>';
+
+									echo '</tr>';
+
+									$no++;
+								}
+								?>
+							</tbody>
+						</table>
+
 					</div>
 				</div>
-				<center>
-					<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
-				</center>
+				<div class="text-center">
+					<button type="submit" class="btn btn-success" name="save" id="simpan-com"><i class="fa fa-save"></i> Simpan</button>
+				</div>
 			</div>
 		</form>
 	</div>
 </div>
 
+<div class="modal fade" id="modal_lc" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-info">
+				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" id="modal_row_index_hidden">
+				<input type="hidden" id="modal_id_supplier_hidden">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Supplier</label>
+							<input type="text" id="modal_supplier_name" class="form-control" readonly>
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Credit</label>
+							<input type="text" id="no_credit" class="form-control" placeholder="Input No. Credit...">
+						</div>
+						<div class="form-group mb-2">
+							<label>Issue Date</label>
+							<input type="date" id="issue_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Expiry Date</label>
+							<input type="date" id="expiry_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Supplier Address</label>
+							<textarea id="modal_supplier_address" class="form-control" rows="3" readonly></textarea>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Value Contract</label>
+							<input type="number" id="value_contract" class="form-control" step="0.01">
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Tolerance + (%)</label>
+								<input type="number" id="tolerance_plus" class="form-control">
+							</div>
+							<div class="col-6">
+								<label>Tolerance - (%)</label>
+								<input type="number" id="tolerance_minus" class="form-control">
+							</div>
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Type Of LC</label>
+								<select id="type_of_lc" class="form-control">
+									<option value="At Sight">At Sight</option>
+									<option value="Usen">Usen</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<div id="group_usen_until" style="display:none;">
+									<label class="text-danger">Valid Usen Until</label>
+									<input type="date" id="valid_usen_until" class="form-control">
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group mb-2">
+							<label>Bank Sender / Receiver</label>
+							<div class="row">
+								<div class="col-6"><input type="text" id="bank_sender" class="form-control" placeholder="Sender"></div>
+								<div class="col-6"><input type="text" id="bank_receiver" class="form-control" placeholder="Receiver"></div>
+							</div>
+						</div>
+						<div class="form-group mb-2">
+							<label>Latest Date Of Shipment</label>
+							<input type="date" id="latest_shipment" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Sales Contract</label>
+							<input type="text" id="no_sales_contract" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+				<button type="button" id="btn_save_lc" class="btn btn-md btn-primary"><i class="fas fa-save"></i> Save Detail LC</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 <script type="text/javascript">
 	//$('#input-kendaraan').hide();
 	var base_url = '<?php echo base_url(); ?>';
@@ -617,6 +743,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		TotalSemua()
 		cariTotal()
+		$('.select2').select2({
+			width: '100%'
+		});
 		$('.auto_num').autoNumeric('init');
 
 		var max_fields2 = 10; //maximum input boxes allowed
@@ -685,6 +814,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			var supplier = $('#supplier').val()
 
 			var ttl_persen_top = 0;
+			var detail_lc_all = [];
 			$('.input_progress').each(function() {
 				var progress = $(this).val();
 				if (progress !== '') {
@@ -722,8 +852,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					},
 					function(isConfirm) {
 						if (isConfirm) {
-
 							var formData = new FormData($('#data-form')[0]);
+							$('.list_tbody_top tr').each(function(index) {
+								var row = $(this);
+								var lcData = row.attr('data-lc_detail');
+
+								if (lcData) {
+									formData.append('detail_lc[' + (index + 1) + ']', lcData);
+								}
+							});
 							var baseurl = siteurl + 'purchase_order/SaveEditPO';
 							$.ajax({
 								url: baseurl,
@@ -792,6 +929,64 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			}
 		});
 
+	});
+
+
+	$(document).on('click', '#btn_save_lc', function() {
+		let rowIndex = $('#modal_row_index_hidden').val();
+
+		let targetRow = $('.list_tbody_top tr').eq(rowIndex);
+
+		let dataLC = {
+			no_credit: $('#no_credit').val(),
+			issue_date: $('#issue_date').val(),
+			expiry_date: $('#expiry_date').val(),
+			value_contract: $('#value_contract').val(),
+			type_of_lc: $('#type_of_lc').val(),
+			valid_usen_until: $('#valid_usen_until').val(),
+			bank_sender: $('#bank_sender').val(),
+			bank_receiver: $('#bank_receiver').val(),
+			latest_shipment: $('#latest_shipment').val(),
+			no_sales_contract: $('#no_sales_contract').val()
+		};
+
+		targetRow.attr('data-lc_detail', JSON.stringify(dataLC));
+
+		targetRow.css('background-color', '#e8f5e9');
+		targetRow.find('label[for="lc"]').html('LC <i class="fa fa-check-circle text-success"></i>');
+
+		swal("Berhasil", "Data LC telah tersimpan di baris ini.", "success");
+		$('#modal_lc').modal('hide');
+	});
+
+	$('.list_tbody_top tr').each(function(i) {
+		console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
+	});
+
+	$(document).on('click', '.btn_view_lc', function() {
+		let no = $(this).data('no'); // Ambil nomor urut baris
+		let row = $(this).closest('tr'); // Ambil nomor urut dari ID tombol
+
+		// Mapping Data dari Hidden Input ke Modal
+		$('#modal_row_index_hidden').val(no);
+		$('#no_credit').val(row.find('input[name="no_credit_' + no + '"]').val());
+		$('#issue_date').val(row.find('input[name="issue_date_' + no + '"]').val());
+		$('#expiry_date').val(row.find('input[name="expiry_date_' + no + '"]').val());
+		$('#value_contract').val(row.find('input[name="value_contract_' + no + '"]').val());
+		$('#tolerance_plus').val(row.find('input[name="tolerance_plus_' + no + '"]').val());
+		$('#tolerance_minus').val(row.find('input[name="tolerance_minus_' + no + '"]').val());
+		$('#type_of_lc').val(row.find('input[name="type_of_lc_' + no + '"]').val()).trigger('change');
+		$('#valid_usen_until').val(row.find('input[name="valid_usen_until_' + no + '"]').val());
+		$('#bank_sender').val(row.find('input[name="bank_sender_' + no + '"]').val());
+		$('#bank_receiver').val(row.find('input[name="bank_receiver_' + no + '"]').val());
+		$('#latest_shipment').val(row.find('input[name="latest_shipment_' + no + '"]').val());
+		$('#no_sales_contract').val(row.find('input[name="no_sales_contract_' + no + '"]').val());
+
+		// Info Supplier
+		$('#modal_supplier_name').val($('#supplier option:selected').text());
+		$('#modal_supplier_address').val($('#supplier option:selected').data('address'));
+
+		$('#modal_lc').modal('show');
 	});
 
 	$(document).on('change', '.cng_nilai_ppn', function() {
@@ -915,7 +1110,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				var Rows = '<tr class="top_' + num_top + '">';
 
 				Rows += '<td class="">';
-				Rows += '<select class="form-control chosen-select" name="group_top_' + num_top + '">';
+				Rows += '<select class="form-control form-control-sm" name="group_top_' + num_top + '">';
 				Rows += result.list_top_group;
 				Rows += '</select>';
 				Rows += '</td>';
@@ -933,21 +1128,30 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				Rows += '<textarea name="keterangan_top_' + num_top + '" class="form-control form-control-sm"></textarea>';
 				Rows += '</td>';
 
+				Rows += '<td class="">';
+				Rows += '<div class="form-check">';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="lc_' + num_top + '" name="tipe_bayar_' + num_top + '" value="lc" required>';
+				Rows += '<label class="form-check-label" for="lc_' + num_top + '">LC</label>';
+				Rows += '</div>';
+				Rows += '<div class="form-check">';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="tt_' + num_top + '" name="tipe_bayar_' + num_top + '" value="tt" required>';
+				Rows += '<label class="form-check-label" for="tt_' + num_top + '">TT</label>';
+				Rows += '</div>';
+				Rows += '</td>';
+
+				Rows += '<td class="">';
+				Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '">';
+				Rows += '</td>';
+
+
 				Rows += '<td class="text-center">';
 				Rows += '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' + num_top + '"><i class="fa fa-trash"></i></button>';
 				Rows += '</td>';
 
 				Rows += '</tr>';
 
-
-
-
 				$('.num_top').val(num_top);
 				$('.list_tbody_top').append(Rows);
-
-				$('.chosen-select').chosen({
-					width: "100%"
-				});
 			},
 			error: function(result) {
 				swal({
@@ -957,6 +1161,39 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				});
 			}
 		});
+	});
+
+	$(document).on('change', '.check_bayar', function() {
+		let tipe = $(this).val();
+
+		if (tipe === 'lc') {
+			let idSupplier = $('#supplier').val();
+			let namaSupplier = $('#supplier option:selected').text();
+			let alamatSupplier = $('#supplier option:selected').data('address');
+
+			if (idSupplier === "") {
+				swal("Perhatian", "Silakan pilih Supplier terlebih dahulu di header form!", "warning");
+				$(this).prop('checked', false);
+				return false;
+			}
+
+			$('#modal_supplier_name').val(namaSupplier);
+			$('#modal_id_supplier_hidden').val(idSupplier);
+			$('#modal_supplier_address').val(alamatSupplier);
+
+			let rowIndex = $(this).closest('tr').index();
+			$('#modal_row_index_hidden').val(rowIndex);
+			$('#modal_lc').modal('show');
+		}
+	});
+
+	$(document).on('change', '#type_of_lc', function() {
+		if ($(this).val() === 'Usen') {
+			$('#group_usen_until').show();
+		} else {
+			$('#group_usen_until').hide();
+			$('#valid_usen_until').val(''); // reset jika pilih At Sight
+		}
 	});
 
 	$(document).on('change', '.input_progress', function() {
@@ -1313,8 +1550,6 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		});
 	}
 
-
-
 	function HitungHarga2(id) {
 		var dt_qty = $("#dt_qty_" + id).val();
 		var dt_width = $("#dt_totalwidth_" + id).val();
@@ -1596,11 +1831,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <script>
 	$(function() {
-		$('#select_department').chosen();
-		$('#select_curr').chosen();
-		$('#supplier').chosen();
-		$('.select').chosen();
-		$('#tanggal').datepicker({
+
+		$('#tanggal, #delivery_date').datepicker({
 			dateFormat: 'yy-mm-dd',
 			changeMonth: true,
 			changeYear: true,

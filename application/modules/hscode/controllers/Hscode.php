@@ -200,6 +200,34 @@ class Hscode extends Admin_Controller
         echo json_encode($return);
     }
 
+    public function update_kuota()
+    {
+        $id = $this->input->post('id');
+        $tambah_kuota = $this->input->post('tambah_kuota');
+
+        if (empty($id) || empty($tambah_kuota)) {
+            echo json_encode(['status' => 0, 'pesan' => 'Data tidak lengkap']);
+            return;
+        }
+
+        $this->db->trans_begin();
+
+        // $oldData = $this->db->get_where('hscode', ['id' => $id])->row();
+
+        $this->db->set('kuota_internal', 'kuota_internal + ' . (float)$tambah_kuota, FALSE);
+        $this->db->where('id', $id);
+        $this->db->update('hscode');
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'pesan' => 'Gagal mengupdate kuota']);
+        } else {
+            $this->db->trans_commit();
+            history("Add New Kuota HS ID: " . $id . " sebesar " . $tambah_kuota);
+            echo json_encode(['status' => 1, 'pesan' => 'Kuota berhasil ditambahkan']);
+        }
+    }
+
     public function delete()
     {
         $id = $this->input->post('id');

@@ -16,7 +16,7 @@
                                 <label>ID HS Code</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="id" placeholder="ID HS Code" value="<?= isset($hs) ? $hs->id : null; ?>" readonly>
+                                <input type="text" class="form-control" name="id" id="idHs" placeholder="ID HS Code" value="<?= isset($hs) ? $hs->id : null; ?>" readonly>
                             </div>
                         </div>
                     </div>
@@ -202,6 +202,22 @@
                                 <input type="text" class="form-control" name="uom" value="<?= (isset($hs->uom) && $hs->uom) ? $hs->uom : ''; ?>" id="uom" placeholder="Ex: TNE | KGS ...">
                             </div>
                         </div>
+                        <div class="form-group row mb-2">
+                            <div class="col-md-4">
+                                <label for="cukai">Sisa Kuota</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control text-end" name="kuota_internal" value="<?= (isset($hs->kuota_internal) && $hs->kuota_internal) ? $hs->kuota_internal : ''; ?>" id="kuota_internal">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="add-kuota" title="Add Kuota" class="btn btn-outline-primary btn-md">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                                <button type="button" id="cancel-kuota" title="Cancel Kuota" class="btn btn-outline-danger btn-md">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <!-- Sisi Kanan -->
                     <div class="col-md-6">
@@ -303,6 +319,19 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="form-kuota" class="form-group row mb-2 pt-3" hidden>
+                            <div class="col-md-4">
+                                <label>Kuota Baru</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control text-end" name="new_kuota_internal" id="newKuota">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="save-kuota" class="btn btn-success btn-md">
+                                    <i class="fa fa-save"></i> Simpan Kuota
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -922,14 +951,19 @@
             }, 500);
         })
 
+        $(document).on('click', '#add-kuota', function() {
+            $('#form-kuota').removeAttr('hidden'); // Tampilkan form
+            $('#newKuota').val('').focus(); // Kosongkan input dan fokus
+        });
+
+        // 2. Logic Hide/Cancel Form Kuota Baru
+        $(document).on('click', '#cancel-kuota', function() {
+            $('#form-kuota').attr('hidden', true); // Sembunyikan form
+            $('#newKuota').val(''); // Reset input
+        });
+
         $('#data-form').submit(function(e) {
             e.preventDefault();
-
-            // (OPSIONAL) kalau ada validasi custom seperti checkbox group, taruh di sini
-            // contoh:
-            // const checkboxes = document.querySelectorAll(".hari-checkbox");
-            // const oneChecked = Array.from(checkboxes).some(cb => cb.checked);
-            // if (!oneChecked) { alert("Pilih minimal satu hari terima!"); return false; }
 
             swal({
                     title: "Are you sure?",
@@ -1000,5 +1034,55 @@
             );
         });
 
+        $(document).on('click', '#save-kuota', function() {
+            let currentKuota = parseFloat($('#kuota_internal').val()) || 0;
+            let addKuota = parseFloat($('#newKuota').val()) || 0;
+            let id_hs = $('#idHs').val();
+
+            if (addKuota <= 0) {
+                swal("Warning", "Masukkan jumlah kuota baru yang valid!", "warning");
+                return false;
+            }
+
+            swal({
+                title: "Konfirmasi",
+                text: "Tambahkan kuota sebesar " + addKuota + "?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-success",
+                confirmButtonText: "Ya, Tambahkan!",
+                cancelButtonText: "Batal",
+                closeOnConfirm: false
+            }, function() {
+                $.ajax({
+                    url: siteurl + active_controller + 'update_kuota',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        id: id_hs,
+                        tambah_kuota: addKuota
+                    },
+                    success: function(result) {
+                        if (result.status == 1) {
+                            swal({
+                                title: "Sukses!",
+                                text: result.pesan,
+                                type: "success"
+                            }, function() {
+                                window.location.reload(true);
+                                // Sembunyikan kembali form add
+                                $('#form-kuota').attr('hidden', true);
+                                $('#newKuota').val('');
+                            });
+                        } else {
+                            swal("Gagal", result.pesan, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("Error", "Terjadi kesalahan pada server", "error");
+                    }
+                });
+            });
+        });
     });
 </script>

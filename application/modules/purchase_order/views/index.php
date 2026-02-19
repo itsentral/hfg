@@ -106,8 +106,8 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								<td><?= $record->reject_reason ?></td>
 								<td>
 									<?php if ($ENABLE_VIEW) : ?>
-										<a class="btn btn-warning btn-sm" href="<?= base_url('/purchase_order/view_po/' . $record->no_po) ?>" title="View"><i class="fa fa-eye"></i></a>
-										<a class="btn btn-primary btn-sm" href="<?= base_url('/purchase_order/print_po/' . $record->no_po) ?>" target="_blank" title="Print"><i class="fa fa-print"></i></a>
+										<!-- <a class="btn btn-warning btn-sm" href="<?= base_url('/purchase_order/view_po/' . $record->no_po) ?>" title="View"><i class="fa fa-eye"></i></a> -->
+										<!-- <a class="btn btn-primary btn-sm" href="<?= base_url('/purchase_order/print_po/' . $record->no_po) ?>" target="_blank" title="Print"><i class="fa fa-print"></i></a> -->
 									<?php endif; ?>
 
 									<?php if ($ENABLE_MANAGE && $valid_edit > 0) : ?>

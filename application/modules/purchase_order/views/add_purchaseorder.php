@@ -68,7 +68,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8">
 								<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO">
-								<input type="hidden" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO">
+								<input type="hidden" class="form-control" id="no_surat" name="no_surat" readonly placeholder="No.PO">
 							</div>
 						</div>
 					</div>
@@ -574,7 +574,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						</div>
 					</div>
 				</div>
-
+				<hr>
 				<div class="form-group row mb-3">
 					<div class="col-sm-12">
 						<input type="hidden" name="num_top" class="num_top">
@@ -1217,10 +1217,12 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 				Rows += '<td class="">';
 				Rows += '<div class="form-check">';
-				Rows += '<input class="form-check-input check_bayar" type="radio" id="lc" name="tipe_bayar" value="lc"required><label class="form-check-label" for="lc">LC</label>';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="lc_' + num_top + '" name="tipe_bayar_' + num_top + '" value="lc" required>';
+				Rows += '<label class="form-check-label" for="lc_' + num_top + '">LC</label>';
 				Rows += '</div>';
 				Rows += '<div class="form-check">';
-				Rows += '<input class="form-check-input check_bayar" type="radio" id="tt" name="tipe_bayar" value="tt"required><label class="form-check-label" for="tt">TT</label>';
+				Rows += '<input class="form-check-input check_bayar" type="radio" id="tt_' + num_top + '" name="tipe_bayar_' + num_top + '" value="tt" required>';
+				Rows += '<label class="form-check-label" for="tt_' + num_top + '">TT</label>';
 				Rows += '</div>';
 				Rows += '</td>';
 

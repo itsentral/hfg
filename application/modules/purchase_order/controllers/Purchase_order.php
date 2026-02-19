@@ -208,7 +208,9 @@ class Purchase_order extends Admin_Controller
 				e.propose_purchase as propose_purchase,
 				g.code as packing_unit,
 				h.code as packing_unit2,
-				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure
+				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure,
+				c.hscode,
+				hs.kuota_internal
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -219,6 +221,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan h ON h.id = f.id_unit_gudang
 				LEFT JOIN ms_satuan i ON i.id = c.id_unit
 				LEFT JOIN ms_satuan j ON j.id = f.id_unit
+				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
 				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
 				(a.tipe IS NULL OR a.tipe = '')
@@ -250,7 +253,9 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				IF(f.code IS NULL, 'Pcs', f.code) as packing_unit,
 				'' as packing_unit2,
-				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure
+				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure,
+				'' as hscode,         
+    			0 as kuota_internal 
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -285,7 +290,9 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				'Pcs' as packing_unit,
 				'' as packing_unit2,
-				'Pcs' as unit_measure
+				'Pcs' as unit_measure,
+				'' as hscode,         
+    			0 as kuota_internal
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -316,7 +323,12 @@ class Purchase_order extends Admin_Controller
 		$list_group_top = $this->db->get_where('list_help', ['group_by' => 'top', 'sts' => 'Y'])->result();
 		$term = $this->db->get_where('list_help', ['group_by' => 'top invoice', 'sts' => 'Y'])->result();
 
-		$list_top = $this->db->get_where('tr_top_po', ['no_po' => $no_po])->result();
+		// $list_top = $this->db->get_where('tr_top_po', ['no_po' => $no_po])->result();
+		$this->db->select('a.*, b.no_credit, b.issue_date, b.expiry_date, b.value_contract, b.tolerance_plus, b.tolerance_minus, b.type_of_lc, b.valid_usen_until, b.bank_sender, b.bank_receiver, b.latest_shipment, b.no_sales_contract');
+		$this->db->from('tr_top_po a');
+		$this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
+		$this->db->where('a.no_po', $no_po);
+		$list_top = $this->db->get()->result();
 		$num_top = count($list_top);
 
 		$data = [
