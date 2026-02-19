@@ -12,7 +12,6 @@ class Ros extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-
         $this->load->model(array('Ros/ros_model', 'all/All_model'));
         date_default_timezone_set('Asia/Bangkok');
     }
@@ -117,7 +116,8 @@ class Ros extends Admin_Controller
 
         $this->db->select('a.*');
         $this->db->from('tr_purchase_order a');
-        $this->db->where_in('a.no_surat', explode(',', $post['no_po']));
+        $this->db->where_in('a.no_po', explode(',', $post['no_po']));
+        $this->db->where('a.status', 2);
         $get_id_po = $this->db->get()->row_array();
 
         $hasil = '';
@@ -132,7 +132,7 @@ class Ros extends Admin_Controller
         $this->db->join('ms_satuan f', 'f.id = c.id_unit', 'left');
         $this->db->join('ms_satuan g', 'g.id = d.id_unit_gudang', 'left');
         $this->db->join('ms_satuan h', 'h.id = e.satuan', 'left');
-        $this->db->where_in('b.no_surat', explode(',', $post['no_po']));
+        $this->db->where_in('a.no_po', explode(',', $post['no_po']));
         $this->db->group_by('a.id');
         $get_detail_po = $this->db->get()->result_array();
         // print_r($this->db->error($get_detail_po));
@@ -282,10 +282,6 @@ class Ros extends Admin_Controller
     public function save_ros()
     {
         $post = $this->input->post();
-        echo '<pre>';
-        print_r($post);
-        echo '</pre>';
-        die();
 
         $config['upload_path'] = './assets/ros'; //path folder
         $config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
@@ -651,8 +647,9 @@ class Ros extends Admin_Controller
         $this->db->select('a.no_surat, a.no_po');
         $this->db->from('tr_purchase_order a');
         $this->db->join('tr_ros b', 'b.no_po = a.no_surat', 'left');
-        // $this->db->where('b.no_po', null);
+        $this->db->where('a.status', 2);
         $this->db->where('a.id_suplier', $kode_supplier);
+        $this->db->where('b.no_po', null);
         $list_po = $this->db->get()->result_array();
 
         $hasil = '';
@@ -670,18 +667,10 @@ class Ros extends Admin_Controller
                     }
                 }
             }
-
-            // if($item['no_surat'] == 'PO-004/MP/03/2024'){
-            //     print_r($nilai_sisa);
-            //     exit;
-            // }
-
-
-
             if ($nilai_sisa > 0) {
                 $hasil .= '<tr>';
                 $hasil .= '<td class="text-center">' . $item['no_surat'] . '</td>';
-                $hasil .= '<td class="text-center"><input type="checkbox" name="no_po[]" class="no_po" value="' . $item['no_surat'] . '"></td>';
+                $hasil .= '<td class="text-center"><input type="checkbox" name="no_po[]" class="no_po" value="' . $item['no_po'] . '"></td>';
                 $hasil .= '</tr>';
             }
         }

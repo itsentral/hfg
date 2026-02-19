@@ -64,7 +64,7 @@ if (!empty($no_ros)) {
             <tbody>
                 <?php
                 $kode_trans = !empty($kode_trans) ? $kode_trans : '';
-                $this->db->select('a.*, b.code as code_product, b.konversi, c.code as unit_measure, d.code as unit_packing, e.qty_order');
+                $this->db->select('a.*, b.code_lv4 as codematerial, b.konversi, c.code as unit_measure, d.code as unit_packing, e.qty_order');
                 $this->db->from('dt_trans_po a');
                 $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.idmaterial', 'left');
                 $this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
@@ -112,7 +112,7 @@ if (!empty($no_ros)) {
                                             <input type='hidden' name='addInMat[$Noo][harga]' value=''>
                                             <input type='hidden' name='addInMat[$Noo][qty_sisa]' value='" . ($valx['qty'] - $ttl_qty_incoming_check) . "'>
                                         </td>";
-                                echo "<td>" . $valx['code_product'] . "</td>";
+                                echo "<td>" . $valx['codematerial'] . "</td>";
                                 echo "<td>" . $valx['namamaterial'] . "</td>";
                                 echo "<td align='right'>" . number_format($valx['qty'], 2) . "</td>";
                                 echo "<td align='center'>" . $valx['unit_measure'] . "</td>";

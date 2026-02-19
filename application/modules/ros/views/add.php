@@ -762,7 +762,6 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             cache: false,
             success: function(result) {
                 $('.no_po').html(result);
-                // $('.select2').select2();
             },
             error: function(result) {
                 swal({
@@ -871,15 +870,11 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
     $(document).on('submit', '#frm-data', function(e) {
         e.preventDefault();
 
-        // Ambil Grand Total dari footer tabel yang sudah diupdate otomatis oleh fungsi .calculate
-        // Kita ambil dari text lalu bersihkan komanya
         var grand_total_text = $('.ttl_price_detail_col').text().split(',').join('');
         var ttl_price = parseFloat(grand_total_text) || 0;
 
-        // Tambahan: Validasi jika input BM di bawah masih kosong padahal di tabel atas ada isinya
         var cost_bm = $('#cost_bm').val() ? parseFloat($('#cost_bm').val().split(',').join('')) : 0;
 
-        // Jika ttl_price masih 0, cek apakah ada input manual di kolom Biaya Masuk/Forwarding
         if (ttl_price <= 0) {
             swal({
                 title: 'Warning !',
@@ -888,8 +883,6 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             });
             return false; // Berhenti di sini
         }
-
-        // Jika sudah ada nilai, lanjutkan proses SweetAlert Save seperti biasa
         swal({
                 title: "Warning !",
                 text: "Data will be saved !",
