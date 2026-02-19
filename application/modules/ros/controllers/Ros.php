@@ -282,6 +282,10 @@ class Ros extends Admin_Controller
     public function save_ros()
     {
         $post = $this->input->post();
+        echo '<pre>';
+        print_r($post);
+        echo '</pre>';
+        die();
 
         $config['upload_path'] = './assets/ros'; //path folder
         $config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan

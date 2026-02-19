@@ -84,9 +84,20 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                 </tbody>
                             </table>
                         <?php
-                        } else {
-                            echo '<input type="text" name="no_po" class="form-control form-control-sm" value="' . str_replace(',', ', ', $no_po) . '" readonly>';
-                        }
+                        } else { ?>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label for="">Nomor PO</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label><?= str_replace(',', ', ', $no_po) ?></label>
+                                        <input type="hidden" name="no_po" class="form-control" value="<?= str_replace(',', ', ', $no_po) ?>" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        <?php }
                         ?>
                     </div>
                 </div>
@@ -99,7 +110,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <label for="">AWB / BL Number</label>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" name="awb_bl_number" id="" class="form-control form-control-sm" value="<?= $awb_bl_number ?>">
+                            <input type="text" name="awb_bl_number" id="" class="form-control" value="<?= $awb_bl_number ?>">
                         </div>
                     </div>
                 </div>
@@ -109,7 +120,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <label for="">AWB / BL Date</label>
                         </div>
                         <div class="col-md-8">
-                            <input type="date" name="awb_bl_date" id="" class="form-control form-control-sm" value="<?= $awb_bl_date ?>" required>
+                            <input type="date" name="awb_bl_date" id="" class="form-control" value="<?= $awb_bl_date ?>">
                         </div>
                     </div>
                 </div>
@@ -122,7 +133,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <label for="">ETA Warehouse</label>
                         </div>
                         <div class="col-md-8">
-                            <input type="date" name="eta_warehouse" id="" class="form-control form-control-sm" value="<?= $eta_warehouse ?>" required>
+                            <input type="date" name="eta_warehouse" id="" class="form-control" value="<?= $eta_warehouse ?>">
                         </div>
                     </div>
                 </div>
@@ -132,7 +143,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <label for="">ATA POD</label>
                         </div>
                         <div class="col-md-8">
-                            <input type="date" name="ata_pod" id="" class="form-control form-control-sm" value="<?= $eta_warehouse ?>" required>
+                            <input type="date" name="ata_pod" id="" class="form-control" value="<?= $eta_warehouse ?>">
                         </div>
                     </div>
                 </div>
@@ -145,7 +156,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <label for="">Kurs PIB</label>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" name="kurs_pib" id="" class="form-control form-control-sm auto_num kurs_pib" value="<?= $kurs_pib ?>">
+                            <input type="text" name="kurs_pib" id="" class="form-control auto_num kurs_pib" value="<?= $kurs_pib ?>">
                         </div>
                     </div>
                 </div>
@@ -177,36 +188,67 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             <tbody class="list_detail_po">
                                 <?php
                                 $ttl_price_detail = 0;
-                                if (isset($detail_ros)) {
-                                    $no = 1;
+                                if (isset($detail_ros) && !empty($detail_ros)) {
+                                    // 1. Grouping data berdasarkan id_po_detail
+                                    $grouped_data = [];
                                     foreach ($detail_ros as $item) {
-                                        $nilai_pengurang = 0;
+                                        $grouped_data[$item['id_po_detail']][] = $item;
+                                    }
+
+                                    $no = 1;
+                                    foreach ($grouped_data as $id_po_detail => $rows) {
+                                        // Ambil baris pertama sebagai referensi data material
+                                        $first_row = $rows[0];
+
+                                        // Hitung nilai pengurang (dari ROS lain)
                                         $this->db->select('IF(SUM(a.qty_packing_list) IS NULL, 0, SUM(a.qty_packing_list)) as nilai_pengurang');
                                         $this->db->from('tr_ros_detail a');
-                                        $this->db->where('a.id_po_detail', $item['id_po_detail']);
-                                        $this->db->where('a.no_ros <>', $item['no_ros']);
+                                        $this->db->where('a.id_po_detail', $id_po_detail);
+                                        $this->db->where('a.no_ros <>', $first_row['no_ros']);
                                         $get_nilai_ros_used = $this->db->get()->row_array();
-                                        if (!empty($get_nilai_ros_used)) {
-                                            $nilai_pengurang += $get_nilai_ros_used['nilai_pengurang'];
+                                        $nilai_pengurang = (!empty($get_nilai_ros_used)) ? $get_nilai_ros_used['nilai_pengurang'] : 0;
+
+                                        // Loop setiap data coil/packing list untuk material ini
+                                        foreach ($rows as $index => $item) {
+                                            if ($index === 0) {
+                                                // BARIS UTAMA (HEADER MATERIAL)
+                                                echo '<tr class="row-material" data-id="' . $id_po_detail . '">';
+                                                echo '<td class="text-center no-urut">' . $no . '</td>';
+                                                echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
+                                                echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
+                                                echo '<td class="text-center">' . $item['currency'] . '</td>';
+                                                echo '<td class="text-end">' . number_format($item['price_unit']) . '</td>';
+                                                echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
+                                                echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
+                                            } else {
+                                                // BARIS CHILD (COIL BERIKUTNYA)
+                                                echo '<tr class="child-' . $id_po_detail . '">';
+                                                echo '<td colspan="7"></td>'; // Kosongkan kolom material info
+                                            }
+
+                                            // KOLOM INPUT (Sama untuk baris utama maupun child)
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_kotor][]" class="form-control auto_num text-end" value="' . $item['berat_kotor'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_bersih][]" class="form-control auto_num text-end" value="' . $item['berat_bersih'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][length][]" class="form-control auto_num text-end" value="' . $item['length'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][biaya_masuk][]" class="form-control auto_num text-end calculate" value="' . $item['biaya_masuk'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][forwarding][]" class="form-control auto_num text-end calculate" value="' . $item['forwarding_cost'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][total_nilai][]" class="form-control auto_num text-end calculate" value="' . $item['total_nilai'] . '"></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][no_coil][]" class="form-control" value="' . $item['no_coil'] . '"></td>';
+
+                                            echo '<td class="text-center">';
+                                            if ($index === 0) {
+                                                // Tombol Tambah di baris pertama
+                                                echo '<button type="button" class="btn btn-sm btn-primary add-row-child" data-id="' . $id_po_detail . '"><i class="fa fa-plus"></i></button>';
+                                            } else {
+                                                // Tombol Hapus di baris child
+                                                echo '<button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button>';
+                                            }
+                                            echo '</td>';
+                                            echo '</tr>';
+
+                                            // Hitung Total Price untuk footer
+                                            $ttl_price_detail += $item['total_nilai'];
                                         }
-
-                                        echo '<tr>';
-                                        echo '<td class="text-center">' . $no . '</td>';
-                                        echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
-                                        echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
-                                        echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                        echo '<td class="text-end">' . number_format($item['price_unit']) . '</td>';
-                                        echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
-                                        echo '<td class="text-center">' . $item['qty_po'] . '</td>';
-                                        echo '<td class="text-center">' . number_format($nilai_pengurang, 2) . '</td>';
-                                        echo '<td class="text-center">' . number_format($item['qty_packing_list'] - $nilai_pengurang, 2) . '</td>';
-                                        echo '<td class="text-center">
-                                        <input type="text" name="qty_packing_list_' . $item['id_po_detail'] . '" id="" class="form-control form-control-sm auto_num text-end qty_packing_list" value="' . $item['qty_packing_list'] . '" data-id="' . $item['id_po_detail'] . '" data-harga_satuan="' . $item['price_unit'] . '">
-                                    </td>';
-                                        echo '<td class="text-end total_price_' . $item['id_po_detail'] . '">' . number_format(($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']) . '</td>';
-                                        echo '</tr>';
-
-                                        $ttl_price_detail += (($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']);
                                         $no++;
                                     }
                                 }
