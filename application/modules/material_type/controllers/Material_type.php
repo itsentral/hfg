@@ -74,7 +74,7 @@ class Material_type extends Admin_Controller
         'category'  => 'material',
         'code_lv1'  => $code,
         'nama'      => $nama,
-        'status'    => $status,
+        // 'status'    => $status,
         $last_by    => $this->id_user,
         $last_date  => $this->datetime
       ];

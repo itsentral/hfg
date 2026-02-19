@@ -80,7 +80,7 @@ class Material_jenis extends Admin_Controller
         'code_lv2'  => $code_lv2,
         'code_lv3'  => $code,
         'nama'      => $nama,
-        'status'    => $status,
+        // 'status'    => $status,
         $last_by    => $this->id_user,
         $last_date  => $this->datetime
       ];
