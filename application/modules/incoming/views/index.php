@@ -8,7 +8,7 @@ $ENABLE_DELETE  = has_permission('Incoming.Delete');
 <div class="card">
     <div class="card-header bg-white d-flex align-items-center justify-content-between">
         <?php if ($ENABLE_ADD) : ?>
-            <a href="<?= base_url('Incoming/add') ?>" class="btn btn-success add">
+            <a href="<?= base_url('incoming/add') ?>" class="btn btn-success add">
                 <i class="fa fa-plus me-1"></i> Incoming
             </a>
         <?php endif; ?>
