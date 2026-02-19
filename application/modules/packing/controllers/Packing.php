@@ -14,9 +14,6 @@ class Packing extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(
-			array('Material/material_model')
-		);
 		$this->template->title('Manage Data Unit');
 		$this->template->page_icon('fa fa-building-o');
 
