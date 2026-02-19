@@ -178,12 +178,18 @@ class Supplier extends Admin_Controller
 		$country    = $this->db->order_by('name', 'asc')->get_where('country_all', array('iso3 !=' => NULL))->result_array();
 		$provinsi   = $this->db->order_by('urut', 'asc')->get('provinsi')->result_array();
 		$currency   = $this->db->order_by('negara', 'asc')->get('mata_uang')->result_array();
+		$prov 		= $this->supplier_model->get_data('prov');
+		$kabkot 	= $this->supplier_model->get_data('kabkot');
+		$kec 		= $this->supplier_model->get_data('kec');
 
 		$data = [
-			'header' => $header,
-			'country' => $country,
-			'provinsi' => $provinsi,
-			'currency' => $currency,
+			'header' 	=> $header,
+			'country' 	=> $country,
+			'provinsi' 	=> $provinsi,
+			'currency' 	=> $currency,
+			'prov'		=> $prov,
+			'kabkot'	=> $kabkot,
+			'kec'		=> $kec,
 		];
 
 		$this->template->title('Edit Supplier');
