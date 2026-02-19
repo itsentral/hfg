@@ -186,10 +186,10 @@ class Hscode extends Admin_Controller
         } else {
             $this->db->trans_commit();
             $return = [
-                'msg' => 'Success Save data Customer.',
+                'msg' => 'Success Save data HS Code.',
                 'status' => 1,
             ];
-            $keterangan = 'SUCCESS save data Customer ' . $data['id'] . ', HS Code name : ' . $data['description'];
+            $keterangan = 'SUCCESS save data HS Code ' . $data['id'] . ', HS Code name : ' . $data['description'];
             $status = 1;
             $nm_hak_akses = $this->addPermission;
             $kode_universal = $data['id'];

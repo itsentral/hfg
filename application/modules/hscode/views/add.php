@@ -209,14 +209,16 @@
                             <div class="col-md-4">
                                 <input type="number" class="form-control text-end" name="kuota_internal" value="<?= (isset($hs->kuota_internal) && $hs->kuota_internal) ? $hs->kuota_internal : ''; ?>" id="kuota_internal">
                             </div>
-                            <div class="col-md-4">
-                                <button type="button" id="add-kuota" title="Add Kuota" class="btn btn-outline-primary btn-md">
-                                    <i class="fas fa-plus"></i> Add
-                                </button>
-                                <button type="button" id="cancel-kuota" title="Cancel Kuota" class="btn btn-outline-danger btn-md">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
+                            <?php if (!empty($hs)) : ?>
+                                <div class="col-md-4">
+                                    <button type="button" id="add-kuota" title="Add Kuota" class="btn btn-outline-primary btn-md">
+                                        <i class="fas fa-plus"></i> Add
+                                    </button>
+                                    <button type="button" id="cancel-kuota" title="Cancel Kuota" class="btn btn-outline-danger btn-md" style="display:none;">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <!-- Sisi Kanan -->
@@ -953,12 +955,14 @@
 
         $(document).on('click', '#add-kuota', function() {
             $('#form-kuota').removeAttr('hidden'); // Tampilkan form
+            $('#cancel-kuota').show();
             $('#newKuota').val('').focus(); // Kosongkan input dan fokus
         });
 
         // 2. Logic Hide/Cancel Form Kuota Baru
         $(document).on('click', '#cancel-kuota', function() {
             $('#form-kuota').attr('hidden', true); // Sembunyikan form
+            $(this).hide();
             $('#newKuota').val(''); // Reset input
         });
 
