@@ -18,6 +18,7 @@ class Incoming extends Admin_Controller
 
     public function index()
     {
+
         $this->template->render('index');
     }
 
@@ -140,7 +141,7 @@ class Incoming extends Admin_Controller
 
             // 3. Proses jika OK
             if ($val['status_qc'] == 'OK') {
-                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_kotor, $get_po->hargasatuan, $kode_incoming, $post['no_po']);
+                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_kotor, $get_po->hargasatuan, $kode_incoming, $post['no_po'], $val['no_coil']);
 
                 // Update qty_in di detail PO
                 $this->db->set('qty_in', 'qty_in + ' . (float)$aktual_kotor, FALSE);
@@ -195,7 +196,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $harga_po, $kode_trans, $no_po)
+    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $harga_po, $kode_trans, $no_po, $no_coil)
     {
         $get_stock = $this->db->get_where('warehouse_stock', [
             'id_material' => $id_material,
@@ -204,6 +205,8 @@ class Incoming extends Admin_Controller
 
         $qty_awal = (!empty($get_stock)) ? $get_stock->qty_stock : 0;
         $harga_lama = (!empty($get_stock)) ? $get_stock->harga_beli : 0;
+        $qty_book_awal = (!empty($get_stock)) ? $get_stock->qty_booking : 0;
+        $qty_free_awal = (!empty($get_stock)) ? $get_stock->qty_free : 0;
 
         $nilai_lama = $qty_awal * $harga_lama;
         $nilai_baru = $qty_in * $harga_po;
@@ -217,6 +220,8 @@ class Incoming extends Admin_Controller
                 'nm_product'  => $nm_material,
                 'id_gudang'   => 1,
                 'kd_gudang'   => 'PUS',
+                'incoming'    => $qty_in,
+                'qty_book'    => $qty_book_awal,
                 'qty_stock'   => $qty_in,
                 'qty_free'    => $qty_in,
                 'harga_beli'  => $costbook,
@@ -226,8 +231,10 @@ class Incoming extends Admin_Controller
             ]);
         } else {
             $this->db->update('warehouse_stock', [
+                'incoming'    => $qty_in,
                 'qty_stock'   => $qty_akhir,
-                'qty_free'    => $get_stock->qty_free + $qty_in,
+                'qty_book'    => $qty_book_awal,
+                'qty_free'    => $qty_free_awal + $qty_in,
                 'harga_beli'  => $costbook,
                 'total_nilai' => $qty_akhir * $costbook,
                 'update_by'   => $this->auth->user_id(),
@@ -239,12 +246,16 @@ class Incoming extends Admin_Controller
             'id_material'     => $id_material,
             'nm_material'     => $nm_material,
             'id_gudang'       => 1,
-            'kd_gudang'       => 'GUDANG PUSAT',
+            'kd_gudang'       => 'PUS',
+            'id_gudang_dari'  => 1,
+            'kd_gudang_dari'  => 'PUS',
+            'id_gudang_ke'    => 1,
+            'kd_gudang_ke'    => 'PUS',
             'qty_stock_awal'  => $qty_awal,
             'qty_stock_akhir' => $qty_akhir,
             'no_ipp'          => $kode_trans,
             'jumlah_mat'      => $qty_in,
-            'ket'             => 'QC Incoming Coil Check (PO: ' . $no_po . ')',
+            'ket'             => 'QC Incoming Coil Check (Coil NO: ' . $no_coil . ' , PO: ' . $no_po . ')',
             'update_by'       => $this->auth->user_id(),
             'update_date'     => date('Y-m-d H:i:s')
         ]);
@@ -255,9 +266,17 @@ class Incoming extends Admin_Controller
             'tgl_transaksi' => date('Y-m-d H:i:s'),
             'code_lv4'      => $id_material,
             'nm_product'    => $nm_material,
+            'qty'           => $qty_awal,
+            'qty_book'      => $qty_book_awal,
+            'qty_free'      => $qty_free_awal,
             'qty_akhir'     => $qty_akhir,
             'qty_transaksi' => $qty_in,
-            'harga_stok'    => $costbook
+            'qty_book_akhir'      => $qty_book_awal,
+            'qty_free_akhir'      => $qty_free_awal + $qty_in,
+            'harga_stok'    => $costbook,
+            'status_transaksi' => 'in',
+            'created_by' => $this->auth->user_id(),
+            'created_on' => date('Y-m-d H:i:s'),
         ]);
     }
 
