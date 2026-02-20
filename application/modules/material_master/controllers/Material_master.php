@@ -140,11 +140,6 @@ class Material_master extends Admin_Controller
         $last_date  => $this->datetime
       ];
 
-      // echo '<pre>';
-      // print_r($dataProcess1);
-      // echo '</pre>';
-      // die();
-
       //UPLOAD DOCUMENT
       $dataProcess2 = [];
       if (!empty($_FILES['photo']["tmp_name"])) {
@@ -175,6 +170,9 @@ class Material_master extends Admin_Controller
         'code_lv4' => $code_lv4,
         'nm_material' => $nama,
         'id_gudang' => 1,
+        'kd_gudang' => 'PUS',
+        'id_unit' => $id_unit,
+        'id_unit_packing' => $id_unit_packing,
         'kd_gudang' => 'PUS',
         'update_by' => $this->id_user,
         'update_date' => $this->datetime
