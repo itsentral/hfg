@@ -97,26 +97,25 @@
 
         $(document).on('change', '.changeSave', function() {
             var nomor = $(this).data('no');
-            var id_material = $(this).data('id_material');
-            var tanggal = $('#tgl_butuh').val();
-
+            var target = $(this).attr('name');
             var stock_awal = getNum(($('#stock_awal_' + nomor).val() || '').split(",").join(""));
             var forecast = getNum(($('#forecast_' + nomor).val() || '').split(",").join(""));
-            var keterangan = $('#keterangan_' + nomor).val();
 
-            var total_purchase = stock_awal + forecast;
+            if (target === 'forecast') {
+                var total_purchase = stock_awal + forecast;
+                $('#purchase_' + nomor).val(number_format(total_purchase, 2));
+            }
 
-            $('#purchase_' + nomor).val(number_format(total_purchase, 2));
+            var current_purchase = getNum(($('#purchase_' + nomor).val() || '').split(",").join(""));
 
             var HTML = $(this).parents('tr');
             var konversi = getNum((HTML.find('.konversi').text() || '').split(",").join(""));
             var propose_pack = 0;
 
-            if (konversi > 0 && total_purchase > 0) {
-                propose_pack = total_purchase / konversi;
+            if (konversi > 0 && current_purchase > 0) {
+                propose_pack = current_purchase / konversi;
             }
             HTML.find('.propose_packing').text(number_format(propose_pack, 2));
-
             $.ajax({
                 url: base_url + active_controller + '/save_reorder_change',
                 type: "POST",

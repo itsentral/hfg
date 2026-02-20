@@ -67,8 +67,6 @@ class Pr_material_model extends BF_Model
                 "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
                 "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$purchase}'>",
                 "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$row['kuota']}'>",
-                // "<div align='center' class='propose_packing'>" . number_format($purchase_pack, 2) . "</div>",
-                // "<div align='center'>{$satuan}</div>",
                 "<input type='text' name='keterangan' id='keterangan_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control input-sm changeSave' style='width:150px;' value='{$keterangan}'>",
             ];
 
