@@ -182,9 +182,9 @@ class Incoming extends Admin_Controller
         }
 
         // 6. Generate Jurnal & Hutang (Hanya 1x panggil)
-        if ($total_harga_check > 0) {
-            $this->_generate_jurnal_and_debt($kode_incoming, $post['no_po'], $total_harga_check, $post['id_supplier']);
-        }
+        // if ($total_harga_check > 0) {
+        //     $this->_generate_jurnal_and_debt($kode_incoming, $post['no_po'], $total_harga_check, $post['id_supplier']);
+        // }
 
         // Finalisasi Transaksi
         if ($this->db->trans_status() === FALSE) {
@@ -217,7 +217,7 @@ class Incoming extends Admin_Controller
             $this->db->insert('warehouse_stock', [
                 'id_material' => $id_material,
                 'code_lv4'    => $id_material,
-                'nm_product'  => $nm_material,
+                'nm_material'  => $nm_material,
                 'id_gudang'   => 1,
                 'kd_gudang'   => 'PUS',
                 'incoming'    => $qty_in,
@@ -265,7 +265,8 @@ class Incoming extends Admin_Controller
             'transaksi'     => "Incoming Material",
             'tgl_transaksi' => date('Y-m-d H:i:s'),
             'code_lv4'      => $id_material,
-            'nm_product'    => $nm_material,
+            'code_material' => $id_material,
+            'nm_material'   => $nm_material,
             'qty'           => $qty_awal,
             'qty_book'      => $qty_book_awal,
             'qty_free'      => $qty_free_awal,
