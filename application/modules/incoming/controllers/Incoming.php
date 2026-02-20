@@ -221,7 +221,7 @@ class Incoming extends Admin_Controller
                 'id_gudang'   => 1,
                 'kd_gudang'   => 'PUS',
                 'incoming'    => $qty_in,
-                'qty_book'    => $qty_book_awal,
+                'qty_booking'    => $qty_book_awal,
                 'qty_stock'   => $qty_in,
                 'qty_free'    => $qty_in,
                 'harga_beli'  => $costbook,
@@ -233,7 +233,7 @@ class Incoming extends Admin_Controller
             $this->db->update('warehouse_stock', [
                 'incoming'    => $qty_in,
                 'qty_stock'   => $qty_akhir,
-                'qty_book'    => $qty_book_awal,
+                'qty_booking'    => $qty_book_awal,
                 'qty_free'    => $qty_free_awal + $qty_in,
                 'harga_beli'  => $costbook,
                 'total_nilai' => $qty_akhir * $costbook,
