@@ -92,6 +92,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 
 	$(document).ready(function() {
 		initTable();
+		checkCountry();
 
 		// ADD - load form into modal
 		$(document).on('click', '.add_supplier', function() {
@@ -328,5 +329,22 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 				initSelect2InModal();
 			}
 		});
+	}
+
+	function checkCountry() {
+		var country = $('#id_country').val();
+
+		// Asumsi ISO3 Indonesia adalah 'IDN'
+		if (country === 'IDN') {
+			$('#indonesia-area').fadeIn(); // Munculkan jika Indonesia
+
+			// Aktifkan kembali required
+			$('#id_prov, #id_kabkot, #id_kec').prop('required', true);
+		} else {
+			$('#indonesia-area').fadeOut(); // Sembunyikan jika Luar Negeri
+
+			// Matikan required agar tidak error saat submit
+			$('#id_prov, #id_kabkot, #id_kec').prop('required', false).val(null).trigger('change');
+		}
 	}
 </script>
