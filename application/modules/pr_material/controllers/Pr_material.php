@@ -106,12 +106,14 @@ class Pr_material extends Admin_Controller
 
         $ArrSaveDetail = [];
         $SUM = 0;
+        $SUM_FORECAST = 0;
         foreach ($getraw_materials as $key => $value) {
             $SUM += $value['request'];
             $ArrSaveDetail[$key]['so_number']           = $so_number;
             $ArrSaveDetail[$key]['id_material']         = $value['code_lv4'];
             $ArrSaveDetail[$key]['propose_purchase']    = $value['request'];
             $ArrSaveDetail[$key]['note']                = $value['keterangan'];
+            $SUM_FORECAST                                 += $value['forecast'];
         }
 
         $ArrSaveHeader = array(
@@ -122,7 +124,7 @@ class Pr_material extends Admin_Controller
             'id_customer'       => 'C100-2401002',
             'project'           => 'Pengisian Stok Material',
             'qty_propose'       => $SUM,
-            'forecast'          => $value['forecast'],
+            'qty_forecast'      => $SUM_FORECAST,
             'tgl_dibutuhkan'    => $value['tgl_dibutuhkan'],
             'created_by'        => $this->auth->user_id(),
             'created_date'      => date('Y-m-d H:i:s'),

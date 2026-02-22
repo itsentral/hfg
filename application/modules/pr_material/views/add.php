@@ -97,9 +97,12 @@
 
         $(document).on('change', '.changeSave', function() {
             var nomor = $(this).data('no');
+            var id_material = $(this).data('id_material');
             var target = $(this).attr('name');
             var stock_awal = getNum(($('#stock_awal_' + nomor).val() || '').split(",").join(""));
             var forecast = getNum(($('#forecast_' + nomor).val() || '').split(",").join(""));
+            var keterangan = $('#keterangan_' + nomor).val().split(",").join("");
+            var tanggal = $('#tgl_butuh').val();
 
             if (target === 'forecast') {
                 var total_purchase = stock_awal + forecast;

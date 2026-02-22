@@ -50,6 +50,7 @@ class Pr_material_model extends BF_Model
             }
 
             $purchase = $row['request'] ?: $qty_pr;
+            $forecast = $row['forecast'];
             $purchase_pack = ($konversi > 0 && $purchase > 0) ? $purchase / $konversi : 0;
             $keterangan = $row['keterangan'] ?? '';
             $stock_awal = $row['max_stok'] - $row['qty_stock'];
@@ -64,7 +65,7 @@ class Pr_material_model extends BF_Model
                 "<div align='right'>" . number_format($row['min_stok']) . "</div>",
                 "<div align='right'>" . number_format($row['max_stok']) . "</div>",
                 "<div align='right'>" . number_format($outstanding_pr) . "<input type='hidden' name='stock_awal' id='stock_awal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' value='{$stock_awal}'></div>",
-                "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;'>",
+                "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$forecast}'>",
                 "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$purchase}'>",
                 "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$row['kuota']}'>",
                 "<input type='text' name='keterangan' id='keterangan_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control input-sm changeSave' style='width:150px;' value='{$keterangan}'>",
@@ -105,6 +106,7 @@ class Pr_material_model extends BF_Model
         COALESCE(a.konversi,0)   AS konversi,
         COALESCE(a.weight,0)    AS weight,
         COALESCE(a.request,0)    AS request,
+        COALESCE(a.forecast,0)    AS forecast,
         COALESCE(a.keterangan,'') AS keterangan
     ");
         $this->db->from('new_inventory_4 a');
