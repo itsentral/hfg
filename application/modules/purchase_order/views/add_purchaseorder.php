@@ -398,22 +398,22 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" onblur="cariTotal()" name="diskonkhusus">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;">
 								<td class="text-end" colspan="12"><b>Total (Exclude PPn)</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="totalexppn" onkeyup required name="totalexppn">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="totalexppn" name="totalexppn">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;">
 								<td class="text-end" colspan="12"><b>DPP</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="dpp" onkeyup required name="dpp">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="dpp" name="dpp">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;">
 								<td class="text-end" colspan="12"><b>PPn</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="ppn" onkeyup required name="ppn">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="ppn" name="ppn">
 								</td>
 							</tr>
 							<!-- <tr>
@@ -433,6 +433,14 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<td class="text-end" colspan="12"><b>Total Order</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control text-end" id="subtotal" onkeyup required name="subtotal">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="14">
+									<div class="form-check form-switch mb-3" style="float: right;">
+										<input class="form-check-input text-end" type="checkbox" id="show_tax" name="show_tax" value="Y">
+										<label class="form-check-label" for="show_tax"><b>Gunakan Pajak (PPn)</b></label>
+									</div>
 								</td>
 							</tr>
 						</tfoot>
@@ -707,6 +715,11 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 	var num_top = getNum($('.num_top').val());
 	$(document).ready(function() {
 		TotalSemua()
+
+		$('input[id^="dt_qty_"]').each(function() {
+			let id = $(this).attr('id').replace('dt_qty_', '');
+			HitAmmount(id);
+		});
 
 		$('.select2').select2({
 			width: '100%'
@@ -1343,6 +1356,20 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		$('.top_' + top_no).remove();
 	});
 
+	$(document).on('change', '#show_tax', function() {
+		if ($(this).is(':checked')) {
+			$('.row-pajak').fadeIn(); // Munculkan baris pajak
+		} else {
+			$('.row-pajak').fadeOut(); // Sembunyikan baris pajak
+
+			// Reset nilai pajak jadi 0 jika tidak digunakan
+			$('#ppn').val(0);
+			$('#dpp').val(0);
+
+			// Jalankan ulang fungsi hitung total (jika ada)
+			HitAmmountAll();
+		}
+	});
 
 	function addmaterial() {
 		var jumlah = $('#data_request').find('tr').length;
@@ -1794,6 +1821,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var fabcost = getNum($("#dt_fabcost_" + id).val().split(",").join(""));
 		var diskon = getNum($("#dt_diskon_" + id).val().split(",").join(""));
 		var pajak = getNum($("#dt_pajak_" + id).val().split(",").join(""));
+		var kuota_internal = getNum($("#dt_kuotainternal" + id).val().split(",").join(""));
 		var qty = getNum($("#dt_qty_" + id).val().split(",").join(""));
 		var hargasatuan = getNum($("#dt_hargasatuan_" + id).val().split(",").join(""));
 		var ppn = getNum($("#dt_nilai_ppn_" + id).val().split(",").join(""));
@@ -1815,6 +1843,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		// 	disc_num = ((hargasatuan * qty) * disc_persen / 100);
 		// }
 
+		var sisa_kuota = kuota_internal - qty;
 
 		var total = hargasatuan;
 		var jumlah = hargasatuan * qty;
@@ -1842,6 +1871,14 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		$("#disc_persen_" + id).val(number_format(disc_persen, 2));
 		$("#disc_num_" + id).val(number_format(disc_num, 2));
+
+		$('#dt_sisa_kuota_' + id).val(number_format(sisa_kuota, 2));
+
+		if (sisa_kuota < 0) {
+			$('#dt_sisa_kuota_' + id).css('color', 'red');
+		} else {
+			$('#dt_sisa_kuota_' + id).css('color', 'black');
+		}
 
 		var SUM_JML = 0
 		var SUM_DIS = 0
