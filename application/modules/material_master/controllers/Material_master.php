@@ -143,7 +143,7 @@ class Material_master extends Admin_Controller
       //UPLOAD DOCUMENT
       $dataProcess2 = [];
       if (!empty($_FILES['photo']["tmp_name"])) {
-        $target_dir     = "assets/material/";
+        $target_dir     = "uploads/material/";
         $target_dir_u   = FCPATH . $target_dir;
         $name_file      = 'msds-' . $code_lv4 . "-" . date('Ymdhis');
         $target_file    = $target_dir . basename($_FILES['photo']["name"]);

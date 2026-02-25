@@ -64,7 +64,7 @@ class Request_payment extends Admin_Controller
 				// print_r($this->input->post("tanggal_" . $val));
 				// exit;
 
-				$config['upload_path'] = './assets/expense/';
+				$config['upload_path'] = './uploads/expense/';
 				$config['allowed_types'] = '*';
 				$config['remove_spaces'] = TRUE;
 				$config['encrypt_name'] = TRUE;
@@ -1087,7 +1087,7 @@ class Request_payment extends Admin_Controller
 		$payment_date = date("Y-m-d");
 		$det_Jurnaltes1 = array();
 		$ix = 0;
-		$config['upload_path'] = './assets/expense/';
+		$config['upload_path'] = './uploads/expense/';
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = TRUE;
 		$config['encrypt_name'] = TRUE;

@@ -50,8 +50,8 @@
 									echo '<td class="text-left">' . $item->keterangan_pembayaran . '</td>';
 									echo '<td>';
 									echo '<a href="' . base_url('pembayaran_material/view_payment_new/' . $item->id_payment) . '" target="_blank" class="btn btn-sm btn-info view" title="View Request Payment"><i class="fa fa-eye"></i></a>';
-									if (file_exists('assets/expense/' . $item->link_doc) && $item->link_doc !== '') {
-										echo '<a href="' . base_url('assets/expense/' . $item->link_doc) . '" class="btn btn-sm btn-primary" style="margin-left: 5px;"><i class="fa fa-download"></i></a>';
+									if (file_exists('uploads/expense/' . $item->link_doc) && $item->link_doc !== '') {
+										echo '<a href="' . base_url('uploads/expense/' . $item->link_doc) . '" class="btn btn-sm btn-primary" style="margin-left: 5px;"><i class="fa fa-download"></i></a>';
 									}
 									echo '</td>';
 									echo '</tr>';
@@ -95,8 +95,8 @@
 									echo '<td class="text-left">' . $item->keterangan_pembayaran . '</td>';
 									echo '<td>';
 									echo '<a href="' . base_url('pembayaran_material/view_payment_new/' . $item->id_payment) . '" target="_blank" class="btn btn-sm btn-info view" title="View Request Payment"><i class="fa fa-eye"></i></a>';
-									if (file_exists('assets/expense/' . $item->link_doc) && $item->link_doc !== '') {
-										echo '<a href="' . base_url('assets/expense/' . $item->link_doc) . '" class="btn btn-sm btn-primary" style="margin-left: 5px;"><i class="fa fa-download"></i></a>';
+									if (file_exists('uploads/expense/' . $item->link_doc) && $item->link_doc !== '') {
+										echo '<a href="' . base_url('uploads/expense/' . $item->link_doc) . '" class="btn btn-sm btn-primary" style="margin-left: 5px;"><i class="fa fa-download"></i></a>';
 									}
 									echo '</tr>';
 

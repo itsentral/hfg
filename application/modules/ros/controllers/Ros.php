@@ -283,7 +283,7 @@ class Ros extends Admin_Controller
     {
         $post = $this->input->post();
 
-        $config['upload_path'] = './assets/ros'; //path folder
+        $config['upload_path'] = './uploads/ros'; //path folder
         $config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
         $config['max_size'] = 100000000; // Maximum file size in kilobytes (2MB).
         $config['encrypt_name'] = TRUE; // Encrypt the uploaded file's name.
@@ -302,7 +302,7 @@ class Ros extends Admin_Controller
 
             if ($this->upload->do_upload('upload_pib')) {
                 $data_upload_po = $this->upload->data();
-                $upload_pib = 'assets/ros/' . $data_upload_po['file_name'];
+                $upload_pib = 'uploads/ros/' . $data_upload_po['file_name'];
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
@@ -391,7 +391,7 @@ class Ros extends Admin_Controller
 
             if ($this->upload->do_upload('upload_pib')) {
                 $data_upload_po = $this->upload->data();
-                $upload_pib = 'assets/ros/' . $data_upload_po['file_name'];
+                $upload_pib = 'uploads/ros/' . $data_upload_po['file_name'];
             } else {
                 $get_ros = $this->db->get_where('tr_ros', ['id' => $post['no_ros']])->row_array();
 

@@ -1275,7 +1275,7 @@ class Pembayaran_material extends Admin_Controller
 
 	// 	$id_payment_paid = $this->Pembayaran_material_model->generate_id_payment_paid($kode_bank, $post['tgl_bayar']);
 
-	// 	$config['upload_path'] = 'assets/expense/';
+	// 	$config['upload_path'] = 'uploads/expense/';
 	// 	$config['allowed_types'] = '*';
 	// 	$config['remove_spaces'] = TRUE;
 	// 	$config['encrypt_name'] = TRUE;
@@ -1465,7 +1465,7 @@ class Pembayaran_material extends Admin_Controller
 		$selisih_total = ($total_doc + $bank_charge) - ($payment_bank + $payment_bank_charge);
 
 		// -------- upload --------
-		$config['upload_path']   = 'assets/expense/';
+		$config['upload_path']   = 'uploads/expense/';
 		$config['allowed_types'] = '*';
 		$config['remove_spaces'] = TRUE;
 		$config['encrypt_name']  = TRUE;

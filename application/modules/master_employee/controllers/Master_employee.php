@@ -125,7 +125,7 @@ class Master_employee extends Admin_Controller
 			);
 
 			//UPLOAD DOCUMENT
-			$target_dir     = "assets/employee/";
+			$target_dir     = "uploads/employee/";
 			$target_dir_u   = FCPATH . $target_dir;
 			$name_file      = 'ttd-' . uniqid() . "-" . date('Ymdhis');
 			$target_file    = $target_dir . basename($_FILES['tanda_tangan']["name"]);
