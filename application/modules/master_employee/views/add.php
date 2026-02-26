@@ -69,7 +69,31 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     <input type="date" class="form-control" name="tgl_lahir" value="<?= $tgl_lahir ?>">
                 </div>
 
-                <div class='col-sm-4'>
+                <div class="col-md-6">
+                    <label class="form-label">Religion</label>
+                    <select name="agama" class="form-select">
+                        <option value="">Select Religion</option>
+                        <?php foreach ($agamax as $v): ?>
+                            <option value="<?= $v['name'] ?>" <?= ($v['name'] == $agama ? 'selected' : '') ?>>
+                                <?= strtoupper($v['data1']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <?php foreach ($genderx as $v): ?>
+                            <option value="<?= $v['name'] ?>" <?= ($v['name'] == $gender ? 'selected' : '') ?>>
+                                <?= strtoupper($v['data1']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class='col-sm-6'>
                     <label class='form-label'>Department</label>
                     <select name='department' id='department' class='form-select'>
                         <option value='0'>Select An Department</option>
@@ -82,30 +106,18 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Religion</label>
-                    <select name="agama" class="form-select">
-                        <option value="">Select Religion</option>
-                        <?php foreach ($agamax as $v): ?>
-                            <option value="<?= $v['name'] ?>" <?= ($v['name'] == $agama ? 'selected' : '') ?>>
-                                <?= strtoupper($v['data1']) ?>
-                            </option>
-                        <?php endforeach; ?>
+                <div class="col-md-6">
+                    <label class="form-label">Last Education</label>
+                    <select name='pendidikan' id='pendidikan' class='form-control input-md'>
+                        <option value='0'>Select An Last Education</option>
+                        <?php
+                        foreach ($pendidikanx as $val => $valx) {
+                            $selected = ($valx['name'] == $pendidikan) ? 'selected' : '';
+                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . $valx['data1'] . "</option>";
+                        }
+                        ?>
                     </select>
                 </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Gender</label>
-                    <select name="gender" class="form-select">
-                        <option value="">Select Gender</option>
-                        <?php foreach ($genderx as $v): ?>
-                            <option value="<?= $v['name'] ?>" <?= ($v['name'] == $gender ? 'selected' : '') ?>>
-                                <?= strtoupper($v['data1']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
             </div>
         </div>
         <div class="card-header bg-white">
@@ -125,21 +137,28 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     <textarea class="form-control" rows="3" name="domisili_alamat"><?= $domisili_alamat ?></textarea>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Contact Number</label>
-                    <?php
-                    echo form_input(array('id' => 'no_ponsel', 'name' => 'no_ponsel', 'class' => 'form-control input-md numberOnly', 'placeholder' => 'Contact Number'), $no_ponsel);
-                    ?>
-                </div>
-
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label">ID Card Postcode</label>
                     <input type="text" class="form-control numberOnly" name="ktp_kode_pos" value="<?= $ktp_kode_pos ?>">
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label">Domicile Postcode</label>
                     <input type="text" class="form-control numberOnly" name="domisili_kode_pos" value="<?= $domisili_kode_pos ?>">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Contact Number</label>
+                    <?php
+                    echo form_input(array('id' => 'no_ponsel', 'name' => 'no_ponsel', 'class' => 'form-control numberOnly', 'placeholder' => 'Contact Number'), $no_ponsel);
+                    ?>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <?php
+                    echo form_input(array('id' => 'email', 'name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email'), $email);
+                    ?>
                 </div>
 
             </div>
@@ -162,6 +181,52 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                 </div>
 
                 <div class="col-md-6">
+                    <label class="form-label">Account Bank</label>
+                    <select name="bank_account" id="bank_account" class="form-control select">
+                        <option value='0'>Select An Account Bank</option>
+                        <?php
+                        foreach ($bankx as $val => $valx) {
+                            $selected = ($valx['code'] == $bank_account) ? 'selected' : '';
+                            echo "<option value='" . $valx['code'] . "' " . $selected . ">" . strtoupper($valx['name']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Account Number</label>
+                    <?php
+                    echo form_input(array('id' => 'rek_number', 'name' => 'rek_number', 'class' => 'form-control', 'placeholder' => 'Account Number'), $rek_number);
+                    ?>
+                </div>
+
+                <div class="col-md-6">
+                    <label class='form-label'>Employee Status</label>
+                    <select name='sts_karyawan' id='sts_karyawan' class='form-control select'>
+                        <option value='0'>Select An Employee Status</option>
+                        <?php
+                        foreach ($sts_karyawanx as $val => $valx) {
+                            $selected = ($valx['name'] == $sts_karyawan) ? 'selected' : '';
+                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper($valx['data1']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class='form-label'>Status</label>
+                    <select name='status' id='status' class='form-control select'>
+                        <option value='0'>Select An Status</option>
+                        <?php
+                        foreach ($statusx as $val => $valx) {
+                            $selected = ($valx['name'] == $status) ? 'selected' : '';
+                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper($valx['data1']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
                     <label class="form-label">Join Date</label>
                     <input type="date" class="form-control" name="tgl_join" value="<?= $tgl_join ?>">
                 </div>
@@ -171,9 +236,104 @@ $tanda_tangan        = (!empty($header[0]->id)) ? $header[0]->tanda_tangan : '';
                     <input type="date" class="form-control" name="tgl_end" value="<?= $tgl_end ?>">
                 </div>
 
+                <div class="col-md-12">
+                    <label for="tanda_tangan" class="form-label">Upload Tanda Tangan (.jpeg/.jpg/.png)</label>
+
+                    <div class="d-flex flex-column gap-2">
+
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <!-- input asli disembunyikan -->
+                            <input type="file"
+                                name="tanda_tangan"
+                                id="tanda_tangan"
+                                class="d-none"
+                                accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+
+                            <!-- tombol pilih file -->
+                            <button type="button" class="btn btn-outline-warning" id="btnPickTtd">
+                                <i class="ti ti-upload me-1"></i> Choose File
+                            </button>
+
+                            <!-- nama file -->
+                            <span class="text-muted" id="ttdFileName">No file chosen</span>
+
+                            <!-- tombol clear -->
+                            <button type="button" class="btn btn-light border" id="btnClearTtd" style="display:none;">
+                                <i class="ti ti-x me-1"></i> Clear
+                            </button>
+                        </div>
+
+                        <!-- hint -->
+                        <small class="text-muted">
+                            Allowed: JPG/JPEG/PNG.
+                        </small>
+
+                        <!-- warning jika belum ada file existing -->
+                        <?php if (empty($tanda_tangan)) : ?>
+                            <small class="text-danger">Belum diupload !!!</small>
+                        <?php endif; ?>
+
+                        <!-- existing file -->
+                        <?php if (!empty($tanda_tangan)) : ?>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="badge bg-light text-dark border">
+                                    <i class="ti ti-file-description me-1"></i> Existing Tanda Tangan
+                                </span>
+
+                                <a href="<?= base_url() . $tanda_tangan; ?>" target="_blank" class="btn btn-sm btn-success">
+                                    <i class="ti ti-download me-1"></i> Download
+                                </a>
+
+                                <a href="<?= base_url() . $tanda_tangan; ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="ti ti-eye me-1"></i> Preview
+                                </a>
+                            </div>
+
+                            <!-- thumbnail preview -->
+                            <div>
+                                <img src="<?= base_url() . $tanda_tangan; ?>"
+                                    alt="Ttd"
+                                    style="width:160px; height:100px; object-fit:contain; border:1px solid #ddd; border-radius:6px; padding:4px; background:#fff;">
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+
+                    <script>
+                        (function() {
+                            const input = document.getElementById('tanda_tangan');
+                            const btnPick = document.getElementById('btnPickTtd');
+                            const btnClear = document.getElementById('btnClearTtd');
+                            const fileName = document.getElementById('ttdFileName');
+
+                            if (!input || !btnPick || !fileName) return;
+
+                            btnPick.addEventListener('click', function() {
+                                input.click();
+                            });
+
+                            input.addEventListener('change', function() {
+                                const name = (input.files && input.files.length) ? input.files[0].name : 'No file chosen';
+                                fileName.textContent = name;
+
+                                if (btnClear) {
+                                    btnClear.style.display = (input.files && input.files.length) ? 'inline-flex' : 'none';
+                                }
+                            });
+
+                            if (btnClear) {
+                                btnClear.addEventListener('click', function() {
+                                    input.value = '';
+                                    fileName.textContent = 'No file chosen';
+                                    btnClear.style.display = 'none';
+                                });
+                            }
+                        })();
+                    </script>
+                </div>
             </div>
         </div>
-        <div class="card-body text-end">
+        <div class="card-body text-center">
             <button type="button" id="back" class="btn btn-dark">
                 <i class="ti ti-arrow-left"></i> Back
             </button>

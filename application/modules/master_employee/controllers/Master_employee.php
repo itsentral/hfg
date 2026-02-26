@@ -170,7 +170,7 @@ class Master_employee extends Admin_Controller
 		} else {
 
 			$restHeader 	= $this->db->get_where('employee', array('id' => $id))->result();
-			// $bank 			= $this->db->get('bank')->result_array();
+			$bank 			= $this->db->get('bank')->result_array();
 			$department		= $this->db->order_by('nama')->get_where('ms_department', array('status' => '1', 'deleted_date' => NULL))->result_array();
 			$pendidikan		= $this->db->order_by('id')->get_where('list_help', array('group_by' => 'pendidikan', 'sts' => 'Y'))->result_array();
 			$agama			= $this->db->order_by('id')->get_where('list_help', array('group_by' => 'agama', 'sts' => 'Y'))->result_array();
@@ -181,7 +181,7 @@ class Master_employee extends Admin_Controller
 			$data = [
 				'departmentx'	=> $department,
 				'pendidikanx'	=> $pendidikan,
-				// 'bankx'			=> $bank,
+				'bankx'			=> $bank,
 				'agamax'		=> $agama,
 				'genderx'		=> $gender,
 				'sts_karyawanx'	=> $sts_karyawan,

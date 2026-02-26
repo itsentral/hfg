@@ -21,7 +21,7 @@ $ENABLE_DELETE  = has_permission('Hscode.Delete');
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>IDN Code</th>
+                        <th>Local Code</th>
                         <th>Description</th>
                         <th>Origin Code</th>
                         <th>Origin</th>

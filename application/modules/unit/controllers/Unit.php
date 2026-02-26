@@ -44,8 +44,8 @@ class Unit extends Admin_Controller
 			$datetime 	= date('Y-m-d H:i:s');
 
 			$id 		= $data['id'];
-			$code     	= trim(strtolower($data['code']));
-			$nama     	= trim(strtolower($data['nama']));
+			$code     	= $data['code'];
+			$nama     	= $data['nama'];
 
 			$field_by   = (empty($id)) ? 'created_by' : 'updated_by';
 			$field_date = (empty($id)) ? 'created_date' : 'updated_date';
