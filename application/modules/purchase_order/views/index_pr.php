@@ -75,14 +75,13 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								foreach ($get_materil as $materil) {
 									$no_materil += $materil->propose_purchase;
 
-									$get_po_materil = $this->db->query("SELECT a.id FROM dt_trans_po a WHERE a.idpr = '" . $materil->id . "' AND (a.tipe IS NULL OR a.tipe = '')")->num_rows();
+									$get_po_materil = $this->db->query("SELECT a.id FROM dt_trans_po a WHERE a.idpr = '" . $materil->id . "' AND (a.tipe IS NULL OR a.tipe = 'pr material')")->num_rows();
 									if ($get_po_materil > 0) {
 										$get_po_materil_qty = $this->db->query("SELECT IF(SUM(a.qty) IS NOT NULL, SUM(a.qty), 0) AS qty_materil FROM dt_trans_po a WHERE a.idpr = '" . $materil->id . "' AND (a.tipe IS NULL OR a.tipe = '')")->row();
 										$no_materil_po += $get_po_materil_qty->qty_materil;
 									}
 								}
 							}
-
 
 							if (isset($filter_status)) {
 								if ($no_materil > $no_materil_po) {

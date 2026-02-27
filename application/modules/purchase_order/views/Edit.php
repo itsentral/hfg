@@ -315,7 +315,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 																<input type='hidden' class='form-control input-sm ch_ppn' id='dt_ch_ppn_" . $key . "' value='" . $value->ppn . "'>
 														</td>
 
-														<td><input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly></td>
+														<td>
+															<input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly>
+															<input type='text' class='form-control input-sm'  id='dt_local_code" . $key . "' name='dt[" . $key . "][local_code]' value='" . $value->local_code . "' readonly>
+														</td>
 														<td><input type='text' class='form-control input-sm autoNumeric3' id='dt_kuotainternal" . $key . "' name='dt[" . $key . "][kuota_internal]' value='" . $value->kuota_internal . "' readonly></td>
 											  
 														<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>

@@ -3,6 +3,13 @@ $ENABLE_ADD     = has_permission('Purchase_Request.Add');
 $ENABLE_MANAGE  = has_permission('Purchase_Request.Manage');
 $ENABLE_VIEW    = has_permission('Purchase_Request.View');
 $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
+
+$noPrList = [];
+if (!empty($results['headerso'])) {
+	foreach ($results['headerso'] as $h) {
+		$noPrList[] = $h->no_pr;
+	}
+}
 ?>
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 <div class="card shadow-sm">
@@ -11,7 +18,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		<form id="data-form" method="post">
 			<input type="hidden" name="so_number" value="<?= implode(',', $results['param']) ?>">
 			<input type="hidden" class="count_all_prod" value="<?= count($results['getitemso']) ?>">
-
+			<input type="hidden" name="no_pr" value="<?= implode(',', $noPrList) ?>">
 			<div class="col-sm-12">
 				<div class="form-group row mb-3">
 					<!-- <div class="col-sm-6">
@@ -160,18 +167,6 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-6" hidden>
-						<div class="form-group row">
-							<div class="col-md-4">
-								<label for="id_customer">PR</label>
-							</div>
-							<div class="col-md-8">
-								<select id="no_pr" name="no_pr" class="form-control select2" required>
-									<option value="0">List Empty</option>
-								</select>
-							</div>
-						</div>
-					</div>
 				</div>
 				<div class="form-group row mb-3" hidden>
 					<div class="col-sm-6">
@@ -228,8 +223,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;" hidden>Width</th>
 								<th style="min-width: 100px;" hidden>Length</th>
-								<th style="min-width: 100px;">Qty PR</th>
-								<th style="min-width: 100px;">PO Qty</th>
+								<th style="min-width: 150px;">Qty PR</th>
+								<th style="min-width: 150px;">PO Qty</th>
 								<th style="min-width: 100px;">Unit Measurement</th>
 								<th style="min-width: 75px;">Unit Packing</th>
 								<th style="min-width: 100px;" hidden>Rate LME</th>
@@ -317,7 +312,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<input type='hidden' class='form-control input-sm ch_ppn' id='dt_ch_ppn_" . $key . "'>
 													</td>
 
-													<td><input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly></td>
+													<td>
+														<input type='hidden' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly>
+														<input type='text' class='form-control input-sm'  id='dt_local_code" . $key . "' name='dt[" . $key . "][local_code]' value='" . $value->local_code . "' readonly>
+													</td>
 													<td><input type='text' class='form-control input-sm autoNumeric3' id='dt_kuotainternal" . $key . "' name='dt[" . $key . "][kuota_internal]' value='" . $value->kuota_internal . "' readonly></td>
 
 													<td hidden>
@@ -329,7 +327,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 													</td>
 												  
 												  	<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][kode_barang]' id='dt_kode_barang_" . $key . "' value='" . $value->code . $value->code1 . "' readonly></td>
-												  	<td><input type='text' class='form-control input-sm text-center' id='dt_pr_" . $key . "' name='dt[" . $key . "][pr]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po)  . "' readonly ></td>
+												  	<td><input type='text' class='form-control input-sm auto_num text-center' id='dt_pr_" . $key . "' name='dt[" . $key . "][pr]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po)  . "' readonly ></td>
 														
 													<td hidden><input type='text' class='form-control input-sm' name='dt[" . $key . "][description]' id='dt_description_" . $key . "' value=''></td>
 												  	<td hidden><input type='hidden' class='form-control input-sm autoNumeric' name='dt[" . $key . "][width]' id='dt_width_" . $key . "'  value='" . $width . "'></td>
@@ -337,7 +335,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 													
 													<td>
 														<input type='hidden' class='form-control input-sm autoNumeric' name='dt[" . $key . "][totalweight]' id='dt_totalweight_" . $key . "' value='" . $total_weight . "'  onkeyup='HitAmmount(" . $key . ")'>
-														<input type='text' class='form-control input-sm text-center' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po) . "' onkeyup='HitAmmount(" . $key . ")'>
+														<input type='text' class='form-control input-sm auto_num text-center' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po) . "' onkeyup='HitAmmount(" . $key . ")'>
 													</td>
 													<td class='text-center'>" . ucfirst($value->unit_measure) . "</td>
 													<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>

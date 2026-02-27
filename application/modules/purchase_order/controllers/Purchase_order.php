@@ -1571,7 +1571,7 @@ class Purchase_order extends Admin_Controller
 				'id_suplier'		=> $post['supplier'],
 				'loi'				=> $post['loi'],
 				'nominal_kurs'		=> $nominal_kurs,
-				'tanggal'			=> $post['tanggal'],
+				'tanggal'			=> $tgl,
 				'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
 				'term'				=> $post['term'],
 				'cif'				=> $post['cif'],
@@ -1599,7 +1599,6 @@ class Purchase_order extends Admin_Controller
 				'tipe'				=> 'pr material'
 			];
 		}
-
 		//Add Data
 		$insert_tr_purchase_order = $this->db->insert('tr_purchase_order', $data);
 
@@ -1623,7 +1622,7 @@ class Purchase_order extends Admin_Controller
 					'hscode'				=> $used['hscode'],
 					'kuota_internal'		=> str_replace(",", "", $used['kuota_internal']),
 					'description'			=> $used['description'],
-					'qty'					=> $used['qty'],
+					'qty'					=> str_replace(",", "", $used['qty']),
 					'width'					=> str_replace(",", "", $used['width']),
 					'rate_lme'				=> $used['ratelme'],
 					'fabcost'				=> str_replace(",", "", $used['fabcost']),
@@ -1678,7 +1677,11 @@ class Purchase_order extends Admin_Controller
 		$this->db->where_in('so_number', explode(',', $post['so_number']));
 		$countMat = $this->db->get()->row_array();
 		if (count($countMat) > 0) {
-			$update_material_planning = $this->db->where_in('so_number', explode(',', $post['so_number']))->update('material_planning_base_on_produksi', ['po_number' => $code, 'po_date' => date('Y-m-d')]);
+			$update_material_planning = $this->db->where_in('so_number', explode(',', $post['so_number']))->update('material_planning_base_on_produksi', ['po_number' => $code, 'po_date' => $tgl]);
+			if (!$update_material_planning) {
+				print_r($this->db->error());
+				exit;
+			}
 		}
 
 		// Untuk PR Departemen
@@ -3179,6 +3182,7 @@ class Purchase_order extends Admin_Controller
 		$getitemso = $this->db->query("
 			SELECT 
 				a.id as id,
+				m.no_pr as no_pr,
 				a.so_number as so_number,
 				a.id_material as id_material,
 				a.propose_purchase as propose_purchase,
@@ -3191,9 +3195,11 @@ class Purchase_order extends Admin_Controller
 				f.code as packing_unit2,
 				IF(g.code IS NOT NULL, g.code, h.code) as unit_measure,
 				c.hscode,
+				hs.local_code,
 				hs.kuota_internal
 			FROM
 				material_planning_base_on_produksi_detail a
+				LEFT JOIN material_planning_base_on_produksi m ON m.so_number = a.so_number
 				LEFT JOIN warehouse_stock b ON b.id_material = a.id_material
 				LEFT JOIN new_inventory_4 c ON c.code_lv4 = a.id_material 
 				LEFT JOIN accessories d ON d.id = a.id_material
@@ -3211,6 +3217,7 @@ class Purchase_order extends Admin_Controller
 
 			SELECT
 				a.id as id,
+				a.no_pr as no_pr,
 				a.no_pengajuan as so_number,
 				'' as id_material,
 				a.qty as propose_purchase,
@@ -3223,6 +3230,7 @@ class Purchase_order extends Admin_Controller
 				'' as packing_unit2,
 				b.code as unit_measure,
 				'' as hscode,         
+				'' as local_code,         
     			0 as kuota_internal 
 			FROM
 				rutin_non_planning_detail a 
@@ -3236,6 +3244,7 @@ class Purchase_order extends Admin_Controller
 
 			SELECT
 				a.id as id,
+				a.no_pr as no_pr,
 				a.code_plan as so_number,
 				'' as id_material,
 				a.rev_qty as propose_purchase,
@@ -3248,6 +3257,7 @@ class Purchase_order extends Admin_Controller
 				'' as packing_unit2,
 				'Pcs' as unit_measure,
 				'' as hscode,         
+				'' as localcode,         
     			0 as kuota_internal
 			FROM
 				asset_planning a 
@@ -3276,7 +3286,7 @@ class Purchase_order extends Admin_Controller
 			'mata_uang' => $mata_uang,
 			// 'matauang' => $matauang,
 			'param' => $getparam,
-			// 'headerso' => $getso,
+			'headerso' => $getso,
 			'getitemso' => $getitemso,
 			'list_supplier' => $list_supplier,
 			'list_department' => $list_department,

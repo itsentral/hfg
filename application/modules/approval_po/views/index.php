@@ -9,8 +9,7 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 <div class="card shadow-sm">
 	<div class="card-body">
 		<!-- Filters -->
-		<div class="row mb-3">
-			<!-- Product Type Filter -->
+		<!-- <div class="row mb-3">
 			<div class="col-md-3 mb-3">
 				<label for="product" class="form-label">Product Type</label>
 				<select name="product" id="product" class="form-select" onchange="filterData()">
@@ -21,7 +20,6 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 				</select>
 			</div>
 
-			<!-- Costcenter Filter -->
 			<div class="col-md-3 mb-3">
 				<label for="costcenter" class="form-label">Costcenter</label>
 				<select name="costcenter" id="costcenter" class="form-select" onchange="filterData()">
@@ -31,7 +29,7 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 					<?php } ?>
 				</select>
 			</div>
-		</div>
+		</div> -->
 
 		<!-- Data Table -->
 		<div class="table-responsive">

@@ -260,52 +260,66 @@ class Pr_model extends BF_Model
 	public function cariPurchaserequest($filter_status = null)
 	{
 		$query = $this->db->query('
-			SELECT 
-				a.so_number as so_number,
-				a.no_pr as no_pr,
-				a.tgl_so as tgl_so, 
-				b.nm_lengkap as nama_user,
-				"pr material" as tipe_pr
-			FROM
-				material_planning_base_on_produksi a
-				LEFT JOIN users b ON b.id_user = a.booking_by
-			WHERE
-				(SELECT COUNT(x.id) as hitung FROM material_planning_base_on_produksi_detail x WHERE x.so_number = a.so_number ) > 0 AND 
-				a.metode_pembelian = "1" AND 
-				a.close_pr IS NULL
-			UNION ALL
-			SELECT 
-				a.no_pengajuan as so_number,
-				a.no_pr as no_pr,
-				DATE_FORMAT(a.created_date, "%Y-%m-%d") as tgl_so,
-				b.nm_lengkap as nama_user,
-				"pr depart" as tipe_pr
-			FROM
-				rutin_non_planning_header a
-				LEFT JOIN users b ON b.id_user = a.created_by
-			WHERE
-				a.sts_app = "Y" AND
-				a.metode_pembelian = "1" AND
-				a.close_pr IS NULL
-			UNION ALL
-			SELECT 
-				a.id as so_number,
-				a.no_pr as no_pr,
-				DATE_FORMAT(a.created_date, "%Y-%m-%d") as tgl_so,
-				b.nm_lengkap as nama_user,
-				"pr asset" as tipe_pr
-			FROM
-				tran_pr_header a
-				LEFT JOIN users b ON b.id_user = a.created_by
-			WHERE
-				a.app_status_3 = "Y" AND
-				a.metode_pembelian = "1" AND
-				a.close_pr IS NULL
-		')->result();
+    SELECT 
+        a.so_number as so_number,
+        a.no_pr as no_pr,
+        a.tgl_so as tgl_so, 
+        b.nm_lengkap as nama_user,
+        "pr material" as tipe_pr
+    FROM
+        material_planning_base_on_produksi a
+        LEFT JOIN users b ON b.id_user = a.booking_by
+    WHERE
+        a.metode_pembelian = "1" AND 
+        a.close_pr IS NULL
+        AND EXISTS (
+            SELECT 1
+            FROM material_planning_base_on_produksi_detail d
+            LEFT JOIN (
+                SELECT 
+                    x.idpr,
+                    SUM(COALESCE(x.qty, 0)) AS qty_po
+                FROM dt_trans_po x
+                INNER JOIN tr_purchase_order h ON h.no_po = x.no_po
+                GROUP BY x.idpr
+            ) po ON po.idpr = d.id
+            WHERE 
+                d.so_number = a.so_number
+                AND COALESCE(NULLIF(d.propose_rev, 0), d.propose_purchase, 0) > COALESCE(po.qty_po, 0)
+        )
 
-		// $query = $this->db->get();
-		// print_r($query);
-		// exit;
+    UNION ALL
+
+    SELECT 
+        a.no_pengajuan as so_number,
+        a.no_pr as no_pr,
+        DATE_FORMAT(a.created_date, "%Y-%m-%d") as tgl_so,
+        b.nm_lengkap as nama_user,
+        "pr depart" as tipe_pr
+    FROM
+        rutin_non_planning_header a
+        LEFT JOIN users b ON b.id_user = a.created_by
+    WHERE
+        a.sts_app = "Y" AND
+        a.metode_pembelian = "1" AND
+        a.close_pr IS NULL
+
+    UNION ALL
+
+    SELECT 
+        a.id as so_number,
+        a.no_pr as no_pr,
+        DATE_FORMAT(a.created_date, "%Y-%m-%d") as tgl_so,
+        b.nm_lengkap as nama_user,
+        "pr asset" as tipe_pr
+    FROM
+        tran_pr_header a
+        LEFT JOIN users b ON b.id_user = a.created_by
+    WHERE
+        a.app_status_3 = "Y" AND
+        a.metode_pembelian = "1" AND
+        a.close_pr IS NULL
+')->result();
 		return $query;
 	}
 

@@ -25,7 +25,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 						<th>No PO</th>
 						<th>No PR</th>
 						<th>No Incoming</th>
-						<th>Tanggal PO</th>
+						<th style="min-width: 75px;">Tanggal PO</th>
 						<th>Progress PO</th>
 						<!-- <th>PO</th> -->
 						<th>Vendor</th>
@@ -48,13 +48,15 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 							$numb++;
 
 							$no_pr = [];
-							$get_no_pr = $this->db->query("SELECT
+							$get_no_pr =
+								$this->db->query("
+							SELECT
 								b.no_pr as no_pr
 							FROM
 								material_planning_base_on_produksi_detail a
-								JOIN material_planning_base_on_produksi b ON b.so_number = a.so_number
+								LEFT JOIN material_planning_base_on_produksi b ON b.so_number = a.so_number
 							WHERE
-								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND (aa.tipe IS NULL OR aa.tipe = ''))
+								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND (aa.tipe IS NULL OR aa.tipe = 'pr material'))
 							GROUP BY b.no_pr
 
 							UNION ALL 
@@ -77,6 +79,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 							WHERE
 								a.id IN (SELECT aa.idpr FROM dt_trans_po aa WHERE aa.no_po = '" . $record->no_po . "' AND aa.tipe = 'pr asset')
 							GROUP BY a.no_pr")->result();
+
 							foreach ($get_no_pr as $item_pr) {
 								$no_pr[] = $item_pr->no_pr;
 							}
