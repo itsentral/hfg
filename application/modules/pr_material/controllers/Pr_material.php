@@ -357,13 +357,14 @@ class Pr_material extends Admin_Controller
 
         // Ambil data inventory level 4 (dulunya dari get_inventory_lv4)
         $GET_LEVEL4 = [];
-        $query = $this->db->select('code_lv4, nama')
+        $query = $this->db->select('code_lv4, nama, trade_name')
             ->from('new_inventory_4')
             ->where('deleted_date IS NULL')
             ->get()
             ->result_array();
         foreach ($query as $row) {
             $GET_LEVEL4[$row['code_lv4']] = ['nama' => $row['nama']];
+            $GET_LEVEL4[$row['code_lv4']] = ['trade_name' => $row['trade_name']];
         }
 
         // Ambil stok pusat (dulunya dari getStokMaterial)
@@ -433,7 +434,12 @@ class Pr_material extends Admin_Controller
             'tingkat_pr' => $data['tingkat_pr'],
             // 'keterangan_1' => $data['keterangan_1'],
             // 'keterangan_2' => $data['keterangan_2'],
-            'keterangan_3' => $data['keterangan_3']
+            'keterangan_3' => $data['keterangan_3'],
+            'sts_reject3' => null,
+            'sts_reject3_by' => null,
+            'sts_reject3_date' => null,
+            'rejected' => null,
+            'app_post' => 3,
         ], ['so_number' => $so_number]);
         if (!empty($ArrUpdate)) {
             $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');

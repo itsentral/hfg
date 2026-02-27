@@ -45,6 +45,7 @@
                             <th class="text-center">Id Material</th>
                             <th class="text-center">HS Code</th>
                             <th class="text-center" style="min-width: 200px;">Material</th>
+                            <th class="text-center" style="min-width: 200px;">Nama Lain</th>
                             <th class="text-center">Category</th>
                             <th class="text-center">Qty Stock</th>
                             <th class="text-center">Min Stock</th>

@@ -90,6 +90,7 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                         <tr>
                             <th class="text-center"><input type="checkbox" name="chk_all" id="chk_all"></th>
                             <th class="text-center">Material Name</th>
+                            <th class="text-center">Nama Lain</th>
                             <?php if ($pembeda == 'SO') { ?>
                                 <th class="text-center">Estimasi (Kg)</th>
                                 <th class="text-center">Stock Free (Kg)</th>
@@ -109,6 +110,7 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                         <?php foreach ($detail as $key => $value) {
                             $key++;
                             $nm_material = $value['nama'];
+                            $nm_lain = $value['trade_name'];
                             $stock_free = $value['stock_free'];
                             $use_stock = $value['use_stock'];
                             $sisa_free = $stock_free - $use_stock;
@@ -123,6 +125,7 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                                 <td class="text-left"><?= $nm_material ?>
                                     <input type="hidden" name="detail[<?= $key ?>][id]" value="<?= $value['id'] ?>">
                                 </td>
+                                <td><?= $nm_lain ?></td>
                                 <?php if ($pembeda == 'SO') { ?>
                                     <td class="text-right qty_order"><?= number_format($value['qty_order'], 5) ?></td>
                                     <td class="text-right stock_free"><?= number_format($stock_free, 5) ?></td>
@@ -340,7 +343,7 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                                         type: "success",
                                         timer: 7000
                                     });
-                                    window.location.href = base_url + active_controller + '/approval_management';
+                                    window.location.href = base_url + active_controller;
                                 } else {
                                     swal({
                                         title: "Reject Failed!",

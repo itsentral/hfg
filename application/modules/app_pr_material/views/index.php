@@ -1,9 +1,8 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
 
 <div class="card shadow-sm border-0">
-    <div class="card-header bg-white">
+    <!-- <div class="card-header bg-white">
         <div class="row g-2 align-items-end">
-            <!-- kalau memang hidden, biarkan hidden. Aku rapikan layoutnya -->
             <div class="col-md-6" hidden>
                 <label class="form-label mb-1"><b>Product Type</b></label>
                 <select name="product" id="product" class="form-control chosen-select">
@@ -28,7 +27,7 @@
                 </select>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="card-body">
         <div class="table-responsive">
@@ -140,8 +139,8 @@
                 url: siteurl + active_controller + 'data_side_approval',
                 type: "POST",
                 data: function(d) {
-                    d.costcenter = costcenter;
-                    d.product = product;
+                    d.costcenter = 0;
+                    d.product = 0;
                 },
                 cache: false,
                 error: function() {

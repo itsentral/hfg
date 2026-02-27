@@ -105,7 +105,7 @@ class App_pr_material extends Admin_Controller
 
             // Ambil detail
             $detail = $this->db
-                ->select('a.*, b.max_stok, b.min_stok, b.nama')
+                ->select('a.*, b.max_stok, b.min_stok, b.nama, b.trade_name')
                 ->join('new_inventory_4 b', 'a.id_material = b.code_lv4', 'left')
                 ->get_where('material_planning_base_on_produksi_detail a', ['a.so_number' => $so_number])
                 ->result_array();
@@ -338,7 +338,8 @@ class App_pr_material extends Admin_Controller
             'sts_reject' . $tingkat_approval . '_date' => date('Y-m-d H:i:s'),
             'reject_reason' . $tingkat_approval => $data['reject_reason'],
             'keterangan_' . $tingkat_approval => $data['keterangan_' . $tingkat_approval],
-            'app_post' => null
+            'app_post' => null,
+            'rejected' => 1,
         ];
 
         $this->db->update('material_planning_base_on_produksi', $ArrData, ['so_number' => $so_number]);

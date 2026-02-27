@@ -14,13 +14,14 @@
                     <tr>
                         <th style="width:60px;">#</th>
                         <th>No.PR</th>
-                        <th>Material</th>
-                        <th class="text-end">Qty</th>
+                        <th style="min-width: 200px;">Material</th>
+                        <th style="min-width: 200px;">Nama Lain</th>
+                        <th>Qty</th>
                         <th>Dibutuhkan</th>
                         <th>Status</th>
                         <th>Request By</th>
                         <th>Request Date</th>
-                        <th class="text-end" style="width:160px;">Option</th>
+                        <th style="min-width: 100px;">Option</th>
                     </tr>
                 </thead>
                 <tbody></tbody>

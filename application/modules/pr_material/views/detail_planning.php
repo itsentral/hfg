@@ -120,13 +120,13 @@ if (!empty($header)) {
 										echo "<td class='text-center'>" . number_format($value['propose_rev'], 2) . "</td>";
 										echo "<td class='text-left'>" . $value['note'] . "</td>";
 										if ($value['status_app'] == 'N') {
-											echo "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";
+											echo "<td class='text-center'><span class='badge bg-primary text-bold'>Waiting Process</span></td>";
 										}
 										if ($value['status_app'] == 'Y') {
-											echo "<td class='text-center'><span class='badge bg-green text-bold'>Approved</span></td>";
+											echo "<td class='text-center'><span class='badge bg-success text-bold'>Approved</span></td>";
 										}
 										if ($value['status_app'] == 'D') {
-											echo "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
+											echo "<td class='text-center'><span class='badge bg-danger text-bold'>Rejected</span></td>";
 										}
 										echo "</tr>";
 									}

@@ -58,8 +58,9 @@ class Pr_material_model extends BF_Model
             $nestedData = [
                 "<div align='center'>{$nomor}</div>",
                 "<div align='left'>{$row['code_lv4']}</div>",
-                "<div align='left'>{$row['hscode']}</div>",
+                "<div align='left'>{$row['local_code']}</div>",
                 "<div align='left'>" . strtoupper($row['nm_material']) . "</div>",
+                "<div align='left'>" . strtoupper($row['nm_lain']) . "</div>",
                 "<div align='left'>{$row['category']}</div>",
                 "<div align='right'>" . number_format($row['qty_stock']) . "</div>",
                 "<div align='right'>" . number_format($row['min_stok']) . "</div>",
@@ -98,7 +99,9 @@ class Pr_material_model extends BF_Model
         a.hscode,
         a.code_lv4               AS code_lv4,
         a.nama                   AS nm_material,
+        a.trade_name                   AS nm_lain,
         z.nama                   AS category,
+        h.local_code             AS local_code,
         h.kuota_internal         AS kuota,
         COALESCE(b.qty_stock,0)  AS qty_stock,
         COALESCE(a.min_stok,0)   AS min_stok,
@@ -165,7 +168,7 @@ class Pr_material_model extends BF_Model
         foreach ($query->result_array() as $row) {
             $nomor = $urut + $requestData['start'];
 
-            $this->db->select('a.propose_purchase, a.qty_order, b.nama as nm_barang, c.code as satuan');
+            $this->db->select('a.propose_purchase, a.qty_order, b.nama as nm_barang, b.trade_name as nama_lain, c.code as satuan');
             $this->db->from('material_planning_base_on_produksi_detail a');
             $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material', 'left');
             $this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
@@ -175,10 +178,12 @@ class Pr_material_model extends BF_Model
             $get_barang = $this->db->get()->result();
 
             $list_barang = [];
+            $list_lainnya = [];
             $list_qty_barang = [];
 
             foreach ($get_barang as $item) {
                 $list_barang[] = $item->nm_barang;
+                $list_lainnya[] = $item->nama_lain;
                 $jumlah = ($item->propose_purchase == null || $item->propose_purchase <= 0)
                     ? $item->qty_order
                     : $item->propose_purchase;
@@ -192,6 +197,7 @@ class Pr_material_model extends BF_Model
                 "<div align='center'>{$nomor}</div>",
                 "<div align='center'>{$row['no_pr']}</div>",
                 "<div align='left'>" . implode('<br><br>', $list_barang) . "</div>",
+                "<div align='left'>" . implode('<br><br>', $list_lainnya) . "</div>",
                 "<div align='left'>" . implode('<br><br>', $list_qty_barang) . "</div>",
                 "<div align='center'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</div>",
                 "<div align='center'><span class='badge' style='background-color: {$status_info['warna']};'>{$status_info['sts']}</span></div>",
@@ -225,6 +231,7 @@ class Pr_material_model extends BF_Model
         $this->db->from('material_planning_base_on_produksi a');
         $this->db->join('customer b', 'a.id_customer = b.id_customer', 'left');
         $this->db->join('users c', 'c.id_user = a.created_by', 'left');
+        // $this->db->join('new_inventory_4 i', 'i.code_lv4 = a.', 'left');
         $this->db->where("a.category IN ('pr material','base on production')");
         $this->db->where("a.booking_date IS NOT NULL");
         $this->db->where("a.close_pr IS NULL");

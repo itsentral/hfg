@@ -109,6 +109,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 								<tr class='bg-blue'>
 									<th class='text-center th'>#</th>
 									<th class='text-center th'>Material Name</th>
+									<th class='text-center th'>Nama Lain</th>
 									<th class='text-center th'>Min Stock</th>
 									<th class='text-center th'>Max Stock</th>
 									<th class='text-center th'>Min Order</th>
@@ -126,6 +127,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 									echo '<tr>';
 									echo '<td class="text-center">' . $no_non_pr . '</td>';
 									echo '<td>' . $item['nama'] . '</td>';
+									echo '<td>' . $item['trade_name'] . '</td>';
 									echo '<td class="text-right">' . number_format($item['min_stok'], 2) . '</td>';
 									echo '<td class="text-right">' . number_format($item['max_stok'], 2) . '</td>';
 									echo '<td class="text-right">' . number_format(0, 2) . '</td>';
@@ -148,6 +150,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 								<tr class='bg-blue'>
 									<th class='text-center th'>#</th>
 									<th class='text-center th'>Material Name</th>
+									<th class='text-center th'>Nama Lain</th>
 									<th class='text-center th'>Min Stock</th>
 									<th class='text-center th'>Max Stock</th>
 									<th class='text-center th'>Min Order</th>
@@ -161,8 +164,9 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 								<?php
 								foreach ($detail as $key => $value) {
 									$key++;
-									$get_material = $this->db->select('nama')->get_where('new_inventory_4', ['code_lv4' => $value['id_material']])->row_array();
+									$get_material = $this->db->select('nama, trade_name')->get_where('new_inventory_4', ['code_lv4' => $value['id_material']])->row_array();
 									$nm_material 	= (!empty($get_material)) ? $get_material['nama'] : '';
+									$nm_lain 	= (!empty($get_material)) ? $get_material['trade_name'] : '';
 									$stock_free 	= $value['stock_free'];
 									$use_stock 		= $value['use_stock'];
 									$sisa_free 		= $stock_free - $use_stock;
@@ -171,17 +175,11 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 									if ($propose > 0) {
 										echo "<tr>";
 										echo "<td class='text-center'>" . $key . "</td>";
-										echo "	<td class='text-left'>" . $nm_material . "
-										
-										</td>";
-										// echo "<td class='text-right qty_order'>".number_format($value['qty_order'],5)."</td>";
-										// echo "<td class='text-right stock_free'>".number_format($stock_free,5)."</td>";
-										// echo "<td class='text-right stock_free'>".number_format($use_stock,5)."</td>";
-										// echo "<td class='text-right sisa_free'>".number_format($sisa_free,5)."</td>";
+										echo "	<td class='text-left'>" . $nm_material . "</td>";
+										echo "	<td class='text-left'>" . $nm_lain . "</td>";
 										echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
 										echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
 										echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
-										// echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
 										if ($value['status_app'] == 'N') {
 											echo "<td align='center'>";
 											echo "<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>";
