@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 
   <title><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?> | Login</title>
-  <link rel="shortcut icon" href="<?= base_url('assets/images/harapan_logo.png'); ?>" />
+  <link rel="shortcut icon" href="<?= base_url('assets/images/iconhfg.png'); ?>" />
 
   <!-- Berry CSS -->
   <link rel="stylesheet" href="<?= base_url('assets/berry/fonts/tabler-icons.min.css'); ?>" />
@@ -127,39 +127,63 @@
       z-index: 2;
     }
 
-    /* Brand logo glass */
+    /* Brand logo tanpa glass */
     .brand-logo {
-      width: 70px;
-      height: 70px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 14px;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-      background: rgba(255, 255, 255, 0.22);
-      backdrop-filter: blur(18px) saturate(160%);
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
 
-      border: 1px solid rgba(255, 255, 255, 0.22);
-
-      box-shadow:
-        0 10px 28px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
     }
 
     .brand-logo img {
-      width: 46px;
-      height: 46px;
+      width: 70px;
+      /* sesuaikan jika mau lebih besar */
+      height: 70px;
       object-fit: contain;
-      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.20));
+      filter: none;
+      /* hilangkan shadow/glow */
+      display: block;
     }
 
     .company-title {
-      font-weight: 700;
-      letter-spacing: .2px;
+      margin: 0;
       text-align: center;
-      margin-bottom: 2px;
-      color: rgba(255, 255, 255, 0.92);
+      font-style: italic;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+
+      /* fallback */
+      color: #f6c94a;
+
+      /* emas lebih terang */
+      background: linear-gradient(180deg,
+          #fff3a6 0%,
+          #ffd95a 35%,
+          #f4c542 60%,
+          #d89b12 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+
+      /* biar lebih kebaca di bg biru */
+      text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.18),
+        /* highlight tipis */
+        0 1px 2px rgba(0, 0, 0, 0.30),
+        /* bayangan bawah */
+        0 0 6px rgba(255, 215, 90, 0.18);
+      /* glow emas halus */
     }
 
     .company-subtitle {
@@ -274,12 +298,12 @@
       <div class="card-body">
 
         <div class="brand-logo">
-          <img src="<?= base_url('assets/images/mikir.png '); ?>" alt="Logo">
+          <img src="<?= base_url('assets/images/iconhfg.png '); ?>" alt="Logo">
         </div>
 
-        <!-- <h4 class="company-title">
+        <h4 class="company-title mb-3">
           <?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?>
-        </h4> -->
+        </h4>
         <div class="company-subtitle">
           Please sign in to continue
         </div>

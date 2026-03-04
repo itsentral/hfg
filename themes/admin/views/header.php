@@ -12,7 +12,7 @@
   </title>
 
   <!-- Favicon (pakai milikmu) -->
-  <link rel="shortcut icon" href="<?= base_url('assets/images/mikir.png'); ?>" />
+  <link rel="shortcut icon" href="<?= base_url('assets/images/iconhfg.png'); ?>" />
 
   <!-- =========================
        BERRY CSS (Bootstrap 5)   
@@ -109,6 +109,22 @@
       overflow-y: auto !important;
       -webkit-overflow-scrolling: touch;
     }
+
+    .b-title {
+      font-style: italic;
+      font-weight: bold;
+      color: #d4a017;
+      /* fallback */
+
+      /* efek emas */
+      background: linear-gradient(180deg, #ffd76a 0%, #d4a017 45%, #b8860b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+
+      /* sedikit bayangan supaya lebih jelas */
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    }
   </style>
 </head>
 
@@ -137,8 +153,9 @@
     <div class="navbar-wrapper">
       <div class="m-header">
         <a href="<?= site_url(); ?>" class="b-brand text-decoration-none">
-          <img src="<?= base_url('assets/images/mikir.png'); ?>" alt="logo" style="height:40px; width:auto;">
-          <span class="b-title ms-2"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></span>
+          <img src="<?= base_url('assets/images/iconhfg.png'); ?>" alt="logo" style="height:50px; width:auto;">
+
+          <span class="b-title"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></span>
         </a>
       </div>
 
