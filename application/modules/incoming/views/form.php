@@ -40,6 +40,14 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4"><label>No. ROS</label></div>
+                            <div class="col-md-8">
+                                <select id="no_ros" name="no_ros" class="form-control select2" disabled>
+                                    <option value="">Pilih ROS</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -47,6 +55,12 @@
                             <div class="col-md-4"><label>Tgl. Incoming</label></div>
                             <div class="col-md-8">
                                 <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4"><label>Tgl. Expired</label></div>
+                            <div class="col-md-8">
+                                <input type="date" name="tanggal" class="form-control">
                             </div>
                         </div>
                         <div class="form-group row mb-3">
@@ -140,7 +154,7 @@
                                 <th rowspan="2" class="text-center" style="vertical-align: middle;" width="8%">Qty Belum Kirim</th>
                                 <th colspan="3" class="text-center" style="background-color: #d2d6de !important; color: #000;">Dari Data ROS (Packing List)</th>
                                 <th colspan="2" class="text-center" style="background-color: #f3b44e !important;">Checklist Visual</th>
-                                <th colspan="2" class="text-center" style="background-color: #69c79d !important;">Penimbangan</th>
+                                <th colspan="2" class="text-center" style="background-color: #69c79d !important;" hidden>Penimbangan</th>
                             </tr>
                             <tr>
                                 <th class="text-center" style="background-color: #d2d6de !important; color: #000;">No. Coil</th>
@@ -148,8 +162,8 @@
                                 <th class="text-center" style="background-color: #d2d6de !important; color: #000;">Berat Bersih</th>
                                 <th class="text-center" style="background-color: #f3b44e !important;">OK</th>
                                 <th class="text-center" style="background-color: #f3b44e !important;">Reject</th>
-                                <th class="text-center" style="background-color: #69c79d !important;">Aktual Berat Kotor</th>
-                                <th class="text-center" style="background-color: #69c79d !important;">Selisih</th>
+                                <th class="text-center" style="background-color: #69c79d !important;" hidden>Aktual Berat Kotor</th>
+                                <th class="text-center" style="background-color: #69c79d !important;" hidden>Selisih</th>
                             </tr>
                         </thead>
                         <tbody id="list-item-coil">
@@ -173,9 +187,12 @@
     $(document).ready(function() {
         $('.select2').select2();
 
-        // 1. Saat Supplier Dipilih -> Ambil PO
+        // 1. SUPPLIER CHANGE -> GET PO
         $(document).on('change', '#id_supplier', function() {
             let id_supplier = $(this).val();
+            $('#no_po').html('<option value="">Pilih PO</option>').prop('disabled', true);
+            $('#no_ros').html('<option value="">Pilih ROS</option>').prop('disabled', true);
+
             if (id_supplier) {
                 $.ajax({
                     url: siteurl + active_controller + 'get_po_by_supplier',
@@ -185,25 +202,49 @@
                     },
                     dataType: 'json',
                     success: function(data) {
-                        let html = '<option value="">Pilih PO</option>';
+                        let opt = '<option value="">Pilih PO</option>';
                         data.forEach(item => {
-                            html += `<option value="${item.no_po}">${item.no_po} (${item.no_surat})</option>`;
+                            opt += `<option value="${item.no_po}">${item.no_surat} (${item.no_po})</option>`;
                         });
-                        $('#no_po').html(html).prop('disabled', false);
+                        $('#no_po').html(opt).prop('disabled', false);
                     }
                 });
             }
         });
 
-        // 2. Saat PO Dipilih -> Ambil Data ROS/Coil
+        // 2. PO CHANGE -> GET ROS
         $(document).on('change', '#no_po', function() {
             let no_po = $(this).val();
+            $('#no_ros').html('<option value="">Pilih ROS</option>').prop('disabled', true);
+
             if (no_po) {
                 $.ajax({
-                    url: siteurl + active_controller + 'get_ros_by_po',
+                    url: siteurl + active_controller + 'get_ros_by_po_select',
                     type: 'POST',
                     data: {
                         no_po: no_po
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        let opt = '<option value="">Pilih ROS</option>';
+                        data.forEach(item => {
+                            opt += `<option value="${item.no_ros}">${item.no_ros}</option>`;
+                        });
+                        $('#no_ros').html(opt).prop('disabled', false);
+                    }
+                });
+            }
+        });
+
+        // 3. ROS CHANGE -> RENDER TABLE
+        $(document).on('change', '#no_ros', function() {
+            let no_ros = $(this).val();
+            if (no_ros) {
+                $.ajax({
+                    url: siteurl + active_controller + 'get_ros_detail_to_table',
+                    type: 'POST',
+                    data: {
+                        no_ros: no_ros
                     },
                     dataType: 'json',
                     success: function(data) {
@@ -213,58 +254,48 @@
                         if (data.length > 0) {
                             data.forEach((item, index) => {
                                 let rowMaterial = '';
-
-                                // Logika Grouping: Jika material sama, kolom kiri dikosongkan (seperti merge cell)
                                 if (item.id_material !== currentMaterial) {
                                     let qty_belum_kirim = item.qty_po - item.qty_in;
                                     rowMaterial = `
-                                <td class="text-center">${index + 1}</td>
-                                <td><b>${item.nm_material}</b></td>
-                                <td class="text-right">${Number(item.qty_po).toLocaleString()}</td>
-                                <td class="text-center">Kg</td>
-                                <td class="text-right">${Number(qty_belum_kirim).toLocaleString()}</td>
-                            `;
+                                    <td class="text-center">${index + 1}</td>
+                                    <td><b>${item.nm_material}</b></td>
+                                    <td class="text-right">${Number(item.qty_po).toLocaleString()}</td>
+                                    <td class="text-center">Kg</td>
+                                    <td class="text-right">${Number(qty_belum_kirim).toLocaleString()}</td>
+                                `;
                                     currentMaterial = item.id_material;
                                 } else {
-                                    // Baris kosong untuk kolom material jika coil masih dalam material yang sama
                                     rowMaterial = `<td colspan="5" style="border-top:none;"></td>`;
                                 }
 
                                 html += `
-                                    <tr>
-                                        ${rowMaterial}
-                                        <td class="bg-gray text-center">${item.no_coil}</td>
-                                        <td class="bg-gray text-right">${item.ros_kotor}</td>
-                                        <td class="bg-gray text-right">${item.ros_bersih}</td>
-                                        <td class="text-center">
-                                            <input type="radio" name="detail[${index}][status_qc]" value="OK" checked>
-                                        </td>
-                                        <td class="text-center">
-                                            <input type="radio" name="detail[${index}][status_qc]" value="REJECT">
-                                        </td>
-                                        <td>
-                                            <input type="number" name="detail[${index}][aktual_kotor]" 
-                                                class="form-control input-sm hitung-selisih" 
-                                                data-ros="${item.ros_kotor}" step="0.01">
-                                            <input type="hidden" name="detail[${index}][id_ros_detail]" value="${item.id_ros_detail}">
-                                            <input type="hidden" name="detail[${index}][id_po_detail]" value="${item.id_po_detail}">
-                                            <input type="hidden" name="detail[${index}][id_material]" value="${item.id_material}">
-                                            <input type="hidden" name="detail[${index}][nm_material]" value="${item.nm_material}">
-                                            <input type="hidden" name="detail[${index}][no_coil]" value="${item.no_coil}">
-                                            <input type="hidden" name="detail[${index}][no_ros]" value="${item.no_ros}">
-                                        </td>
-                                        <td class="bg-yellow">
-                                            <input type="text" name="detail[${index}][selisih]" 
-                                                class="form-control input-sm text-selisih" readonly>
-                                        </td>
-                                    </tr>`;
+                                <tr>
+                                    ${rowMaterial}
+                                    <td class="bg-gray text-center">${item.no_coil}</td>
+                                    <td class="bg-gray text-end">${item.ros_kotor}</td>
+                                    <td class="bg-gray text-end">${item.ros_bersih}</td>
+                                    <td class="text-center">
+                                        <input type="radio" name="detail[${index}][status_qc]" value="OK" checked>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="radio" name="detail[${index}][status_qc]" value="REJECT">
+                                        <input type="hidden" name="detail[${index}][id_ros_detail]" value="${item.id_ros_detail}">
+                                        <input type="hidden" name="detail[${index}][id_po_detail]" value="${item.id_po_detail}">
+                                        <input type="hidden" name="detail[${index}][id_material]" value="${item.id_material}">
+                                        <input type="hidden" name="detail[${index}][no_coil]" value="${item.no_coil}">
+                                        <input type="hidden" name="detail[${index}][no_ros]" value="${item.no_ros}">
+                                        <input type="hidden" name="detail[${index}][aktual_bersih]" value="${item.ros_bersih}">
+                                    </td>
+                                </tr>`;
                             });
                         } else {
-                            html = '<tr><td colspan="12" class="text-center">Data Coil tidak ditemukan</td></tr>';
+                            html = '<tr><td colspan="10" class="text-center">Data tidak ditemukan</td></tr>';
                         }
                         $('#list-item-coil').html(html);
                     }
                 });
+            } else {
+                $('#list-item-coil').html('');
             }
         });
 

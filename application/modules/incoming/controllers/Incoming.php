@@ -59,31 +59,41 @@ class Incoming extends Admin_Controller
     }
 
 
-    public function get_ros_by_po()
+    public function get_ros_by_po_select()
     {
         $no_po = $this->input->post('no_po');
+        // Ambil nomor ROS unik dari tabel detail yang terhubung ke PO tersebut
+        $data = $this->db->query("
+        SELECT DISTINCT a.no_ros 
+        FROM tr_ros_detail a
+        LEFT JOIN dt_trans_po b ON a.id_po_detail = b.id
+        LEFT JOIN tr_ros c ON c.id = a.no_ros
+        WHERE b.no_po = '$no_po'
+        AND c.sts = 1
+        ORDER BY a.no_ros ASC
+    ")->result();
+        echo json_encode($data);
+    }
 
-        $query = "SELECT 
-                a.id as id_ros_detail, 
-                a.no_coil, 
+    // Update fungsi detail ini agar memfilter berdasarkan no_ros, bukan cuma no_po
+    public function get_ros_detail_to_table()
+    {
+        $no_ros = $this->input->post('no_ros');
+        $query = "SELECT
+                a.id AS id_ros_detail,
+                a.no_coil,
                 a.no_ros,
-                a.berat_kotor as ros_kotor, 
-                a.berat_bersih as ros_bersih,
-                a.nm_barang as nm_material,
-                a.id_barang as id_material,
-                b.qty as qty_po,
+                a.berat_kotor AS ros_kotor,
+                a.berat_bersih AS ros_bersih,
+                a.nm_barang AS nm_material,
+                a.id_barang AS id_material,
+                b.qty AS qty_po,
                 b.qty_in,
-                b.id as id_po_detail
-              FROM tr_ros_detail a
-              LEFT JOIN dt_trans_po b ON a.id_po_detail = b.id
-              WHERE a.no_ros IN (
-                  SELECT no_ros 
-                  FROM tr_ros 
-                  WHERE no_po = '$no_po' 
-                  AND sts = '0'
-              )
-              ORDER BY a.id_barang, a.no_coil ASC";
-
+                b.id AS id_po_detail
+                FROM tr_ros_detail a
+                LEFT JOIN dt_trans_po b ON a.id_po_detail = b.id
+                WHERE a.no_ros = '$no_ros' 
+                ORDER BY a.id_barang, a.no_coil ASC";
         $data = $this->db->query($query)->result();
         echo json_encode($data);
     }
@@ -104,24 +114,34 @@ class Incoming extends Admin_Controller
 
         foreach ($post['detail'] as $val) {
             // Lewati jika tidak ada input berat (mencegah data sampah)
-            if (empty($val['aktual_kotor']) || $val['aktual_kotor'] == 0) continue;
+            if (empty($val['aktual_bersih']) || $val['aktual_bersih'] == 0) continue;
 
-            $aktual_kotor = str_replace(',', '', $val['aktual_kotor']);
+            $aktual_bersih = str_replace(',', '', $val['aktual_bersih']);
             $id_material  = $val['id_material'];
             $id_po_detail = $val['id_po_detail'];
+            $id_ros_detail = $val['id_ros_detail'];
 
-            $get_mat = $this->db->get_where('new_inventory_4', ['code_lv4' => $id_material])->row();
+            $get_mat = $this->db
+                ->select('a.*, d.nm_satuan as unit, e.nm_satuan as packing')
+                ->from('new_inventory_4 a')
+                ->join('ms_satuan d', 'a.id_unit = d.id', 'left')
+                ->join('ms_satuan e', 'a.id_unit_packing = e.id', 'left')
+                ->where('a.code_lv4', $id_material)
+                ->get()
+                ->row();
             $get_po  = $this->db->get_where('dt_trans_po', ['id' => $id_po_detail])->row();
+            $get_ros  = $this->db->get_where('tr_ros_detail', ['id' => $id_ros_detail])->row();
 
             // 1. Insert Detail Utama
             $this->db->insert('tr_incoming_check_detail', [
                 'kode_trans'   => $kode_incoming,
                 'id_po_detail' => $id_po_detail,
                 'no_ipp'       => $post['no_po'],
+                'id_material_req'  => $id_material,
                 'id_material'  => $id_material,
                 'nm_material'  => $get_mat->nama,
-                'qty_order'    => $aktual_kotor,
-                'harga'        => $get_po->hargasatuan,
+                'qty_order'    => $get_po->qty,
+                'harga'        => $get_ros->price_unit_idr,
                 'keterangan'   => "Coil Nomor: " . $val['no_coil']
             ]);
 
@@ -129,27 +149,33 @@ class Incoming extends Admin_Controller
 
             // 2. Insert Detail QC
             $this->db->insert('tr_checked_incoming_detail', [
-                'kode_trans'  => $kode_incoming,
-                'id_detail'   => $id_detail_inc,
-                'id_material' => $id_material,
-                'qty_oke'     => ($val['status_qc'] == 'OK') ? $aktual_kotor : 0,
-                'qty_ng'      => ($val['status_qc'] == 'REJECT') ? $aktual_kotor : 0,
-                'sts'         => '1',
-                'harga'       => $get_po->hargasatuan,
-                'total_harga' => $aktual_kotor * $get_po->hargasatuan
+                'kode_trans'    => $kode_incoming,
+                'id_detail'     => $id_detail_inc,
+                'id_material'   => $id_material,
+                'nm_material'   => $get_mat->nama,
+                'unit'          => $get_mat->unit,
+                'packing'       => $get_mat->packing,
+                'no_ipp'        => $post['no_po'],
+                'qty_order'     => $get_po->qty,
+                'qty_incoming'  => ($val['status_qc'] == 'OK') ? $aktual_bersih : 0,
+                'qty_oke'       => ($val['status_qc'] == 'OK') ? $aktual_bersih : 0,
+                'qty_ng'        => ($val['status_qc'] == 'REJECT') ? $aktual_bersih : 0,
+                'sts'           => '1',
+                'harga'         => $get_ros->price_unit_idr,
+                'total_harga'   => $aktual_bersih * $get_ros->price_unit_idr
             ]);
 
             // 3. Proses jika OK
             if ($val['status_qc'] == 'OK') {
-                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_kotor, $get_po->hargasatuan, $kode_incoming, $post['no_po'], $val['no_coil']);
+                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_bersih, $get_ros->price_unit_idr, $kode_incoming, $post['no_po'], $val['no_coil']);
 
                 // Update qty_in di detail PO
-                $this->db->set('qty_in', 'qty_in + ' . (float)$aktual_kotor, FALSE);
+                $this->db->set('qty_in', 'qty_in + ' . (float)$aktual_bersih, FALSE);
                 $this->db->where('id', $id_po_detail);
                 $this->db->update('dt_trans_po');
 
-                $total_harga_check += ($aktual_kotor * $get_po->hargasatuan);
-                $total_berat_check += $aktual_kotor;
+                $total_harga_check += ($aktual_bersih * $get_ros->price_unit_idr);
+                $total_berat_check += $aktual_bersih;
             }
 
             // Simpan ID ROS untuk diupdate statusnya nanti
@@ -163,6 +189,7 @@ class Incoming extends Admin_Controller
             'kode_trans'   => $kode_incoming,
             'tanggal'      => $post['tanggal'],
             'no_ipp'       => $post['no_po'],
+            'no_ros'       => $post['no_ros'],
             'category'     => 'incoming material',
             'jumlah_mat'   => $total_berat_check,
             'id_gudang_dari' => 1,
@@ -196,7 +223,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $harga_po, $kode_trans, $no_po, $no_coil)
+    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil)
     {
         $get_stock = $this->db->get_where('warehouse_stock', [
             'id_material' => $id_material,
@@ -209,9 +236,9 @@ class Incoming extends Admin_Controller
         $qty_free_awal = (!empty($get_stock)) ? $get_stock->qty_free : 0;
 
         $nilai_lama = $qty_awal * $harga_lama;
-        $nilai_baru = $qty_in * $harga_po;
+        $nilai_baru = $qty_in * $price_unit_idr;
         $qty_akhir  = $qty_awal + $qty_in;
-        $costbook   = ($qty_akhir > 0) ? ($nilai_lama + $nilai_baru) / $qty_akhir : $harga_po;
+        $costbook   = ($qty_akhir > 0) ? ($nilai_lama + $nilai_baru) / $qty_akhir : $price_unit_idr;
 
         if (empty($get_stock)) {
             $this->db->insert('warehouse_stock', [
@@ -262,6 +289,7 @@ class Incoming extends Admin_Controller
 
         $this->db->insert('kartu_stok', [
             'no_transaksi'  => $kode_trans,
+            'id_gudang'     => 1,
             'transaksi'     => "Incoming Material",
             'tgl_transaksi' => date('Y-m-d H:i:s'),
             'code_lv4'      => $id_material,
