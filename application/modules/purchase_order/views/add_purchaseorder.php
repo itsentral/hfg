@@ -224,6 +224,7 @@ if (!empty($results['headerso'])) {
 									<input type="checkbox" id="select_all" checked>
 								</th>
 								<th style="min-width: 200px;">Item</th>
+								<th style="min-width: 200px;">Nama Lain</th>
 								<th style="min-width: 150px;">HS Code</th>
 								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;" hidden>Width</th>
@@ -316,6 +317,8 @@ if (!empty($results['headerso'])) {
 														<input type='hidden' class='form-control input-sm ch_jumlah' id='dt_ch_jumlah_" . $key . "'>
 														<input type='hidden' class='form-control input-sm ch_ppn' id='dt_ch_ppn_" . $key . "'>
 													</td>
+
+													<td>" . $value->nm_lain . "</td>
 
 													<td>
 														<input type='hidden' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly>

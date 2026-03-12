@@ -195,7 +195,8 @@ class Purchase_order extends Admin_Controller
 				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure,
 				c.hscode,
 				hs.kuota_internal,
-				hs.local_code as local_code
+				hs.local_code as local_code,
+				c.trade_name as nm_lain
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -241,7 +242,8 @@ class Purchase_order extends Admin_Controller
 				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure,
 				'' as hscode,         
     			0 as kuota_internal,
-				'' as local_code 
+				'' as local_code,
+				'' as nm_lain
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -279,7 +281,8 @@ class Purchase_order extends Admin_Controller
 				'Pcs' as unit_measure,
 				'' as hscode,         
     			0 as kuota_internal,
-				'' as local_code 
+				'' as local_code,
+				'' as nm_lain
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -3432,7 +3435,8 @@ class Purchase_order extends Admin_Controller
 				IF(g.code IS NOT NULL, g.code, h.code) as unit_measure,
 				c.hscode,
 				hs.local_code,
-				hs.kuota_internal
+				hs.kuota_internal,
+				c.trade_name as nm_lain
 			FROM
 				material_planning_base_on_produksi_detail a
 				LEFT JOIN material_planning_base_on_produksi m ON m.so_number = a.so_number
@@ -3467,7 +3471,8 @@ class Purchase_order extends Admin_Controller
 				b.code as unit_measure,
 				'' as hscode,         
 				'' as local_code,         
-    			0 as kuota_internal 
+    			0 as kuota_internal,
+				'' as nm_lain
 			FROM
 				rutin_non_planning_detail a 
 				LEFT JOIN ms_satuan b ON b.id = a.satuan
@@ -3494,7 +3499,8 @@ class Purchase_order extends Admin_Controller
 				'Pcs' as unit_measure,
 				'' as hscode,         
 				'' as localcode,         
-    			0 as kuota_internal
+    			0 as kuota_internal,
+				'' as nm_lain
 			FROM
 				asset_planning a 
 			WHERE

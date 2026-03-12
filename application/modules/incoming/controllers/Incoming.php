@@ -18,8 +18,12 @@ class Incoming extends Admin_Controller
 
     public function index()
     {
-
         $this->template->render('index');
+    }
+
+    public function data_side_incoming()
+    {
+        $this->Incoming_model->get_data_json_incoming();
     }
 
     public function add()
@@ -44,6 +48,50 @@ class Incoming extends Admin_Controller
         $this->template->set($data);
         $this->template->title('Incoming Based on ROS');
         $this->template->render('form');
+    }
+
+    public function view()
+    {
+        $no_po = $this->uri->segment(3);
+
+        $this->db->select('a.*, b.code as code_product, b.konversi, c.code as unit_measure, d.code as unit_packing, e.qty_order, e.keterangan as keterangan_check, f.tanggal as tgl_incoming');
+        $this->db->from('dt_trans_po a');
+        $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.idmaterial', 'left');
+        $this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
+        $this->db->join('ms_satuan d', 'd.id = b.id_unit_packing', 'left');
+        $this->db->join('tr_incoming_check_detail e', 'e.id_po_detail = a.id');
+        $this->db->join('tr_incoming_check f', 'f.kode_trans = e.kode_trans', 'left');
+        $this->db->where('e.kode_trans', $no_po);
+        $result = $this->db->get()->result_array();
+        $result_header    = $this->db->get_where('tr_purchase_order', array('no_po' => $result[0]['no_po']))->result();
+
+        $get_file_incoming = $this->db->select('no_ipp,file_incoming_material')->get_where('tr_incoming_check', ['kode_trans' => $no_po])->row();
+
+        $no_surat = [];
+        $get_no_surat = $this->db
+            ->select('no_surat')
+            ->from('tr_purchase_order')
+            ->where_in('no_po', explode(',', $get_file_incoming->no_ipp))
+            ->get()
+            ->result();
+
+        foreach ($get_no_surat as $item_surat) {
+            $no_surat[] = $item_surat->no_surat;
+        }
+        $no_surat = implode(', ', $no_surat);
+
+
+
+        $data = array(
+            'result'     => $result,
+            'no_surat' => $no_surat,
+            'tanggal'     => date('d F Y', strtotime($result[0]['tgl_incoming'])),
+            'file_incoming_material' => $get_file_incoming->file_incoming_material
+
+        );
+
+        $this->template->set($data);
+        $this->template->render('view');
     }
 
     public function get_po_by_supplier()
