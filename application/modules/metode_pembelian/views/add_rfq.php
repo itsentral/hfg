@@ -32,7 +32,8 @@
 							<th class="text-center no-sort" width="4%">#</th>
 							<th class="text-center" width="7%">No PR</th>
 							<th class="text-center" width="10%">Tanggal PR</th>
-							<th class="text-center">Product Name</th>
+							<th class="text-center">Item</th>
+							<th class="text-center">Nama Lain</th>
 							<th class="text-center" width="10%">Category</th>
 							<th class="text-center" width="10%">Dibutuhkan</th>
 							<th class="text-center" width="9%">Request By</th>

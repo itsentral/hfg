@@ -648,16 +648,17 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
 
 			$list_barang = '';
+			$nm_lain = '';
 			if ($row['category'] == 'pr material' || $row['category'] == 'pr stok') {
 				if ($row['category'] == 'pr stok') {
-					$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty');
+					$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty, "" as nm_lain');
 					$this->db->from('material_planning_base_on_produksi_detail a');
 					$this->db->join('accessories b', 'b.id = a.id_material', 'left');
 					$this->db->where('a.status_app', 'Y');
 					$this->db->where('a.so_number', $row['so_number']);
 					$get_list_barang = $this->db->get()->result_array();
 				} else {
-					$this->db->select('b.nama as nm_barang, a.propose_purchase as qty');
+					$this->db->select('b.nama as nm_barang, a.propose_purchase as qty, b.trade_name as nm_lain');
 					$this->db->from('material_planning_base_on_produksi_detail a');
 					$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material', 'left');
 					$this->db->where('a.status_app', 'Y');
@@ -666,13 +667,13 @@ class Metode_pembelian_model extends BF_Model
 				}
 			} else {
 				if ($row['category'] == 'pr asset' || $row['category'] == 'asset') {
-					$this->db->select('a.nama_asset as nm_barang, 1 as qty');
+					$this->db->select('a.nama_asset as nm_barang, 1 as qty, "" as nm_lain');
 					$this->db->from('asset_planning a');
 					$this->db->where('a.status', 'Y');
 					$this->db->where('a.no_pr', $row['no_pr']);
 					$get_list_barang = $this->db->get()->result_array();
 				} else {
-					$this->db->select('a.nm_barang as nm_barang, a.qty as qty');
+					$this->db->select('a.nm_barang as nm_barang, a.qty as qty, "" as nm_lain');
 					$this->db->from('rutin_non_planning_detail a');
 					$this->db->where('a.sts_app', 'Y');
 					$this->db->where('a.no_pr', $row['no_pr']);
@@ -682,9 +683,10 @@ class Metode_pembelian_model extends BF_Model
 
 			foreach ($get_list_barang as $barang) :
 				$list_barang .= $barang['nm_barang'] . ' x <span style="font-weight: bold;">' . number_format($barang['qty']) . '</span><br>';
+				$nm_lain .= $barang['nm_lain'];
 			endforeach;
 			$nestedData[]	= "<div align='left'>" . $list_barang . "</div>";
-
+			$nestedData[]	= "<div align='left'>" . $nm_lain . "</div>";
 			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {
@@ -888,13 +890,7 @@ class Metode_pembelian_model extends BF_Model
 
 
 			';
-
-			// print_r($sql);
-			// exit;
 		}
-
-		// echo $sql;
-		// exit;
 
 		$data['totalData'] = $this->db->query($sql)->num_rows();
 		$data['totalFiltered'] = $this->db->query($sql)->num_rows();
