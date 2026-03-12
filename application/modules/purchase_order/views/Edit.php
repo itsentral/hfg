@@ -75,8 +75,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="customer">NO.PO</label>
 							</div>
 							<div class="col-md-8">
-								<input type="text" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= $results['get_po']->no_po ?>">
-								<input type="hidden" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= $results['get_po']->no_surat ?>">
+								<input type="hidden" class="form-control" id="no_po" required name="no_po" readonly placeholder="ID PO" value="<?= $results['get_po']->no_po ?>">
+								<input type="text" class="form-control" id="no_surat" required name="no_surat" readonly placeholder="No.PO" value="<?= $results['get_po']->no_surat ?>">
 							</div>
 						</div>
 					</div>
@@ -222,6 +222,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 
 				<div class="table-responsive mb-3">
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input text-end form-control"
+							type="checkbox"
+							id="show_tax"
+							name="show_tax"
+							value="Y"
+							<?= ($results['get_po']->show_tax == 'Y') ? 'checked' : ''; ?>>
+						<label class="form-check-label" for="show_tax"><b>Gunakan Pajak (PPn)</b></label>
+					</div>
 					<table class='table table-bordered table-striped'>
 						<thead>
 							<tr class='bg-blue'>
@@ -245,7 +254,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
 								<th style="min-width: 150px;">Sub Total</th>
 								<th style="min-width: 150px;">Deskripsi Item</th>
-								<th style="min-width: 150px;">Sisa Kuota</th>z
+								<th style="min-width: 150px;">Sisa Kuota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -291,7 +300,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								$idpr = (!empty($value->idpr)) ? $value->idpr : '';
 								$no_pr = (!empty($value->no_pr)) ? $value->no_pr : '';
 								$tipe_pr = (!empty($value->tipe_pr)) ? $value->tipe_pr : '';
-								$id_material = (!empty($value->id_material)) ? $value->id_material : '';
+								$id_material = (!empty($value->idmaterial)) ? $value->idmaterial : '';
 								$nm_material1 = (!empty($value->nm_material1)) ? $value->nm_material1 : '';
 								$description = (!empty($value->description)) ? $value->description : '';
 								$width = (!empty($value->width)) ? $value->width : 0;
@@ -316,7 +325,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 
 														<td>
-															<input type='text' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "' readonly>
+															<input type='hidden' class='form-control input-sm'  id='dt_hscode" . $key . "' name='dt[" . $key . "][hscode]' value='" . $value->hscode . "'>
 															<input type='text' class='form-control input-sm'  id='dt_local_code" . $key . "' name='dt[" . $key . "][local_code]' value='" . $value->local_code . "' readonly>
 														</td>
 														<td><input type='text' class='form-control input-sm autoNumeric3' id='dt_kuotainternal" . $key . "' name='dt[" . $key . "][kuota_internal]' value='" . $value->kuota_internal . "' readonly></td>
@@ -376,7 +385,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . ($total - $value->nilai_disc + $value->ppn) . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
-														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]'></td>
+														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]' value='" . $value->hargasatuan . "'></td>
 										 			</tr>
 												";
 							}
@@ -389,28 +398,28 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
 								</td>
 							</tr>
-							<tr>
+							<tr hidden>
 								<td class="text-end" colspan="11"><b>Diskon Khusus</b></th>
 								<td colspan="2">
 									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= $results['get_po']->diskon_khusus ?>" onblur="cariTotal()" name="diskonkhusus">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;" hidden>
 								<td class="text-end" colspan="11"><b>Total (Exclude PPn)</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= $results['get_po']->total_exclude_ppn ?>" onkeyup required name="totalexppn">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="totalexppn" name="totalexppn">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;">
 								<td class="text-end" colspan="11"><b>DPP</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= $results['get_po']->total_dpp ?>" onkeyup required name="dpp">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="dpp" name="dpp">
 								</td>
 							</tr>
-							<tr>
+							<tr class="row-pajak" style="display: none;">
 								<td class="text-end" colspan="11"><b>PPn</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= $results['get_po']->total_ppn ?>" onkeyup required name="ppn">
+									<input readonly type="text" class="form-control text-end autoNumeric" id="ppn" name="ppn">
 								</td>
 							</tr>
 							<tr>
@@ -746,6 +755,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		TotalSemua()
 		cariTotal()
+		checkShowTax()
 		$('.select2').select2({
 			width: '100%'
 		});
@@ -814,7 +824,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			var term = $('#term').val();
 			var cif = $('#cif').val();
 			var pajak = $('.pajak').val();
-			var supplier = $('#supplier').val()
+			var supplier = $('#supplier').val();
+			var department = $('#select_department').val();
+			var delivery_date = $('#delivery_date').val()
+			var currency = $('#select_curr').val()
 
 			var ttl_persen_top = 0;
 			var detail_lc_all = [];
@@ -828,6 +841,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				}
 			});
 
+
 			var data, xhr;
 			if (loi == '' || loi == null) {
 				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
@@ -837,6 +851,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				return false;
 			} else if (supplier == '' || supplier == null) {
 				swal("Warning", "Supplier tidak boleh kosong  :)", "error");
+				return false;
+			} else if (select_department == '' || select_department == null) {
+				swal("Warning", "Department tidak boleh kosong  :)", "error");
+				return false;
+			} else if (delivery_date == '' || delivery_date == null) {
+				swal("Warning", "Delivery Date tidak boleh kosong  :)", "error");
+				return false;
+			} else if (currency == '' || currency == null) {
+				swal("Warning", "Currency tidak boleh kosong  :)", "error");
 				return false;
 			} else if (ttl_persen_top > 100) {
 				swal("Warning", "Total TOP tidak boleh lebih dari 100%", "error");
@@ -864,7 +887,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									formData.append('detail_lc[' + (index + 1) + ']', lcData);
 								}
 							});
-							var baseurl = siteurl + 'purchase_order/SaveEditPO';
+							var baseurl = siteurl + 'purchase_order/SaveAll';
 							$.ajax({
 								url: baseurl,
 								type: "POST",
@@ -932,333 +955,345 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			}
 		});
 
-	});
+		$(document).on('click', '#btn_save_lc', function() {
+			let rowIndex = $('#modal_row_index_hidden').val();
+
+			let targetRow = $('.list_tbody_top tr').eq(rowIndex);
+
+			let dataLC = {
+				no_credit: $('#no_credit').val(),
+				issue_date: $('#issue_date').val(),
+				expiry_date: $('#expiry_date').val(),
+				value_contract: $('#value_contract').val(),
+				type_of_lc: $('#type_of_lc').val(),
+				valid_usen_until: $('#valid_usen_until').val(),
+				bank_sender: $('#bank_sender').val(),
+				bank_receiver: $('#bank_receiver').val(),
+				latest_shipment: $('#latest_shipment').val(),
+				no_sales_contract: $('#no_sales_contract').val()
+			};
+
+			targetRow.attr('data-lc_detail', JSON.stringify(dataLC));
+
+			targetRow.css('background-color', '#e8f5e9');
+			targetRow.find('label[for="lc"]').html('LC <i class="fa fa-check-circle text-success"></i>');
+
+			swal("Berhasil", "Data LC telah tersimpan di baris ini.", "success");
+			$('#modal_lc').modal('hide');
+		});
+
+		$('.list_tbody_top tr').each(function(i) {
+			console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
+		});
+
+		$(document).on('click', '.btn_view_lc', function() {
+			let no = $(this).data('no'); // Ambil nomor urut baris
+			let row = $(this).closest('tr'); // Ambil nomor urut dari ID tombol
+
+			// Mapping Data dari Hidden Input ke Modal
+			$('#modal_row_index_hidden').val(no);
+			$('#no_credit').val(row.find('input[name="no_credit_' + no + '"]').val());
+			$('#issue_date').val(row.find('input[name="issue_date_' + no + '"]').val());
+			$('#expiry_date').val(row.find('input[name="expiry_date_' + no + '"]').val());
+			$('#value_contract').val(row.find('input[name="value_contract_' + no + '"]').val());
+			$('#tolerance_plus').val(row.find('input[name="tolerance_plus_' + no + '"]').val());
+			$('#tolerance_minus').val(row.find('input[name="tolerance_minus_' + no + '"]').val());
+			$('#type_of_lc').val(row.find('input[name="type_of_lc_' + no + '"]').val()).trigger('change');
+			$('#valid_usen_until').val(row.find('input[name="valid_usen_until_' + no + '"]').val());
+			$('#bank_sender').val(row.find('input[name="bank_sender_' + no + '"]').val());
+			$('#bank_receiver').val(row.find('input[name="bank_receiver_' + no + '"]').val());
+			$('#latest_shipment').val(row.find('input[name="latest_shipment_' + no + '"]').val());
+			$('#no_sales_contract').val(row.find('input[name="no_sales_contract_' + no + '"]').val());
+
+			// Info Supplier
+			$('#modal_supplier_name').val($('#supplier option:selected').text());
+			$('#modal_supplier_address').val($('#supplier option:selected').data('address'));
+
+			$('#modal_lc').modal('show');
+		});
+
+		$(document).on('change', '.cng_nilai_ppn', function() {
+			var key = $(this).data('key');
+			var nilai = $("#dt_nilai_ppn_" + key).val();
+			var nilai = nilai.split(',').join('');
+			var nilai = parseFloat(nilai);
+			var nilai = nilai.toFixed(2);
+
+			var hargasatuan = $("#dt_hargasatuan_" + key).val();
+			var hargasatuan = hargasatuan.split(',').join('');
+			var hargasatuan = parseFloat(hargasatuan);
+
+			var qty = $("#dt_qty_" + key).val();
+			var qty = qty.split(',').join('');
+			var qty = parseFloat(qty);
+
+			if (qty <= 0 || hargasatuan <= 0) {
+				var nilai_persen = 0;
+			} else {
+				var nilai_persen = parseFloat(nilai / (hargasatuan * qty) * 100);
+			}
+
+			$("#dt_persen_ppn_" + key).val(nilai_persen);
+
+			HitAmmount(key);
+		});
+
+		$(document).on('change', '.cng_persen_ppn', function() {
+			var key = $(this).data('key');
+
+			var persen = $("#dt_persen_ppn_" + key).val();
+			persen = persen.split(',').join('');
+			persen = parseFloat(persen);
+
+			var hargasatuan = $("#dt_hargasatuan_" + key).val();
+			hargasatuan = hargasatuan.split(',').join('');
+			hargasatuan = parseFloat(hargasatuan);
+
+			var qty = $("#dt_qty_" + key).val();
+			qty = qty.split(',').join('');
+			qty = parseFloat(qty);
+
+			var nilai_ppn = parseFloat((hargasatuan * qty) * persen / 100);
+
+			$("#dt_nilai_ppn_" + key).autoNumeric('set', nilai_ppn.toFixed(2));
 
 
-	$(document).on('click', '#btn_save_lc', function() {
-		let rowIndex = $('#modal_row_index_hidden').val();
+			HitAmmount(key);
+		});
 
-		let targetRow = $('.list_tbody_top tr').eq(rowIndex);
+		$(document).on('change', '.disc_persen', function() {
+			var key = $(this).data('key');
+			var disc_persen = getNum($(this).val().split(',').join(''));
+			var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
+			var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
 
-		let dataLC = {
-			no_credit: $('#no_credit').val(),
-			issue_date: $('#issue_date').val(),
-			expiry_date: $('#expiry_date').val(),
-			value_contract: $('#value_contract').val(),
-			type_of_lc: $('#type_of_lc').val(),
-			valid_usen_until: $('#valid_usen_until').val(),
-			bank_sender: $('#bank_sender').val(),
-			bank_receiver: $('#bank_receiver').val(),
-			latest_shipment: $('#latest_shipment').val(),
-			no_sales_contract: $('#no_sales_contract').val()
-		};
+			var disc_num = ((hargasatuan * qty) * disc_persen / 100);
+			$('#disc_num_' + key).val(number_format(disc_num, 2));
 
-		targetRow.attr('data-lc_detail', JSON.stringify(dataLC));
+			HitAmmount(key);
+		});
 
-		targetRow.css('background-color', '#e8f5e9');
-		targetRow.find('label[for="lc"]').html('LC <i class="fa fa-check-circle text-success"></i>');
+		$(document).on('change', '.disc_num', function() {
+			var key = $(this).data('key');
+			var disc_num = getNum($(this).val().split(',').join(''));
+			var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
+			var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
 
-		swal("Berhasil", "Data LC telah tersimpan di baris ini.", "success");
-		$('#modal_lc').modal('hide');
-	});
+			var disc_persen = (disc_num / (hargasatuan * qty) * 100);
+			$('#disc_persen_' + key).val(number_format(disc_persen, 2));
 
-	$('.list_tbody_top tr').each(function(i) {
-		console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
-	});
+			HitAmmount(key);
+		});
 
-	$(document).on('click', '.btn_view_lc', function() {
-		let no = $(this).data('no'); // Ambil nomor urut baris
-		let row = $(this).closest('tr'); // Ambil nomor urut dari ID tombol
+		$(document).on('keyup', '#persendisc', function() {
+			var total = getNum($("#hargatotal").val().split(",").join(""));
+			var persen_disc = getNum($(this).val().split(",").join(""));
 
-		// Mapping Data dari Hidden Input ke Modal
-		$('#modal_row_index_hidden').val(no);
-		$('#no_credit').val(row.find('input[name="no_credit_' + no + '"]').val());
-		$('#issue_date').val(row.find('input[name="issue_date_' + no + '"]').val());
-		$('#expiry_date').val(row.find('input[name="expiry_date_' + no + '"]').val());
-		$('#value_contract').val(row.find('input[name="value_contract_' + no + '"]').val());
-		$('#tolerance_plus').val(row.find('input[name="tolerance_plus_' + no + '"]').val());
-		$('#tolerance_minus').val(row.find('input[name="tolerance_minus_' + no + '"]').val());
-		$('#type_of_lc').val(row.find('input[name="type_of_lc_' + no + '"]').val()).trigger('change');
-		$('#valid_usen_until').val(row.find('input[name="valid_usen_until_' + no + '"]').val());
-		$('#bank_sender').val(row.find('input[name="bank_sender_' + no + '"]').val());
-		$('#bank_receiver').val(row.find('input[name="bank_receiver_' + no + '"]').val());
-		$('#latest_shipment').val(row.find('input[name="latest_shipment_' + no + '"]').val());
-		$('#no_sales_contract').val(row.find('input[name="no_sales_contract_' + no + '"]').val());
+			var disc = (total * persen_disc / 100);
 
-		// Info Supplier
-		$('#modal_supplier_name').val($('#supplier option:selected').text());
-		$('#modal_supplier_address').val($('#supplier option:selected').data('address'));
+			$("#totaldisc").val(number_format(disc, 2));
+			cariTotal();
+		});
 
-		$('#modal_lc').modal('show');
-	});
+		$(document).on('keyup', '#diskonkhusus', function() {
+			var total = getNum($("#totalinppn").val().split(",").join(""));
+			var nilai = getNum($(this).val().split(",").join(""));
+			var selisih = total - nilai
 
-	$(document).on('change', '.cng_nilai_ppn', function() {
-		var key = $(this).data('key');
-		var nilai = $("#dt_nilai_ppn_" + key).val();
-		var nilai = nilai.split(',').join('');
-		var nilai = parseFloat(nilai);
-		var nilai = nilai.toFixed(2);
+			var exppn = selisih / 1.11
+			var dpp = (exppn) * 11 / 12
+			var ppn = 12 / 100 * (dpp)
+			var subtotal = exppn + ppn
 
-		var hargasatuan = $("#dt_hargasatuan_" + key).val();
-		var hargasatuan = hargasatuan.split(',').join('');
-		var hargasatuan = parseFloat(hargasatuan);
+			$("#totalexppn").val(number_format(exppn, 2));
+			$("#ppn").val(number_format(ppn, 2));
+			$("#subtotal").val(number_format(subtotal, 2));
 
-		var qty = $("#dt_qty_" + key).val();
-		var qty = qty.split(',').join('');
-		var qty = parseFloat(qty);
+			cariTotal()
+		});
 
-		if (qty <= 0 || hargasatuan <= 0) {
-			var nilai_persen = 0;
-		} else {
-			var nilai_persen = parseFloat(nilai / (hargasatuan * qty) * 100);
-		}
+		$(document).on('keyup', '#totaldisc', function() {
+			var total = getNum($("#hargatotal").val().split(",").join(""));
+			var disc = getNum($("#totaldisc").val().split(",").join(""));
 
-		$("#dt_persen_ppn_" + key).val(nilai_persen);
+			var persen_disc = (disc / total * 100);
+			$("#persendisc").val(number_format(persen_disc, 2));
 
-		HitAmmount(key);
-	});
+			cariTotal();
+		});
 
-	$(document).on('change', '.cng_persen_ppn', function() {
-		var key = $(this).data('key');
+		$(document).on('click', '.add_top', function() {
+			$.ajax({
+				type: "POST",
+				url: siteurl + active_controller + '/add_top_po',
+				cache: false,
+				dataType: 'JSON',
+				success: function(result) {
+					num_top++;
+					var Rows = '<tr class="top_' + num_top + '">';
 
-		var persen = $("#dt_persen_ppn_" + key).val();
-		persen = persen.split(',').join('');
-		persen = parseFloat(persen);
+					Rows += '<td class="">';
+					Rows += '<select class="form-control form-control-sm" name="group_top_' + num_top + '">';
+					Rows += result.list_top_group;
+					Rows += '</select>';
+					Rows += '</td>';
 
-		var hargasatuan = $("#dt_hargasatuan_" + key).val();
-		hargasatuan = hargasatuan.split(',').join('');
-		hargasatuan = parseFloat(hargasatuan);
+					Rows += '<td class="">';
+					Rows += '<input type="text" class="form-control form-control-sm input_progress progress_' + num_top + ' auto_num" name="progress_' + num_top + '" data-no="' + num_top + '">';
+					Rows += '</select>';
+					Rows += '</td>';
 
-		var qty = $("#dt_qty_" + key).val();
-		qty = qty.split(',').join('');
-		qty = parseFloat(qty);
+					Rows += '<td class="text-right">';
+					Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
+					Rows += '</td>';
 
-		var nilai_ppn = parseFloat((hargasatuan * qty) * persen / 100);
+					Rows += '<td class="">';
+					Rows += '<textarea name="keterangan_top_' + num_top + '" class="form-control form-control-sm"></textarea>';
+					Rows += '</td>';
 
-		$("#dt_nilai_ppn_" + key).autoNumeric('set', nilai_ppn.toFixed(2));
+					Rows += '<td class="">';
+					Rows += '<div class="form-check">';
+					Rows += '<input class="form-check-input check_bayar" type="radio" id="lc_' + num_top + '" name="tipe_bayar_' + num_top + '" value="lc" required>';
+					Rows += '<label class="form-check-label" for="lc_' + num_top + '">LC</label>';
+					Rows += '</div>';
+					Rows += '<div class="form-check">';
+					Rows += '<input class="form-check-input check_bayar" type="radio" id="tt_' + num_top + '" name="tipe_bayar_' + num_top + '" value="tt" required>';
+					Rows += '<label class="form-check-label" for="tt_' + num_top + '">TT</label>';
+					Rows += '</div>';
+					Rows += '</td>';
 
-
-		HitAmmount(key);
-	});
-
-	$(document).on('change', '.disc_persen', function() {
-		var key = $(this).data('key');
-		var disc_persen = getNum($(this).val().split(',').join(''));
-		var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
-		var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
-
-		var disc_num = ((hargasatuan * qty) * disc_persen / 100);
-		$('#disc_num_' + key).val(number_format(disc_num, 2));
-
-		HitAmmount(key);
-	});
-
-	$(document).on('change', '.disc_num', function() {
-		var key = $(this).data('key');
-		var disc_num = getNum($(this).val().split(',').join(''));
-		var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
-		var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
-
-		var disc_persen = (disc_num / (hargasatuan * qty) * 100);
-		$('#disc_persen_' + key).val(number_format(disc_persen, 2));
-
-		HitAmmount(key);
-	});
-
-	$(document).on('keyup', '#persendisc', function() {
-		var total = getNum($("#hargatotal").val().split(",").join(""));
-		var persen_disc = getNum($(this).val().split(",").join(""));
-
-		var disc = (total * persen_disc / 100);
-
-		$("#totaldisc").val(number_format(disc, 2));
-		cariTotal();
-	});
-
-	$(document).on('keyup', '#diskonkhusus', function() {
-		var total = getNum($("#totalinppn").val().split(",").join(""));
-		var nilai = getNum($(this).val().split(",").join(""));
-		var selisih = total - nilai
-
-		var exppn = selisih / 1.11
-		var dpp = (exppn) * 11 / 12
-		var ppn = 12 / 100 * (dpp)
-		var subtotal = exppn + ppn
-
-		$("#totalexppn").val(number_format(exppn, 2));
-		$("#ppn").val(number_format(ppn, 2));
-		$("#subtotal").val(number_format(subtotal, 2));
-
-		cariTotal()
-	});
-
-	$(document).on('keyup', '#totaldisc', function() {
-		var total = getNum($("#hargatotal").val().split(",").join(""));
-		var disc = getNum($("#totaldisc").val().split(",").join(""));
-
-		var persen_disc = (disc / total * 100);
-		$("#persendisc").val(number_format(persen_disc, 2));
-
-		cariTotal();
-	});
-
-	$(document).on('click', '.add_top', function() {
-		$.ajax({
-			type: "POST",
-			url: siteurl + active_controller + '/add_top_po',
-			cache: false,
-			dataType: 'JSON',
-			success: function(result) {
-				num_top++;
-				var Rows = '<tr class="top_' + num_top + '">';
-
-				Rows += '<td class="">';
-				Rows += '<select class="form-control form-control-sm" name="group_top_' + num_top + '">';
-				Rows += result.list_top_group;
-				Rows += '</select>';
-				Rows += '</td>';
-
-				Rows += '<td class="">';
-				Rows += '<input type="text" class="form-control form-control-sm input_progress progress_' + num_top + ' auto_num" name="progress_' + num_top + '" data-no="' + num_top + '">';
-				Rows += '</select>';
-				Rows += '</td>';
-
-				Rows += '<td class="text-right">';
-				Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
-				Rows += '</td>';
-
-				Rows += '<td class="">';
-				Rows += '<textarea name="keterangan_top_' + num_top + '" class="form-control form-control-sm"></textarea>';
-				Rows += '</td>';
-
-				Rows += '<td class="">';
-				Rows += '<div class="form-check">';
-				Rows += '<input class="form-check-input check_bayar" type="radio" id="lc_' + num_top + '" name="tipe_bayar_' + num_top + '" value="lc" required>';
-				Rows += '<label class="form-check-label" for="lc_' + num_top + '">LC</label>';
-				Rows += '</div>';
-				Rows += '<div class="form-check">';
-				Rows += '<input class="form-check-input check_bayar" type="radio" id="tt_' + num_top + '" name="tipe_bayar_' + num_top + '" value="tt" required>';
-				Rows += '<label class="form-check-label" for="tt_' + num_top + '">TT</label>';
-				Rows += '</div>';
-				Rows += '</td>';
-
-				Rows += '<td class="">';
-				Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '">';
-				Rows += '</td>';
+					Rows += '<td class="">';
+					Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '">';
+					Rows += '</td>';
 
 
-				Rows += '<td class="text-center">';
-				Rows += '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' + num_top + '"><i class="fa fa-trash"></i></button>';
-				Rows += '</td>';
+					Rows += '<td class="text-center">';
+					Rows += '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' + num_top + '"><i class="fa fa-trash"></i></button>';
+					Rows += '</td>';
 
-				Rows += '</tr>';
+					Rows += '</tr>';
 
-				$('.num_top').val(num_top);
-				$('.list_tbody_top').append(Rows);
-			},
-			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+					$('.num_top').val(num_top);
+					$('.list_tbody_top').append(Rows);
+				},
+				error: function(result) {
+					swal({
+						title: 'Error !',
+						text: 'Please try again later !',
+						type: 'error'
+					});
+				}
+			});
+		});
+
+		$(document).on('change', '.check_bayar', function() {
+			let tipe = $(this).val();
+
+			if (tipe === 'lc') {
+				let idSupplier = $('#supplier').val();
+				let namaSupplier = $('#supplier option:selected').text();
+				let alamatSupplier = $('#supplier option:selected').data('address');
+
+				if (idSupplier === "") {
+					swal("Perhatian", "Silakan pilih Supplier terlebih dahulu di header form!", "warning");
+					$(this).prop('checked', false);
+					return false;
+				}
+
+				$('#modal_supplier_name').val(namaSupplier);
+				$('#modal_id_supplier_hidden').val(idSupplier);
+				$('#modal_supplier_address').val(alamatSupplier);
+
+				let rowIndex = $(this).closest('tr').index();
+				$('#modal_row_index_hidden').val(rowIndex);
+				$('#modal_lc').modal('show');
 			}
 		});
-	});
 
-	$(document).on('change', '.check_bayar', function() {
-		let tipe = $(this).val();
+		$(document).on('change', '#type_of_lc', function() {
+			if ($(this).val() === 'Usen') {
+				$('#group_usen_until').show();
+			} else {
+				$('#group_usen_until').hide();
+				$('#valid_usen_until').val(''); // reset jika pilih At Sight
+			}
+		});
 
-		if (tipe === 'lc') {
-			let idSupplier = $('#supplier').val();
-			let namaSupplier = $('#supplier option:selected').text();
-			let alamatSupplier = $('#supplier option:selected').data('address');
-
-			if (idSupplier === "") {
-				swal("Perhatian", "Silakan pilih Supplier terlebih dahulu di header form!", "warning");
-				$(this).prop('checked', false);
-				return false;
+		$(document).on('change', '.input_progress', function() {
+			var no = $(this).data('no');
+			var subtotal = $('#subtotal').val();
+			if (subtotal == '' || subtotal == null) {
+				subtotal = 0;
+			} else {
+				subtotal = subtotal.split(',').join('');
+				subtotal = parseFloat(subtotal);
 			}
 
-			$('#modal_supplier_name').val(namaSupplier);
-			$('#modal_id_supplier_hidden').val(idSupplier);
-			$('#modal_supplier_address').val(alamatSupplier);
+			var progress = $(this).val();
+			if (progress == '' || progress == null) {
+				progress = 0;
+			} else {
+				progress = progress.split(',').join('');
+				progress = parseFloat(progress);
+			}
 
-			let rowIndex = $(this).closest('tr').index();
-			$('#modal_row_index_hidden').val(rowIndex);
-			$('#modal_lc').modal('show');
-		}
+			var nilai_top = (subtotal * progress / 100);
+
+			$('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
+				maximumFractionDigits: 2
+			}));
+		});
+
+		$(document).on('change', '.nilai_top', function() {
+			var no = $(this).data('no');
+
+			var subtotal = $('#subtotal').val();
+			if (subtotal == '' || subtotal == null) {
+				subtotal = 0;
+			} else {
+				subtotal = subtotal.split(',').join('');
+				subtotal = parseFloat(subtotal);
+			}
+
+			var nilai_top = $(this).val();
+			if (nilai_top == '' || nilai_top == null) {
+				nilai_top = 0;
+			} else {
+				nilai_top = nilai_top.split(',').join('');
+				nilai_top = parseFloat(nilai_top);
+			}
+
+			var progress = (nilai_top / subtotal * 100);
+
+			$(this).val(nilai_top.toLocaleString('en-US', {
+				maximumFractionDigits: 2
+			}));
+			$('.progress_' + no).val(progress.toLocaleString('en-US', {
+				maximumFractionDigits: 2
+			}));
+		});
+
+		$(document).on('click', '.del_top', function() {
+			var top_no = $(this).data('top_no');
+
+			$('.top_' + top_no).remove();
+		});
+
+		$('#show_tax').on('change', function() {
+			checkShowTax();
+		});
+
 	});
 
-	$(document).on('change', '#type_of_lc', function() {
-		if ($(this).val() === 'Usen') {
-			$('#group_usen_until').show();
+	function checkShowTax() {
+		cariTotal();
+
+		if ($('#show_tax').is(':checked')) {
+			$('.row-pajak').show();
 		} else {
-			$('#group_usen_until').hide();
-			$('#valid_usen_until').val(''); // reset jika pilih At Sight
+			$('.row-pajak').hide();
 		}
-	});
-
-	$(document).on('change', '.input_progress', function() {
-		var no = $(this).data('no');
-		var subtotal = $('#subtotal').val();
-		if (subtotal == '' || subtotal == null) {
-			subtotal = 0;
-		} else {
-			subtotal = subtotal.split(',').join('');
-			subtotal = parseFloat(subtotal);
-		}
-
-		var progress = $(this).val();
-		if (progress == '' || progress == null) {
-			progress = 0;
-		} else {
-			progress = progress.split(',').join('');
-			progress = parseFloat(progress);
-		}
-
-		var nilai_top = (subtotal * progress / 100);
-
-		$('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
-			maximumFractionDigits: 2
-		}));
-	});
-
-	$(document).on('change', '.nilai_top', function() {
-		var no = $(this).data('no');
-
-		var subtotal = $('#subtotal').val();
-		if (subtotal == '' || subtotal == null) {
-			subtotal = 0;
-		} else {
-			subtotal = subtotal.split(',').join('');
-			subtotal = parseFloat(subtotal);
-		}
-
-		var nilai_top = $(this).val();
-		if (nilai_top == '' || nilai_top == null) {
-			nilai_top = 0;
-		} else {
-			nilai_top = nilai_top.split(',').join('');
-			nilai_top = parseFloat(nilai_top);
-		}
-
-		var progress = (nilai_top / subtotal * 100);
-
-		$(this).val(nilai_top.toLocaleString('en-US', {
-			maximumFractionDigits: 2
-		}));
-		$('.progress_' + no).val(progress.toLocaleString('en-US', {
-			maximumFractionDigits: 2
-		}));
-	});
-
-	$(document).on('click', '.del_top', function() {
-		var top_no = $(this).data('top_no');
-
-		$('.top_' + top_no).remove();
-	});
-
+	}
 
 	function addmaterial() {
 		var jumlah = $('#data_request').find('tr').length;
@@ -1668,56 +1703,76 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			SUM_DISC += Number($(this).val().split(",").join(""));
 		});
 
-		var exppn = SUM_JML / 1.11
-		var dpp = (exppn) * 11 / 12
-		var ppn = 12 / 100 * (dpp)
-		var subtotal = exppn + ppn
+		// --- MULAI PERBAIKAN DI SINI ---
+		// 1. Ambil status Pajak dari Switch HTML Anda
+		var pajakAktif = $('#show_tax').is(':checked');
+		var kirim = getNum($("#kirim").val().split(",").join(""));
+		var diskonKhusus = getNum($("#diskonkhusus").val().split(",").join(""));
 
-		$("#hargatotal").val(number_format(SUM_JMX, 2));
-		$("#totalppn").val(number_format(SUM_PPN, 2));
-		$("#totaldisc").val(number_format(SUM_DISC, 2));
-		$("#diskontotal").val(number_format(SUM_DIS));
-		$("#taxtotal").val(number_format(SUM_PJK));
-		// $("#subtotal").val(number_format(subtotal, 2));
+		// 2. Gunakan SUM_JML (Total dari semua baris item)
+		var totalAwal = Math.max(0, SUM_JML - diskonKhusus);
+		var dpp = 0;
+		var ppn = 0;
+		var totalOrder = totalAwal;
+
+		if (pajakAktif) {
+			// RUMUS EXCLUSIVE (SESUAI EXCEL ANDA)
+			dpp = totalAwal * (11 / 12); //
+			ppn = dpp * 0.12; //
+			totalOrder = totalAwal + ppn; //
+		}
+
+		// 3. Masukkan kembali ke ID Input yang Anda punya
 		$("#totalinppn").val(number_format(SUM_JML, 2));
-		$("#totalexppn").val(number_format(exppn, 2));
 		$("#dpp").val(number_format(dpp, 2));
 		$("#ppn").val(number_format(ppn, 2));
-	}
 
+		// Total Order Akhir (Harga + Pajak + Ongkir)
+		var grandTotal = totalOrder + kirim;
+		$("#subtotal").val(number_format(grandTotal, 2));
+
+		// Fungsi pembantu jika ada (opsional)
+		if (typeof TotalSemua === "function") {
+			TotalSemua();
+		}
+		cariTotal()
+	}
 
 	function cariTotal() {
 		var diskonKhusus = getNum($("#diskonkhusus").val().split(",").join(""));
-		var total = getNum($("#hargatotal").val().split(",").join(""));
-		var totalInPPn = getNum($("#totalinppn").val().split(",").join(""));
-
+		var totalAwal = getNum($("#totalinppn").val().split(",").join(""));
 		var kirim = getNum($("#kirim").val().split(",").join(""));
-		// var persen_disc = getNum($("#persendisc").val().split(",").join(""));
-		// var disc = getNum($("#totaldisc").val().split(",").join(""));
-		// var persen_ppn = getNum($("#persenppn").val().split(",").join(""));
-		// var ppn = getNum($("#totalppn").val().split(",").join(""));
 
-		// if (persen_disc > 0 && persen_disc !== null) {
-		// 	var disc = parseFloat(total * persen_disc / 100);
-		// 	$("#totaldisc").val(number_format(disc, 2));
-		// }
+		var baseSetelahDiskon = Math.max(0, totalAwal - diskonKhusus);
 
-		// if (persen_ppn > 0 && persen_ppn !== null) {
-		// 	var ppn = parseFloat((total - disc) * persen_ppn / 100);
-		// 	$("#totalppn").val(number_format(ppn, 2));
-		// }
+		// Rumus sesuai Excel: DPP = Total Awal * 11/12
+		var dpp = baseSetelahDiskon * (11 / 12);
 
-		var base = Math.max(0, totalInPPn - diskonKhusus)
+		var ppn = 0;
+		var totalPlusPajak = 0;
 
-		var exppn = base / 1.11
-		var dpp = (exppn) * 11 / 12
-		var ppn = 12 / 100 * (dpp)
-		var subtotal = exppn + ppn
+		// UPDATE: Gunakan ID 'show_tax' sesuai HTML Anda
+		var pajakAktif = $('#show_tax').is(':checked');
 
-		var grandtotal = kirim + subtotal;
+		if (pajakAktif) {
+			// PPn = DPP * 12%
+			ppn = dpp * 0.12;
 
-		$("#kirim").val(number_format(kirim, 2));
+			// Total Akhir = Total Awal + PPn
+			totalPlusPajak = baseSetelahDiskon + ppn;
+
+			$("#dpp").val(number_format(dpp, 2));
+			$("#ppn").val(number_format(ppn, 2));
+		} else {
+			totalPlusPajak = baseSetelahDiskon;
+			$("#dpp").val(0);
+			$("#ppn").val(0);
+		}
+
+		var grandtotal = totalPlusPajak + kirim;
+
 		$("#subtotal").val(number_format(grandtotal, 2));
+		$("#kirim").val(number_format(kirim, 2));
 	}
 
 	// function SumDel() {

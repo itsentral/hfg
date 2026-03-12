@@ -164,24 +164,8 @@ class Purchase_order extends Admin_Controller
 	public function edit($no_po)
 	{
 		$session = $this->session->userdata('app_session');
-		// $getparam = explode(";", $_GET['param']);
-
-		// print_r($no_po);
-		// exit;
 
 		$get_po = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
-
-		// $getso = $this->Pr_model->get_where_in('so_number', $getparam, 'material_planning_base_on_produksi');
-		// $getitemso = $this->Pr_model->get_where_in('so_number', $getparam, 'material_planning_base_on_produksi_detail');
-
-		// $getitemso = $this->db->select("a.*, (b.qty_stock - b.qty_booking) AS avl_stock, c.code as code, d.id_stock as code1, c.nama as nm_material, d.stock_name as nm_material1, e.propose_purchase");
-		// $getitemso = $this->db->from('dt_trans_po a');
-		// $getitemso = $this->db->join('warehouse_stock b', 'b.id_material = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('new_inventory_4 c', 'c.code_lv4 = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('accessories d', 'd.id = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('material_planning_base_on_produksi_detail e', 'e.id = a.idpr', 'left');
-		// $getitemso = $this->db->where_in('a.no_po', $no_po);
-		// $getitemso = $this->db->group_by('a.id');
 
 		$getitemso = $this->db->query("
 			SELECT 
@@ -210,7 +194,8 @@ class Purchase_order extends Admin_Controller
 				h.code as packing_unit2,
 				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure,
 				c.hscode,
-				hs.kuota_internal
+				hs.kuota_internal,
+				hs.local_code as local_code
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -224,7 +209,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
 				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
-				(a.tipe IS NULL OR a.tipe = '')
+				(a.tipe IS NULL OR a.tipe = 'pr material')
 			GROUP BY id
 
 			UNION ALL
@@ -255,7 +240,8 @@ class Purchase_order extends Admin_Controller
 				'' as packing_unit2,
 				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure,
 				'' as hscode,         
-    			0 as kuota_internal 
+    			0 as kuota_internal,
+				'' as local_code 
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -292,7 +278,8 @@ class Purchase_order extends Admin_Controller
 				'' as packing_unit2,
 				'Pcs' as unit_measure,
 				'' as hscode,         
-    			0 as kuota_internal
+    			0 as kuota_internal,
+				'' as local_code 
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -301,13 +288,6 @@ class Purchase_order extends Admin_Controller
 				a.tipe = 'pr asset'
 			GROUP BY id
 		")->result();
-
-
-
-		// $getitemso = $this->db->get()->result();
-
-		// print_r($getitemso);
-		// exit;
 
 		$aktif = 'active';
 		$deleted = '0';
@@ -1790,6 +1770,236 @@ class Purchase_order extends Admin_Controller
 		echo json_encode($status);
 	}
 
+	public function SaveAll()
+	{
+		$this->auth->restrict($this->addPermission);
+		$post = $this->input->post();
+		$tgl  = $post['tanggal'];
+
+		echo '<pre>';
+		print_r($post);
+		echo '</pre>';
+		die();
+
+		// Cek apakah mode EDIT atau NEW
+		$is_edit = (!empty($post['no_po']));
+		$code    = $is_edit ? $post['no_po'] : $this->Pr_model->generate_code($tgl);
+		$no_surat = $is_edit ? $post['no_surat'] : $this->Pr_model->BuatNomor($tgl);
+
+		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
+		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept']) : '';
+
+		$this->db->trans_start();
+
+		// 1. Logika Revisi & Tipe PR
+		$revisi = 0;
+		if ($is_edit) {
+			$old_po = $this->db->select('revisi')->get_where('tr_purchase_order', ['no_po' => $code])->row();
+			$revisi = $old_po ? ((int)$old_po->revisi + 1) : 1;
+		}
+
+		$po_pr_depart = '0';
+		$po_pr_asset = '0';
+		foreach ($post['dt'] as $used) {
+			if ($used['tipe_pr'] == 'pr depart') $po_pr_depart = '1';
+			if ($used['tipe_pr'] == 'pr asset')  $po_pr_asset = '1';
+		}
+
+		// 2. Persiapan Data Header (Sesuai Struktur Lengkap Kamu)
+		$data = [
+			'no_po'             => $code,
+			'no_surat'          => $no_surat,
+			'id_suplier'        => $post['supplier'],
+			'loi'               => $post['loi'],
+			'nominal_kurs'      => $nominal_kurs,
+			'tanggal'           => $tgl,
+			'expect_tanggal'    => date('Y-m-d', strtotime($post['expect_tanggal'])),
+			'term'              => $post['term'],
+			'cif'               => $post['cif'],
+			'no_pr'             => $post['no_pr'],
+			'matauang'          => $post['matauang'],
+			'total_include_ppn' => str_replace(',', '', $post['subtotal']),
+			'total_exclude_ppn' => str_replace(',', '', $post['totalinppn']),
+			'diskon_khusus'     => str_replace(',', '', $post['diskonkhusus']),
+			'hargatotal'        => str_replace(',', '', $post['hargatotal']),
+			'diskontotal'       => str_replace(',', '', $post['diskontotal']),
+			'taxtotal'          => str_replace(',', '', $post['kirim']),
+			'subtotal'          => str_replace(',', '', $post['subtotal']),
+			'total_ppn'         => str_replace(',', '', $post['ppn']),
+			'total_barang'      => str_replace(',', '', $post['hargatotal']),
+			'status'            => '1',
+			'total_ppn_persen'  => str_replace(',', '', $post['persenppn']),
+			'persen_disc'       => str_replace(',', '', $post['persendisc']),
+			'nilai_disc'        => str_replace(',', '', $post['totaldisc']),
+			'note'              => $post['keterangan'],
+			'delivery_address'  => $post['delivery_address'],
+			'delivery_date'     => $post['delivery_date'],
+			'id_dept'           => $id_dept,
+			'revisi'            => $revisi,
+			'show_tax' 			=> ($post['show_tax'] == 'Y') ? 'Y' : 'N',
+		];
+
+		// Penentuan Tipe PO
+		if ($po_pr_depart == '1') {
+			$data['tipe'] = 'pr depart';
+		} else if ($po_pr_asset == '1') {
+			$data['tipe'] = 'pr asset';
+		} else {
+			$data['tipe'] = 'pr material';
+		}
+
+		if ($is_edit) {
+			$this->db->where('no_po', $code)->update('tr_purchase_order', $data);
+			// Jika edit, bersihkan detail lama untuk re-insert (pola paling aman untuk detail)
+			$this->db->delete('dt_trans_po', ['no_po' => $code]);
+		} else {
+			$data['created_on'] = date('Y-m-d H:i:s');
+			$data['created_by'] = $this->auth->user_id();
+			$this->db->insert('tr_purchase_order', $data);
+		}
+
+		// 3. Simpan Detail Barang & Validasi Qty
+		$valid_qty = 1;
+		$numb1 = 0;
+		if (isset($post['dt'])) {
+			foreach ($post['dt'] as $used) {
+				// Pada mode NEW, hanya simpan yang diceklis. Pada mode EDIT, biasanya semua yang dikirim disimpan.
+				if (!$is_edit && !isset($used['checked_point'])) continue;
+
+				$numb1++;
+				$dt = array(
+					'no_po'         => $code,
+					'id_dt_po'      => $code . '-' . $numb1,
+					'idpr'          => $used['idpr'],
+					'idmaterial'    => $used['idmaterial'],
+					'namamaterial'  => $used['namamaterial'],
+					'hscode'        => $used['hscode'],
+					'kuota_internal' => str_replace(",", "", $used['kuota_internal']),
+					'description'   => $used['description'],
+					'qty'           => str_replace(",", "", $used['qty']),
+					'width'         => str_replace(",", "", $used['width']),
+					'rate_lme'      => $used['ratelme'],
+					'fabcost'       => str_replace(",", "", $used['fabcost']),
+					'alloyprice'    => str_replace(",", "", $used['alloyprice']),
+					'totalwidth'    => str_replace(",", "", $used['totalweight']),
+					'hargasatuan'   => str_replace(",", "", $used['hargasatuan']),
+					'lebar'         => $used['lebar'],
+					'panjang'       => str_replace(",", "", $used['length']),
+					'diskon'        => str_replace(",", "", $used['diskon']),
+					'pajak'         => str_replace(",", "", $used['pajak']),
+					'jumlahharga'   => str_replace(",", "", $used['jumlahharga']),
+					'ppn'           => str_replace(",", "", $used['nilai_ppn']),
+					'ppn_persen'    => str_replace(",", "", $used['persen_ppn']),
+					'persen_disc'   => str_replace(",", "", $used['disc_persen']),
+					'nilai_disc'    => str_replace(",", "", $used['disc_num']),
+					'harga_total'   => str_replace(",", "", $used['totalharga']),
+					'note'          => $used['note'],
+					'sisa_kuota'    => str_replace(",", "", $used['sisa_kuota']),
+					'kode_barang'   => $used['kode_barang'],
+					'tipe'          => (!empty($used['tipe_pr'])) ? $used['tipe_pr'] : 'pr material'
+				);
+
+				$this->db->insert('dt_trans_po', $dt);
+
+				// Validasi Qty PR vs PO
+				$q_other = $this->db->query("SELECT SUM(qty) AS other_qty FROM dt_trans_po WHERE idpr = '" . $used['idpr'] . "' AND tipe = '" . $used['tipe_pr'] . "' AND no_po != '$code'")->row();
+				$other_qty = ($q_other) ? $q_other->other_qty : 0;
+
+				if ($used['tipe_pr'] == 'pr depart') {
+					$q_pr = $this->db->query("SELECT qty AS qty_pr FROM rutin_non_planning_detail WHERE id = '" . $used['idpr'] . "'")->row();
+				} else if ($used['tipe_pr'] == 'pr asset') {
+					$q_pr = $this->db->query("SELECT rev_qty AS qty_pr FROM asset_planning WHERE id = '" . $used['idpr'] . "'")->row();
+				} else {
+					$q_pr = $this->db->query("SELECT propose_purchase AS qty_pr FROM material_planning_base_on_produksi_detail WHERE id = '" . $used['idpr'] . "'")->row();
+				}
+
+				if ($q_pr && ($dt['qty'] + $other_qty) > $q_pr->qty_pr) {
+					$valid_qty = 0;
+				}
+			}
+		}
+
+		// 4. Update Status ke Planning Asal (Khusus New/First Time)
+		if (!$is_edit) {
+			$so_numbers = explode(',', $post['so_number']);
+
+			if ($po_pr_depart == '1') {
+				// Hanya update tabel Rutin/Departemen
+				$this->db->where_in('no_pengajuan', $so_numbers)
+					->update('rutin_non_planning_header', [
+						'po_number' => $code,
+						'po_date'   => date('Y-m-d')
+					]);
+			} elseif ($po_pr_asset == '1') {
+				// Jika ada tabel khusus asset header yang perlu diupdate statusnya, taruh di sini
+				$this->db->where_in('no_pengajuan', $so_numbers)
+					->update('asset_planning', [
+						'po_number' => $code,
+						'po_date'   => date('Y-m-d')
+					]);
+			} else {
+				// Default: PR Material
+				$this->db->where_in('so_number', $so_numbers)
+					->update('material_planning_base_on_produksi', [
+						'po_number' => $code,
+						'po_date'   => $tgl
+					]);
+			}
+		}
+
+		// 5. Simpan TOP & LC (Hapus dulu jika Edit)
+		if ($is_edit) {
+			$this->db->delete('tr_top_po', ['no_po' => $code]);
+			$this->db->delete('tr_po_detail_lc', ['no_po' => $code]);
+		}
+
+		$num_top = $this->input->post('num_top');
+		$detail_lc = $this->input->post('detail_lc');
+
+		if ($num_top > 0) {
+			for ($i = 1; $i <= $num_top; $i++) {
+				if (isset($post['group_top_' . $i])) {
+					$tipe_bayar = $this->input->post('tipe_bayar_' . $i); // Pastikan index sesuai view
+					$data_top = [
+						'no_po'      => $code,
+						'group_top'  => $this->input->post('group_top_' . $i),
+						'progress'   => str_replace(',', '', $this->input->post('progress_' . $i)),
+						'nilai'      => str_replace(',', '', $this->input->post('nilai_top_' . $i)),
+						'keterangan' => $this->input->post('keterangan_top_' . $i),
+						'tipe_bayar' => $tipe_bayar,
+						'jatuh_tempo' => $this->input->post('jatuh_tempo_' . $i),
+						'created_by' => $this->auth->user_id(),
+						'created_on' => date('Y-m-d H:i:s')
+					];
+					$this->db->insert('tr_top_po', $data_top);
+					$id_top = $this->db->insert_id();
+
+					if ($tipe_bayar === 'lc' && isset($detail_lc[$i])) {
+						$lc = json_decode($detail_lc[$i], true);
+						$lc['id_top'] = $id_top;
+						$lc['no_po']  = $code;
+						$lc['value_contract'] = str_replace(',', '', $lc['value_contract']);
+						$lc['created_by'] = $this->auth->user_id();
+						$lc['created_on'] = date('Y-m-d H:i:s');
+						$this->db->insert('tr_po_detail_lc', $lc);
+					}
+				}
+			}
+		}
+
+		// 6. Transaksi Selesai
+		if ($this->db->trans_status() === FALSE || $valid_qty == 0) {
+			$this->db->trans_rollback();
+			$msg = ($valid_qty == 0) ? 'Maaf, ada PO Qty yang melebihi Qty PR!' : 'Gagal Save Item.';
+			$status = ['pesan' => $msg, 'status' => 0];
+		} else {
+			$this->db->trans_commit();
+			$status = ['pesan' => 'Success Save Item.', 'code' => $code, 'status' => 1];
+		}
+
+		echo json_encode($status);
+	}
+
 	public function SaveEditPO()
 	{
 		$this->auth->restrict($this->addPermission);
@@ -1869,59 +2079,84 @@ class Purchase_order extends Admin_Controller
 					$get_data_pr = $this->db->query("SELECT IF(propose_purchase IS NOT NULL, propose_purchase, 0) AS qty_pr FROM material_planning_base_on_produksi_detail WHERE id = '" . $used['idpr'] . "'")->row();
 				}
 
-
-
 				$qty_all = ($used['qty']);
 
-				// $qty_all = ($used[qty] + $get_other_po_brg->other_qty);
-				// print($used[idpr].' ('. $used[qty] . ' + '.$get_other_po_brg->other_qty.') - ' . $get_data_pr->qty_pr.'<br>');
 				if ($qty_all > $get_data_pr->qty_pr) {
 					$valid_qty = 0;
 				}
 			}
 
-			// print_r($used[id]);
-			// exit;
 
 			$this->db->update('dt_trans_po', $dt, ['id' => $used['id']]);
-			// $nopr = $used[no_pr];
 			$dataupdate = [
 				'status_po'				=> 'CLS',
 			];
-
-			// $this->db->where('no_pr', $nopr)->update("tr_purchase_request", $dataupdate);
 		}
-		// $this->db->where_in('so_number', explode(',', $post['so_number']))->update('material_planning_base_on_produksi', ['po_number' => $code, 'po_date' => date('Y-m-d')]);
 
-		$del_top_po = $this->db->delete('tr_top_po', ['no_po' => $post['no_po']]);
 
+		// 1. Hapus data TOP dan LC lama agar tidak duplikat saat edit
+		$this->db->delete('tr_top_po', ['no_po' => $code]);
+		$this->db->delete('tr_po_detail_lc', ['no_po' => $code]);
+
+		// 2. Ambil input TOP dan LC
 		$num_top = $this->input->post('num_top');
-		// if($num_top < 1 || $num_top == '') {
-		// 	$num_top = 1;
-		// }
+		$detail_lc = $this->input->post('detail_lc');
 
 		if ($num_top > 0 && $num_top !== '') {
 			for ($i = 1; $i <= $num_top; $i++) {
 				if (isset($post['group_top_' . $i])) {
-					$group_top = $this->input->post('group_top_' . $i);
-					$progress = $this->input->post('progress_' . $i);
-					$nilai_top = $this->input->post('nilai_top_' . $i);
-					$keterangan_top = $this->input->post('keterangan_top_' . $i);
+					$tipe_bayar = $this->input->post('tipe_bayar_' . $i); // Pastikan index sesuai name di view
 
-					// print_r($num_top.'<br>');
+					$data_top = [
+						'no_po'       => $code,
+						'group_top'   => $this->input->post('group_top_' . $i),
+						'progress'    => str_replace(',', '', $this->input->post('progress_' . $i)),
+						'nilai'       => str_replace(',', '', $this->input->post('nilai_top_' . $i)),
+						'keterangan'  => $this->input->post('keterangan_top_' . $i),
+						'tipe_bayar'  => $tipe_bayar,
+						'jatuh_tempo' => $this->input->post('jatuh_tempo_' . $i),
+						'created_by'  => $this->auth->user_id(),
+						'created_on'  => date('Y-m-d H:i:s')
+					];
 
-					$insert_top = $this->db->insert('tr_top_po', [
-						'no_po' => $post['no_po'],
-						'group_top' => $group_top,
-						'progress' => str_replace(',', '', $progress),
-						'nilai' => str_replace(',', '', $nilai_top),
-						'keterangan' => $keterangan_top,
-						'created_by' => $this->auth->user_id(),
-						'created_on' => date('Y-m-d H:i:s')
-					]);
-					if (!$insert_top) {
-						print_r($this->db->error($insert_top));
-						exit;
+					$this->db->insert('tr_top_po', $data_top);
+					$id_top = $this->db->insert_id();
+
+					// 3. Logika LC (Letter of Credit) jika tipe bayar adalah LC
+					if ($tipe_bayar === 'lc' && isset($detail_lc[$i])) {
+						$lc = json_decode($detail_lc[$i], true);
+
+						if (!empty($lc)) {
+							$data_lc = [
+								'id_top'            => $id_top,
+								'no_po'             => $code,
+								'no_credit'         => $lc['no_credit'],
+								'issue_date'        => $lc['issue_date'],
+								'expiry_date'       => $lc['expiry_date'],
+								'value_contract'    => str_replace(',', '', $lc['value_contract']),
+								'tolerance_plus'    => $lc['tolerance_plus'],
+								'tolerance_minus'   => $lc['tolerance_minus'],
+								'type_of_lc'        => $lc['type_of_lc'],
+								'valid_usen_until'  => $lc['valid_usen_until'],
+								'bank_sender'       => $lc['bank_sender'],
+								'bank_receiver'     => $lc['bank_receiver'],
+								'latest_shipment'   => $lc['latest_shipment'],
+								'no_sales_contract' => $lc['no_sales_contract'],
+								'created_by'        => $this->auth->user_id(),
+								'created_on'        => date('Y-m-d H:i:s')
+							];
+
+							$insert_detail_lc = $this->db->insert('tr_po_detail_lc', $data_lc);
+
+							if (!$insert_detail_lc) {
+								$this->db->trans_rollback();
+								echo json_encode([
+									'status' => 0,
+									'pesan'  => 'Gagal simpan detail LC: ' . $this->db->error()['message']
+								]);
+								exit;
+							}
+						}
 					}
 				}
 			}
@@ -2025,6 +2260,7 @@ class Purchase_order extends Admin_Controller
 
 		echo json_encode($status);
 	}
+
 	public function PrintH()
 	{
 		ob_clean();

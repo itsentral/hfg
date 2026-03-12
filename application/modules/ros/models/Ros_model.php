@@ -98,7 +98,7 @@ class Ros_model extends BF_Model
             $nestedData   = array();
             $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
             $nestedData[]  = "<div align='left'>" . $row['id'] . "</div>";
-            $nestedData[]  = "<div align='left'>" . $row['no_po'] . "</div>";
+            $nestedData[]  = "<div align='left'>" . $row['no_surat'] . "</div>";
             $nestedData[]  = "<div align='left'>" . $row['nm_supplier'] . "</div>";
             $nestedData[]  = "<div align='center'>" . $row['no_pengajuan_pib'] . "</div>";
             $nestedData[]  = "<div align='center'>" . number_format($row['cost_bm'] + $row['cost_ppn'] + $row['cost_pph'] + $other_cost, 2) . "</div>";
@@ -122,37 +122,22 @@ class Ros_model extends BF_Model
 
     public function get_query_ros($product, $costcenter, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
     {
-
-
-        // $sql = "SELECT
-        //       (@row:=@row+1) AS nomor,
-        //       a.*,
-        //       b.nm_customer
-        //     FROM
-        //       material_planning_base_on_produksi a
-        //       LEFT JOIN customer b ON a.id_customer=b.id_customer,
-        //       (SELECT @row:=0) r
-        //     WHERE 1=1 AND a.category in ('pr material','base on production') AND a.booking_date IS NOT NULL AND (
-        //       b.nm_customer LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-        //       OR a.so_number LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-        //       OR a.project LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-        //       OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-        //       OR a.no_rev LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-        //     )
-        // ";
         $sql = "
             SELECT
-                a.*
+                a.*,
+                b.no_surat
             FROM
                 tr_ros a
+            LEFT JOIN 
+                tr_purchase_order b ON a.no_po = b.no_po
             WHERE
                 1=1 AND (
                     a.id LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR
                     a.no_po LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR
-                    a.nm_supplier LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+                    a.nm_supplier LIKE '%" . $this->db->escape_like_str($like_value) . "%' OR
+                    b.no_surat LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 )
         ";
-        // echo $sql; exit;
 
         $data['totalData'] = $this->db->query($sql)->num_rows();
         $data['totalFiltered'] = $this->db->query($sql)->num_rows();
