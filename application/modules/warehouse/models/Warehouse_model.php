@@ -68,19 +68,15 @@ class Warehouse_model extends BF_Model
 
         foreach ($query->result_array() as $row) {
             $nomor = $urut1 + $requestData['start'];
-            $qty_stock = isset($row['qty_stock']) ? floatval($row['qty_stock']) : 0;
-            $qty_booking = isset($row['qty_booking']) ? floatval($row['qty_booking']) : 0;
-            $available = $qty_stock - $qty_booking;
 
             $nestedData = [];
             $nestedData[] = "<div align='center'>{$nomor}</div>";
-            $nestedData[] = "<div align='left'>{$row['code_material']}</div>";
-            $nestedData[] = "<div align='left'>{$row['nm_material']}</div>";
-            $nestedData[] = "<div align='center'>{$row['unit']}</div>";
-            $nestedData[] = "<div align='center'>{$row['unit_packing']}</div>";
-            $nestedData[] = "<div align='right'>" . number_format($qty_stock) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($qty_booking) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($available) . "</div>";
+            $nestedData[] = "<div align='left'>{$row['nm_barang']}</div>";
+            $nestedData[] = "<div align='center'>{$row['no_coil']}</div>";
+            $nestedData[] = "<div align='center'>1</div>"; // Jumlah Coil selalu 1 per baris sesuai konsep
+            $nestedData[] = "<div align='right'>" . number_format($row['berat_bersih'], 3) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format($row['berat_kotor'], 3) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format($row['length'], 3) . "</div>";
 
             $data[] = $nestedData;
             $urut1++;
@@ -95,75 +91,36 @@ class Warehouse_model extends BF_Model
 
         echo json_encode($json_data);
     }
-
     public function get_query_json_warehouse_stock($like_value = null, $column_order = null, $column_dir = null, $limit_start = null, $limit_length = null)
     {
         $columns_order_by = [
-            0 => 'ws.id',
-            1 => 'ws.code_material',
-            2 => 'ws.nm_material',
-            3 => 'sp.nama',
-            4 => 'sm.nama',
-            5 => 'ws.qty_stock',
-            6 => 'ws.qty_booking'
+            0 => 'rd.id',
+            1 => 'rd.nm_barang',
+            2 => 'rd.no_coil',
+            4 => 'rd.berat_bersih',
+            5 => 'rd.berat_kotor',
+            6 => 'rd.length'
         ];
 
-        // Total Data
-        $this->db->select('ws.id');
-        $this->db->from('warehouse_stock ws');
-        $this->db->join('ms_satuan sm', 'ws.id_unit = sm.id', 'left');
-        $this->db->join('ms_satuan sp', 'ws.id_unit_packing = sp.id', 'left');
-        $this->db->join('new_inventory_4 ni', 'ni.code_lv4 = ws.code_lv4', 'inner');
-        $this->db->where('ni.deleted_date IS NULL', null, false);
-        $this->db->where('ni.deleted_by IS NULL',  null, false);
-        $totalData = $this->db->count_all_results();
+        // 1. Hitung Total Data (Tanpa Filter Search)
+        $this->db->from('tr_ros_detail rd');
+        $this->db->join('tr_ros r', 'rd.no_ros = r.id', 'inner');
+        $this->db->where('r.sts', '1');
+        $totalData = $this->db->count_all_results(); // count_all_results otomatis mereset query CI
 
-        // Total Filtered
-        $this->db->select('ws.id');
-        $this->db->from('warehouse_stock ws');
-        $this->db->join('ms_satuan sm', 'ws.id_unit = sm.id', 'left');
-        $this->db->join('ms_satuan sp', 'ws.id_unit_packing = sp.id', 'left');
-        $this->db->join('new_inventory_4 ni', 'ni.code_lv4 = ws.code_lv4', 'inner');
-        $this->db->where('ni.deleted_date IS NULL', null, false);
-        $this->db->where('ni.deleted_by IS NULL',  null, false);
-
-        if ($like_value) {
-            $this->db->group_start();
-            $this->db->like('ws.code_material', $like_value);
-            $this->db->or_like('ws.nm_material', $like_value);
-            $this->db->or_like('sm.nama', $like_value);
-            $this->db->or_like('sp.nama', $like_value);
-            $this->db->group_end();
-        }
-
+        // 2. Hitung Total Filtered (Dengan Search)
+        // Kita panggil manual builder-nya di sini
+        $this->_build_query_stock($like_value);
         $totalFiltered = $this->db->count_all_results();
 
-        // Data utama
-        $this->db->select('
-                            ws.*,
-                            sm.nama AS unit,
-                            sp.nama AS unit_packing
-                        ');
-        $this->db->from('warehouse_stock ws');
-        $this->db->join('ms_satuan sm', 'ws.id_unit = sm.id', 'left');
-        $this->db->join('ms_satuan sp', 'ws.id_unit_packing = sp.id', 'left');
-        $this->db->join('new_inventory_4 ni', 'ni.code_lv4 = ws.code_lv4', 'inner');
-        $this->db->where('ni.deleted_date IS NULL', null, false);
-        $this->db->where('ni.deleted_by IS NULL',  null, false);
-
-        if ($like_value) {
-            $this->db->group_start();
-            $this->db->like('ws.code_material', $like_value);
-            $this->db->or_like('ws.nm_material', $like_value);
-            $this->db->or_like('sp.nama', $like_value);
-            $this->db->or_like('sm.nama', $like_value);
-            $this->db->group_end();
-        }
+        // 3. Ambil Data Utama
+        $this->db->select('rd.*');
+        $this->_build_query_stock($like_value); // Panggil lagi builder-nya
 
         if ($column_order !== null && isset($columns_order_by[$column_order])) {
             $this->db->order_by($columns_order_by[$column_order], $column_dir);
         } else {
-            $this->db->order_by('ws.id', 'desc');
+            $this->db->order_by('rd.id', 'desc');
         }
 
         if ($limit_length != -1) {
@@ -177,6 +134,21 @@ class Warehouse_model extends BF_Model
             'totalFiltered' => $totalFiltered,
             'query' => $query
         ];
+    }
+
+    // Tambahkan r.sts = 1 di sini agar konsisten di semua hitungan
+    private function _build_query_stock($like_value)
+    {
+        $this->db->from('tr_ros_detail rd');
+        $this->db->join('tr_ros r', 'rd.no_ros = r.id', 'inner');
+        $this->db->where('r.sts', '1');
+
+        if ($like_value) {
+            $this->db->group_start();
+            $this->db->like('rd.nm_barang', $like_value);
+            $this->db->or_like('rd.no_coil', $like_value);
+            $this->db->group_end();
+        }
     }
 
     public function get_json_kartu_stok()

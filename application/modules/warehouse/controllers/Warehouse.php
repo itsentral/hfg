@@ -29,7 +29,7 @@ class Warehouse extends Admin_Controller
 
     public function index()
     {
-        $this->template->title('Warehouse Stock');
+        $this->template->title('Material Stock');
         $this->template->page_icon('fa fa-cubes');
         $this->template->render('index');
     }

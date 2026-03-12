@@ -6,13 +6,12 @@
             <table id="table-stock" class="table table-bordered table-striped">
                 <thead class="bg-blue">
                     <th>No</th>
-                    <th>Kode Product</th>
-                    <th>Nama Product</th>
-                    <th>Unit Packing</th>
-                    <th>Unit Measurement</th>
-                    <th>Jumlah Stok</th>
-                    <th>Stok Booking</th>
-                    <th>Stok Available</th>
+                    <th>Nama Material (Lv.4)</th>
+                    <th>Coil No.</th>
+                    <th>Jumlah Coil</th>
+                    <th>Nett Weight</th>
+                    <th>Gross Weight</th>
+                    <th>Length (M)</th>
                 </thead>
                 <tbody></tbody>
             </table>

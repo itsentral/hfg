@@ -54,40 +54,57 @@ class Incoming extends Admin_Controller
     {
         $no_po = $this->uri->segment(3);
 
-        $this->db->select('a.*, b.code as code_product, b.konversi, c.code as unit_measure, d.code as unit_packing, e.qty_order, e.keterangan as keterangan_check, f.tanggal as tgl_incoming');
+        // 1. Ambil data utama dengan JOIN ke tr_ros_detail untuk mendapatkan data per COIL
+        $this->db->select('
+        a.*, 
+        b.code as id_barang, b.konversi, 
+        c.code as unit_measure, 
+        d.code as unit_packing, 
+        e.qty_order, e.keterangan as keterangan_check, 
+        f.tanggal as tgl_incoming,
+        g.no_coil, g.berat_kotor, g.berat_bersih, g.length, g.nm_barang, g.id_po_detail
+    ');
         $this->db->from('dt_trans_po a');
         $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.idmaterial', 'left');
         $this->db->join('ms_satuan c', 'c.id = b.id_unit', 'left');
         $this->db->join('ms_satuan d', 'd.id = b.id_unit_packing', 'left');
         $this->db->join('tr_incoming_check_detail e', 'e.id_po_detail = a.id');
         $this->db->join('tr_incoming_check f', 'f.kode_trans = e.kode_trans', 'left');
+
+        // JOIN ke detail ROS berdasarkan id_po_detail agar bisa grouping per coil
+        $this->db->join('tr_ros_detail g', 'g.id_po_detail = a.id', 'left');
+
         $this->db->where('e.kode_trans', $no_po);
         $result = $this->db->get()->result_array();
-        $result_header    = $this->db->get_where('tr_purchase_order', array('no_po' => $result[0]['no_po']))->result();
 
-        $get_file_incoming = $this->db->select('no_ipp,file_incoming_material')->get_where('tr_incoming_check', ['kode_trans' => $no_po])->row();
+        // 2. Ambil informasi file dan header
+        $get_file_incoming = $this->db->select('no_ipp, file_incoming_material')
+            ->get_where('tr_incoming_check', ['kode_trans' => $no_po])
+            ->row();
 
-        $no_surat = [];
-        $get_no_surat = $this->db
-            ->select('no_surat')
-            ->from('tr_purchase_order')
-            ->where_in('no_po', explode(',', $get_file_incoming->no_ipp))
-            ->get()
-            ->result();
+        // 3. Ambil No Surat (PO)
+        $no_surat_list = [];
+        if ($get_file_incoming) {
+            $get_no_surat = $this->db
+                ->select('no_surat')
+                ->from('tr_purchase_order')
+                ->where_in('no_po', explode(',', $get_file_incoming->no_ipp))
+                ->get()
+                ->result();
 
-        foreach ($get_no_surat as $item_surat) {
-            $no_surat[] = $item_surat->no_surat;
+            foreach ($get_no_surat as $item_surat) {
+                $no_surat_list[] = $item_surat->no_surat;
+            }
         }
-        $no_surat = implode(', ', $no_surat);
+        $no_surat = implode(', ', $no_surat_list);
 
-
-
+        // 4. Kirim data ke View
+        // Kita kirim 'detail_ros' yang berisi hasil join tadi untuk di-loop dengan logika grouping
         $data = array(
-            'result'     => $result,
-            'no_surat' => $no_surat,
-            'tanggal'     => date('d F Y', strtotime($result[0]['tgl_incoming'])),
-            'file_incoming_material' => $get_file_incoming->file_incoming_material
-
+            'detail_ros'             => $result, // Ini variabel yang akan di-foreach di view terbaru
+            'no_surat'               => $no_surat,
+            'tanggal'                => isset($result[0]['tgl_incoming']) ? date('d F Y', strtotime($result[0]['tgl_incoming'])) : '-',
+            'file_incoming_material' => $get_file_incoming->file_incoming_material ?? ''
         );
 
         $this->template->set($data);
