@@ -1779,11 +1779,6 @@ class Purchase_order extends Admin_Controller
 		$post = $this->input->post();
 		$tgl  = $post['tanggal'];
 
-		echo '<pre>';
-		print_r($post);
-		echo '</pre>';
-		die();
-
 		// Cek apakah mode EDIT atau NEW
 		$is_edit = (!empty($post['no_po']));
 		$code    = $is_edit ? $post['no_po'] : $this->Pr_model->generate_code($tgl);
