@@ -17,7 +17,7 @@
                     ?>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-2" hidden>
                     <label class="form-label mb-1"><b>Tingkat PR</b></label>
                     <select name="tingkat_pr" class="form-control tingkat_pr">
                         <option value="1">Normal</option>
@@ -25,7 +25,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-7 text-md-end">
+                <div class="col-md-9 text-md-end">
                     <!-- <button type="button" class="btn btn-primary btn-sm" id="autoPropose">
                         <i class="fa fa-magic me-1"></i> Set Auto Propose
                     </button> -->
@@ -311,6 +311,8 @@
                                 type: "success",
                                 timer: 3000
                             });
+
+                            $("input[name^='forecast']").val('0');
                             window.location.href = base_url + active_controller + 'add';
                         } else {
                             swal({
