@@ -92,7 +92,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     </div>
                                     <div class="col-md-8">
                                         <label><?= str_replace(',', ', ', $no_po) ?></label>
-                                        <input type="hidden" name="no_po" class="form-control" value="<?= str_replace(',', ', ', $no_po) ?>" readonly>
+                                        <input type="hidden" name="no_po" class="form-control no_po" value="<?= str_replace(',', ', ', $no_po) ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -596,23 +596,37 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
     });
 
     $(document).on('change', '.kurs_pib', function() {
-        var no_po = [];
-        $('.no_po').each(function() {
-            var val = $(this).val();
-            if ($(this).prop('checked')) {
-                no_po.push(val);
+        var no_po_list = [];
+        var no_ros = "<?= $no_ros ?>"; // Ambil status dari PHP
+
+        if (no_ros === 'New') {
+            // Mode NEW: Loop checkbox yang dicentang
+            $('.no_po').each(function() {
+                if ($(this).is(':checkbox') && $(this).prop('checked')) {
+                    no_po_list.push($(this).val());
+                }
+            });
+        } else {
+            // Mode EDIT: Ambil langsung dari input hidden
+            var val_edit = $('input[name="no_po"]').val();
+            if (val_edit) {
+                // Hapus spasi jika ada (karena di PHP Anda pakai str_replace ke ', ')
+                no_po_list.push(val_edit.split(' ').join(''));
             }
-        });
-        var no_po = no_po.join(',');
+        }
+
+        var no_po = no_po_list.join(',');
         var kurs_pib = $(this).val();
+
         if (kurs_pib == '' || kurs_pib == null) {
-            kurs_pib = 1
+            kurs_pib = 1;
         } else {
             kurs_pib = kurs_pib.split(',').join('');
             kurs_pib = parseFloat(kurs_pib);
         }
 
         get_list_detail_po(no_po, kurs_pib);
+        ttl_price()
     });
 
     $(document).on('change', '.input_bm', function() {

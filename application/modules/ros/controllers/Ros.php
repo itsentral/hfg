@@ -151,7 +151,8 @@ class Ros extends Admin_Controller
             }
 
             if (($item_po['qty'] - $nilai_pengurang) > 0) {
-                $net_price = ($item_po['qty']) *  ($item_po['hargasatuan']);
+                $harga_satuan_idr = $item_po['hargasatuan'] * $post['kurs_pib'];
+                $net_price = ($item_po['qty']) *  $harga_satuan_idr;
                 // Di dalam loop foreach ($get_detail_po as $item_po)
                 $hasil .= '<tr class="row-material" data-id="' . $item_po['id'] . '">';
                 $hasil .= '<td class="text-center no-urut">' . $no . '</td>';
@@ -160,7 +161,7 @@ class Ros extends Admin_Controller
                 $hasil .= '<td class="text-center">' . ucfirst($item_po['unit_satuan']) . '</td>';
                 $hasil .= '<td class="text-center">' . $get_id_po['matauang'] . '</td>';
                 $hasil .= '<td class="text-end hargasatuan">' . number_format($item_po['hargasatuan']) . '</td>';
-                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($item_po['hargasatuan'] * $post['kurs_pib']) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($harga_satuan_idr) . '</td>';
                 $hasil .= '<td class="text-center">' . number_format($item_po['qty']) . '</td>';
                 $hasil .= '<td class="text-center">' . number_format($net_price) . '</td>';
 

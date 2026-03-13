@@ -134,7 +134,7 @@ class Incoming extends Admin_Controller
         LEFT JOIN dt_trans_po b ON a.id_po_detail = b.id
         LEFT JOIN tr_ros c ON c.id = a.no_ros
         WHERE b.no_po = '$no_po'
-        AND c.sts = 1
+        AND c.sts = 0
         ORDER BY a.no_ros ASC
     ")->result();
         echo json_encode($data);
