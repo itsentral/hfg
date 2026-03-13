@@ -329,7 +329,7 @@ class Approval_po extends Admin_Controller
         LEFT JOIN ms_satuan h ON h.id = d.id_unit_gudang
 			WHERE
 				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
-				(a.tipe IS NULL OR a.tipe = '')
+				(a.tipe IS NULL OR a.tipe = 'pr material')
       GROUP BY a.id
 
 			UNION ALL
@@ -426,7 +426,14 @@ class Approval_po extends Admin_Controller
     $mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
     $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
     $list_group_top = $this->db->get_where('list_help', ['group_by' => 'top', 'sts' => 'Y'])->result();
-    $list_top = $this->db->get_where('tr_top_po', ['no_po' => $no_po])->result();
+    $term = $this->db->get_where('list_help', ['group_by' => 'top invoice', 'sts' => 'Y'])->result();
+
+    // $list_top = $this->db->get_where('tr_top_po', ['no_po' => $no_po])->result();
+    $this->db->select('a.*, b.no_credit, b.issue_date, b.expiry_date, b.value_contract, b.tolerance_plus, b.tolerance_minus, b.type_of_lc, b.valid_usen_until, b.bank_sender, b.bank_receiver, b.latest_shipment, b.no_sales_contract');
+    $this->db->from('tr_top_po a');
+    $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
+    $this->db->where('a.no_po', $no_po);
+    $list_top = $this->db->get()->result();
     $num_top = count($list_top);
 
     // $matauang = $this->db->get_where('matauang')->result();
@@ -459,7 +466,8 @@ class Approval_po extends Admin_Controller
       'nm_depart' => $nm_depart,
       'list_top' => $list_top,
       'list_group_top' => $list_group_top,
-      'num_po' => $num_top
+      'num_po' => $num_top,
+      'term' => $term
     ];
 
     $this->template->set('results', $data);
@@ -507,7 +515,7 @@ class Approval_po extends Admin_Controller
 
     $this->db->trans_begin();
 
-    $this->db->update('tr_purchase_order', ['status' => 1, 'reject_reason' => $post['reject_reason']], ['no_po' => $post['no_po']]);
+    $this->db->update('tr_purchase_order', ['status' => 3, 'reject_reason' => $post['reject_reason']], ['no_po' => $post['no_po']]);
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();

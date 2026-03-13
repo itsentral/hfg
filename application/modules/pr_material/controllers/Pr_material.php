@@ -250,6 +250,7 @@ class Pr_material extends Admin_Controller
         foreach ($get_materials as $key => $value) {
             $ArrUpdate[$key]['code_lv4']        = $value['code_lv4'];
             $ArrUpdate[$key]['request']         = 0;
+            $ArrUpdate[$key]['forecast']         = 0;
             $ArrUpdate[$key]['tgl_dibutuhkan']  = $tgl_next_month;
         }
 

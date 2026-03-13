@@ -105,11 +105,13 @@
             var keterangan = $('#keterangan_' + nomor).val().split(",").join("");
             var tanggal = $('#tgl_butuh').val();
 
+            // Logika perhitungan tetap sama
             if (target === 'forecast') {
                 var total_purchase = stock_awal + forecast;
                 $('#purchase_' + nomor).val(number_format(total_purchase, 2));
             }
 
+            // Ambil nilai terbaru dari input purchase (baik setelah dihitung maupun tidak)
             var current_purchase = getNum(($('#purchase_' + nomor).val() || '').split(",").join(""));
 
             var HTML = $(this).parents('tr');
@@ -120,17 +122,17 @@
                 propose_pack = current_purchase / konversi;
             }
             HTML.find('.propose_packing').text(number_format(propose_pack, 2));
+
             $.ajax({
                 url: base_url + active_controller + '/save_reorder_change',
                 type: "POST",
                 data: {
                     "id_material": id_material,
-                    "purchase": total_purchase, // Pastikan ini nilai terbaru
+                    "purchase": current_purchase,
                     "forecast": forecast,
                     "keterangan": keterangan,
                     "tanggal": tanggal
                 },
-                cache: false,
                 dataType: 'json',
                 success: function(data) {
                     swal({

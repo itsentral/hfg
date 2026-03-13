@@ -98,8 +98,10 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 										echo "<span class='badge bg-primary'>Waiting</span>";
 									} elseif ($record->status == '2') {
 										echo "<span class='badge bg-success'>Approved</span>";
+									} elseif ($record->status == '3') {
+										echo "<span class='badge bg-danger'>Rejected</span>";
 									} else {
-										echo "<span class='badge bg-danger'>Closed</span>";
+										echo "<span class='badge bg-gray'>Closed</span>";
 									}
 									?>
 								</td>

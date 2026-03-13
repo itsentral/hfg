@@ -1778,6 +1778,7 @@ class Purchase_order extends Admin_Controller
 		$this->auth->restrict($this->addPermission);
 		$post = $this->input->post();
 		$tgl  = $post['tanggal'];
+		$show_tax = (isset($post['show_tax']) && $post['show_tax'] === 'Y') ? 'Y' : 'N';
 
 		// Cek apakah mode EDIT atau NEW
 		$is_edit = (!empty($post['no_po']));
@@ -1834,7 +1835,7 @@ class Purchase_order extends Admin_Controller
 			'delivery_date'     => $post['delivery_date'],
 			'id_dept'           => $id_dept,
 			'revisi'            => $revisi,
-			'show_tax' 			=> ($post['show_tax'] == 'Y') ? 'Y' : 'N',
+			'show_tax' 			=> $show_tax,
 		];
 
 		// Penentuan Tipe PO

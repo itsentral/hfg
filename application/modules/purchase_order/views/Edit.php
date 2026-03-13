@@ -10,6 +10,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 	<div class="card-body">
 		<form id="data-form" method="post">
 			<input type="hidden" name="no_po" value="<?= $results['get_po']->no_po ?>">
+			<input type="hidden" name="no_pr" value="<?= $results['get_po']->no_pr ?>">
 			<div class="col-sm-12">
 				<div class="form-group row mb-3">
 					<!-- <div class="col-sm-6">
@@ -163,18 +164,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-6" hidden>
-						<div class="form-group row">
-							<div class="col-md-4">
-								<label for="id_customer">PR</label>
-							</div>
-							<div class="col-md-8">
-								<select id="no_pr" name="no_pr" class='form-control select2' required>
-									<option value="0">List Empty</option>
-								</select>
-							</div>
-						</div>
-					</div>
+
 				</div>
 
 				<div class="form-group row mb-3">

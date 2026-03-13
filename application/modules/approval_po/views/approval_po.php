@@ -199,6 +199,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 
 				<div class="table-responsive mb-3">
+
 					<table id="example" class='table table-bordered table-striped'>
 						<thead>
 							<tr class='bg-blue'>
@@ -357,25 +358,25 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= number_format($results['header_po']->subtotal) ?>" required name="totalinppn">
 								</td>
 							</tr>
-							<tr>
+							<tr hidden>
 								<td class="text-end" colspan="9"><b>Diskon Khusus</b></th>
 								<td colspan="2">
 									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= number_format($results['header_po']->diskon_khusus) ?>" name="diskonkhusus">
 								</td>
 							</tr>
-							<tr>
+							<tr hidden>
 								<td class="text-end" colspan="9"><b>Total (Exclude PPn)</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= number_format($results['header_po']->total_exclude_ppn) ?>" required name="totalexppn">
 								</td>
 							</tr>
-							<tr>
+							<tr <?= (isset($results['header_po']->show_tax) ? 'hidden' : '') ?>>
 								<td class="text-end" colspan="9"><b>DPP</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= number_format($results['header_po']->total_dpp) ?>" required name="dpp">
 								</td>
 							</tr>
-							<tr>
+							<tr <?= (isset($results['header_po']->show_tax) ? 'hidden' : '') ?>>
 								<td class="text-end" colspan="9"><b>PPn</b></td>
 								<td colspan="2">
 									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= number_format($results['header_po']->total_ppn) ?>" required name="ppn">
@@ -412,54 +413,104 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				</div>
 
 
-				<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
-				<table class="table table-bordered">
-					<thead class="bg-blue">
-						<tr>
-							<th class="text-center">Group TOP</th>
-							<th class="text-center">Progress (%)</th>
-							<th class="text-center">Value</th>
-							<th class="text-center">Keterangan</th>
-						</tr>
-					</thead>
-					<tbody class="list_tbody_top">
-						<?php
-						$no = 1;
-						foreach ($results['list_top'] as $item_top) {
-							echo '<tr class="top_' . $no . '">';
+				<div class="form-group row mb-3">
+					<div class="col-sm-12">
+						<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
+						<!-- <button type="button" class="btn btn-sm btn-primary add_top mb-3">
+							<i class="fa fa-plus"></i> Add TOP
+						</button> -->
+						<table class="table table-bordered">
+							<thead class="bg-blue">
+								<tr>
+									<th class="text-center">Group TOP</th>
+									<th class="text-center">Progress (%)</th>
+									<th class="text-center">Value</th>
+									<th class="text-center">Keterangan</th>
+									<th class="text-center">Tipe Pembayaran</th>
+									<th class="text-center">Jatuh Tempo</th>
+									<th class="text-center">Action</th>
+								</tr>
+							</thead>
+							<tbody class="list_tbody_top">
+								<?php
+								$no = 1;
+								foreach ($results['list_top'] as $item_top) {
+									$checked_lc = ($item_top->tipe_bayar == 'lc') ? 'checked' : '';
+									$checked_tt = ($item_top->tipe_bayar == 'tt') ? 'checked' : '';
+									$display_btn_lc = ($item_top->tipe_bayar == 'lc') ? '' : 'display:none;';
 
-							echo '<td>';
-							echo '<select name="group_top_' . $no . '">';
-							foreach ($results['list_group_top'] as $item_group_top) {
-								$selected = '';
-								if ($item_group_top->id == $item_top->group_top) {
-									$selected = 'selected';
+									echo '<tr class="top_' . $no . '">';
+
+									echo '<td>';
+									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
+									foreach ($results['list_group_top'] as $item_group_top) {
+										$selected = '';
+										if ($item_group_top->id == $item_top->group_top) {
+											$selected = 'selected';
+										}
+										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+									}
+									echo '</select>';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
+									echo '</td>';
+
+									echo '<td class="text-right">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
+									echo '</td>';
+
+									echo '<td>';
+									echo '<div class="form-check">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '">';
+									echo '<label class="form-check-label" for="lc_' . $no . '">LC</label>';
+									echo '</div>';
+									echo '<div class="form-check">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '">';
+									echo '<label class="form-check-label" for="tt_' . $no . '">TT</label>';
+									echo '</div>';
+
+									// Tombol untuk buka modal LC
+									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> Detail LC</button>';
+
+									// --- INPUT HIDDEN UNTUK DATA LC (DARI TABEL tr_po_detail_lc) ---
+									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
+									echo '<input type="hidden" name="issue_date_' . $no . '" value="' . $item_top->issue_date . '">';
+									echo '<input type="hidden" name="expiry_date_' . $no . '" value="' . $item_top->expiry_date . '">';
+									echo '<input type="hidden" name="value_contract_' . $no . '" value="' . $item_top->value_contract . '">';
+									echo '<input type="hidden" name="tolerance_plus_' . $no . '" value="' . $item_top->tolerance_plus . '">';
+									echo '<input type="hidden" name="tolerance_minus_' . $no . '" value="' . $item_top->tolerance_minus . '">';
+									echo '<input type="hidden" name="type_of_lc_' . $no . '" value="' . $item_top->type_of_lc . '">';
+									echo '<input type="hidden" name="valid_usen_until_' . $no . '" value="' . $item_top->valid_usen_until . '">';
+									echo '<input type="hidden" name="bank_sender_' . $no . '" value="' . $item_top->bank_sender . '">';
+									echo '<input type="hidden" name="bank_receiver_' . $no . '" value="' . $item_top->bank_receiver . '">';
+									echo '<input type="hidden" name="latest_shipment_' . $no . '" value="' . $item_top->latest_shipment . '">';
+									echo '<input type="hidden" name="no_sales_contract_' . $no . '" value="' . $item_top->no_sales_contract . '">';
+									echo '</td>';
+
+									echo '<td class="">';
+									echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $item_top->jatuh_tempo . '">';
+									echo '</td>';
+
+									echo '<td class="text-center">';
+									echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
+									echo '</td>';
+
+									echo '</tr>';
+
+									$no++;
 								}
-								echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
-							}
-							echo '</select>';
-							echo '</td>';
+								?>
+							</tbody>
+						</table>
 
-							echo '<td>';
-							echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
-							echo '</td>';
-
-							echo '<td class="text-end">';
-							echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
-							echo '</td>';
-
-							echo '<td>';
-							echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
-							echo '</td>';
-
-							echo '</tr>';
-
-							$no++;
-						}
-						?>
-					</tbody>
-				</table>
-
+					</div>
+				</div>
 
 				<div class="form-group row mb-3" hidden>
 					<div class="col-sm-6">
@@ -576,13 +627,104 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				<div class="col-md-12 text-center mb-3">
 					<button type="submit" class="btn btn-success" name="save" id="simpan-com"><i class="fa fa-save"></i> Approve</button>
 					<button type="submit" class="btn btn-danger" name="save" id="reject-com"><i class="fa fa-ban"></i> Reject</button>
-					<a href="<?= base_url('approval_po') ?>" class="btn btn-default"><i class="fa fa-arrow-left"></i> Back</a>
+					<a href="<?= base_url('approval_po') ?>" class="btn btn-dark"><i class="fa fa-arrow-left"></i> Back</a>
 				</div>
 
 			</div>
 		</form>
 	</div>
 </div>
+
+<div class="modal fade" id="modal_lc" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header bg-info">
+				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" id="modal_row_index_hidden">
+				<input type="hidden" id="modal_id_supplier_hidden">
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Supplier</label>
+							<input type="text" id="modal_supplier_name" class="form-control" readonly>
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Credit</label>
+							<input type="text" id="no_credit" class="form-control" placeholder="Input No. Credit...">
+						</div>
+						<div class="form-group mb-2">
+							<label>Issue Date</label>
+							<input type="date" id="issue_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Expiry Date</label>
+							<input type="date" id="expiry_date" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>Supplier Address</label>
+							<textarea id="modal_supplier_address" class="form-control" rows="3" readonly></textarea>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="form-group mb-2">
+							<label>Value Contract</label>
+							<input type="number" id="value_contract" class="form-control" step="0.01">
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Tolerance + (%)</label>
+								<input type="number" id="tolerance_plus" class="form-control">
+							</div>
+							<div class="col-6">
+								<label>Tolerance - (%)</label>
+								<input type="number" id="tolerance_minus" class="form-control">
+							</div>
+						</div>
+						<div class="form-group row mb-2">
+							<div class="col-6">
+								<label>Type Of LC</label>
+								<select id="type_of_lc" class="form-control">
+									<option value="At Sight">At Sight</option>
+									<option value="Usen">Usen</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<div id="group_usen_until" style="display:none;">
+									<label class="text-danger">Valid Usen Until</label>
+									<input type="date" id="valid_usen_until" class="form-control">
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group mb-2">
+							<label>Bank Sender / Receiver</label>
+							<div class="row">
+								<div class="col-6"><input type="text" id="bank_sender" class="form-control" placeholder="Sender"></div>
+								<div class="col-6"><input type="text" id="bank_receiver" class="form-control" placeholder="Receiver"></div>
+							</div>
+						</div>
+						<div class="form-group mb-2">
+							<label>Latest Date Of Shipment</label>
+							<input type="date" id="latest_shipment" class="form-control">
+						</div>
+						<div class="form-group mb-2">
+							<label>No. Sales Contract</label>
+							<input type="text" id="no_sales_contract" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+				<button type="button" id="btn_save_lc" class="btn btn-md btn-primary"><i class="fas fa-save"></i> Save Detail LC</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 
@@ -866,101 +1008,125 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			}
 		});
 
+		$(document).on('click', '.btn_view_lc', function() {
+			let no = $(this).data('no'); // Ambil nomor urut baris
+			let row = $(this).closest('tr'); // Ambil nomor urut dari ID tombol
+
+			// Mapping Data dari Hidden Input ke Modal
+			$('#modal_row_index_hidden').val(no);
+			$('#no_credit').val(row.find('input[name="no_credit_' + no + '"]').val());
+			$('#issue_date').val(row.find('input[name="issue_date_' + no + '"]').val());
+			$('#expiry_date').val(row.find('input[name="expiry_date_' + no + '"]').val());
+			$('#value_contract').val(row.find('input[name="value_contract_' + no + '"]').val());
+			$('#tolerance_plus').val(row.find('input[name="tolerance_plus_' + no + '"]').val());
+			$('#tolerance_minus').val(row.find('input[name="tolerance_minus_' + no + '"]').val());
+			$('#type_of_lc').val(row.find('input[name="type_of_lc_' + no + '"]').val()).trigger('change');
+			$('#valid_usen_until').val(row.find('input[name="valid_usen_until_' + no + '"]').val());
+			$('#bank_sender').val(row.find('input[name="bank_sender_' + no + '"]').val());
+			$('#bank_receiver').val(row.find('input[name="bank_receiver_' + no + '"]').val());
+			$('#latest_shipment').val(row.find('input[name="latest_shipment_' + no + '"]').val());
+			$('#no_sales_contract').val(row.find('input[name="no_sales_contract_' + no + '"]').val());
+
+			// Info Supplier
+			$('#modal_supplier_name').val($('#supplier option:selected').text());
+			$('#modal_supplier_address').val($('#supplier option:selected').data('address'));
+
+			$('#modal_lc').modal('show');
+		});
+
+		$(document).on('change', '.cng_nilai_ppn', function() {
+			var key = $(this).data('key');
+			var nilai = $("#dt_nilai_ppn_" + key).val();
+			var nilai = nilai.split(',').join('');
+			var nilai = parseFloat(nilai);
+			var nilai = nilai.toFixed(2);
+
+			var hargasatuan = $("#dt_hargasatuan_" + key).val();
+			var hargasatuan = hargasatuan.split(',').join('');
+			var hargasatuan = parseFloat(hargasatuan);
+
+			var qty = $("#dt_qty_" + key).val();
+			var qty = qty.split(',').join('');
+			var qty = parseFloat(qty);
+
+			if (qty <= 0 || hargasatuan <= 0) {
+				var nilai_persen = 0;
+			} else {
+				var nilai_persen = parseFloat(nilai / (hargasatuan * qty) * 100);
+			}
+
+			$("#dt_persen_ppn_" + key).val(nilai_persen);
+
+			HitAmmount(key);
+		});
+
+		$(document).on('change', '.cng_persen_ppn', function() {
+			var key = $(this).data('key');
+
+			var persen = $("#dt_persen_ppn_" + key).val();
+			persen = persen.split(',').join('');
+			persen = parseFloat(persen);
+
+			var hargasatuan = $("#dt_hargasatuan_" + key).val();
+			hargasatuan = hargasatuan.split(',').join('');
+			hargasatuan = parseFloat(hargasatuan);
+
+			var qty = $("#dt_qty_" + key).val();
+			qty = qty.split(',').join('');
+			qty = parseFloat(qty);
+
+			var nilai_ppn = parseFloat((hargasatuan * qty) * persen / 100);
+
+			$("#dt_nilai_ppn_" + key).autoNumeric('set', nilai_ppn.toFixed(2));
+
+
+			HitAmmount(key);
+		});
+
+		$(document).on('keyup', '.disc_persen', function() {
+			var key = $(this).data('key');
+			var disc_persen = getNum($(this).val().split(',').join(''));
+			var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
+			var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
+
+			var disc_num = ((hargasatuan * qty) * disc_persen / 100);
+			$('#disc_num_' + key).val(number_format(disc_num, 2));
+
+			HitAmmount(key);
+		});
+
+		$(document).on('keyup', '.disc_num', function() {
+			var key = $(this).data('key');
+			var disc_num = getNum($(this).val().split(',').join(''));
+			var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
+			var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
+
+			var disc_persen = (disc_num / (hargasatuan * qty) * 100);
+			$('#disc_persen_' + key).val(number_format(disc_persen, 2));
+
+			HitAmmount(key);
+		});
+
+		$(document).on('keyup', '#persendisc', function() {
+			var total = getNum($("#hargatotal").val().split(",").join(""));
+			var persen_disc = getNum($(this).val().split(",").join(""));
+
+			var disc = (total * persen_disc / 100);
+
+			$("#totaldisc").val(number_format(disc, 2));
+			cariTotal();
+		});
+
+		$(document).on('keyup', '#totaldisc', function() {
+			var total = getNum($("#hargatotal").val().split(",").join(""));
+			var disc = getNum($("#totaldisc").val().split(",").join(""));
+
+			var persen_disc = (disc / total * 100);
+			$("#persendisc").val(number_format(persen_disc, 2));
+
+			cariTotal();
+		});
 	});
-
-	$(document).on('change', '.cng_nilai_ppn', function() {
-		var key = $(this).data('key');
-		var nilai = $("#dt_nilai_ppn_" + key).val();
-		var nilai = nilai.split(',').join('');
-		var nilai = parseFloat(nilai);
-		var nilai = nilai.toFixed(2);
-
-		var hargasatuan = $("#dt_hargasatuan_" + key).val();
-		var hargasatuan = hargasatuan.split(',').join('');
-		var hargasatuan = parseFloat(hargasatuan);
-
-		var qty = $("#dt_qty_" + key).val();
-		var qty = qty.split(',').join('');
-		var qty = parseFloat(qty);
-
-		if (qty <= 0 || hargasatuan <= 0) {
-			var nilai_persen = 0;
-		} else {
-			var nilai_persen = parseFloat(nilai / (hargasatuan * qty) * 100);
-		}
-
-		$("#dt_persen_ppn_" + key).val(nilai_persen);
-
-		HitAmmount(key);
-	});
-
-	$(document).on('change', '.cng_persen_ppn', function() {
-		var key = $(this).data('key');
-
-		var persen = $("#dt_persen_ppn_" + key).val();
-		persen = persen.split(',').join('');
-		persen = parseFloat(persen);
-
-		var hargasatuan = $("#dt_hargasatuan_" + key).val();
-		hargasatuan = hargasatuan.split(',').join('');
-		hargasatuan = parseFloat(hargasatuan);
-
-		var qty = $("#dt_qty_" + key).val();
-		qty = qty.split(',').join('');
-		qty = parseFloat(qty);
-
-		var nilai_ppn = parseFloat((hargasatuan * qty) * persen / 100);
-
-		$("#dt_nilai_ppn_" + key).autoNumeric('set', nilai_ppn.toFixed(2));
-
-
-		HitAmmount(key);
-	});
-
-	$(document).on('keyup', '.disc_persen', function() {
-		var key = $(this).data('key');
-		var disc_persen = getNum($(this).val().split(',').join(''));
-		var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
-		var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
-
-		var disc_num = ((hargasatuan * qty) * disc_persen / 100);
-		$('#disc_num_' + key).val(number_format(disc_num, 2));
-
-		HitAmmount(key);
-	});
-
-	$(document).on('keyup', '.disc_num', function() {
-		var key = $(this).data('key');
-		var disc_num = getNum($(this).val().split(',').join(''));
-		var hargasatuan = getNum($('#dt_hargasatuan_' + key).val().split(',').join(''));
-		var qty = getNum($('#dt_qty_' + key).val().split(',').join(''));
-
-		var disc_persen = (disc_num / (hargasatuan * qty) * 100);
-		$('#disc_persen_' + key).val(number_format(disc_persen, 2));
-
-		HitAmmount(key);
-	});
-
-	$(document).on('keyup', '#persendisc', function() {
-		var total = getNum($("#hargatotal").val().split(",").join(""));
-		var persen_disc = getNum($(this).val().split(",").join(""));
-
-		var disc = (total * persen_disc / 100);
-
-		$("#totaldisc").val(number_format(disc, 2));
-		cariTotal();
-	});
-
-	$(document).on('keyup', '#totaldisc', function() {
-		var total = getNum($("#hargatotal").val().split(",").join(""));
-		var disc = getNum($("#totaldisc").val().split(",").join(""));
-
-		var persen_disc = (disc / total * 100);
-		$("#persendisc").val(number_format(persen_disc, 2));
-
-		cariTotal();
-	});
-
 
 	function addmaterial() {
 		var jumlah = $('#data_request').find('tr').length;
