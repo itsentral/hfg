@@ -419,6 +419,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                         // Loop setiap data coil/packing list untuk material ini
                                         foreach ($rows as $index => $item) {
                                             if ($index === 0) {
+                                                $nett_price = ($item['qty_po']) * (($item['price_unit'] * $kurs_pib));
                                                 // BARIS UTAMA (HEADER MATERIAL)
                                                 echo '<tr class="row-material" data-id="' . $id_po_detail . '">';
                                                 echo '<td class="text-center no-urut">' . $no . '</td>';
@@ -429,19 +430,19 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                                 echo '<td class="text-end">' . number_format($item['price_unit']) . '</td>';
                                                 echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
                                                 echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
-                                                echo '<td class="text-center"></td>';
+                                                echo '<td class="text-center">' . number_format($nett_price) . '</td>';
                                             } else {
                                                 // BARIS CHILD (COIL BERIKUTNYA)
                                                 echo '<tr class="child-' . $id_po_detail . '">';
-                                                echo '<td colspan="9"></td>'; // Kosongkan kolom material info
+                                                echo '<td colspan="9"></td>';
                                             }
 
                                             // KOLOM INPUT (Sama untuk baris utama maupun child)
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_kotor][]" class="form-control auto_num text-end" value="' . $item['berat_kotor'] . '"></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_bersih][]" class="form-control auto_num text-end" value="' . $item['berat_bersih'] . '"></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][length][]" class="form-control auto_num text-end" value="' . $item['length'] . '"></td>';
-                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil][]" class="form-control auto_num text-end calculate" value="" readonly></td>';
-                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil_idr][]" class="form-control auto_num text-end calculate" value="" readonly></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil][]" class="form-control auto_num text-end calculate" value="' . $item['price_coil'] . '" readonly></td>';
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil_idr][]" class="form-control auto_num text-end calculate" value="' . $item['price_coil_idr'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][biaya_masuk][]" class="form-control auto_num text-end calculate" value="' . $item['biaya_masuk'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][forwarding][]" class="form-control auto_num text-end calculate" value="' . $item['forwarding_cost'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][total_nilai][]" class="form-control auto_num text-end calculate" value="' . $item['total_nilai'] . '" readonly></td>';
