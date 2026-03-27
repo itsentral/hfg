@@ -63,7 +63,7 @@ class Supplier extends Admin_Controller
 			$fax    			= $data['fax'];
 			$email    			= $data['email'];
 			$email2    			= $data['email2'];
-			$email3    			= $data['email3'];
+			$inisial    			= $data['inisial'];
 			$contact    		= $data['contact'];
 			$contact_person    	= $data['contact_person'];
 			$tax_number    		= $data['tax_number'];
@@ -103,7 +103,7 @@ class Supplier extends Admin_Controller
 				'fax'			    => $fax,
 				'email'			    => $email,
 				'email2'			=> $email2,
-				'email3'			=> $email3,
+				'inisial'			=> $inisial,
 				'contact'			=> $contact,
 				'contact_person'	=> $contact_person,
 				'tax_number'		=> $tax_number,

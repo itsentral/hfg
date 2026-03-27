@@ -9,7 +9,7 @@ $telp2         = (!empty($header[0]->telp2)) ? $header[0]->telp2 : '';
 $fax           = (!empty($header[0]->fax)) ? $header[0]->fax : '';
 $email         = (!empty($header[0]->email)) ? $header[0]->email : '';
 $email2        = (!empty($header[0]->email2)) ? $header[0]->email2 : '';
-$email3        = (!empty($header[0]->email3)) ? $header[0]->email3 : '';
+$inisial       = (!empty($header[0]->inisial)) ? $header[0]->inisial : '';
 $contact       = (!empty($header[0]->contact)) ? $header[0]->contact : '';
 $contact_person = (!empty($header[0]->contact_person)) ? $header[0]->contact_person : '';
 $tax_number    = (!empty($header[0]->tax_number)) ? $header[0]->tax_number : '';
@@ -105,8 +105,8 @@ $bank_account  = (!empty($header[0]->bank_account)) ? $header[0]->bank_account :
 	</div>
 
 	<div class="col-md-6">
-		<label class="form-label">Email 3</label>
-		<input type="text" name="email3" id="email3" class="form-control" placeholder="Email 3" value="<?= $email3; ?>">
+		<label class="form-label">Inisial</label>
+		<input type="text" name="inisial" id="inisial" class="form-control" placeholder="Inisial" value="<?= $inisial; ?>">
 	</div>
 
 	<div class="col-md-6">
