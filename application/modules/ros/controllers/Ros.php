@@ -160,8 +160,8 @@ class Ros extends Admin_Controller
                 $hasil .= '<td class="text-center">' . $item_po['namalain'] . '</td>';
                 $hasil .= '<td class="text-center">' . ucfirst($item_po['unit_satuan']) . '</td>';
                 $hasil .= '<td class="text-center">' . $get_id_po['matauang'] . '</td>';
-                $hasil .= '<td class="text-end hargasatuan">' . number_format($item_po['hargasatuan']) . '</td>';
-                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($harga_satuan_idr) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan">' . number_format($item_po['hargasatuan'], 2) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($harga_satuan_idr, 2) . '</td>';
                 $hasil .= '<td class="text-center">' . number_format($item_po['qty']) . '</td>';
                 $hasil .= '<td class="text-center">' . number_format($net_price) . '</td>';
 
