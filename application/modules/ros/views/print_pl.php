@@ -181,7 +181,7 @@
     </div>
 
     <!-- Info Header -->
-    <div style="display: flex; justify-content: flex-start; gap: 150px; margin-bottom: 10px;">
+    <div style="display: flex; justify-content: flex-start; gap: 80px; margin-bottom: 10px;">
 
         <!-- Kiri -->
         <div>
@@ -199,7 +199,7 @@
                 <tr>
                     <td style="white-space: nowrap; padding: 3px 6px 3px 0; font-weight: 600;">Supplier</td>
                     <td style="padding: 3px 6px 3px 0;">:</td>
-                    <td style="padding: 3px 0; white-space: nowrap;"><?= $nm_supplier ?></td>
+                    <td style="padding: 3px 0;"><?= $nm_supplier ?></td>
                 </tr>
             </table>
         </div>
