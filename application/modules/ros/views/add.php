@@ -94,8 +94,9 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                         <label for="">Nomor PO</label>
                                     </div>
                                     <div class="col-md-8">
-                                        <label><?= str_replace(',', ', ', $no_po) ?></label>
-                                        <input type="hidden" name="no_po" class="form-control no_po" value="<?= str_replace(',', ', ', $no_po) ?>" readonly>
+                                        <label><?= str_replace(',', ', ', $no_surat) ?></label>
+                                        <input type="hidden" name="no_po" class="form-control no_po" value="<?= $no_po ?>" readonly>
+                                        <input type="hidden" name="no_surat" value="<?= $no_surat ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -429,10 +430,11 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                                 echo '<tr class="row-material" data-id="' . $id_po_detail . '">';
                                                 echo '<td class="text-center no-urut">' . $no . '</td>';
                                                 echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
-                                                echo '<td class="text-center">' . $item['trade_name'] .'</td>';
+                                                echo '<td class="text-center">' . $item['trade_name'] . '</td>';
                                                 echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
                                                 echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                                echo '<td class="text-end">' . number_format($item['price_unit'], 2) . '</td>';
+                                                // echo '<td class="text-end">' . number_format($item['price_unit'], 2) . '</td>';
+                                                echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format($item['price_unit'], 2) . '</td>';
                                                 echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib, 2) . '</td>';
                                                 echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
                                                 echo '<td class="text-center">' . number_format($nett_price) . '</td>';
@@ -948,26 +950,24 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         var priceUnitUSD = parseFloat(parentRow.find('.hargasatuan').text().replace(/,/g, '')) || 0;
         var kurs = parseFloat($('.kurs_pib').val().replace(/,/g, '')) || 1;
 
-        var berat_bersih = parseFloat($(this).val().replace(/,/g, '')) || 0;
-
-        // Hitung Price/Coil
-        var priceCoilUSD = berat_bersih * priceUnitUSD;
+        var berat = parseFloat($(this).val().replace(/,/g, '')) || 0;
+        var priceCoilUSD = berat * priceUnitUSD;
         var priceCoilIDR = priceCoilUSD * kurs;
 
-        // Hitung Forwarding Cost: berat_bersih × forwarding_cost_per_kg
-        var forwarding_per_kg = parseFloat($('#forwarding_cost_per_kg').val()) || 0;
-        var forwarding_cost = berat_bersih * forwarding_per_kg;
-
-        var inputUSD = row.find('input[name*="[price_coil]"]');
+        var inputUSD = row.find('input[name*="[price_coil]"]').first();
         var inputIDR = row.find('input[name*="[price_coil_idr]"]');
-        var inputFwd = row.find('input[name*="[forwarding]"]');
 
         if (!inputUSD.data('autoNumeric')) inputUSD.autoNumeric('init');
         if (!inputIDR.data('autoNumeric')) inputIDR.autoNumeric('init');
-        if (!inputFwd.data('autoNumeric')) inputFwd.autoNumeric('init');
 
         inputUSD.autoNumeric('set', priceCoilUSD);
         inputIDR.autoNumeric('set', priceCoilIDR);
+
+        var forwarding_per_kg = parseFloat($('#forwarding_cost_per_kg').val()) || 0;
+        var forwarding_cost = berat * forwarding_per_kg;
+
+        var inputFwd = row.find('input[name*="[forwarding]"]');
+        if (!inputFwd.data('autoNumeric')) inputFwd.autoNumeric('init');
         inputFwd.autoNumeric('set', forwarding_cost);
 
         distribusikan_bm_total();

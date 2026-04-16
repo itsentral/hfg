@@ -69,10 +69,11 @@
             <div class="qr-code">
                 <?php
                 // $qr_content = "ROS:" . $row['no_ros'] . "|COIL:" . $row['no_coil'] . "|W:" . $row['berat_bersih'];
+                //  $url = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" . urlencode($qr_content) . "&choe=UTF-8";
                 $qr_content = $row['kode_internal'];
-                $url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($qr_content) . "&choe=UTF-8";
+                $url = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" . urlencode($qr_content);
                 ?>
-                <img src="<?= $url ?>" alt="QR Code">
+                <img src="<?php echo $url; ?>" alt="QR Code" width="100" height="100">
             </div>
 
             <table class="info-table">

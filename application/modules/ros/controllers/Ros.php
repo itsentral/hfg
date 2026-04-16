@@ -57,8 +57,10 @@ class Ros extends Admin_Controller
         // $get_ros_detail = $this->db->get_where('tr_ros_detail', ['no_ros' => $no_ros])->result_array();
         $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result_array();
 
-        $this->db->select('a.*, IF(d.code IS NULL, IF(e.code IS NULL, IF(h.code IS NULL, "Pcs", h.code), e.code), d.code) as unit_satuan, b.trade_name');
+        $this->db->select('a.*, IF(d.code IS NULL, IF(e.code IS NULL, IF(h.code IS NULL, "Pcs", h.code), e.code), d.code) as unit_satuan, b.trade_name, n.no_surat');
         $this->db->from('tr_ros_detail a');
+        $this->db->join('tr_ros r', 'r.id = a.no_ros', 'left');
+        $this->db->join('tr_purchase_order n', 'n.no_po = r.no_po', 'left');
         $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_barang', 'left');
         $this->db->join('accessories c', 'c.id = a.id_barang', 'left');
         $this->db->join('dt_trans_po f', 'f.id = a.id_po_detail AND f.tipe IS NOT NULL', 'left');
@@ -77,8 +79,14 @@ class Ros extends Admin_Controller
         $get_supplier_inisial = $this->db->get_where('new_supplier', ['kode_supplier' => $get_ros['id_supplier']])->row_array();
         $inisial_supplier = isset($get_supplier_inisial['inisial']) ? $get_supplier_inisial['inisial'] : '';
 
+        $no_surat = '';
+        if (!empty($get_ros_detail)) {
+            $no_surat = $get_ros_detail[0]['no_surat'];
+        }
+
         $this->template->set('inisial_supplier', $inisial_supplier);
         $this->template->set('forwarding_cost_per_kg', $forwarding_cost_per_kg);
+        $this->template->set('no_surat', $no_surat);
         $this->template->set('list_ros_no_po', $list_ros_no_po);
         $this->template->set('list_custom_pib', $list_custom_pib);
         $this->template->set('header_ros', $get_ros);
@@ -302,10 +310,6 @@ class Ros extends Admin_Controller
 
     public function save_ros()
     {
-        // Mencegah output lain (seperti warning/notice) ikut terkirim ke browser
-        if (ob_get_level() > 0) ob_clean();
-        ob_start();
-
         $post = $this->input->post();
 
         // Konfigurasi Upload
@@ -334,12 +338,16 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_array = array_map('trim', explode(',', $no_po_raw));
+            $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
+            $no_surat_final = implode(',', array_map('trim', explode(',', $no_surat_raw)));
 
             // Ambil data detail PO
             $this->db->select('a.*, b.matauang');
             $this->db->from('dt_trans_po a');
             $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
-            $this->db->where_in('b.no_po', $post['no_po']);
+            $this->db->where_in('b.no_po', $no_po_array);
             $get_po_detail = $this->db->get()->result_array();
 
             foreach ($get_po_detail as $po_detail) {
@@ -354,6 +362,7 @@ class Ros extends Admin_Controller
                         $berat_kotor  = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
                         $berat_bersih = str_replace(',', '', $data_per_material['berat_bersih'][$key]);
                         $no_coil      = $data_per_material['no_coil'][$key];
+                        $kode_internal = isset($data_per_material['kode_internal'][$key]) ? $data_per_material['kode_internal'][$key] : '';
 
                         if ($berat_kotor > 0 || !empty($no_coil)) {
                             $this->db->insert('tr_ros_detail', [
@@ -371,6 +380,7 @@ class Ros extends Admin_Controller
                                 'price_coil'      => str_replace(',', '', $data_per_material['price_coil'][$key]),
                                 'price_coil_idr'  => str_replace(',', '', $data_per_material['price_coil_idr'][$key]),
                                 'biaya_masuk'     => str_replace(',', '', $data_per_material['biaya_masuk'][$key]),
+                                'kode_internal'   => $kode_internal,
                                 'forwarding_cost' => str_replace(',', '', $data_per_material['forwarding'][$key]),
                                 'total_nilai'     => str_replace(',', '', $data_per_material['total_nilai'][$key]),
                                 'no_coil'         => $no_coil,
@@ -384,7 +394,8 @@ class Ros extends Admin_Controller
 
             $this->db->insert('tr_ros', [
                 'id'               => $no_ros,
-                'no_po'            => is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'],
+                'no_po'            => implode(',', $no_po_array),
+                'no_surat'         => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
                 'link_doc'         => $upload_pib,
@@ -392,7 +403,7 @@ class Ros extends Admin_Controller
                 'cost_bm'          => str_replace(',', '', $post['cost_bm']),
                 'cost_ppn'         => str_replace(',', '', $post['cost_ppn']),
                 'cost_pph'         => str_replace(',', '', $post['cost_pph']),
-                'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
+                // 'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
                 'awb_bl_date'      => $post['awb_bl_date'],
                 'awb_bl_number'    => $post['awb_bl_number'],
                 'eta_warehouse'    => $post['eta_warehouse'],
@@ -417,12 +428,16 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_array = array_map('trim', explode(',', $no_po_raw));
+            $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
+            $no_surat_final = implode(',', array_map('trim', explode(',', $no_surat_raw)));
             $this->db->delete('tr_ros_detail', ['no_ros' => $post['no_ros']]);
 
             $this->db->select('a.*, b.matauang');
             $this->db->from('dt_trans_po a');
             $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
-            $this->db->where_in('b.no_po', $post['no_po']);
+            $this->db->where_in('b.no_po', $no_po_array);
             $get_po_detail = $this->db->get()->result_array();
 
             foreach ($get_po_detail as $po_detail) {
@@ -434,8 +449,6 @@ class Ros extends Admin_Controller
                     foreach ($data_per_material['berat_kotor'] as $key => $val) {
                         $berat_kotor = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
                         $no_coil     = $data_per_material['no_coil'][$key];
-
-                        // Ambil kode internal di dalam loop $key
                         $kode_internal = isset($data_per_material['kode_internal'][$key]) ? $data_per_material['kode_internal'][$key] : '';
 
                         if ($berat_kotor > 0 || !empty($no_coil)) {
@@ -466,11 +479,9 @@ class Ros extends Admin_Controller
                 }
             }
 
-            // Perbaikan: Gunakan implode untuk no_po jika dikirim sebagai array
-            $no_po_final = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
-
             $this->db->update('tr_ros', [
-                'no_po'            => $no_po_final,
+                'no_po'    => implode(',', $no_po_array),
+                'no_surat' => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
                 'link_doc'         => $upload_pib,
@@ -478,7 +489,7 @@ class Ros extends Admin_Controller
                 'cost_bm'          => str_replace(',', '', $post['cost_bm']),
                 'cost_ppn'         => str_replace(',', '', $post['cost_ppn']),
                 'cost_pph'         => str_replace(',', '', $post['cost_pph']),
-                'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
+                // 'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
                 'awb_bl_date'      => $post['awb_bl_date'],
                 'awb_bl_number'    => $post['awb_bl_number'],
                 'eta_warehouse'    => $post['eta_warehouse'],
@@ -498,10 +509,6 @@ class Ros extends Admin_Controller
             $valid = 1;
         }
 
-        // Buang output buffer (warning/space) yang mungkin muncul sebelum JSON
-        ob_clean();
-
-        // Set header agar browser mengenali ini sebagai JSON murni
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode([
