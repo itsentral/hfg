@@ -66,7 +66,7 @@
         <div class="label-container">
             <div class="header-label">PACKING LIST / COIL INFO</div>
 
-            <<div class="qr-code">
+            <div class="qr-code">
                 <?php
                 require_once APPPATH . 'third_party/phpqrcode/qrlib.php';
 
@@ -80,35 +80,35 @@
                 $base64 = base64_encode($imageData);
                 ?>
                 <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px;">
-        </div>
+            </div>
 
-        <table class="info-table">
-            <tr>
-                <td><b>No. ROS</b></td>
-                <td>: <?= $row['no_ros'] ?></td>
-            </tr>
-            <tr>
-                <td><b>Supplier</b></td>
-                <td>: <?= $row['nm_supplier'] ?></td>
-            </tr>
-            <tr>
-                <td><b>Material</b></td>
-                <td>: <?= $row['trade_name'] ?></td>
-            </tr>
-            <tr>
-                <td><b>Kode Internal</b></td>
-                <td>: <?= $row['kode_internal'] ?></td>
-            </tr>
-            <tr>
-                <td><b>Net Weight</b></td>
-                <td>: <?= number_format($row['berat_bersih'], 2) ?> Kg</td>
-            </tr>
-            <tr>
-                <td><b>AWB/BL</b></td>
-                <td>: <?= $row['awb_bl_number'] ?></td>
-            </tr>
-        </table>
-        <div class="clear"></div>
+            <table class="info-table">
+                <tr>
+                    <td><b>No. ROS</b></td>
+                    <td>: <?= $row['no_ros'] ?></td>
+                </tr>
+                <tr>
+                    <td><b>Supplier</b></td>
+                    <td>: <?= $row['nm_supplier'] ?></td>
+                </tr>
+                <tr>
+                    <td><b>Material</b></td>
+                    <td>: <?= $row['trade_name'] ?></td>
+                </tr>
+                <tr>
+                    <td><b>Kode Internal</b></td>
+                    <td>: <?= $row['kode_internal'] ?></td>
+                </tr>
+                <tr>
+                    <td><b>Net Weight</b></td>
+                    <td>: <?= number_format($row['berat_bersih'], 2) ?> Kg</td>
+                </tr>
+                <tr>
+                    <td><b>AWB/BL</b></td>
+                    <td>: <?= $row['awb_bl_number'] ?></td>
+                </tr>
+            </table>
+            <div class="clear"></div>
         </div>
     <?php endforeach; ?>
 

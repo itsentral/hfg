@@ -243,6 +243,7 @@
                 <th style="width: 30px;">Satuan</th>
                 <th style="width: 80px;">Length</th>
                 <th style="width: 100px;">No. Coil</th>
+                <th style="width: 100px;">Kode Internal</th>
                 <th style="width: 100px;">Berat Kotor (kg)</th>
                 <th style="width: 100px;">Berat Bersih (kg)</th>
             </tr>
@@ -257,6 +258,9 @@
                         <td class="text-center"><?= ucfirst($item['unit_satuan']) ?></td>
                         <td class="text-end"><?= number_format($item['length'], 2) ?></td>
                         <td class="text-center"><?= htmlspecialchars($item['no_coil']) ?></td>
+                        <td class="text-center">
+                            <?= !empty($item['kode_internal']) ? htmlspecialchars($item['kode_internal']) : '-' ?>
+                        </td>
                         <td class="text-end"><?= number_format($item['berat_kotor'], 2) ?></td>
                         <td class="text-end"><?= number_format($item['berat_bersih'], 2) ?></td>
                     </tr>

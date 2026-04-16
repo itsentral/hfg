@@ -705,7 +705,7 @@ class Ros extends Admin_Controller
         $id_ros = $this->input->post('id_ros');
 
         // Ambil data detail dengan join ke PO detail untuk info master material
-        $this->db->select('a.*, b.qty as qty_order, m.nama as uom');
+        $this->db->select('a.*, b.qty as qty_order, m.nama as uom, i.trade_name');
         $this->db->from('tr_ros_detail a');
         $this->db->join('dt_trans_po b', 'b.id = a.id_po_detail', 'left');
         $this->db->join('new_inventory_4 i', 'i.code_lv4 = b.idmaterial', 'left');
@@ -725,6 +725,7 @@ class Ros extends Admin_Controller
                     <tr class="bg-gray">
                         <th class="text-center" rowspan="2" style="vertical-align:middle">No</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Material</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">Nama Lain</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Qty Order</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Uom</th>
                         <th colspan="3" class="text-center bg-info">Packing List</th>
@@ -752,6 +753,7 @@ class Ros extends Admin_Controller
                     if ($index === 0) {
                         $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $no . '</td>';
                         $html .= '<td rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['nm_barang'] . '</td>';
+                        $html .= '<td rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['trade_name'] . '</td>';
                         $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . number_format($coil['qty_order'], 2) . '</td>';
                         $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['uom'] . '</td>';
                     }
@@ -825,7 +827,7 @@ class Ros extends Admin_Controller
 
         $get_ros = $this->db->get_where('tr_ros', ['id' => $no_ros])->row_array();
 
-        $this->db->select('a.id_po_detail, a.nm_barang, a.no_coil, a.berat_kotor, a.berat_bersih, a.length, b.trade_name,
+        $this->db->select('a.id_po_detail, a.nm_barang, a.no_coil, a.berat_kotor, a.berat_bersih, a.length, b.trade_name, a.kode_internal,
                        IF(d.code IS NULL, IF(e.code IS NULL, IF(h.code IS NULL, "Pcs", h.code), e.code), d.code) as unit_satuan');
         $this->db->from('tr_ros_detail a');
         $this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_barang', 'left');
