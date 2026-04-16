@@ -267,7 +267,7 @@
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="6" class="text-center" style="color: #999; padding: 20px;">
+                    <td colspan="7" class="text-center" style="color: #999; padding: 20px;">
                         No data available
                     </td>
                 </tr>
@@ -275,7 +275,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" class="text-end">Total</td>
+                <td colspan="6" class="text-end">Total</td>
                 <td class="text-end"><?= number_format($ttl_berat_kotor, 2) ?></td>
                 <td class="text-end"><?= number_format($ttl_berat_bersih, 2) ?></td>
             </tr>
