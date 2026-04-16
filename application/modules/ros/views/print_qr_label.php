@@ -68,8 +68,9 @@
 
             <div class="qr-code">
                 <?php
-                $qr_content = "ROS:" . $row['no_ros'] . "|COIL:" . $row['no_coil'] . "|W:" . $row['berat_bersih'];
-                $url = "https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=" . urlencode($qr_content) . "&choe=UTF-8";
+                // $qr_content = "ROS:" . $row['no_ros'] . "|COIL:" . $row['no_coil'] . "|W:" . $row['berat_bersih'];
+                $qr_content = $row['kode_internal'];
+                $url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($qr_content) . "&choe=UTF-8";
                 ?>
                 <img src="<?= $url ?>" alt="QR Code">
             </div>
@@ -85,11 +86,11 @@
                 </tr>
                 <tr>
                     <td><b>Material</b></td>
-                    <td>: <?= $row['nm_barang'] ?></td>
+                    <td>: <?= $row['trade_name'] ?></td>
                 </tr>
                 <tr>
-                    <td><b>No. Coil</b></td>
-                    <td>: <?= $row['no_coil'] ?></td>
+                    <td><b>Kode Internal</b></td>
+                    <td>: <?= $row['kode_internal'] ?></td>
                 </tr>
                 <tr>
                     <td><b>Net Weight</b></td>

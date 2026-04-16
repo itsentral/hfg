@@ -18,6 +18,7 @@ $freight_cost_persen = (isset($header_ros)) ? $header_ros['freight_cost'] : 0;
 $no_pengajuan_pib = (isset($header_ros)) ? $header_ros['no_pengajuan_pib'] : null;
 $no_billing = (isset($header_ros)) ? $header_ros['no_biling'] : null;
 $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
+$forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_kg : 0;
 ?>
 <style type="text/css">
     thead input {
@@ -28,6 +29,8 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
 <div class="card">
     <div class="card-body">
         <form action="" method="post" id="frm-data" enctype="multipart/form-data">
+            <input type="hidden" id="forwarding_cost_per_kg" value="<?= $forwarding_cost_per_kg ?>">
+            <input type="hidden" id="inisial_supplier_hidden" value="<?= isset($inisial_supplier) ? $inisial_supplier : '' ?>">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="mb-0 fw-bold">Form Report of Shipment</h5>
                 <span class="text-muted small">(*) wajib diisi</span>
@@ -390,6 +393,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                     <th class="text-center" style="min-width: 150px;">Forwarding Cost</th>
                                     <th class="text-center" style="min-width: 150px;">Nilai Total</th>
                                     <th class="text-center" style="min-width: 200px;">No. Coil</th>
+                                    <th class="text-center" style="min-width: 180px;">Kode Internal</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -399,6 +403,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                 if (isset($detail_ros) && !empty($detail_ros)) {
                                     // 1. Grouping data berdasarkan id_po_detail
                                     $grouped_data = [];
+                                    $counter_kode_internal = [];
                                     foreach ($detail_ros as $item) {
                                         $grouped_data[$item['id_po_detail']][] = $item;
                                     }
@@ -424,7 +429,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                                 echo '<tr class="row-material" data-id="' . $id_po_detail . '">';
                                                 echo '<td class="text-center no-urut">' . $no . '</td>';
                                                 echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
-                                                echo '<td class="text-center"></td>';
+                                                echo '<td class="text-center">' . $item['trade_name'] .'</td>';
                                                 echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
                                                 echo '<td class="text-center">' . $item['currency'] . '</td>';
                                                 echo '<td class="text-end">' . number_format($item['price_unit'], 2) . '</td>';
@@ -444,9 +449,24 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil][]" class="form-control auto_num text-end calculate" value="' . $item['price_coil'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][price_coil_idr][]" class="form-control auto_num text-end calculate" value="' . $item['price_coil_idr'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][biaya_masuk][]" class="form-control auto_num text-end calculate" value="' . $item['biaya_masuk'] . '" readonly></td>';
-                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][forwarding][]" class="form-control auto_num text-end calculate" value="' . $item['forwarding_cost'] . '" readonly></td>';
+                                            $forwarding_calculated = $item['berat_bersih'] * $forwarding_cost_per_kg;
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][forwarding][]" class="form-control auto_num text-end calculate" value="' . $forwarding_calculated . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][total_nilai][]" class="form-control auto_num text-end calculate" value="' . $item['total_nilai'] . '" readonly></td>';
                                             echo '<td><input type="text" name="dt[' . $id_po_detail . '][no_coil][]" class="form-control" value="' . $item['no_coil'] . '"></td>';
+                                            // Hitung kode internal
+                                            $inisial = isset($inisial_supplier) ? $inisial_supplier : '';
+                                            $no_coil_val = $item['no_coil'];
+
+                                            // urutan per kombinasi inisial+no_coil
+                                            if (!isset($counter_kode_internal[$no_coil_val])) {
+                                                $counter_kode_internal[$no_coil_val] = 1;
+                                            } else {
+                                                $counter_kode_internal[$no_coil_val]++;
+                                            }
+                                            $prefix = str_pad($counter_kode_internal[$no_coil_val], 3, '0', STR_PAD_LEFT);
+                                            $kode_internal = $inisial . '-' . $no_coil_val . '-' . $prefix;
+
+                                            echo '<td><input type="text" name="dt[' . $id_po_detail . '][kode_internal][]" class="form-control kode_internal text-center" value="' . $kode_internal . '" readonly></td>';
 
                                             echo '<td class="text-center">';
                                             if ($index === 0) {
@@ -469,10 +489,12 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="16" align="right" style="background-color: #c7f0ff;">
+                                    <td colspan="15" align="right" style="background-color: #c7f0ff;">
                                         <b>Grand Total</b>
                                     </td>
                                     <td align="right" colspan="2" style="background-color: #c7f0ff;" class="ttl_price_detail_col" id="ttl_total_price"><?= number_format($ttl_price_detail, 2) ?></td>
+                                    <td style="background-color: #c7f0ff;"></td>
+                                    <td style="background-color: #c7f0ff;"></td>
                                     <td style="background-color: #c7f0ff;"></td>
                                 </tr>
                             </tfoot>
@@ -483,7 +505,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                 </div>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between mb-2">
+            <!-- <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="mb-0 fw-bold">Freight Cost Forecast</h5>
             </div>
             <hr class="mt-2">
@@ -508,7 +530,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                                         <input type="hidden" name="freight_cost" class="freight_cost">
                                     </td>
                                     <td class="text-end freight_cost_val">
-                                        <?php
+                                        <php
                                         if ($freight_cost_persen > 0) {
                                             echo number_format($ttl_price_detail * $freight_cost_persen / 100);
                                         } else {
@@ -521,7 +543,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
 
             <div class="row">
@@ -785,13 +807,20 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             cache: false,
             success: function(result) {
                 $('.no_po').html(result);
+            }
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + '/get_inisial_supplier',
+            data: {
+                'supplier': supplier
             },
-            error: function(result) {
-                swal({
-                    title: 'Error !',
-                    text: 'Please try again later !',
-                    type: 'error'
-                });
+            cache: false,
+            dataType: 'json',
+            success: function(result) {
+                $('#inisial_supplier_hidden').val(result.inisial);
+                generate_kode_internal();
             }
         });
     });
@@ -801,21 +830,22 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
         var $row = $(this).closest('tr');
 
         var newRow = `
-        <tr class="child-${id_po_detail}">
-            <td colspan="9"></td> <td><input type="text" name="dt[${id_po_detail}][berat_kotor][]" class="form-control auto_num text-end"></td>
-            <td><input type="text" name="dt[${id_po_detail}][berat_bersih][]" class="form-control auto_num text-end"></td>
-            <td><input type="text" name="dt[${id_po_detail}][length][]" class="form-control auto_num text-end"></td>
-            <td><input type="text" name="dt[${id_po_detail}][price_coil][]" class="form-control auto_num text-end calculate" readonly></td>
-            <td><input type="text" name="dt[${id_po_detail}][price_coil_idr][]" class="form-control auto_num text-end calculate" readonly></td>
-            <td><input type="text" name="dt[${id_po_detail}][biaya_masuk][]" class="form-control auto_num text-end calculate" readonly></td>
-            <td><input type="text" name="dt[${id_po_detail}][forwarding][]" class="form-control auto_num text-end calculate" readonly></td>
-            <td><input type="text" name="dt[${id_po_detail}][total_nilai][]" class="form-control auto_num text-end calculate" readonly></td>
-            <td><input type="text" name="dt[${id_po_detail}][no_coil][]" class="form-control"></td>
-            <td class="text-center"><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button></td>
-        </tr>
-    `;
+            <tr class="child-${id_po_detail}">
+                <td colspan="9"></td>
+                <td><input type="text" name="dt[${id_po_detail}][berat_kotor][]" class="form-control auto_num text-end"></td>
+                <td><input type="text" name="dt[${id_po_detail}][berat_bersih][]" class="form-control auto_num text-end"></td>
+                <td><input type="text" name="dt[${id_po_detail}][length][]" class="form-control auto_num text-end"></td>
+                <td><input type="text" name="dt[${id_po_detail}][price_coil][]" class="form-control auto_num text-end calculate" readonly></td>
+                <td><input type="text" name="dt[${id_po_detail}][price_coil_idr][]" class="form-control auto_num text-end calculate" readonly></td>
+                <td><input type="text" name="dt[${id_po_detail}][biaya_masuk][]" class="form-control auto_num text-end calculate" readonly></td>
+                <td><input type="text" name="dt[${id_po_detail}][forwarding][]" class="form-control auto_num text-end calculate" readonly></td>
+                <td><input type="text" name="dt[${id_po_detail}][total_nilai][]" class="form-control auto_num text-end calculate" readonly></td>
+                <td><input type="text" name="dt[${id_po_detail}][no_coil][]" class="form-control"></td>
+                <td><input type="text" name="dt[${id_po_detail}][kode_internal][]" class="form-control kode_internal text-center" readonly></td>
+                <td class="text-center"><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button></td>
+            </tr>
+        `;
 
-        // Masukkan baris baru tepat setelah baris material terakhir
         var lastChild = $(`.child-${id_po_detail}`).last();
         if (lastChild.length > 0) {
             lastChild.after(newRow);
@@ -908,35 +938,38 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
         var row = $(this).closest('tr');
         var id_po_detail = "";
 
-        // Deteksi ID: Jika di baris material (pertama) pakai data-id, jika di child pakai class
         if (row.hasClass('row-material')) {
             id_po_detail = row.data('id');
         } else {
             id_po_detail = row.attr('class').split('-')[1];
         }
 
-        // Ambil Harga Satuan (USD/Mata Uang Asli) dan Kurs
-        // Pastikan di baris pertama Anda memberikan class .hargasatuan dan .kurs_pib sudah ada
         var parentRow = $(`.row-material[data-id="${id_po_detail}"]`);
         var priceUnitUSD = parseFloat(parentRow.find('.hargasatuan').text().replace(/,/g, '')) || 0;
         var kurs = parseFloat($('.kurs_pib').val().replace(/,/g, '')) || 1;
 
-        // Hitung Nilai Per Coil
-        var berat = parseFloat($(this).val().replace(/,/g, '')) || 0;
-        var priceCoilUSD = berat * priceUnitUSD;
+        var berat_bersih = parseFloat($(this).val().replace(/,/g, '')) || 0;
+
+        // Hitung Price/Coil
+        var priceCoilUSD = berat_bersih * priceUnitUSD;
         var priceCoilIDR = priceCoilUSD * kurs;
 
-        // Set nilai ke Price/Coil dan Price/Coil (Rp) di baris yang sedang diketik
-        var inputUSD = row.find('input[name*="[price_coil]"]').first(); // first() untuk memastikan price_coil mata uang asli
+        // Hitung Forwarding Cost: berat_bersih × forwarding_cost_per_kg
+        var forwarding_per_kg = parseFloat($('#forwarding_cost_per_kg').val()) || 0;
+        var forwarding_cost = berat_bersih * forwarding_per_kg;
+
+        var inputUSD = row.find('input[name*="[price_coil]"]');
         var inputIDR = row.find('input[name*="[price_coil_idr]"]');
+        var inputFwd = row.find('input[name*="[forwarding]"]');
 
         if (!inputUSD.data('autoNumeric')) inputUSD.autoNumeric('init');
         if (!inputIDR.data('autoNumeric')) inputIDR.autoNumeric('init');
+        if (!inputFwd.data('autoNumeric')) inputFwd.autoNumeric('init');
 
         inputUSD.autoNumeric('set', priceCoilUSD);
         inputIDR.autoNumeric('set', priceCoilIDR);
+        inputFwd.autoNumeric('set', forwarding_cost);
 
-        // Jalankan distribusi BM global
         distribusikan_bm_total();
     });
 
@@ -958,6 +991,7 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
                 }));
 
                 $('.auto_num').autoNumeric();
+                generate_kode_internal();
             },
             error: function(result) {
                 swal({
@@ -1109,4 +1143,44 @@ $id_supplier = (isset($header_ros)) ? $header_ros['id_supplier'] : null;
             maximumFractionDigits: 2
         }));
     }
+
+    function generate_kode_internal() {
+        var inisial = "<?= isset($inisial_supplier) ? $inisial_supplier : '' ?>";
+
+        // Jika mode Add, ambil inisial dari supplier yang dipilih
+        if (inisial === '') {
+            inisial = $('#inisial_supplier_hidden').val() || '';
+        }
+
+        var counter = {};
+        $('input[name*="[no_coil]"]').each(function() {
+            var row = $(this).closest('tr');
+            var no_coil = $(this).val().trim();
+
+            if (no_coil === '') {
+                row.find('.kode_internal').val('');
+                return;
+            }
+
+            // Hitung urutan
+            if (!counter[no_coil]) {
+                counter[no_coil] = 1;
+            } else {
+                counter[no_coil]++;
+            }
+
+            var prefix = String(counter[no_coil]).padStart(3, '0');
+            var kode = inisial + '-' + no_coil + '-' + prefix;
+
+            row.find('.kode_internal').val(kode);
+        });
+    }
+
+    $(document).on('keyup change', 'input[name*="[no_coil]"]', function() {
+        generate_kode_internal();
+    });
+
+    // $(document).ready(function() {
+    // generate_kode_internal();
+    // });
 </script>
