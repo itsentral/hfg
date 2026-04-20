@@ -411,58 +411,121 @@ class Pr_material extends Admin_Controller
         $this->template->render('edit_planning', $data);
     }
 
+    // public function process_update_all()
+    // {
+    //     $data       = $this->input->post();
+    //     $detail      = $data['detail'];
+    //     $so_number  = $data['so_number'];
+
+    //     $ArrUpdate = [];
+    //     foreach ($detail as $key => $value) {
+    //         $ArrUpdate[$key]['id'] = $value['id'];
+    //         $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty']);
+    //         $ArrUpdate[$key]['note'] = $value['note'];
+    //     }
+
+    //     $get_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row();
+
+
+    //     $this->db->trans_start();
+    //     $this->db->update('material_planning_base_on_produksi', [
+    //         'no_rev' => ($get_pr->no_rev + 1),
+    //         'reject_status' => '0',
+    //         'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
+    //         'tingkat_pr' => $data['tingkat_pr'],
+    //         // 'keterangan_1' => $data['keterangan_1'],
+    //         // 'keterangan_2' => $data['keterangan_2'],
+    //         'keterangan_3' => $data['keterangan_3'],
+    //         'sts_reject3' => null,
+    //         'sts_reject3_by' => null,
+    //         'sts_reject3_date' => null,
+    //         'rejected' => null,
+    //         'app_post' => 3,
+    //     ], ['so_number' => $so_number]);
+    //     if (!empty($ArrUpdate)) {
+    //         $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');
+    //     }
+    //     $this->db->trans_complete();
+
+    //     if ($this->db->trans_status() === FALSE) {
+    //         $this->db->trans_rollback();
+    //         $Arr_Data  = array(
+    //             'pesan'    => 'Process Failed !',
+    //             'status'  => 0,
+    //             'so_number'  => $so_number
+    //         );
+    //     } else {
+    //         $this->db->trans_commit();
+    //         $Arr_Data  = array(
+    //             'pesan'    => 'Process Success !',
+    //             'status'  => 1,
+    //             'so_number'  => $so_number
+    //         );
+    //         history("Update qty pr material  : " . $so_number);
+    //     }
+    //     echo json_encode($Arr_Data);
+    // }
+
     public function process_update_all()
     {
-        $data       = $this->input->post();
-        $detail      = $data['detail'];
-        $so_number  = $data['so_number'];
+        $data      = $this->input->post();
+        $detail    = $data['detail'] ?? [];
+        $so_number = $data['so_number'];
 
         $ArrUpdate = [];
         foreach ($detail as $key => $value) {
-            $ArrUpdate[$key]['id'] = $value['id'];
-            $ArrUpdate[$key]['propose_purchase'] = str_replace(',', '', $value['qty']);
-            $ArrUpdate[$key]['note'] = $value['note'];
+            if (!isset($value['id']) || !isset($value['qty'])) {
+                continue;
+            }
+
+            $ArrUpdate[] = [
+                'id'               => $value['id'],
+                'propose_purchase' => (float) str_replace(',', '', $value['qty']),
+                'note'             => $value['note'] ?? '',
+            ];
         }
 
         $get_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $so_number])->row();
 
-
         $this->db->trans_start();
+
         $this->db->update('material_planning_base_on_produksi', [
-            'no_rev' => ($get_pr->no_rev + 1),
-            'reject_status' => '0',
-            'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
-            'tingkat_pr' => $data['tingkat_pr'],
-            // 'keterangan_1' => $data['keterangan_1'],
-            // 'keterangan_2' => $data['keterangan_2'],
-            'keterangan_3' => $data['keterangan_3'],
-            'sts_reject3' => null,
-            'sts_reject3_by' => null,
+            'no_rev'           => ($get_pr->no_rev + 1),
+            'reject_status'    => '0',
+            'tgl_dibutuhkan'   => $data['tgl_dibutuhkan'],
+            'tingkat_pr'       => $data['tingkat_pr'],
+            'keterangan_3'     => $data['keterangan_3'],
+            'sts_reject3'      => null,
+            'sts_reject3_by'   => null,
             'sts_reject3_date' => null,
-            'rejected' => null,
-            'app_post' => 3,
+            'rejected'         => null,
+            'app_3'            => null, 
+            'app_post'         => 3,
         ], ['so_number' => $so_number]);
+
         if (!empty($ArrUpdate)) {
             $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');
         }
+
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            $Arr_Data  = array(
-                'pesan'    => 'Process Failed !',
-                'status'  => 0,
-                'so_number'  => $so_number
-            );
+            $Arr_Data = [
+                'pesan'     => 'Process Failed !',
+                'status'    => 0,
+                'so_number' => $so_number
+            ];
         } else {
             $this->db->trans_commit();
-            $Arr_Data  = array(
-                'pesan'    => 'Process Success !',
-                'status'  => 1,
-                'so_number'  => $so_number
-            );
-            history("Update qty pr material  : " . $so_number);
+            $Arr_Data = [
+                'pesan'     => 'Process Success !',
+                'status'    => 1,
+                'so_number' => $so_number
+            ];
+            history("Update qty pr material: " . $so_number);
         }
+
         echo json_encode($Arr_Data);
     }
 

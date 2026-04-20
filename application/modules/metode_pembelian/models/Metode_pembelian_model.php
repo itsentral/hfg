@@ -648,6 +648,7 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
 
 			$list_barang = '';
+			$list_qty = '';
 			$nm_lain = '';
 			if ($row['category'] == 'pr material' || $row['category'] == 'pr stok') {
 				if ($row['category'] == 'pr stok') {
@@ -681,12 +682,27 @@ class Metode_pembelian_model extends BF_Model
 				}
 			}
 
-			foreach ($get_list_barang as $barang) :
-				$list_barang .= $barang['nm_barang'] . ' x <span style="font-weight: bold;">' . number_format($barang['qty']) . '</span><br>';
-				$nm_lain .= $barang['nm_lain'];
+			$total_item = count($get_list_barang);
+
+			foreach ($get_list_barang as $key => $barang) :
+
+				$is_last = ($key == $total_item - 1);
+				$style = $is_last
+					? "padding:4px 0;"
+					: "border-bottom:1px solid #ddd; padding:4px 0;";
+
+				$list_barang .= "<div style='{$style}'>" . $barang['nm_barang'] . "</div>";
+
+				$nm_lain .= "<div style='{$style}'>" . $barang['nm_lain'] . "</div>";
+
+				$list_qty .= "<div style='{$style}; text-align:right; font-weight:bold;'>"
+					. number_format($barang['qty']) .
+					"</div>";
+
 			endforeach;
 			$nestedData[]	= "<div align='left'>" . $list_barang . "</div>";
 			$nestedData[]	= "<div align='left'>" . $nm_lain . "</div>";
+			$nestedData[] = "<div align='center'>" . $list_qty . "</div>";
 			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {

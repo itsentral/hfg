@@ -111,7 +111,7 @@ class Pr_material_model extends BF_Model
         COALESCE(a.request,0)    AS request,
         COALESCE(a.forecast,0)    AS forecast,
         COALESCE(a.keterangan,'') AS keterangan
-    ");
+        ");
         $this->db->from('new_inventory_4 a');
         $this->db->join('new_inventory_1 z', 'a.code_lv1 = z.code_lv1', 'left');
         $this->db->join('hscode h', 'h.id = a.hscode', 'left');
@@ -273,6 +273,16 @@ class Pr_material_model extends BF_Model
             'status_app' => 'N'
         ])->result();
 
+        $getCheckN = $this->db->get_where('material_planning_base_on_produksi_detail', [
+            'so_number' => $row['so_number'],
+            'status_app' => 'N'
+        ])->num_rows();
+
+        $getCheckY = $this->db->get_where('material_planning_base_on_produksi_detail', [
+            'so_number' => $row['so_number'],
+            'status_app' => 'Y'
+        ])->num_rows();
+
         if (($row['sts_reject1'] || $row['sts_reject2'] || $row['sts_reject3']) && $row['rejected'] == 1) {
             if ($row['sts_reject1'] == "1") {
                 $warna = "red";
@@ -303,7 +313,11 @@ class Pr_material_model extends BF_Model
             }
         }
 
-        if (count($getCheck) <= 0) {
+        if ($getCheckY > 0 && $getCheckN > 0) {
+            $warna = "orange";
+            $sts = "Approved Partial";
+        }
+        elseif ($getCheckN <= 0) {
             $warna = "green";
             $sts = "Approved";
         }
