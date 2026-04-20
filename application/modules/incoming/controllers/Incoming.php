@@ -23,12 +23,84 @@ class Incoming extends Admin_Controller
 
     public function data_side_incoming()
     {
-        $this->Incoming_model->get_data_json_incoming();
+        $ENABLE_ADD  = has_permission('Incoming.Add');
+        $ENABLE_VIEW = has_permission('Incoming.View');
+
+        $requestData = $_REQUEST;
+        $search      = $requestData['search']['value'] ?? '';
+        $start       = (int) ($requestData['start'] ?? 0);
+        $length      = (int) ($requestData['length'] ?? 10);
+        $order_col   = $requestData['order'][0]['column'] ?? 1;
+        $order_dir   = $requestData['order'][0]['dir']    ?? 'desc';
+
+        $col_map = [
+            1 => 'r.id',
+            2 => 'r.no_po',
+            3 => 'r.nm_supplier',
+            4 => 'r.kurs_pib',
+            5 => 'r.eta_warehouse',
+        ];
+        $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'r.id';
+
+        $where_search = '';
+        if (!empty($search)) {
+            $s = $this->db->escape_like_str($search);
+            $where_search = " AND (r.id LIKE '%{$s}%' OR r.no_po LIKE '%{$s}%' OR r.nm_supplier LIKE '%{$s}%')";
+        }
+
+        // Total data
+        $total_q = $this->db->query("SELECT COUNT(*) as cnt FROM tr_ros r WHERE r.sts = '0'" . $where_search)->row();
+        $totalData = $total_q ? (int) $total_q->cnt : 0;
+
+        // Data query
+        $sql = "
+            SELECT r.id, r.no_po, r.nm_supplier, r.kurs_pib, r.eta_warehouse, r.sts
+            FROM tr_ros r
+            WHERE r.sts = '0'
+            {$where_search}
+            ORDER BY {$order_by} {$order_dir}
+            LIMIT {$start}, {$length}
+        ";
+        $rows = $this->db->query($sql)->result_array();
+
+        $data = [];
+        $no   = $start + 1;
+        foreach ($rows as $row) {
+            $sts_badge = '<span class="badge rounded-pill bg-warning text-dark">Open</span>';
+
+            $btn_incoming = '';
+            if ($ENABLE_ADD) {
+                $btn_incoming = '<a href="' . base_url('incoming/add/' . $row['id']) . '" class="btn btn-sm btn-success" title="Proses Incoming">
+                    <i class="fa fa-sign-in-alt"></i> Incoming
+                </a>';
+            }
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['id'],
+                $row['no_po'],
+                $row['nm_supplier'],
+                number_format((float) $row['kurs_pib'], 0, ',', '.'),
+                $row['eta_warehouse'] ? date('d-M-Y', strtotime($row['eta_warehouse'])) : '-',
+                "<div class='text-center'>{$sts_badge}</div>",
+                "<div class='text-center'>{$btn_incoming}</div>",
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalData,
+            'data'            => $data,
+        ]);
     }
 
     public function add()
     {
         $this->auth->restrict($this->viewPermission);
+
+        $no_ros_default = $this->uri->segment(3); // incoming/add/{no_ros}
 
         $list_supplier = $this->db->query("
         SELECT DISTINCT(b.kode_supplier), b.nama 
@@ -40,10 +112,18 @@ class Incoming extends Admin_Controller
 
         $list_gudang = $this->db->query("SELECT id, nm_gudang, kd_gudang FROM warehouse WHERE status = 'Y' ORDER BY urut ASC")->result_array();
 
-        $data = array(
-            'list_supplier' => $list_supplier,
-            'list_gudang'   => $list_gudang,
-        );
+        // Jika no_ros diberikan dari URL, ambil data ROS untuk pre-fill form
+        $ros_data = null;
+        if (!empty($no_ros_default)) {
+            $ros_data = $this->db->get_where('tr_ros', ['id' => $no_ros_default, 'sts' => '0'])->row();
+        }
+
+        $data = [
+            'list_supplier'  => $list_supplier,
+            'list_gudang'    => $list_gudang,
+            'no_ros_default' => $no_ros_default,
+            'ros_data'       => $ros_data,
+        ];
 
         $this->template->set($data);
         $this->template->title('Incoming Based on ROS');
@@ -172,22 +252,16 @@ class Incoming extends Admin_Controller
         $post = $this->input->post();
         $dateTime = date('Y-m-d H:i:s');
 
-        // Validasi gudang tujuan wajib dipilih
-        $id_gudang_ke = (int) $post['id_gudang_ke'];
-        $kd_gudang_ke = trim($post['kd_gudang_ke']);
-
-        if (empty($id_gudang_ke)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Gudang tujuan wajib dipilih!']);
-            return;
+        // Validasi: pastikan semua coil sudah dipilih gudang tujuan
+        if (!empty($post['detail'])) {
+            foreach ($post['detail'] as $idx => $val) {
+                if (empty($val['aktual_bersih']) || $val['aktual_bersih'] == 0) continue;
+                if (empty($val['id_gudang_ke'])) {
+                    echo json_encode(['status' => 0, 'pesan' => 'Semua coil harus dipilih gudang tujuannya!']);
+                    return;
+                }
+            }
         }
-
-        // Pastikan kd_gudang_ke terisi dari DB (tidak bergantung hidden input)
-        $gd = $this->db->get_where('warehouse', ['id' => $id_gudang_ke])->row();
-        if (empty($gd)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Gudang tujuan tidak valid!']);
-            return;
-        }
-        $kd_gudang_ke = $gd->kd_gudang;
 
         $this->db->trans_begin();
 
@@ -264,11 +338,16 @@ class Incoming extends Admin_Controller
                     ? ($get_ros->total_nilai / $get_ros->berat_bersih)
                     : 0;
 
+                // Gudang tujuan per coil — ambil dari DB untuk keamanan
+                $id_gudang_ke = (int) $val['id_gudang_ke'];
+                $gd = $this->db->get_where('warehouse', ['id' => $id_gudang_ke])->row();
+                $kd_gudang_ke = $gd ? $gd->kd_gudang : 'PUS';
+
                 // Nilai masuk = qty × harga, dibulatkan ke rupiah penuh (tanpa desimal)
                 // agar sama dengan nilai yang tercatat di warehouse_history
                 $nilai_coil = (int) round($aktual_bersih * $price_per_kg, 0);
 
-                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_bersih, $price_per_kg, $kode_incoming, $post['no_po'], $val['no_coil'], $id_gudang_ke, $kd_gudang_ke);
+                $this->_update_stock_and_history($id_material, $get_mat->nama, $aktual_bersih, $price_per_kg, $kode_incoming, $post['no_po'], $val['no_coil'], $id_gudang_ke, $kd_gudang_ke, $post['no_ros']);
 
                 // Update qty_in di detail PO
                 $this->db->set('qty_in', 'qty_in + ' . (float)$aktual_bersih, FALSE);
@@ -285,16 +364,18 @@ class Incoming extends Admin_Controller
 
                 // Kumpulkan per material untuk jurnal persediaan
                 $materials_incoming[] = [
-                    'id_material'    => $id_material,
-                    'nm_material'    => $get_mat->nama,
-                    'qty'            => $aktual_bersih,
-                    'harga'          => $price_per_kg,
-                    'total_persediaan' => $nilai_coil,          // Debet 1105-01-01
-                    'biaya_masuk'    => $biaya_masuk_coil,      // Kredit 1108-01-09
-                    'forwarding'     => $forwarding_coil,       // Kredit 2104-01-13
-                    'price_coil_usd' => $price_coil_usd,        // Untuk hitung selisih kurs
-                    'price_coil_idr' => $price_coil_idr,        // Nilai IDR saat ini
-                    'no_coil'        => $val['no_coil'],
+                    'id_material'      => $id_material,
+                    'nm_material'      => $get_mat->nama,
+                    'qty'              => $aktual_bersih,
+                    'harga'            => $price_per_kg,
+                    'total_persediaan' => $nilai_coil,          // Debet COA persediaan
+                    'biaya_masuk'      => $biaya_masuk_coil,    // Kredit 1108-01-09
+                    'forwarding'       => $forwarding_coil,     // Kredit 2104-01-13
+                    'price_coil_usd'   => $price_coil_usd,      // Untuk hitung selisih kurs
+                    'price_coil_idr'   => $price_coil_idr,      // Nilai IDR saat ini
+                    'no_coil'          => $val['no_coil'],
+                    'id_gudang_ke'     => $id_gudang_ke,        // Untuk mapping COA persediaan
+                    'kd_gudang_ke'     => $kd_gudang_ke,
                 ];
             }
 
@@ -312,10 +393,10 @@ class Incoming extends Admin_Controller
             'no_ros'       => $post['no_ros'],
             'category'     => 'incoming material',
             'jumlah_mat'   => $total_berat_check,
-            'id_gudang_dari' => $id_gudang_ke,
-            'kd_gudang_dari' => $kd_gudang_ke,
-            'id_gudang_ke'   => $id_gudang_ke,
-            'kd_gudang_ke'   => $kd_gudang_ke,
+            'id_gudang_dari' => 1,
+            'kd_gudang_dari' => 'PUS',
+            'id_gudang_ke'   => null,
+            'kd_gudang_ke'   => 'MULTI',
             'checked'      => 'Y',
             'file_incoming_material' => $link,
             'created_by'   => $this->auth->user_id(),
@@ -391,7 +472,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil, $id_gudang = 1, $kd_gudang = 'PUS')
+    private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil, $id_gudang = 1, $kd_gudang = 'PUS', $no_ros = '')
     {
         // Pakai SELECT ... FOR UPDATE agar baca nilai terbaru dalam transaction
         $get_stock = $this->db->query(
@@ -491,6 +572,24 @@ class Incoming extends Admin_Controller
             'created_by' => $this->auth->user_id(),
             'created_on' => date('Y-m-d H:i:s'),
         ]);
+
+        // Insert detail coil ke warehouse_stock_coil (child dari warehouse_stock)
+        $this->db->insert('warehouse_stock_coil', [
+            'id_material' => $id_material,
+            'nm_material' => $nm_material,
+            'id_gudang'   => $id_gudang,
+            'kd_gudang'   => $kd_gudang,
+            'no_coil'     => $no_coil,
+            'no_ipp'      => $kode_trans,
+            'no_po'       => $no_po,
+            'no_ros'      => $no_ros,
+            'qty'         => $qty_in,
+            'harga_beli'  => (int) round($price_unit_idr),
+            'total_nilai' => $nilai_baru,
+            'status'      => 1,
+            'created_by'  => $this->auth->user_id(),
+            'created_on'  => date('Y-m-d H:i:s'),
+        ]);
     }
 
     /**
@@ -522,12 +621,24 @@ class Incoming extends Admin_Controller
         $supplier_name = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row()->nama;
         $Nomor_JV      = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
-        $coa_persediaan  = '1105-01-01';
-        $coa_dp          = '1104-01-01';
+        // Ambil currency dari tr_purchase_order
+        $po_data  = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
+        $currency = $po_data ? strtoupper(trim($po_data->matauang)) : 'IDR';
+
+        // COA DP: IDR = 1104-01-01, USD/lainnya = 1104-01-02
+        $coa_dp          = ($currency === 'IDR') ? '1104-01-01' : '1104-01-02';
         $coa_unbill      = '2101-01-06';
         $coa_bm          = '1108-01-09';
         $coa_forwarder   = '2104-01-13';
         $coa_kurs        = '7201-01-07';
+
+        // Mapping COA persediaan berdasarkan kd_gudang
+        $coa_persediaan_map = [
+            'PUS' => '1105-01-01', // Gudang Pusat → Persediaan Bahan Baku
+            'PEN' => '1105-01-02', // Gudang Penjualan → Persediaan Barang Dagangan
+        ];
+        $coa_persediaan_default = '1105-01-01'; // fallback jika gudang tidak ada di map
+
         $keterangan      = "Incoming Coil PO: " . $no_po;
         $user_id         = $this->auth->user_id();
         $created_on      = date('Y-m-d H:i:s');
@@ -575,8 +686,10 @@ class Incoming extends Admin_Controller
 
         // --- STEP 1b: Insert detail ke gl_interface_detail ---
 
-        // DEBET 1105-01-01 Persediaan: 1 baris per material/coil
+        // DEBET persediaan: 1 baris per material/coil, COA sesuai gudang tujuan
         foreach ($materials as $mat) {
+            $kd_gudang_mat  = $mat['kd_gudang_ke'] ?? '';
+            $coa_persediaan = $coa_persediaan_map[$kd_gudang_mat] ?? $coa_persediaan_default;
             $ket_mat = "Incoming Coil PO: {$no_po} | {$mat['nm_material']} (Coil: {$mat['no_coil']})";
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
@@ -586,7 +699,7 @@ class Incoming extends Admin_Controller
                 'no_perkiraan'    => $coa_persediaan,
                 'id_material'     => $mat['id_material'],
                 'nm_material'     => $mat['nm_material'],
-                'id_gudang'       => $id_gudang_ke,
+                'id_gudang'       => $mat['id_gudang_ke'] ?? null,
                 'no_coil'         => $mat['no_coil'],
                 'keterangan'      => $ket_mat,
                 'no_reff'         => $no_po,
