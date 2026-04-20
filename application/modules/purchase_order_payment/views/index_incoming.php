@@ -248,6 +248,20 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 	$(document).on('submit', '#frm-data', function(e) {
 		e.preventDefault();
 
+		// Validasi: kurs wajib diisi jika currency bukan IDR
+		var currency = $('#frm-data').find('input[name="currency"]').val();
+		var kurs     = $('#frm-data').find('input[name="kurs"]').val();
+		var kursVal  = parseFloat((kurs || '0').replace(/,/g, ''));
+
+		if (currency && currency.toUpperCase() !== 'IDR' && (kursVal <= 0 || kurs === '')) {
+			swal({
+				title: 'Peringatan!',
+				text: 'Kurs wajib diisi dan harus lebih dari 0 jika currency bukan IDR!',
+				type: 'warning'
+			});
+			return false;
+		}
+
 		swal({
 				title: "Warning !",
 				text: "PO Invoice will be created !",

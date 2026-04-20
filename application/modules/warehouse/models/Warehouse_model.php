@@ -151,6 +151,94 @@ class Warehouse_model extends BF_Model
         }
     }
 
+    public function get_json_stock_value()
+    {
+        $requestData     = $_REQUEST;
+        $id_gudang       = isset($_POST['id_gudang'])       ? $_POST['id_gudang']       : '';
+        $filter_material = isset($_POST['filter_material']) ? $_POST['filter_material'] : '';
+
+        // Total data
+        $this->_build_query_stock_value($id_gudang, $filter_material);
+        $totalData = $this->db->count_all_results();
+
+        // Total filtered (sama karena filter sudah di query)
+        $this->_build_query_stock_value($id_gudang, $filter_material);
+        $totalFiltered = $this->db->count_all_results();
+
+        // Data
+        $this->db->select('ws.id_material, ws.nm_material, ws.id_gudang, ws.kd_gudang, ws.qty_stock, ws.harga_beli, ws.total_nilai, w.nm_gudang');
+        $this->_build_query_stock_value($id_gudang, $filter_material);
+
+        $col_order = [
+            1 => 'ws.id_material',
+            2 => 'ws.nm_material',
+            3 => 'w.nm_gudang',
+            4 => 'ws.qty_stock',
+            5 => 'ws.harga_beli',
+            6 => 'ws.total_nilai',
+        ];
+
+        $order_col = $requestData['order'][0]['column'] ?? 2;
+        $order_dir = $requestData['order'][0]['dir']    ?? 'asc';
+        if (isset($col_order[$order_col])) {
+            $this->db->order_by($col_order[$order_col], $order_dir);
+        } else {
+            $this->db->order_by('ws.nm_material', 'asc');
+        }
+
+        $start  = $requestData['start']  ?? 0;
+        $length = $requestData['length'] ?? 25;
+        if ($length != -1) {
+            $this->db->limit($length, $start);
+        }
+
+        $query = $this->db->get()->result_array();
+
+        $data  = [];
+        $no    = (int)$start + 1;
+        foreach ($query as $row) {
+            $btn_history = "<button class='btn btn-xs btn-info' onclick=\"showHistory('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}')\">
+                                <i class='fa fa-history'></i> History
+                            </button>";
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['id_material'],
+                $row['nm_material'],
+                $row['nm_gudang'] . ' (' . $row['kd_gudang'] . ')',
+                number_format((float)$row['qty_stock'], 3, ',', '.'),
+                number_format((int)round($row['harga_beli']), 0, ',', '.'),
+                number_format((int)round($row['total_nilai']), 0, ',', '.'),
+                $btn_history,
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalFiltered,
+            'data'            => $data,
+        ]);
+    }
+
+    private function _build_query_stock_value($id_gudang = '', $filter_material = '')
+    {
+        $this->db->from('warehouse_stock ws');
+        $this->db->join('warehouse w', 'w.id = ws.id_gudang', 'left');
+        $this->db->where('ws.qty_stock >', 0);
+
+        if (!empty($id_gudang)) {
+            $this->db->where('ws.id_gudang', $id_gudang);
+        }
+        if (!empty($filter_material)) {
+            $this->db->group_start();
+            $this->db->like('ws.nm_material', $filter_material);
+            $this->db->or_like('ws.id_material', $filter_material);
+            $this->db->group_end();
+        }
+    }
+
     public function get_json_kartu_stok()
     {
         $requestData = $_REQUEST;

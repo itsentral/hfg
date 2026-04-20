@@ -46,8 +46,24 @@
                                 <select id="no_ros" name="no_ros" class="form-control select2" disabled>
                                     <option value="">Pilih ROS</option>
                                 </select>
+                                 <input type="text" name="uang_muka" id="uang_muka" class="form-control" readonly placeholder="Otomatis dari PO">
+                                 <input type="text" name="uang_muka_idr" id="uang_muka_idr" class="form-control" readonly placeholder="Otomatis dari PO">
                             </div>
                         </div>
+                        <div class="form-group row mb-3">
+                            <div class="col-md-4"><label>Gudang Tujuan</label></div>
+                            <div class="col-md-8">
+                                <select id="id_gudang_ke" name="id_gudang_ke" class="form-control select2">
+                                    <option value="">Pilih Gudang</option>
+                                    <?php foreach ($list_gudang as $gudang): ?>
+                                        <option value="<?= $gudang['id'] ?>" data-kd="<?= $gudang['kd_gudang'] ?>">
+                                            <?= $gudang['nm_gudang'] ?> (<?= $gudang['kd_gudang'] ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="hidden" id="kd_gudang_ke" name="kd_gudang_ke" value="">
+                            </div>
+                        </div>                        
                     </div>
 
                     <div class="col-md-6">
@@ -144,7 +160,7 @@
                 <hr>
 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="table-coil">
+                    <table class="table table-bordered table-striped" id="table-coil"> 
                         <thead>
                             <tr>
                                 <th rowspan="2" class="text-center" style="vertical-align: middle;" width="3%">No</th>
@@ -192,7 +208,9 @@
             let id_supplier = $(this).val();
             $('#no_po').html('<option value="">Pilih PO</option>').prop('disabled', true);
             $('#no_ros').html('<option value="">Pilih ROS</option>').prop('disabled', true);
-
+            $('#uang_muka').val('');
+            $('#uang_muka_idr').val('');
+            
             if (id_supplier) {
                 $.ajax({
                     url: siteurl + active_controller + 'get_po_by_supplier',
@@ -204,7 +222,7 @@
                     success: function(data) {
                         let opt = '<option value="">Pilih PO</option>';
                         data.forEach(item => {
-                            opt += `<option value="${item.no_po}">${item.no_surat} (${item.no_po})</option>`;
+                            opt += `<option value="${item.no_po}" data-uang-muka="${item.uang_muka}" data-uang-muka-idr="${item.uang_muka_idr}">${item.no_surat} (${item.no_po})</option>`;
                         });
                         $('#no_po').html(opt).prop('disabled', false);
                     }
@@ -212,10 +230,15 @@
             }
         });
 
-        // 2. PO CHANGE -> GET ROS
+        // 2. PO CHANGE -> GET ROS + ISI UANG MUKA
         $(document).on('change', '#no_po', function() {
             let no_po = $(this).val();
             $('#no_ros').html('<option value="">Pilih ROS</option>').prop('disabled', true);
+
+            // Isi uang muka dari data attribute option yang dipilih
+            let selected = $(this).find('option:selected');
+            $('#uang_muka').val(selected.data('uang-muka') || '');
+            $('#uang_muka_idr').val(selected.data('uang-muka-idr') || '');
 
             if (no_po) {
                 $.ajax({
@@ -285,6 +308,11 @@
                                         <input type="hidden" name="detail[${index}][no_coil]" value="${item.no_coil}">
                                         <input type="hidden" name="detail[${index}][no_ros]" value="${item.no_ros}">
                                         <input type="hidden" name="detail[${index}][aktual_bersih]" value="${item.ros_bersih}">
+                                        <!-- SYAMSUDIN 16/04/2026 -->
+                                        <input type="hidden" name="detail[${index}][price_coil]" value="${item.price_coil}">
+                                        <input type="hidden" name="detail[${index}][price_coil_idr]" value="${item.price_coil_idr}">
+                                        <input type="hidden" name="detail[${index}][biaya_masuk]" value="${item.biaya_masuk}">
+                                        <input type="hidden" name="detail[${index}][forwarding_cost]" value="${item.forwarding_cost}">
                                     </td>
                                 </tr>`;
                             });
@@ -308,19 +336,31 @@
             $(this).closest('tr').find('.text-selisih').val(selisih.toFixed(2));
         });
 
+        // Sync kd_gudang_ke saat pilih gudang
+        $(document).on('change', '#id_gudang_ke', function() {
+            let kd = $(this).find('option:selected').data('kd') || '';
+            $('#kd_gudang_ke').val(kd);
+        });
+
         $(document).on('click', '#save-incoming', function(e) {
             e.preventDefault();
 
             let formData = new FormData($('#data-form')[0]);
             let no_po = $('#no_po').val();
+            let id_gudang_ke = $('#id_gudang_ke').val();
 
             if (no_po == "") {
                 swal("Peringatan", "Pilih Nomor PO terlebih dahulu!", "warning");
                 return false;
             }
 
+            if (id_gudang_ke == "") {
+                swal("Peringatan", "Pilih Gudang Tujuan terlebih dahulu!", "warning");
+                return false;
+            }
+
             // Validasi sederhana: pastikan ada berat aktual yang diisi
-            let adaIsi = false;
+            /*let adaIsi = false;
             $('.hitung-selisih').each(function() {
                 if ($(this).val() !== "" && $(this).val() !== "0") {
                     adaIsi = true;
@@ -330,7 +370,7 @@
             if (!adaIsi) {
                 swal("Peringatan", "Minimal satu coil harus diisi berat aktualnya!", "warning");
                 return false;
-            }
+            }*/
 
             swal({
                 title: "Apakah Anda Yakin?",
@@ -356,6 +396,14 @@
                                 title: "Berhasil!",
                                 text: result.pesan,
                                 type: "success"
+                            }, function() {
+                                window.location.href = siteurl + active_controller;
+                            });
+                        } else if (result.status == 2) {
+                            swal({
+                                title: "Transaksi Tersimpan",
+                                text: result.pesan,
+                                type: "warning"
                             }, function() {
                                 window.location.href = siteurl + active_controller;
                             });
