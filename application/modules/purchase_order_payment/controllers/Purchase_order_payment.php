@@ -379,6 +379,14 @@ class Purchase_order_payment extends Admin_Controller
 	{
 		$post = $this->input->post();
 
+		// Validasi kurs wajib diisi jika currency bukan IDR
+		$currency = strtoupper(trim($post['currency'] ?? ''));
+		$kurs_raw = (float) str_replace(',', '', $post['kurs'] ?? '0');
+		if ($currency !== 'IDR' && $kurs_raw <= 0) {
+			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0 jika currency bukan IDR!']);
+			return;
+		}
+
 		$config['upload_path'] = './uploads/invoice'; //path folder
 		$config['allowed_types'] = '*'; //type yang dapat diakses bisa anda sesuaikan
 		$config['max_size'] = 100000000; // Maximum file size in kilobytes (2MB).
@@ -753,10 +761,10 @@ class Purchase_order_payment extends Admin_Controller
 			$get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $get_po->id_suplier])->row();
 			if ($post['currency'] == 'IDR') {
 				$kurs  = 1;
-				$jenis_jurnal = 'JV001';
+				$jenis_jurnal = 'JV083';
 			} else {
 				$kurs  = str_replace(',', '', $post['kurs']);
-				$jenis_jurnal = 'JV004';
+				$jenis_jurnal = 'JV084';
 			}
 
 			$nilai_invoice = str_replace(',', '', $post['total_pembelian']) * $kurs;
