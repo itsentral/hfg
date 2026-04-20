@@ -68,10 +68,18 @@
 
             <div class="qr-code">
                 <?php
-                $qr_content = "ROS:" . $row['no_ros'] . "|COIL:" . $row['no_coil'] . "|W:" . $row['berat_bersih'];
-                $url = "https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=" . urlencode($qr_content) . "&choe=UTF-8";
+                require_once APPPATH . 'third_party/phpqrcode/qrlib.php';
+
+                $qr_content = $row['kode_internal'];
+
+                ob_start();
+                QRcode::png($qr_content, null, QR_ECLEVEL_M, 4, 1);
+                $imageData = ob_get_contents();
+                ob_end_clean();
+
+                $base64 = base64_encode($imageData);
                 ?>
-                <img src="<?= $url ?>" alt="QR Code">
+                <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px;">
             </div>
 
             <table class="info-table">
@@ -85,11 +93,11 @@
                 </tr>
                 <tr>
                     <td><b>Material</b></td>
-                    <td>: <?= $row['nm_barang'] ?></td>
+                    <td>: <?= $row['trade_name'] ?></td>
                 </tr>
                 <tr>
-                    <td><b>No. Coil</b></td>
-                    <td>: <?= $row['no_coil'] ?></td>
+                    <td><b>Kode Internal</b></td>
+                    <td>: <?= $row['kode_internal'] ?></td>
                 </tr>
                 <tr>
                     <td><b>Net Weight</b></td>

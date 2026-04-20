@@ -62,12 +62,12 @@ class Ros_model extends BF_Model
                 $nomor = $urut1 + $start_dari;
             }
 
-            $edit_btn = '<a href="ros/edit/' . $row['id'] . '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>';
+            $edit_btn = '<a href="ros/edit/' . $row['id'] . '" class="btn btn-sm btn-warning" title="Edit"><i class="fas fa-edit"></i></a>';
             if (!$ENABLE_MANAGE || $row['sts'] !== '0') {
                 $edit_btn = '';
             }
 
-            $del_btn = '<a href="javascript:void(0)" class="btn btn-sm btn-danger del_ros" style="margin-left: 0.5rem;" data-no_ros="' . $row['id'] . '"><i class="fa fa-trash"></i></a>';
+            $del_btn = '<a href="javascript:void(0)" class="btn btn-sm btn-danger del_ros" style="margin-left: 0.5rem;" title="Delete" data-no_ros="' . $row['id'] . '"><i class="fa fa-trash"></i></a>';
             if (!$ENABLE_DELETE || $row['sts'] !== '0') {
                 $del_btn = '';
             }
@@ -78,8 +78,9 @@ class Ros_model extends BF_Model
             }
 
             $view_btn = '<a href="' . base_url('ros/view/' . $row['id'] . '') . '" class="btn btn-sm btn-info" style="margin-left: 0.5rem;"><i class="fa fa-eye"></i></a>';
-            $print_btn = '<button type="button" class="btn btn-sm btn-primary view_coil" data-id="' . $row['id'] . '" style="margin-left: 0.5rem;"><i class="fas fa-print"></i> Print QR</button>';
+            $print_btn = '<button type="button" class="btn btn-sm btn-primary view_coil" data-id="' . $row['id'] . '" title="Print QR"><i class="fas fa-print"></i></button>';
 
+            $print_pl_btn = '<a href="' . base_url('ros/print_pl/' . $row['id']) . '" target="_blank" class="btn btn-sm btn-secondary" style="margin-left: 0.5rem;" title="Print Packing List"><i class="fas fa-file-alt"></i></a>';
             $sts = '<div class="badge rounded-pill bg-warning">Draft</div>';
             if ($row['sts'] == '1') {
                 $sts = '<div class="badge rounded-pill bg-success">Request Payment</div>';
@@ -103,7 +104,17 @@ class Ros_model extends BF_Model
             $nestedData[]  = "<div align='center'>" . $row['no_pengajuan_pib'] . "</div>";
             $nestedData[]  = "<div align='center'>" . number_format($row['cost_bm'] + $row['cost_ppn'] + $row['cost_pph'] + $other_cost, 2) . "</div>";
             $nestedData[]  = "<div align='center'>" . $sts . "</div>";
-            $nestedData[]  = "<div align='center'>" . $edit_btn . $del_btn . $print_btn . "</div>";
+            // $nestedData[]  = "<div align='center'>" . $edit_btn . $del_btn . $print_btn . $print_pl_btn ."</div>";
+            $nestedData[] = "
+                <div class='d-flex flex-column align-items-center'>
+                    <div class='d-flex mb-1'>
+                        $edit_btn $del_btn
+                    </div>
+                    <div class='d-flex'>
+                        $print_btn $print_pl_btn
+                    </div>
+                </div>
+                ";
 
             $data[] = $nestedData;
             $urut1++;
