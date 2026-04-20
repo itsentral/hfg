@@ -34,6 +34,7 @@
 							<th class="text-center" width="10%">Tanggal PR</th>
 							<th class="text-center">Item</th>
 							<th class="text-center">Nama Lain</th>
+							<th class="text-center">QTY</th>
 							<th class="text-center" width="10%">Category</th>
 							<th class="text-center" width="10%">Dibutuhkan</th>
 							<th class="text-center" width="9%">Request By</th>
