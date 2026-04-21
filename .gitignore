@@ -27,3 +27,6 @@ application/config/constants.php
 /assets/pr/*
 /assets/bayar_rutin/*
 /assets/ros/*
+
+#kiro
+.kiro/*
