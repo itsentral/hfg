@@ -470,6 +470,10 @@ class Approval_po extends Admin_Controller
       'term' => $term
     ];
 
+  // echo "<pre>";
+  // var_dump($data);
+  // echo "</pre>";
+
     $this->template->set('results', $data);
     $this->template->page_icon('fa fa-check-square-o');
     $this->template->title('Approval Purchase Order');

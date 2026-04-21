@@ -347,7 +347,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_alloyprice_" . $key . "' " . $disabled . " data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' name='dt[" . $key . "][alloyprice]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_fabcost_" . $key . "' " . $disabled . " name='dt[" . $key . "][fabcost]' onkeyup='HitAmmount(" . $key . ")'></td>
-														<td><input type='text' class='form-control text-right input-sm auto_num' id='dt_hargasatuan_" . $key . "' name='dt[" . $key . "][hargasatuan]' onkeyup='HitAmmount(" . $key . ")' value='" . $value->hargasatuan . "'></td>
+														<td><input type='text' class='form-control text-right input-sm auto_num_3dec' id='dt_hargasatuan_" . $key . "' name='dt[" . $key . "][hargasatuan]' onkeyup='HitAmmount(" . $key . ")' value='" . $value->hargasatuan . "'></td>
 														<td hidden>
 															<select class='form-control input-sm' id='dt_ppn_" . $key . "' name='dt[" . $key . "][ppn]' onchange='CariPPN(" . $key . ")'>
 																<option value=''>SELECT</option>
@@ -378,7 +378,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														</td>
 														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . ($total - $value->nilai_disc + $value->ppn) . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
-														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]' value='" . $value->hargasatuan . "'></td>
+														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]' value='" . ($value->kuota_internal - $value->qty) . "' readonly></td>
 										 			</tr>
 												";
 							}
@@ -753,6 +753,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			width: '100%'
 		});
 		$('.auto_num').autoNumeric('init');
+		$('.auto_num_3dec').autoNumeric('init', {
+			mDec: 3,
+			vMin: 0
+		});
 
 		var max_fields2 = 10; //maximum input boxes allowed
 		var wrapper2 = $(".input_fields_wrap2"); //Fields wrapper
@@ -1642,6 +1646,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		var total = hargasatuan;
 		var jumlah = hargasatuan * qty;
+		var kuota_internal = getNum($("#dt_kuotainternal" + id).val().split(",").join(""));
+		var sisa_kuota = kuota_internal - qty;
+		$("#dt_sisa_kuota_" + id).val(number_format(sisa_kuota, 2));
 		var jumlah_w_disc = (jumlah - (jumlah * disc_persen / 100));
 		var ppn = (jumlah_w_disc * persen_ppn / 100);
 		var totalharga = (jumlah_w_disc + ppn);

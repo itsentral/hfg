@@ -434,7 +434,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                                 echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
                                                 echo '<td class="text-center">' . $item['currency'] . '</td>';
                                                 // echo '<td class="text-end">' . number_format($item['price_unit'], 2) . '</td>';
-                                                echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format($item['price_unit'], 2) . '</td>';
+                                                echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format($item['price_unit'], 3) . '</td>';
                                                 echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib, 2) . '</td>';
                                                 echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
                                                 echo '<td class="text-center">' . number_format($nett_price) . '</td>';

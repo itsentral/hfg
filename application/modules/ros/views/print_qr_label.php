@@ -104,8 +104,8 @@
                     <td>: <?= number_format($row['berat_bersih'], 2) ?> Kg</td>
                 </tr>
                 <tr>
-                    <td><b>AWB/BL</b></td>
-                    <td>: <?= $row['awb_bl_number'] ?></td>
+                    <td><b>Kode Coil</b></td>
+                    <td>: <?= $row['no_coil'] ?></td>
                 </tr>
             </table>
             <div class="clear"></div>
