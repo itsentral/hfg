@@ -791,7 +791,19 @@ class Purchase_order_payment extends Admin_Controller
 		// exit;
 
 		$datajurnal1 = $this->db->query("select * from " . DBACC . ".master_oto_jurnal_detail where kode_master_jurnal='" . $jenis_jurnal . "' order by parameter_no")->result();
-		$data_po     = $this->db->query("select * from tr_purchase_order WHERE no_surat='$no_po'")->row();
+
+		// Untuk DP: cari berdasarkan no_surat (nomor_po), untuk inc: cari berdasarkan no_po
+		if ($post['tipe_req'] == 'dp') {
+			$data_po = $this->db->query("select * from tr_purchase_order WHERE no_surat='" . $this->db->escape_str($post['nomor_po']) . "'")->row();
+		} else {
+			$data_po = $this->db->query("select * from tr_purchase_order WHERE no_surat='$no_po'")->row();
+		}
+
+		if (empty($data_po)) {
+			$this->db->trans_rollback();
+			echo json_encode(['status' => 0, 'message' => 'Data PO tidak ditemukan']);
+			return;
+		}
 
 		// print_r($data_po);
 		// exit;
@@ -844,7 +856,7 @@ class Purchase_order_payment extends Admin_Controller
 						$totalunbill = $nilai_invoice;
 						$coaunbill = $rec->no_perkiraan;
 					}
-					if ($rec->parameter_no == "2") {
+					if ($rec->parameter_no == "3") {
 						$det_Jurnaltes1[] = array(
 							'nomor' => $nomor_jurnal,
 							'tanggal' => $payment_date,
@@ -862,7 +874,7 @@ class Purchase_order_payment extends Admin_Controller
 						$totalap = $nilai_invoice + $nilai_ppn;
 						$coaap = $rec->no_perkiraan;
 					}
-					if ($rec->parameter_no == "3") {
+					if ($rec->parameter_no == "2") {
 						$det_Jurnaltes1[] = array(
 							'nomor' => $nomor_jurnal,
 							'tanggal' => $payment_date,
@@ -1322,7 +1334,7 @@ class Purchase_order_payment extends Admin_Controller
 
 
 			$view_btn = '';
-			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Request Payment" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-arrow-up"></i></button>';
+			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Receive Invoice" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-file-invoice"></i> Receive Invoice</button>';
 			if ($close == 1) {
 				$get_invoice = $this->db->select('id')->get_where('tr_invoice_po', ['no_po' => $item['no_surat'], 'id_top' => $item['id_top']])->row_array();
 
@@ -1490,7 +1502,7 @@ class Purchase_order_payment extends Admin_Controller
 
 
 			$view_btn = '';
-			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Request Payment" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-arrow-up"></i></button>';
+			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Receive Invoice" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-file-invoice"></i> Receive Invoice</button>';
 			if ($close == 1) {
 				$get_invoice = $this->db->select('id')->get_where('tr_invoice_po', ['no_po' => $item['no_surat'], 'id_top' => $item['id_top']])->row_array();
 
@@ -1657,7 +1669,7 @@ class Purchase_order_payment extends Admin_Controller
 
 
 			$view_btn = '';
-			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Request Payment" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-arrow-up"></i></button>';
+			$req_pay_btn = '<button type="button" class="btn btn-sm btn-primary req_app" style="margin-left: 0.5rem" title="Receive Invoice" data-no_po="' . $item['no_surat'] . '" data-id_top="' . $item['id_top'] . '" data-tipe="dp"><i class="fa fa-file-invoice"></i> Receive Invoice</button>';
 			if ($close == 1) {
 				$get_invoice = $this->db->select('id')->get_where('tr_invoice_po', ['no_po' => $item['no_surat'], 'id_top' => $item['id_top']])->row_array();
 

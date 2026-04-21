@@ -54,10 +54,13 @@ class Incoming extends Admin_Controller
 
         // Data query
         $sql = "
-            SELECT r.id, r.no_po, r.nm_supplier, r.kurs_pib, r.eta_warehouse, r.sts
+            SELECT r.id, r.no_po, r.nm_supplier, r.kurs_pib, r.eta_warehouse, r.sts,
+                   GROUP_CONCAT(DISTINCT p.no_surat ORDER BY p.no_surat SEPARATOR ', ') AS no_surat_list
             FROM tr_ros r
+            LEFT JOIN tr_purchase_order p ON FIND_IN_SET(p.no_po, REPLACE(r.no_po, ' ', ''))
             WHERE r.sts = '0'
             {$where_search}
+            GROUP BY r.id
             ORDER BY {$order_by} {$order_dir}
             LIMIT {$start}, {$length}
         ";
@@ -75,10 +78,12 @@ class Incoming extends Admin_Controller
                 </a>';
             }
 
+            $no_po_display = !empty($row['no_surat_list']) ? $row['no_surat_list'] : $row['no_po'];
+
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['id'],
-                $row['no_po'],
+                $no_po_display,
                 $row['nm_supplier'],
                 number_format((float) $row['kurs_pib'], 0, ',', '.'),
                 $row['eta_warehouse'] ? date('d-M-Y', strtotime($row['eta_warehouse'])) : '-',

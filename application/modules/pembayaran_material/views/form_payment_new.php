@@ -81,7 +81,7 @@ foreach ($results['result_payment'] as $item) {
 					<td width="25%">
 						<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier) ?>">
 						<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier) ?>">
-						<select name="supplier" id="" class="form-control form-control-sm supplier" disabled>
+						<select name="supplier" id="" class="form-control form-control-sm supplier">
 							<option value="">- Supplier Name -</option>
 							<?php
 							foreach ($results['list_supplier'] as $item_supplier) {
@@ -515,7 +515,14 @@ foreach ($results['result_payment'] as $item) {
 	set_jurnal_refill();
 
 	$(document).ready(function() {
-		// $('.supplier').chosen();
+		// Init chosen untuk supplier dan trigger update agar tampil selected
+		$('.supplier').chosen({ width: '100%' });
+		// Pastikan supplier yang sudah selected dari PHP ter-render di chosen
+		var supplierVal = '<?= implode(',', array_keys($kode_supplier)) ?>';
+		if (supplierVal !== '') {
+			$('.supplier').val(supplierVal.split(',')[0]).trigger('chosen:updated');
+		}
+
 		$('.bank').chosen();
 		$('.mata_uang').chosen();
 		$('.pph').chosen();
@@ -599,6 +606,14 @@ foreach ($results['result_payment'] as $item) {
 		var payment_bank_charge = $('.input_payment_bank_charge').val()
 		var bank_charge = $('.bank_charge').val();
 		var bank = $('.bank').val();
+		var mata_uang    = $('select[name="mata_uang"]').val();
+		var kurs_payment = $('input[name="kurs_payment"]').val().replace(/,/g, '');
+
+		// Kumpulkan kurs_invoice per baris dt
+		var kurs_invoice_list = [];
+		$('input[name^="dt["][name$="][kurs_invoice]"]').each(function() {
+			kurs_invoice_list.push($(this).val());
+		});
 
 		$.ajax({
 			type: 'post',
@@ -608,7 +623,10 @@ foreach ($results['result_payment'] as $item) {
 				'payment_bank': payment_bank,
 				'payment_bank_charge': payment_bank_charge,
 				'bank_charge': bank_charge,
-				'bank': bank
+				'bank': bank,
+				'mata_uang': mata_uang,
+				'kurs_payment': kurs_payment,
+				'kurs_invoice_list': kurs_invoice_list
 			},
 			cache: false,
 			dataType: 'json',

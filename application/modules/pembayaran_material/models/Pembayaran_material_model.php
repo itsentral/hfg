@@ -264,22 +264,34 @@ class Pembayaran_material_model extends BF_Model
 		$post = $this->input->post();
 
 		$id_payment          = $post['id_payment'];
-		$bank                = $post['bank']; // bisa string / array
-		// Normalisasi bank ke array untuk where_in
+		$bank                = $post['bank'];
 		if (!is_array($bank)) {
 			$bank = [$bank];
 		}
 
+		$mata_uang    = strtoupper(trim($post['mata_uang'] ?? 'IDR'));
+		$kurs_payment = (float) str_replace(',', '', $post['kurs_payment'] ?? '1');
+		if ($kurs_payment <= 0) $kurs_payment = 1;
+
+		// kurs_invoice per baris (array, urutan sama dengan payment_approve rows)
+		$kurs_invoice_list = $post['kurs_invoice_list'] ?? [];
+		if (!is_array($kurs_invoice_list)) $kurs_invoice_list = [];
+
 		$hasil_jurnal = '';
 		$ttl_debit    = 0;
 		$ttl_kredit   = 0;
-
-		// GLOBAL index jurnal (JANGAN reset di dalam loop)
-		$no_jurnal = 1;
+		$no_jurnal    = 1;
 
 		$bank_main_credit = (float) str_replace(',', '', ($post['payment_bank'] ?? '0'));
 		$admin_credit     = (float) str_replace(',', '', ($post['payment_bank_charge'] ?? '0'));
 		$admin_debit      = (float) str_replace(',', '', ($post['bank_charge'] ?? '0'));
+
+		// Jika USD, kalikan nilai bank dengan kurs_payment untuk dapat nilai IDR
+		if ($mata_uang === 'USD') {
+			$bank_main_credit = (int) round($bank_main_credit * $kurs_payment);
+			$admin_credit     = (int) round($admin_credit     * $kurs_payment);
+			$admin_debit      = (int) round($admin_debit      * $kurs_payment);
+		}
 
 		// BANK (ambil sekali)
 		$this->accounting->select('a.no_perkiraan as no_coa, a.nama as nm_coa');
@@ -347,7 +359,11 @@ class Pembayaran_material_model extends BF_Model
 			$no_jurnal++;
 		};
 
-		foreach ($get_payment as $item_payment) :
+		foreach ($get_payment as $idx_payment => $item_payment) :
+
+			// kurs invoice untuk baris ini (dari dt[N][kurs_invoice] di view)
+			$kurs_invoice = (float) ($kurs_invoice_list[$idx_payment] ?? 1);
+			if ($kurs_invoice <= 0) $kurs_invoice = 1;
 
 			// =========================
 			// KASBON (DETAIL ONLY)
@@ -475,28 +491,47 @@ class Pembayaran_material_model extends BF_Model
 				// CASE 2: expense berisi pembayaran PO (exp_inv_po)
 				else if (!empty($get_expense->exp_inv_po)) {
 
-					// Di code kamu, yang dipakai untuk jurnal hutang adalah 2104-01-01.
-					// Jadi kita emit 1 baris debit hutang per dokumen payment_approve.
-					$amount_po = (float) $item_payment->jumlah;
+					$nilai_usd = (float) $item_payment->jumlah;
 
-					if ($amount_po > 0) {
-						$addRow(
-							'2104-01-01',
-							'Hutang Pembelian Belum Ditagih',
-							$informasi,
-							$amount_po,
-							0
-						);
+					// COA hutang: IDR = 2101-01-01, USD = 2101-01-02
+					$coa_hutang    = ($mata_uang === 'USD') ? '2101-01-02' : '2101-01-01';
+					$nm_coa_hutang = ($mata_uang === 'USD') ? 'Hutang Pembelian Belum Ditagih ($)' : 'Hutang Pembelian Belum Ditagih';
 
-						$ttl_debit       += $amount_po;
-						$total_bank_main += $amount_po;
+					if ($mata_uang === 'USD') {
+						// Debit hutang = nilai_usd × kurs_invoice
+						$nilai_hutang_idr = (int) round($nilai_usd * $kurs_invoice);
+
+						$addRow($coa_hutang, $nm_coa_hutang, $informasi, $nilai_hutang_idr, 0);
+						$ttl_debit       += $nilai_hutang_idr;
+						$total_bank_main += $nilai_usd; // akumulasi USD untuk kredit bank
+
+						// Selisih kurs = (kurs_payment - kurs_invoice) × nilai_usd
+						$selisih_kurs     = ($kurs_payment - $kurs_invoice) * $nilai_usd;
+						$selisih_kurs_abs = (int) round(abs($selisih_kurs));
+
+						if ($selisih_kurs_abs > 0) {
+							$addRow(
+								'7201-01-07',
+								'Selisih Kurs',
+								'Selisih Kurs Pembayaran DP (Kurs Invoice: ' . number_format($kurs_invoice, 2) . ', Kurs Payment: ' . number_format($kurs_payment, 2) . ')',
+								($selisih_kurs > 0) ? $selisih_kurs_abs : 0,
+								($selisih_kurs < 0) ? $selisih_kurs_abs : 0
+							);
+							if ($selisih_kurs > 0) {
+								$ttl_debit  += $selisih_kurs_abs;
+							} else {
+								$ttl_kredit += $selisih_kurs_abs;
+							}
+						}
+
+						$ket_bank[] = 'PO/Inv via Expense ' . $item_payment->no_doc;
+					} else {
+						// IDR — langsung pakai nilai tanpa konversi
+						$addRow($coa_hutang, $nm_coa_hutang, $informasi, $nilai_usd, 0);
+						$ttl_debit       += $nilai_usd;
+						$total_bank_main += $nilai_usd;
 						$ket_bank[]       = 'PO/Inv via Expense ' . $item_payment->no_doc;
 					}
-
-					// NOTE: Bagian "pr depart" di code kamu panjang dan belum ada emit jurnal.
-					// Kalau nanti di situ ada debit account lain, polanya sama:
-					// - emit debit detailnya
-					// - tambah $total_bank_main sesuai nominal yang dibayar
 				}
 				// CASE 3: expense normal (detail debit sesuai COA)
 				else {
@@ -550,14 +585,20 @@ class Pembayaran_material_model extends BF_Model
 		// 2) Cr bank pembayaran utama (1x)
 		if ($total_bank_main > 0) {
 			$ket = 'Pembayaran: ' . implode(' | ', array_unique($ket_bank));
+
+			// Jika USD, kredit bank = total_bank_main (USD) × kurs_payment
+			$kredit_bank = ($mata_uang === 'USD')
+				? (int) round($total_bank_main * $kurs_payment)
+				: $bank_main_credit;
+
 			$addRow(
 				$coa_bank->no_coa,
 				$coa_bank->nm_coa,
 				$ket,
 				0,
-				$bank_main_credit
+				$kredit_bank
 			);
-			$ttl_kredit += $bank_main_credit;
+			$ttl_kredit += $kredit_bank;
 		}
 
 		// 3) Cr bank pembayaran admin (1x)

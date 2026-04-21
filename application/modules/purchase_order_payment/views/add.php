@@ -1,6 +1,8 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <input type="hidden" name="tipe_req" value="dp">
 <input type="hidden" name="id_top" value="<?= $id_top ?>">
+<input type="hidden" name="no_po" value="<?= $data_po['no_po'] ?>">
+<input type="hidden" name="no_incoming" value="">
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
