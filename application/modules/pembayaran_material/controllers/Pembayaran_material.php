@@ -139,7 +139,7 @@ class Pembayaran_material extends Admin_Controller
 		// $results = $this->pembayaran_material_model->get_data_json_request_payment_header("status>0 and tipe='material'");
 		// $results = $this->db->get_where('payment_approve', ['status' => 2])->result();
 		$results = $this->db
-			->select('a.*, a.nm_supplier, b.id_po as no_po')
+			->select('a.*')
 			->from('payment_approve a')
 			->join('tr_expense b', 'b.no_doc = a.no_doc')
 			->where('a.status', 2)
