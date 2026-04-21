@@ -24,6 +24,7 @@
 							<tr class='bg-blue'>
 								<th class="text-center">No Payment</th>
 								<th class="text-center">No Dokumen</th>
+								<th class="text-center">No. PO</th>
 								<th class="text-center">Tgl Bayar</th>
 								<th class="text-center">Requesto / Supplier</th>
 								<th class="text-center">Nilai Bayar</th>
@@ -39,11 +40,25 @@
 								$no = 1;
 								foreach ($results as $item) {
 
-									$nm_supplier = $item->nm_supplier;
+									// Ambil no_surat PO dari tr_purchase_order berdasarkan id_po
+									$no_po_display = '-';
+									if (!empty($item->no_po)) {
+										$po_list = explode(',', $item->no_po);
+										$no_surat_list = [];
+										foreach ($po_list as $po) {
+											$po = trim($po);
+											$get_surat = $this->db->select('no_surat')->get_where('tr_purchase_order', ['no_po' => $po])->row();
+											if ($get_surat) $no_surat_list[] = $get_surat->no_surat;
+										}
+										if (!empty($no_surat_list)) $no_po_display = implode(', ', array_unique($no_surat_list));
+									}
+
+									$nm_supplier = !empty($item->nm_supplier) ? $item->nm_supplier : '-';
 
 									echo '<tr>';
 									echo '<td class="text-center">' . $item->id_payment . '</td>';
 									echo '<td class="text-center">' . $item->no_doc . '</td>';
+									echo '<td class="text-center">' . $no_po_display . '</td>';
 									echo '<td class="text-center">' . date('d F Y', strtotime($item->tgl_bayar)) . '</td>';
 									echo '<td class="text-center">' . $nm_supplier . '</td>';
 									echo '<td class="text-right">' . number_format($item->payment_bank, 2) . '</td>';
