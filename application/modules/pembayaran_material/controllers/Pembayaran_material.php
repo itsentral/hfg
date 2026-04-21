@@ -1577,12 +1577,15 @@ class Pembayaran_material extends Admin_Controller
 				$arr_jurnal = [];
 				$no_jurnal = 1;
 
+				// Generate nomor BUK di awal agar bisa dipakai di gl_interface dan accounting
+				$Nomor_BUK = $this->Jurnal_model->get_no_buk('HSJ');
+
 				foreach ($post['jurnal_ls'] as $item) {
 					$id_jurnal = $this->Pembayaran_material_model->generate_id_invoice_jurnal($no_jurnal);
 
 					$arr_jurnal[] = [
 						'no_jurnal'       => $id_jurnal,
-						'tgl_jurnal'      => $item['tanggal_jurnal'] ?? $tgl_bayar, // pakai dari post
+						'tgl_jurnal'      => $item['tanggal_jurnal'] ?? $tgl_bayar,
 						'tipe'            => $item['tipe'],
 						'coa'             => $item['coa'],
 						'nm_coa'          => $item['nm_coa'],
@@ -1599,6 +1602,90 @@ class Pembayaran_material extends Admin_Controller
 
 				$ok = $this->db->insert_batch('tr_jurnal', $arr_jurnal);
 				if (!$ok) throw new Exception('Insert jurnal gagal: ' . json_encode($this->db->error()));
+
+				// 7) Insert ke gl_interface (staging) dengan jenis_transaksi = 'bank keluar'
+				$ok = $this->db->insert('gl_interface', [
+					'nomor'           => $Nomor_BUK,
+					'tgl'             => $tgl_bayar,
+					'bulan'           => date('m', strtotime($tgl_bayar)),
+					'tahun'           => date('Y', strtotime($tgl_bayar)),
+					'kdcab'           => '101',
+					'jenis'           => 'BUK',
+					'keterangan'      => 'Pembayaran Material ' . $id_payment_paid,
+					'jenis_transaksi' => 'bank keluar',
+					'status'          => 'posted',
+					'posted_at'       => date('Y-m-d H:i:s'),
+					'user_id'         => $this->auth->user_id(),
+					'memo'            => json_encode([
+						'id_supplier'   => $supplier_id,
+						'nama_supplier' => $supplier_name,
+						'no_reff'       => $id_payment_paid,
+					]),
+				]);
+				if (!$ok) throw new Exception('Insert gl_interface gagal: ' . json_encode($this->db->error()));
+
+				$id_gl_interface = $this->db->insert_id();
+
+				foreach ($post['jurnal_ls'] as $item) {
+					$this->db->insert('gl_interface_detail', [
+						'id_gl_interface' => $id_gl_interface,
+						'no_batch'        => $Nomor_BUK,
+						'tipe'            => 'BUK',
+						'tanggal'         => $item['tanggal_jurnal'] ?? $tgl_bayar,
+						'no_perkiraan'    => $item['coa'],
+						'keterangan'      => $item['keterangan'],
+						'no_reff'         => $id_payment_paid,
+						'no_request'      => $id_payment_paid,
+						'debet'           => $money($item['debit']  ?? 0),
+						'kredit'          => $money($item['kredit'] ?? 0),
+						'created_at'      => date('Y-m-d H:i:s'),
+					]);
+				}
+
+				// 8) Post ke accounting (DBACC.japh + DBACC.jurnal)
+				$total_debet = 0;
+				$arr_jurnal_acc = [];
+				foreach ($post['jurnal_ls'] as $item) {
+					$debet  = $money($item['debit']  ?? 0);
+					$kredit = $money($item['kredit'] ?? 0);
+					$total_debet += $debet;
+
+					$arr_jurnal_acc[] = [
+						'tipe'         => 'BUK',
+						'nomor'        => $Nomor_BUK,
+						'tanggal'      => $item['tanggal_jurnal'] ?? $tgl_bayar,
+						'no_perkiraan' => $item['coa'],
+						'keterangan'   => $item['keterangan'],
+						'no_reff'      => $id_payment_paid,
+						'debet'        => $debet,
+						'kredit'       => $kredit,
+						'created_by'   => $this->auth->user_id(),
+						'created_on'   => date('Y-m-d H:i:s'),
+					];
+				}
+
+				// Insert detail jurnal ke accounting
+				$ok = $this->db->insert_batch(DBACC . '.jurnal', $arr_jurnal_acc);
+				if (!$ok) throw new Exception('Insert DBACC.jurnal gagal: ' . json_encode($this->db->error()));
+
+				// Insert header ke DBACC.japh (Jurnal Pengeluaran Kas/Bank)
+				$ok = $this->db->insert(DBACC . '.japh', [
+					'nomor'        => $Nomor_BUK,
+					'tgl'          => $tgl_bayar,
+					'jml'          => $total_debet,
+					'jenis_ap'     => 'V',
+					'bayar_kepada' => $supplier_name,
+					'kdcab'        => '101',
+					'jenis_reff'   => 'BUK',
+					'no_reff'      => $id_payment_paid,
+					'note'         => 'Pembayaran Material ' . $id_payment_paid,
+					'user_id'      => $this->auth->user_id(),
+					'ho_valid'     => '',
+				]);
+				if (!$ok) throw new Exception('Insert DBACC.japh gagal: ' . json_encode($this->db->error()));
+
+				// Update counter nomor BUK
+				$this->db->query("UPDATE " . DBACC . ".pastibisa_tb_cabang SET nobuk = nobuk + 1 WHERE nocab = '101'");
 			}
 
 			if ($this->db->trans_status() === FALSE) {
