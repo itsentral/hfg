@@ -313,7 +313,7 @@ class Ros extends Admin_Controller
         $post = $this->input->post();
 
         // Konfigurasi Upload
-        $config['upload_path']   = './uploads/ros';
+        $config['upload_path'] = FCPATH . 'uploads/ros/';
         $config['allowed_types'] = '*';
         $config['max_size']      = 100000000;
         $config['encrypt_name']  = TRUE;
@@ -421,8 +421,10 @@ class Ros extends Admin_Controller
             $upload_pib = '';
             if ($this->upload->do_upload('upload_pib')) {
                 $data_upload_po = $this->upload->data();
+                
                 $upload_pib = 'uploads/ros/' . $data_upload_po['file_name'];
             } else {
+                var_dump($this->upload->display_errors()); die;
                 $get_ros = $this->db->get_where('tr_ros', ['id' => $post['no_ros']])->row_array();
                 $upload_pib = $get_ros['link_doc'];
             }
