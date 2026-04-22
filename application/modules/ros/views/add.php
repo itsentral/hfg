@@ -413,11 +413,10 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
 
                                 $no = 1;
                                 $global_counter_kode = 1;
+
                                 foreach ($grouped_data as $id_po_detail => $rows) {
-                                    // Ambil baris pertama sebagai referensi data material
                                     $first_row = $rows[0];
 
-                                    // Hitung nilai pengurang (dari ROS lain)
                                     $this->db->select('IF(SUM(a.qty_packing_list) IS NULL, 0, SUM(a.qty_packing_list)) as nilai_pengurang');
                                     $this->db->from('tr_ros_detail a');
                                     $this->db->where('a.id_po_detail', $id_po_detail);
@@ -425,29 +424,26 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                     $get_nilai_ros_used = $this->db->get()->row_array();
                                     $nilai_pengurang = (!empty($get_nilai_ros_used)) ? $get_nilai_ros_used['nilai_pengurang'] : 0;
 
-                                    // Loop setiap data coil/packing list untuk material ini
+                                    // ✅ Loop coil per material
                                     foreach ($rows as $index => $item) {
                                         if ($index === 0) {
                                             $nett_price = ($item['qty_po']) * (($item['price_unit'] * $kurs_pib));
-                                            // BARIS UTAMA (HEADER MATERIAL)
                                             echo '<tr class="row-material" data-id="' . $id_po_detail . '">';
                                             echo '<td class="text-center no-urut">' . $no . '</td>';
                                             echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
                                             echo '<td class="text-center">' . $item['trade_name'] . '</td>';
                                             echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
                                             echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                            // echo '<td class="text-end">' . number_format($item['price_unit'], 2) . '</td>';
                                             echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format($item['price_unit'], 3) . '</td>';
                                             echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib, 2) . '</td>';
                                             echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
                                             echo '<td class="text-center">' . number_format($nett_price) . '</td>';
                                         } else {
-                                            // BARIS CHILD (COIL BERIKUTNYA)
                                             echo '<tr class="child-' . $id_po_detail . '">';
                                             echo '<td colspan="9"></td>';
                                         }
 
-                                        // KOLOM INPUT (Sama untuk baris utama maupun child)
+                                        // Kolom input
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_kotor][]" class="form-control auto_num text-end" value="' . $item['berat_kotor'] . '"></td>';
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][berat_bersih][]" class="form-control auto_num text-end" value="' . $item['berat_bersih'] . '"></td>';
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][length][]" class="form-control auto_num text-end" value="' . $item['length'] . '"></td>';
@@ -458,12 +454,10 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][forwarding][]" class="form-control auto_num text-end calculate" value="' . $forwarding_calculated . '" readonly></td>';
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][total_nilai][]" class="form-control auto_num text-end calculate" value="' . $item['total_nilai'] . '" readonly></td>';
                                         echo '<td><input type="text" name="dt[' . $id_po_detail . '][no_coil][]" class="form-control" value="' . $item['no_coil'] . '"></td>';
-                                        // Hitung kode internal
-                                        $inisial = isset($inisial_supplier) ? $inisial_supplier : '';
-                                        $no_coil_val = $item['no_coil'];
 
-                                        $no_coil_val = $item['no_coil'];
-                                        $prefix = str_pad($global_counter_kode, 3, '0', STR_PAD_LEFT);
+                                        $inisial      = isset($inisial_supplier) ? $inisial_supplier : '';
+                                        $no_coil_val  = $item['no_coil'];
+                                        $prefix       = str_pad($global_counter_kode, 3, '0', STR_PAD_LEFT);
                                         $kode_internal = $inisial . '-' . $no_coil_val . '-' . $prefix;
                                         $global_counter_kode++;
 
@@ -471,18 +465,31 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
 
                                         echo '<td class="text-center">';
                                         if ($index === 0) {
-                                            // Tombol Tambah di baris pertama
                                             echo '<button type="button" class="btn btn-sm btn-primary add-row-child" data-id="' . $id_po_detail . '"><i class="fa fa-plus"></i></button>';
                                         } else {
-                                            // Tombol Hapus di baris child
                                             echo '<button type="button" class="btn btn-sm btn-danger remove-row"><i class="fa fa-trash"></i></button>';
                                         }
                                         echo '</td>';
                                         echo '</tr>';
 
-                                        // Hitung Total Price untuk footer
                                         $ttl_price_detail += $item['total_nilai'];
                                     }
+
+                                    $subtotal_gross = array_sum(array_column($rows, 'berat_kotor'));
+                                    $subtotal_net   = array_sum(array_column($rows, 'berat_bersih'));
+                                    $subtotal_total = array_sum(array_column($rows, 'total_nilai'));
+                                    $subtotal_coil  = count($rows);
+
+                                    echo '<tr class="subtotal-material table-info" data-id="' . $id_po_detail . '">';
+                                    echo '<td colspan="8" class="text-end"><b>Subtotal </b></td>';
+                                    echo '<td class="text-center subtotal-coil-' . $id_po_detail . '"><small><b>' . $subtotal_coil . ' coil</b></small></td>';
+                                    echo '<td class="text-end subtotal-gross-' . $id_po_detail . '"><b>' . number_format($subtotal_gross, 2) . '</b></td>';
+                                    echo '<td class="text-end subtotal-net-' . $id_po_detail . '"><b>' . number_format($subtotal_net, 2) . '</b></td>';
+                                    echo '<td></td><td></td><td></td><td></td>';
+                                    echo '<td colspan="2" class="text-end subtotal-total-' . $id_po_detail . '"><b>' . number_format($subtotal_total, 2) . '</b></td>';
+                                    echo '<td></td><td></td><td></td>';
+                                    echo '</tr>';
+
                                     $no++;
                                 }
                             }
@@ -490,10 +497,21 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="15" align="right" style="background-color: #c7f0ff;">
-                                    <b>Grand Total</b>
+                                <td colspan="8" align="right" style="background-color: #c7f0ff;">
+                                    <b>Total</b>
                                 </td>
-                                <td align="right" colspan="2" style="background-color: #c7f0ff;" class="ttl_price_detail_col" id="ttl_total_price"><?= number_format($ttl_price_detail, 2) ?></td>
+                                <td align="center" style="background-color: #c7f0ff;">
+                                    <b id="ttl_total_coil">0</b> coil
+                                </td>
+                                <td align="right" style="background-color: #c7f0ff;" id="ttl_gross_weight">0</td>
+                                <td align="right" style="background-color: #c7f0ff;" id="ttl_net_weight">0</td>
+                                <td style="background-color: #c7f0ff;"></td>
+                                <td style="background-color: #c7f0ff;"></td>
+                                <td style="background-color: #c7f0ff;"></td>
+                                <td style="background-color: #c7f0ff;"></td>
+                                <td align="right" colspan="2" style="background-color: #c7f0ff;" class="ttl_price_detail_col" id="ttl_total_price">
+                                    <?= number_format($ttl_price_detail, 2) ?>
+                                </td>
                                 <td style="background-color: #c7f0ff;"></td>
                                 <td style="background-color: #c7f0ff;"></td>
                                 <td style="background-color: #c7f0ff;"></td>
@@ -861,7 +879,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
     // Pastikan saat hapus baris, angka di bawah juga terupdate
     $(document).on('click', '.remove-row', function() {
         $(this).closest('tr').remove();
-        $('.calculate').first().trigger('change'); // Pancing kalkulasi ulang
+        distribusikan_bm_total(); // sudah memanggil update_footer_totals di dalamnya
     });
 
     $(document).on('submit', '#frm-data', function(e) {
@@ -946,7 +964,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 text: 'Berat bersih tidak boleh lebih besar dari berat kotor!',
                 type: 'warning'
             });
-            $(this).val(''); 
+            $(this).val('');
             $(this).autoNumeric('set', 0);
             return false;
         }
@@ -1001,6 +1019,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
             $(this).autoNumeric('set', 0);
             return false;
         }
+        update_footer_totals();
     });
 
     function get_list_detail_po(no_po = null, kurs_pib = 1) {
@@ -1161,17 +1180,81 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
 
     function update_footer_totals() {
         var grandTotal = 0;
-        // Jumlahkan semua total_nilai dari baris coil
-        $('input[name*="[total_nilai]"]').each(function() {
-            grandTotal += parseFloat($(this).val().replace(/,/g, '')) || 0;
+        var grandGross = 0;
+        var grandNet = 0;
+        var totalCoil = 0;
+
+        var materials = {};
+
+        $('input[name*="[berat_kotor]"]').each(function() {
+            var row = $(this).closest('tr');
+            var gross = parseFloat($(this).val().replace(/,/g, '')) || 0;
+            var net = parseFloat(row.find('input[name*="[berat_bersih]"]').val().replace(/,/g, '')) || 0;
+            var total = parseFloat(row.find('input[name*="[total_nilai]"]').val().replace(/,/g, '')) || 0;
+
+            // Ambil id dari name attribute, lebih reliable dari class
+            var nameAttr = $(this).attr('name'); 
+            var id = nameAttr.match(/dt\[(\d+)\]/);
+            id = id ? id[1] : null;
+
+            if (id) {
+                if (!materials[id]) {
+                    materials[id] = {
+                        gross: 0,
+                        net: 0,
+                        total: 0,
+                        coil: 0
+                    };
+                }
+                materials[id].gross += gross;
+                materials[id].net += net;
+                materials[id].total += total;
+                materials[id].coil++;
+            }
+
+            grandGross += gross;
+            grandNet += net;
+            grandTotal += total;
+            totalCoil++;
         });
 
-        // Update Label & Input Grand Total di bawah tabel
-        $('.ttl_total_price').val(grandTotal).autoNumeric('set', grandTotal);
+        // Update subtotal per material
+        $.each(materials, function(id, val) {
+            var $subtotalRow = $('tr.subtotal-material[data-id="' + id + '"]');
+            $subtotalRow.find('.subtotal-gross-' + id)
+                .html('<small><b>' + val.gross.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) + '</b></small>');
+            $subtotalRow.find('.subtotal-net-' + id)
+                .html('<small><b>' + val.net.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) + '</b></small>');
+            $subtotalRow.find('.subtotal-total-' + id)
+                .html('<small><b>' + val.total.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) + '</b></small>');
+            $subtotalRow.find('.subtotal-coil-' + id)
+                .html('<small><b>' + val.coil + ' coil</b></small>');
+        });
+
+        // grand total footer
+        $('#ttl_total_coil').html(totalCoil);
+        $('#ttl_gross_weight').html(grandGross.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
+        $('#ttl_net_weight').html(grandNet.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }));
         $('.ttl_price_detail_col').html(grandTotal.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }));
+        $('.ttl_total_price').val(grandTotal);
     }
 
     function generate_kode_internal() {
@@ -1181,7 +1264,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
             inisial = $('#inisial_supplier_hidden').val() || '';
         }
 
-        var globalCounter = 1; // ← counter global, tidak peduli no_coil
+        var globalCounter = 1;
         $('input[name*="[no_coil]"]').each(function() {
             var row = $(this).closest('tr');
             var no_coil = $(this).val().trim();
@@ -1203,7 +1286,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
         generate_kode_internal();
     });
 
-    // $(document).ready(function() {
-    // generate_kode_internal();
-    // });
+    $(document).ready(function() {
+        update_footer_totals();
+    });
 </script>
