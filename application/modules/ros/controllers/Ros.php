@@ -424,7 +424,7 @@ class Ros extends Admin_Controller
                 
                 $upload_pib = 'uploads/ros/' . $data_upload_po['file_name'];
             } else {
-                var_dump($this->upload->display_errors()); die;
+                // var_dump($this->upload->display_errors()); die;
                 $get_ros = $this->db->get_where('tr_ros', ['id' => $post['no_ros']])->row_array();
                 $upload_pib = $get_ros['link_doc'];
             }
