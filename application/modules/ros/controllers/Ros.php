@@ -311,7 +311,6 @@ class Ros extends Admin_Controller
     public function save_ros()
     {
         $post = $this->input->post();
-
         // Konfigurasi Upload
         $config['upload_path'] = FCPATH . 'uploads/ros/';
         $config['allowed_types'] = '*';
@@ -421,7 +420,7 @@ class Ros extends Admin_Controller
             $upload_pib = '';
             if ($this->upload->do_upload('upload_pib')) {
                 $data_upload_po = $this->upload->data();
-                
+
                 $upload_pib = 'uploads/ros/' . $data_upload_po['file_name'];
             } else {
                 // var_dump($this->upload->display_errors()); die;

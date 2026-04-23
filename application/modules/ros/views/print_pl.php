@@ -287,9 +287,9 @@
         <span>Dicetak pada: <?= date('d-M-Y H:i') ?></span>
     </div>
 
-    <!-- <script>
+    <script>
         window.print();
-    </script> -->
+    </script>
 </body>
 
 </html>
