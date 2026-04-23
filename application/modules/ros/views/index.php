@@ -237,7 +237,7 @@ $ENABLE_DELETE  = has_permission('ROS.Delete');
             "processing": true,
             "serverSide": true,
             "stateSave": true,
-            "fixedHeader": true,
+            "fixedHeader": false,
             "autoWidth": false,
             "destroy": true,
             "searching": true,

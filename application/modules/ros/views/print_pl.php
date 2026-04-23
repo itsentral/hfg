@@ -146,6 +146,7 @@
 
     $no_ros        = isset($header_ros['id'])            ? $header_ros['id']            : '-';
     $no_po         = isset($header_ros['no_po'])         ? str_replace(',', ', ', $header_ros['no_po']) : '-';
+    $no_surat      = isset($header_ros['no_surat'])      ? $header_ros['no_surat']      : '-';
     $nm_supplier   = isset($header_ros['nm_supplier'])   ? $header_ros['nm_supplier']   : '-';
     $awb_number    = isset($header_ros['awb_bl_number']) && $header_ros['awb_bl_number'] !== '' ? $header_ros['awb_bl_number'] : '-';
     $awb_date      = fmt_date(isset($header_ros['awb_bl_date'])   ? $header_ros['awb_bl_date']   : '');
@@ -194,7 +195,7 @@
                 <tr>
                     <td style="white-space: nowrap; padding: 3px 6px 3px 0; font-weight: 600;">No. PO</td>
                     <td style="padding: 3px 6px 3px 0;">:</td>
-                    <td style="padding: 3px 0; white-space: nowrap;"><?= $no_po ?></td>
+                    <td style="padding: 3px 0; white-space: nowrap;"><?= $no_surat ?></td>
                 </tr>
                 <tr>
                     <td style="white-space: nowrap; padding: 3px 6px 3px 0; font-weight: 600;">Supplier</td>
