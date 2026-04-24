@@ -485,7 +485,7 @@ class Product_master extends Admin_Controller
     $NewRow  = $Row + 1;
 
     // Hitung total kolom = 13 (A sampai M)
-    $Col_Akhir = 'M';
+    $Col_Akhir = 'N';
 
     // ── TITLE ──────────────────────────────────────────────
     $sheet->setCellValue('A' . $Row, 'PRODUCT MASTER');
@@ -527,6 +527,7 @@ class Product_master extends Admin_Controller
       ->get('product_lvl_4')
       ->result_array();
 
+    // var_dump($dataResult); die;
     $GET_UNIT   = get_list_satuan();
     $GET_LEVEL3 = get_product_lv3();
     $GET_LEVEL2 = get_product_lv2();
@@ -565,7 +566,7 @@ class Product_master extends Admin_Controller
           'K' => $unit,
           'L' => $s($vals['max_stok']),
           'M' => $s($vals['min_stok']),
-          'Np' => $s($vals['weight']),
+          'N' => $s($vals['weight']),
         ];
 
         foreach ($row_data as $col => $value) {
