@@ -276,7 +276,7 @@ class Production_planning_model extends CI_Model
             'target_qty'   => $plan->target_qty,
             'tgl_spk'      => date('Y-m-d'),
             'due_date'     => $plan->due_date,
-            'status'       => 'Draft',
+            'status'       => 'In Process',
             'created_by'   => $plan->created_by,
             'created_at'   => date('Y-m-d H:i:s'),
         ]);

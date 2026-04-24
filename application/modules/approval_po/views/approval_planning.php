@@ -167,40 +167,68 @@ $pembeda = substr($header[0]['so_number'],0,1);
 			e.preventDefault();
 
 			if($('.chk_personal:checked').length == 0){
-				Swal.fire({ title: "Error Message!", text: 'Checklist Minimal Satu !', icon: "warning", confirmButtonText: "OK" });
+				swal({
+					title	: "Error Message!",
+					text	: 'Checklist Minimal Satu !',
+					type	: "warning"
+				});
 				return false;
 			}
 
-			Swal.fire({
-				title: "Are you sure?",
-				text: "You will not be able to process again this data!",
-				icon: "warning",
-				showCancelButton: true,
-				confirmButtonText: "Yes, Process it!",
-				cancelButtonText: "No, cancel process!"
-			}).then(function(result) {
-				if (result.isConfirmed) {
-					var formData = new FormData($('#data-form')[0]);
-					var baseurl = siteurl + active_controller + '/process_approval_all';
-					$.ajax({
-						url: baseurl, type: "POST", data: formData, cache: false,
-						dataType: 'json', processData: false, contentType: false,
-						success: function(data) {
-							if (data.status == 1) {
-								Swal.fire({ title: "Save Success!", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-									.then(function(){ window.location.href = base_url + active_controller + '/approval_planning/' + data.so_number; });
-							} else {
-								Swal.fire({ title: "Save Failed!", text: data.pesan, icon: "warning", confirmButtonText: "OK" });
+			swal({
+				  title: "Are you sure?",
+				  text: "You will not be able to process again this data!",
+				  type: "warning",
+				  showCancelButton: true,
+				  confirmButtonClass: "btn-danger",
+				  confirmButtonText: "Yes, Process it!",
+				  cancelButtonText: "No, cancel process!",
+				  closeOnConfirm: true,
+				  closeOnCancel: false
+				},
+				function(isConfirm) {
+				  if (isConfirm) {
+						var formData 	=new FormData($('#data-form')[0]);
+						var baseurl=siteurl+active_controller+'/process_approval_all';
+						$.ajax({
+							url			: baseurl,
+							type		: "POST",
+							data		: formData,
+							cache		: false,
+							dataType	: 'json',
+							processData	: false,
+							contentType	: false,
+							success		: function(data){
+								if(data.status == 1){
+									swal({
+										  title	: "Save Success!",
+										  text	: data.pesan,
+										  type	: "success",
+										  timer	: 7000
+										});
+									window.location.href = base_url + active_controller + '/approval_planning/' + data.so_number
+								}else{
+									swal({
+										title	: "Save Failed!",
+										text	: data.pesan,
+										type	: "warning",
+										timer	: 7000
+									});
+								}
+							},
+							error: function() {
+								swal({
+								  title				: "Error Message !",
+								  text				: 'An Error Occured During Process. Please try again..',
+								  type				: "warning",
+								  timer				: 7000
+								});
 							}
-						},
-						error: function() {
-							Swal.fire({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', icon: "error", confirmButtonText: "OK" });
-						}
-					});
-				} else {
-					Swal.fire({ title: "Cancelled", text: "Data can be process again :)", icon: "error", confirmButtonText: "OK" });
+						});
+				  } else {
+					swal("Cancelled", "Data can be process again :)", "error");
 					return false;
-				}
+				  }
 			});
 		});
 
@@ -210,33 +238,49 @@ $pembeda = substr($header[0]['so_number'],0,1);
 			var action 		= $(this).data('action');
 			var so_number 	= $('#so_number').val();
 			var pr_rev 	= $('#pr_rev_'+id).val();
-			Swal.fire({
-				title: "Anda Yakin?",
-				text: "Process "+action+" PR !",
-				icon: "warning",
-				showCancelButton: true,
-				confirmButtonText: "Ya!",
-				cancelButtonText: "Batal"
-			}).then(function(result) {
-				if (result.isConfirmed) {
-					$.ajax({
-						type:'POST',
-						url: base_url + active_controller + '/process_approval_satuan',
-						dataType: "json",
-						data: {'id':id,'action':action,'so_number':so_number,'pr_rev':pr_rev},
-						success: function(result) {
-							if (result.status == '1') {
-								Swal.fire({ title: "Sukses", text: result.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-									.then(function(){ window.location.href = base_url + active_controller + '/approval_planning/' + result.so_number; });
-							} else {
-								Swal.fire({ title: "Error", text: result.pesan, icon: "error", confirmButtonText: "OK" });
-							}
-						},
-						error: function() {
-							Swal.fire({ title: "Error", text: "Data error. Gagal request Ajax", icon: "error", confirmButtonText: "OK" });
-						}
-					});
+			// alert(id);
+			swal({
+			title: "Anda Yakin?",
+			text: "Process "+action+" PR !",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-info",
+			confirmButtonText: "Ya!",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false
+			},
+			function(){
+			$.ajax({
+				type:'POST',
+				url: base_url + active_controller + '/process_approval_satuan',
+				dataType : "json",
+				data:{'id':id,'action':action,'so_number':so_number,'pr_rev':pr_rev},
+				success:function(result){
+					if(result.status == '1'){
+						swal({
+							title: "Sukses",
+							text : result.pesan,
+							type : "success"
+							},
+							function (){
+								window.location.href = base_url + active_controller + '/approval_planning/' + result.so_number
+							})
+					} else {
+						swal({
+						title : "Error",
+						text  : result.pesan,
+						type  : "error"
+						})
+					}
+				},
+				error : function(){
+					swal({
+						title : "Error",
+						text  : "Data error. Gagal request Ajax",
+						type  : "error"
+						})
 				}
+			})
 			});
 		})
 

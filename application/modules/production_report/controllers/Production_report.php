@@ -132,18 +132,18 @@ class Production_report extends Admin_Controller
             echo json_encode(['success' => false]);
             return;
         }
+        // var_dump($spk);die;
 
         // Ambil no_coil pertama dari SPK
         $coil = $this->db->where('spk_no', $spk_no)->limit(1)->get('tr_spk_material_detail')->row();
         $no_coil = $coil ? $coil->no_coil : null;
 
-        // Ambil nama supplier dari tr_ros_detail → tr_ros → supplier
+        // Ambil nama supplier dari tr_ros_detail → tr_ros (nm_supplier sudah ada di tr_ros)
         $nm_supplier = '';
         if ($no_coil) {
-            $sup = $this->db->select('s.nm_supplier')
+            $sup = $this->db->select('r.nm_supplier')
                 ->from('tr_ros_detail rd')
-                ->join('tr_ros r', 'r.no_ros = rd.no_ros', 'left')
-                ->join('supplier s', 's.id = r.id_supplier', 'left')
+                ->join('tr_ros r', 'r.id = rd.no_ros', 'left')
                 ->where('rd.no_coil', $no_coil)
                 ->limit(1)->get()->row();
             $nm_supplier = $sup ? $sup->nm_supplier : '';

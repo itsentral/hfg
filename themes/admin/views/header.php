@@ -41,7 +41,7 @@
   <!-- =========================
        CSS PLUGIN LAMA (sementara dipertahankan)
        ========================= -->
-  <link rel="stylesheet" href="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.css'); ?>">
+  <link rel="stylesheet" href="<?= base_url('assets/dist/sweetalert.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/select2/select2.min.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/daterangepicker/daterangepicker.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/jquery-ui-1.12.1/jquery-ui-1.12.1/jquery-ui.min.css'); ?>">
@@ -64,8 +64,8 @@
   <script src="<?= base_url('assets/plugins/datetimepicker/bootstrap-datetimepicker.js'); ?>"></script>
   <script src="<?= base_url('assets/plugins/datetimepicker/moment-with-locales.js'); ?>"></script>
 
-  <!-- Sweet Alert 2 -->
-  <script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.js'); ?>"></script>
+  <!-- Sweet Alert -->
+  <script src="<?= base_url('assets/dist/sweetalert.min.js'); ?>"></script>
 
   <!-- Form Jquery -->
   <script src="<?= base_url('assets/plugins/jqueryform/jquery.form.js'); ?>"></script>

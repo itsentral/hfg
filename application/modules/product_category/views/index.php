@@ -136,28 +136,26 @@
             var code_lv1 = $('#code_lv1').val();
 
             if (code_lv1 == '0') {
-                Swal.fire({ title: "Error Message!", text: 'Product type not selected...', icon: "warning", confirmButtonText: "OK" });
+                swal({ title: "Error Message!", text: 'Product type not selected...', type: "warning" });
                 return false;
             }
 
-            Swal.fire({
-                title: "Are you sure?", text: "Process this data", icon: "warning",
-                showCancelButton: true, confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal"
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: 'POST', url: base_url + active_controller + 'add', dataType: "json", data: data,
-                        success: function (res) {
-                            if (res.status == '1') {
-                                Swal.fire({ title: "Success", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-                                    .then(function(){ window.location.reload(true); });
-                            } else {
-                                Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
-                            }
-                        },
-                        error: function () { Swal.fire({ title: "Error", text: "Error Process!", icon: "error", confirmButtonText: "OK" }); }
-                    });
-                }
+            swal({
+                title: "Are you sure?", text: "Process this data", type: "warning",
+                showCancelButton: true, confirmButtonClass: "btn-info",
+                confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal", closeOnConfirm: false
+            }, function () {
+                $.ajax({
+                    type: 'POST', url: base_url + active_controller + 'add', dataType: "json", data: data,
+                    success: function (res) {
+                        if (res.status == '1') {
+                            swal({ title: "Success", text: res.pesan, type: "success" }, function () { window.location.reload(true); });
+                        } else {
+                            swal({ title: "Error", text: res.pesan, type: "error" });
+                        }
+                    },
+                    error: function () { swal({ title: "Error", text: "Error Process!", type: "error" }); }
+                });
             });
         });
 
@@ -166,25 +164,22 @@
             e.preventDefault();
             var id = $(this).data('id');
 
-            Swal.fire({
-                title: "Are you sure?", text: "Delete this data", icon: "warning",
-                showCancelButton: true, confirmButtonColor: "#dc3545",
-                confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal"
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: 'POST', url: base_url + active_controller + 'delete', dataType: "json", data: { id: id },
-                        success: function (res) {
-                            if (res.status == '1') {
-                                Swal.fire({ title: "Success", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-                                    .then(function(){ window.location.reload(true); });
-                            } else {
-                                Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
-                            }
-                        },
-                        error: function () { Swal.fire({ title: "Error", text: "Error Process!", icon: "error", confirmButtonText: "OK" }); }
-                    });
-                }
+            swal({
+                title: "Are you sure?", text: "Delete this data", type: "warning",
+                showCancelButton: true, confirmButtonClass: "btn-info",
+                confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal", closeOnConfirm: false
+            }, function () {
+                $.ajax({
+                    type: 'POST', url: base_url + active_controller + 'delete', dataType: "json", data: { id: id },
+                    success: function (res) {
+                        if (res.status == '1') {
+                            swal({ title: "Success", text: res.pesan, type: "success" }, function () { window.location.reload(true); });
+                        } else {
+                            swal({ title: "Error", text: res.pesan, type: "error" });
+                        }
+                    },
+                    error: function () { swal({ title: "Error", text: "Error Process!", type: "error" }); }
+                });
             });
         });
 

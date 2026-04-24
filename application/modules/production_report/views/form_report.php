@@ -6,8 +6,8 @@
 
 <style>
 .section-card { border-left: 4px solid #0d6efd; margin-bottom: 1rem; }
-.section-card .card-header { background: #f0f4ff; font-weight: 600; }
-.summary-table th { background: #343a40; color: #fff; font-size: 0.8rem; }
+.section-card .card-header { font-weight: 600; }
+.summary-table th { color: #fff; font-size: 0.8rem; }
 .summary-table td { font-size: 0.85rem; }
 .warning-selisih { background: #fff3cd; border: 1px solid #ffc107; }
 .danger-selisih  { background: #f8d7da; border: 1px solid #dc3545; }
@@ -318,7 +318,7 @@
                 <!-- 7. SUMMARY -->
                 <div class="card section-card mb-3" id="section-summary">
                     <div class="card-header">7. Summary Packing List vs Aktual</div>
-                    <div class="card-body p-0">
+                    <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered table-sm summary-table mb-0">
                                 <thead>

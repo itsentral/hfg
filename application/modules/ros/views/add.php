@@ -111,6 +111,19 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 <div class="col-md-6">
                     <div class="form-group row">
                         <div class="col-md-4">
+                            <label for="">No. Surat / Invoice <span class="text-danger">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="no_surat" id="no_surat" class="form-control" value="" placeholder="Masukkan No. Surat / Invoice">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <div class="col-md-4">
                             <label for="">AWB / BL Number</label>
                         </div>
                         <div class="col-md-8">
@@ -546,6 +559,18 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
     $('.auto_num').autoNumeric('init');
 
     $(document).on('click', '.no_po', function() {
+        // Validasi: hanya boleh pilih 1 PO
+        var checked = $('.no_po:checked');
+        if (checked.length > 1) {
+            $(this).prop('checked', false);
+            swal({
+                title: 'Perhatian!',
+                text: 'Hanya boleh memilih 1 Nomor PO!',
+                type: 'warning'
+            });
+            return;
+        }
+
         var no_po = [];
         $('.no_po').each(function() {
             var val = $(this).val();

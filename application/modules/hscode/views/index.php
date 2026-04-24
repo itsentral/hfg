@@ -68,34 +68,48 @@ $ENABLE_DELETE  = has_permission('Hscode.Delete');
         $(document).on('click', '.delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
-            Swal.fire({
+            swal({
                 title: "Are you sure?",
                 text: "Data will be deleted!",
-                icon: "warning",
+                type: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#dc3545",
+                confirmButtonClass: "btn-info",
                 confirmButtonText: "Yes",
-                cancelButtonText: "No"
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: 'POST',
-                        url: siteurl + active_controller + '/delete',
-                        dataType: 'json',
-                        data: { 'id': id },
-                        success: function(data) {
-                            if (data.status == '1') {
-                                Swal.fire({ title: "Success", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-                                    .then(function(){ window.location.reload(true); });
-                            } else {
-                                Swal.fire({ title: "Error", text: data.pesan, icon: "error", confirmButtonText: "OK" });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({ title: "Error", text: "Error processing!", icon: "error", confirmButtonText: "OK" });
+                cancelButtonText: "No",
+                closeOnConfirm: false
+            }, function() {
+                $.ajax({
+                    type: 'POST',
+                    url: siteurl + active_controller + '/delete',
+                    dataType: 'json',
+                    data: {
+                        'id': id
+                    },
+                    success: function(data) {
+                        if (data.status == '1') {
+                            swal({
+                                title: "Success",
+                                text: data.pesan,
+                                type: "success"
+                            }, function() {
+                                window.location.reload(true);
+                            });
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: data.pesan,
+                                type: "error"
+                            });
                         }
-                    });
-                }
+                    },
+                    error: function() {
+                        swal({
+                            title: "Error",
+                            text: "Error processing!",
+                            type: "error"
+                        });
+                    }
+                });
             });
         });
 

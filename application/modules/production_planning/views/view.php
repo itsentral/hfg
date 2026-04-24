@@ -170,52 +170,67 @@
     </div>
 </div>
 
+<script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.js'); ?>"></script>
 <script>
 $(document).on('click', '.btn-release', function () {
     var plan_no = $(this).data('plan');
-    swal({
+    Swal.fire({
         title: 'Release Plan?',
         text: 'Plan akan diubah ke status Released.',
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         confirmButtonText: 'Ya, Release',
         cancelButtonText: 'Batal'
-    }, function (isConfirm) {
-        if (isConfirm) {
-            $.post(siteurl + 'production_planning/process_release/' + plan_no, function (res) {
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.ajax({
+            url: siteurl + 'production_planning/process_release/' + plan_no,
+            type: 'POST',
+            dataType: 'json',
+            success: function(res) {
                 if (res.success) {
-                    swal('Berhasil!', 'Plan berhasil di-release.', 'success');
-                    setTimeout(function () { location.reload(); }, 1500);
+                    Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil di-release.', icon: 'success', timer: 1500, showConfirmButton: false })
+                        .then(function(){ location.reload(); });
                 } else {
-                    swal('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
+                    Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
                 }
-            }, 'json');
-        }
+            },
+            error: function(xhr) {
+                Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+            }
+        });
     });
 });
 
 $(document).on('click', '.btn-cancel', function () {
     var plan_no = $(this).data('plan');
-    swal({
+    Swal.fire({
         title: 'Batalkan Plan?',
         text: 'Plan akan dibatalkan.',
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
         confirmButtonText: 'Ya, Batalkan',
         cancelButtonText: 'Tidak'
-    }, function (isConfirm) {
-        if (isConfirm) {
-            $.post(siteurl + 'production_planning/process_cancel/' + plan_no, function (res) {
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.ajax({
+            url: siteurl + 'production_planning/process_cancel/' + plan_no,
+            type: 'POST',
+            dataType: 'json',
+            success: function(res) {
                 if (res.success) {
-                    swal('Berhasil!', 'Plan berhasil dibatalkan.', 'success');
-                    setTimeout(function () { window.location.href = siteurl + 'production_planning'; }, 1500);
+                    Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil dibatalkan.', icon: 'success', timer: 1500, showConfirmButton: false })
+                        .then(function(){ window.location.href = siteurl + 'production_planning'; });
                 } else {
-                    swal('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
+                    Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
                 }
-            }, 'json');
-        }
+            },
+            error: function(xhr) {
+                Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+            }
+        });
     });
 });
 </script>

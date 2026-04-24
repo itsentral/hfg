@@ -815,52 +815,55 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			var data, xhr;
 			if (loi == '' || loi == null) {
-				Swal.fire({ title: "Warning", text: "Form Tidak Boleh Kosong :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
 				return false;
 			} else if (tanggal == '' || tanggal == null) {
-				Swal.fire({ title: "Warning", text: "Tanggal Tidak Boleh Kosong :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Tanggal Tidak Boleh Kosong :)", "error");
 				return false;
 			} else if (supplier == '' || supplier == null) {
-				Swal.fire({ title: "Warning", text: "Supplier tidak boleh kosong  :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Supplier tidak boleh kosong  :)", "error");
 				return false;
 			} else {
-				Swal.fire({
-					title: "Are you sure?",
-					text: "This PO will be approved!",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonText: "Yes, Process it!",
-					cancelButtonText: "No, cancel process!"
-				}).then(function(result) {
-					if (result.isConfirmed) {
-						var formData = new FormData($('#data-form')[0]);
-						var baseurl = siteurl + 'approval_po/approve_po_process';
-						$.ajax({
-							url: baseurl,
-							type: "POST",
-							data: formData,
-							cache: false,
-							dataType: 'json',
-							processData: false,
-							contentType: false,
-							success: function(data) {
-								console.log(data);
-								if (data.status == 1) {
-									Swal.fire({ title: "Save Success!", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-										.then(function(){ window.location.href = base_url + active_controller; });
-								} else {
-									Swal.fire({ title: "Save Failed!", text: data.pesan, icon: "warning", confirmButtonText: "OK" });
+				swal({
+						title: "Are you sure?",
+						text: "This PO will be approved!",
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonClass: "btn-danger",
+						confirmButtonText: "Yes, Process it!",
+						cancelButtonText: "No, cancel process!",
+						closeOnConfirm: true,
+						closeOnCancel: false
+					},
+					function(isConfirm) {
+						if (isConfirm) {
+							var formData = new FormData($('#data-form')[0]);
+							var baseurl = siteurl + 'approval_po/approve_po_process';
+							$.ajax({
+								url: baseurl, type: "POST", data: formData, cache: false,
+								dataType: 'json', processData: false, contentType: false,
+								success: function(data) {
+									console.log(data);
+									if (data.status == 1) {
+										swal({ title: "Save Success!", text: data.pesan, type: "success", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										window.location.href = base_url + active_controller;
+									} else {
+										if (data.status == 2) {
+											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										} else {
+											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										}
+									}
+								},
+								error: function() {
+									swal({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
 								}
-							},
-							error: function() {
-								Swal.fire({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', icon: "error", confirmButtonText: "OK" });
-							}
-						});
-					} else {
-						Swal.fire({ title: "Cancelled", text: "Data can be process again :)", icon: "error", confirmButtonText: "OK" });
-						return false;
-					}
-				});
+							});
+						} else {
+							swal("Cancelled", "Data can be process again :)", "error");
+							return false;
+						}
+					});
 			}
 		});
 
@@ -876,51 +879,54 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			var data, xhr;
 			if (loi == '' || loi == null) {
-				Swal.fire({ title: "Warning", text: "Form Tidak Boleh Kosong :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
 				return false;
 			} else if (tanggal == '' || tanggal == null) {
-				Swal.fire({ title: "Warning", text: "Tanggal Tidak Boleh Kosong :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Tanggal Tidak Boleh Kosong :)", "error");
 				return false;
 			} else if (supplier == '' || supplier == null) {
-				Swal.fire({ title: "Warning", text: "Supplier tidak boleh kosong  :)", icon: "warning", confirmButtonText: "OK" });
+				swal("Warning", "Supplier tidak boleh kosong  :)", "error");
 				return false;
 			} else {
-				Swal.fire({
-					title: "Are you sure?",
-					text: "This PO will be rejected!",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonText: "Yes, Process it!",
-					cancelButtonText: "No, cancel process!"
-				}).then(function(result) {
-					if (result.isConfirmed) {
-						var formData = new FormData($('#data-form')[0]);
-						var baseurl = siteurl + 'approval_po/reject_po_process';
-						$.ajax({
-							url: baseurl,
-							type: "POST",
-							data: formData,
-							cache: false,
-							dataType: 'json',
-							processData: false,
-							contentType: false,
-							success: function(data) {
-								if (data.status == 1) {
-									Swal.fire({ title: "Save Success!", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-										.then(function(){ window.location.href = base_url + active_controller; });
-								} else {
-									Swal.fire({ title: "Save Failed!", text: data.pesan, icon: "warning", confirmButtonText: "OK" });
+				swal({
+						title: "Are you sure?",
+						text: "This PO will be rejected!",
+						type: "warning",
+						showCancelButton: true,
+						confirmButtonClass: "btn-danger",
+						confirmButtonText: "Yes, Process it!",
+						cancelButtonText: "No, cancel process!",
+						closeOnConfirm: true,
+						closeOnCancel: false
+					},
+					function(isConfirm) {
+						if (isConfirm) {
+							var formData = new FormData($('#data-form')[0]);
+							var baseurl = siteurl + 'approval_po/reject_po_process';
+							$.ajax({
+								url: baseurl, type: "POST", data: formData, cache: false,
+								dataType: 'json', processData: false, contentType: false,
+								success: function(data) {
+									if (data.status == 1) {
+										swal({ title: "Save Success!", text: data.pesan, type: "success", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										window.location.href = base_url + active_controller;
+									} else {
+										if (data.status == 2) {
+											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										} else {
+											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										}
+									}
+								},
+								error: function() {
+									swal({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
 								}
-							},
-							error: function() {
-								Swal.fire({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', icon: "error", confirmButtonText: "OK" });
-							}
-						});
-					} else {
-						Swal.fire({ title: "Cancelled", text: "Data can be process again :)", icon: "error", confirmButtonText: "OK" });
-						return false;
-					}
-				});
+							});
+						} else {
+							swal("Cancelled", "Data can be process again :)", "error");
+							return false;
+						}
+					});
 			}
 		});
 
@@ -1050,7 +1056,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var loi = $("#loi").val();
 		var angka = jumlah + 1;
 		if (id_suplier == '' || id_suplier == null || loi == '' || loi == null) {
-			Swal.fire({ title: "Warning", text: "Silahkan Pilih Supplier Terlebih Dahulu :)", icon: "warning", confirmButtonText: "OK" });
+			swal("Warning", "Silahkan Pilih Supplier Terlebih Dahulu :)", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -1105,7 +1111,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var dt_ratelme = $("#dt_ratelme_" + id).val();
 		var dt_idmaterial = $("#dt_idmaterial_" + id).val();
 		if (dt_idmaterial == '' || dt_idmaterial == null) {
-			Swal.fire({ title: "Warning", text: "Silahkan Pilih Material Terlebih Dahulu :)", icon: "warning", confirmButtonText: "OK" });
+			swal("Warning", "Silahkan Pilih Material Terlebih Dahulu :)", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -1360,7 +1366,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var diskontotal = $("#diskontotal").val();
 		var taxtotal = $("#taxtotal").val();
 		if (qty == '' || qty == null || hargasatuan == '' || hargasatuan == null) {
-			Swal.fire({ title: "Warning", text: "Form Tidak Boleh Kosong :)", icon: "warning", confirmButtonText: "OK" });
+			swal("Warning", "Form Tidak Boleh Kosong :)", "error");
 			return false;
 		} else {
 			$.ajax({

@@ -41,6 +41,7 @@
 
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.js'); ?>"></script>
 
 <script>
 $(document).ready(function () {

@@ -161,11 +161,10 @@
         var kode_supplier = $('#select_supplier').val();
 
         if (kode_supplier == '') {
-            Swal.fire({
+            swal({
                 title: 'Warning !',
                 text: 'Pastikan kolom Supplier sudah diisi !',
-                icon: 'warning',
-                confirmButtonText: 'OK'
+                type: 'warning'
             });
         } else {
             $.ajax({

@@ -272,14 +272,33 @@
       data: formdata,
       success: function(msg) {
         if (msg['save'] == '1') {
-          Swal.fire({ title: "Sukses!", text: "Data Berhasil Di Simpan", icon: "success", timer: 1500, showConfirmButton: false })
-            .then(function(){ cancel(); window.location.reload(); });
+          swal({
+            title: "Sukses!",
+            text: "Data Berhasil Di Simpan",
+            type: "success",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          cancel();
+          window.location.reload();
         } else {
-          Swal.fire({ title: "Gagal!", text: "Data Gagal Di Simpan", icon: "error", confirmButtonText: "OK" });
+          swal({
+            title: "Gagal!",
+            text: "Data Gagal Di Simpan",
+            type: "error",
+            timer: 1500,
+            showConfirmButton: false
+          });
         }
       },
       error: function() {
-        Swal.fire({ title: "Gagal!", text: "Ajax Data Gagal Di Proses", icon: "error", confirmButtonText: "OK" });
+        swal({
+          title: "Gagal!",
+          text: "Ajax Data Gagal Di Proses",
+          type: "error",
+          timer: 1500,
+          showConfirmButton: false
+        });
       }
     });
   });
