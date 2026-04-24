@@ -196,7 +196,7 @@ function addRow() {
 
 function removeRow(btn) {
     if ($('#item-rows tr').length <= 1) {
-        alert('Minimal satu item harus ada');
+        Swal.fire({ title: 'Perhatian', text: 'Minimal satu item harus ada', icon: 'warning', confirmButtonText: 'OK' });
         return;
     }
     $(btn).closest('tr').remove();

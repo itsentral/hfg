@@ -149,61 +149,35 @@ $('.select2').select2();
 
 								
 function save_jurnal(){
-	
-        swal({
-          title: "Peringatan !",
-          text: "Pastikan data sudah lengkap dan benar",
-          type: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#DD6B55",
-          confirmButtonText: "Ya, simpan!",
-          cancelButtonText: "Batal!",
-          closeOnConfirm: false,
-          closeOnCancel: true
-        },
-        function(isConfirm){
-			if(isConfirm) {
-				var formdata = $("#form-detail-jurnal").serialize();
-				$.ajax({
-					url: siteurl+"jurnal_nomor/save_jurnal_tras",
-					dataType : "json",
-					type: 'POST',
-					data: formdata,
-					success: function(result){
-						if(result.save=='1'){
-							swal({
-								title: "Sukses!",
-								text: result['msg'],
-								type: "success",
-								timer: 1500,
-								showConfirmButton: false
-							});
-							setTimeout(function(){
-								window.location.href=siteurl+'jurnal_nomor/approval_jurnal_po_nonstok';
-							},1600);
-						} else {
-							swal({
-								title: "Gagal!",
-								text: "Data Gagal Di Simpan",
-								type: "error",
-								timer: 1500,
-								showConfirmButton: false
-							});
-						};
-					},
-					error: function(){
-						swal({
-							title: "Gagal!",
-							text: "Ajax Data Gagal Di Proses",
-							type: "error",
-							timer: 1500,
-							showConfirmButton: false
-						});
+	Swal.fire({
+		title: "Peringatan !",
+		text: "Pastikan data sudah lengkap dan benar",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Ya, simpan!",
+		cancelButtonText: "Batal!"
+	}).then(function(result) {
+		if (result.isConfirmed) {
+			var formdata = $("#form-detail-jurnal").serialize();
+			$.ajax({
+				url: siteurl+"jurnal_nomor/save_jurnal_tras",
+				dataType: "json",
+				type: 'POST',
+				data: formdata,
+				success: function(result){
+					if(result.save=='1'){
+						Swal.fire({ title: "Sukses!", text: result['msg'], icon: "success", timer: 1500, showConfirmButton: false })
+							.then(function(){ window.location.href=siteurl+'jurnal_nomor/approval_jurnal_po_nonstok'; });
+					} else {
+						Swal.fire({ title: "Gagal!", text: "Data Gagal Di Simpan", icon: "error", confirmButtonText: "OK" });
 					}
-				});
-			}
-        });
-    
-    }
+				},
+				error: function(){
+					Swal.fire({ title: "Gagal!", text: "Ajax Data Gagal Di Proses", icon: "error", confirmButtonText: "OK" });
+				}
+			});
+		}
+	});
+}
 	
 	</script>

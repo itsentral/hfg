@@ -22,15 +22,18 @@ class Production_planning_model extends CI_Model
     }
 
     /**
-     * Ambil daftar produk FG dari master new_inventory_4
+     * Ambil daftar produk FG dari product_lvl_4
      * Digunakan untuk dropdown di form production planning
      */
     public function get_produk_fg_list()
     {
         return $this->db
-            ->select('code_lv4, nama')
-            ->from('new_inventory_4')
-            ->order_by('nama', 'ASC')
+            ->select('p4.code_lv4, p4.nama, p4.trade_name')
+            ->from('product_lvl_4 p4')
+            ->where('p4.category', 'product')
+            ->where('p4.deleted_date', null)
+            ->where('p4.status', 1)
+            ->order_by('p4.nama', 'ASC')
             ->get()->result();
     }
 
@@ -104,34 +107,116 @@ class Production_planning_model extends CI_Model
     }
 
     /**
-     * Ambil coil available di gudang material (status belum dialokasikan ke plan aktif)
-     * Coil dari tr_ros_detail yang belum ada di tr_production_plan_coil_alloc dengan status allocated/issued
+     * Ambil coil available di gudang berdasarkan material dari BOM produk
+     * Hitung estimate qty = net weight coil / berat per unit produk
+     *
+     * @param string $id_produk  code_lv4 dari product_lvl_4
+     * @return array
      */
     public function get_coil_available($id_produk_fg = null)
     {
-        $sql = "
-            SELECT
-                d.no_coil,
-                d.id_barang AS id_material,
-                d.nm_barang AS nm_material,
-                d.berat_kotor,
-                d.berat_bersih,
-                d.no_ros,
-                ws.qty_stock,
-                w.nm_gudang
-            FROM tr_ros_detail d
-            LEFT JOIN warehouse_stock ws ON ws.id_material = d.id_barang
-            LEFT JOIN warehouse w ON w.id = ws.id_gudang
-            LEFT JOIN tr_production_plan_coil_alloc alloc
-                ON alloc.no_coil COLLATE utf8mb4_general_ci = d.no_coil COLLATE utf8mb4_general_ci
-                AND alloc.status_alloc IN ('allocated','issued')
-            WHERE alloc.id IS NULL
-              AND d.no_coil IS NOT NULL
-              AND d.no_coil != ''
-              AND ws.qty_stock > 0
-            ORDER BY d.no_coil ASC
-        ";
-        return $this->db->query($sql)->result();
+        if (empty($id_produk_fg)) {
+            // Fallback: tampilkan semua coil available jika tidak ada produk dipilih
+            $sql = "
+                SELECT
+                    c.no_coil,
+                    c.id_material,
+                    c.nm_material AS nm_material,
+                    c.qty AS berat_bersih,
+                    c.qty AS net_weight,
+                    c.no_ros,
+                    c.id_gudang,
+                    w.nm_gudang,
+                    0 AS berat_kotor,
+                    NULL AS berat_per_unit,
+                    NULL AS estimate_qty
+                FROM warehouse_stock_coil c
+                LEFT JOIN warehouse w ON w.id = c.id_gudang
+                LEFT JOIN tr_production_plan_coil_alloc alloc
+                    ON alloc.no_coil COLLATE utf8mb4_general_ci = c.no_coil COLLATE utf8mb4_general_ci
+                    AND alloc.status_alloc IN ('allocated','issued')
+                WHERE alloc.id IS NULL
+                  AND c.no_coil IS NOT NULL
+                  AND c.no_coil != ''
+                  AND c.qty > 0
+                  AND c.status = 1
+                ORDER BY c.no_coil ASC
+            ";
+            return $this->db->query($sql)->result();
+        }
+
+        // Ambil berat per unit produk dari product_lvl_4
+        $produk = $this->db->select('weight, nama')
+            ->from('product_lvl_4')
+            ->where('code_lv4', $id_produk_fg)
+            ->get()->row();
+
+        $berat_per_unit = ($produk && $produk->weight > 0) ? (float) $produk->weight : 0;
+
+        // Ambil material yang dibutuhkan dari BOM
+        $bom = $this->db->select('b.id_material')
+            ->from('ms_bom_header h')
+            ->join('ms_bom_detail b', 'b.id_bom = h.id')
+            ->where('h.id_produk', $id_produk_fg)
+            ->get()->result();
+
+        $material_ids = array_map(function($r) { return $r->id_material; }, $bom);
+
+        // Query coil dari warehouse_stock_coil yang materialnya sesuai BOM
+        $this->db->select('
+            c.no_coil,
+            c.id_material,
+            c.nm_material,
+            c.qty AS net_weight,
+            c.no_ros,
+            c.id_gudang,
+            w.nm_gudang
+        ');
+        $this->db->from('warehouse_stock_coil c');
+        $this->db->join('warehouse w', 'w.id = c.id_gudang', 'left');
+        $this->db->join(
+            'tr_production_plan_coil_alloc alloc',
+            'alloc.no_coil = c.no_coil
+             AND alloc.status_alloc IN (\'allocated\',\'issued\')',
+            'left'
+        );
+        $this->db->where('alloc.id IS NULL', null, false);
+        $this->db->where('c.no_coil IS NOT NULL', null, false);
+        $this->db->where("c.no_coil != ''", null, false);
+        $this->db->where('c.qty >', 0);
+        $this->db->where('c.kd_gudang', 'PUS');
+        $this->db->where('c.status', 1);
+
+        if (!empty($material_ids)) {
+            $this->db->where_in('c.id_material', $material_ids);
+        }
+
+        $this->db->order_by('c.id_material', 'ASC');
+        $this->db->order_by('c.no_coil', 'ASC');
+
+        $rows = $this->db->get()->result();
+
+        // Inject estimate_qty dan berat_per_unit ke setiap row
+        foreach ($rows as $row) {
+            $row->berat_per_unit = $berat_per_unit;
+            $row->estimate_qty   = ($berat_per_unit > 0)
+                ? floor((float) $row->net_weight / $berat_per_unit)
+                : 0;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Ambil berat per unit produk dari product_lvl_4
+     */
+    public function get_berat_per_unit($id_produk_fg)
+    {
+        $row = $this->db->select('weight, nama, trade_name')
+            ->from('product_lvl_4')
+            ->where('code_lv4', $id_produk_fg)
+            ->get()->row();
+        return $row;
     }
 
     /**

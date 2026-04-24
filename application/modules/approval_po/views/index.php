@@ -141,48 +141,33 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 	$(document).on('click', '.Approve', function(e) {
 		e.preventDefault();
 		var id = $(this).data('no_po');
-		swal({
+		Swal.fire({
 			title: "Are you sure?",
 			text: "This PO will be approved.",
-			type: "warning",
+			icon: "warning",
 			showCancelButton: true,
-			confirmButtonClass: "btn-info",
 			confirmButtonText: "Yes, Approve!",
-			cancelButtonText: "Cancel",
-			closeOnConfirm: false
-		}, function() {
-			$.ajax({
-				type: 'POST',
-				url: siteurl + 'purchase_order/Approved',
-				dataType: "json",
-				data: {
-					'id': id
-				},
-				success: function(result) {
-					if (result.status == '1') {
-						swal({
-							title: "Success",
-							text: "PO Approved",
-							type: "success"
-						}, function() {
-							window.location.reload(true);
-						});
-					} else {
-						swal({
-							title: "Error",
-							text: "Error approving PO",
-							type: "error"
-						});
+			cancelButtonText: "Cancel"
+		}).then(function(result) {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: 'POST',
+					url: siteurl + 'purchase_order/Approved',
+					dataType: "json",
+					data: { 'id': id },
+					success: function(result) {
+						if (result.status == '1') {
+							Swal.fire({ title: "Success", text: "PO Approved", icon: "success", timer: 1500, showConfirmButton: false })
+								.then(function(){ window.location.reload(true); });
+						} else {
+							Swal.fire({ title: "Error", text: "Error approving PO", icon: "error", confirmButtonText: "OK" });
+						}
+					},
+					error: function() {
+						Swal.fire({ title: "Error", text: "Request failed", icon: "error", confirmButtonText: "OK" });
 					}
-				},
-				error: function() {
-					swal({
-						title: "Error",
-						text: "Request failed",
-						type: "error"
-					});
-				}
-			});
+				});
+			}
 		});
 	});
 
@@ -190,48 +175,33 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 	$(document).on('click', '.booking', function(e) {
 		e.preventDefault();
 		var so_number = $(this).data('so_number');
-		swal({
+		Swal.fire({
 			title: "Are you sure?",
 			text: "Process Booking Material & PR!",
-			type: "warning",
+			icon: "warning",
 			showCancelButton: true,
-			confirmButtonClass: "btn-info",
 			confirmButtonText: "Yes!",
-			cancelButtonText: "Cancel",
-			closeOnConfirm: false
-		}, function() {
-			$.ajax({
-				type: 'POST',
-				url: base_url + active_controller + 'process_booking',
-				dataType: "json",
-				data: {
-					'so_number': so_number
-				},
-				success: function(result) {
-					if (result.status == '1') {
-						swal({
-							title: "Success",
-							text: result.pesan,
-							type: "success"
-						}, function() {
-							window.location.reload(true);
-						});
-					} else {
-						swal({
-							title: "Error",
-							text: result.pesan,
-							type: "error"
-						});
+			cancelButtonText: "Cancel"
+		}).then(function(result) {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: 'POST',
+					url: base_url + active_controller + 'process_booking',
+					dataType: "json",
+					data: { 'so_number': so_number },
+					success: function(result) {
+						if (result.status == '1') {
+							Swal.fire({ title: "Success", text: result.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+								.then(function(){ window.location.reload(true); });
+						} else {
+							Swal.fire({ title: "Error", text: result.pesan, icon: "error", confirmButtonText: "OK" });
+						}
+					},
+					error: function() {
+						Swal.fire({ title: "Error", text: "Request failed", icon: "error", confirmButtonText: "OK" });
 					}
-				},
-				error: function() {
-					swal({
-						title: "Error",
-						text: "Request failed",
-						type: "error"
-					});
-				}
-			});
+				});
+			}
 		});
 	});
 </script>

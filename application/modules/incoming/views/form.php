@@ -419,7 +419,7 @@
             let no_po = $('#no_po').val();
 
             if (no_po == "") {
-                swal("Peringatan", "Pilih Nomor PO terlebih dahulu!", "warning");
+                Swal.fire({ title: "Peringatan", text: "Pilih Nomor PO terlebih dahulu!", icon: "warning", confirmButtonText: "OK" });
                 return false;
             }
 
@@ -431,66 +431,43 @@
                 }
             });
             if (gudangKosong) {
-                swal("Peringatan", "Semua coil harus dipilih gudang tujuannya!", "warning");
+                Swal.fire({ title: "Peringatan", text: "Semua coil harus dipilih gudang tujuannya!", icon: "warning", confirmButtonText: "OK" });
                 return false;
             }
 
-            // Validasi sederhana: pastikan ada berat aktual yang diisi
-            /*let adaIsi = false;
-            $('.hitung-selisih').each(function() {
-                if ($(this).val() !== "" && $(this).val() !== "0") {
-                    adaIsi = true;
-                }
-            });
-
-            if (!adaIsi) {
-                swal("Peringatan", "Minimal satu coil harus diisi berat aktualnya!", "warning");
-                return false;
-            }*/
-
-            swal({
+            Swal.fire({
                 title: "Apakah Anda Yakin?",
                 text: "Data akan diproses ke stok dan jurnal akuntansi!",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-primary",
                 confirmButtonText: "Ya, Proses!",
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true
-            }, function() {
-                $.ajax({
-                    url: siteurl + active_controller + 'process_incoming_coil',
-                    type: "POST",
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    success: function(result) {
-                        if (result.status == 1) {
-                            swal({
-                                title: "Berhasil!",
-                                text: result.pesan,
-                                type: "success"
-                            }, function() {
-                                window.location.href = siteurl + active_controller;
-                            });
-                        } else if (result.status == 2) {
-                            swal({
-                                title: "Transaksi Tersimpan",
-                                text: result.pesan,
-                                type: "warning"
-                            }, function() {
-                                window.location.href = siteurl + active_controller;
-                            });
-                        } else {
-                            swal("Gagal", result.pesan, "error");
+                cancelButtonText: "Batal"
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: siteurl + active_controller + 'process_incoming_coil',
+                        type: "POST",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(result) {
+                            if (result.status == 1) {
+                                Swal.fire({ title: "Berhasil!", text: result.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+                                    .then(function(){ window.location.href = siteurl + active_controller; });
+                            } else if (result.status == 2) {
+                                Swal.fire({ title: "Transaksi Tersimpan", text: result.pesan, icon: "warning", confirmButtonText: "OK" })
+                                    .then(function(){ window.location.href = siteurl + active_controller; });
+                            } else {
+                                Swal.fire({ title: "Gagal", text: result.pesan, icon: "error", confirmButtonText: "OK" });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({ title: "Error", text: "Terjadi kesalahan koneksi server.", icon: "error", confirmButtonText: "OK" });
                         }
-                    },
-                    error: function() {
-                        swal("Error", "Terjadi kesalahan koneksi server.", "error");
-                    }
-                });
+                    });
+                }
             });
         });
     });

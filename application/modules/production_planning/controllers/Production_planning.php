@@ -102,6 +102,18 @@ class Production_planning extends Admin_Controller
         echo json_encode(['status' => 'ok', 'data' => $coils]);
     }
 
+    /** AJAX: ambil berat per unit dan info produk */
+    public function get_produk_info()
+    {
+        $id_produk_fg = $this->input->get('id_produk_fg');
+        $produk       = $this->Production_planning_model->get_berat_per_unit($id_produk_fg);
+        if ($produk) {
+            echo json_encode(['status' => 'ok', 'data' => $produk]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Produk tidak ditemukan']);
+        }
+    }
+
     /** POST: simpan plan baru atau update */
     public function save_plan()
     {

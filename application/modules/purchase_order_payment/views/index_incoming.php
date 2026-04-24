@@ -85,11 +85,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				$('.dic').html(result);
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -123,11 +119,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				$('#dialog-popup').modal('show');
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -150,11 +142,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				$('#dialog-popup').modal('show');
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -188,11 +176,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				$('#dialog-popup').modal('show');
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -216,11 +200,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 				$('#dialog-popup').modal('show');
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -254,63 +234,41 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
 		var kursVal  = parseFloat((kurs || '0').replace(/,/g, ''));
 
 		if (currency && currency.toUpperCase() !== 'IDR' && (kursVal <= 0 || kurs === '')) {
-			swal({
-				title: 'Peringatan!',
-				text: 'Kurs wajib diisi dan harus lebih dari 0 jika currency bukan IDR!',
-				type: 'warning'
-			});
+			Swal.fire({ title: 'Peringatan!', text: 'Kurs wajib diisi dan harus lebih dari 0 jika currency bukan IDR!', icon: 'warning', confirmButtonText: 'OK' });
 			return false;
 		}
 
-		swal({
-				title: "Warning !",
-				text: "PO Invoice will be created !",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#DD6B55",
-				confirmButtonText: "Yes, Create it!",
-				cancelButtonText: "Cancel!",
-				closeOnConfirm: false,
-				closeOnCancel: true
-			},
-			function(isConfirm) {
-				if (isConfirm) {
-
-					var formdata = new FormData($('#frm-data')[0]);
-					$.ajax({
-						type: 'POST',
-						url: siteurl + active_controller + '/save_invoice',
-						data: formdata,
-						cache: false,
-						dataType: 'json',
-						processData: false,
-						contentType: false,
-						success: function(result) {
-							if (result.status == 1) {
-								swal({
-									title: 'Success !',
-									text: 'PO Invoice has been saved !',
-									type: 'success'
-								});
-
-								location.reload();
-							} else {
-								swal({
-									title: 'Failed !',
-									text: 'PO Invoice has not been saved !',
-									type: 'error'
-								});
-							}
-						},
-						error: function(result) {
-							swal({
-								title: 'Error !',
-								text: 'Please try again later !',
-								type: 'error'
-							});
+		Swal.fire({
+			title: "Warning !",
+			text: "PO Invoice will be created !",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Yes, Create it!",
+			cancelButtonText: "Cancel!"
+		}).then(function(isConfirm) {
+			if (isConfirm.isConfirmed) {
+				var formdata = new FormData($('#frm-data')[0]);
+				$.ajax({
+					type: 'POST',
+					url: siteurl + active_controller + '/save_invoice',
+					data: formdata,
+					cache: false,
+					dataType: 'json',
+					processData: false,
+					contentType: false,
+					success: function(result) {
+						if (result.status == 1) {
+							Swal.fire({ title: 'Success !', text: 'PO Invoice has been saved !', icon: 'success', timer: 1500, showConfirmButton: false })
+								.then(function(){ location.reload(); });
+						} else {
+							Swal.fire({ title: 'Failed !', text: 'PO Invoice has not been saved !', icon: 'error', confirmButtonText: 'OK' });
 						}
-					});
-				}
-			});
+					},
+					error: function(result) {
+						Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
+					}
+				});
+			}
+		});
 	});
 </script>

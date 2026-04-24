@@ -564,19 +564,11 @@
 				if (result.hasil == '1') {
 					refresh_incoming_check(result.kode_trans, no_ipp);
 				} else {
-					swal({
-						title: 'Error !',
-						text: 'Please, try again !',
-						type: 'error'
-					});
+					Swal.fire({ title: 'Error !', text: 'Please, try again !', icon: 'error', confirmButtonText: 'OK' });
 				}
 			},
 			error: function(result) {
-				swal({
-					title: 'Error',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 
@@ -641,11 +633,7 @@
 				if (result.hasil == '1') {
 					refresh_incoming_check(kode_trans, no_ipp);
 				} else {
-					swal({
-						title: 'Error !',
-						text: 'Please, try again !',
-						type: 'error'
-					});
+					Swal.fire({ title: 'Error !', text: 'Please, try again !', icon: 'error', confirmButtonText: 'OK' });
 				}
 			}
 		});

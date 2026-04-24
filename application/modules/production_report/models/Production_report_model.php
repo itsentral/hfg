@@ -316,9 +316,9 @@ class Production_report_model extends CI_Model
     public function get_report($report_no)
     {
         return $this->db
-            ->select('r.*, u.name AS nama_created_by, a.name AS nama_approved_by, s.nm_produk_fg, s.produk_fg')
+            ->select('r.*, u.nm_lengkap AS nama_created_by, a.name AS nama_approved_by, s.nm_produk_fg, s.produk_fg')
             ->from('tr_production_report r')
-            ->join('users u', 'u.id = r.created_by', 'left')
+            ->join('users u', 'u.id_user = r.created_by', 'left')
             ->join('users a', 'a.id = r.approved_by', 'left')
             ->join('tr_spk_production s', 's.spk_no = r.spk_no', 'left')
             ->where('r.report_no', $report_no)
@@ -569,7 +569,7 @@ class Production_report_model extends CI_Model
         $order_by = isset($cols[$order_col]) ? $cols[$order_col] : 'r.created_at';
 
         $base_sql = "FROM tr_production_report r
-                     LEFT JOIN users u ON u.id = r.created_by
+                     LEFT JOIN users u ON u.id_user = r.created_by
                      LEFT JOIN tr_spk_production s ON s.spk_no = r.spk_no
                      WHERE 1=1";
 
@@ -581,7 +581,7 @@ class Production_report_model extends CI_Model
         $total    = $this->db->query("SELECT COUNT(*) AS cnt {$base_sql}")->row()->cnt;
         $filtered = $total;
         $query    = $this->db->query(
-            "SELECT r.*, u.name AS nama_created_by, s.nm_produk_fg {$base_sql} ORDER BY {$order_by} {$order_dir} LIMIT {$start},{$length}"
+            "SELECT r.*, u.nm_lengkap AS nama_created_by, s.nm_produk_fg {$base_sql} ORDER BY {$order_by} {$order_dir} LIMIT {$start},{$length}"
         );
 
         return ['total' => $total, 'filtered' => $filtered, 'data' => $query->result()];

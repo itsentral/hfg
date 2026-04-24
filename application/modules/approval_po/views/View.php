@@ -121,85 +121,46 @@ foreach ($results['header'] as $header) {
 			var idtype = $('#inventory_1').val();
 
 			var data, xhr;
-			swal({
-					title: "Are you sure?",
-					text: "You will not be able to process again this data!",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonClass: "btn-danger",
-					confirmButtonText: "Yes, Process it!",
-					cancelButtonText: "No, cancel process!",
-					closeOnConfirm: true,
-					closeOnCancel: false
-				},
-				function(isConfirm) {
-					if (isConfirm) {
-						var formData = new FormData($('#data-form')[0]);
-						var baseurl = siteurl + 'purchase_request/SaveNew';
-						$.ajax({
-							url: baseurl,
-							type: "POST",
-							data: formData,
-							cache: false,
-							dataType: 'json',
-							processData: false,
-							contentType: false,
-							success: function(data) {
-								if (data.status == 1) {
-									swal({
-										title: "Save Success!",
-										text: data.pesan,
-										type: "success",
-										timer: 7000,
-										showCancelButton: false,
-										showConfirmButton: false,
-										allowOutsideClick: false
-									});
-									window.location.href = base_url + active_controller;
+			Swal.fire({
+				title: "Are you sure?",
+				text: "You will not be able to process again this data!",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Yes, Process it!",
+				cancelButtonText: "No, cancel process!"
+			}).then(function(result) {
+				if (result.isConfirmed) {
+					var formData = new FormData($('#data-form')[0]);
+					var baseurl = siteurl + 'purchase_request/SaveNew';
+					$.ajax({
+						url: baseurl,
+						type: "POST",
+						data: formData,
+						cache: false,
+						dataType: 'json',
+						processData: false,
+						contentType: false,
+						success: function(data) {
+							if (data.status == 1) {
+								Swal.fire({ title: "Save Success!", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+									.then(function(){ window.location.href = base_url + active_controller; });
+							} else {
+								if (data.status == 2) {
+									Swal.fire({ title: "Save Failed!", text: data.pesan, icon: "warning", confirmButtonText: "OK" });
 								} else {
-
-									if (data.status == 2) {
-										swal({
-											title: "Save Failed!",
-											text: data.pesan,
-											type: "warning",
-											timer: 7000,
-											showCancelButton: false,
-											showConfirmButton: false,
-											allowOutsideClick: false
-										});
-									} else {
-										swal({
-											title: "Save Failed!",
-											text: data.pesan,
-											type: "warning",
-											timer: 7000,
-											showCancelButton: false,
-											showConfirmButton: false,
-											allowOutsideClick: false
-										});
-									}
-
+									Swal.fire({ title: "Save Failed!", text: data.pesan, icon: "warning", confirmButtonText: "OK" });
 								}
-							},
-							error: function() {
-
-								swal({
-									title: "Error Message !",
-									text: 'An Error Occured During Process. Please try again..',
-									type: "warning",
-									timer: 7000,
-									showCancelButton: false,
-									showConfirmButton: false,
-									allowOutsideClick: false
-								});
 							}
-						});
-					} else {
-						swal("Cancelled", "Data can be process again :)", "error");
-						return false;
-					}
-				});
+						},
+						error: function() {
+							Swal.fire({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', icon: "error", confirmButtonText: "OK" });
+						}
+					});
+				} else {
+					Swal.fire({ title: "Cancelled", text: "Data can be process again :)", icon: "error", confirmButtonText: "OK" });
+					return false;
+				}
+			});
 		});
 
 	});

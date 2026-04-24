@@ -133,17 +133,52 @@ class Production_report extends Admin_Controller
             return;
         }
 
-        $berat_standar = 0;
-        if (!empty($spk->produk_fg)) {
-            $berat_standar = $this->Production_report_model->get_berat_standar_fg($spk->produk_fg);
+        // Ambil no_coil pertama dari SPK
+        $coil = $this->db->where('spk_no', $spk_no)->limit(1)->get('tr_spk_material_detail')->row();
+        $no_coil = $coil ? $coil->no_coil : null;
+
+        // Ambil nama supplier dari tr_ros_detail → tr_ros → supplier
+        $nm_supplier = '';
+        if ($no_coil) {
+            $sup = $this->db->select('s.nm_supplier')
+                ->from('tr_ros_detail rd')
+                ->join('tr_ros r', 'r.no_ros = rd.no_ros', 'left')
+                ->join('supplier s', 's.id = r.id_supplier', 'left')
+                ->where('rd.no_coil', $no_coil)
+                ->limit(1)->get()->row();
+            $nm_supplier = $sup ? $sup->nm_supplier : '';
         }
 
         echo json_encode([
-            'success'       => true,
-            'produk_fg'     => $spk->produk_fg,
-            'nm_produk_fg'  => isset($spk->nm_produk_fg) ? $spk->nm_produk_fg : '',
-            'berat_standar' => $berat_standar,
+            'success'      => true,
+            'produk_fg'    => $spk->produk_fg,
+            'nm_produk_fg' => isset($spk->nm_produk_fg) ? $spk->nm_produk_fg : '',
+            'no_coil'      => $no_coil,
+            'nm_supplier'  => $nm_supplier,
         ]);
+    }
+
+    /**
+     * AJAX: ambil data packing list (berat_kotor, berat_bersih, length) dari tr_ros_detail
+     */
+    public function get_coil_packing_list()
+    {
+        $no_coil = $this->input->get('no_coil');
+        $row = $this->db->select('berat_kotor, berat_bersih, length')
+            ->from('tr_ros_detail')
+            ->where('no_coil', $no_coil)
+            ->limit(1)->get()->row();
+
+        if ($row) {
+            echo json_encode([
+                'success'      => true,
+                'berat_kotor'  => $row->berat_kotor,
+                'berat_bersih' => $row->berat_bersih,
+                'length'       => $row->length,
+            ]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
     }
 
     /**

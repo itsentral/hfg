@@ -182,55 +182,34 @@ $ENABLE_DELETE  = has_permission('menus.Delete');
 
 	// Delete
 	function delete_data(id) {
-		swal({
-				title: "Anda Yakin?",
-				text: "Data Akan Terhapus secara Permanen!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#DD6B55",
-				confirmButtonText: "Yes, delete!",
-				cancelButtonText: "No,cancel!",
-				closeOnConfirm: false,
-				closeOnCancel: true
-			},
-			function(isConfirm) {
-				if (isConfirm) {
-					$.ajax({
-						url: siteurl + 'menus/hapus_menus/' + id,
-						dataType: "json",
-						type: 'POST',
-						success: function(msg) {
-							if (msg['delete'] == '1') {
-								swal({
-									title: "Terhapus!",
-									text: "Data berhasil dihapus",
-									type: "success",
-									timer: 1500,
-									showConfirmButton: false
-								});
-								window.location.reload();
-							} else {
-								swal({
-									title: "Gagal!",
-									text: "Data gagal dihapus",
-									type: "error",
-									timer: 1500,
-									showConfirmButton: false
-								});
-							}
-						},
-						error: function() {
-							swal({
-								title: "Gagal!",
-								text: "Gagal Eksekusi Ajax",
-								type: "error",
-								timer: 1500,
-								showConfirmButton: false
-							});
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Terhapus secara Permanen!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#dc3545",
+			confirmButtonText: "Yes, delete!",
+			cancelButtonText: "No, cancel!"
+		}).then(function(result) {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: siteurl + 'menus/hapus_menus/' + id,
+					dataType: "json",
+					type: 'POST',
+					success: function(msg) {
+						if (msg['delete'] == '1') {
+							Swal.fire({ title: "Terhapus!", text: "Data berhasil dihapus", icon: "success", timer: 1500, showConfirmButton: false })
+								.then(function(){ window.location.reload(); });
+						} else {
+							Swal.fire({ title: "Gagal!", text: "Data gagal dihapus", icon: "error", confirmButtonText: "OK" });
 						}
-					});
-				}
-			});
+					},
+					error: function() {
+						Swal.fire({ title: "Gagal!", text: "Gagal Eksekusi Ajax", icon: "error", confirmButtonText: "OK" });
+					}
+				});
+			}
+		});
 	}
 
 	function PreviewPdf(id) {

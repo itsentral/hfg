@@ -209,116 +209,60 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 			var code_lv2 = $('#code_lv2').val();
 
 			if (code_lv1 == '0') {
-				swal({
-					title: "Error Message!",
-					text: 'Material type not selected...',
-					type: "warning"
-				});
+				Swal.fire({ title: "Error Message!", text: 'Material type not selected...', icon: "warning", confirmButtonText: "OK" });
 				return false;
 			}
 			if (code_lv2 == '0') {
-				swal({
-					title: "Error Message!",
-					text: 'Material category not selected...',
-					type: "warning"
-				});
+				Swal.fire({ title: "Error Message!", text: 'Material category not selected...', icon: "warning", confirmButtonText: "OK" });
 				return false;
 			}
 
-			swal({
-				title: "Anda Yakin?",
-				text: "Data akan diproses!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-info",
-				confirmButtonText: "Yes",
-				cancelButtonText: "No",
-				closeOnConfirm: false
-			}, function() {
-				$.ajax({
-					type: 'POST',
-					url: siteurl + active_controller + 'add',
-					dataType: 'json',
-					data: data,
-					success: function(res) {
-						if (res.status == '1') {
-							swal({
-								title: "Sukses",
-								text: res.pesan,
-								type: "success"
-							}, function() {
-								window.location.reload(true);
-							});
-						} else {
-							swal({
-								title: "Error",
-								text: res.pesan,
-								type: "error"
-							});
-						}
-					},
-					error: function() {
-						swal({
-							title: "Error",
-							text: "Error proccess !",
-							type: "error"
-						});
-					}
-				});
+			Swal.fire({
+				title: "Anda Yakin?", text: "Data akan diproses!", icon: "warning",
+				showCancelButton: true, confirmButtonText: "Yes", cancelButtonText: "No"
+			}).then(function(result) {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: 'POST', url: siteurl + active_controller + 'add', dataType: 'json', data: data,
+						success: function(res) {
+							if (res.status == '1') {
+								Swal.fire({ title: "Sukses", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+									.then(function(){ window.location.reload(true); });
+							} else {
+								Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
+							}
+						},
+						error: function() { Swal.fire({ title: "Error", text: "Error proccess !", icon: "error", confirmButtonText: "OK" }); }
+					});
+				}
 			});
 		});
 
-		// Delete
 		$(document).on('click', '.delete', function(e) {
 			e.preventDefault();
 			var id = $(this).data('id');
 
-			swal({
-				title: "Anda Yakin?",
-				text: "Data akan di hapus!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-info",
-				confirmButtonText: "Yes",
-				cancelButtonText: "No",
-				closeOnConfirm: false
-			}, function() {
-				$.ajax({
-					type: 'POST',
-					url: siteurl + active_controller + '/delete',
-					dataType: 'json',
-					data: {
-						'id': id
-					},
-					success: function(res) {
-						if (res.status == '1') {
-							swal({
-								title: "Sukses",
-								text: res.pesan,
-								type: "success"
-							}, function() {
-								window.location.reload(true);
-							});
-						} else {
-							swal({
-								title: "Error",
-								text: res.pesan,
-								type: "error"
-							});
-						}
-					},
-					error: function() {
-						swal({
-							title: "Error",
-							text: "Error proccess !",
-							type: "error"
-						});
-					}
-				});
+			Swal.fire({
+				title: "Anda Yakin?", text: "Data akan di hapus!", icon: "warning",
+				showCancelButton: true, confirmButtonColor: "#dc3545", confirmButtonText: "Yes", cancelButtonText: "No"
+			}).then(function(result) {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: 'POST', url: siteurl + active_controller + '/delete', dataType: 'json', data: { 'id': id },
+						success: function(res) {
+							if (res.status == '1') {
+								Swal.fire({ title: "Sukses", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+									.then(function(){ window.location.reload(true); });
+							} else {
+								Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
+							}
+						},
+						error: function() { Swal.fire({ title: "Error", text: "Error proccess !", icon: "error", confirmButtonText: "OK" }); }
+					});
+				}
 			});
 		});
 
-		// Toggle Status (samakan param dengan controller kamu)
 		$(document).on('change', '.toggle-status-checkbox', function() {
 			const id = $(this).data('id');
 			const currentStatus = $(this).data('status');
@@ -327,51 +271,28 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 			$.ajax({
 				url: siteurl + active_controller + 'toggle_status',
 				type: 'POST',
-				data: {
-					id: id,
-					status: currentStatus
-				},
+				data: { id: id, status: currentStatus },
 				dataType: 'json',
-				beforeSend: function() {
-					checkbox.prop('disabled', true);
-				},
+				beforeSend: function() { checkbox.prop('disabled', true); },
 				success: function(response) {
 					const ok = (response.status === true || response.status === 1 || response.status === '1');
-
 					if (ok) {
 						const newStatus = (response.new_status !== undefined) ? response.new_status : (currentStatus == 1 ? 0 : 1);
 						const msg = response.message || response.pesan || "Status updated.";
-
 						checkbox.data('status', newStatus);
 						checkbox.prop('checked', newStatus == 1);
-
-						swal({
-							title: "Sukses",
-							text: msg,
-							type: "success"
-						});
+						Swal.fire({ title: "Sukses", text: msg, icon: "success", timer: 1500, showConfirmButton: false });
 					} else {
 						const msg = response.message || response.pesan || "Gagal update status.";
 						checkbox.prop('checked', currentStatus == 1);
-
-						swal({
-							title: "Error",
-							text: msg,
-							type: "error"
-						});
+						Swal.fire({ title: "Error", text: msg, icon: "error", confirmButtonText: "OK" });
 					}
 				},
 				error: function() {
 					checkbox.prop('checked', currentStatus == 1);
-					swal({
-						title: "Error",
-						text: "Error processing!",
-						type: "error"
-					});
+					Swal.fire({ title: "Error", text: "Error processing!", icon: "error", confirmButtonText: "OK" });
 				},
-				complete: function() {
-					checkbox.prop('disabled', false);
-				}
+				complete: function() { checkbox.prop('disabled', false); }
 			});
 		});
 

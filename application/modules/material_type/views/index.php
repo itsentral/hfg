@@ -140,99 +140,51 @@ $ENABLE_DELETE  = has_permission('Material_Type.Delete');
 			});
 		});
 
-		// Handle form submission for adding data
 		$(document).on('submit', '#data_form', function(e) {
 			e.preventDefault();
 			var data = $(this).serialize();
-			swal({
-				title: "Are you sure?",
-				text: "Data will be processed!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-info",
-				confirmButtonText: "Yes",
-				cancelButtonText: "No",
-				closeOnConfirm: false
-			}, function() {
-				$.ajax({
-					type: 'POST',
-					url: siteurl + active_controller + 'add',
-					dataType: 'json',
-					data: data,
-					success: function(data) {
-						if (data.status == '1') {
-							swal({
-								title: "Success",
-								text: data.pesan,
-								type: "success"
-							}, function() {
-								window.location.reload(true);
-							});
-						} else {
-							swal({
-								title: "Error",
-								text: data.pesan,
-								type: "error"
-							});
-						}
-					},
-					error: function() {
-						swal({
-							title: "Error",
-							text: "Error processing!",
-							type: "error"
-						});
-					}
-				});
+			Swal.fire({
+				title: "Are you sure?", text: "Data will be processed!", icon: "warning",
+				showCancelButton: true, confirmButtonText: "Yes", cancelButtonText: "No"
+			}).then(function(result) {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: 'POST', url: siteurl + active_controller + 'add', dataType: 'json', data: data,
+						success: function(data) {
+							if (data.status == '1') {
+								Swal.fire({ title: "Success", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+									.then(function(){ window.location.reload(true); });
+							} else {
+								Swal.fire({ title: "Error", text: data.pesan, icon: "error", confirmButtonText: "OK" });
+							}
+						},
+						error: function() { Swal.fire({ title: "Error", text: "Error processing!", icon: "error", confirmButtonText: "OK" }); }
+					});
+				}
 			});
 		});
 
-		// Delete action
 		$(document).on('click', '.delete', function(e) {
 			e.preventDefault();
 			var id = $(this).data('id');
-			swal({
-				title: "Are you sure?",
-				text: "Data will be deleted!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-info",
-				confirmButtonText: "Yes",
-				cancelButtonText: "No",
-				closeOnConfirm: false
-			}, function() {
-				$.ajax({
-					type: 'POST',
-					url: siteurl + active_controller + '/delete',
-					dataType: 'json',
-					data: {
-						'id': id
-					},
-					success: function(data) {
-						if (data.status == '1') {
-							swal({
-								title: "Success",
-								text: data.pesan,
-								type: "success"
-							}, function() {
-								window.location.reload(true);
-							});
-						} else {
-							swal({
-								title: "Error",
-								text: data.pesan,
-								type: "error"
-							});
-						}
-					},
-					error: function() {
-						swal({
-							title: "Error",
-							text: "Error processing!",
-							type: "error"
-						});
-					}
-				});
+			Swal.fire({
+				title: "Are you sure?", text: "Data will be deleted!", icon: "warning",
+				showCancelButton: true, confirmButtonColor: "#dc3545", confirmButtonText: "Yes", cancelButtonText: "No"
+			}).then(function(result) {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: 'POST', url: siteurl + active_controller + '/delete', dataType: 'json', data: { 'id': id },
+						success: function(data) {
+							if (data.status == '1') {
+								Swal.fire({ title: "Success", text: data.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+									.then(function(){ window.location.reload(true); });
+							} else {
+								Swal.fire({ title: "Error", text: data.pesan, icon: "error", confirmButtonText: "OK" });
+							}
+						},
+						error: function() { Swal.fire({ title: "Error", text: "Error processing!", icon: "error", confirmButtonText: "OK" }); }
+					});
+				}
 			});
 		});
 
@@ -244,51 +196,25 @@ $ENABLE_DELETE  = has_permission('Material_Type.Delete');
 			$.ajax({
 				url: siteurl + active_controller + 'toggle_status',
 				type: 'POST',
-				data: {
-					id: id,
-					status: currentStatus
-				},
+				data: { id: id, status: currentStatus },
 				dataType: 'json',
-				beforeSend: function() {
-					checkbox.prop('disabled', true);
-				},
+				beforeSend: function() { checkbox.prop('disabled', true); },
 				success: function(response) {
 					if (response.status) {
-						// Update the status data
 						checkbox.data('status', response.new_status);
 						checkbox.prop('checked', response.new_status == 1);
-
-						// Show success notification
-						swal({
-							title: "Success",
-							text: response.message,
-							type: "success"
-						});
+						Swal.fire({ title: "Success", text: response.message, icon: "success", timer: 1500, showConfirmButton: false });
 					} else {
-						// Show failure notification
 						checkbox.prop('checked', currentStatus == 1);
-
-						swal({
-							title: "Error",
-							text: response.message,
-							type: "error"
-						});
+						Swal.fire({ title: "Error", text: response.message, icon: "error", confirmButtonText: "OK" });
 					}
 				},
 				error: function(xhr, status, error) {
 					checkbox.prop('checked', currentStatus == 1);
-
 					console.error('Error:', error);
-
-					swal({
-						title: "Error",
-						text: "Error processing!",
-						type: "error"
-					});
+					Swal.fire({ title: "Error", text: "Error processing!", icon: "error", confirmButtonText: "OK" });
 				},
-				complete: function() {
-					checkbox.prop('disabled', false);
-				}
+				complete: function() { checkbox.prop('disabled', false); }
 			});
 		});
 

@@ -188,11 +188,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 				$('#dialog-popupCP').modal('show');
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -210,25 +206,14 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 			contentType: false,
 			success: function(result) {
 				if (result.status == 1) {
-					swal({
-						title: 'Success !',
-						text: 'PO has been closed',
-						type: 'success'
-					});
+					Swal.fire({ title: 'Success !', text: 'PO has been closed', icon: 'success', timer: 1500, showConfirmButton: false })
+						.then(function(){ location.reload(); });
 				} else {
-					swal({
-						title: 'Failed !',
-						text: 'PO has not been closed',
-						type: 'warning'
-					});
+					Swal.fire({ title: 'Failed !', text: 'PO has not been closed', icon: 'warning', confirmButtonText: 'OK' });
 				}
 			},
 			error: function(result) {
-				swal({
-					title: 'Error !',
-					text: 'Please try again later !',
-					type: 'error'
-				});
+				Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
 			}
 		});
 	});
@@ -294,54 +279,34 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 	$(document).on('click', '.Approve', function(e) {
 		e.preventDefault()
 		var id = $(this).data('no_po');
-		// alert(id);
-		swal({
-				title: "Anda Yakin?",
-				text: "PO. Akan Di Approve.",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-info",
-				confirmButtonText: "Ya, Approve!",
-				cancelButtonText: "Batal",
-				closeOnConfirm: false
-			},
-			function() {
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "PO. Akan Di Approve.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Ya, Approve!",
+			cancelButtonText: "Batal"
+		}).then(function(result) {
+			if (result.isConfirmed) {
 				$.ajax({
 					type: 'POST',
 					url: siteurl + 'purchase_order/Approved',
 					dataType: "json",
-					data: {
-						'id': id
-					},
+					data: { 'id': id },
 					success: function(result) {
 						if (result.status == '1') {
-							swal({
-									title: "Sukses",
-									text: "P.R Approved.",
-									type: "success"
-								},
-								function() {
-									window.location.reload(true);
-								})
+							Swal.fire({ title: "Sukses", text: "P.R Approved.", icon: "success", timer: 1500, showConfirmButton: false })
+								.then(function(){ window.location.reload(true); });
 						} else {
-							swal({
-								title: "Error",
-								text: "Data error. Gagal Approve data",
-								type: "error"
-							})
-
+							Swal.fire({ title: "Error", text: "Data error. Gagal Approve data", icon: "error", confirmButtonText: "OK" });
 						}
 					},
 					error: function() {
-						swal({
-							title: "Error",
-							text: "Data error. Gagal request Ajax",
-							type: "error"
-						})
+						Swal.fire({ title: "Error", text: "Data error. Gagal request Ajax", icon: "error", confirmButtonText: "OK" });
 					}
-				})
-			});
-
+				});
+			}
+		});
 	})
 
 	$(function() {

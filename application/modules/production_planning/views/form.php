@@ -3,15 +3,20 @@ $is_edit    = isset($plan) && $plan;
 $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
 ?>
 
-<!-- Select2 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
-<!-- Flatpickr -->
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+
+<style>
+.coil-row-selected { background-color: #d1e7dd !important; }
+.estimate-badge { font-size: 1rem; font-weight: bold; }
+.product-block { border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: #f8f9fa; }
+.product-block .block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+</style>
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><?= $page_title ?></h5>
+        <h5 class="mb-0"><i class="fa fa-industry"></i> <?= $page_title ?></h5>
         <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-sm">
             <i class="fa fa-arrow-left"></i> Kembali
         </a>
@@ -22,6 +27,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                 <input type="hidden" name="plan_no" value="<?= $plan->plan_no ?>">
             <?php endif; ?>
 
+            <!-- Header Plan -->
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Plan <span class="text-danger">*</span></label>
@@ -34,278 +40,389 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                         value="<?= $is_edit ? $plan->due_date : '' ?>" autocomplete="off">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Target Qty <span class="text-danger">*</span></label>
+                    <label class="form-label">Target Qty</label>
                     <input type="number" step="0.01" name="target_qty" class="form-control"
-                        value="<?= $is_edit ? $plan->target_qty : '' ?>" required>
+                        value="<?= $is_edit ? $plan->target_qty : '' ?>">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Target Berat (kg)</label>
-                    <input type="number" step="0.001" name="target_berat" class="form-control"
-                        value="<?= $is_edit ? $plan->target_berat : '' ?>">
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-8">
-                    <label class="form-label">Produk FG <span class="text-danger">*</span></label>
-                    <select name="id_produk_fg" id="select-produk-fg" class="form-select select2-produk" required>
-                        <option value="">-- Pilih Produk FG --</option>
-                        <?php if (!empty($produk_list)): ?>
-                            <?php foreach ($produk_list as $p): ?>
-                                <option value="<?= htmlspecialchars($p->code_lv4) ?>"
-                                    data-nama="<?= htmlspecialchars($p->nama) ?>"
-                                    <?= ($is_edit && $plan->id_produk_fg == $p->code_lv4) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                    <input type="hidden" name="nm_produk_fg" id="nm_produk_fg"
-                        value="<?= $is_edit ? htmlspecialchars($plan->nm_produk_fg) : '' ?>">
-                </div>
-                <div class="col-md-4">
                     <label class="form-label">Catatan</label>
                     <textarea name="catatan" class="form-control" rows="1"><?= $is_edit ? htmlspecialchars($plan->catatan) : '' ?></textarea>
                 </div>
             </div>
 
-            <!-- Tabel Coil -->
-            <div class="card mt-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Alokasi Coil</h6>
-                    <button type="button" class="btn btn-primary btn-sm" id="btn-load-coil">
-                        <i class="fa fa-search"></i> Cari Coil Tersedia
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-sm mb-0" id="tbl-coil-selected">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="40" class="text-center">No</th>
-                                    <th>No Coil</th>
-                                    <th>No ROS</th>
-                                    <th>Material</th>
-                                    <th class="text-end">Berat Bersih (kg)</th>
-                                    <th class="text-end">Estimasi FG (kg)</th>
-                                    <th width="60" class="text-center">Hapus</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-coil">
-                                <?php if ($is_edit && !empty($details)): ?>
-                                    <?php foreach ($details as $i => $d): ?>
-                                        <tr>
-                                            <td class="text-center row-no"><?= $i + 1 ?></td>
-                                            <td>
-                                                <?= htmlspecialchars($d->no_coil) ?>
-                                                <input type="hidden" name="detail[<?= $i ?>][no_coil]" value="<?= htmlspecialchars($d->no_coil) ?>">
-                                                <input type="hidden" name="detail[<?= $i ?>][id_material]" value="<?= htmlspecialchars($d->id_material) ?>">
-                                                <input type="hidden" name="detail[<?= $i ?>][nm_material]" value="<?= htmlspecialchars($d->nm_material) ?>">
-                                                <input type="hidden" name="detail[<?= $i ?>][no_ros]" value="<?= htmlspecialchars($d->no_ros) ?>">
-                                                <input type="hidden" name="detail[<?= $i ?>][net_weight_coil]" value="<?= $d->net_weight_coil ?>">
-                                                <input type="hidden" name="detail[<?= $i ?>][estimasi_fg]" value="<?= $d->estimasi_fg ?>">
-                                            </td>
-                                            <td><?= htmlspecialchars($d->no_ros) ?></td>
-                                            <td><?= htmlspecialchars($d->nm_material) ?></td>
-                                            <td class="text-end"><?= number_format($d->net_weight_coil, 3) ?></td>
-                                            <td class="text-end"><?= number_format($d->estimasi_fg, 3) ?></td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-danger btn-xs btn-remove-coil"><i class="fa fa-trash"></i></button>
-                                            </td>
-                                        </tr>
+            <!-- Container produk (bisa multi produk) -->
+            <div id="product-blocks">
+                <!-- Blok produk pertama -->
+                <div class="product-block" id="block-0">
+                    <div class="block-header">
+                        <h6 class="mb-0 text-primary"><i class="fa fa-box"></i> Produk #<span class="block-num">1</span></h6>
+                        <button type="button" class="btn btn-danger btn-sm btn-remove-block d-none">
+                            <i class="fa fa-times"></i> Hapus Produk
+                        </button>
+                    </div>
+
+                    <!-- Pilih Produk -->
+                    <div class="row mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Produk FG <span class="text-danger">*</span></label>
+                            <select name="id_produk_fg" class="form-select select2-produk" required>
+                                <option value="">-- Pilih Produk --</option>
+                                <?php if (!empty($produk_list)): ?>
+                                    <?php foreach ($produk_list as $p): ?>
+                                        <option value="<?= htmlspecialchars($p->code_lv4) ?>"
+                                            data-nama="<?= htmlspecialchars($p->nama) ?>"
+                                            data-trade="<?= htmlspecialchars($p->trade_name) ?>"
+                                            <?= ($is_edit && $plan->id_produk_fg == $p->code_lv4) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-light fw-bold">
-                                    <td colspan="4" class="text-end">Total:</td>
-                                    <td class="text-end" id="total-net-weight">0.000</td>
-                                    <td class="text-end" id="total-estimasi-fg">0.000</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                            </select>
+                            <input type="hidden" name="nm_produk_fg" class="inp-nm-produk"
+                                value="<?= $is_edit ? htmlspecialchars($plan->nm_produk_fg) : '' ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Berat / Unit (kg)</label>
+                            <input type="text" class="form-control bg-light inp-berat-unit" readonly
+                                placeholder="Otomatis" value="<?= $is_edit ? $plan->target_berat : '' ?>">
+                            <input type="hidden" name="target_berat" class="inp-berat-unit-hidden"
+                                value="<?= $is_edit ? $plan->target_berat : '' ?>">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-primary w-100 btn-cari-coil">
+                                <i class="fa fa-search"></i> Cari Coil Tersedia
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Coil -->
+                    <div class="coil-section" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold text-secondary">Material: <span class="lbl-material-name">—</span></span>
+                            <span class="badge bg-success estimate-badge">
+                                Estimated Total Qty: <span class="lbl-total-qty">0</span>
+                            </span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th width="40" class="text-center">
+                                            <input type="checkbox" class="check-all-coil">
+                                        </th>
+                                        <th>No Coil</th>
+                                        <th>Nama Material</th>
+                                        <th class="text-end">Net Weight (kg)</th>
+                                        <th class="text-end">Estimate Qty</th>
+                                        <th>Gudang</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbody-coil">
+                                    <!-- diisi via AJAX -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Hidden inputs untuk coil yang dipilih -->
+                        <div class="selected-coil-inputs"></div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div class="coil-loading text-center py-3" style="display:none;">
+                        <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+                        <div class="mt-2 text-muted">Memuat coil tersedia...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-save"></i> Simpan Plan
+            <!-- Tombol Tambah Produk -->
+            <div class="mb-3">
+                <button type="button" class="btn btn-outline-primary" id="btn-add-product">
+                    <i class="fa fa-plus"></i> Add More Product
                 </button>
-                <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary">Batal</a>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success btn-lg" id="btn-create-spk">
+                    <i class="fa fa-file-alt"></i> Create SPK
+                </button>
+                <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-lg">Batal</a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal Pilih Coil -->
-<div class="modal fade" id="modal-coil" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Pilih Coil Tersedia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Template blok produk -->
+<template id="product-block-template">
+    <div class="product-block" id="block-__IDX__">
+        <div class="block-header">
+            <h6 class="mb-0 text-primary"><i class="fa fa-box"></i> Produk #<span class="block-num">__NUM__</span></h6>
+            <button type="button" class="btn btn-danger btn-sm btn-remove-block">
+                <i class="fa fa-times"></i> Hapus Produk
+            </button>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-7">
+                <label class="form-label fw-semibold">Produk FG <span class="text-danger">*</span></label>
+                <select name="id_produk_fg" class="form-select select2-produk" required>
+                    <option value="">-- Pilih Produk --</option>
+                    <?php foreach ($produk_list as $p): ?>
+                        <option value="<?= htmlspecialchars($p->code_lv4) ?>"
+                            data-nama="<?= htmlspecialchars($p->nama) ?>"
+                            data-trade="<?= htmlspecialchars($p->trade_name) ?>">
+                            <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="hidden" name="nm_produk_fg" class="inp-nm-produk" value="">
             </div>
-            <div class="modal-body">
-                <div id="coil-loading" class="text-center py-3">
-                    <i class="fa fa-spinner fa-spin fa-2x"></i> Memuat data coil...
-                </div>
-                <div class="table-responsive" id="coil-table-wrap" style="display:none;">
-                    <table class="table table-bordered table-sm table-hover" id="tbl-coil-available">
-                        <thead class="table-light">
-                            <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="check-all-coil"></th>
-                                <th>No Coil</th>
-                                <th>No ROS</th>
-                                <th>Material</th>
-                                <th class="text-end">Berat Kotor</th>
-                                <th class="text-end">Berat Bersih</th>
-                                <th>Gudang</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-coil-available"></tbody>
-                    </table>
-                </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Berat / Unit (kg)</label>
+                <input type="text" class="form-control bg-light inp-berat-unit" readonly placeholder="Otomatis">
+                <input type="hidden" name="target_berat" class="inp-berat-unit-hidden" value="">
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="btn-add-selected-coil">
-                    <i class="fa fa-plus"></i> Tambahkan Coil Terpilih
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary w-100 btn-cari-coil">
+                    <i class="fa fa-search"></i> Cari Coil Tersedia
                 </button>
             </div>
         </div>
+        <div class="coil-section" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold text-secondary">Material: <span class="lbl-material-name">—</span></span>
+                <span class="badge bg-success estimate-badge">
+                    Estimated Total Qty: <span class="lbl-total-qty">0</span>
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th width="40" class="text-center"><input type="checkbox" class="check-all-coil"></th>
+                            <th>No Coil</th>
+                            <th>Nama Material</th>
+                            <th class="text-end">Net Weight (kg)</th>
+                            <th class="text-end">Estimate Qty</th>
+                            <th>Gudang</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody-coil"></tbody>
+                </table>
+            </div>
+            <div class="selected-coil-inputs"></div>
+        </div>
+        <div class="coil-loading text-center py-3" style="display:none;">
+            <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+            <div class="mt-2 text-muted">Memuat coil tersedia...</div>
+        </div>
     </div>
-</div>
+</template>
 
-<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <script>
-var rowIndex = <?= $is_edit && !empty($details) ? count($details) : 0 ?>;
+var blockIndex = 1;
 
-$(document).ready(function () {
+// ── Flatpickr ────────────────────────────────────────────────────────────────
+flatpickr('.flatpickr-date', { dateFormat: 'Y-m-d', locale: 'id', allowInput: true });
 
-    // ── Select2 untuk Produk FG ──────────────────────────────────────────────
-    $('#select-produk-fg').select2({
+// ── Init Select2 pada satu blok ──────────────────────────────────────────────
+function initBlockSelect2($block) {
+    $block.find('.select2-produk').select2({
         theme: 'bootstrap-5',
-        placeholder: '-- Pilih Produk FG --',
+        placeholder: '-- Pilih Produk --',
         allowClear: true,
         width: '100%'
     }).on('change', function () {
-        var $opt = $(this).find(':selected');
-        $('#nm_produk_fg').val($opt.data('nama') || '');
+        var $opt  = $(this).find(':selected');
+        var nama  = $opt.data('nama') || '';
+        $block.find('.inp-nm-produk').val(nama);
+        // Reset coil section
+        $block.find('.coil-section').hide();
+        $block.find('.inp-berat-unit').val('');
+        $block.find('.inp-berat-unit-hidden').val('');
+        $block.find('.lbl-total-qty').text('0');
     });
+}
 
-    // ── Flatpickr untuk semua input tanggal ──────────────────────────────────
-    flatpickr('.flatpickr-date', {
-        dateFormat: 'Y-m-d',
-        locale: 'id',
-        allowInput: true
-    });
+// ── Cari coil untuk satu blok ────────────────────────────────────────────────
+function loadCoilForBlock($block) {
+    var id_produk = $block.find('.select2-produk').val();
+    if (!id_produk) {
+        alert('Pilih produk terlebih dahulu');
+        return;
+    }
 
-    // ── Recalc totals ────────────────────────────────────────────────────────
-    recalcTotals();
+    $block.find('.coil-section').hide();
+    $block.find('.coil-loading').show();
 
-    // ── Load coil available ──────────────────────────────────────────────────
-    $('#btn-load-coil').on('click', function () {
-        var id_produk_fg = $('#select-produk-fg').val();
-        $('#coil-loading').show();
-        $('#coil-table-wrap').hide();
-        $('#modal-coil').modal('show');
+    // Ambil berat per unit produk
+    $.get(siteurl + 'production_planning/get_produk_info', { id_produk_fg: id_produk }, function (res) {
+        if (res.status === 'ok') {
+            var berat = parseFloat(res.data.weight) || 0;
+            $block.find('.inp-berat-unit').val(berat > 0 ? berat.toFixed(4) : '—');
+            $block.find('.inp-berat-unit-hidden').val(berat);
+        }
+    }, 'json');
 
-        $.get(siteurl + 'production_planning/get_coil_available', { id_produk_fg: id_produk_fg }, function (res) {
-            $('#coil-loading').hide();
-            var html = '';
-            if (res.status === 'ok' && res.data.length > 0) {
-                $.each(res.data, function (i, c) {
-                    html += '<tr>'
-                          + '<td class="text-center"><input type="checkbox" class="coil-check"'
-                          + ' data-no_coil="' + c.no_coil + '"'
-                          + ' data-id_material="' + (c.id_material || '') + '"'
-                          + ' data-nm_material="' + (c.nm_material || '') + '"'
-                          + ' data-no_ros="' + (c.no_ros || '') + '"'
-                          + ' data-berat_bersih="' + (c.berat_bersih || 0) + '"></td>'
-                          + '<td>' + c.no_coil + '</td>'
-                          + '<td>' + (c.no_ros || '-') + '</td>'
-                          + '<td>' + (c.nm_material || '-') + '</td>'
-                          + '<td class="text-end">' + parseFloat(c.berat_kotor || 0).toFixed(3) + '</td>'
-                          + '<td class="text-end">' + parseFloat(c.berat_bersih || 0).toFixed(3) + '</td>'
-                          + '<td>' + (c.nm_gudang || '-') + '</td>'
-                          + '</tr>';
-                });
-            } else {
-                html = '<tr><td colspan="7" class="text-center text-muted">Tidak ada coil tersedia</td></tr>';
+    // Ambil coil tersedia (filter via BOM)
+    $.get(siteurl + 'production_planning/get_coil_available', { id_produk_fg: id_produk }, function (res) {
+        $block.find('.coil-loading').hide();
+
+        if (res.status !== 'ok' || res.data.length === 0) {
+            $block.find('.tbody-coil').html(
+                '<tr><td colspan="6" class="text-center text-muted py-3">' +
+                '<i class="fa fa-info-circle"></i> Tidak ada coil tersedia untuk produk ini' +
+                '</td></tr>'
+            );
+            $block.find('.coil-section').show();
+            return;
+        }
+
+        var html = '';
+        var materialNames = [];
+        $.each(res.data, function (i, c) {
+            if (c.nm_material && materialNames.indexOf(c.nm_material) === -1) {
+                materialNames.push(c.nm_material);
             }
-            $('#tbody-coil-available').html(html);
-            $('#coil-table-wrap').show();
-        }, 'json');
-    });
-
-    // ── Check all coil ───────────────────────────────────────────────────────
-    $('#check-all-coil').on('change', function () {
-        $('.coil-check').prop('checked', this.checked);
-    });
-
-    // ── Tambahkan coil terpilih ──────────────────────────────────────────────
-    $('#btn-add-selected-coil').on('click', function () {
-        var existingCoils = [];
-        $('#tbody-coil input[name*="[no_coil]"]').each(function () {
-            existingCoils.push($(this).val());
+            html += '<tr class="coil-row" data-no_coil="' + c.no_coil + '"'
+                  + ' data-id_material="' + (c.id_material || '') + '"'
+                  + ' data-nm_material="' + (c.nm_material || '') + '"'
+                  + ' data-no_ros="' + (c.no_ros || '') + '"'
+                  + ' data-net_weight="' + (c.net_weight || 0) + '"'
+                  + ' data-estimate_qty="' + (c.estimate_qty || 0) + '">'
+                  + '<td class="text-center">'
+                  + '<input type="checkbox" class="coil-checkbox">'
+                  + '</td>'
+                  + '<td><code>' + c.no_coil + '</code></td>'
+                  + '<td>' + (c.nm_material || '-') + '</td>'
+                  + '<td class="text-end fw-bold">' + parseFloat(c.net_weight || 0).toFixed(3) + '</td>'
+                  + '<td class="text-end">'
+                  + '<span class="badge bg-primary">' + (c.estimate_qty || 0) + ' pcs</span>'
+                  + '</td>'
+                  + '<td>' + (c.nm_gudang || '-') + '</td>'
+                  + '</tr>';
         });
 
-        $('.coil-check:checked').each(function () {
-            var no_coil      = $(this).data('no_coil');
-            if (existingCoils.indexOf(no_coil) !== -1) return;
+        $block.find('.tbody-coil').html(html);
+        $block.find('.lbl-material-name').text(materialNames.join(', ') || '—');
+        $block.find('.coil-section').show();
+        updateTotalQty($block);
+    }, 'json');
+}
 
-            var id_material  = $(this).data('id_material');
-            var nm_material  = $(this).data('nm_material');
-            var no_ros       = $(this).data('no_ros');
-            var berat_bersih = parseFloat($(this).data('berat_bersih')) || 0;
+// ── Hitung total estimate qty dari coil yang dicentang ───────────────────────
+function updateTotalQty($block) {
+    var total = 0;
+    $block.find('.coil-row').each(function () {
+        if ($(this).find('.coil-checkbox').is(':checked')) {
+            total += parseInt($(this).data('estimate_qty')) || 0;
+        }
+    });
+    $block.find('.lbl-total-qty').text(total);
+    syncHiddenInputs($block);
+}
 
-            var row = '<tr>'
-                + '<td class="text-center row-no"></td>'
-                + '<td>' + no_coil
-                + '<input type="hidden" name="detail[' + rowIndex + '][no_coil]" value="' + no_coil + '">'
-                + '<input type="hidden" name="detail[' + rowIndex + '][id_material]" value="' + id_material + '">'
-                + '<input type="hidden" name="detail[' + rowIndex + '][nm_material]" value="' + nm_material + '">'
-                + '<input type="hidden" name="detail[' + rowIndex + '][no_ros]" value="' + no_ros + '">'
-                + '<input type="hidden" name="detail[' + rowIndex + '][net_weight_coil]" value="' + berat_bersih.toFixed(3) + '">'
-                + '<input type="hidden" name="detail[' + rowIndex + '][estimasi_fg]" value="' + berat_bersih.toFixed(3) + '">'
-                + '</td>'
-                + '<td>' + (no_ros || '-') + '</td>'
-                + '<td>' + (nm_material || '-') + '</td>'
-                + '<td class="text-end">' + berat_bersih.toFixed(3) + '</td>'
-                + '<td class="text-end">' + berat_bersih.toFixed(3) + '</td>'
-                + '<td class="text-center"><button type="button" class="btn btn-danger btn-xs btn-remove-coil"><i class="fa fa-trash"></i></button></td>'
-                + '</tr>';
+// ── Sync hidden inputs untuk coil yang dipilih ───────────────────────────────
+function syncHiddenInputs($block) {
+    var $container = $block.find('.selected-coil-inputs');
+    $container.empty();
 
-            $('#tbody-coil').append(row);
-            rowIndex++;
-        });
+    var blockId = $block.attr('id').replace('block-', '');
 
-        recalcTotals();
-        $('#modal-coil').modal('hide');
+    $block.find('.coil-row').each(function (i) {
+        if (!$(this).find('.coil-checkbox').is(':checked')) return;
+        var no_coil     = $(this).data('no_coil');
+        var id_material = $(this).data('id_material');
+        var nm_material = $(this).data('nm_material');
+        var no_ros      = $(this).data('no_ros');
+        var net_weight  = $(this).data('net_weight');
+        var est_qty     = $(this).data('estimate_qty');
+
+        var prefix = 'detail[' + blockId + '_' + i + ']';
+        $container.append(
+            '<input type="hidden" name="' + prefix + '[no_coil]" value="' + no_coil + '">' +
+            '<input type="hidden" name="' + prefix + '[id_material]" value="' + id_material + '">' +
+            '<input type="hidden" name="' + prefix + '[nm_material]" value="' + nm_material + '">' +
+            '<input type="hidden" name="' + prefix + '[no_ros]" value="' + no_ros + '">' +
+            '<input type="hidden" name="' + prefix + '[net_weight_coil]" value="' + net_weight + '">' +
+            '<input type="hidden" name="' + prefix + '[estimasi_fg]" value="' + est_qty + '">'
+        );
+    });
+}
+
+// ── Renumber blok produk ─────────────────────────────────────────────────────
+function renumberBlocks() {
+    $('#product-blocks .product-block').each(function (i) {
+        $(this).find('.block-num').text(i + 1);
+        if (i === 0) {
+            $(this).find('.btn-remove-block').addClass('d-none');
+        } else {
+            $(this).find('.btn-remove-block').removeClass('d-none');
+        }
+    });
+}
+
+// ── Event delegation ─────────────────────────────────────────────────────────
+$(document).ready(function () {
+
+    // Init blok pertama
+    initBlockSelect2($('#block-0'));
+
+    // Cari coil
+    $(document).on('click', '.btn-cari-coil', function () {
+        loadCoilForBlock($(this).closest('.product-block'));
     });
 
-    // ── Hapus baris coil ─────────────────────────────────────────────────────
-    $(document).on('click', '.btn-remove-coil', function () {
-        $(this).closest('tr').remove();
-        recalcTotals();
+    // Check all coil dalam satu blok
+    $(document).on('change', '.check-all-coil', function () {
+        var $block = $(this).closest('.product-block');
+        $block.find('.coil-checkbox').prop('checked', this.checked);
+        $block.find('.coil-row').toggleClass('coil-row-selected', this.checked);
+        updateTotalQty($block);
+    });
+
+    // Centang individual coil
+    $(document).on('change', '.coil-checkbox', function () {
+        var $row   = $(this).closest('.coil-row');
+        var $block = $(this).closest('.product-block');
+        $row.toggleClass('coil-row-selected', this.checked);
+        updateTotalQty($block);
+    });
+
+    // Klik baris untuk toggle checkbox
+    $(document).on('click', '.coil-row td:not(:first-child)', function () {
+        var $cb = $(this).closest('.coil-row').find('.coil-checkbox');
+        $cb.prop('checked', !$cb.prop('checked')).trigger('change');
+    });
+
+    // Tambah blok produk
+    $('#btn-add-product').on('click', function () {
+        var tpl = document.getElementById('product-block-template').innerHTML;
+        tpl = tpl.replace(/__IDX__/g, blockIndex).replace(/__NUM__/g, blockIndex + 1);
+        var $newBlock = $(tpl);
+        $('#product-blocks').append($newBlock);
+        initBlockSelect2($newBlock);
+        blockIndex++;
+        renumberBlocks();
+    });
+
+    // Hapus blok produk
+    $(document).on('click', '.btn-remove-block', function () {
+        $(this).closest('.product-block').remove();
+        renumberBlocks();
+    });
+
+    // Validasi sebelum submit
+    $('#form-plan').on('submit', function () {
+        var hasCoil = false;
+        $('.coil-checkbox:checked').each(function () { hasCoil = true; });
+        if (!hasCoil) {
+            alert('Pilih minimal satu coil sebelum membuat SPK');
+            return false;
+        }
     });
 });
-
-function recalcTotals() {
-    var totalNet = 0, totalFg = 0;
-    $('#tbody-coil tr').each(function (i) {
-        $(this).find('.row-no').text(i + 1);
-        totalNet += parseFloat($(this).find('input[name*="net_weight_coil"]').val()) || 0;
-        totalFg  += parseFloat($(this).find('input[name*="estimasi_fg"]').val()) || 0;
-    });
-    $('#total-net-weight').text(totalNet.toFixed(3));
-    $('#total-estimasi-fg').text(totalFg.toFixed(3));
-}
 </script>

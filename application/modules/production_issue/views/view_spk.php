@@ -104,7 +104,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
     <div class="card-header">
         <h6 class="mb-0">Detail Coil SPK</h6>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered table-sm table-hover mb-0">
                 <thead class="table-light">
@@ -166,7 +166,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
         <h6 class="mb-0">Log Scan Barcode</h6>
         <span class="badge bg-secondary"><?= count($logs) ?> entri</span>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
                 <thead class="table-light">

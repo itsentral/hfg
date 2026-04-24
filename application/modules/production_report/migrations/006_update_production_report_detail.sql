@@ -1,0 +1,43 @@
+-- Update tr_production_report: tambah field sesuai konsep mockup
+ALTER TABLE tr_production_report
+    ADD COLUMN tgl_produksi  DATE NOT NULL DEFAULT (CURDATE()) AFTER report_no,
+    ADD COLUMN no_mesin      VARCHAR(100) DEFAULT NULL AFTER no_coil,
+    ADD COLUMN nama_operator VARCHAR(100) DEFAULT NULL AFTER no_mesin,
+    ADD COLUMN jam_start     TIME DEFAULT NULL AFTER nama_operator,
+    ADD COLUMN jam_selesai   TIME DEFAULT NULL AFTER jam_start,
+    ADD COLUMN berat_kotor_aktual DECIMAL(10,3) DEFAULT 0 COMMENT 'Input berat kotor aktual dari timbangan';
+
+-- Update tr_production_report_result: tambah field packing dan detail sesuai mockup
+ALTER TABLE tr_production_report_result
+    ADD COLUMN berat_kotor_input  DECIMAL(10,3) DEFAULT 0 COMMENT 'Input berat kotor laporan produksi',
+    ADD COLUMN packing_kulit      DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN packing_bobin      DECIMAL(10,3) DEFAULT 0 COMMENT 'Bobin kertas',
+    ADD COLUMN packing_clamp_ring DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN packing_tong_coil  DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN packing_wrapping   DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN fg_berat_per_pcs   DECIMAL(10,4) DEFAULT 0 COMMENT 'Otomatis: fg_kg/fg_qty atau input',
+    ADD COLUMN fg_input_mode      ENUM('total','per_pcs') DEFAULT 'total' COMMENT 'Pilihan 1=total, Pilihan 2=per_pcs',
+    ADD COLUMN kw2_internal_berat_per_pcs  DECIMAL(10,4) DEFAULT 0,
+    ADD COLUMN kw2_internal_keterangan     VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN kw2_internal_foto           VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN kw2_supplier_berat_per_pcs  DECIMAL(10,4) DEFAULT 0,
+    ADD COLUMN kw2_supplier_keterangan     VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN kw2_supplier_foto           VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN reject_internal_qty         DECIMAL(10,2) DEFAULT 0,
+    ADD COLUMN reject_internal_kg          DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN reject_internal_berat_per_pcs DECIMAL(10,4) DEFAULT 0,
+    ADD COLUMN reject_internal_keterangan  VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN reject_internal_foto        VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN reject_supplier_qty         DECIMAL(10,2) DEFAULT 0,
+    ADD COLUMN reject_supplier_berat_per_pcs DECIMAL(10,4) DEFAULT 0,
+    ADD COLUMN reject_supplier_keterangan  VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN reject_supplier_foto        VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN reject_mat_internal_kg      DECIMAL(10,3) DEFAULT 0 COMMENT 'Reject material plat internal',
+    ADD COLUMN reject_mat_internal_ket     VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN reject_mat_internal_foto    VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN reject_mat_supplier_kg      DECIMAL(10,3) DEFAULT 0 COMMENT 'Reject material plat supplier',
+    ADD COLUMN reject_mat_supplier_ket     VARCHAR(500) DEFAULT NULL,
+    ADD COLUMN reject_mat_supplier_foto    VARCHAR(300) DEFAULT NULL,
+    ADD COLUMN potongan_pisau              DECIMAL(10,3) DEFAULT 0,
+    ADD COLUMN selisih_kg                  DECIMAL(10,3) DEFAULT 0 COMMENT 'total output - kg packing list',
+    ADD COLUMN selisih_pct                 DECIMAL(8,4) DEFAULT 0 COMMENT 'selisih / kg packing list';

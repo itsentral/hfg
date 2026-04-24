@@ -302,49 +302,91 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
 var doNo = '<?= $do->do_no ?>';
 
 function doApprove() {
-    if (!confirm('Approve Delivery Order ini?')) return;
-    $.post(siteurl + 'delivery_fg/process_approve/' + doNo, {}, function (res) {
-        if (res.success) {
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    Swal.fire({
+        title: 'Approve Delivery Order ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Approve',
+        cancelButtonText: 'Batal'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'delivery_fg/process_approve/' + doNo, {}, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 
 function doReject() {
     var alasan = $('#alasan_reject').val().trim();
-    if (!alasan) { alert('Alasan reject wajib diisi'); return; }
-    $.post(siteurl + 'delivery_fg/process_reject/' + doNo, { alasan: alasan }, function (res) {
-        if (res.success) {
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    if (!alasan) {
+        Swal.fire({ title: 'Perhatian', text: 'Alasan reject wajib diisi', icon: 'warning', confirmButtonText: 'OK' });
+        return;
+    }
+    Swal.fire({
+        title: 'Reject Delivery Order ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Ya, Reject',
+        cancelButtonText: 'Batal'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'delivery_fg/process_reject/' + doNo, { alasan: alasan }, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 
 function doShip() {
-    if (!confirm('Konfirmasi DO ini sebagai Shipped? Stok FG akan dikurangi dan tindakan ini tidak dapat dibatalkan.')) return;
-    $.post(siteurl + 'delivery_fg/process_ship/' + doNo, {}, function (res) {
-        if (res.success) {
-            alert(res.message);
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    Swal.fire({
+        title: 'Konfirmasi Shipped?',
+        text: 'Stok FG akan dikurangi dan tindakan ini tidak dapat dibatalkan.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Ya, Ship',
+        cancelButtonText: 'Batal'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'delivery_fg/process_ship/' + doNo, {}, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 
 function doCancel() {
-    if (!confirm('Batalkan Delivery Order ini?')) return;
-    $.post(siteurl + 'delivery_fg/process_cancel/' + doNo, {}, function (res) {
-        if (res.success) {
-            alert(res.message);
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    Swal.fire({
+        title: 'Batalkan Delivery Order ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Tidak'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'delivery_fg/process_cancel/' + doNo, {}, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 </script>

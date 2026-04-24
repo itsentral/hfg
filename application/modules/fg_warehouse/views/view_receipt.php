@@ -157,26 +157,45 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
 var receiptNo = '<?= $receipt->fg_receipt_no ?>';
 
 function doPost() {
-    if (!confirm('Post FG Receipt ini? Stok FG akan diupdate.')) return;
-    $.post(siteurl + 'fg_warehouse/process_post_receipt/' + receiptNo, {}, function (res) {
-        if (res.success) {
-            alert(res.message);
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    Swal.fire({
+        title: 'Post FG Receipt ini?',
+        text: 'Stok FG akan diupdate.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Post',
+        cancelButtonText: 'Batal'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'fg_warehouse/process_post_receipt/' + receiptNo, {}, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 
 function doCancel() {
-    if (!confirm('Cancel FG Receipt ini? Stok FG akan di-reverse.')) return;
-    $.post(siteurl + 'fg_warehouse/process_cancel_receipt/' + receiptNo, {}, function (res) {
-        if (res.success) {
-            alert(res.message);
-            location.reload();
-        } else {
-            alert('Gagal: ' + res.message);
-        }
-    }, 'json');
+    Swal.fire({
+        title: 'Cancel FG Receipt ini?',
+        text: 'Stok FG akan di-reverse.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Ya, Cancel',
+        cancelButtonText: 'Tidak'
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        $.post(siteurl + 'fg_warehouse/process_cancel_receipt/' + receiptNo, {}, function (res) {
+            if (res.success) {
+                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(function(){ location.reload(); });
+            } else {
+                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+            }
+        }, 'json');
+    });
 }
 </script>

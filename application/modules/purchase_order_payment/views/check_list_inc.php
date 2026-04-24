@@ -210,11 +210,7 @@
 
             },
             error: function(result) {
-                swal({
-                    type: 'error',
-                    title: 'Error !',
-                    text: 'Please try again later !'
-                });
+                Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
             }
         });
     });
@@ -227,27 +223,14 @@
             dataType: 'json',
             success: function(result) {
                 if (result.status == 1) {
-                    swal({
-                        title: 'Success !',
-                        text: 'Your checked invoice has been removed !',
-                        type: 'success'
-                    }, function(isConfirm) {
-                        location.reload(true);
-                    });
+                    Swal.fire({ title: 'Success !', text: 'Your checked invoice has been removed !', icon: 'success', timer: 1500, showConfirmButton: false })
+                        .then(function(){ location.reload(true); });
                 } else {
-                    swal({
-                        title: 'Warning !',
-                        text: 'Your checked invoice cannot removed !',
-                        type: 'error'
-                    });
+                    Swal.fire({ title: 'Warning !', text: 'Your checked invoice cannot removed !', icon: 'error', confirmButtonText: 'OK' });
                 }
             },
             error: function(result) {
-                swal({
-                    title: 'Error !',
-                    text: 'Please try again later !',
-                    type: 'error'
-                });
+                Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
             }
         });
     });
@@ -256,11 +239,7 @@
 
         var check_inv = checkCheckedInv();
         if (check_inv <= 0) {
-            swal({
-                title: 'Warning !',
-                text: 'Please check at least 1 Invoice below !',
-                type: 'error'
-            });
+            Swal.fire({ title: 'Warning !', text: 'Please check at least 1 Invoice below !', icon: 'error', confirmButtonText: 'OK' });
         } else {
             $.ajax({
                 type: 'POST',
@@ -280,20 +259,15 @@
     $(document).on('submit', '#frm-data', function(e) {
         e.preventDefault();
 
-        swal({
+        Swal.fire({
                 title: "Warning !",
                 text: "PO Invoice will be created !",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Create it!",
-                cancelButtonText: "Cancel!",
-                closeOnConfirm: false,
-                closeOnCancel: true
-            },
-            function(isConfirm) {
-                if (isConfirm) {
-
+                cancelButtonText: "Cancel!"
+            }).then(function(result) {
+                if (result.isConfirmed) {
                     var formdata = new FormData($('#frm-data')[0]);
                     $.ajax({
                         type: 'POST',
@@ -305,27 +279,14 @@
                         contentType: false,
                         success: function(result) {
                             if (result.status == 1) {
-                                swal({
-                                    title: 'Success !',
-                                    text: 'PO Invoice has been saved !',
-                                    type: 'success'
-                                }, function(isConfirm) {
-                                    window.location.href = siteurl + active_controller;
-                                });
+                                Swal.fire({ title: 'Success !', text: 'PO Invoice has been saved !', icon: 'success', timer: 1500, showConfirmButton: false })
+                                    .then(function(){ window.location.href = siteurl + active_controller; });
                             } else {
-                                swal({
-                                    title: 'Failed !',
-                                    text: 'PO Invoice has not been saved !',
-                                    type: 'error'
-                                });
+                                Swal.fire({ title: 'Failed !', text: 'PO Invoice has not been saved !', icon: 'error', confirmButtonText: 'OK' });
                             }
                         },
                         error: function(result) {
-                            swal({
-                                title: 'Error !',
-                                text: 'Please try again later !',
-                                type: 'error'
-                            });
+                            Swal.fire({ title: 'Error !', text: 'Please try again later !', icon: 'error', confirmButtonText: 'OK' });
                         }
                     });
                 }

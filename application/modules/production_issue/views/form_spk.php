@@ -66,7 +66,7 @@
                 <div class="card-header">
                     <h6 class="mb-0">Coil yang Akan Di-issue</h6>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm mb-0">
                             <thead class="table-light">

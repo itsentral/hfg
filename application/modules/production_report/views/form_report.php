@@ -1,333 +1,515 @@
 <?php defined('BASEPATH') || exit('No direct script access allowed'); ?>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+
+<style>
+.section-card { border-left: 4px solid #0d6efd; margin-bottom: 1rem; }
+.section-card .card-header { background: #f0f4ff; font-weight: 600; }
+.summary-table th { background: #343a40; color: #fff; font-size: 0.8rem; }
+.summary-table td { font-size: 0.85rem; }
+.warning-selisih { background: #fff3cd; border: 1px solid #ffc107; }
+.danger-selisih  { background: #f8d7da; border: 1px solid #dc3545; }
+.mode-toggle .btn { min-width: 120px; }
+</style>
+
 <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= $this->session->flashdata('error') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+<div class="alert alert-danger alert-dismissible fade show">
+    <?= $this->session->flashdata('error') ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
 <?php endif; ?>
 
 <div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">
-            <?= isset($report) ? 'Edit Laporan Produksi: ' . $report->report_no : 'Form Laporan Produksi Baru' ?>
-        </h5>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fa fa-clipboard-list"></i> Input Laporan Produksi</h5>
+        <a href="<?= base_url('production_report') ?>" class="btn btn-secondary btn-sm">
+            <i class="fa fa-arrow-left"></i> Kembali
+        </a>
     </div>
     <div class="card-body">
-        <form method="POST" action="<?= base_url('production_report/save_report') ?>" id="form-report">
+        <form id="form-report" action="<?= base_url('production_report/save_report') ?>" method="POST" enctype="multipart/form-data">
 
-            <?php if (isset($report)): ?>
-                <input type="hidden" name="report_no" value="<?= $report->report_no ?>">
-            <?php endif; ?>
-
-            <!-- SPK & Coil -->
+            <!-- ── Header ── -->
             <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">No SPK <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
-                    <select name="spk_no" id="spk_no" class="form-control" required>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Tanggal Produksi</label>
+                    <input type="text" name="tgl_produksi" id="tgl_produksi" class="form-control flatpickr-date"
+                        value="<?= date('Y-m-d') ?>" required autocomplete="off">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">No SPK <span class="text-danger">*</span></label>
+                    <select name="spk_no" id="spk_no" class="form-select select2-spk" required>
                         <option value="">-- Pilih SPK --</option>
-                        <?php if (isset($spk_list) && !empty($spk_list)): ?>
+                        <?php if (!empty($spk_list)): ?>
                             <?php foreach ($spk_list as $s): ?>
                                 <option value="<?= $s->spk_no ?>"
-                                    data-produk="<?= isset($s->produk_fg) ? $s->produk_fg : '' ?>"
-                                    data-nm="<?= isset($s->nm_produk_fg) ? $s->nm_produk_fg : '' ?>"
-                                    <?= (isset($report) && $report->spk_no === $s->spk_no) || (isset($spk) && $spk && $spk->spk_no === $s->spk_no) ? 'selected' : '' ?>>
-                                    <?= $s->spk_no ?> — <?= isset($s->nm_produk_fg) ? $s->nm_produk_fg : '' ?>
+                                    <?= (isset($spk) && $spk && $spk->spk_no === $s->spk_no) ? 'selected' : '' ?>>
+                                    <?= $s->spk_no ?> — <?= $s->nm_produk_fg ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">No Coil <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
-                    <input type="text" name="no_coil" id="no_coil" class="form-control"
-                           value="<?= isset($report) ? $report->no_coil : '' ?>" required>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Produk</label>
+                    <input type="text" id="info_produk" class="form-control bg-light" readonly
+                        placeholder="Otomatis dari SPK"
+                        value="<?= isset($spk) && $spk ? htmlspecialchars($spk->nm_produk_fg) : '' ?>">
+                    <input type="hidden" name="id_produk_fg" id="id_produk_fg"
+                        value="<?= isset($spk) && $spk ? htmlspecialchars($spk->produk_fg) : '' ?>">
+                    <input type="hidden" name="no_coil" id="no_coil"
+                        value="<?= isset($spk) && $spk ? htmlspecialchars($spk->no_coil ?? '') : '' ?>">
                 </div>
             </div>
 
-            <input type="hidden" name="id_produk_fg" id="id_produk_fg" value="<?= isset($report) && isset($report->produk_fg) ? $report->produk_fg : '' ?>">
-
-            <hr>
-            <h6 class="mb-3 text-primary">Hasil Produksi</h6>
-
-            <!-- Reject Supplier -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">Reject Supplier (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="reject_supplier" id="reject_supplier"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->reject_supplier : '0' ?>">
+            <!-- ── Info Coil & Supplier (dari SPK) ── -->
+            <div id="section-coil-info" class="<?= isset($spk) && $spk ? '' : 'd-none' ?>">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">No Coil</label>
+                        <input type="text" id="disp_no_coil" class="form-control bg-light" readonly
+                            value="<?= isset($spk) && $spk ? htmlspecialchars($spk->no_coil ?? '') : '' ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Supplier</label>
+                        <input type="text" id="disp_supplier" class="form-control bg-light" readonly
+                            value="<?= isset($spk) && $spk ? htmlspecialchars($spk->nm_supplier ?? '') : '' ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">No Mesin</label>
+                        <input type="text" name="no_mesin" class="form-control" placeholder="Input nama mesin">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nama Operator</label>
+                        <input type="text" name="nama_operator" class="form-control" placeholder="Input nama operator">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Jam Mulai</label>
+                        <input type="text" name="jam_start" class="form-control flatpickr-time" placeholder="HH:MM" autocomplete="off">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Jam Selesai</label>
+                        <input type="text" name="jam_selesai" class="form-control flatpickr-time" placeholder="HH:MM" autocomplete="off">
+                    </div>
                 </div>
             </div>
 
-            <!-- Waste Potong -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">Waste Potong (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="waste_potong" id="waste_potong"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->waste_potong : '0' ?>">
+            <!-- ── Packing List (dari stok coil) ── -->
+            <div id="section-packing-list" class="card section-card mb-3 <?= isset($spk) && $spk ? '' : 'd-none' ?>">
+                <div class="card-header">Packing List</div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="text-muted small">Berat Kotor (kg)</div>
+                            <div class="fs-5 fw-bold" id="pl_berat_kotor">—</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted small">Berat Bersih (kg)</div>
+                            <div class="fs-5 fw-bold" id="pl_berat_bersih">—</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted small">Total Meter (m)</div>
+                            <div class="fs-5 fw-bold" id="pl_length">—</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="pl_berat_bersih_val" name="pl_berat_bersih" value="0">
                 </div>
             </div>
 
-            <!-- NG Internal -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">NG Internal (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="ng_internal" id="ng_internal"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->ng_internal : '0' ?>">
-                </div>
-            </div>
+            <!-- ── Laporan Produksi ── -->
+            <div id="section-laporan" class="<?= isset($spk) && $spk ? '' : 'd-none' ?>">
 
-            <!-- NG Supplier -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">NG Supplier (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="ng_supplier" id="ng_supplier"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->ng_supplier : '0' ?>">
+                <!-- Berat Kotor Aktual -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Berat Kotor Aktual (kg)</label>
+                        <input type="number" step="0.001" name="berat_kotor_aktual" class="form-control calc-input"
+                            placeholder="Input kg" value="0">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Plat BS -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">Plat BS (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="plat_bs" id="plat_bs"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->plat_bs : '0' ?>">
-                </div>
-            </div>
-
-            <!-- FG -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">FG (kg)</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.001" min="0" name="fg_kg" id="fg_kg"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->fg_kg : '0' ?>">
-                </div>
-                <label class="col-sm-1 col-form-label text-center">Qty</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.01" min="0" name="fg_qty" id="fg_qty"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->fg_qty : '0' ?>">
-                </div>
-            </div>
-
-            <!-- KW2 Internal -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">KW2 Internal (kg)</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.001" min="0" name="kw2_internal_kg" id="kw2_internal_kg"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->kw2_internal_kg : '0' ?>">
-                </div>
-                <label class="col-sm-1 col-form-label text-center">Qty</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.01" min="0" name="kw2_internal_qty"
-                           class="form-control"
-                           value="<?= isset($result) ? $result->kw2_internal_qty : '0' ?>">
-                </div>
-            </div>
-
-            <!-- KW2 Supplier -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">KW2 Supplier (kg)</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.001" min="0" name="kw2_supplier_kg" id="kw2_supplier_kg"
-                           class="form-control calc-input"
-                           value="<?= isset($result) ? $result->kw2_supplier_kg : '0' ?>">
-                </div>
-                <label class="col-sm-1 col-form-label text-center">Qty</label>
-                <div class="col-sm-2">
-                    <input type="number" step="0.01" min="0" name="kw2_supplier_qty"
-                           class="form-control"
-                           value="<?= isset($result) ? $result->kw2_supplier_qty : '0' ?>">
-                </div>
-            </div>
-
-            <!-- Tong Coil -->
-            <div class="row mb-2 align-items-center">
-                <label class="col-sm-3 col-form-label">Berat Tong Coil (kg)</label>
-                <div class="col-sm-3">
-                    <input type="number" step="0.001" min="0" name="tong_coil" id="tong_coil"
-                           class="form-control"
-                           value="<?= isset($result) ? $result->tong_coil : '0' ?>">
-                </div>
-            </div>
-
-            <hr>
-
-            <!-- Summary Kalkulasi Otomatis -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title text-secondary">Kalkulasi Otomatis</h6>
-                            <table class="table table-sm mb-0">
-                                <tr>
-                                    <td>Total Berat Coil</td>
-                                    <td class="text-end fw-bold">
-                                        <span id="display_total_berat">0.000</span> kg
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Net Hasil Produksi</td>
-                                    <td class="text-end fw-bold">
-                                        <span id="display_net_hasil">0.000</span> kg
-                                    </td>
-                                </tr>
-                            </table>
+                <!-- 1. PACKING -->
+                <div class="card section-card mb-3">
+                    <div class="card-header">1. PACKING</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <?php
+                            $packing_fields = [
+                                'packing_kulit'      => 'Kulit',
+                                'packing_bobin'      => 'Bobin Kertas',
+                                'packing_clamp_ring' => 'Clamp / Ring',
+                                'packing_tong_coil'  => 'Tong Coil',
+                                'packing_wrapping'   => 'Wrapping',
+                            ];
+                            foreach ($packing_fields as $name => $label):
+                            ?>
+                            <div class="col-md-2 col-sm-4 mb-2">
+                                <label class="form-label small"><?= $label ?> (kg)</label>
+                                <input type="number" step="0.001" name="<?= $name ?>"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
 
-                <!-- Deviasi Berat FG -->
-                <div class="col-md-6">
-                    <div class="card" id="card-deviasi">
-                        <div class="card-body">
-                            <h6 class="card-title text-secondary">Validasi Berat FG</h6>
-                            <table class="table table-sm mb-0">
-                                <tr>
-                                    <td>Berat Satuan Aktual</td>
-                                    <td class="text-end"><span id="display_berat_satuan">—</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Berat Standar</td>
-                                    <td class="text-end"><span id="display_berat_standar">—</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Deviasi</td>
-                                    <td class="text-end fw-bold"><span id="display_deviasi">—</span></td>
-                                </tr>
-                            </table>
-                            <div id="alert-deviasi" class="alert alert-danger mt-2 mb-0 d-none" role="alert">
-                                <i class="fa fa-exclamation-triangle"></i>
-                                <strong>Deviasi melebihi toleransi!</strong> Diperlukan konfirmasi QC sebelum posting.
+                <!-- 2. FINISH GOOD -->
+                <div class="card section-card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>2. FINISH GOOD</span>
+                        <div class="mode-toggle btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-primary active" id="btn-mode-total"
+                                onclick="setFgMode('total')">
+                                Pilihan 1 (Total + Qty)
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-mode-per-pcs"
+                                onclick="setFgMode('per_pcs')">
+                                Pilihan 2 (Per Pcs + Qty)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="fg_input_mode" id="fg_input_mode" value="total">
+                        <div class="row align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small">QTY (pcs)</label>
+                                <input type="number" step="0.01" name="fg_qty" id="fg_qty"
+                                    class="form-control calc-input" placeholder="0" value="0"
+                                    oninput="calcFg()">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small" id="lbl-fg-input">Berat Total (kg)</label>
+                                <input type="number" step="0.001" name="fg_kg" id="fg_kg"
+                                    class="form-control calc-input" placeholder="0" value="0"
+                                    oninput="calcFg()">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Berat / Pcs (kg) <span class="text-muted small">otomatis</span></label>
+                                <input type="number" step="0.0001" name="fg_berat_per_pcs" id="fg_berat_per_pcs"
+                                    class="form-control bg-light" readonly placeholder="0">
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-save"></i> Simpan Laporan
-                </button>
-                <a href="<?= base_url('production_report') ?>" class="btn btn-secondary ms-2">
-                    <i class="fa fa-arrow-left"></i> Kembali
-                </a>
-            </div>
+                <!-- 3. KW2 -->
+                <div class="card section-card mb-3">
+                    <div class="card-header">3. KW 2</div>
+                    <div class="card-body">
+                        <?php foreach (['internal' => 'Internal', 'supplier' => 'Supplier'] as $key => $label): ?>
+                        <div class="row align-items-end mb-2">
+                            <div class="col-md-1 d-flex align-items-center">
+                                <span class="badge bg-<?= $key === 'internal' ? 'info' : 'warning' ?> text-dark"><?= $label ?></span>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">QTY</label>
+                                <input type="number" step="0.01" name="kw2_<?= $key ?>_qty"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Berat/Pcs (kg)</label>
+                                <input type="number" step="0.0001" name="kw2_<?= $key ?>_berat_per_pcs"
+                                    class="form-control form-control-sm" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Berat Total (kg)</label>
+                                <input type="number" step="0.001" name="kw2_<?= $key ?>_kg"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Keterangan</label>
+                                <input type="text" name="kw2_<?= $key ?>_keterangan"
+                                    class="form-control form-control-sm" placeholder="Keterangan KW2">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Upload Foto</label>
+                                <input type="file" name="kw2_<?= $key ?>_foto" class="form-control form-control-sm"
+                                    accept="image/*">
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
+                <!-- 4. REJECT PRODUK -->
+                <div class="card section-card mb-3">
+                    <div class="card-header">4. Reject Produk</div>
+                    <div class="card-body">
+                        <?php foreach (['internal' => 'Internal', 'supplier' => 'Supplier'] as $key => $label): ?>
+                        <div class="row align-items-end mb-2">
+                            <div class="col-md-1 d-flex align-items-center">
+                                <span class="badge bg-<?= $key === 'internal' ? 'info' : 'warning' ?> text-dark"><?= $label ?></span>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">QTY</label>
+                                <input type="number" step="0.01" name="reject_<?= $key ?>_qty"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Berat/Pcs (kg)</label>
+                                <input type="number" step="0.0001" name="reject_<?= $key ?>_berat_per_pcs"
+                                    class="form-control form-control-sm" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Berat Total (kg)</label>
+                                <input type="number" step="0.001" name="reject_<?= $key ?>_kg"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Keterangan</label>
+                                <input type="text" name="reject_<?= $key ?>_keterangan"
+                                    class="form-control form-control-sm" placeholder="Keterangan reject">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Upload Foto</label>
+                                <input type="file" name="reject_<?= $key ?>_foto" class="form-control form-control-sm"
+                                    accept="image/*">
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- 5. REJECT MATERIAL PLAT -->
+                <div class="card section-card mb-3">
+                    <div class="card-header">5. Reject Material Plat</div>
+                    <div class="card-body">
+                        <?php foreach (['internal' => 'Internal', 'supplier' => 'Supplier'] as $key => $label): ?>
+                        <div class="row align-items-end mb-2">
+                            <div class="col-md-1 d-flex align-items-center">
+                                <span class="badge bg-<?= $key === 'internal' ? 'info' : 'warning' ?> text-dark"><?= $label ?></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Berat (kg)</label>
+                                <input type="number" step="0.001" name="reject_mat_<?= $key ?>_kg"
+                                    class="form-control form-control-sm calc-input" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Keterangan</label>
+                                <input type="text" name="reject_mat_<?= $key ?>_ket"
+                                    class="form-control form-control-sm" placeholder="Keterangan">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Upload Foto</label>
+                                <input type="file" name="reject_mat_<?= $key ?>_foto" class="form-control form-control-sm"
+                                    accept="image/*">
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- 6. POTONGAN PISAU -->
+                <div class="card section-card mb-3">
+                    <div class="card-header">6. Potongan Pisau</div>
+                    <div class="card-body">
+                        <div class="col-md-3">
+                            <label class="form-label small">Berat (kg)</label>
+                            <input type="number" step="0.001" name="potongan_pisau"
+                                class="form-control calc-input" placeholder="0" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. SUMMARY -->
+                <div class="card section-card mb-3" id="section-summary">
+                    <div class="card-header">7. Summary Packing List vs Aktual</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm summary-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Finish Good</th>
+                                        <th>KW2</th>
+                                        <th>Reject Produk</th>
+                                        <th>Reject Material</th>
+                                        <th>Potongan Pisau</th>
+                                        <th>Tong Coil</th>
+                                        <th>Wrapping</th>
+                                        <th class="table-warning">Total Output (kg)</th>
+                                        <th class="table-info">KG Packing List</th>
+                                        <th class="table-danger">Selisih (kg)</th>
+                                        <th class="table-danger">Selisih (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="sum_fg">0</td>
+                                        <td id="sum_kw2">0</td>
+                                        <td id="sum_reject_produk">0</td>
+                                        <td id="sum_reject_mat">0</td>
+                                        <td id="sum_potongan">0</td>
+                                        <td id="sum_tong">0</td>
+                                        <td id="sum_wrapping">0</td>
+                                        <td id="sum_total_output" class="fw-bold table-warning">0</td>
+                                        <td id="sum_pl" class="table-info">0</td>
+                                        <td id="sum_selisih" class="fw-bold table-danger">0</td>
+                                        <td id="sum_selisih_pct" class="fw-bold table-danger">0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Warning selisih -->
+                        <div id="alert-selisih" class="m-3 p-3 rounded d-none">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span id="alert-selisih-msg"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fa fa-save"></i> Save Laporan
+                    </button>
+                    <a href="<?= base_url('production_report') ?>" class="btn btn-secondary btn-lg">Batal</a>
+                </div>
+
+            </div><!-- /section-laporan -->
         </form>
     </div>
 </div>
 
-<script>
-var beratStandarFG = 0;
-var toleransiDeviasi = 0.05;
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
-// Ambil berat standar saat SPK dipilih (via AJAX ke endpoint get_spk_info)
-$('#spk_no').on('change', function () {
-    var spkNo = $(this).val();
-    if (!spkNo) {
-        beratStandarFG = 0;
-        updateDeviasi();
-        return;
-    }
-    $.get(siteurl + 'production_report/get_spk_info/' + spkNo, function (res) {
-        if (res && res.berat_standar) {
-            beratStandarFG = parseFloat(res.berat_standar) || 0;
-        } else {
-            beratStandarFG = 0;
+<script>
+var TOLERANSI_SELISIH = 0.03; // 3%
+
+// ── Init plugins ─────────────────────────────────────────────────────────────
+flatpickr('.flatpickr-date', { dateFormat: 'Y-m-d', locale: 'id', allowInput: true });
+flatpickr('.flatpickr-time', { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true });
+
+$(document).ready(function () {
+
+    // Select2 SPK
+    $('#spk_no').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Pilih SPK --',
+        allowClear: true,
+        width: '100%'
+    }).on('change', function () {
+        var spk_no = $(this).val();
+        if (!spk_no) {
+            $('#section-coil-info, #section-packing-list, #section-laporan').addClass('d-none');
+            return;
         }
-        $('#display_berat_standar').text(beratStandarFG > 0 ? beratStandarFG.toFixed(4) + ' kg' : '—');
-        updateDeviasi();
-    }, 'json').fail(function () {
-        beratStandarFG = 0;
-        updateDeviasi();
+        // Load info SPK via AJAX
+        $.get(siteurl + 'production_report/get_spk_info/' + spk_no, function (res) {
+            if (!res.success) return;
+            $('#info_produk').val(res.nm_produk_fg || '');
+            $('#id_produk_fg').val(res.produk_fg || '');
+            $('#no_coil').val(res.no_coil || '');
+            $('#disp_no_coil').val(res.no_coil || '');
+            $('#disp_supplier').val(res.nm_supplier || '');
+
+            // Load packing list dari coil
+            if (res.no_coil) {
+                $.get(siteurl + 'production_report/get_coil_packing_list', { no_coil: res.no_coil }, function (pl) {
+                    if (pl.success) {
+                        $('#pl_berat_kotor').text(parseFloat(pl.berat_kotor || 0).toFixed(3));
+                        $('#pl_berat_bersih').text(parseFloat(pl.berat_bersih || 0).toFixed(3));
+                        $('#pl_length').text(parseFloat(pl.length || 0).toFixed(2));
+                        $('#pl_berat_bersih_val').val(pl.berat_bersih || 0);
+                        recalcSummary();
+                    }
+                }, 'json');
+            }
+
+            $('#section-coil-info, #section-packing-list, #section-laporan').removeClass('d-none');
+        }, 'json');
+    });
+
+    // Recalc saat ada input berubah
+    $(document).on('input change', '.calc-input', function () {
+        recalcSummary();
     });
 });
 
-// Hitung ulang saat ada perubahan input
-$(document).on('input change', '.calc-input', function () {
-    hitungKalkulasi();
-});
-
-function getVal(id) {
-    return parseFloat($('#' + id).val()) || 0;
-}
-
-function hitungKalkulasi() {
-    var reject_supplier  = getVal('reject_supplier');
-    var waste_potong     = getVal('waste_potong');
-    var ng_internal      = getVal('ng_internal');
-    var ng_supplier      = getVal('ng_supplier');
-    var plat_bs          = getVal('plat_bs');
-    var fg_kg            = getVal('fg_kg');
-    var fg_qty           = getVal('fg_qty');
-    var kw2_internal_kg  = getVal('kw2_internal_kg');
-    var kw2_supplier_kg  = getVal('kw2_supplier_kg');
-    var tong_coil        = getVal('tong_coil');
-
-    // Total Berat Coil = 8 komponen
-    var totalBerat = reject_supplier + waste_potong + ng_internal + ng_supplier
-                   + plat_bs + fg_kg + kw2_internal_kg + kw2_supplier_kg;
-
-    // Net Hasil Produksi = Total + tong_coil + berat_cover_wrapping (cover wrapping dari server)
-    var coverWrapping = parseFloat($('#cover_wrapping_display').data('value')) || 0;
-    var netHasil = totalBerat + tong_coil + coverWrapping;
-
-    $('#display_total_berat').text(totalBerat.toFixed(3));
-    $('#display_net_hasil').text(netHasil.toFixed(3));
-
-    // Berat satuan FG
-    var beratSatuan = (fg_qty > 0) ? (fg_kg / fg_qty) : 0;
-    $('#display_berat_satuan').text(fg_qty > 0 ? beratSatuan.toFixed(4) + ' kg' : '—');
-
-    updateDeviasi(beratSatuan);
-}
-
-function updateDeviasi(beratSatuan) {
-    if (typeof beratSatuan === 'undefined') {
-        var fg_kg  = getVal('fg_kg');
-        var fg_qty = getVal('fg_qty');
-        beratSatuan = (fg_qty > 0) ? (fg_kg / fg_qty) : 0;
-    }
-
-    if (beratStandarFG <= 0 || beratSatuan <= 0) {
-        $('#display_deviasi').text('—').removeClass('text-danger text-success');
-        $('#alert-deviasi').addClass('d-none');
-        return;
-    }
-
-    var deviasi = Math.abs(beratSatuan - beratStandarFG) / beratStandarFG;
-    var pct = (deviasi * 100).toFixed(2);
-
-    $('#display_deviasi').text(pct + '%');
-
-    if (deviasi > toleransiDeviasi) {
-        $('#display_deviasi').addClass('text-danger').removeClass('text-success');
-        $('#alert-deviasi').removeClass('d-none');
-        $('#card-deviasi').addClass('border-danger');
+// ── Mode FG ──────────────────────────────────────────────────────────────────
+function setFgMode(mode) {
+    $('#fg_input_mode').val(mode);
+    if (mode === 'total') {
+        $('#lbl-fg-input').text('Berat Total (kg)');
+        $('#fg_kg').attr('readonly', false);
+        $('#fg_berat_per_pcs').attr('readonly', true);
+        $('#btn-mode-total').addClass('active btn-primary').removeClass('btn-outline-primary');
+        $('#btn-mode-per-pcs').removeClass('active btn-primary').addClass('btn-outline-primary');
     } else {
-        $('#display_deviasi').addClass('text-success').removeClass('text-danger');
-        $('#alert-deviasi').addClass('d-none');
-        $('#card-deviasi').removeClass('border-danger');
+        $('#lbl-fg-input').text('Berat / Pcs (kg)');
+        $('#fg_kg').attr('readonly', true);
+        $('#fg_berat_per_pcs').attr('readonly', false);
+        $('#btn-mode-per-pcs').addClass('active btn-primary').removeClass('btn-outline-primary');
+        $('#btn-mode-total').removeClass('active btn-primary').addClass('btn-outline-primary');
     }
+    calcFg();
 }
 
-// Init saat halaman load (mode edit)
-$(document).ready(function () {
-    hitungKalkulasi();
-    // Trigger SPK change jika sudah ada nilai
-    if ($('#spk_no').val()) {
-        $('#spk_no').trigger('change');
+function calcFg() {
+    var mode = $('#fg_input_mode').val();
+    var qty  = parseFloat($('#fg_qty').val()) || 0;
+    if (mode === 'total') {
+        var total = parseFloat($('#fg_kg').val()) || 0;
+        var per_pcs = (qty > 0) ? total / qty : 0;
+        $('#fg_berat_per_pcs').val(per_pcs.toFixed(4));
+    } else {
+        var per_pcs = parseFloat($('#fg_berat_per_pcs').val()) || 0;
+        var total = qty * per_pcs;
+        $('#fg_kg').val(total.toFixed(3));
     }
-});
+    recalcSummary();
+}
+
+// ── Recalc Summary ───────────────────────────────────────────────────────────
+function recalcSummary() {
+    var fg          = parseFloat($('input[name="fg_kg"]').val()) || 0;
+    var kw2_int     = parseFloat($('input[name="kw2_internal_kg"]').val()) || 0;
+    var kw2_sup     = parseFloat($('input[name="kw2_supplier_kg"]').val()) || 0;
+    var rej_int     = parseFloat($('input[name="reject_internal_kg"]').val()) || 0;
+    var rej_sup     = parseFloat($('input[name="reject_supplier_kg"]').val()) || 0;
+    var rej_mat_int = parseFloat($('input[name="reject_mat_internal_kg"]').val()) || 0;
+    var rej_mat_sup = parseFloat($('input[name="reject_mat_supplier_kg"]').val()) || 0;
+    var potongan    = parseFloat($('input[name="potongan_pisau"]').val()) || 0;
+    var tong        = parseFloat($('input[name="packing_tong_coil"]').val()) || 0;
+    var wrapping    = parseFloat($('input[name="packing_wrapping"]').val()) || 0;
+    var pl_bersih   = parseFloat($('#pl_berat_bersih_val').val()) || 0;
+
+    var sum_kw2          = kw2_int + kw2_sup;
+    var sum_reject_produk = rej_int + rej_sup;
+    var sum_reject_mat   = rej_mat_int + rej_mat_sup;
+    var total_output     = fg + sum_kw2 + sum_reject_produk + sum_reject_mat + potongan + tong + wrapping;
+    var selisih          = total_output - pl_bersih;
+    var selisih_pct      = (pl_bersih > 0) ? (selisih / pl_bersih) : 0;
+
+    $('#sum_fg').text(fg.toFixed(3));
+    $('#sum_kw2').text(sum_kw2.toFixed(3));
+    $('#sum_reject_produk').text(sum_reject_produk.toFixed(3));
+    $('#sum_reject_mat').text(sum_reject_mat.toFixed(3));
+    $('#sum_potongan').text(potongan.toFixed(3));
+    $('#sum_tong').text(tong.toFixed(3));
+    $('#sum_wrapping').text(wrapping.toFixed(3));
+    $('#sum_total_output').text(total_output.toFixed(3));
+    $('#sum_pl').text(pl_bersih.toFixed(3));
+    $('#sum_selisih').text(selisih.toFixed(3));
+    $('#sum_selisih_pct').text((selisih_pct * 100).toFixed(2) + '%');
+
+    // Warning / danger berdasarkan selisih
+    var $alert = $('#alert-selisih');
+    var absPct = Math.abs(selisih_pct);
+    if (pl_bersih > 0 && absPct > TOLERANSI_SELISIH) {
+        var msg = 'Selisih ' + (selisih_pct * 100).toFixed(2) + '% melebihi toleransi ' + (TOLERANSI_SELISIH * 100) + '%. '
+                + (selisih < 0 ? 'Material KURANG dari packing list.' : 'Material LEBIH dari packing list.')
+                + ' Harap cek ulang input atau timbangan.';
+        $alert.removeClass('d-none warning-selisih danger-selisih')
+              .addClass(absPct > 0.1 ? 'danger-selisih' : 'warning-selisih')
+              .find('#alert-selisih-msg').text(msg);
+        $alert.removeClass('d-none');
+    } else {
+        $alert.addClass('d-none');
+    }
+}
 </script>

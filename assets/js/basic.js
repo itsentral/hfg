@@ -10,7 +10,6 @@
 	}
 	//Create
   	function data_add(){
-		
 		$(".box").hide();
 		$("#form-data").show();
 		$("#form-data").load(url_add);
@@ -33,55 +32,50 @@
 	}
 	//Delete
 	function data_delete(id){
-		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Dihapus!",
-		  type: "warning",
-		  showCancelButton: true,
-		  confirmButtonText: "Ya, hapus!",
-		  cancelButtonText: "Tidak!",
-		  closeOnConfirm: false,
-		  closeOnCancel: true
-		},
-		function(isConfirm){
-		  if (isConfirm) {
-		  	$.ajax({
-		            url: url_delete+id,
-		            dataType : "json",
-		            type: 'POST',
-		            success: function(msg){
-		                if(msg['delete']=='1'){
-		                    swal({
-		                      title: "Terhapus!",
-		                      text: "Data berhasil dihapus",
-		                      type: "success",
-		                      timer: 1500,
-		                      showConfirmButton: false
-		                    });
-		                    window.location.reload();
-		                } else {
-		                    swal({
-		                      title: "Gagal!",
-		                      text: "Data gagal dihapus",
-		                      type: "error",
-		                      timer: 1500,
-		                      showConfirmButton: false
-		                    });
-		                };
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Dihapus!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#dc3545",
+			confirmButtonText: "Ya, hapus!",
+			cancelButtonText: "Tidak!"
+		}).then(function(result){
+			if (result.isConfirmed) {
+				$.ajax({
+					url: url_delete+id,
+					dataType: "json",
+					type: 'POST',
+					success: function(msg){
+						if(msg['delete']=='1'){
+							Swal.fire({
+								title: "Terhapus!",
+								text: "Data berhasil dihapus",
+								icon: "success",
+								timer: 1500,
+								showConfirmButton: false
+							}).then(function(){ window.location.reload(); });
+						} else {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Data gagal dihapus",
+								icon: "error",
+								confirmButtonText: "OK"
+							});
+						}
 						console.log(msg);
-		            },
-		            error: function(msg){
-		                swal({
-	                      title: "Gagal!",
-	                      text: "Gagal Eksekusi Ajax",
-	                      type: "error",
-	                      timer: 1500,
-	                      showConfirmButton: false
-	                    });
+					},
+					error: function(msg){
+						Swal.fire({
+							title: "Gagal!",
+							text: "Gagal Eksekusi Ajax",
+							icon: "error",
+							confirmButtonText: "OK"
+						});
 						console.log(msg);
-		            }
-		        });
-		  }
+					}
+				});
+			}
 		});
 	}
 
@@ -91,222 +85,197 @@
     }
 
     function data_save(){
-		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Disimpan!",
-		  type: "info",
-		  showCancelButton: true,
-		  confirmButtonText: "Ya, simpan!",
-		  cancelButtonText: "Tidak!",
-		  closeOnConfirm: false,
-		  closeOnCancel: true
-		},
-		function(isConfirm){
-		  if (isConfirm) {
-			var formdata = $("#frm_data").serialize();
-			$.ajax({
-				url: url_save,
-				dataType : "json",
-				type: 'POST',
-				data: formdata,
-				success: function(msg){
-					if(msg['save']=='1'){
-						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di Simpan",
-							type: "success",
-							timer: 1500,
-							showConfirmButton: false
-						});
-						cancel();
-						window.location.reload();
-					} else {
-						swal({
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Disimpan!",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonText: "Ya, simpan!",
+			cancelButtonText: "Tidak!"
+		}).then(function(result){
+			if (result.isConfirmed) {
+				var formdata = $("#frm_data").serialize();
+				$.ajax({
+					url: url_save,
+					dataType: "json",
+					type: 'POST',
+					data: formdata,
+					success: function(msg){
+						if(msg['save']=='1'){
+							Swal.fire({
+								title: "Sukses!",
+								text: "Data Berhasil Di Simpan",
+								icon: "success",
+								timer: 1500,
+								showConfirmButton: false
+							}).then(function(){ cancel(); window.location.reload(); });
+						} else {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Data Gagal Di Simpan",
+								icon: "error",
+								confirmButtonText: "OK"
+							});
+						}
+						console.log(msg);
+					},
+					error: function(msg){
+						Swal.fire({
 							title: "Gagal!",
-							text: "Data Gagal Di Simpan",
-							type: "error",
-							timer: 1500,
-							showConfirmButton: false
+							text: "Ajax Data Gagal Di Proses",
+							icon: "error",
+							confirmButtonText: "OK"
 						});
-					};
-					console.log(msg);
-				},
-				error: function(msg){
-					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
-						type: "error",
-						timer: 1500,
-						showConfirmButton: false
-					});
-					console.log(msg);
-				}
-			});
-		  }
+						console.log(msg);
+					}
+				});
+			}
 		});
 	}
 
     function data_save_detail(){
-		swal({
-		  title: "Anda Yakin ?",
-		  text: "Data Akan Disimpan!",
-		  type: "info",
-		  showCancelButton: true,
-		  confirmButtonText: "Ya, simpan!",
-		  cancelButtonText: "Tidak!",
-		  closeOnConfirm: false,
-		  closeOnCancel: true
-		},
-		function(isConfirm){
-		  if (isConfirm) {
-			var formdata = $("#form_modal").serialize();
-			$.ajax({
-				url: url_save_detail,
-				dataType : "json",
-				type: 'POST',
-				data: formdata,
-				success: function(msg){
-					if(msg['save']=='1'){
-						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di Simpan",
-							type: "success",
-							timer: 1500,
-							showConfirmButton: false
-						});
-						reload_detail();
-					} else {
-						swal({
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Disimpan!",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonText: "Ya, simpan!",
+			cancelButtonText: "Tidak!"
+		}).then(function(result){
+			if (result.isConfirmed) {
+				var formdata = $("#form_modal").serialize();
+				$.ajax({
+					url: url_save_detail,
+					dataType: "json",
+					type: 'POST',
+					data: formdata,
+					success: function(msg){
+						if(msg['save']=='1'){
+							Swal.fire({
+								title: "Sukses!",
+								text: "Data Berhasil Di Simpan",
+								icon: "success",
+								timer: 1500,
+								showConfirmButton: false
+							}).then(function(){ reload_detail(); });
+						} else {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Data Gagal Di Simpan",
+								icon: "error",
+								confirmButtonText: "OK"
+							});
+						}
+						console.log(msg);
+					},
+					error: function(msg){
+						Swal.fire({
 							title: "Gagal!",
-							text: "Data Gagal Di Simpan",
-							type: "error",
-							timer: 1500,
-							showConfirmButton: false
+							text: "Ajax Data Gagal Di Proses",
+							icon: "error",
+							confirmButtonText: "OK"
 						});
-					};
-					console.log(msg);
-				},
-				error: function(msg){
-					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
-						type: "error",
-						timer: 1500,
-						showConfirmButton: false
-					});
-					console.log(msg);
-				}
-			});
-		  }
+						console.log(msg);
+					}
+				});
+			}
 		});
 	}
 
 	//Delete detail
 	function data_delete_detail(id){
-		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Dihapus!",
-		  type: "warning",
-		  showCancelButton: true,
-		  confirmButtonText: "Ya, hapus!",
-		  cancelButtonText: "Tidak!",
-		  closeOnConfirm: false,
-		  closeOnCancel: true
-		},
-		function(isConfirm){
-		  if (isConfirm) {
-		  	$.ajax({
-		            url: url_delete_detail+id,
-		            dataType : "json",
-		            type: 'POST',
-		            success: function(msg){
-		                if(msg['delete']=='1'){
-		                    swal({
-		                      title: "Terhapus!",
-		                      text: "Data berhasil dihapus",
-		                      type: "success",
-		                      timer: 1500,
-		                      showConfirmButton: false
-		                    });
-							reload_detail();
-		                } else {
-		                    swal({
-		                      title: "Gagal!",
-		                      text: "Data gagal dihapus",
-		                      type: "error",
-		                      timer: 1500,
-		                      showConfirmButton: false
-		                    });
-		                };
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Dihapus!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#dc3545",
+			confirmButtonText: "Ya, hapus!",
+			cancelButtonText: "Tidak!"
+		}).then(function(result){
+			if (result.isConfirmed) {
+				$.ajax({
+					url: url_delete_detail+id,
+					dataType: "json",
+					type: 'POST',
+					success: function(msg){
+						if(msg['delete']=='1'){
+							Swal.fire({
+								title: "Terhapus!",
+								text: "Data berhasil dihapus",
+								icon: "success",
+								timer: 1500,
+								showConfirmButton: false
+							}).then(function(){ reload_detail(); });
+						} else {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Data gagal dihapus",
+								icon: "error",
+								confirmButtonText: "OK"
+							});
+						}
 						console.log(msg);
-		            },
-		            error: function(msg){
-		                swal({
-	                      title: "Gagal!",
-	                      text: "Gagal Eksekusi Ajax",
-	                      type: "error",
-	                      timer: 1500,
-	                      showConfirmButton: false
-	                    });
-						console.log(msg);
-		            }
-		        });
-		  }
-		});
-	}
-	
-    function data_save_self(){
-		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Disimpan!",
-		  type: "info",
-		  showCancelButton: true,
-		  confirmButtonText: "Ya, simpan!",
-		  cancelButtonText: "Tidak!",
-		  closeOnConfirm: false,
-		  closeOnCancel: true
-		},
-		function(isConfirm){
-		  if (isConfirm) {
-			var formdata = $("#frm_data").serialize();
-			$.ajax({
-				url: url_save,
-				dataType : "json",
-				type: 'POST',
-				data: formdata,
-				success: function(msg){
-					if(msg['save']=='1'){
-						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di Simpan",
-							type: "success",
-							timer: 1500,
-							showConfirmButton: false
-						});
-						$("#form-data").load(url_edit+msg['id']);
-					} else {
-						swal({
+					},
+					error: function(msg){
+						Swal.fire({
 							title: "Gagal!",
-							text: "Data Gagal Di Simpan",
-							type: "error",
-							timer: 1500,
-							showConfirmButton: false
+							text: "Gagal Eksekusi Ajax",
+							icon: "error",
+							confirmButtonText: "OK"
 						});
-					};
-					console.log(msg);
-				},
-				error: function(msg){
-					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
-						type: "error",
-						timer: 1500,
-						showConfirmButton: false
-					});
-					console.log(msg);
-				}
-			});
-		  }
+						console.log(msg);
+					}
+				});
+			}
 		});
 	}
 
+    function data_save_self(){
+		Swal.fire({
+			title: "Anda Yakin?",
+			text: "Data Akan Disimpan!",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonText: "Ya, simpan!",
+			cancelButtonText: "Tidak!"
+		}).then(function(result){
+			if (result.isConfirmed) {
+				var formdata = $("#frm_data").serialize();
+				$.ajax({
+					url: url_save,
+					dataType: "json",
+					type: 'POST',
+					data: formdata,
+					success: function(msg){
+						if(msg['save']=='1'){
+							Swal.fire({
+								title: "Sukses!",
+								text: "Data Berhasil Di Simpan",
+								icon: "success",
+								timer: 1500,
+								showConfirmButton: false
+							}).then(function(){ $("#form-data").load(url_edit+msg['id']); });
+						} else {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Data Gagal Di Simpan",
+								icon: "error",
+								confirmButtonText: "OK"
+							});
+						}
+						console.log(msg);
+					},
+					error: function(msg){
+						Swal.fire({
+							title: "Gagal!",
+							text: "Ajax Data Gagal Di Proses",
+							icon: "error",
+							confirmButtonText: "OK"
+						});
+						console.log(msg);
+					}
+				});
+			}
+		});
+	}

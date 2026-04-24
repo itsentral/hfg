@@ -969,73 +969,41 @@
         $('#data-form').submit(function(e) {
             e.preventDefault();
 
-            swal({
-                    title: "Are you sure?",
-                    text: "You will not be able to process again this data!",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonClass: "btn-danger",
-                    confirmButtonText: "Yes, Save it!",
-                    cancelButtonText: "No, cancel!",
-                    closeOnConfirm: true,
-                    closeOnCancel: false
-                },
-                function(isConfirm) {
-                    if (isConfirm) {
-
-                        var formData = new FormData($('#data-form')[0]);
-                        var baseurl = base_url + active_controller + 'save';
-
-                        $.ajax({
-                            url: baseurl,
-                            type: "POST",
-                            data: formData,
-                            cache: false,
-                            dataType: 'json',
-                            processData: false,
-                            contentType: false,
-                            success: function(data) {
-                                if (data.status == 1 || data.status == '1') {
-                                    swal({
-                                        title: "Save Success!",
-                                        text: data.msg || data.pesan || "Data saved successfully.",
-                                        type: "success",
-                                        timer: 3000,
-                                        showCancelButton: false,
-                                        showConfirmButton: false,
-                                        allowOutsideClick: false
-                                    });
-                                    window.location.href = base_url + active_controller;
-                                } else {
-                                    swal({
-                                        title: "Save Failed!",
-                                        text: data.msg || data.pesan || "Failed to save data.",
-                                        type: "warning",
-                                        timer: 4000,
-                                        showCancelButton: false,
-                                        showConfirmButton: false,
-                                        allowOutsideClick: false
-                                    });
-                                }
-                            },
-                            error: function() {
-                                swal({
-                                    title: "Error Message!",
-                                    text: "An Error Occured During Process. Please try again..",
-                                    type: "warning",
-                                    timer: 4000,
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    allowOutsideClick: false
-                                });
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will not be able to process again this data!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Save it!",
+                cancelButtonText: "No, cancel!"
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var formData = new FormData($('#data-form')[0]);
+                    var baseurl = base_url + active_controller + 'save';
+                    $.ajax({
+                        url: baseurl,
+                        type: "POST",
+                        data: formData,
+                        cache: false,
+                        dataType: 'json',
+                        processData: false,
+                        contentType: false,
+                        success: function(data) {
+                            if (data.status == 1 || data.status == '1') {
+                                Swal.fire({ title: "Save Success!", text: data.msg || data.pesan || "Data saved successfully.", icon: "success", timer: 1500, showConfirmButton: false })
+                                    .then(function(){ window.location.href = base_url + active_controller; });
+                            } else {
+                                Swal.fire({ title: "Save Failed!", text: data.msg || data.pesan || "Failed to save data.", icon: "warning", confirmButtonText: "OK" });
                             }
-                        });
-
-                    } else {
-                        swal("Cancelled", "Data can be processed again :)", "error");
-                    }
+                        },
+                        error: function() {
+                            Swal.fire({ title: "Error Message!", text: "An Error Occured During Process. Please try again..", icon: "error", confirmButtonText: "OK" });
+                        }
+                    });
+                } else {
+                    Swal.fire({ title: "Cancelled", text: "Data can be processed again :)", icon: "error", confirmButtonText: "OK" });
                 }
-            );
+            });
         });
 
         $(document).on('click', '#save-kuota', function() {
@@ -1044,48 +1012,41 @@
             let id_hs = $('#idHs').val();
 
             if (addKuota <= 0) {
-                swal("Warning", "Masukkan jumlah kuota baru yang valid!", "warning");
+                Swal.fire({ title: "Warning", text: "Masukkan jumlah kuota baru yang valid!", icon: "warning", confirmButtonText: "OK" });
                 return false;
             }
 
-            swal({
+            Swal.fire({
                 title: "Konfirmasi",
                 text: "Tambahkan kuota sebesar " + addKuota + "?",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-success",
                 confirmButtonText: "Ya, Tambahkan!",
-                cancelButtonText: "Batal",
-                closeOnConfirm: false
-            }, function() {
-                $.ajax({
-                    url: siteurl + active_controller + 'update_kuota',
-                    type: 'POST',
-                    dataType: 'JSON',
-                    data: {
-                        id: id_hs,
-                        tambah_kuota: addKuota
-                    },
-                    success: function(result) {
-                        if (result.status == 1) {
-                            swal({
-                                title: "Sukses!",
-                                text: result.pesan,
-                                type: "success"
-                            }, function() {
-                                window.location.reload(true);
-                                // Sembunyikan kembali form add
-                                $('#form-kuota').attr('hidden', true);
-                                $('#newKuota').val('');
-                            });
-                        } else {
-                            swal("Gagal", result.pesan, "error");
+                cancelButtonText: "Batal"
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: siteurl + active_controller + 'update_kuota',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { id: id_hs, tambah_kuota: addKuota },
+                        success: function(result) {
+                            if (result.status == 1) {
+                                Swal.fire({ title: "Sukses!", text: result.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+                                    .then(function(){
+                                        window.location.reload(true);
+                                        $('#form-kuota').attr('hidden', true);
+                                        $('#newKuota').val('');
+                                    });
+                            } else {
+                                Swal.fire({ title: "Gagal", text: result.pesan, icon: "error", confirmButtonText: "OK" });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({ title: "Error", text: "Terjadi kesalahan pada server", icon: "error", confirmButtonText: "OK" });
                         }
-                    },
-                    error: function() {
-                        swal("Error", "Terjadi kesalahan pada server", "error");
-                    }
-                });
+                    });
+                }
             });
         });
     });

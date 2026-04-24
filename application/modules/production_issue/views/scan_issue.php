@@ -59,7 +59,7 @@
                 <h6 class="mb-0">Coil dalam SPK</h6>
                 <span id="badge-coil-count" class="badge bg-secondary">0 coil</span>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                     <table class="table table-sm table-bordered mb-0">
                         <thead class="table-light sticky-top">
@@ -91,7 +91,7 @@
                     </a>
                 </div>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                     <table class="table table-sm table-bordered mb-0" id="tbl-scan-log">
                         <thead class="table-light sticky-top">

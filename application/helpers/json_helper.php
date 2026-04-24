@@ -2813,6 +2813,112 @@ function get_detail_user()
 	return $ArrGetCategory;
 }
 
+//PRODUCT LEVEL
+function get_list_product_lv1($category)
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get_where('product_lvl_1', array('category' => $category, 'deleted_date' => NULL))->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv1']]['code_lv1'] 	= $value['code_lv1'];
+		$ArrGetCategory[$value['code_lv1']]['nama'] 		= $value['nama'];
+		$ArrGetCategory[$value['code_lv1']]['code'] 		= $value['code'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_list_product_lv2($category)
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get_where('product_lvl_2', array('category' => $category, 'deleted_date' => NULL))->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']]['code_lv1'] 	= $value['code_lv1'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']]['code_lv2'] 	= $value['code_lv2'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']]['nama'] 		= $value['nama'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']]['code'] 		= $value['code'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_list_product_lv3($category)
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get_where('product_lvl_3', array('category' => $category, 'deleted_date' => NULL))->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']][$value['code_lv3']]['code_lv1'] 	= $value['code_lv1'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']][$value['code_lv3']]['code_lv2'] 	= $value['code_lv2'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']][$value['code_lv3']]['code_lv3'] 	= $value['code_lv3'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']][$value['code_lv3']]['nama'] 		= $value['nama'];
+		$ArrGetCategory[$value['code_lv1']][$value['code_lv2']][$value['code_lv3']]['code'] 		= $value['code'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_list_product_lv4($category)
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get_where('product_lvl_4', array('category' => $category, 'deleted_date' => NULL))->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv4']]['code_lv1'] 	= $value['code_lv1'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv2'] 	= $value['code_lv2'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv3'] 	= $value['code_lv3'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv4'] 	= $value['code_lv4'];
+		$ArrGetCategory[$value['code_lv4']]['nama'] 		= $value['nama'];
+		$ArrGetCategory[$value['code_lv4']]['code'] 		= $value['code'];
+		$ArrGetCategory[$value['code_lv4']]['min_stock'] 	= $value['min_stok'];
+		$ArrGetCategory[$value['code_lv4']]['moq'] 			= $value['max_stok'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_product_lv4()
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get_where('product_lvl_4', array('deleted_date' => NULL))->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv4']]['code_lv1'] 	= $value['code_lv1'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv2'] 	= $value['code_lv2'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv3'] 	= $value['code_lv3'];
+		$ArrGetCategory[$value['code_lv4']]['code_lv4'] 	= $value['code_lv4'];
+		$ArrGetCategory[$value['code_lv4']]['nama'] 		= $value['nama'];
+		$ArrGetCategory[$value['code_lv4']]['code'] 		= $value['code'];
+		$ArrGetCategory[$value['code_lv4']]['min_stock'] 	= $value['min_stok'];
+		$ArrGetCategory[$value['code_lv4']]['moq'] 			= $value['max_stok'];
+		$ArrGetCategory[$value['code_lv4']]['konversi'] 	= $value['konversi'];
+		$ArrGetCategory[$value['code_lv4']]['id_packing'] 	= $value['id_unit_packing'];
+		$ArrGetCategory[$value['code_lv4']]['id_unit'] 		= $value['id_unit'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_product_lv2()
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get('product_lvl_2')->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv2']]['code_lv2'] 	= $value['code_lv2'];
+		$ArrGetCategory[$value['code_lv2']]['nama'] 		= $value['nama'];
+	}
+	return $ArrGetCategory;
+}
+
+function get_product_lv3()
+{
+	$CI = &get_instance();
+	$listGetCategory = $CI->db->get('product_lvl_3')->result_array();
+	$ArrGetCategory = [];
+	foreach ($listGetCategory as $key => $value) {
+		$ArrGetCategory[$value['code_lv3']]['code_lv3'] 	= $value['code_lv3'];
+		$ArrGetCategory[$value['code_lv3']]['nama'] 		= $value['nama'];
+	}
+	return $ArrGetCategory;
+}
+
 // function auto_jurnal_product($ArrDetailProduct, $ket)
 // {
 //     $CI     = &get_instance();
