@@ -49,18 +49,10 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" class="form-control" rows="2"
-                        placeholder="Opsional"><?= $is_edit ? htmlspecialchars($bom->keterangan) : '' ?></textarea>
-                </div>
-            </div>
-
             <!-- Detail Material -->
             <div class="card border-primary">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0"><i class="fa fa-list"></i> Daftar Material</h6>
+                <div class="card-header bg-primary d-flex justify-content-between align-items-center p-3">
+                    <h4 class="mb-0" style="color: white;"><i class="fa fa-list"></i> Daftar Material</h4>
                     <button type="button" class="btn btn-light btn-sm" id="btn-add-row">
                         <i class="fa fa-plus"></i> Tambah Material
                     </button>
@@ -75,7 +67,6 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                                     <th width="25%">Trade Name</th>
                                     <th width="10%">Qty</th>
                                     <!-- <th width="10%">Satuan</th> -->
-                                    <th>Keterangan</th>
                                     <th width="50" class="text-center">Hapus</th>
                                 </tr>
                             </thead>
@@ -114,15 +105,6 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                                         <td>
                                             <input type="number" name="detail[<?= $i ?>][qty]" step="0.0001"
                                                 class="form-control form-control-sm" value="<?= $d->qty ?>" required>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control form-control-sm inp-unit-display bg-light"
-                                                readonly value="<?= htmlspecialchars($d->nm_unit) ?>">
-                                        </td>
-                                        <td>
-                                            <input type="text" name="detail[<?= $i ?>][keterangan]"
-                                                class="form-control form-control-sm"
-                                                value="<?= htmlspecialchars($d->keterangan) ?>">
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-xs btn-remove-row">
@@ -180,12 +162,6 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
         <td>
             <input type="number" name="detail[__IDX__][qty]" step="0.0001"
                 class="form-control form-control-sm" value="1" required>
-        </td>
-        <td>
-            <input type="text" class="form-control form-control-sm inp-unit-display bg-light" readonly placeholder="Otomatis">
-        </td>
-        <td>
-            <input type="text" name="detail[__IDX__][keterangan]" class="form-control form-control-sm" placeholder="Opsional">
         </td>
         <td class="text-center">
             <button type="button" class="btn btn-danger btn-xs btn-remove-row">

@@ -40,9 +40,10 @@
     </div>
 </div>
 
-<!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -76,7 +77,6 @@
         // Release plan
         $(document).on('click', '.btn-release', function() {
             var plan_no = $(this).data('plan');
-
             Swal.fire({
                 title: 'Release Plan?',
                 text: 'Plan akan diubah ke status Released dan tidak bisa diedit lagi.',
@@ -86,8 +86,7 @@
                 confirmButtonText: 'Ya, Release',
                 cancelButtonText: 'Batal'
             }).then(function(result) {
-                if (!result.value) return; // ✅ Fix: ganti dari result.isConfirmed
-
+                if (!result.isConfirmed) return;
                 $.ajax({
                     url: siteurl + 'production_planning/process_release/' + plan_no,
                     type: 'POST',
@@ -95,14 +94,15 @@
                     success: function(res) {
                         if (res.success) {
                             Swal.fire({
-                                title: 'Berhasil!',
-                                text: 'Plan berhasil di-release.',
-                                icon: 'success',
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(function() {
-                                $('#tbl-plan').DataTable().ajax.reload();
-                            });
+                                    title: 'Berhasil!',
+                                    text: 'Plan berhasil di-release.',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                })
+                                .then(function() {
+                                    $('#tbl-plan').DataTable().ajax.reload();
+                                });
                         } else {
                             Swal.fire({
                                 title: 'Gagal!',
@@ -136,7 +136,7 @@
                 confirmButtonText: 'Ya, Batalkan',
                 cancelButtonText: 'Tidak'
             }).then(function(result) {
-                if (!result.value) return;
+                if (!result.isConfirmed) return;
                 $.ajax({
                     url: siteurl + 'production_planning/process_cancel/' + plan_no,
                     type: 'POST',

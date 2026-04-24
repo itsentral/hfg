@@ -170,7 +170,9 @@
     </div>
 </div>
 
-<script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.js'); ?>"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script>
 $(document).on('click', '.btn-release', function () {
     var plan_no = $(this).data('plan');

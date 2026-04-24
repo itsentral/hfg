@@ -111,19 +111,6 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                 <div class="col-md-6">
                     <div class="form-group row">
                         <div class="col-md-4">
-                            <label for="">No. Surat / Invoice <span class="text-danger">*</span></label>
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" name="no_surat" id="no_surat" class="form-control" value="" placeholder="Masukkan No. Surat / Invoice">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <div class="col-md-4">
                             <label for="">AWB / BL Number</label>
                         </div>
                         <div class="col-md-8">

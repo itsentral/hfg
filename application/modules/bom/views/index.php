@@ -41,7 +41,8 @@
 
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.js'); ?>"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
 $(document).ready(function () {
@@ -75,17 +76,25 @@ $(document).ready(function () {
             confirmButtonColor: '#dc3545',
             confirmButtonText: 'Ya, Hapus',
             cancelButtonText: 'Batal'
-        }).then(function(result) {
-            if (result.isConfirmed) {
-                $.post(siteurl + 'bom/delete_bom', { id: id }, function (res) {
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: siteurl + 'bom/delete_bom',
+                type: 'POST',
+                dataType: 'json',
+                data: { id: id },
+                success: function (res) {
                     if (res.success) {
                         Swal.fire({ title: 'Berhasil!', text: 'BOM berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false })
-                            .then(function(){ $('#tbl-bom').DataTable().ajax.reload(); });
+                            .then(function () { $('#tbl-bom').DataTable().ajax.reload(); });
                     } else {
                         Swal.fire({ title: 'Gagal!', text: 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
                     }
-                }, 'json');
-            }
+                },
+                error: function (xhr) {
+                    Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                }
+            });
         });
     });
 });

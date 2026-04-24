@@ -24,12 +24,6 @@
                         <td class="fw-semibold">Nama Produk</td>
                         <td>: <?= htmlspecialchars($bom->nm_produk ?: '-') ?></td>
                     </tr>
-                    <?php if ($bom->keterangan): ?>
-                    <tr>
-                        <td class="fw-semibold">Keterangan</td>
-                        <td>: <?= nl2br(htmlspecialchars($bom->keterangan)) ?></td>
-                    </tr>
-                    <?php endif; ?>
                     <tr>
                         <td class="fw-semibold">Dibuat</td>
                         <td>: <?= date('d/m/Y H:i', strtotime($bom->created_at)) ?></td>
@@ -56,13 +50,12 @@
                         <th>Trade Name</th>
                         <th class="text-end">Qty</th>
                         <th>Satuan</th>
-                        <th>Keterangan</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($details)): ?>
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-3">Belum ada material</td>
+                            <td colspan="6" class="text-center text-muted py-3">Belum ada material</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($details as $i => $d): ?>
@@ -79,7 +72,6 @@
                             </td>
                             <td class="text-end"><?= number_format($d->qty, 4) ?></td>
                             <td><?= htmlspecialchars($d->nm_unit ?: $d->id_unit ?: '-') ?></td>
-                            <td><?= htmlspecialchars($d->keterangan ?: '-') ?></td>
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
