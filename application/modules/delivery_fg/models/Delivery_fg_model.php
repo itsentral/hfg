@@ -317,10 +317,10 @@ class Delivery_fg_model extends CI_Model
     public function get_do($do_no)
     {
         return $this->db
-            ->select('d.*, u.nama as nama_created_by, ua.nama as nama_approved_by')
+            ->select('d.*, u.nm_lengkap as nama_created_by, ua.nama as nama_approved_by')
             ->from('tr_delivery_order d')
-            ->join('ms_users u', 'u.id = d.created_by', 'left')
-            ->join('ms_users ua', 'ua.id = d.approved_by', 'left')
+            ->join('users u', 'u.id_user = d.created_by', 'left')
+            ->join('users ua', 'ua.id = d.approved_by', 'left')
             ->where('d.do_no', $do_no)
             ->get()
             ->row();
@@ -348,9 +348,9 @@ class Delivery_fg_model extends CI_Model
     public function get_do_weight_log($do_no)
     {
         return $this->db
-            ->select('wl.*, u.nama as nama_user')
+            ->select('wl.*, u.nm_lengkap as nama_user')
             ->from('tr_delivery_weight_log wl')
-            ->join('ms_users u', 'u.id = wl.user_timbang', 'left')
+            ->join('users u', 'u.id_user = wl.user_timbang', 'left')
             ->where('wl.do_no', $do_no)
             ->order_by('wl.tgl_timbang', 'DESC')
             ->get()
@@ -366,9 +366,9 @@ class Delivery_fg_model extends CI_Model
     public function get_do_approval_log($do_no)
     {
         return $this->db
-            ->select('a.*, u.nama as nama_approver')
+            ->select('a.*, u.nm_lengkap as nama_approver')
             ->from('tr_delivery_approval a')
-            ->join('ms_users u', 'u.id = a.approver_id', 'left')
+            ->join('users u', 'u.id_user = a.approver_id', 'left')
             ->where('a.do_no', $do_no)
             ->order_by('a.tgl_approval', 'DESC')
             ->get()
@@ -388,9 +388,9 @@ class Delivery_fg_model extends CI_Model
         $length = isset($params['length']) ? (int) $params['length'] : 10;
 
         $base = $this->db
-            ->select('d.do_no, d.customer, d.tgl_delivery, d.status, d.created_at, u.nama as nama_created_by')
+            ->select('d.do_no, d.customer, d.tgl_delivery, d.status, d.created_at, u.nm_lengkap as nama_created_by')
             ->from('tr_delivery_order d')
-            ->join('ms_users u', 'u.id = d.created_by', 'left');
+            ->join('users u', 'u.id_user = d.created_by', 'left');
 
         if ($search) {
             $base->group_start()
@@ -407,7 +407,7 @@ class Delivery_fg_model extends CI_Model
         $count_query = $this->db
             ->select('COUNT(*) as cnt')
             ->from('tr_delivery_order d')
-            ->join('ms_users u', 'u.id = d.created_by', 'left');
+            ->join('users u', 'u.id_user = d.created_by', 'left');
         if ($search) {
             $count_query->group_start()
                 ->like('d.do_no', $search)
@@ -419,9 +419,9 @@ class Delivery_fg_model extends CI_Model
 
         // Data query
         $data_query = $this->db
-            ->select('d.do_no, d.customer, d.tgl_delivery, d.status, d.created_at, u.nama as nama_created_by')
+            ->select('d.do_no, d.customer, d.tgl_delivery, d.status, d.created_at, u.nm_lengkap as nama_created_by')
             ->from('tr_delivery_order d')
-            ->join('ms_users u', 'u.id = d.created_by', 'left');
+            ->join('users u', 'u.id_user = d.created_by', 'left');
         if ($search) {
             $data_query->group_start()
                 ->like('d.do_no', $search)

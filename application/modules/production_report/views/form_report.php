@@ -7,7 +7,7 @@
 <style>
 .section-card { border-left: 4px solid #0d6efd; margin-bottom: 1rem; }
 .section-card .card-header { font-weight: 600; }
-.summary-table th { color: #fff; font-size: 0.8rem; }
+.summary-table th { font-size: 0.8rem; }
 .summary-table td { font-size: 0.85rem; }
 .warning-selisih { background: #fff3cd; border: 1px solid #ffc107; }
 .danger-selisih  { background: #f8d7da; border: 1px solid #dc3545; }
@@ -188,9 +188,10 @@
                                     oninput="calcFg()">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small">Berat / Pcs (kg) <span class="text-muted small">otomatis</span></label>
+                                <label class="form-label small" id="lbl-fg-berat-per-pcs">Berat / Pcs (kg) <span class="text-muted small">otomatis</span></label>
                                 <input type="number" step="0.0001" name="fg_berat_per_pcs" id="fg_berat_per_pcs"
-                                    class="form-control bg-light" readonly placeholder="0">
+                                    class="form-control bg-light" readonly placeholder="0"
+                                    oninput="calcFg()">
                             </div>
                         </div>
                     </div>
@@ -435,14 +436,16 @@ function setFgMode(mode) {
     $('#fg_input_mode').val(mode);
     if (mode === 'total') {
         $('#lbl-fg-input').text('Berat Total (kg)');
-        $('#fg_kg').attr('readonly', false);
-        $('#fg_berat_per_pcs').attr('readonly', true);
+        $('#fg_kg').attr('readonly', false).removeClass('bg-light');
+        $('#fg_berat_per_pcs').attr('readonly', true).addClass('bg-light');
+        $('#lbl-fg-berat-per-pcs').html('Berat / Pcs (kg) <span class="text-muted small">otomatis</span>');
         $('#btn-mode-total').addClass('active btn-primary').removeClass('btn-outline-primary');
         $('#btn-mode-per-pcs').removeClass('active btn-primary').addClass('btn-outline-primary');
     } else {
         $('#lbl-fg-input').text('Berat / Pcs (kg)');
-        $('#fg_kg').attr('readonly', true);
-        $('#fg_berat_per_pcs').attr('readonly', false);
+        $('#fg_kg').attr('readonly', true).addClass('bg-light');
+        $('#fg_berat_per_pcs').attr('readonly', false).removeClass('bg-light');
+        $('#lbl-fg-berat-per-pcs').html('Berat / Pcs (kg)');
         $('#btn-mode-per-pcs').addClass('active btn-primary').removeClass('btn-outline-primary');
         $('#btn-mode-total').removeClass('active btn-primary').addClass('btn-outline-primary');
     }

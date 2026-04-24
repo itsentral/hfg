@@ -259,10 +259,10 @@ class Fg_warehouse_model extends CI_Model
     public function get_receipt($fg_receipt_no)
     {
         return $this->db
-            ->select('r.*, u.name AS nama_created_by, p.name AS nama_posted_by')
+            ->select('r.*, u.nm_lengkap AS nama_created_by, p.nm_lengkap AS nama_posted_by')
             ->from('tr_fg_receipt r')
-            ->join('users u', 'u.id = r.created_by', 'left')
-            ->join('users p', 'p.id = r.posted_by', 'left')
+            ->join('users u', 'u.id_user = r.created_by', 'left')
+            ->join('users p', 'p.id_user = r.posted_by', 'left')
             ->where('r.fg_receipt_no', $fg_receipt_no)
             ->get()->row();
     }
@@ -285,7 +285,7 @@ class Fg_warehouse_model extends CI_Model
         $order_by = isset($cols[$order_col]) ? $cols[$order_col] : 'r.created_at';
 
         $base_sql = "FROM tr_fg_receipt r
-                     LEFT JOIN users u ON u.id = r.created_by
+                     LEFT JOIN users u ON u.id_user = r.created_by
                      WHERE 1=1";
 
         if (!empty($search)) {
@@ -301,7 +301,7 @@ class Fg_warehouse_model extends CI_Model
         $total    = $this->db->query("SELECT COUNT(*) AS cnt {$base_sql}")->row()->cnt;
         $filtered = $total;
         $query    = $this->db->query(
-            "SELECT r.*, u.name AS nama_created_by {$base_sql}
+            "SELECT r.*, u.nm_lengkap AS nama_created_by {$base_sql}
              ORDER BY {$order_by} {$order_dir}
              LIMIT {$start},{$length}"
         );

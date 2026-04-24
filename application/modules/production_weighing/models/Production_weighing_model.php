@@ -252,9 +252,9 @@ class Production_weighing_model extends CI_Model
     public function get_preweigh($preweigh_no)
     {
         return $this->db
-            ->select('p.*, u.name AS nama_user')
+            ->select('p.*, u.nm_lengkap AS nama_user')
             ->from('tr_coil_preweigh p')
-            ->join('users u', 'u.id = p.created_by', 'left')
+            ->join('users u', 'u.id_user = p.created_by', 'left')
             ->where('p.preweigh_no', $preweigh_no)
             ->get()->row();
     }
@@ -285,7 +285,7 @@ class Production_weighing_model extends CI_Model
                 c.selisih_net_pct,
                 p.status,
                 p.created_at,
-                u.name AS nama_user
+                u.nm_lengkap AS nama_user
             FROM tr_coil_preweigh p
             LEFT JOIN tr_coil_preweigh_component c ON c.preweigh_no = p.preweigh_no
             LEFT JOIN users u ON u.id = p.created_by
@@ -315,7 +315,7 @@ class Production_weighing_model extends CI_Model
 
         $base_sql = "FROM tr_coil_preweigh p
                      LEFT JOIN tr_coil_preweigh_component c ON c.preweigh_no = p.preweigh_no
-                     LEFT JOIN users u ON u.id = p.created_by
+                     LEFT JOIN users u ON u.id_user = p.created_by
                      WHERE 1=1";
 
         if (!empty($search)) {
@@ -326,7 +326,7 @@ class Production_weighing_model extends CI_Model
         $total    = $this->db->query("SELECT COUNT(*) AS cnt {$base_sql}")->row()->cnt;
         $filtered = $total;
         $query    = $this->db->query(
-            "SELECT p.*, c.net_timbang_awal, c.selisih_net, c.selisih_net_pct, u.name AS nama_user
+            "SELECT p.*, c.net_timbang_awal, c.selisih_net, c.selisih_net_pct, u.nm_lengkap AS nama_user
              {$base_sql}
              ORDER BY {$order_by} {$order_dir}
              LIMIT {$start},{$length}"
