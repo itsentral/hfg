@@ -989,85 +989,60 @@ class Purchase_order_payment extends Admin_Controller
 			exit;
 		}
 
-		//auto jurnal
+		//auto jurnal → insert ke gl_interface (staging), posting manual via GL Interface
 
 		$tanggal = $post['invoice_date_real'];
 		$Bln	= substr($tanggal, 5, 2);
 		$Thn	= substr($tanggal, 0, 4);
 		$total	= 0;
-		$Nomor_JV = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tanggal);
+		$keterangan = 'Receive Invoice ' . $no_invoice;
+
+		// Insert header ke gl_interface
+		$this->db->insert('gl_interface', [
+			'nomor'           => null,
+			'tgl'             => $tanggal,
+			'bulan'           => $Bln,
+			'tahun'           => $Thn,
+			'kdcab'           => '101',
+			'jenis'           => 'JV',
+			'keterangan'      => $keterangan,
+			'jenis_transaksi' => 'receive invoice',
+			'status'          => 'pending',
+			'user_id'         => $this->auth->user_id(),
+			'memo'            => json_encode([
+				'id_supplier'   => $kode_supplier,
+				'nama_supplier' => $nama,
+				'no_reff'       => $post['nomor_po'],
+				'no_request'    => $post['nomor_invoice'] ?? $no_invoice,
+				'coaunbill'     => $coaunbill,
+				'totalunbill'   => $totalunbill,
+				'coaap'         => $coaap,
+				'totalap'       => $totalap,
+			]),
+		]);
+		$id_gl_interface = $this->db->insert_id();
+
+		// Insert detail ke gl_interface_detail
 		foreach ($det_Jurnaltes1 as $vals) {
-			$datadetail = array(
-				'tipe'			=> 'JV',
-				'nomor'			=> $Nomor_JV,
-				'tanggal'		=> $tanggal,
-				'no_perkiraan'	=> $vals['no_perkiraan'],
-				'keterangan'	=> $vals['keterangan'],
-				'no_reff'		=> $vals['no_reff'],
-				'debet'			=> $vals['debet'],
-				'kredit'		=> $vals['kredit'],
-			);
 			$total = ($total + $vals['debet']);
-			$insert_jurnal = $this->db->insert(DBACC . '.jurnal', $datadetail);
-			if (!$insert_jurnal) {
-				print_r($this->db->error($insert_jurnal));
-				exit;
-			}
+			$this->db->insert('gl_interface_detail', [
+				'id_gl_interface' => $id_gl_interface,
+				'no_batch'        => null,
+				'tipe'            => 'JV',
+				'tanggal'         => $tanggal,
+				'no_perkiraan'    => $vals['no_perkiraan'],
+				'keterangan'      => $vals['keterangan'],
+				'no_reff'         => $vals['no_reff'],
+				'no_request'      => $vals['no_request'] ?? '',
+				'debet'           => $vals['debet'],
+				'kredit'          => $vals['kredit'],
+				'created_at'      => date('Y-m-d H:i:s'),
+			]);
 		}
-		$keterangan		= 'Receive Invoice ' . $no_invoice;
-		$dataJVhead = array(
-			'nomor' 	    	=> $Nomor_JV,
-			'tgl'	         	=> $tanggal,
-			'jml'	            => $total,
-			'bulan'	            => $Bln,
-			'tahun'	            => $Thn,
-			'kdcab'				=> '101',
-			'jenis'			    => 'JV',
-			'keterangan'		=> $keterangan,
-			'user_id'			=> $this->auth->user_id(),
-			'ho_valid'			=> '',
-		);
-		$insert_javh = $this->db->insert(DBACC . '.javh', $dataJVhead);
-		if (!$insert_javh) {
-			print_r($this->db->error($insert_javh));
-			exit;
-		}
-		$datahutang = array(
-			'tipe'       	 => 'JV',
-			'nomor'       	 => $Nomor_JV,
-			'tanggal'        => $tanggal,
-			'no_perkiraan'   => $coaunbill,
-			'keterangan'     => $keterangan,
-			'no_reff'     	 => $post['nomor_po'],
-			'kredit'      	 => 0,
-			'debet'          => $totalunbill,
-			'id_supplier'    => $kode_supplier,
-			'nama_supplier'  => $nama,
-			'no_request'     => $post['nomor_invoice'],
-		);
-		$insert_kartu_hutang = $this->db->insert('tr_kartu_hutang', $datahutang);
-		if (!$insert_kartu_hutang) {
-			print_r($this->db->error($insert_kartu_hutang));
-			exit;
-		}
-		$datahutang = array(
-			'tipe'       	 => 'JV',
-			'nomor'       	 => $Nomor_JV,
-			'tanggal'        => $tanggal,
-			'no_perkiraan'   => $coaap,
-			'keterangan'     => $keterangan,
-			'no_reff'     	 => $post['nomor_po'],
-			'kredit'      	 => $totalap,
-			'debet'          => 0,
-			'id_supplier'    => $kode_supplier,
-			'nama_supplier'  => $nama,
-			'no_request'     => $post['nomor_invoice'],
-		);
-		$insert_kartu_hutang = $this->db->insert('tr_kartu_hutang', $datahutang);
-		if (!$insert_kartu_hutang) {
-			print_r($this->db->error($insert_kartu_hutang));
-			exit;
-		}
+
+		// Update jml (total debet) di header
+		$this->db->update('gl_interface', ['jml' => $total], ['id' => $id_gl_interface]);
+
 		//end auto jurnal
 
 

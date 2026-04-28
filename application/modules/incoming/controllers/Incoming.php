@@ -624,7 +624,8 @@ class Incoming extends Admin_Controller
     {
         $tgl_inv       = date('Y-m-d');
         $supplier_name = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row()->nama;
-        $Nomor_JV      = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
+
+        // Nomor jurnal akan di-generate saat posting dari GL Interface
 
         // Ambil currency dari tr_purchase_order
         $po_data  = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
@@ -670,7 +671,7 @@ class Incoming extends Admin_Controller
 
         // --- STEP 1a: Insert header ke gl_interface ---
         $this->db->insert('gl_interface', [
-            'nomor'           => $Nomor_JV,
+            'nomor'           => null,
             'tgl'             => $tgl_inv,
             'bulan'           => date('m'),
             'tahun'           => date('Y'),
@@ -698,7 +699,7 @@ class Incoming extends Admin_Controller
             $ket_mat = "Incoming Coil PO: {$no_po} | {$mat['nm_material']} (Coil: {$mat['no_coil']})";
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_persediaan,
@@ -719,7 +720,7 @@ class Incoming extends Admin_Controller
         if ($uang_muka_idr > 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_dp,
@@ -740,7 +741,7 @@ class Incoming extends Admin_Controller
         if ($total_unbill != 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_unbill,
@@ -761,7 +762,7 @@ class Incoming extends Admin_Controller
         if ($total_biaya_masuk > 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_bm,
@@ -782,7 +783,7 @@ class Incoming extends Admin_Controller
         if ($total_forwarding > 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_forwarder,
@@ -803,7 +804,7 @@ class Incoming extends Admin_Controller
         if ($selisih_kurs_abs > 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl_interface,
-                'no_batch'        => $Nomor_JV,
+                'no_batch'        => null,
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
                 'no_perkiraan'    => $coa_kurs,
@@ -820,17 +821,8 @@ class Incoming extends Admin_Controller
             ]);
         }
 
-        // --- STEP 2: Posting dari gl_interface ke accounting ---
-        try {
-            $this->_post_gl_interface($Nomor_JV);
-        } catch (Exception $e) {
-            // Posting gagal — tandai error di gl_interface agar bisa direpost
-            $this->db->update('gl_interface',
-                ['status' => 'error', 'error_msg' => $e->getMessage()],
-                ['id' => $id_gl_interface]
-            );
-            throw $e; // lempar ke atas agar process_incoming_coil bisa tangkap
-        }
+        // Posting ke accounting sekarang dilakukan manual via menu GL Interface.
+        // Data sudah masuk ke gl_interface dengan status 'pending'.
     }
 
     /**
