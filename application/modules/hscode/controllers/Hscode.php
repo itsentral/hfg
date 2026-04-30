@@ -50,6 +50,7 @@ class Hscode extends Admin_Controller
     {
         $this->auth->restrict($this->managePermission);
         $hs             = $this->db->get_where('hscode', ['id' => $id])->row();
+        $def_ppn        = $hs->ppn_rate ?? 0;
         $countries      = $this->Hscode_model->get_data('countries');
         $requirements   = $this->db->get_where('hscode_requirement', ['hscode_id' => $hs->id])->result_array();
         $ArrRQ          = [];
@@ -65,11 +66,43 @@ class Hscode extends Admin_Controller
 
         $this->template->set([
             'hs' => $hs,
+            'def_ppn' => $def_ppn,
             'countries' => $countries,
             'ArrRQ' => $ArrRQ,
             'origins' => $origins,
         ]);
         $this->template->title('Edit HS Code');
+        $this->template->render('add');
+    }
+
+    public function view($id)
+    {
+        $this->auth->restrict($this->viewPermission);
+
+        $hs             = $this->db->get_where('hscode', ['id' => $id])->row();
+        $def_ppn        = $hs->ppn_rate ?? 0;
+        $countries      = $this->Hscode_model->get_data('countries');
+        $requirements   = $this->db->get_where('hscode_requirement', ['hscode_id' => $hs->id])->result_array();
+        $ArrRQ          = [];
+
+        $origins = $this->db->get_where('hscode_origin', ['hscode_id' => $id])->result_array();
+        foreach ($origins as &$origin) {
+            $origin['details'] = $this->db->get_where('hscode_bm_origin', ['hscode_origin_id' => $origin['id']])->result_array();
+        }
+
+        foreach ($requirements as $rq) {
+            $ArrRQ[$rq['type']][] = $rq;
+        }
+
+        $this->template->set([
+            'hs'       => $hs,
+            'def_ppn' => $def_ppn,
+            'countries' => $countries,
+            'ArrRQ'    => $ArrRQ,
+            'origins'  => $origins,
+            'results'  => ['mode' => 'view'],
+        ]);
+        $this->template->title('View HS Code');
         $this->template->render('add');
     }
 
@@ -84,6 +117,7 @@ class Hscode extends Admin_Controller
         $RQ = isset($post['requirement']) ? $post['requirement'] : '';
         unset($data['requirement']);
         unset($data['origin_bm']);
+        unset($data['new_kuota_internal']);
 
         $data['lartas'] = ($data['lartas']) ?: null;;
         $this->db->trans_begin();

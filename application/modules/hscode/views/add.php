@@ -1,4 +1,4 @@
-<!-- ✅ Card Berry -->
+<!--  Card Berry -->
 <div class="card">
     <div class="card-body">
         <form id="data-form" method="post">
@@ -60,7 +60,7 @@
                                 <label for="lartas">Lartas</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="lartas" placeholder="Lartas">
+                                <input type="text" class="form-control" name="lartas" placeholder="-">
                             </div>
                         </div>
                         <div class="form-group row mb-3">
@@ -133,7 +133,8 @@
                                         <div class="col-md-8">
                                             <div class="input-group">
                                                 <span class="input-group-text">Current</span>
-                                                <input type="number" step="0.01" id="current" class="form-control text-end" readonly value="<?= isset($def_ppn) && $def_ppn ? $def_ppn : 0; ?>">
+                                                <!-- <input type="number" step="0.01" id="current" class="form-control text-end" readonly value="<?= isset($def_ppn) && $def_ppn ? $def_ppn : 0; ?>"> -->
+                                                <input type="number" step="0.01" id="current" name="ppn_rate" class="form-control text-end" value="<?= isset($def_ppn) && $def_ppn ? $def_ppn : 0; ?>">
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </div>
@@ -770,6 +771,7 @@
         }
 
         $(document).on('change', 'input[name="ppn"]', togglePpnCurrent);
+        togglePpnCurrent();
 
         // ===== Add Origin =====
         $(document).on('click', '#add-item-origin', function() {
@@ -787,61 +789,61 @@
             const $btn = $(this);
             const id = $btn.data('id') || '';
 
-            // kalau data belum tersimpan DB (id kosong) -> remove langsung
             if (!id) {
-                // destroy select2 sebelum remove
                 const $sel = $btn.closest('tr').find('.country-select');
                 if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
-
                 $btn.closest('tr').remove();
                 reindexAll();
                 return;
             }
 
-            Swal.fire({
+            swal({
                 title: "Confirm",
                 text: "Are you sure to delete this Origin and related BM Origin data?",
-                icon: "question",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonText: "Yes",
                 cancelButtonText: "No",
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return $.ajax({
-                        url: siteurl + thisController + 'deleteOriginBm',
-                        type: "POST",
-                        dataType: 'JSON',
-                        data: {
-                            id,
-                            type: 'origin'
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function() {
+                $.ajax({
+                    url: siteurl + thisController + 'deleteOriginBm',
+                    type: "POST",
+                    dataType: 'JSON',
+                    data: {
+                        id,
+                        type: 'origin'
+                    },
+                    success: function(val) {
+                        if (val && val.status === '1') {
+                            swal({
+                                    title: 'Deleted',
+                                    text: val.msg || 'Success',
+                                    type: 'success'
+                                },
+                                function() {
+                                    const $sel = $btn.closest('tr').find('.country-select');
+                                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+                                    $btn.closest('tr').remove();
+                                    reindexAll();
+                                });
+                        } else {
+                            swal({
+                                title: 'Failed',
+                                text: val?.msg || 'Failed delete',
+                                type: 'warning'
+                            });
                         }
-                    }).catch(() => {
-                        Swal.showValidationMessage("Server error / timeout");
-                    });
-                }
-            }).then((val) => {
-                if (!val.isConfirmed) return;
-
-                if (val.value && val.value.status === '1') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted',
-                        text: val.value.msg || 'Success'
-                    });
-
-                    // destroy select2 sebelum remove
-                    const $sel = $btn.closest('tr').find('.country-select');
-                    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
-
-                    $btn.closest('tr').remove();
-                    reindexAll();
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Failed',
-                        text: val.value?.msg || 'Failed delete'
-                    });
-                }
+                    },
+                    error: function() {
+                        swal({
+                            title: 'Error',
+                            text: 'Server error / timeout',
+                            type: 'error'
+                        });
+                    }
+                });
             });
         });
 
@@ -867,45 +869,50 @@
                 return;
             }
 
-            Swal.fire({
+            swal({
                 title: "Confirm",
                 text: "Are you sure to delete this BM Origin data?",
-                icon: "question",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonText: "Yes",
                 cancelButtonText: "No",
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return $.ajax({
-                        url: siteurl + thisController + 'deleteOriginBm',
-                        type: "POST",
-                        dataType: 'JSON',
-                        data: {
-                            id: bmId,
-                            type: 'bm'
+                closeOnConfirm: false
+            }, function() {
+                $.ajax({
+                    url: siteurl + thisController + 'deleteOriginBm',
+                    type: "POST",
+                    dataType: 'JSON',
+                    data: {
+                        id: bmId,
+                        type: 'bm'
+                    },
+                    success: function(val) {
+                        if (val && val.status === '1') {
+                            swal({
+                                    title: 'Deleted',
+                                    text: val.msg || 'Success',
+                                    type: 'success'
+                                },
+                                function() {
+                                    $btn.closest('tr').remove();
+                                    reindexAll();
+                                });
+                        } else {
+                            swal({
+                                title: 'Failed',
+                                text: val?.msg || 'Failed delete',
+                                type: 'warning'
+                            });
                         }
-                    }).catch(() => {
-                        Swal.showValidationMessage("Server error / timeout");
-                    });
-                }
-            }).then((val) => {
-                if (!val.isConfirmed) return;
-
-                if (val.value && val.value.status === '1') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted',
-                        text: val.value.msg || 'Success'
-                    });
-                    $btn.closest('tr').remove();
-                    reindexAll();
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Failed',
-                        text: val.value?.msg || 'Failed delete'
-                    });
-                }
+                    },
+                    error: function() {
+                        swal({
+                            title: 'Error',
+                            text: 'Server error / timeout',
+                            type: 'error'
+                        });
+                    }
+                });
             });
         });
 
@@ -968,41 +975,51 @@
 
         $('#data-form').submit(function(e) {
             e.preventDefault();
-
-            Swal.fire({
+            swal({
                 title: "Are you sure?",
                 text: "You will not be able to process again this data!",
-                icon: "warning",
+                type: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes, Save it!",
-                cancelButtonText: "No, cancel!"
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    var formData = new FormData($('#data-form')[0]);
-                    var baseurl = base_url + active_controller + 'save';
-                    $.ajax({
-                        url: baseurl,
-                        type: "POST",
-                        data: formData,
-                        cache: false,
-                        dataType: 'json',
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data.status == 1 || data.status == '1') {
-                                Swal.fire({ title: "Save Success!", text: data.msg || data.pesan || "Data saved successfully.", icon: "success", timer: 1500, showConfirmButton: false })
-                                    .then(function(){ window.location.href = base_url + active_controller; });
-                            } else {
-                                Swal.fire({ title: "Save Failed!", text: data.msg || data.pesan || "Failed to save data.", icon: "warning", confirmButtonText: "OK" });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({ title: "Error Message!", text: "An Error Occured During Process. Please try again..", icon: "error", confirmButtonText: "OK" });
+                cancelButtonText: "No, cancel!",
+                closeOnConfirm: false
+            }, function() {
+                var formData = new FormData($('#data-form')[0]);
+                var baseurl = base_url + active_controller + 'save';
+                $.ajax({
+                    url: baseurl,
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.status == 1 || data.status == '1') {
+                            swal({
+                                    title: "Save Success!",
+                                    text: data.msg || data.pesan || "Data saved successfully.",
+                                    type: "success"
+                                },
+                                function() {
+                                    window.location.href = base_url + active_controller;
+                                });
+                        } else {
+                            swal({
+                                title: "Save Failed!",
+                                text: data.msg || data.pesan || "Failed to save data.",
+                                type: "warning"
+                            });
                         }
-                    });
-                } else {
-                    Swal.fire({ title: "Cancelled", text: "Data can be processed again :)", icon: "error", confirmButtonText: "OK" });
-                }
+                    },
+                    error: function() {
+                        swal({
+                            title: "Error Message!",
+                            text: "An Error Occured During Process. Please try again.",
+                            type: "error"
+                        });
+                    }
+                });
             });
         });
 
@@ -1012,42 +1029,70 @@
             let id_hs = $('#idHs').val();
 
             if (addKuota <= 0) {
-                Swal.fire({ title: "Warning", text: "Masukkan jumlah kuota baru yang valid!", icon: "warning", confirmButtonText: "OK" });
+                swal({
+                    title: "Warning",
+                    text: "Masukkan jumlah kuota baru yang valid!",
+                    type: "warning"
+                });
                 return false;
             }
 
-            Swal.fire({
+            swal({
                 title: "Konfirmasi",
                 text: "Tambahkan kuota sebesar " + addKuota + "?",
-                icon: "warning",
+                type: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ya, Tambahkan!",
-                cancelButtonText: "Batal"
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: siteurl + active_controller + 'update_kuota',
-                        type: 'POST',
-                        dataType: 'JSON',
-                        data: { id: id_hs, tambah_kuota: addKuota },
-                        success: function(result) {
-                            if (result.status == 1) {
-                                Swal.fire({ title: "Sukses!", text: result.pesan, icon: "success", timer: 1500, showConfirmButton: false })
-                                    .then(function(){
-                                        window.location.reload(true);
-                                        $('#form-kuota').attr('hidden', true);
-                                        $('#newKuota').val('');
-                                    });
-                            } else {
-                                Swal.fire({ title: "Gagal", text: result.pesan, icon: "error", confirmButtonText: "OK" });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({ title: "Error", text: "Terjadi kesalahan pada server", icon: "error", confirmButtonText: "OK" });
+                cancelButtonText: "Batal",
+                closeOnConfirm: false
+            }, function() {
+                $.ajax({
+                    url: siteurl + active_controller + 'update_kuota',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        id: id_hs,
+                        tambah_kuota: addKuota
+                    },
+                    success: function(result) {
+                        if (result.status == 1) {
+                            swal({
+                                    title: "Sukses!",
+                                    text: result.pesan,
+                                    type: "success"
+                                },
+                                function() {
+                                    window.location.reload(true);
+                                    $('#form-kuota').attr('hidden', true);
+                                    $('#newKuota').val('');
+                                });
+                        } else {
+                            swal({
+                                title: "Gagal",
+                                text: result.pesan,
+                                type: "error"
+                            });
                         }
-                    });
-                }
+                    },
+                    error: function() {
+                        swal({
+                            title: "Error",
+                            text: "Terjadi kesalahan pada server",
+                            type: "error"
+                        });
+                    }
+                });
             });
         });
+
+        <?php if (!empty($results['mode']) && $results['mode'] === 'view') : ?>
+            $('#data-form input, #data-form select, #data-form textarea').prop('disabled', true);
+            $('#add-item-origin, .del-origin, .add-bm, .del-bm').prop('disabled', true).addClass('disabled');
+            $('#add-req1, #add-req2, .del-item, .editRQ, .deleteRQ').prop('disabled', true).addClass('disabled');
+            $('#add-kuota, #cancel-kuota, #save-kuota').prop('disabled', true).addClass('disabled');
+            $('#add-item-origin, .del-origin, .add-bm, .del-bm').hide();
+            $('#add-req1, #add-req2').hide();
+            $('#add-kuota').hide();
+        <?php endif; ?>
     });
 </script>
