@@ -451,7 +451,7 @@ class Material_master extends Admin_Controller
     $sheet->mergeCells('H' . $NewRow . ':H' . $NextRow);
 
     $sheet->getColumnDimension("I")->setAutoSize(true);
-    $sheet->setCellValue('i' . $NewRow, 'PACKING UNIT');
+    $sheet->setCellValue('I' . $NewRow, 'PACKING UNIT');
     $sheet->getStyle('I' . $NewRow . ':I' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('I' . $NewRow . ':I' . $NextRow);
 

@@ -50,9 +50,9 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 					<a class="btn btn-md btn-success add" href="javascript:void(0)" title="Add">
 						<i class="fa fa-plus me-1"></i>Add
 					</a>
-					<!-- <a class="btn btn-md btn-info" href="<?= base_url('material_master/download_excel'); ?>" target="_blank" title="Download">
+					<a class="btn btn-md btn-info" href="<?= base_url('material_master/download_excel'); ?>" target="_blank" title="Download">
 						<i class="fa fa-excel me-1"></i>Excel
-					</a> -->
+					</a>
 				<?php endif; ?>
 			</div>
 

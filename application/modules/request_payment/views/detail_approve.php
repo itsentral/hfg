@@ -20,7 +20,7 @@ if ($type == 'expense') {
 	$bank_id = $header->bank_id;
 	$accnumber = $header->accnumber;
 	$accname = $header->accname;
-} elseif ($type == 'transport') {
+} elseif ($type == 'transportasi') {
 	$keterangan = 'Transportasi';
 	$no_doc = $header->no_doc;
 	$tgl_doc = $header->tgl_doc;
@@ -58,8 +58,8 @@ if ($type == 'expense') {
 <!-- <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script> -->
 <div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
 <?= form_open($this->uri->uri_string(), array('id' => 'frm_data', 'name' => 'frm_data', 'role' => 'form', 'class' => 'form-horizontal')); ?>
-<div class="card">
-	<div class="card-body">
+<div class="box">
+	<div class="box-body">
 
 		<div class="row">
 			<input type="hidden" name="id" value="<?= $header->id; ?>">
@@ -86,8 +86,8 @@ if ($type == 'expense') {
 					<div class="col-md-6" style="margin-bottom: 1rem;">
 						<?php
 						if ($data_req_payment['link_doc'] !== '' && $data_req_payment['link_doc'] !== null) {
-							if (file_exists('./uploads/expense/' . $data_req_payment['link_doc'])) {
-								echo '<a href="' . base_url('uploads/expense/' . $data_req_payment['link_doc']) . '" class="btn btn-sm btn-primary" target="_blank">
+							if (file_exists('./assets/expense/' . $data_req_payment['link_doc'])) {
+								echo '<a href="' . base_url('assets/expense/' . $data_req_payment['link_doc']) . '" class="btn btn-sm btn-primary" target="_blank">
 										<i class="fa fa-download"></i> Download
 									</a>';
 							}
@@ -156,7 +156,7 @@ if ($type == 'expense') {
 									<td><?= $dtl->tanggal; ?></td>
 									<td><?= $dtl->qty; ?></td>
 									<td><?= $data_req_payment['currency']; ?></td>
-									<!-- <td class="text-left">
+									<td class="text-left">
 										<table class="w-100">
 											<tr>
 												<td>Nilai Pengajuan</td>
@@ -187,8 +187,7 @@ if ($type == 'expense') {
 												</td>
 											</tr>
 										</table>
-									</td> -->
-									<td class="text-right"><?= number_format($dtl->expense) ?></td>
+									</td>
 									<td class="text-center">
 										<?php
 
@@ -203,9 +202,9 @@ if ($type == 'expense') {
 												echo '<a href="' . base_url('./' . $get_invoice['link_doc']) . '" target="_blank"><i class="fa fa-download"></i></a>';
 											}
 										} else {
-											if (file_exists('./uploads/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
+											if (file_exists('./assets/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
 										?>
-												<a href="<?= base_url('./uploads/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a>
+												<a href="<?= base_url('./assets/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a>
 										<?php
 											}
 										}
@@ -231,7 +230,7 @@ if ($type == 'expense') {
 										<td><?= $data_req_payment['currency']; ?></td>
 										<td class="text-right">-</td>
 										<td class="text-right">-</td>
-										<td class="text-center"><a href="<?= base_url('uploads/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
+										<td class="text-center"><a href="<?= base_url('assets/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
 										<td>
 											<?php if ($dtl->status == '2') : ?>
 												<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="check_item" id="check_<?= $dtl->id; ?>">
@@ -305,7 +304,7 @@ if ($type == 'expense') {
 												</tr>
 											</table>
 										</td>
-										<td class="text-center"><a href="<?= base_url('uploads/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
+										<td class="text-center"><a href="<?= base_url('assets/expense/') . $dtl->doc_file; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
 										<td>
 											<?php if ($dtl->status == '2') : ?>
 												<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="check_item" id="check_<?= $dtl->id; ?>">
@@ -322,7 +321,7 @@ if ($type == 'expense') {
 								<?php
 								}
 								?>
-							<?php elseif ($type == 'transport') :
+							<?php elseif ($type == 'transportasi') :
 								$gTotal += ($dtl->jumlah_kasbon + $data_req_payment['admin_bank'] - $data_req_payment['total_pph']); ?>
 								<tr>
 									<td><?= $n; ?></td>
@@ -365,8 +364,8 @@ if ($type == 'expense') {
 									</td>
 									<td class="text-center">
 										<?php
-										if (file_exists('./uploads/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
-											echo '<a href="' . base_url('./uploads/expense/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
+										if (file_exists('./assets/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
+											echo '<a href="' . base_url('./assets/expense/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
 										}
 										?>
 									</td>
@@ -426,8 +425,8 @@ if ($type == 'expense') {
 									</td>
 									<td class="text-center">
 										<?php
-										if (file_exists('./uploads/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
-											echo '<a href="' . base_url('./uploads/expense/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
+										if (file_exists('./assets/expense/' . $dtl->doc_file) && $dtl->doc_file !== '') {
+											echo '<a href="' . base_url('./assets/expense/') . $dtl->doc_file . '" target="_blank"><i class="fa fa-download"></i></a>';
 										}
 										?>
 									</td>
@@ -505,7 +504,7 @@ if ($type == 'expense') {
 									<td><?= $data_req_payment['currency']; ?></td>
 									<td class="text-right"><?= number_format($dtl->grand_total, 2) ?></td>
 
-									<td class="text-center"><a href="<?= base_url('uploads/expense/') . $data_req_payment['link_doc']; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
+									<td class="text-center"><a href="<?= base_url('assets/expense/') . $data_req_payment['link_doc']; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
 									<td>
 										<?php if ($dtl->sts == '2') : ?>
 											<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="check_item" id="check_<?= $dtl->id; ?>">
@@ -528,39 +527,44 @@ if ($type == 'expense') {
 				<tfoot>
 					<tr class="bg-blue">
 						<th colspan="6" class="text-right">Total</th>
-						<th class="text-right"><?= number_format($data_req_payment['jumlah'], 2); ?></th>
+						<th class="text-right"><?= number_format($gTotal); ?></th>
 						<th colspan="3" class="text-center"></th>
 					</tr>
 				</tfoot>
 			</table>
-		</div>
-
-		<div class="row mb-2">
-			<div class="col-md-12">
+			<div class="col-md-4">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th class="text-center" colspan="6">Info Transfer</th>
+							<th class="text-center" colspan="3">Info Transfer</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td class="text-center" width="10%"><b>Bank</b></td>
-							<td class="text-right" width="10%"><?= $bank_id ?></td>
-							<td class="text-center" width="15%"><b>Account Number</b></td>
-							<td class="text-right" width="15%"><?= $accnumber ?></td>
-							<td class="text-center" width="15%"><b>Account Name</b></td>
-							<td class="text-right" width="15%"><?= $accname ?></td>
+							<td>Bank</td>
+							<td class="text-center">:</td>
+							<td><?= $bank_id ?></td>
+						</tr>
+						<tr>
+							<td>Account Number</td>
+							<td class="text-center">:</td>
+							<td><?= $accnumber ?></td>
+						</tr>
+						<tr>
+							<td>Account Name</td>
+							<td class="text-center">:</td>
+							<td><?= $accname ?></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-		</div>
-
-		<div class="text-center">
-			<a href="<?= base_url($this->uri->segment(1) . '/list_approve_management'); ?>" class="btn btn-secondary btn-md" style="margin-right: 0.5em;"><i class="fa fa-reply">&nbsp;</i>Back</a>
-			<button type="button" class="btn btn-danger btn-md" style="margin-right: 0.5em;" id="reject"><i class="fas fa-ban">&nbsp;</i>Reject</button>
-			<button type="button" class="btn btn-success btn-md" id="process"><i class="fas fa-check-double">&nbsp;</i>Approve</button>
+			<div class="col-md-8"></div>
+			<div class="col-md-12"></div>
+			<div class="">
+				<button type="button" class="btn btn-success btn-sm text-right pull-right" id="process"><i class="fa fa-save">&nbsp;</i>Process</button>
+				<button type="button" class="btn btn-danger btn-sm text-right pull-right" style="margin-right: 0.5em;" id="reject"><i class="fa fa-close">&nbsp;</i>Reject</button>
+				<a href="<?= base_url($this->uri->segment(1) . '/list_approve_management'); ?>" class="btn btn-default btn-sm pull-right" style="margin-right: 0.5em;"><i class="fa fa-reply">&nbsp;</i>Back</a>
+			</div>
 		</div>
 	</div>
 	<!-- <div> &nbsp;<button type="button" id="btnxls" class="btn btn-default">Export Excel</button><br /><br /></div> -->
