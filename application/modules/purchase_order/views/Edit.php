@@ -1104,7 +1104,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			$("#totalexppn").val(number_format(exppn, 2));
 			$("#ppn").val(number_format(ppn, 2));
-			$("#subtotal").val(number_format(subtotal, 2));
+			$("#subtotal").val(number_format(subtotal, 4));
 
 			cariTotal()
 		});
@@ -1771,7 +1771,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		var grandtotal = totalPlusPajak + kirim;
 
-		$("#subtotal").val(number_format(grandtotal, 2));
+		$("#subtotal").val(number_format(grandtotal, 4));
 		$("#kirim").val(number_format(kirim, 2));
 	}
 
@@ -1850,7 +1850,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		$("#hargatotal").val(number_format(SUM_JMX, 2));
 		$("#diskontotal").val(number_format(SUM_DIS, 2));
 		$("#taxtotal").val(number_format(SUM_PJK, 2));
-		$("#subtotal").val(number_format((SUM_JMX - totaldisc + totalppn + biaya_kirim), 2));
+		$("#subtotal").val(number_format((SUM_JMX - totaldisc + totalppn + biaya_kirim), 4));
 
 	}
 
