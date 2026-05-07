@@ -233,17 +233,46 @@ $is_view_mode = !empty($detail_ros);
                                 <div class="col-md-4"><label class="col-form-label">Upload Document</label></div>
                                 <div class="col-md-8">
                                     <div class="d-flex flex-column gap-2">
+
+                                        <?php
+                                        // File lama hanya ada di mode edit_draft
+                                        $existing_original = $ros_data->file_original ?? '';
+                                        $existing_hash     = $ros_data->file_hash     ?? '';
+                                        ?>
+
+                                        <?php if (!empty($existing_original) && !empty($existing_hash) && file_exists($existing_hash)): ?>
+                                            <!-- Tampilkan file yang sudah tersimpan -->
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <i class="fa fa-file-alt text-primary"></i>
+                                                <a href="<?= base_url($existing_hash) ?>" target="_blank" class="small">
+                                                    <?= htmlspecialchars($existing_original) ?>
+                                                </a>
+                                                <span class="badge bg-secondary">Tersimpan</span>
+                                            </div>
+                                            <small class="text-warning">
+                                                <i class="fa fa-info-circle"></i>
+                                                Upload file baru untuk <b>mengganti</b> file lama.
+                                            </small>
+                                        <?php endif; ?>
+
+                                        <!-- Input upload — selalu tampil -->
                                         <div class="d-flex align-items-center gap-2 flex-wrap">
                                             <input type="file" name="file_incoming_material[]" id="file_incoming_material"
                                                 class="d-none" accept=".pdf,.jpg,.jpeg,.png" multiple>
                                             <button type="button" class="btn btn-outline-warning" id="btnPickFile">
-                                                <i class="ti ti-upload me-1"></i> Choose File
+                                                <i class="ti ti-upload me-1"></i>
+                                                <?= !empty($existing_original) ? 'Ganti File' : 'Choose File' ?>
                                             </button>
                                             <span class="text-muted" id="docFileName">No file chosen</span>
                                             <button type="button" class="btn btn-light border" id="btnClearFile" style="display:none;">
                                                 <i class="ti ti-x me-1"></i> Clear
                                             </button>
                                         </div>
+
+                                        <!-- Hidden: kirim nilai file lama ke server jika tidak ada upload baru -->
+                                        <input type="hidden" name="existing_file_original" value="<?= htmlspecialchars($existing_original) ?>">
+                                        <input type="hidden" name="existing_file_hash" value="<?= htmlspecialchars($existing_hash) ?>">
+
                                         <small class="text-muted">Allowed: PDF/JPG/PNG. Max 2MB.</small>
                                     </div>
                                 </div>

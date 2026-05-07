@@ -394,7 +394,6 @@ class Incoming extends Admin_Controller
             return;
         }
 
-        // Validasi semua coil sudah pilih gudang
         if (!empty($post['detail'])) {
             foreach ($post['detail'] as $val) {
                 if (empty($val['id_gudang_ke'])) {
@@ -404,11 +403,25 @@ class Incoming extends Admin_Controller
             }
         }
 
+        // ── Handle file upload ──────────────────────────────────
+        // Ambil nama asli sebelum upload (hanya file pertama)
+        $file_original = $_FILES['file_incoming_material']['name'][0] ?? '';
+        $file_hash     = '';
+
+        if (!empty($file_original)) {
+            // Ada file baru → upload
+            $file_hash = $this->_upload_incoming_files('file_incoming_material');
+        } else {
+            // Tidak ada upload baru → pakai nilai lama dari hidden input
+            $file_original = $post['existing_file_original'] ?? '';
+            $file_hash     = $post['existing_file_hash']     ?? '';
+        }
+        // ────────────────────────────────────────────────────────
+
         $this->db->trans_begin();
 
-        // Update gudang & QC per coil ke tr_ros_material_coil
         foreach ($post['detail'] as $val) {
-            $gd = $this->db->get_where('warehouse', ['id' => (int) $val['id_gudang_ke']])->row();
+            $gd        = $this->db->get_where('warehouse', ['id' => (int) $val['id_gudang_ke']])->row();
             $kd_gudang = $gd ? $gd->kd_gudang : '';
 
             $this->db->update('tr_ros_material_coil', [
@@ -418,11 +431,12 @@ class Incoming extends Admin_Controller
             ], ['id' => (int) $val['id_ros_coil']]);
         }
 
-        // Update status ROS → draft
         $this->db->update('tr_ros_header', [
             'status_incoming' => 'draft',
             'draft_by'        => $this->auth->user_id(),
             'draft_date'      => date('Y-m-d H:i:s'),
+            'file_original'   => $file_original, // ← tambah
+            'file_hash'       => $file_hash,     // ← tambah
         ], ['id' => $no_ros]);
 
         if ($this->db->trans_status() === FALSE) {
@@ -433,12 +447,11 @@ class Incoming extends Admin_Controller
 
         $this->db->trans_commit();
 
-        // Ambil coil ids untuk URL print
         $coil_ids = $this->db->query(
             "SELECT GROUP_CONCAT(c.id SEPARATOR '-') AS ids
-             FROM tr_ros_material_coil c
-             JOIN tr_ros_material m ON m.id = c.id_ros_material
-             WHERE m.id_ros = ?",
+         FROM tr_ros_material_coil c
+         JOIN tr_ros_material m ON m.id = c.id_ros_material
+         WHERE m.id_ros = ?",
             [$no_ros]
         )->row();
 
@@ -515,7 +528,13 @@ class Incoming extends Admin_Controller
         $tanggal        = $this->input->post('tanggal') ?: date('Y-m-d');
         $uang_muka_idr  = (float) str_replace(',', '', $this->input->post('uang_muka_idr') ?? 0);
         $uang_muka_usd  = (float) str_replace(',', '', $this->input->post('uang_muka') ?? 0);
-        $link           = $this->_upload_incoming_files('file_incoming_material');
+        if (!empty($_FILES['file_incoming_material']['name'][0])) {
+            $link = $this->_upload_incoming_files('file_incoming_material');
+            $file_original_final = $_FILES['file_incoming_material']['name'][0] ?? '';
+        } else {
+            $link                = $ros_header->file_hash     ?? '';
+            $file_original_final = $ros_header->file_original ?? '';
+        }
 
         $this->db->trans_begin();
 
@@ -645,6 +664,7 @@ class Incoming extends Admin_Controller
             'kd_gudang_ke'           => 'MULTI',
             'checked'                => 'Y',
             'file_incoming_material' => $link,
+            'file_original'          => $file_original_final,
             'created_by'             => $this->auth->user_id(),
             'created_date'           => date('Y-m-d H:i:s'),
         ]);
