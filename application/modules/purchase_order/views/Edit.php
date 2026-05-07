@@ -1729,7 +1729,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		// Total Order Akhir (Harga + Pajak + Ongkir)
 		var grandTotal = totalOrder + kirim;
-		$("#subtotal").val(number_format(grandTotal, 2));
+		$("#subtotal").val(number_format(grandTotal, 4));
 
 		// Fungsi pembantu jika ada (opsional)
 		if (typeof TotalSemua === "function") {
