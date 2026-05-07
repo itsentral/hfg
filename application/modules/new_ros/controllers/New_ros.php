@@ -597,7 +597,7 @@ class New_ros extends Admin_Controller
     public function parse_packing_list()
     {
         // Upload file
-        $config['upload_path']   = FCPATH . 'assets/uploads/new_ros/';
+        $config['upload_path']   = FCPATH . 'uploads/new_ros/';
         $config['allowed_types'] = 'xlsx|xls';
         $config['max_size']      = 10240;
         $config['encrypt_name']  = TRUE;
@@ -751,7 +751,7 @@ class New_ros extends Admin_Controller
         }
 
         // Upload file
-        $config['upload_path']   = FCPATH . 'assets/uploads/new_ros/';
+        $config['upload_path']   = FCPATH . 'uploads/new_ros/';
         $config['allowed_types'] = 'xlsx|xls';
         $config['max_size']      = 10240; // 10MB
         $config['encrypt_name']  = TRUE;
