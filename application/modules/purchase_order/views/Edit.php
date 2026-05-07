@@ -358,7 +358,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 													
-														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . $total . "'></td>
+														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
 														
 														<td>
 															<div class='input-group input-group-sm mb-2'>
@@ -376,7 +376,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='Nilai PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn : null) . "'>
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn_persen : null) . "'>
 														</td>
-														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . ($total - $value->nilai_disc + $value->ppn) . "'></td>
+														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total - $value->nilai_disc + $value->ppn, 4, '.', ',') . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
 														<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]' value='" . ($value->kuota_internal - $value->qty) . "' readonly></td>
 										 			</tr>
