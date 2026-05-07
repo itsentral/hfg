@@ -1723,7 +1723,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		}
 
 		// 3. Masukkan kembali ke ID Input yang Anda punya
-		$("#totalinppn").val(number_format(SUM_JML, 2));
+		$("#totalinppn").val(number_format(SUM_JML, 4));
 		$("#dpp").val(number_format(dpp, 2));
 		$("#ppn").val(number_format(ppn, 2));
 
