@@ -452,7 +452,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             <a href="<?= base_url('new_ros') ?>" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
             <button type="button" class="btn btn-success" id="btn_save"><i class="fas fa-save"></i> Simpan</button>
             <?php if ($is_edit) : ?>
-                <button type="button" class="btn btn-warning" id="btn_print_qr"><i class="fas fa-qrcode"></i> Print QR Code</button>
+                <!-- <button type="button" class="btn btn-warning" id="btn_print_qr"><i class="fas fa-qrcode"></i> Print QR Code</button> -->
                 <button type="button" class="btn btn-info" id="btn_finalize"><i class="fas fa-check-double"></i> Selesai & Kirim ke Incoming</button>
             <?php endif; ?>
         </div>
@@ -460,7 +460,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
 </div>
 
 <!-- Modal Print QR -->
-<div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- <div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -474,7 +474,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Modal Review Upload Packing List -->
 <div class="modal fade" id="modalReviewUpload" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1388,36 +1388,36 @@ $list_po_data = isset($list_po) ? $list_po : [];
         // ═══════════════════════════════════════════════════════════════
         // PRINT QR CODE
         // ═══════════════════════════════════════════════════════════════
-        $('#btn_print_qr').on('click', function() {
-            var id_ros = $('#id_ros').val();
-            $.ajax({
-                url: siteurl + 'new_ros/get_coil_list',
-                type: 'POST',
-                data: {
-                    id_ros: id_ros
-                },
-                success: function(html) {
-                    $('#modal_body_qr').html(html);
-                    $('#modalPrintQR').modal('show');
-                }
-            });
-        });
+        // $('#btn_print_qr').on('click', function() {
+        //     var id_ros = $('#id_ros').val();
+        //     $.ajax({
+        //         url: siteurl + 'new_ros/get_coil_list',
+        //         type: 'POST',
+        //         data: {
+        //             id_ros: id_ros
+        //         },
+        //         success: function(html) {
+        //             $('#modal_body_qr').html(html);
+        //             $('#modalPrintQR').modal('show');
+        //         }
+        //     });
+        // });
 
         $(document).on('click', '#check_all_modal', function() {
             $('.check_item_modal').prop('checked', this.checked);
         });
 
-        $(document).on('click', '#btn-print-qr-action', function() {
-            var ids = [];
-            $('.check_item_modal:checked').each(function() {
-                ids.push($(this).val());
-            });
-            if (ids.length === 0) {
-                Swal.fire('Perhatian', 'Pilih minimal 1 coil untuk print QR.', 'warning');
-                return;
-            }
-            window.open(siteurl + 'new_ros/print_qr/' + ids.join('-'), '_blank');
-        });
+        // $(document).on('click', '#btn-print-qr-action', function() {
+        //     var ids = [];
+        //     $('.check_item_modal:checked').each(function() {
+        //         ids.push($(this).val());
+        //     });
+        //     if (ids.length === 0) {
+        //         Swal.fire('Perhatian', 'Pilih minimal 1 coil untuk print QR.', 'warning');
+        //         return;
+        //     }
+        //     window.open(siteurl + 'new_ros/print_qr/' + ids.join('-'), '_blank');
+        // });
 
         // ═══════════════════════════════════════════════════════════════
         // FINALIZE → Kirim ke Incoming
