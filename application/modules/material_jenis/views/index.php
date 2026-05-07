@@ -5,6 +5,12 @@ $ENABLE_VIEW    = has_permission('Material_Jenis.View');
 $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 ?>
 
+
+<style>
+	.swal2-container {
+        z-index: 99999 !important;
+    }
+</style>
 <div class="card shadow-sm border-0">
 	<div class="card-header bg-white d-flex align-items-center justify-content-between">
 		<?php if ($ENABLE_ADD) : ?>
@@ -102,6 +108,9 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 	</div>
 </div>
 
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
