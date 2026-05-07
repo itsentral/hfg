@@ -220,6 +220,8 @@ class New_ros extends Admin_Controller
             ];
         }
 
+        // var_dump($bm_persen);die;
+
         echo json_encode(['status' => 1, 'data' => $result]);
     }
 
@@ -501,10 +503,11 @@ class New_ros extends Admin_Controller
     // ─── DOWNLOAD TEMPLATE EXCEL ─────────────────────────────────────
     public function download_template()
     {
-        $materials_json = $this->input->post('materials');
-        $materials = json_decode($materials_json, true);
+        // Format input baru: JSON array of { nm_alias, count }
+        $materials_coil_json = $this->input->post('materials_coil');
+        $materials_coil = json_decode($materials_coil_json, true);
 
-        if (empty($materials)) {
+        if (empty($materials_coil)) {
             show_error('Tidak ada data material.');
             return;
         }
@@ -517,69 +520,106 @@ class New_ros extends Admin_Controller
         $sheet = $objPHPExcel->getActiveSheet();
         $sheet->setTitle('Packing List');
 
-        // Header style
+        // ── Style Header ──
         $headerStyle = array(
             'font' => array('bold' => true, 'size' => 10),
             'alignment' => array(
                 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
                 'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-                'wrapText'   => true
+                'wrapText'   => true,
             ),
             'borders' => array(
-                'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN)
+                'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN),
             ),
             'fill' => array(
                 'type'  => PHPExcel_Style_Fill::FILL_SOLID,
-                'color' => array('rgb' => 'D9E1F2')
-            )
+                'color' => array('rgb' => 'D9E1F2'),
+            ),
         );
 
+        // ── Style Data (baris biasa) ──
         $dataStyle = array(
             'borders' => array(
-                'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN)
+                'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN),
             ),
             'alignment' => array(
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
-            )
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ),
         );
 
-        // Set column widths
-        $sheet->getColumnDimension('A')->setWidth(20);
-        $sheet->getColumnDimension('B')->setWidth(45);
-        $sheet->getColumnDimension('C')->setWidth(12);
-        $sheet->getColumnDimension('D')->setWidth(12);
-        $sheet->getColumnDimension('E')->setWidth(12);
-        $sheet->getColumnDimension('F')->setWidth(12);
-        $sheet->getColumnDimension('G')->setWidth(10);
+        // ── Style baris nama material (warna berbeda per group) ──
+        $matColors = ['EBF5FB', 'E9F7EF', 'FEF9E7', 'F9EBEA', 'F4ECF7'];
 
-        // Header row
+        // ── Kolom widths ──
+        $sheet->getColumnDimension('A')->setWidth(20);  // COIL NO.
+        $sheet->getColumnDimension('B')->setWidth(40);  // Nama Lain/Alias
+        $sheet->getColumnDimension('C')->setWidth(40);  // Nama Asli (nm_barang)
+        $sheet->getColumnDimension('D')->setWidth(12);  // N.W.
+        $sheet->getColumnDimension('E')->setWidth(12);  // G.W.
+        $sheet->getColumnDimension('F')->setWidth(12);  // LENGTH
+        $sheet->getColumnDimension('G')->setWidth(10);  // BPM
+
+        // ── Header Row ──
         $sheet->setCellValue('A1', 'COIL NO.');
-        $sheet->setCellValue('B1', 'NAMA Sesuai PO');
-        $sheet->setCellValue('C1', "COIL\nNUMBER");
+        $sheet->setCellValue('B1', 'Nama Lain/Alias');
+        $sheet->setCellValue('C1', 'Nama Asli');
         $sheet->setCellValue('D1', "N.W.\n(KGS)");
         $sheet->setCellValue('E1', "G.W.\n(KGS)");
         $sheet->setCellValue('F1', "LENGTH\n(M)");
         $sheet->setCellValue('G1', 'BPM');
-
         $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
         $sheet->getRowDimension(1)->setRowHeight(30);
 
-        // Data rows — 1 baris per material (nama lain sudah terisi)
-        $row = 2;
-        foreach ($materials as $nm_alias) {
-            $sheet->setCellValue('A' . $row, ''); // COIL NO — user isi
-            $sheet->setCellValue('B' . $row, $nm_alias); // Nama Sesuai PO — sudah terisi
-            $sheet->setCellValue('C' . $row, 1); // COIL NUMBER default 1
-            $sheet->setCellValue('D' . $row, ''); // N.W.
-            $sheet->setCellValue('E' . $row, ''); // G.W.
-            $sheet->setCellValue('F' . $row, ''); // LENGTH
-            $sheet->setCellValue('G' . $row, ''); // BPM
+        // ── Data Rows: 1 baris per coil, sudah disiapkan sesuai jumlah ──
+        $row       = 2;
+        $colorIdx  = 0;
+        foreach ($materials_coil as $mat) {
+            $nm_alias  = isset($mat['nm_alias'])  ? $mat['nm_alias']  : '';
+            $nm_barang = isset($mat['nm_barang']) ? $mat['nm_barang'] : '';
+            $count     = isset($mat['count'])     ? max(1, (int) $mat['count']) : 1;
+            $bgColor   = $matColors[$colorIdx % count($matColors)];
 
-            $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray($dataStyle);
-            $row++;
+            // Style khusus per material group (warna berbeda)
+            $matStyle = array(
+                'borders' => array(
+                    'allborders' => array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                ),
+                'fill' => array(
+                    'type'  => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => $bgColor),
+                ),
+                'alignment' => array(
+                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+            );
+
+            for ($c = 1; $c <= $count; $c++) {
+                $sheet->setCellValue('A' . $row, '');           // COIL NO — user isi
+                $sheet->setCellValue('B' . $row, $nm_alias);    // Nama Lain/Alias — sudah terisi
+                $sheet->setCellValue('C' . $row, $nm_barang);   // Nama Asli — sudah terisi
+                $sheet->setCellValue('D' . $row, '');            // N.W.
+                $sheet->setCellValue('E' . $row, '');            // G.W.
+                $sheet->setCellValue('F' . $row, '');            // LENGTH
+                $sheet->setCellValue('G' . $row, '');            // BPM
+
+                $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray($matStyle);
+                $sheet->getRowDimension($row)->setRowHeight(18);
+                $row++;
+            }
+
+            // Baris kosong pemisah antar material (kecuali material terakhir)
+            if ($colorIdx < count($materials_coil) - 1) {
+                $sheet->getRowDimension($row)->setRowHeight(18);
+                $row++;
+            }
+
+            $colorIdx++;
         }
 
-        // Output
+        // ── Freeze panes pada row pertama data ──
+        $sheet->freezePane('A2');
+
+        // ── Output ──
         $filename = 'Template_Packing_List_' . date('Ymd_His') . '.xlsx';
 
         ob_end_clean();
@@ -645,44 +685,47 @@ class New_ros extends Admin_Controller
         $highRow = $sheet->getHighestRow();
 
         // Mapping kolom
-        $start_row = 2;
-        $col_coil_no = 'B';
-        $col_nama_po = 'C';
-        $col_number  = 'D';
-        $col_nw = 'E';
-        $col_gw = 'F';
-        $col_length  = 'G';
-        $col_bpm = 'H';
+        // ── Deteksi header row & mapping kolom (format baru) ──
+        $start_row   = 2;
+        $col_coil_no = 'A';
+        $col_nama_alias = 'B';
+        $col_nm_barang  = 'C';
+        $col_nw      = 'D';
+        $col_gw      = 'E';
+        $col_length  = 'F';
+        $col_bpm     = 'G';
 
         for ($r = 1; $r <= min($highRow, 10); $r++) {
             $cellA = strtolower(trim((string) $sheet->getCell('A' . $r)->getValue()));
             $cellB = strtolower(trim((string) $sheet->getCell('B' . $r)->getValue()));
 
             if (strpos($cellA, 'coil no') !== false) {
-                $col_coil_no = 'A';
-                $col_nama_po = 'B';
-                $col_number = 'C';
-                $col_nw = 'D';
-                $col_gw = 'E';
-                $col_length = 'F';
-                $col_bpm = 'G';
-                $start_row = $r + 1;
+                // Format baru: A=COIL NO, B=Alias, C=Nama Asli, D=NW, E=GW, F=Length, G=BPM
+                $col_coil_no    = 'A';
+                $col_nama_alias = 'B';
+                $col_nm_barang  = 'C';
+                $col_nw         = 'D';
+                $col_gw         = 'E';
+                $col_length     = 'F';
+                $col_bpm        = 'G';
+                $start_row      = $r + 1;
                 break;
             } elseif (strpos($cellB, 'coil no') !== false) {
-                $col_coil_no = 'B';
-                $col_nama_po = 'C';
-                $col_number = 'D';
-                $col_nw = 'E';
-                $col_gw = 'F';
-                $col_length = 'G';
-                $col_bpm = 'H';
-                $start_row = $r + 1;
+                // Format lama fallback: B=COIL NO, C=Alias, D=Number, E=NW, F=GW, G=Length, H=BPM
+                $col_coil_no    = 'B';
+                $col_nama_alias = 'C';
+                $col_nm_barang  = 'D';
+                $col_nw         = 'E';
+                $col_gw         = 'F';
+                $col_length     = 'G';
+                $col_bpm        = 'H';
+                $start_row      = $r + 1;
                 break;
             }
         }
 
         $counter = $existing_count + 1;
-        $coils = [];
+        $coils   = [];
 
         for ($row = $start_row; $row <= $highRow; $row++) {
             $getCellValue = function ($col) use ($sheet, $row) {
@@ -693,16 +736,18 @@ class New_ros extends Admin_Controller
                 return $cell->getValue();
             };
 
-            $coil_no     = trim((string) $getCellValue($col_coil_no));
-            $nm_po       = trim((string) $getCellValue($col_nama_po));
-            $coil_number = $getCellValue($col_number);
-            $nw          = $getCellValue($col_nw);
-            $gw          = $getCellValue($col_gw);
-            $length      = $getCellValue($col_length);
-            $bpm         = $getCellValue($col_bpm);
+            $coil_no    = trim((string) $getCellValue($col_coil_no));
+            $nama_alias = trim((string) $getCellValue($col_nama_alias));
+            $nm_barang  = trim((string) $getCellValue($col_nm_barang));
+            $nw         = $getCellValue($col_nw);
+            $gw         = $getCellValue($col_gw);
+            $length     = $getCellValue($col_length);
+            $bpm        = $getCellValue($col_bpm);
 
             if (empty($coil_no) || strtolower($coil_no) == 'total') continue;
             if (strpos(strtolower($coil_no), 'error') !== false) continue;
+            // Skip baris kosong (baris pemisah antar material)
+            if (empty($nama_alias) && empty($nm_barang)) continue;
 
             $nw_val     = (float) str_replace(',', '', (string) $nw);
             $gw_val     = (float) str_replace(',', '', (string) $gw);
@@ -712,14 +757,14 @@ class New_ros extends Admin_Controller
             $kode_internal = $inisial . '-' . $coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
 
             $coils[] = [
-                'no_coil'        => $coil_no,
-                'nama_sesuai_po' => $nm_po,
-                'coil_number'    => (int) $coil_number ?: 1,
-                'berat_bersih'   => $nw_val,
-                'berat_kotor'    => $gw_val,
-                'panjang'        => $length_val,
-                'bpm'            => $bpm_val,
-                'kode_internal'  => $kode_internal,
+                'no_coil'       => $coil_no,
+                'nama_alias'    => $nama_alias,   // ← key baru, dipakai untuk matching
+                'nm_barang'     => $nm_barang,
+                'berat_bersih'  => $nw_val,
+                'berat_kotor'   => $gw_val,
+                'panjang'       => $length_val,
+                'bpm'           => $bpm_val,
+                'kode_internal' => $kode_internal,
             ];
             $counter++;
         }

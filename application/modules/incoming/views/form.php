@@ -178,7 +178,7 @@ $is_view_mode = !empty($detail_ros);
             }
 
             // Ambil no_surat PO untuk ditampilkan sebagai teks (dari DB sudah ada di ros_data->no_po)
-            $no_po_display = $ros_data->no_po ?? '-';
+            $no_po_display = $ros_data->no_surat ?? '-';
             $no_ros_display = $ros_data->id ?? '-';
             ?>
 

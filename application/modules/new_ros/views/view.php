@@ -119,7 +119,6 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                     <tr>
                         <th class="text-center">No</th>
                         <th class="text-center">Nama di PO</th>
-                        <th class="text-center">Nama di ERP</th>
                         <th class="text-center">Nama PO (Alias)</th>
                         <th class="text-center">Kg Unit</th>
                         <th class="text-center">Unit Price (U$)</th>
@@ -152,7 +151,6 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                         <tr>
                             <td class="text-center"><?= $idx + 1 ?></td>
                             <td><?= $m['nm_barang'] ?></td>
-                            <td><?= $m['nm_erp'] ?></td>
                             <td><?= $m['nm_alias'] ?></td>
                             <td class="text-end"><?= number_format($m['kg_unit'], 4) ?></td>
                             <td class="text-end"><?= number_format($m['unit_price_usd'], 6) ?></td>
@@ -171,7 +169,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                 </tbody>
                 <tfoot>
                     <tr class="summary-row">
-                        <td colspan="6" class="text-end">Total PO</td>
+                        <td colspan="5" class="text-end">Total PO</td>
                         <td class="text-end"><?= number_format($sum_usd, 4) ?></td>
                         <td class="text-end"><?= number_format($sum_rp, 0) ?></td>
                         <td></td>
@@ -187,55 +185,71 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
             </table>
         </div>
         <!-- DATA COIL -->
-        <?php
-        $all_coils = [];
-        foreach ($materials as $mat) {
-            if (!empty($mat['coils'])) {
-                foreach ($mat['coils'] as $coil) {
-                    $coil['nm_alias'] = $mat['nm_alias'];
-                    $coil['nm_erp']   = $mat['nm_erp'];
-                    $all_coils[] = $coil;
-                }
-            }
-        }
-        ?>
-        <?php if (!empty($all_coils)) : ?>
-            <div class="section-title" style="border-left-color:#17a2b8;"><i class="fas fa-file-excel"></i> Data Coil (Packing List)</div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm table-view">
-                    <thead class="table-light">
+        <!-- DATA COIL -->
+<?php
+// Hitung total coil dan cek apakah ada material yang punya coil
+$total_coil_count = 0;
+$has_coil = false;
+foreach ($materials as $mat) {
+    if (!empty($mat['coils'])) {
+        $has_coil = true;
+        $total_coil_count += count($mat['coils']);
+    }
+}
+?>
+<?php if ($has_coil) : ?>
+    <div class="section-title" style="border-left-color:#17a2b8;">
+        <i class="fas fa-file-excel"></i> Data Coil (Packing List)
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm table-view">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" width="4%">No</th>
+                    <th class="text-center">Nama Asli</th>
+                    <th class="text-center">Nama Alias</th>
+                    <th class="text-center">No. Coil</th>
+                    <th class="text-center">Kode Internal</th>
+                    <th class="text-center">N.W. (Kg)</th>
+                    <th class="text-center">G.W. (Kg)</th>
+                    <th class="text-center">Length (M)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 1;
+                foreach ($materials as $mat) :
+                    if (empty($mat['coils'])) continue;
+
+                    $rowspan  = count($mat['coils']);
+                    $nm_asli  = $mat['nm_barang'] ?: $mat['nm_erp'];
+                    $nm_alias = $mat['nm_alias']  ?: $mat['nm_barang'];
+                ?>
+                    <?php foreach ($mat['coils'] as $j => $coil) : ?>
                         <tr>
-                            <th class="text-center">No</th>
-                            <th class="text-center">Material (Alias)</th>
-                            <th class="text-center">No. Coil</th>
-                            <th class="text-center">Kode Internal</th>
-                            <th class="text-center">N.W. (Kg)</th>
-                            <th class="text-center">G.W. (Kg)</th>
-                            <th class="text-center">Length (M)</th>
+                            <?php if ($j === 0) : ?>
+                                <td class="text-center align-middle" rowspan="<?= $rowspan ?>"><?= $no ?></td>
+                                <td class="align-middle" rowspan="<?= $rowspan ?>"><?= $nm_asli ?></td>
+                                <td class="align-middle" rowspan="<?= $rowspan ?>"><?= $nm_alias ?></td>
+                            <?php endif; ?>
+                            <td class="text-center"><?= $coil['no_coil'] ?></td>
+                            <td class="text-center"><?= $coil['kode_internal'] ?></td>
+                            <td class="text-end"><?= number_format($coil['berat_bersih'], 2) ?></td>
+                            <td class="text-end"><?= number_format($coil['berat_kotor'],  2) ?></td>
+                            <td class="text-end"><?= number_format($coil['panjang'],      2) ?></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($all_coils as $idx => $c) : ?>
-                            <tr>
-                                <td class="text-center"><?= $idx + 1 ?></td>
-                                <td><?= $c['nm_alias'] ?: $c['nm_erp'] ?></td>
-                                <td class="text-center"><?= $c['no_coil'] ?></td>
-                                <td class="text-center"><?= $c['kode_internal'] ?></td>
-                                <td class="text-end"><?= number_format($c['berat_bersih'], 2) ?></td>
-                                <td class="text-end"><?= number_format($c['berat_kotor'], 2) ?></td>
-                                <td class="text-end"><?= number_format($c['panjang'], 2) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr class="table-secondary">
-                            <td colspan="2" class="text-end fw-bold">Total Coil: <?= count($all_coils) ?></td>
-                            <td colspan="5"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php $no++; endforeach; ?>
+            </tbody>
+            <tfoot>
+                <tr class="table-secondary">
+                    <td colspan="3" class="text-end fw-bold">Total Coil: <?= $total_coil_count ?></td>
+                    <td colspan="5"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+<?php endif; ?>
     </div>
 
     <div class="card-footer text-end">
@@ -243,12 +257,12 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         <?php if ($h['status'] == 0) : ?>
             <a href="<?= base_url('new_ros/edit/' . $h['id']) ?>" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
         <?php endif; ?>
-        <button type="button" class="btn btn-primary" id="btn_view_qr"><i class="fas fa-qrcode"></i> Print QR Code</button>
+        <!-- <button type="button" class="btn btn-primary" id="btn_view_qr"><i class="fas fa-qrcode"></i> Print QR Code</button> -->
     </div>
 </div>
 
 <!-- Modal Print QR -->
-<div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- <div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -262,7 +276,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -283,16 +297,16 @@ $(document).ready(function() {
         $('.check_item_modal').prop('checked', this.checked);
     });
 
-    $(document).on('click', '#btn-print-qr-action', function() {
-        var ids = [];
-        $('.check_item_modal:checked').each(function() {
-            ids.push($(this).val());
-        });
-        if (ids.length === 0) {
-            Swal.fire('Perhatian', 'Pilih minimal 1 coil untuk print QR.', 'warning');
-            return;
-        }
-        window.open(siteurl + 'new_ros/print_qr/' + ids.join('-'), '_blank');
-    });
+    // $(document).on('click', '#btn-print-qr-action', function() {
+    //     var ids = [];
+    //     $('.check_item_modal:checked').each(function() {
+    //         ids.push($(this).val());
+    //     });
+    //     if (ids.length === 0) {
+    //         Swal.fire('Perhatian', 'Pilih minimal 1 coil untuk print QR.', 'warning');
+    //         return;
+    //     }
+    //     window.open(siteurl + 'new_ros/print_qr/' + ids.join('-'), '_blank');
+    // });
 });
 </script>

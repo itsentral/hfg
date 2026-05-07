@@ -116,37 +116,65 @@ class New_ros_model extends BF_Model
      * Ambil BM% dari HS Code berdasarkan material dan origin supplier
      * Lookup: new_inventory_4.hscode -> hscode_origin (by supplier country) -> hscode_bm_origin.bm_value
      */
+    // public function get_bm_persen($id_material, $id_supplier)
+    // {
+    //     // Ambil hscode dari material
+    //     $material = $this->db->select('hscode')->get_where('new_inventory_4', ['code_lv4' => $id_material])->row();
+    //     if (!$material || !$material->hscode) {
+    //         // Coba cari by id
+    //         $material = $this->db->select('hscode')->get_where('new_inventory_4', ['id' => $id_material])->row();
+    //     }
+    //     if (!$material || !$material->hscode) return 0;
+
+    //     // Ambil country dari supplier
+    //     $supplier = $this->db->select('id_country')->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
+    //     if (!$supplier || !$supplier->id_country) return 0;
+
+    //     // Cari country id di tabel countries berdasarkan iso3
+    //     $country = $this->db->select('id')->get_where('countries', ['country_code' => $supplier->id_country])->row();
+    //     if (!$country) {
+    //         $country = $this->db->select('id')->get_where('country_all', ['iso3' => $supplier->id_country])->row();
+    //     }
+
+    //     $country_id = $country ? $country->id : null;
+
+    //     // Cari hscode_origin
+    //     $origin = $this->db->get_where('hscode_origin', [
+    //         'hscode_id' => $material->hscode,
+    //         'origin_id' => $country_id
+    //     ])->row();
+
+    //     if (!$origin) return 0;
+
+    //     // Ambil BM value (ambil yang pertama / BM utama)
+    //     $bm = $this->db->select('bm_value')
+    //         ->where('hscode_origin_id', $origin->id)
+    //         ->order_by('id', 'ASC')
+    //         ->get('hscode_bm_origin')
+    //         ->row();
+
+    //     return $bm ? (float) $bm->bm_value : 0;
+    // }
+
     public function get_bm_persen($id_material, $id_supplier)
     {
-        // Ambil hscode dari material
+        // 1. Ambil hscode dari material
         $material = $this->db->select('hscode')->get_where('new_inventory_4', ['code_lv4' => $id_material])->row();
         if (!$material || !$material->hscode) {
-            // Coba cari by id
             $material = $this->db->select('hscode')->get_where('new_inventory_4', ['id' => $id_material])->row();
         }
+
         if (!$material || !$material->hscode) return 0;
 
-        // Ambil country dari supplier
-        $supplier = $this->db->select('id_country')->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
-        if (!$supplier || !$supplier->id_country) return 0;
-
-        // Cari country id di tabel countries berdasarkan iso3
-        $country = $this->db->select('id')->get_where('countries', ['country_code' => $supplier->id_country])->row();
-        if (!$country) {
-            $country = $this->db->select('id')->get_where('country_all', ['iso3' => $supplier->id_country])->row();
-        }
-
-        $country_id = $country ? $country->id : null;
-
-        // Cari hscode_origin
+        // 2. Cari hscode_origin TANPA melihat origin_id (Negara)
+        // Kita ambil yang pertama ditemukan (limit 1)
         $origin = $this->db->get_where('hscode_origin', [
-            'hscode_id' => $material->hscode,
-            'origin_id' => $country_id
+            'hscode_id' => $material->hscode
         ])->row();
 
         if (!$origin) return 0;
 
-        // Ambil BM value (ambil yang pertama / BM utama)
+        // 3. Ambil BM value
         $bm = $this->db->select('bm_value')
             ->where('hscode_origin_id', $origin->id)
             ->order_by('id', 'ASC')
