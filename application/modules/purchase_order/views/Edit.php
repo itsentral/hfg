@@ -388,7 +388,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['get_po']->total_include_ppn ?>" onkeyup required name="totalinppn">
+									<input readonly type="text" class="form-control auto_num auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['get_po']->total_include_ppn, 4, '.', ',') ?>" onkeyup required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
@@ -425,7 +425,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total Order</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= $results['get_po']->subtotal ?>" onkeyup required name="subtotal">
+									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" value="<?= number_format($results['get_po']->subtotal, 4, '.', ',') ?>" onkeyup required name="subtotal">
 								</td>
 							</tr>
 						</tfoot>
@@ -585,7 +585,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '</td>';
 
 									echo '<td class="text-right">';
-									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '">';
 									echo '</td>';
 
 									echo '<td>';

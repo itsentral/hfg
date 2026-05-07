@@ -879,11 +879,11 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 html += '<tr data-idx="' + i + '">';
                 html += '<td class="text-center">' + (i + 1) + '</td>';
                 html += '<td>' +
-                '<input type="hidden" name="mat[' + i + '][id_po_detail]" value="' + m.id_po_detail + '">' +
-                '<input type="hidden" name="mat[' + i + '][id_barang]" value="' + m.id_barang + '">' +
-                '<input type="hidden" name="mat[' + i + '][nm_erp]" value="' + (m.nm_erp || '') + '">' +
-                '<input type="text" name="mat[' + i + '][nm_barang]" class="form-control form-control-sm readonly-field" value="' + (m.nm_barang || '') + '" readonly></td>';
-            html += '<td><input type="text" name="mat[' + i + '][nm_alias]" class="form-control form-control-sm readonly-field" value="' + (m.nm_alias || '') + '" readonly></td>';
+                    '<input type="hidden" name="mat[' + i + '][id_po_detail]" value="' + m.id_po_detail + '">' +
+                    '<input type="hidden" name="mat[' + i + '][id_barang]" value="' + m.id_barang + '">' +
+                    '<input type="hidden" name="mat[' + i + '][nm_erp]" value="' + (m.nm_erp || '') + '">' +
+                    '<input type="text" name="mat[' + i + '][nm_barang]" class="form-control form-control-sm readonly-field" value="' + (m.nm_barang || '') + '" readonly></td>';
+                html += '<td><input type="text" name="mat[' + i + '][nm_alias]" class="form-control form-control-sm readonly-field" value="' + (m.nm_alias || '') + '" readonly></td>';
                 html += '<td class="text-end mat-kg">' + formatNum(m.kg_unit, 4) + '<input type="hidden" name="mat[' + i + '][kg_unit]" value="' + m.kg_unit + '"></td>';
                 html += '<td class="text-end mat-price">' + formatNum(m.unit_price_usd, 6) + '<input type="hidden" name="mat[' + i + '][unit_price_usd]" value="' + m.unit_price_usd + '"></td>';
                 html += '<td class="text-end mat-total-usd">' + formatNum(m.total_value_usd, 4) + '<input type="hidden" name="mat[' + i + '][total_value_usd]" value="' + m.total_value_usd + '"></td>';
@@ -907,7 +907,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
         // ═══════════════════════════════════════════════════════════
         function renderCoilTable() {
             var html = '';
-            var no = 1;
+            var no = 1; // <-- nomor urut MATERIAL (bukan coil)
             var total = 0;
             var hasCoil = false;
 
@@ -922,21 +922,18 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 $.each(m.coils, function(j, coil) {
                     html += '<tr>';
 
-                    // Kolom No, Nama Asli, Nama Alias — hanya di baris pertama, pakai rowspan
                     if (j === 0) {
                         html += '<td class="text-center align-middle" rowspan="' + rowspan + '">' + no + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_asli + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_alias + '</td>';
                     }
 
-                    // Kolom per-coil
                     html += '<td class="text-center">' + coil.no_coil + '</td>';
                     html += '<td class="text-center"><small><b>' + (coil.kode_internal || '') + '</b></small></td>';
                     html += '<td class="text-end">' + formatNum(coil.berat_bersih, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.berat_kotor, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.panjang, 2) + '</td>';
 
-                    // Hidden inputs untuk submit — index material tetap pakai i, coil pakai j
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][no_coil]"       value="' + coil.no_coil + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_bersih]"  value="' + coil.berat_bersih + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_kotor]"   value="' + coil.berat_kotor + '">';
@@ -944,9 +941,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][kode_internal]" value="' + (coil.kode_internal || '') + '">';
 
                     html += '</tr>';
-                    no++;
                     total++;
                 });
+
+                no++;
             });
 
             if (!hasCoil) {
@@ -958,7 +956,6 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('#coil_result_body').html(html);
             $('#total_coil_count').text(total);
             $('#coil_section').show();
-
             $('#coil_count_badge').show();
             $('#coil_count_text').text(total);
         }
