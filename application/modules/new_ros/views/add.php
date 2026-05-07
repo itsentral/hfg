@@ -117,10 +117,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
         position: relative;
     }
 
-    #tbl_coils td,
-    #tbl_coils th {
-        border: 2px solid #000 !important;
-    }
+    #tbl_coils td, #tbl_coils th {
+    border: 2px solid #000 !important;
+}
 </style>
 
 <div class="card">
@@ -1083,17 +1082,17 @@ $list_po_data = isset($list_po) ? $list_po : [];
             inputsHtml += '<p class="mb-2 text-muted small">Tentukan jumlah baris coil yang akan disiapkan per material di template Excel.</p>';
             inputsHtml += '<table class="table table-sm table-bordered" style="font-size:13px;">';
             inputsHtml += '<thead class="table-light"><tr><th>Material (Alias)</th><th class="text-center" width="100px">Jumlah Coil</th></tr></thead><tbody>';
-            $.each(materialsData, function(i, m) {
-                var nm_alias = m.nm_alias || '-';
-                var nm_barang = m.nm_barang || m.nm_erp || '-';
-                inputsHtml += '<tr>' +
-                    '<td>' +
-                    '<div><b>' + nm_alias + '</b></div>' +
-                    '<div class="text-muted small">' + nm_barang + '</div>' +
-                    '</td>' +
-                    '<td><input type="number" id="coil_count_' + i + '" class="form-control form-control-sm text-center" value="1" min="1" max="500" style="width:80px;margin:auto;"></td>' +
-                    '</tr>';
-            });
+            inputsHtml += '<table class="table table-sm table-bordered" style="font-size:13px;">';
+inputsHtml += '<thead class="table-light"><tr><th>Nama Alias</th><th>Nama Barang</th><th class="text-center" width="100px">Jumlah Coil</th></tr></thead><tbody>';
+$.each(materialsData, function(i, m) {
+    var nm_alias  = m.nm_alias  || '-';
+    var nm_barang = m.nm_barang || m.nm_erp || '-';
+    inputsHtml += '<tr>' +
+        '<td>' + nm_alias  + '</td>' +
+        '<td>' + nm_barang + '</td>' +
+        '<td><input type="number" id="coil_count_' + i + '" class="form-control form-control-sm text-center" value="1" min="1" max="500" style="width:80px;margin:auto;"></td>' +
+        '</tr>';
+});
             inputsHtml += '</tbody></table></div>';
 
             Swal.fire({
