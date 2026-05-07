@@ -1664,8 +1664,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var nilai_ppn = parseFloat(((hargasatuan - (hargasatuan * disc_persen / 100)) * qty) * persen_ppn / 100);
 		$("#dt_nilai_ppn_" + id).val(number_format(nilai_ppn, 2));
 
-		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 2));
-		$("#dt_totalharga_" + id).val(number_format(totalharga, 2));
+		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 4));
+		$("#dt_totalharga_" + id).val(number_format(totalharga, 4));
 
 		$("#dt_ch_pajak_" + id).val(tot_pajak);
 		$("#dt_ch_diskon_" + id).val(tot_diskon);
