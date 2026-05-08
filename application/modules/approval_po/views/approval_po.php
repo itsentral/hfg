@@ -326,7 +326,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 													
-														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-end auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . $total . "'></td>
+														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-end auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
 														
 														<td>
 															<div class='input-group input-group-sm' style='margin-bottom:6px;'>
@@ -344,7 +344,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='Nilai PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn : null) . "'>
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn_persen : null) . "'>
 														</td>
-														<td><input type='text' class='form-control input-sm text-end auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . ($total - $value->nilai_disc + $value->ppn) . "'></td>
+														<td><input type='text' class='form-control input-sm text-end auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total - $value->nilai_disc + $value->ppn, 4, '.', ',') . "'></td>
 														<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>																
 										 			</tr>
 												";
@@ -355,7 +355,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="9"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="totalinppn" value="<?= $results['header_po']->subtotal ?>" required name="totalinppn">
+									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['header_po']->subtotal, 4, '.', ',') ?>" required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
@@ -392,7 +392,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="9"><b>Total Order</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= number_format($results['header_po']->total_include_ppn, 2) ?>" required name="subtotal">
+									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= number_format($results['header_po']->total_include_ppn, 4, '.', ',') ?>" required name="subtotal">
 								</td>
 							</tr>
 						</tfoot>
@@ -458,7 +458,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '</td>';
 
 									echo '<td class="text-right">';
-									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 2) . '">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '">';
 									echo '</td>';
 
 									echo '<td>';
@@ -747,6 +747,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			mDec: 3,
 			vMin: 0
 		});
+		$('.auto_num_4dec').autoNumeric('init', {
+			mDec: 4,
+			vMin: 0
+		});
 
 		var max_fields2 = 10; //maximum input boxes allowed
 		var wrapper2 = $(".input_fields_wrap2"); //Fields wrapper
@@ -840,23 +844,60 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							var formData = new FormData($('#data-form')[0]);
 							var baseurl = siteurl + 'approval_po/approve_po_process';
 							$.ajax({
-								url: baseurl, type: "POST", data: formData, cache: false,
-								dataType: 'json', processData: false, contentType: false,
+								url: baseurl,
+								type: "POST",
+								data: formData,
+								cache: false,
+								dataType: 'json',
+								processData: false,
+								contentType: false,
 								success: function(data) {
 									console.log(data);
 									if (data.status == 1) {
-										swal({ title: "Save Success!", text: data.pesan, type: "success", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										swal({
+											title: "Save Success!",
+											text: data.pesan,
+											type: "success",
+											timer: 7000,
+											showCancelButton: false,
+											showConfirmButton: false,
+											allowOutsideClick: false
+										});
 										window.location.href = base_url + active_controller;
 									} else {
 										if (data.status == 2) {
-											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+											swal({
+												title: "Save Failed!",
+												text: data.pesan,
+												type: "warning",
+												timer: 7000,
+												showCancelButton: false,
+												showConfirmButton: false,
+												allowOutsideClick: false
+											});
 										} else {
-											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+											swal({
+												title: "Save Failed!",
+												text: data.pesan,
+												type: "warning",
+												timer: 7000,
+												showCancelButton: false,
+												showConfirmButton: false,
+												allowOutsideClick: false
+											});
 										}
 									}
 								},
 								error: function() {
-									swal({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+									swal({
+										title: "Error Message !",
+										text: 'An Error Occured During Process. Please try again..',
+										type: "warning",
+										timer: 7000,
+										showCancelButton: false,
+										showConfirmButton: false,
+										allowOutsideClick: false
+									});
 								}
 							});
 						} else {
@@ -904,22 +945,59 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							var formData = new FormData($('#data-form')[0]);
 							var baseurl = siteurl + 'approval_po/reject_po_process';
 							$.ajax({
-								url: baseurl, type: "POST", data: formData, cache: false,
-								dataType: 'json', processData: false, contentType: false,
+								url: baseurl,
+								type: "POST",
+								data: formData,
+								cache: false,
+								dataType: 'json',
+								processData: false,
+								contentType: false,
 								success: function(data) {
 									if (data.status == 1) {
-										swal({ title: "Save Success!", text: data.pesan, type: "success", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+										swal({
+											title: "Save Success!",
+											text: data.pesan,
+											type: "success",
+											timer: 7000,
+											showCancelButton: false,
+											showConfirmButton: false,
+											allowOutsideClick: false
+										});
 										window.location.href = base_url + active_controller;
 									} else {
 										if (data.status == 2) {
-											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+											swal({
+												title: "Save Failed!",
+												text: data.pesan,
+												type: "warning",
+												timer: 7000,
+												showCancelButton: false,
+												showConfirmButton: false,
+												allowOutsideClick: false
+											});
 										} else {
-											swal({ title: "Save Failed!", text: data.pesan, type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+											swal({
+												title: "Save Failed!",
+												text: data.pesan,
+												type: "warning",
+												timer: 7000,
+												showCancelButton: false,
+												showConfirmButton: false,
+												allowOutsideClick: false
+											});
 										}
 									}
 								},
 								error: function() {
-									swal({ title: "Error Message !", text: 'An Error Occured During Process. Please try again..', type: "warning", timer: 7000, showCancelButton: false, showConfirmButton: false, allowOutsideClick: false });
+									swal({
+										title: "Error Message !",
+										text: 'An Error Occured During Process. Please try again..',
+										type: "warning",
+										timer: 7000,
+										showCancelButton: false,
+										showConfirmButton: false,
+										allowOutsideClick: false
+									});
 								}
 							});
 						} else {
@@ -1544,8 +1622,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 
 
-		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 2));
-		$("#dt_totalharga_" + id).val(number_format(totalharga, 2));
+		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 4));
+		$("#dt_totalharga_" + id).val(number_format(totalharga, 4));
 
 		$("#dt_ch_pajak_" + id).val(tot_pajak);
 		$("#dt_ch_diskon_" + id).val(tot_diskon);

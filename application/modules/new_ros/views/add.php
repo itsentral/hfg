@@ -500,7 +500,11 @@ $list_po_data = isset($list_po) ? $list_po : [];
                         <tfoot>
                             <tr class="table-secondary">
                                 <td colspan="3" class="text-end fw-bold">Total Coil</td>
-                                <td class="text-end fw-bold" id="total_coil_count" colspan="5">0</td>
+                                <td class="text-end fw-bold" id="total_coil_count">0</td>
+                                <td></td>
+                                <td class="text-end fw-bold" id="total_nw">0</td>
+                                <td class="text-end fw-bold" id="total_gw">0</td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -912,8 +916,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
         // ═══════════════════════════════════════════════════════════
         function renderCoilTable() {
             var html = '';
-            var no = 1; // <-- nomor urut MATERIAL (bukan coil)
+            var no = 1;
             var total = 0;
+            var total_nw = 0;
+            var total_gw = 0;
             var hasCoil = false;
 
             $.each(materialsData, function(i, m) {
@@ -925,14 +931,15 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 var nm_alias = m.nm_alias || m.nm_barang || '';
 
                 $.each(m.coils, function(j, coil) {
-                    html += '<tr>';
+                    total_nw += parseFloat(coil.berat_bersih) || 0;
+                    total_gw += parseFloat(coil.berat_kotor) || 0;
 
+                    html += '<tr>';
                     if (j === 0) {
                         html += '<td class="text-center align-middle" rowspan="' + rowspan + '">' + no + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_asli + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_alias + '</td>';
                     }
-
                     html += '<td class="text-center">' + coil.no_coil + '</td>';
                     html += '<td class="text-center"><small><b>' + (coil.kode_internal || '') + '</b></small></td>';
                     html += '<td class="text-end">' + formatNum(coil.berat_bersih, 2) + '</td>';
@@ -955,11 +962,15 @@ $list_po_data = isset($list_po) ? $list_po : [];
             if (!hasCoil) {
                 $('#coil_result_body').html('<tr id="tr_empty_coil"><td colspan="8" class="text-center text-muted py-2">Belum ada data coil.</td></tr>');
                 $('#total_coil_count').text('0');
+                $('#total_nw').text('0');
+                $('#total_gw').text('0');
                 return;
             }
 
             $('#coil_result_body').html(html);
             $('#total_coil_count').text(total);
+            $('#total_nw').text(formatNum(total_nw, 2));
+            $('#total_gw').text(formatNum(total_gw, 2));
             $('#coil_section').show();
             $('#coil_count_badge').show();
             $('#coil_count_text').text(total);

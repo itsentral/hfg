@@ -388,7 +388,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['get_po']->total_include_ppn, 4, '.', ',') ?>" onkeyup required name="totalinppn">
+									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['get_po']->total_include_ppn, 4, '.', ',') ?>" onkeyup required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
@@ -755,6 +755,11 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		$('.auto_num').autoNumeric('init');
 		$('.auto_num_3dec').autoNumeric('init', {
 			mDec: 3,
+			vMin: 0
+		});
+
+		$('.auto_num_4dec').autoNumeric('init', {
+			mDec: 4,
 			vMin: 0
 		});
 
@@ -1141,7 +1146,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					Rows += '</td>';
 
 					Rows += '<td class="text-right">';
-					Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
+					Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num_4dec" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
 					Rows += '</td>';
 
 					Rows += '<td class="">';
@@ -1236,9 +1241,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			var nilai_top = (subtotal * progress / 100);
 
-			$('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
+			// Gunakan number_format dengan 4 digit
+			$('.nilai_top_' + no).val(number_format(nilai_top, 4));
+			// Jangan timpa $(this) di sini
 		});
 
 		$(document).on('change', '.nilai_top', function() {
@@ -1262,12 +1267,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			var progress = (nilai_top / subtotal * 100);
 
-			$(this).val(nilai_top.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
-			$('.progress_' + no).val(progress.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
+			$(this).val(number_format(nilai_top, 4));
+			$('.progress_' + no).val(number_format(progress, 2));
 		});
 
 		$(document).on('click', '.del_top', function() {

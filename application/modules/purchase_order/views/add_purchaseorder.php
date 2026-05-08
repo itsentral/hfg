@@ -364,7 +364,7 @@ if (!empty($results['headerso'])) {
 													<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 													<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 												
-												  	<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . $total . "'></td>
+												  	<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
 													<td>
 														<div class='input-group input-group-sm mb-2'>
 															<input type='text' name='dt[" . $key . "][disc_persen]' class='form-control input-sm auto_num disc_persen'
@@ -383,7 +383,7 @@ if (!empty($results['headerso'])) {
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' readonly>
 													</td>
 													
-													<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . $total . "'></td>
+													<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
 													<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>
 													<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]'></td>
 											 	</tr>
@@ -395,7 +395,7 @@ if (!empty($results['headerso'])) {
 							<tr>
 								<td class="text-end" colspan="12"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="totalinppn" onkeyup required name="totalinppn">
+									<input readonly type="text" class="form-control text-end auto_num_4dec" id="totalinppn" onkeyup required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
@@ -438,7 +438,7 @@ if (!empty($results['headerso'])) {
 							<tr>
 								<td class="text-end" colspan="12"><b>Total Order</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="subtotal" onkeyup required name="subtotal">
+									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" onkeyup required name="subtotal">
 								</td>
 							</tr>
 						</tfoot>
@@ -727,6 +727,10 @@ if (!empty($results['headerso'])) {
 		$('.auto_num').autoNumeric('init');
 		$('.auto_num_3dec').autoNumeric('init', {
 			mDec: 3,
+			vMin: 0
+		});
+		$('.auto_num_4dec').autoNumeric('init', {
+			mDec: 4,
 			vMin: 0
 		});
 		$('[id^="dt_hargasatuan_"]').autoNumeric('init', {
@@ -1226,7 +1230,7 @@ if (!empty($results['headerso'])) {
 					Rows += '</td>';
 
 					Rows += '<td class="text-right">';
-					Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
+					Rows += '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' + num_top + ' auto_num_4dec" name="nilai_top_' + num_top + '" data-no="' + num_top + '">';
 					Rows += '</td>';
 
 					Rows += '<td class="">';
@@ -1321,9 +1325,7 @@ if (!empty($results['headerso'])) {
 
 			var nilai_top = (subtotal * progress / 100);
 
-			$('.nilai_top_' + no).val(nilai_top.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
+			$('.nilai_top_' + no).val(number_format(nilai_top, 4));
 		});
 
 		$(document).on('change', '.nilai_top', function() {
@@ -1347,12 +1349,8 @@ if (!empty($results['headerso'])) {
 
 			var progress = (nilai_top / subtotal * 100);
 
-			$(this).val(nilai_top.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
-			$('.progress_' + no).val(progress.toLocaleString('en-US', {
-				maximumFractionDigits: 2
-			}));
+			$(this).val(number_format(nilai_top, 4));
+			$('.progress_' + no).val(number_format(progress, 2));
 		});
 
 		$(document).on('click', '.del_top', function() {
@@ -1868,8 +1866,8 @@ if (!empty($results['headerso'])) {
 		var nilai_ppn = parseFloat(((hargasatuan - (hargasatuan * disc_persen / 100)) * qty) * persen_ppn / 100);
 		$("#dt_nilai_ppn_" + id).val(number_format(nilai_ppn, 2));
 
-		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 2));
-		$("#dt_totalharga_" + id).val(number_format(totalharga, 2));
+		$("#dt_jumlahharga_" + id).val(number_format(jumlah, 4));
+		$("#dt_totalharga_" + id).val(number_format(totalharga, 4));
 
 		$("#dt_ch_pajak_" + id).val(tot_pajak);
 		$("#dt_ch_diskon_" + id).val(tot_diskon);
@@ -1935,13 +1933,13 @@ if (!empty($results['headerso'])) {
 		}
 
 		// 3. Masukkan kembali ke ID Input yang Anda punya
-		$("#totalinppn").val(number_format(SUM_JML, 2));
+		$("#totalinppn").val(number_format(SUM_JML, 4));
 		$("#dpp").val(number_format(dpp, 2));
 		$("#ppn").val(number_format(ppn, 2));
 
 		// Total Order Akhir (Harga + Pajak + Ongkir)
 		var grandTotal = totalOrder + kirim;
-		$("#subtotal").val(number_format(grandTotal, 2));
+		$("#subtotal").val(number_format(grandTotal, 4));
 
 		// Fungsi pembantu jika ada (opsional)
 		if (typeof TotalSemua === "function") {
@@ -1983,7 +1981,7 @@ if (!empty($results['headerso'])) {
 
 		var grandtotal = totalPlusPajak + kirim;
 
-		$("#subtotal").val(number_format(grandtotal, 2));
+		$("#subtotal").val(number_format(grandtotal, 4));
 		$("#kirim").val(number_format(kirim, 2));
 	}
 
@@ -2012,7 +2010,7 @@ if (!empty($results['headerso'])) {
 		$("#hargatotal").val(number_format(SUM_JMX, 2));
 		$("#diskontotal").val(number_format(SUM_DIS, 2));
 		$("#taxtotal").val(number_format(SUM_PJK, 2));
-		$("#subtotal").val(number_format(SUM_JML, 2));
+		$("#subtotal").val(number_format(SUM_JML, 4));
 
 	}
 
@@ -2039,10 +2037,10 @@ if (!empty($results['headerso'])) {
 		});
 
 		$("#hargatotal").val(number_format(SUM_JMX, 2));
-		$("#totalinppn").val(number_format(SUM_JMX, 2));
+		$("#totalinppn").val(number_format(SUM_JMX, 4));
 		$("#diskontotal").val(number_format(SUM_DIS, 2));
 		$("#taxtotal").val(number_format(SUM_PJK, 2));
-		$("#subtotal").val(number_format(SUM_JMX, 2));
+		$("#subtotal").val(number_format(SUM_JMX, 4));
 
 	}
 
