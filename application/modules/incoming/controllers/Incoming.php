@@ -20,9 +20,7 @@ class Incoming extends Admin_Controller
         $this->template->render('index');
     }
 
-    // =========================================================
     // DATA TABLE — Tab OPEN
-    // =========================================================
     public function data_side_incoming()
     {
         $ENABLE_ADD  = has_permission('Incoming.Add');
@@ -103,9 +101,7 @@ class Incoming extends Admin_Controller
         ]);
     }
 
-    // =========================================================
     // DATA TABLE — Tab DRAFT
-    // =========================================================
     public function data_side_draft()
     {
         $ENABLE_MANAGE = has_permission('Incoming.Manage');
@@ -155,8 +151,6 @@ class Incoming extends Admin_Controller
 
         foreach ($rows as $row) {
             $no_po_display = !empty($row['no_surat_list']) ? $row['no_surat_list'] : $row['no_po'];
-
-            // Ambil semua id coil untuk keperluan print
             $coil_ids = $this->db->query(
                 "SELECT GROUP_CONCAT(c.id SEPARATOR '-') AS ids
                  FROM tr_ros_material_coil c
@@ -166,19 +160,23 @@ class Incoming extends Admin_Controller
             )->row();
             $coil_ids_str = $coil_ids ? $coil_ids->ids : '';
 
-            $btn_edit = '<a href="' . base_url('incoming/edit_draft/' . $row['id']) . '" class="btn btn-sm btn-warning" title="Edit Draft">
+            $btn_edit = '<a href="' . base_url('incoming/edit_draft/' . $row['id']) . '" class="btn btn-sm btn-warning" title="Edit Draft" style="width:100px">
                 <i class="fa fa-edit"></i> Edit
             </a>';
 
             $btn_print = $coil_ids_str
-                ? '<a href="' . base_url('incoming/print_qr/' . $coil_ids_str) . '" target="_blank" class="btn btn-sm btn-info" title="Print Label">
-                    <i class="fa fa-print"></i> Print
+                ? '<a href="' . base_url('incoming/print_qr/' . $coil_ids_str) . '" target="_blank" class="btn btn-sm btn-info" title="Print Label" style="width:100px">
+                    <i class="fa fa-print"></i> Print QR
                   </a>'
                 : '';
 
+            $btn_print_pl = '<a href="' . base_url('incoming/print_pl_by_gudang/' . $row['id']) . '" target="_blank" class="btn btn-sm btn-secondary" title="Print Packing List per Gudang" style="width:100px">
+                    <i class="fa fa-file-alt"></i> Print PL
+                </a>';
+
             $btn_finalize = '';
             if ($ENABLE_MANAGE) {
-                $btn_finalize = '<button class="btn btn-sm btn-success btn-finalize" data-id="' . $row['id'] . '" title="Finalize & Close">
+                $btn_finalize = '<button class="btn btn-sm btn-success btn-finalize" data-id="' . $row['id'] . '" title="Finalize & Close" style="width:100px">
                     <i class="fa fa-check-circle"></i> Finalize
                 </button>';
             }
@@ -191,7 +189,16 @@ class Incoming extends Admin_Controller
                 "<div class='text-center'>" . ($row['draft_date'] ? date('d/m/Y H:i', strtotime($row['draft_date'])) : '-') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars($row['draft_by_name'] ?? '-') . "</div>",
                 "<span class='badge rounded-pill bg-info text-dark'>Draft</span>",
-                "<div class='text-center d-flex gap-1 justify-content-center'>{$btn_edit} {$btn_print} {$btn_finalize}</div>",
+                "<div class='text-center d-flex flex-column align-items-center gap-1'>
+                    <div class='d-flex gap-1'>
+                        {$btn_edit} 
+                        {$btn_print}
+                    </div>
+                    <div class='d-flex gap-1'>
+                        {$btn_print_pl} 
+                        {$btn_finalize}
+                    </div>
+                </div>"
             ];
             $no++;
         }
@@ -204,9 +211,7 @@ class Incoming extends Admin_Controller
         ]);
     }
 
-    // =========================================================
     // FORM ADD
-    // =========================================================
     public function add()
     {
         $this->auth->restrict($this->viewPermission);
@@ -236,14 +241,13 @@ class Incoming extends Admin_Controller
             }
         }
 
-        // var_dump($ros_data);die;
         $data = [
             'page_mode'      => 'add',
             'list_supplier'  => $list_supplier,
             'list_gudang'    => $list_gudang,
             'no_ros_default' => $no_ros_default,
             'ros_data'       => $ros_data,
-            'draft_coils'    => [], // kosong saat add
+            'draft_coils'    => [],
         ];
 
         $this->template->set($data);
@@ -251,9 +255,7 @@ class Incoming extends Admin_Controller
         $this->template->render('form');
     }
 
-    // =========================================================
     // FORM EDIT DRAFT
-    // =========================================================
     public function edit_draft()
     {
         $this->auth->restrict($this->viewPermission);
@@ -322,9 +324,7 @@ class Incoming extends Admin_Controller
         $this->template->render('form');
     }
 
-    // =========================================================
     // FORM VIEW
-    // =========================================================
     public function view()
     {
         $kode_trans = $this->uri->segment(3);
@@ -332,25 +332,25 @@ class Incoming extends Admin_Controller
         $get_incoming = $this->db->get_where('tr_incoming_check', ['kode_trans' => $kode_trans])->row();
 
         $sql = "
-                SELECT inc.kode_trans, inc.tanggal, inc.no_ros, det.id_material, det.nm_material,
-                    det.qty_order, det.keterangan, det.harga,
-                    coil.no_coil, coil.berat_kotor, coil.berat_bersih, coil.panjang AS length,
-                    mat.nm_erp AS nm_barang, mat.id_barang,
-                    po.no_po, wh.nm_gudang, wh.kd_gudang, qc.status_qc, qc.id_gudang_ke,
-                    sup.nama AS nm_supplier
-                FROM tr_incoming_check inc
-                JOIN tr_incoming_check_detail det   ON det.kode_trans    = inc.kode_trans
-                LEFT JOIN tr_ros_header ros          ON ros.id            = inc.no_ros
-                LEFT JOIN new_supplier sup           ON sup.kode_supplier = ros.id_supplier
-                LEFT JOIN tr_ros_material_coil coil ON coil.no_coil      = SUBSTRING_INDEX(det.keterangan, ': ', -1)
-                LEFT JOIN tr_ros_material mat        ON mat.id            = coil.id_ros_material
-                LEFT JOIN dt_trans_po po             ON po.id             = det.id_po_detail
-                LEFT JOIN warehouse wh               ON wh.kd_gudang      = inc.kd_gudang_ke
-                LEFT JOIN tr_checked_incoming_detail qc ON qc.kode_trans  = det.kode_trans
-                                                        AND qc.id_material = det.id_material
-                WHERE inc.kode_trans = ?
-                ORDER BY det.id_material, coil.no_coil ASC
-            ";
+        SELECT inc.kode_trans, inc.tanggal, inc.no_ros, det.id_material, det.nm_material,
+            det.qty_order, det.keterangan, det.harga,
+            coil.no_coil, coil.berat_kotor, coil.berat_bersih, coil.panjang AS length,
+            mat.nm_erp AS nm_barang, mat.id_barang,
+            po.no_po, wh.nm_gudang, wh.kd_gudang, qc.status_qc, qc.id_gudang_ke,
+            sup.nama AS nm_supplier
+        FROM tr_incoming_check inc
+        JOIN tr_incoming_check_detail det   ON det.kode_trans    = inc.kode_trans
+        LEFT JOIN tr_ros_header ros          ON ros.id            = inc.no_ros
+        LEFT JOIN new_supplier sup           ON sup.kode_supplier = ros.id_supplier
+        LEFT JOIN tr_ros_material_coil coil ON coil.no_coil      = SUBSTRING_INDEX(det.keterangan, ': ', -1)
+        LEFT JOIN tr_ros_material mat        ON mat.id            = coil.id_ros_material
+        LEFT JOIN dt_trans_po po             ON po.id             = det.id_po_detail
+        LEFT JOIN warehouse wh               ON wh.kd_gudang      = inc.kd_gudang_ke
+        LEFT JOIN tr_checked_incoming_detail qc ON qc.kode_trans  = det.kode_trans
+                                                AND qc.id_material = det.id_material
+        WHERE inc.kode_trans = ?
+        ORDER BY det.id_material, coil.no_coil ASC
+    ";
         $detail_ros = $this->db->query($sql, [$kode_trans])->result_array();
 
         $no_surat_list = [];
@@ -366,7 +366,7 @@ class Incoming extends Admin_Controller
         }
 
         $data = [
-            'page_mode'              => 'view',
+            'page_mode'              => 'view',           // ← tambah ini
             'detail_ros'             => $detail_ros,
             'no_surat'               => implode(', ', $no_surat_list),
             'tanggal'                => $get_incoming ? date('d F Y', strtotime($get_incoming->tanggal)) : '-',
@@ -374,16 +374,20 @@ class Incoming extends Admin_Controller
             'ros_data'               => null,
             'draft_coils'            => [],
             'draft_coils_map'        => [],
+            // Tambah ini agar view punya data supplier & no_ros untuk header
+            'nm_supplier_view'       => !empty($detail_ros) ? ($detail_ros[0]['nm_supplier'] ?? '-') : '-',
+            'no_ros_view'            => $get_incoming->no_ros ?? '-',
+            'list_supplier'          => [],
+            'list_gudang'            => [],
+            'no_ros_default'         => '',
         ];
 
         $this->template->set($data);
         $this->template->title('Detail Incoming');
-        $this->template->render('form');
+        $this->template->render('form');   // ← arahkan ke form, bukan view terpisah
     }
 
-    // =========================================================
     // SAVE DRAFT
-    // =========================================================
     public function save_draft()
     {
         $post   = $this->input->post();
@@ -463,18 +467,14 @@ class Incoming extends Admin_Controller
         ]);
     }
 
-    // =========================================================
     // UPDATE DRAFT (dari edit_draft)
-    // =========================================================
     public function update_draft()
     {
         // Sama logikanya dengan save_draft — reuse
         $this->save_draft();
     }
 
-    // =========================================================
     // FINALIZE (proses stok + jurnal + close)
-    // =========================================================
     public function finalize()
     {
         $this->auth->restrict($this->managePermission);
@@ -724,9 +724,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    // =========================================================
     // PRINT QR — include info gudang per coil
-    // =========================================================
     public function print_qr($ids)
     {
         $array_id = explode('-', $ids);
@@ -751,9 +749,7 @@ class Incoming extends Admin_Controller
         $this->load->view('print_qr_label', $data);
     }
 
-    // =========================================================
     // AJAX helpers (tidak berubah)
-    // =========================================================
     public function get_po_by_supplier()
     {
         $id_supplier = $this->input->post('id_supplier');
@@ -804,9 +800,7 @@ class Incoming extends Admin_Controller
         echo json_encode($data);
     }
 
-    // =========================================================
     // PROSES INCOMING COIL (SAVE)
-    // =========================================================
     public function process_incoming_coil()
     {
         $post     = $this->input->post();
@@ -1020,9 +1014,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    // =========================================================
     // UPDATE STOK & HISTORY
-    // =========================================================
     private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil, $id_gudang = 1, $kd_gudang = 'PUS', $no_ros = '')
     {
         $get_stock = $this->db->query(
@@ -1134,9 +1126,7 @@ class Incoming extends Admin_Controller
         ]);
     }
 
-    // =========================================================
     // GENERATE JURNAL & HUTANG (GL Interface)
-    // =========================================================
     private function _generate_jurnal_and_debt($kode_trans, $no_po, $total_rp, $id_supplier, $materials = [], $uang_muka_idr = 0, $uang_muka_usd = 0, $no_ros = '', $id_gudang_ke = null)
     {
         $tgl_inv       = date('Y-m-d');
@@ -1322,9 +1312,7 @@ class Incoming extends Admin_Controller
         }
     }
 
-    // =========================================================
     // POST GL INTERFACE (step 2 - posting ke accounting)
-    // =========================================================
     private function _post_gl_interface($nomor_jv)
     {
         $header = $this->db->get_where('gl_interface', ['nomor' => $nomor_jv, 'status' => 'pending'])->row_array();
@@ -1403,9 +1391,7 @@ class Incoming extends Admin_Controller
         $this->db->update('gl_interface', ['status' => 'posted', 'posted_at' => date('Y-m-d H:i:s')], ['id' => $header['id']]);
     }
 
-    // =========================================================
     // REPOST GL INTERFACE
-    // =========================================================
     public function repost_gl_interface()
     {
         $nomor_jv = $this->input->post('nomor_jv');
@@ -1439,9 +1425,7 @@ class Incoming extends Admin_Controller
             ->set_output(json_encode(['status' => 1, 'pesan' => 'Posting ulang berhasil untuk JV ' . $nomor_jv]));
     }
 
-    // =========================================================
     // UPLOAD FILE
-    // =========================================================
     private function _upload_incoming_files($input_name)
     {
         if (empty($_FILES[$input_name]['name'][0])) return '';
@@ -1501,9 +1485,7 @@ class Incoming extends Admin_Controller
         return $nomor_jv;
     }
 
-    // =========================================================
     // DATA TABLE — Tab CLOSE
-    // =========================================================
     public function data_side_close()
     {
         $requestData = $_REQUEST;
@@ -1590,5 +1572,86 @@ class Incoming extends Admin_Controller
             'recordsFiltered' => $totalData,
             'data'            => $data,
         ]);
+    }
+
+    public function print_pl_by_gudang($no_ros)
+    {
+        $this->auth->restrict($this->viewPermission);
+
+        // ── 1. Header ROS ────────────────────────────────────────────────────
+        $header_ros = $this->db->query("
+        SELECT a.*,
+               b.nama AS nm_supplier
+        FROM tr_ros_header a
+        LEFT JOIN new_supplier b ON a.id_supplier = b.kode_supplier
+        WHERE a.id = ?
+        LIMIT 1
+    ", [$no_ros])->row_array();
+
+        if (empty($header_ros)) {
+            show_404();
+        }
+
+        // ── 2. Detail coil lengkap dengan info gudang ─────────────────────────
+        //    Diambil semua coil yang sudah di-assign ke gudang (kd_gudang_ke IS NOT NULL)
+        $detail_coils = $this->db->query("
+        SELECT
+            c.id                AS id_coil,
+            c.no_coil,
+            c.berat_kotor,
+            c.berat_bersih,
+            c.panjang           AS length,
+            c.kode_internal,
+            c.status_qc,
+            c.id_gudang_ke,
+            c.kd_gudang_ke,
+            w.nm_gudang,
+            b.nm_erp            AS nm_material,
+            b.id_barang         AS id_material,
+            b.nm_alias          AS trade_name,
+            IFNULL(ms.code, 'Kg') AS unit_satuan
+        FROM tr_ros_material_coil c
+        JOIN tr_ros_material b      ON c.id_ros_material = b.id
+        JOIN tr_ros_header a        ON b.id_ros = a.id
+        LEFT JOIN warehouse w       ON c.id_gudang_ke = w.id
+        LEFT JOIN dt_trans_po f     ON b.id_po_detail = f.id AND f.tipe IS NOT NULL
+        LEFT JOIN ms_satuan ms      ON ms.id = (
+            /* Prioritas satuan: dari PO > dari inventory */
+            COALESCE(
+                (SELECT id_unit FROM new_inventory_4 WHERE code_lv4 = b.id_barang LIMIT 1),
+                (SELECT id_unit_gudang FROM accessories WHERE id = b.id_barang LIMIT 1)
+            )
+        )
+        WHERE a.id = ?
+          AND c.id_gudang_ke IS NOT NULL
+        ORDER BY w.nm_gudang ASC, b.id_barang ASC, c.no_coil ASC
+    ", [$no_ros])->result_array();
+
+        // ── 3. Kelompokkan coil berdasarkan gudang ────────────────────────────
+        $grouped_by_gudang = [];   // [ id_gudang => ['info' => [...], 'items' => [...]] ]
+
+        foreach ($detail_coils as $row) {
+            $gid = $row['id_gudang_ke'] ?? 'unset';
+
+            if (!isset($grouped_by_gudang[$gid])) {
+                $grouped_by_gudang[$gid] = [
+                    'id_gudang'  => $row['id_gudang_ke'],
+                    'kd_gudang'  => $row['kd_gudang_ke'],
+                    'nm_gudang'  => $row['nm_gudang'] ?? '-',
+                    'items'      => [],
+                ];
+            }
+
+            $grouped_by_gudang[$gid]['items'][] = $row;
+        }
+
+        // ── 4. Kirim ke view ──────────────────────────────────────────────────
+        $data = [
+            'header_ros'        => $header_ros,
+            'grouped_by_gudang' => $grouped_by_gudang,
+            'no_ros'            => $no_ros,
+        ];
+
+        $this->load->view('incoming/print_pl_by_gudang', $data);
     }
 }
