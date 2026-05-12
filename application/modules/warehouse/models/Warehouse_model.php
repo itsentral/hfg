@@ -18,198 +18,116 @@ class Warehouse_model extends BF_Model
         $this->ENABLE_DELETE  = has_permission('Warehouse.Delete');
     }
 
-    // list data
+    // ── LIST & GET ─────────────────────────────────────────────────────────
+
     public function GetListWarehouse()
     {
         $this->db->select('a.*');
         $this->db->from($this->table_name . ' a');
         $this->db->order_by('a.id', 'asc');
         $query = $this->db->get();
-        if ($query->num_rows() != 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() ? $query->result() : false;
     }
 
-    // get data
     public function GetDataWarehouse($id)
     {
         $this->db->select('a.*');
         $this->db->from($this->table_name . ' a');
         $this->db->where('a.id', $id);
         $query = $this->db->get();
-        if ($query->num_rows() != 0) {
-            return $query->row();
-        } else {
-            return false;
-        }
+        return $query->num_rows() ? $query->row() : false;
     }
 
-    //server side
-    public function get_json_warehouse_stock()
+    // ── STOCK PER COIL (index) — sumber: warehouse_stock_coil ─────────────
+    // $kd_gudang: 'PUS' = Pusat, 'PEN' = Penjualan (sesuaikan dengan data)
+
+    public function get_json_warehouse_stock($kd_gudang = '')
     {
         $requestData = $_REQUEST;
+        $search      = $requestData['search']['value'] ?? '';
+        $start       = (int) ($requestData['start']  ?? 0);
+        $length      = (int) ($requestData['length'] ?? 10);
+        $order_col   = $requestData['order'][0]['column'] ?? 1;
+        $order_dir   = $requestData['order'][0]['dir']    ?? 'asc';
 
-        $fetch = $this->get_query_json_warehouse_stock(
-            $requestData['search']['value'],
-            $requestData['order'][0]['column'],
-            $requestData['order'][0]['dir'],
-            $requestData['start'],
-            $requestData['length']
-        );
+        $col_map = [
+            1 => 'ni.nama',
+            2 => 'wsc.no_coil',
+            3 => 'wsc.net_weight',
+            4 => 'wsc.gross_weight',
+            5 => 'wsc.length',
+            6 => 'w.nm_gudang',
+        ];
+        $order_by = $col_map[$order_col] ?? 'ni.nama';
 
-        $totalData = $fetch['totalData'];
-        $totalFiltered = $fetch['totalFiltered'];
-        $query = $fetch['query'];
+        // Build base WHERE
+        $where_gudang = '';
+        if (!empty($kd_gudang)) {
+            $kd = $this->db->escape($kd_gudang);
+            $where_gudang = " AND ws.kd_gudang = {$kd}";
+        }
 
+        $where_search = '';
+        if (!empty($search)) {
+            $s = $this->db->escape_like_str($search);
+            $where_search = " AND (ni.nama LIKE '%{$s}%'
+                               OR wsc.no_coil   LIKE '%{$s}%'
+                               OR wsc.id_material LIKE '%{$s}%'
+                               OR w.nm_gudang   LIKE '%{$s}%')";
+        }
+
+        $base_from = "
+            FROM warehouse_stock_coil wsc
+            JOIN warehouse_stock ws
+                ON CONVERT(ws.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
+            JOIN warehouse w
+                ON w.id = ws.id_gudang
+            LEFT JOIN new_inventory_4 ni
+                ON CONVERT(ni.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
+            WHERE 1=1
+            {$where_gudang}
+            {$where_search}
+        ";
+
+        // Hitung total & filtered — pakai raw query agar tidak konflik CI builder
+        $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_from}")->row();
+        $totalData = $total_q ? (int) $total_q->cnt : 0;
+
+        // Data utama
+        $sql = "
+            SELECT
+                wsc.id,
+                wsc.id_material,
+                wsc.no_coil,
+                wsc.kode_internal,
+                wsc.gross_weight,
+                wsc.net_weight,
+                wsc.length,
+                ws.kd_gudang,
+                ws.id_gudang,
+                ws.harga_beli,
+                ni.nama AS nm_barang,
+                ni.trade_name,
+                w.nm_gudang
+            {$base_from}
+            ORDER BY {$order_by} {$order_dir}
+            LIMIT {$start}, {$length}
+        ";
+
+        $rows = $this->db->query($sql)->result_array();
         $data = [];
-        $urut1 = 1;
+        $no   = $start + 1;
 
-        foreach ($query->result_array() as $row) {
-            $nomor = $urut1 + $requestData['start'];
-
-            $nestedData = [];
-            $nestedData[] = "<div align='center'>{$nomor}</div>";
-            $nestedData[] = "<div align='left'>{$row['nm_barang']}</div>";
-            $nestedData[] = "<div align='center'>{$row['no_coil']}</div>";
-            $nestedData[] = "<div align='center'>1</div>"; // Jumlah Coil selalu 1 per baris sesuai konsep
-            $nestedData[] = "<div align='right'>" . number_format($row['berat_bersih'], 3) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['berat_kotor'], 3) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['length'], 3) . "</div>";
-
-            $data[] = $nestedData;
-            $urut1++;
-        }
-
-        $json_data = [
-            "draw"            => intval($requestData['draw']),
-            "recordsTotal"    => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data"            => $data
-        ];
-
-        echo json_encode($json_data);
-    }
-    public function get_query_json_warehouse_stock($like_value = null, $column_order = null, $column_dir = null, $limit_start = null, $limit_length = null)
-    {
-        $columns_order_by = [
-            0 => 'rd.id',
-            1 => 'rd.nm_barang',
-            2 => 'rd.no_coil',
-            4 => 'rd.berat_bersih',
-            5 => 'rd.berat_kotor',
-            6 => 'rd.length'
-        ];
-
-        // 1. Hitung Total Data (Tanpa Filter Search)
-        $this->db->from('tr_ros_detail rd');
-        $this->db->join('tr_ros r', 'rd.no_ros = r.id', 'inner');
-        $this->db->where('r.sts', '1');
-        $totalData = $this->db->count_all_results(); // count_all_results otomatis mereset query CI
-
-        // 2. Hitung Total Filtered (Dengan Search)
-        // Kita panggil manual builder-nya di sini
-        $this->_build_query_stock($like_value);
-        $totalFiltered = $this->db->count_all_results();
-
-        // 3. Ambil Data Utama
-        $this->db->select('rd.*');
-        $this->_build_query_stock($like_value); // Panggil lagi builder-nya
-
-        if ($column_order !== null && isset($columns_order_by[$column_order])) {
-            $this->db->order_by($columns_order_by[$column_order], $column_dir);
-        } else {
-            $this->db->order_by('rd.id', 'desc');
-        }
-
-        if ($limit_length != -1) {
-            $this->db->limit($limit_length, $limit_start);
-        }
-
-        $query = $this->db->get();
-
-        return [
-            'totalData' => $totalData,
-            'totalFiltered' => $totalFiltered,
-            'query' => $query
-        ];
-    }
-
-    // Tambahkan r.sts = 1 di sini agar konsisten di semua hitungan
-    private function _build_query_stock($like_value)
-    {
-        $this->db->from('tr_ros_detail rd');
-        $this->db->join('tr_ros r', 'rd.no_ros = r.id', 'inner');
-        $this->db->where('r.sts', '1');
-
-        if ($like_value) {
-            $this->db->group_start();
-            $this->db->like('rd.nm_barang', $like_value);
-            $this->db->or_like('rd.no_coil', $like_value);
-            $this->db->group_end();
-        }
-    }
-
-    public function get_json_stock_value()
-    {
-        $requestData     = $_REQUEST;
-        $id_gudang       = isset($_POST['id_gudang'])       ? $_POST['id_gudang']       : '';
-        $filter_material = isset($_POST['filter_material']) ? $_POST['filter_material'] : '';
-
-        // Total data
-        $this->_build_query_stock_value($id_gudang, $filter_material);
-        $totalData = $this->db->count_all_results();
-
-        // Total filtered (sama karena filter sudah di query)
-        $this->_build_query_stock_value($id_gudang, $filter_material);
-        $totalFiltered = $this->db->count_all_results();
-
-        // Data
-        $this->db->select('ws.id_material, ws.nm_material, ws.id_gudang, ws.kd_gudang, ws.qty_stock, ws.harga_beli, ws.total_nilai, w.nm_gudang');
-        $this->_build_query_stock_value($id_gudang, $filter_material);
-
-        $col_order = [
-            1 => 'ws.id_material',
-            2 => 'ws.nm_material',
-            3 => 'w.nm_gudang',
-            4 => 'ws.qty_stock',
-            5 => 'ws.harga_beli',
-            6 => 'ws.total_nilai',
-        ];
-
-        $order_col = $requestData['order'][0]['column'] ?? 2;
-        $order_dir = $requestData['order'][0]['dir']    ?? 'asc';
-        if (isset($col_order[$order_col])) {
-            $this->db->order_by($col_order[$order_col], $order_dir);
-        } else {
-            $this->db->order_by('ws.nm_material', 'asc');
-        }
-
-        $start  = $requestData['start']  ?? 0;
-        $length = $requestData['length'] ?? 25;
-        if ($length != -1) {
-            $this->db->limit($length, $start);
-        }
-
-        $query = $this->db->get()->result_array();
-
-        $data  = [];
-        $no    = (int)$start + 1;
-        foreach ($query as $row) {
-            $btn_history = "<button class='btn btn-xs btn-info' onclick=\"showHistory('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}')\">
-                                <i class='fa fa-history'></i> History
-                            </button>";
-
+        foreach ($rows as $row) {
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
-                $row['id_material'],
-                $row['nm_material'],
-                $row['nm_gudang'] . ' (' . $row['kd_gudang'] . ')',
-                number_format((float)$row['qty_stock'], 3, ',', '.'),
-                number_format((int)round($row['harga_beli']), 0, ',', '.'),
-                number_format((int)round($row['total_nilai']), 0, ',', '.'),
-                $btn_history,
+                $row['nm_barang'] . '<br><small class="text-muted">' . $row['id_material'] . '</small>',
+                "<div class='text-center'>" . $row['no_coil'] . "</div>",
+                "<div class='text-center'>1</div>",
+                "<div class='text-right'>" . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['gross_weight'], 3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['length'],       3, ',', '.') . "</div>",
+                "<div class='text-center'>" . ($row['nm_gudang'] ?? $row['kd_gudang']) . "</div>",
             ];
             $no++;
         }
@@ -217,135 +135,236 @@ class Warehouse_model extends BF_Model
         echo json_encode([
             'draw'            => intval($requestData['draw'] ?? 1),
             'recordsTotal'    => $totalData,
-            'recordsFiltered' => $totalFiltered,
+            'recordsFiltered' => $totalData,
             'data'            => $data,
         ]);
     }
 
-    private function _build_query_stock_value($id_gudang = '', $filter_material = '')
-    {
-        $this->db->from('warehouse_stock ws');
-        $this->db->join('warehouse w', 'w.id = ws.id_gudang', 'left');
-        $this->db->where('ws.qty_stock >', 0);
+    // ── STOCK VALUE PER MATERIAL — sumber: warehouse_stock ────────────────
 
+    public function get_json_stock_value($kd_gudang = '')
+    {
+        $requestData     = $_REQUEST;
+        $id_gudang       = $_POST['id_gudang']       ?? '';
+        $filter_material = $_POST['filter_material'] ?? '';
+
+        $from = $this->_from_stock_value($kd_gudang, $id_gudang, $filter_material);
+
+        // Total & filtered (sama karena filter sudah masuk ke FROM)
+        $cnt_row   = $this->db->query("SELECT COUNT(DISTINCT ws.code_lv4, ws.id_gudang) AS cnt {$from}")->row();
+        $totalData = $cnt_row ? (int) $cnt_row->cnt : 0;
+
+        // Order
+        $col_order = [
+            1 => 'ws.code_lv4',
+            2 => 'ws.nm_material',
+            3 => 'w.nm_gudang',
+            4 => 'jumlah_coil',
+            5 => 'ws.qty_stock',
+            6 => 'ws.harga_beli',
+            7 => 'ws.total_nilai',
+        ];
+        $order_col = (int) ($requestData['order'][0]['column'] ?? 2);
+        $order_dir = in_array(strtolower($requestData['order'][0]['dir'] ?? ''), ['asc','desc'])
+            ? $requestData['order'][0]['dir'] : 'asc';
+        $order_by  = $col_order[$order_col] ?? 'ws.nm_material';
+
+        $start  = (int) ($requestData['start']  ?? 0);
+        $length = (int) ($requestData['length'] ?? 25);
+        $limit  = ($length != -1) ? "LIMIT {$start}, {$length}" : '';
+
+        $sql = "
+            SELECT
+                ws.code_lv4    AS id_material,
+                ws.nm_material,
+                ws.id_gudang,
+                ws.kd_gudang,
+                ws.qty_stock,
+                ws.qty_booking,
+                ws.qty_free,
+                ws.harga_beli,
+                ws.total_nilai,
+                w.nm_gudang,
+                COUNT(wsc.id)  AS jumlah_coil
+            {$from}
+            GROUP BY ws.code_lv4, ws.id_gudang
+            ORDER BY {$order_by} {$order_dir}
+            {$limit}
+        ";
+
+        $rows = $this->db->query($sql)->result_array();
+        $data = [];
+        $no   = $start + 1;
+
+        foreach ($rows as $row) {
+            $btn_history = "<button class='btn btn-xs btn-info'
+                onclick=\"showHistory('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}')\">
+                <i class='fa fa-history'></i> History
+            </button>";
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['id_material'],
+                $row['nm_material'],
+                ($row['nm_gudang'] ?? '-') . ' <span class="text-muted">(' . $row['kd_gudang'] . ')</span>',
+                // "<div class='text-center'>" . (int) $row['jumlah_coil'] . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((int) round($row['total_nilai']), 0, ',', '.') . "</div>",
+                "<div class='text-center'>{$btn_history}</div>",
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalData,
+            'data'            => $data,
+        ]);
+    }
+
+    // Bangun klausa WHERE untuk stock value (raw, aman dari collation issue)
+    private function _where_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
+    {
+        $where = " WHERE ws.qty_stock > 0 ";
+
+        if (!empty($kd_gudang)) {
+            $kd    = $this->db->escape($kd_gudang);
+            $where .= " AND ws.kd_gudang = {$kd} ";
+        }
         if (!empty($id_gudang)) {
-            $this->db->where('ws.id_gudang', $id_gudang);
+            $where .= " AND ws.id_gudang = " . (int) $id_gudang . " ";
         }
         if (!empty($filter_material)) {
-            $this->db->group_start();
-            $this->db->like('ws.nm_material', $filter_material);
-            $this->db->or_like('ws.id_material', $filter_material);
-            $this->db->group_end();
+            $f     = $this->db->escape_like_str($filter_material);
+            $where .= " AND (ws.nm_material LIKE '%{$f}%' OR ws.code_lv4 LIKE '%{$f}%') ";
         }
+        if (!empty($_POST['search']['value'])) {
+            $s     = $this->db->escape_like_str($_POST['search']['value']);
+            $where .= " AND (ws.nm_material LIKE '%{$s}%'
+                          OR ws.code_lv4    LIKE '%{$s}%'
+                          OR w.nm_gudang    LIKE '%{$s}%') ";
+        }
+
+        return $where;
     }
+
+    // FROM + JOIN bersama (raw SQL — CONVERT menghindari collation mismatch)
+    private function _from_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
+    {
+        $where = $this->_where_stock_value($kd_gudang, $id_gudang, $filter_material);
+
+        return "
+            FROM warehouse_stock ws
+            LEFT JOIN warehouse w ON w.id = ws.id_gudang
+            LEFT JOIN warehouse_stock_coil wsc
+                ON CONVERT(wsc.id_material USING utf8mb4)
+                 = CONVERT(ws.code_lv4    USING utf8mb4)
+            {$where}
+        ";
+    }
+
+    public function get_grand_total_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
+    {
+        $from = $this->_from_stock_value($kd_gudang, $id_gudang, $filter_material);
+        $row  = $this->db->query("SELECT SUM(ws.total_nilai) AS grand_total {$from}")->row();
+        return $row ? (int) round($row->grand_total) : 0;
+    }
+
+    // ── KARTU STOK ────────────────────────────────────────────────────────
 
     public function get_json_kartu_stok()
     {
         $requestData = $_REQUEST;
 
         $fetch = $this->get_query_json_kartu_stok(
-            $requestData['search']['value'],
-            $requestData['order'][0]['column'],
-            $requestData['order'][0]['dir'],
-            $requestData['start'],
-            $requestData['length']
+            $requestData['search']['value']      ?? '',
+            $requestData['order'][0]['column']   ?? null,
+            $requestData['order'][0]['dir']      ?? null,
+            $requestData['start']                ?? 0,
+            $requestData['length']               ?? 10
         );
 
-        $totalData = $fetch['totalData'];
-        $totalFiltered = $fetch['totalFiltered'];
-        $query = $fetch['query'];
-
-        $data = [];
+        $data  = [];
         $urut1 = 1;
 
-        foreach ($query->result_array() as $row) {
+        foreach ($fetch['query']->result_array() as $row) {
             $nomor = $urut1 + $requestData['start'];
-            $nestedData = [];
 
-            $nestedData[] = "<div align='center'>{$nomor}</div>";
-            $nestedData[] = date('d/M/Y', strtotime($row['tgl_transaksi']));
-            $nestedData[] = $row['no_transaksi'];
-            $nestedData[] = $row['transaksi'];
-            $nestedData[] = $row['code_lv4'];
-            $nestedData[] = $row['nm_material'];
-            $nestedData[] = number_format($row['qty']);                  // AWAL: stock
-            $nestedData[] = number_format($row['qty_book']);             // AWAL: booking
-            $nestedData[] = number_format($row['qty_free']);             // AWAL: free stock
-            $nestedData[] = number_format($row['qty_transaksi']);        // TRANSAKSI: in/out
-            $nestedData[] = number_format($row['qty_book_akhir']);       // TRANSAKSI: booking
-            $nestedData[] = number_format($row['qty_akhir']);            // AKHIR: stock
-            $nestedData[] = number_format($row['qty_book_akhir']);       // AKHIR: booking
-            $nestedData[] = number_format($row['qty_free_akhir']);       // AKHIR: free stock
-
-            $data[] = $nestedData;
+            $data[] = [
+                "<div align='center'>{$nomor}</div>",
+                date('d/M/Y', strtotime($row['tgl_transaksi'])),
+                $row['no_transaksi'],
+                $row['transaksi'],
+                $row['code_lv4'],
+                $row['nm_material'],
+                number_format($row['qty']),
+                number_format($row['qty_book']),
+                number_format($row['qty_free']),
+                number_format($row['qty_transaksi']),
+                number_format($row['qty_book_akhir']),
+                number_format($row['qty_akhir']),
+                number_format($row['qty_book_akhir']),
+                number_format($row['qty_free_akhir']),
+            ];
             $urut1++;
         }
 
-        $json_data = [
-            "draw" => intval($requestData['draw']),
-            "recordsTotal" => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data" => $data
-        ];
-
-        echo json_encode($json_data);
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => intval($fetch['totalData']),
+            'recordsFiltered' => intval($fetch['totalFiltered']),
+            'data'            => $data,
+        ]);
     }
 
-
-    public function get_query_json_kartu_stok($like_value = null, $column_order = null, $column_dir = null, $limit_start = null, $limit_length = null)
+    public function get_query_json_kartu_stok($like_value = null, $column_order = null, $column_dir = null, $limit_start = 0, $limit_length = 10)
     {
         $columns_order_by = [
-            0 => 'ks.id',
-            1 => 'ks.tgl_transaksi',
-            2 => 'ks.no_transaksi',
-            3 => 'ks.transaksi',
-            4 => 'ks.code_lv4',
-            5 => 'ks.nm_material',
-            6 => 'ks.qty',
-            7 => 'ks.qty_book',
-            8 => 'ks.qty_free',
-            9 => 'ks.qty_transaksi',
+            1  => 'ks.tgl_transaksi',
+            2  => 'ks.no_transaksi',
+            3  => 'ks.transaksi',
+            4  => 'ks.code_lv4',
+            5  => 'ks.nm_material',
+            6  => 'ks.qty',
+            7  => 'ks.qty_book',
+            8  => 'ks.qty_free',
+            9  => 'ks.qty_transaksi',
             10 => 'ks.qty_book_akhir',
             11 => 'ks.qty_akhir',
             12 => 'ks.qty_book_akhir',
-            13 => 'ks.qty_free_akhir'
+            13 => 'ks.qty_free_akhir',
         ];
 
-        $this->db->select('ks.id');
+        // Total semua (tanpa search)
         $this->db->from('kartu_stok ks');
         $this->db->where('ks.deleted', null);
-        $this->db->order_by('ks.tgl_transaksi', 'desc');
         $totalData = $this->db->count_all_results();
 
-        $this->db->select('ks.id');
+        // Total filtered (dengan search)
         $this->db->from('kartu_stok ks');
         $this->db->where('ks.deleted', null);
-        $this->db->order_by('ks.tgl_transaksi', 'desc');
-
         if (!empty($like_value)) {
             $this->db->group_start();
-            $this->db->like('ks.code_lv4', $like_value);
-            $this->db->or_like('ks.nm_material', $like_value);
+            $this->db->like('ks.code_lv4',    $like_value);
+            $this->db->or_like('ks.nm_material',  $like_value);
             $this->db->or_like('ks.no_transaksi', $like_value);
-            $this->db->or_like('ks.transaksi', $like_value);
+            $this->db->or_like('ks.transaksi',    $like_value);
             $this->db->group_end();
         }
-
         $totalFiltered = $this->db->count_all_results();
 
-        $this->db->select('
-        ks.*
-    ');
+        // Data
+        $this->db->select('ks.*');
         $this->db->from('kartu_stok ks');
         $this->db->where('ks.deleted', null);
-        $this->db->order_by('ks.created_on', 'desc');
-
         if (!empty($like_value)) {
             $this->db->group_start();
-            $this->db->like('ks.code_lv4', $like_value);
-            $this->db->or_like('ks.nm_material', $like_value);
+            $this->db->like('ks.code_lv4',    $like_value);
+            $this->db->or_like('ks.nm_material',  $like_value);
             $this->db->or_like('ks.no_transaksi', $like_value);
-            $this->db->or_like('ks.transaksi', $like_value);
+            $this->db->or_like('ks.transaksi',    $like_value);
             $this->db->group_end();
         }
 
@@ -359,12 +378,10 @@ class Warehouse_model extends BF_Model
             $this->db->limit($limit_length, $limit_start);
         }
 
-        $query = $this->db->get();
-
         return [
-            'totalData' => $totalData,
+            'totalData'     => $totalData,
             'totalFiltered' => $totalFiltered,
-            'query' => $query
+            'query'         => $this->db->get(),
         ];
     }
 }

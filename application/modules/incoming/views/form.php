@@ -1,4 +1,5 @@
 <?php
+
 /**
  * form.php — Incoming Material
  * Mode ADD        : incoming/add/{no_ros}
@@ -120,27 +121,27 @@ $is_add    = ($page_mode === 'add');
                                     $qc    = strtoupper($row['status_qc'] ?? 'OK');
                                     $badge = $qc === 'OK' ? 'success' : 'danger';
                         ?>
-                                <tr>
-                                    <?php if ($idx === 0):
-                                        $rowspan = count($rows); ?>
-                                        <td class="text-center" rowspan="<?= $rowspan ?>" style="vertical-align:middle;"><?= $no ?></td>
-                                        <td rowspan="<?= $rowspan ?>" style="vertical-align:middle;">
-                                            <b><?= htmlspecialchars($row['nm_material'] ?? $row['nm_barang'] ?? '-') ?></b><br>
-                                            <small class="text-muted"><?= htmlspecialchars($row['id_material'] ?? $row['id_barang'] ?? '') ?></small>
+                                    <tr>
+                                        <?php if ($idx === 0):
+                                            $rowspan = count($rows); ?>
+                                            <td class="text-center" rowspan="<?= $rowspan ?>" style="vertical-align:middle;"><?= $no ?></td>
+                                            <td rowspan="<?= $rowspan ?>" style="vertical-align:middle;">
+                                                <b><?= htmlspecialchars($row['nm_material'] ?? $row['nm_barang'] ?? '-') ?></b><br>
+                                                <small class="text-muted"><?= htmlspecialchars($row['id_material'] ?? $row['id_barang'] ?? '') ?></small>
+                                            </td>
+                                            <td class="text-center" rowspan="<?= $rowspan ?>" style="vertical-align:middle;">Kg</td>
+                                            <td class="text-right" rowspan="<?= $rowspan ?>" style="vertical-align:middle;"><?= number_format((float)($row['qty_order'] ?? 0), 2) ?></td>
+                                        <?php endif; ?>
+                                        <td class="text-center bg-light"><?= htmlspecialchars($row['no_coil'] ?? '-') ?></td>
+                                        <td class="text-right bg-light"><?= number_format((float)($row['berat_kotor'] ?? 0), 2) ?></td>
+                                        <td class="text-right bg-light"><?= number_format((float)($row['berat_bersih'] ?? 0), 2) ?></td>
+                                        <td class="text-right bg-light"><?= number_format((float)($row['length'] ?? 0), 2) ?></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-<?= $badge ?>"><?= $qc ?></span>
                                         </td>
-                                        <td class="text-center" rowspan="<?= $rowspan ?>" style="vertical-align:middle;">Kg</td>
-                                        <td class="text-right" rowspan="<?= $rowspan ?>" style="vertical-align:middle;"><?= number_format((float)($row['qty_order'] ?? 0), 2) ?></td>
-                                    <?php endif; ?>
-                                    <td class="text-center bg-light"><?= htmlspecialchars($row['no_coil'] ?? '-') ?></td>
-                                    <td class="text-right bg-light"><?= number_format((float)($row['berat_kotor'] ?? 0), 2) ?></td>
-                                    <td class="text-right bg-light"><?= number_format((float)($row['berat_bersih'] ?? 0), 2) ?></td>
-                                    <td class="text-right bg-light"><?= number_format((float)($row['length'] ?? 0), 2) ?></td>
-                                    <td class="text-center">
-                                        <span class="badge bg-<?= $badge ?>"><?= $qc ?></span>
-                                    </td>
-                                    <td class="text-center"><?= htmlspecialchars($row['kd_gudang'] ?? $row['kd_gudang_ke'] ?? '-') ?></td>
-                                </tr>
-                        <?php
+                                        <td class="text-center"><?= htmlspecialchars($row['kd_gudang'] ?? $row['kd_gudang_ke'] ?? '-') ?></td>
+                                    </tr>
+                            <?php
                                 endforeach;
                                 $no++;
                             endforeach;
@@ -184,10 +185,10 @@ $is_add    = ($page_mode === 'add');
             <form action="" id="data-form" enctype="multipart/form-data">
 
                 <!-- Hidden fields -->
-                <input type="hidden" name="id_supplier"   value="<?= htmlspecialchars($ros_data->id_supplier ?? '') ?>">
-                <input type="hidden" name="no_po"         value="<?= htmlspecialchars($ros_data->no_po ?? '') ?>">
-                <input type="hidden" name="no_ros"        value="<?= htmlspecialchars($ros_data->id ?? '') ?>">
-                <input type="hidden" name="uang_muka"     id="uang_muka"     value="">
+                <input type="hidden" name="id_supplier" value="<?= htmlspecialchars($ros_data->id_supplier ?? '') ?>">
+                <input type="hidden" name="no_po" value="<?= htmlspecialchars($ros_data->no_po ?? '') ?>">
+                <input type="hidden" name="no_ros" value="<?= htmlspecialchars($ros_data->id ?? '') ?>">
+                <input type="hidden" name="uang_muka" id="uang_muka" value="">
                 <input type="hidden" name="uang_muka_idr" id="uang_muka_idr" value="">
 
                 <div class="col-md-12">
@@ -265,7 +266,7 @@ $is_add    = ($page_mode === 'add');
                                         </div>
 
                                         <input type="hidden" name="existing_file_original" value="<?= htmlspecialchars($existing_original) ?>">
-                                        <input type="hidden" name="existing_file_hash"     value="<?= htmlspecialchars($existing_hash) ?>">
+                                        <input type="hidden" name="existing_file_hash" value="<?= htmlspecialchars($existing_hash) ?>">
                                         <small class="text-muted">Allowed: PDF/JPG/PNG. Max 2MB.</small>
                                     </div>
                                 </div>
@@ -342,128 +343,134 @@ $is_add    = ($page_mode === 'add');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php if (!$is_view): ?>
-<script>
-    $(document).ready(function () {
+    <script>
+        $(document).ready(function() {
 
-        /* ── File upload handler ── */
-        (function () {
-            var input  = document.getElementById('file_incoming_material');
-            var btnPick = document.getElementById('btnPickFile');
-            var btnClr  = document.getElementById('btnClearFile');
-            var label   = document.getElementById('docFileName');
-            if (!input || !btnPick) return;
+            /* ── File upload handler ── */
+            (function() {
+                var input = document.getElementById('file_incoming_material');
+                var btnPick = document.getElementById('btnPickFile');
+                var btnClr = document.getElementById('btnClearFile');
+                var label = document.getElementById('docFileName');
+                if (!input || !btnPick) return;
 
-            btnPick.addEventListener('click', function () { input.click(); });
+                btnPick.addEventListener('click', function() {
+                    input.click();
+                });
 
-            input.addEventListener('change', function () {
-                label.textContent = (input.files && input.files.length)
-                    ? input.files[0].name
-                    : 'No file chosen';
-                btnClr.style.display = (input.files && input.files.length) ? 'inline-flex' : 'none';
-            });
+                input.addEventListener('change', function() {
+                    label.textContent = (input.files && input.files.length) ?
+                        input.files[0].name :
+                        'No file chosen';
+                    btnClr.style.display = (input.files && input.files.length) ? 'inline-flex' : 'none';
+                });
 
-            if (btnClr) btnClr.addEventListener('click', function () {
-                input.value = '';
-                label.textContent = 'No file chosen';
-                btnClr.style.display = 'none';
-            });
-        })();
+                if (btnClr) btnClr.addEventListener('click', function() {
+                    input.value = '';
+                    label.textContent = 'No file chosen';
+                    btnClr.style.display = 'none';
+                });
+            })();
 
-        /* ── Prefill uang muka dari PO ── */
-        (function () {
-            var no_po       = '<?= addslashes($ros_data->no_po ?? '') ?>';
-            var id_supplier = '<?= addslashes($ros_data->id_supplier ?? '') ?>';
-            if (!no_po || !id_supplier) return;
+            /* ── Prefill uang muka dari PO ── */
+            (function() {
+                var no_po = '<?= addslashes($ros_data->no_po ?? '') ?>';
+                var id_supplier = '<?= addslashes($ros_data->id_supplier ?? '') ?>';
+                if (!no_po || !id_supplier) return;
 
-            $.ajax({
-                url      : siteurl + active_controller + 'get_po_by_supplier',
-                type     : 'POST',
-                data     : { id_supplier: id_supplier },
-                dataType : 'json',
-                success  : function (data) {
-                    data.forEach(function (item) {
-                        if (item.no_po === no_po) {
-                            $('#uang_muka').val(item.uang_muka || '');
-                            $('#uang_muka_idr').val(item.uang_muka_idr || '');
-                        }
-                    });
-                }
-            });
-        })();
-
-        /* ── Data draft coils map untuk prefill mode edit_draft ── */
-        <?php if ($is_edit): ?>
-            var draftCoilsMap = <?= json_encode($draft_coils_map ?? []) ?>;
-        <?php else: ?>
-            var draftCoilsMap = {};
-        <?php endif; ?>
-
-        /* ── Load tabel coil via AJAX ── */
-        function loadCoilTable(no_ros) {
-            $('#list-item-coil').html(
-                '<tr><td colspan="12" class="text-center">' +
-                '<i class="fa fa-spinner fa-spin"></i> Memuat data...</td></tr>'
-            );
-
-            var listGudang = <?= json_encode($list_gudang ?? []) ?>;
-
-            $.ajax({
-                url      : siteurl + active_controller + 'get_ros_detail_to_table',
-                type     : 'POST',
-                data     : { no_ros: no_ros },
-                dataType : 'json',
-                success  : function (data) {
-                    var html            = '';
-                    var currentMaterial = '';
-                    var rowCounter      = 0;
-
-                    if (data && data.length > 0) {
-                        data.forEach(function (item, index) {
-
-                            /* Prefill dari draft jika mode edit */
-                            var saved      = draftCoilsMap[item.id_ros_coil_detail] || {};
-                            var savedGudang = saved.id_gudang_ke  || '';
-                            var savedKdGudang = saved.kd_gudang_ke || '';
-                            var savedQC    = saved.status_qc     || 'OK';
-
-                            /* Kolom material — hanya muncul di baris pertama per material */
-                            var rowMaterial = '';
-                            if (item.id_material !== currentMaterial) {
-                                var qty_belum = (parseFloat(item.qty_po) || 0) - (parseFloat(item.qty_in) || 0);
-                                rowCounter++;
-                                rowMaterial =
-                                    '<td class="text-center" style="vertical-align:top;">' + rowCounter + '</td>' +
-                                    '<td style="vertical-align:top;"><b>' + item.nm_material + '</b></td>' +
-                                    '<td class="text-right" style="vertical-align:top;">' + (parseFloat(item.qty_po) || 0).toLocaleString('id-ID') + '</td>' +
-                                    '<td class="text-center" style="vertical-align:top;">Kg</td>' +
-                                    '<td class="text-right" style="vertical-align:top;">' + qty_belum.toLocaleString('id-ID') + '</td>';
-                                currentMaterial = item.id_material;
-                            } else {
-                                rowMaterial = '<td colspan="5" style="border-top:none;border-bottom:none;"></td>';
+                $.ajax({
+                    url: siteurl + active_controller + 'get_po_by_supplier',
+                    type: 'POST',
+                    data: {
+                        id_supplier: id_supplier
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        data.forEach(function(item) {
+                            if (item.no_po === no_po) {
+                                $('#uang_muka').val(item.uang_muka || '');
+                                $('#uang_muka_idr').val(item.uang_muka_idr || '');
                             }
+                        });
+                    }
+                });
+            })();
 
-                            /* Build opsi gudang */
-                            var gudangOptsCoil = '<option value="">-- Pilih --</option>';
-                            listGudang.forEach(function (g) {
-                                var isSelected = (String(g.id) === String(savedGudang)) ? ' selected' : '';
-                                gudangOptsCoil +=
-                                    '<option value="' + g.id + '" data-kd="' + g.kd_gudang + '"' + isSelected + '>' +
-                                    g.nm_gudang + ' (' + g.kd_gudang + ')</option>';
-                            });
+            /* ── Data draft coils map untuk prefill mode edit_draft ── */
+            <?php if ($is_edit): ?>
+                var draftCoilsMap = <?= json_encode($draft_coils_map ?? []) ?>;
+            <?php else: ?>
+                var draftCoilsMap = {};
+            <?php endif; ?>
 
-                            html +=
-                                '<tr>' +
-                                rowMaterial +
-                                '<td class="text-center bg-light">' + item.no_coil + '</td>' +
-                                '<td class="text-end bg-light">' + parseFloat(item.ros_kotor).toLocaleString('id-ID') + '</td>' +
-                                '<td class="text-end bg-light">' + parseFloat(item.ros_bersih).toLocaleString('id-ID') + '</td>' +
-                                '<td class="text-end bg-light">' + (parseFloat(item.panjang || 0)).toLocaleString('id-ID') + '</td>' +
-                                /* Radio OK */
-                                '<td class="text-center">' +
+            /* ── Load tabel coil via AJAX ── */
+            function loadCoilTable(no_ros) {
+                $('#list-item-coil').html(
+                    '<tr><td colspan="12" class="text-center">' +
+                    '<i class="fa fa-spinner fa-spin"></i> Memuat data...</td></tr>'
+                );
+
+                var listGudang = <?= json_encode($list_gudang ?? []) ?>;
+
+                $.ajax({
+                    url: siteurl + active_controller + 'get_ros_detail_to_table',
+                    type: 'POST',
+                    data: {
+                        no_ros: no_ros
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        var html = '';
+                        var currentMaterial = '';
+                        var rowCounter = 0;
+
+                        if (data && data.length > 0) {
+                            data.forEach(function(item, index) {
+
+                                /* Prefill dari draft jika mode edit */
+                                var saved = draftCoilsMap[item.id_ros_coil_detail] || {};
+                                var savedGudang = saved.id_gudang_ke || '';
+                                var savedKdGudang = saved.kd_gudang_ke || '';
+                                var savedQC = saved.status_qc || 'OK';
+
+                                /* Kolom material — hanya muncul di baris pertama per material */
+                                var rowMaterial = '';
+                                if (item.id_material !== currentMaterial) {
+                                    var qty_belum = (parseFloat(item.qty_po) || 0) - (parseFloat(item.qty_in) || 0);
+                                    rowCounter++;
+                                    rowMaterial =
+                                        '<td class="text-center" style="vertical-align:top;">' + rowCounter + '</td>' +
+                                        '<td style="vertical-align:top;"><b>' + item.nm_material + '</b></td>' +
+                                        '<td class="text-right" style="vertical-align:top;">' + (parseFloat(item.qty_po) || 0).toLocaleString('id-ID') + '</td>' +
+                                        '<td class="text-center" style="vertical-align:top;">Kg</td>' +
+                                        '<td class="text-right" style="vertical-align:top;">' + qty_belum.toLocaleString('id-ID') + '</td>';
+                                    currentMaterial = item.id_material;
+                                } else {
+                                    rowMaterial = '<td colspan="5" style="border-top:none;border-bottom:none;"></td>';
+                                }
+
+                                /* Build opsi gudang */
+                                var gudangOptsCoil = '<option value="">-- Pilih --</option>';
+                                listGudang.forEach(function(g) {
+                                    var isSelected = (String(g.id) === String(savedGudang)) ? ' selected' : '';
+                                    gudangOptsCoil +=
+                                        '<option value="' + g.id + '" data-kd="' + g.kd_gudang + '"' + isSelected + '>' +
+                                        g.nm_gudang + ' (' + g.kd_gudang + ')</option>';
+                                });
+
+                                html +=
+                                    '<tr>' +
+                                    rowMaterial +
+                                    '<td class="text-center bg-light">' + item.no_coil + '</td>' +
+                                    '<td class="text-end bg-light">' + parseFloat(item.ros_kotor).toLocaleString('id-ID') + '</td>' +
+                                    '<td class="text-end bg-light">' + parseFloat(item.ros_bersih).toLocaleString('id-ID') + '</td>' +
+                                    '<td class="text-end bg-light">' + (parseFloat(item.panjang || 0)).toLocaleString('id-ID') + '</td>' +
+                                    /* Radio OK */
+                                    '<td class="text-center">' +
                                     '<input type="radio" name="detail[' + index + '][status_qc]" value="OK"' + (savedQC === 'OK' ? ' checked' : '') + '>' +
-                                '</td>' +
-                                /* Radio REJECT + hidden inputs */
-                                '<td class="text-center">' +
+                                    '</td>' +
+                                    /* Radio REJECT + hidden inputs */
+                                    '<td class="text-center">' +
                                     '<input type="radio" name="detail[' + index + '][status_qc]" value="REJECT"' + (savedQC === 'REJECT' ? ' checked' : '') + '>' +
                                     '<input type="hidden" name="detail[' + index + '][id_ros_header]"   value="' + item.no_ros + '">' +
                                     '<input type="hidden" name="detail[' + index + '][id_ros_material]" value="' + item.id_ros_material + '">' +
@@ -472,157 +479,193 @@ $is_add    = ($page_mode === 'add');
                                     '<input type="hidden" name="detail[' + index + '][id_material]"     value="' + item.id_material + '">' +
                                     '<input type="hidden" name="detail[' + index + '][no_coil]"         value="' + item.no_coil + '">' +
                                     '<input type="hidden" name="detail[' + index + '][aktual_bersih]"   value="' + item.ros_bersih + '">' +
-                                '</td>' +
-                                /* Select gudang */
-                                '<td class="text-center" style="background-color:#f1f8e9;">' +
+                                    '</td>' +
+                                    /* Select gudang */
+                                    '<td class="text-center" style="background-color:#f1f8e9;">' +
                                     '<select name="detail[' + index + '][id_gudang_ke]" class="form-control form-control-sm select-gudang-coil" required>' +
-                                        gudangOptsCoil +
+                                    gudangOptsCoil +
                                     '</select>' +
                                     '<input type="hidden" name="detail[' + index + '][kd_gudang_ke]" class="kd-gudang-coil" value="' + savedKdGudang + '">' +
-                                '</td>' +
-                                '</tr>';
+                                    '</td>' +
+                                    '</tr>';
+                            });
+                        } else {
+                            html = '<tr><td colspan="12" class="text-center text-warning">Data Coil tidak ditemukan untuk ROS ini.</td></tr>';
+                        }
+
+                        $('#list-item-coil').html(html);
+                        $('.select-gudang-coil').select2({
+                            width: '100%'
                         });
-                    } else {
-                        html = '<tr><td colspan="12" class="text-center text-warning">Data Coil tidak ditemukan untuk ROS ini.</td></tr>';
-                    }
-
-                    $('#list-item-coil').html(html);
-                    $('.select-gudang-coil').select2({ width: '100%' });
-                },
-                error: function (xhr) {
-                    console.error('Error load coil:', xhr.responseText);
-                    $('#list-item-coil').html(
-                        '<tr><td colspan="12" class="text-center text-danger">Gagal memuat data coil.</td></tr>'
-                    );
-                }
-            });
-        }
-
-        /* ── Auto-load coil saat halaman dibuka ── */
-        <?php if (!empty($no_ros_default) && !empty($ros_data)): ?>
-            loadCoilTable('<?= addslashes($ros_data->id) ?>');
-        <?php endif; ?>
-
-        /* ── Sync kd_gudang saat select berubah ── */
-        $(document).on('change', '.select-gudang-coil', function () {
-            var kd = $(this).find('option:selected').data('kd') || '';
-            $(this).siblings('.kd-gudang-coil').val(kd);
-        });
-
-        /* ── Validasi gudang semua coil sudah dipilih ── */
-        function validateGudang() {
-            var kosong = false;
-            $('.select-gudang-coil').each(function () {
-                if (!$(this).val()) kosong = true;
-            });
-            return !kosong;
-        }
-
-        /* ── SAVE DRAFT ── */
-        $(document).on('click', '#save-draft', function (e) {
-            e.preventDefault();
-
-            if (!validateGudang()) {
-                Swal.fire({ title: 'Peringatan', text: 'Semua coil harus dipilih gudang tujuannya!', icon: 'warning' });
-                return;
-            }
-
-            var endpoint = '<?= $is_edit ? "update_draft" : "save_draft" ?>';
-
-            Swal.fire({
-                title             : 'Simpan Draft?',
-                text              : 'Data gudang dan QC per coil akan disimpan. Anda masih bisa mengubahnya nanti.',
-                icon              : 'question',
-                showCancelButton  : true,
-                confirmButtonText : 'Ya, Simpan Draft!',
-                cancelButtonText  : 'Batal'
-            }).then(function (result) {
-                if (!result.isConfirmed) return;
-
-                $.ajax({
-                    url         : siteurl + active_controller + endpoint,
-                    type        : 'POST',
-                    data        : new FormData($('#data-form')[0]),
-                    cache       : false,
-                    contentType : false,
-                    processData : false,
-                    dataType    : 'json',
-                    success     : function (res) {
-                        if (res.status == 1) {
-                            Swal.fire({
-                                title             : 'Draft Tersimpan!',
-                                html              : res.pesan + '<br><br><b>Apakah ingin print label sekarang?</b>',
-                                icon              : 'success',
-                                showCancelButton  : true,
-                                confirmButtonText : '<i class="fa fa-print"></i> Print Label',
-                                cancelButtonText  : 'Nanti Saja'
-                            }).then(function (r2) {
-                                if (r2.isConfirmed && res.print_url) {
-                                    window.open(res.print_url, '_blank');
-                                }
-                                window.location.href = siteurl + active_controller;
-                            });
-                        } else {
-                            Swal.fire({ title: 'Gagal', text: res.pesan, icon: 'error' });
-                        }
-                    }
-                });
-            });
-        });
-
-        /* ── SAVE FINALISASI (process_incoming_coil) ── */
-        $(document).on('click', '#save-incoming', function (e) {
-            e.preventDefault();
-
-            if (!validateGudang()) {
-                Swal.fire({ title: 'Peringatan', text: 'Semua coil harus dipilih gudang tujuannya!', icon: 'warning', confirmButtonText: 'OK' });
-                return;
-            }
-
-            Swal.fire({
-                title             : 'Apakah Anda Yakin?',
-                text              : 'Data akan diproses ke stok dan jurnal akuntansi!',
-                icon              : 'warning',
-                showCancelButton  : true,
-                confirmButtonText : 'Ya, Proses!',
-                cancelButtonText  : 'Batal'
-            }).then(function (result) {
-                if (!result.isConfirmed) return;
-
-                $.ajax({
-                    url         : siteurl + active_controller + 'process_incoming_coil',
-                    type        : 'POST',
-                    data        : new FormData($('#data-form')[0]),
-                    cache       : false,
-                    contentType : false,
-                    processData : false,
-                    dataType    : 'json',
-                    success     : function (res) {
-                        if (res.status == 1) {
-                            Swal.fire({
-                                title: 'Berhasil!', text: res.pesan, icon: 'success',
-                                timer: 1500, showConfirmButton: false
-                            }).then(function () {
-                                window.location.href = siteurl + active_controller;
-                            });
-                        } else if (res.status == 2) {
-                            Swal.fire({
-                                title: 'Transaksi Tersimpan', text: res.pesan,
-                                icon: 'warning', confirmButtonText: 'OK'
-                            }).then(function () {
-                                window.location.href = siteurl + active_controller;
-                            });
-                        } else {
-                            Swal.fire({ title: 'Gagal', text: res.pesan, icon: 'error', confirmButtonText: 'OK' });
-                        }
                     },
-                    error: function () {
-                        Swal.fire({ title: 'Error', text: 'Terjadi kesalahan koneksi server.', icon: 'error', confirmButtonText: 'OK' });
+                    error: function(xhr) {
+                        console.error('Error load coil:', xhr.responseText);
+                        $('#list-item-coil').html(
+                            '<tr><td colspan="12" class="text-center text-danger">Gagal memuat data coil.</td></tr>'
+                        );
                     }
                 });
-            });
-        });
+            }
 
-    });
-</script>
+            /* ── Auto-load coil saat halaman dibuka ── */
+            <?php if (!empty($no_ros_default) && !empty($ros_data)): ?>
+                loadCoilTable('<?= addslashes($ros_data->id) ?>');
+            <?php endif; ?>
+
+            /* ── Sync kd_gudang saat select berubah ── */
+            $(document).on('change', '.select-gudang-coil', function() {
+                var kd = $(this).find('option:selected').data('kd') || '';
+                $(this).siblings('.kd-gudang-coil').val(kd);
+            });
+
+            /* ── Validasi gudang semua coil sudah dipilih ── */
+            function validateGudang() {
+                var kosong = false;
+                $('.select-gudang-coil').each(function() {
+                    if (!$(this).val()) kosong = true;
+                });
+                return !kosong;
+            }
+
+            /* ── SAVE DRAFT ── */
+            $(document).on('click', '#save-draft', function(e) {
+                e.preventDefault();
+
+                if (!validateGudang()) {
+                    Swal.fire({
+                        title: 'Peringatan',
+                        text: 'Semua coil harus dipilih gudang tujuannya!',
+                        icon: 'warning'
+                    });
+                    return;
+                }
+
+                var endpoint = '<?= $is_edit ? "update_draft" : "save_draft" ?>';
+
+                Swal.fire({
+                    title: 'Simpan Draft?',
+                    text: 'Data gudang dan QC per coil akan disimpan. Anda masih bisa mengubahnya nanti.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan Draft!',
+                    cancelButtonText: 'Batal'
+                }).then(function(result) {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: siteurl + active_controller + endpoint,
+                        type: 'POST',
+                        data: new FormData($('#data-form')[0]),
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(res) {
+                            if (res.status == 1) {
+                                Swal.fire({
+                                    title: 'Draft Tersimpan!',
+                                    html: res.pesan + '<br><br><b>Pilih aksi selanjutnya:</b>',
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    showDenyButton: true,
+                                    confirmButtonText: '<i class="fa fa-print"></i> Print Label',
+                                    denyButtonText: '<i class="fa fa-file-alt"></i> Print Packing List',
+                                    cancelButtonText: 'Nanti Saja',
+                                    confirmButtonColor: '#3085d6',
+                                    denyButtonColor: '#28a745',
+                                }).then(function(r2) {
+                                    if (r2.isConfirmed && res.print_url) {
+                                        window.open(res.print_url, '_blank');
+                                    } else if (r2.isDenied && res.print_pl_url) {
+                                        window.open(res.print_pl_url, '_blank');
+                                    }
+                                    window.location.href = siteurl + active_controller;
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: res.pesan,
+                                    icon: 'error'
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+            /* ── SAVE FINALISASI (process_incoming_coil) ── */
+            $(document).on('click', '#save-incoming', function(e) {
+                e.preventDefault();
+
+                if (!validateGudang()) {
+                    Swal.fire({
+                        title: 'Peringatan',
+                        text: 'Semua coil harus dipilih gudang tujuannya!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: 'Data akan diproses ke stok dan jurnal akuntansi!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Proses!',
+                    cancelButtonText: 'Batal'
+                }).then(function(result) {
+                    if (!result.isConfirmed) return;
+
+                    $.ajax({
+                        url: siteurl + active_controller + 'process_incoming_coil',
+                        type: 'POST',
+                        data: new FormData($('#data-form')[0]),
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(res) {
+                            if (res.status == 1) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: res.pesan,
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(function() {
+                                    window.location.href = siteurl + active_controller;
+                                });
+                            } else if (res.status == 2) {
+                                Swal.fire({
+                                    title: 'Transaksi Tersimpan',
+                                    text: res.pesan,
+                                    icon: 'warning',
+                                    confirmButtonText: 'OK'
+                                }).then(function() {
+                                    window.location.href = siteurl + active_controller;
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: res.pesan,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Terjadi kesalahan koneksi server.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
 <?php endif; ?>

@@ -32,7 +32,45 @@ class New_ros_model extends BF_Model
     /**
      * DataTables server-side untuk list ROS
      */
-    public function get_datatables()
+    // public function get_datatables()
+    // {
+    //     $requestData = $_REQUEST;
+    //     $search      = $requestData['search']['value'];
+    //     $col_index   = $requestData['order'][0]['column'];
+    //     $col_dir     = $requestData['order'][0]['dir'];
+    //     $start       = $requestData['start'];
+    //     $length      = $requestData['length'];
+
+    //     $columns_order = [0 => 'a.id', 1 => 'a.id', 2 => 'a.no_po', 3 => 'a.nm_supplier', 4 => 'a.nilai_po_pib_rp'];
+
+    //     $where = "1=1";
+    //     if ($search) {
+    //         $like = $this->db->escape_like_str($search);
+    //         $where .= " AND (a.id LIKE '%{$like}%' OR a.no_po LIKE '%{$like}%' OR a.nm_supplier LIKE '%{$like}%' OR b.no_surat LIKE '%{$like}%')";
+    //     }
+
+    //     $sql_base = "
+    //         SELECT a.*, b.no_surat
+    //         FROM tr_ros_header a
+    //         LEFT JOIN tr_purchase_order b ON b.no_po = a.no_po
+    //         WHERE {$where}
+    //     ";
+
+    //     $totalData     = $this->db->query($sql_base)->num_rows();
+    //     $totalFiltered = $totalData;
+
+    //     $order_col = isset($columns_order[$col_index]) ? $columns_order[$col_index] : 'a.created_on';
+    //     $sql = $sql_base . " ORDER BY a.created_on DESC, {$order_col} {$col_dir} LIMIT {$start}, {$length}";
+    //     $query = $this->db->query($sql);
+
+    //     return [
+    //         'totalData'     => $totalData,
+    //         'totalFiltered' => $totalFiltered,
+    //         'query'         => $query
+    //     ];
+    // }
+
+    public function get_datatables($tab = 'draft')
     {
         $requestData = $_REQUEST;
         $search      = $requestData['search']['value'];
@@ -41,20 +79,30 @@ class New_ros_model extends BF_Model
         $start       = $requestData['start'];
         $length      = $requestData['length'];
 
-        $columns_order = [0 => 'a.id', 1 => 'a.id', 2 => 'a.no_po', 3 => 'a.nm_supplier', 4 => 'a.nilai_po_pib_rp'];
+        $columns_order = [
+            0 => 'a.id',
+            1 => 'a.id',
+            2 => 'a.no_po',
+            3 => 'a.nm_supplier',
+            4 => 'a.nilai_po_pib_rp'
+        ];
 
-        $where = "1=1";
+        // Filter status berdasarkan tab
+        $status_filter = ($tab === 'draft') ? '0' : '1';
+
+        $where = "a.status = '{$status_filter}'";
+
         if ($search) {
             $like = $this->db->escape_like_str($search);
             $where .= " AND (a.id LIKE '%{$like}%' OR a.no_po LIKE '%{$like}%' OR a.nm_supplier LIKE '%{$like}%' OR b.no_surat LIKE '%{$like}%')";
         }
 
         $sql_base = "
-            SELECT a.*, b.no_surat
-            FROM tr_ros_header a
-            LEFT JOIN tr_purchase_order b ON b.no_po = a.no_po
-            WHERE {$where}
-        ";
+        SELECT a.*, b.no_surat
+        FROM tr_ros_header a
+        LEFT JOIN tr_purchase_order b ON b.no_po = a.no_po
+        WHERE {$where}
+    ";
 
         $totalData     = $this->db->query($sql_base)->num_rows();
         $totalFiltered = $totalData;

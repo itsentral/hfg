@@ -147,7 +147,7 @@ $is_balance = (round($total_debet) === round($total_kredit));
                         foreach ($details as $d): ?>
                             <tr>
                                 <td><?= $no++ ?></td>
-                                <td><?= htmlspecialchars($d['no_perkiraan']) ?></td>
+                                <td style="white-space: nowrap;"><?= htmlspecialchars($d['no_perkiraan']) ?></td>
                                 <td><?= htmlspecialchars($d['nama_coa'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($d['keterangan'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($d['no_reff'] ?? '-') ?></td>

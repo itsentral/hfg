@@ -27,8 +27,10 @@ class New_ros extends Admin_Controller
     {
         $ENABLE_MANAGE = has_permission('New_ROS.Manage');
         $ENABLE_DELETE = has_permission('New_ROS.Delete');
+        $ENABLE_CLOSE  = has_permission('New_ROS.Manage');
 
-        $fetch         = $this->New_ros_model->get_datatables();
+        $tab   = $this->input->post('tab') ?: 'draft';
+        $fetch = $this->New_ros_model->get_datatables($tab);
         $totalData     = $fetch['totalData'];
         $totalFiltered = $fetch['totalFiltered'];
         $query         = $fetch['query'];
@@ -45,20 +47,37 @@ class New_ros extends Admin_Controller
 
             $edit_btn = '';
             if ($ENABLE_MANAGE && $row['status'] == '0') {
-                $edit_btn = '<a href="' . base_url('new_ros/edit/' . $row['id']) . '" class="btn btn-sm btn-warning" title="Edit"><i class="fas fa-edit"></i></a>';
+                $edit_btn = '<a href="' . base_url('new_ros/edit/' . $row['id']) . '" class="btn btn-sm btn-warning" style="width: 80px; title="Edit"><i class="fas fa-edit"> Edit</i></a>';
             }
 
             $del_btn = '';
             if ($ENABLE_DELETE && $row['status'] == '0') {
-                $del_btn = '<a href="javascript:void(0)" class="btn btn-sm btn-danger del_ros" style="margin-left:0.5rem;" title="Delete" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i></a>';
+                $del_btn = '<a href="javascript:void(0)" class="btn btn-sm btn-danger del_ros" style="width: 80px;" title="Delete" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i> Delete</a>';
             }
 
-            $view_btn = '<a href="' . base_url('new_ros/view/' . $row['id']) . '" class="btn btn-sm btn-info" style="margin-left:0.5rem;" title="View"><i class="fa fa-eye"></i></a>';
+            $close_btn = '';
+            if ($ENABLE_CLOSE && $row['status'] == '0') {
+                $close_btn = '<a href="javascript:void(0)" class="btn btn-sm btn-success btn_close_ros" style="width: 80px;" title="Close ROS" data-id="' . $row['id'] . '"><i class="fas fa-check-double"></i> Close</a>';
+            }
+
+            $view_btn = '<a href="' . base_url('new_ros/view/' . $row['id']) . '" class="btn btn-sm btn-info" style="width: 80px;" title="View"><i class="fa fa-eye"> View</i></a>';
 
             $sts = '<span class="badge rounded-pill bg-warning">Draft</span>';
             if ($row['status'] == '1') {
                 $sts = '<span class="badge rounded-pill bg-success">Final</span>';
             }
+
+            $action_buttons = '
+            <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                <div style="display: flex; gap: 5px;">
+                    ' . $view_btn . '
+                    ' . $edit_btn . '
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    ' . $del_btn . '
+                    ' . $close_btn . '
+                </div>
+            </div>';
 
             $nestedData   = [];
             $nestedData[] = "<div class='text-center'>{$nomor}</div>";
@@ -67,7 +86,7 @@ class New_ros extends Admin_Controller
             $nestedData[] = "<div class='text-left'>{$row['nm_supplier']}</div>";
             $nestedData[] = "<div class='text-end'>" . number_format($row['nilai_po_pib_rp'], 2) . "</div>";
             $nestedData[] = "<div class='text-center'>{$sts}</div>";
-            $nestedData[] = "<div class='text-center'>{$view_btn} {$edit_btn} {$del_btn}</div>";
+            $nestedData[] = "<div class='text-center'>{$action_buttons}</div>";
 
             $data[] = $nestedData;
             $urut1++;
@@ -1146,6 +1165,38 @@ class New_ros extends Admin_Controller
     }
 
     // ─── FINALIZE ROS → Pindah ke Incoming ───────────────────────────
+    // public function finalize()
+    // {
+    //     $id_ros = $this->input->post('id_ros');
+
+    //     // Cek apakah sudah ada coil
+    //     $this->db->select('c.id');
+    //     $this->db->from('tr_ros_material_coil c');
+    //     $this->db->join('tr_ros_material m', 'm.id = c.id_ros_material');
+    //     $this->db->where('m.id_ros', $id_ros);
+    //     $coil_count = $this->db->get()->num_rows();
+
+    //     if ($coil_count == 0) {
+    //         echo json_encode(['status' => 0, 'msg' => 'Upload packing list terlebih dahulu sebelum finalize.']);
+    //         return;
+    //     }
+
+    //     $this->db->trans_begin();
+    //     $this->db->update('tr_ros_header', [
+    //         'status'      => 1,
+    //         'modified_by' => $this->auth->user_id(),
+    //         'modified_on' => date('Y-m-d H:i:s')
+    //     ], ['id' => $id_ros]);
+
+    //     if ($this->db->trans_status() === false) {
+    //         $this->db->trans_rollback();
+    //         echo json_encode(['status' => 0, 'msg' => 'Gagal finalize ROS.']);
+    //     } else {
+    //         $this->db->trans_commit();
+    //         echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-finalize. Silakan proses di menu Incoming.']);
+    //     }
+    // }
+
     public function finalize()
     {
         $id_ros = $this->input->post('id_ros');
@@ -1162,7 +1213,21 @@ class New_ros extends Admin_Controller
             return;
         }
 
+        // Ambil header ROS
+        $header = $this->New_ros_model->get_header($id_ros);
+        if (!$header) {
+            echo json_encode(['status' => 0, 'msg' => 'Data ROS tidak ditemukan.']);
+            return;
+        }
+
+        // Ambil semua material beserta coil
+        $materials = $this->New_ros_model->get_materials($id_ros);
+        foreach ($materials as &$mat) {
+            $mat['coils'] = $this->New_ros_model->get_coils($mat['id']);
+        }
+
         $this->db->trans_begin();
+
         $this->db->update('tr_ros_header', [
             'status'      => 1,
             'modified_by' => $this->auth->user_id(),
@@ -1172,10 +1237,224 @@ class New_ros extends Admin_Controller
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
             echo json_encode(['status' => 0, 'msg' => 'Gagal finalize ROS.']);
+            return;
+        }
+
+        $this->db->trans_commit();
+
+        // Hitung total untuk GL Interface
+        $total_inventory = 0;
+        $materials_gl    = [];
+
+        foreach ($materials as $mat) {
+            $total_inventory += (float) $mat['total_nilai_inventory'];
+
+            $materials_gl[] = [
+                'id_material'      => $mat['id_barang'],
+                'nm_material'      => $mat['nm_erp'] ?: $mat['nm_barang'],
+                'qty'              => (float) $mat['kg_unit'],
+                'harga'            => (float) $mat['cost_book'],
+                'total_persediaan' => (float) $mat['total_nilai_inventory'],
+                'biaya_masuk'      => (float) $mat['bm_rp'],
+                'forwarding'       => (float) $mat['forwarding_cost'],
+                'price_coil_usd'   => (float) $mat['unit_price_usd'],
+                'price_coil_idr'   => (float) $mat['total_value_rp'],
+                'no_coil'          => '',
+                'id_gudang_ke'     => null,
+                'kd_gudang_ke'     => '',
+            ];
+        }
+
+        // Generate GL Interface
+        // Generate GL Interface
+        $jurnal_error = null;
+        if ($total_inventory > 0) {
+            try {
+                $this->_generate_gl_interface(
+                    $id_ros,
+                    $header['no_po'],
+                    $total_inventory,
+                    $header['id_supplier'],
+                    $materials_gl,
+                    $header['kurs_pib']
+                );
+
+                // ── DEBUG: cek apakah sudah masuk ke gl_interface ──
+                $cek_gl = $this->db->get_where('gl_interface', [
+                    'no_request' => $id_ros,  // atau sesuai field yang dipakai
+                    'jenis_transaksi' => 'finalize ros'
+                ])->result_array();
+
+                var_dump($cek_gl);
+                die(); // stop di sini dulu biar keliatan hasilnya
+
+            } catch (Exception $e) {
+                $jurnal_error = $e->getMessage();
+                log_message('error', 'GL Interface error finalize ROS ' . $id_ros . ': ' . $jurnal_error);
+            }
+        }
+
+        if ($jurnal_error) {
+            echo json_encode(['status' => 2, 'msg' => 'ROS berhasil di-finalize, namun GL Interface gagal dibuat. Silakan repost via menu GL Interface.']);
         } else {
-            $this->db->trans_commit();
             echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-finalize. Silakan proses di menu Incoming.']);
         }
+    }
+
+    private function _generate_gl_interface($no_ros, $no_po, $total_rp, $id_supplier, $materials = [], $kurs_pib = 0)
+    {
+        $tgl_inv       = date('Y-m-d');
+        $supplier      = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
+        $supplier_name = $supplier ? $supplier->nama : '';
+
+        $po_data  = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
+        $currency = $po_data ? strtoupper(trim($po_data->matauang)) : 'IDR';
+
+        $coa_dp      = ($currency === 'IDR') ? '1104-01-01' : '1104-01-02';
+        $coa_unbill  = '2101-01-06';
+        $coa_bm      = '1108-01-09';
+        $coa_forward = '2104-01-13';
+
+        $coa_persediaan_map     = ['PUS' => '1105-01-01', 'PEN' => '1105-01-02'];
+        $coa_persediaan_default = '1105-01-01';
+
+        $keterangan = "Finalize ROS: {$no_ros} | PO: {$no_po}";
+        $user_id    = $this->auth->user_id();
+        $created_on = date('Y-m-d H:i:s');
+
+        $total_biaya_masuk = array_sum(array_column($materials, 'biaya_masuk'));
+        $total_forwarding  = array_sum(array_column($materials, 'forwarding'));
+        $total_unbill      = $total_rp - $total_biaya_masuk - $total_forwarding;
+
+        $nomor_jv = $this->_generate_nomor_jv_ros();
+
+        // Insert header GL Interface
+        $this->db->insert('gl_interface', [
+            'nomor'           => $nomor_jv,
+            'tgl'             => $tgl_inv,
+            'bulan'           => date('m'),
+            'tahun'           => date('Y'),
+            'kdcab'           => '101',
+            'jenis'           => 'JV',
+            'keterangan'      => $keterangan,
+            'jenis_transaksi' => 'finalize ros',
+            'status'          => 'pending',
+            'user_id'         => $user_id,
+            'memo'            => json_encode([
+                'id_supplier'   => $id_supplier,
+                'nama_supplier' => $supplier_name,
+                'no_reff'       => $no_po,
+                'no_request'    => $no_ros,
+            ]),
+        ]);
+        $id_gl = $this->db->insert_id();
+
+        // DEBET persediaan per material
+        foreach ($materials as $mat) {
+            $kd_gd          = $mat['kd_gudang_ke'] ?? '';
+            $coa_persediaan = $coa_persediaan_map[$kd_gd] ?? $coa_persediaan_default;
+
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => null,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $coa_persediaan,
+                'id_material'     => $mat['id_material'],
+                'nm_material'     => $mat['nm_material'],
+                'id_gudang'       => $mat['id_gudang_ke'] ?? null,
+                'no_coil'         => $mat['no_coil'] ?? null,
+                'keterangan'      => "Finalize ROS: {$no_ros} | PO: {$no_po} | {$mat['nm_material']}",
+                'no_reff'         => $no_po,
+                'no_request'      => $no_ros,
+                'debet'           => $mat['total_persediaan'],
+                'kredit'          => 0,
+                'created_at'      => $created_on,
+            ]);
+        }
+
+        // KREDIT Unbill
+        if ($total_unbill > 0) {
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => null,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $coa_unbill,
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => null,
+                'no_coil'         => null,
+                'keterangan'      => $keterangan,
+                'no_reff'         => $no_po,
+                'no_request'      => $no_ros,
+                'debet'           => 0,
+                'kredit'          => $total_unbill,
+                'created_at'      => $created_on,
+            ]);
+        }
+
+        // KREDIT Prepaid BM
+        if ($total_biaya_masuk > 0) {
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => null,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $coa_bm,
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => null,
+                'no_coil'         => null,
+                'keterangan'      => $keterangan,
+                'no_reff'         => $no_po,
+                'no_request'      => $no_ros,
+                'debet'           => 0,
+                'kredit'          => $total_biaya_masuk,
+                'created_at'      => $created_on,
+            ]);
+        }
+
+        // KREDIT Hutang Forwarder
+        if ($total_forwarding > 0) {
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => null,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $coa_forward,
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => null,
+                'no_coil'         => null,
+                'keterangan'      => $keterangan,
+                'no_reff'         => $no_po,
+                'no_request'      => $no_ros,
+                'debet'           => 0,
+                'kredit'          => $total_forwarding,
+                'created_at'      => $created_on,
+            ]);
+        }
+    }
+
+    private function _generate_nomor_jv_ros()
+    {
+        $cabang = $this->db->query(
+            "SELECT nomorJC FROM " . DBACC . ".pastibisa_tb_cabang WHERE nocab = '101' LIMIT 1 FOR UPDATE"
+        )->row();
+
+        if (empty($cabang)) {
+            throw new Exception('Data cabang tidak ditemukan untuk generate nomor JV!');
+        }
+
+        $nomor_urut = (int) $cabang->nomorJC + 1;
+        $nomor_jv   = '101-AJV' . date('ym') . $nomor_urut;
+
+        $this->db->query(
+            "UPDATE " . DBACC . ".pastibisa_tb_cabang SET nomorJC = nomorJC + 1 WHERE nocab = '101'"
+        );
+
+        return $nomor_jv;
     }
 
     // ─── AJAX: Get Coils data for view after upload ──────────────────
@@ -1192,5 +1471,403 @@ class New_ros extends Admin_Controller
         $coils = $this->db->get()->result_array();
 
         echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils)]);
+    }
+
+    // public function close_ros()
+    // {
+    //     $id_ros = $this->input->post('id_ros');
+
+    //     // Cek ROS exists & masih draft
+    //     $header = $this->New_ros_model->get_header($id_ros);
+    //     if (!$header) {
+    //         echo json_encode(['status' => 0, 'msg' => 'Data ROS tidak ditemukan.']);
+    //         return;
+    //     }
+    //     if ($header['status'] != '0') {
+    //         echo json_encode(['status' => 0, 'msg' => 'ROS sudah tidak berstatus Draft.']);
+    //         return;
+    //     }
+
+    //     // Ambil materials & others
+    //     $materials = $this->New_ros_model->get_materials($id_ros);
+    //     $others    = $this->New_ros_model->get_others($id_ros);
+
+    //     // Hitung total komponen biaya
+    //     $total_inventory  = 0;
+    //     $total_bm         = 0;
+    //     $total_ls         = (float) $header['biaya_ls'];
+    //     $total_forwarding = 0;
+    //     $total_insurance  = (float) $header['insurance'];
+    //     $total_others_val = 0;
+
+    //     foreach ($materials as $mat) {
+    //         $total_inventory  += (float) $mat['total_nilai_inventory'];
+    //         $total_bm         += (float) $mat['bm_rp'];
+    //         $total_forwarding += (float) $mat['forwarding_cost'];
+    //     }
+    //     foreach ($others as $ot) {
+    //         $total_others_val += (float) $ot['nilai'];
+    //     }
+
+    //     // Nilai DP dari PO
+    //     $po_data       = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
+    //     $uang_muka_idr = $po_data ? (float) $po_data->uang_muka_idr : 0;
+    //     $uang_muka_usd = $po_data ? (float) $po_data->uang_muka     : 0;
+    //     $kurs_pib      = (float) $header['kurs_pib'];
+
+    //     // Selisih kurs = Nilai PIB - Nilai DP
+    //     // Nilai PIB = nilai_po_pib_rp (sudah dalam Rp)
+    //     // Nilai DP  = uang_muka_idr (sudah dalam Rp)
+    //     $nilai_pib      = (float) $header['nilai_po_pib_rp'];
+    //     $selisih_kurs   = $nilai_pib - $uang_muka_idr;
+    //     $selisih_kurs_abs = abs($selisih_kurs);
+
+    //     // Biaya pembulatan = total kredit - total debet (kompensasi selisih PO vs PIB)
+    //     $total_kredit = $uang_muka_idr + $total_bm + $total_ls
+    //         + $total_forwarding + $total_insurance + $total_others_val
+    //         + ($selisih_kurs > 0 ? $selisih_kurs_abs : 0);
+    //     $total_debet  = $total_inventory
+    //         + ($selisih_kurs < 0 ? $selisih_kurs_abs : 0);
+    //     $pembulatan   = $total_kredit - $total_debet; // positif = debet, negatif = kredit
+
+    //     // ── Update status ROS ──
+    //     $this->db->trans_begin();
+    //     $this->db->update('tr_ros_header', [
+    //         'status'          => '1',
+    //         'status_incoming' => 'open',
+    //         'modified_by'     => $this->auth->user_id(),
+    //         'modified_on'     => date('Y-m-d H:i:s')
+    //     ], ['id' => $id_ros]);
+
+    //     if ($this->db->trans_status() === false) {
+    //         $this->db->trans_rollback();
+    //         echo json_encode(['status' => 0, 'msg' => 'Gagal close ROS.']);
+    //         return;
+    //     }
+    //     $this->db->trans_commit();
+
+    //     // ── Generate Jurnal ROS ke GL Interface ──
+    //     $jurnal_error = null;
+    //     if ($total_inventory > 0) {
+    //         try {
+    //             $this->_generate_jurnal_ros(
+    //                 $id_ros,
+    //                 $header['no_po'],
+    //                 $header['id_supplier'],
+    //                 $total_inventory,
+    //                 $uang_muka_idr,
+    //                 $total_bm,
+    //                 $total_ls,
+    //                 $total_forwarding,
+    //                 $total_insurance,
+    //                 $total_others_val,
+    //                 $selisih_kurs,
+    //                 $pembulatan,
+    //                 $kurs_pib
+    //             );
+    //         } catch (Exception $e) {
+    //             $jurnal_error = $e->getMessage();
+    //             log_message('error', 'GL Interface error close ROS ' . $id_ros . ': ' . $jurnal_error);
+    //         }
+    //     }
+
+    //     if ($jurnal_error) {
+    //         echo json_encode(['status' => 2, 'msg' => 'ROS berhasil di-close, namun GL Interface gagal dibuat. Error: ' . $jurnal_error]);
+    //     } else {
+    //         echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-close dan siap diproses di Incoming.']);
+    //     }
+    // }
+
+    public function close_ros()
+    {
+        $id_ros = $this->input->post('id_ros');
+
+        // Cek ROS exists & masih draft
+        $header = $this->New_ros_model->get_header($id_ros);
+        if (!$header || $header['status'] != '0') {
+            echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan atau sudah tidak Draft.']);
+            return;
+        }
+
+        $materials = $this->New_ros_model->get_materials($id_ros);
+        $others    = $this->New_ros_model->get_others($id_ros);
+
+        // ── Hitung total komponen biaya ──
+        $total_inventory  = 0;
+        $total_bm         = 0;
+        $total_forwarding = 0;
+        $total_ls         = (float) $header['biaya_ls'];
+        $total_insurance  = (float) $header['insurance'];
+        $total_others_val = 0;
+
+        foreach ($materials as $mat) {
+            $total_inventory  += (float) $mat['total_nilai_inventory'];
+            $total_bm         += (float) $mat['bm_rp'];
+            $total_forwarding += (float) $mat['forwarding_cost'];
+        }
+        foreach ($others as $ot) {
+            $total_others_val += (float) $ot['nilai'];
+        }
+
+        // ── Nilai DP ──
+        // nilai_dp_rp  = nilai_po_pib_rp (USD × kurs PIB) → ini yang dikreditkan ke COA 1104-01-02
+        // uang_muka_idr_po = nilai DP yang sudah dibayar pakai kurs lama → untuk hitung selisih kurs
+        $po_data          = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
+        $uang_muka_idr_po = $po_data ? (float) $po_data->uang_muka_idr : 0;
+        $nilai_dp_rp      = (float) $header['nilai_po_pib_rp']; // nilai_po_usd × kurs_pib
+        $kurs_pib         = (float) $header['kurs_pib'];
+
+        // ── Selisih Kurs ──
+        // Rumus: Nilai PIB - Nilai DP yang sudah dibayar
+        // Positif → rugi kurs → KREDIT
+        // Negatif → untung kurs → DEBET
+        $selisih_kurs     = ($uang_muka_idr_po > 0) ? ($nilai_dp_rp - $uang_muka_idr_po) : 0;
+        $selisih_kurs_abs = abs($selisih_kurs);
+
+        // ── Pembulatan ──
+        // Rumus: Total Kredit - Total Debet
+        // Untuk kompensasi selisih antara PO vs PIB
+        $total_kredit = $nilai_dp_rp
+            + $total_bm
+            + $total_ls
+            + $total_forwarding
+            + $total_insurance
+            + $total_others_val
+            + ($selisih_kurs > 0 ? $selisih_kurs_abs : 0);
+
+        $total_debet  = $total_inventory
+            + ($selisih_kurs < 0 ? $selisih_kurs_abs : 0);
+
+        $pembulatan   = $total_kredit - $total_debet;
+        // Positif → lebih kredit → DEBET pembulatan
+        // Negatif → lebih debet  → KREDIT pembulatan
+
+        // ── Update status ROS ──
+        $this->db->trans_begin();
+        $this->db->update('tr_ros_header', [
+            'status'          => '1',
+            'status_incoming' => 'open',
+            'modified_by'     => $this->auth->user_id(),
+            'modified_on'     => date('Y-m-d H:i:s')
+        ], ['id' => $id_ros]);
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            echo json_encode(['status' => 0, 'msg' => 'Gagal update status ROS.']);
+            return;
+        }
+        $this->db->trans_commit();
+
+        // ── Generate Jurnal GL Interface ──
+        if ($total_inventory > 0) {
+            try {
+                $this->_generate_jurnal_ros(
+                    $id_ros,
+                    $header['no_po'],
+                    $header['id_supplier'],
+                    $total_inventory,
+                    $nilai_dp_rp,       // nilai PO PIB (USD × kurs PIB) → kredit COA 1104-01-02
+                    $uang_muka_idr_po,  // nilai DP yg sudah dibayar → untuk hitung selisih kurs
+                    $total_bm,
+                    $total_ls,
+                    $total_forwarding,
+                    $total_insurance,
+                    $total_others_val,
+                    $selisih_kurs,
+                    $pembulatan,
+                    $kurs_pib
+                );
+                echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-close dan Jurnal JV telah dibuat.']);
+            } catch (Exception $e) {
+                log_message('error', 'GL Interface error close ROS ' . $id_ros . ': ' . $e->getMessage());
+                echo json_encode(['status' => 2, 'msg' => 'ROS closed, tapi Jurnal error: ' . $e->getMessage()]);
+            }
+        } else {
+            echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-close.']);
+        }
+    }
+
+    private function _generate_jurnal_ros(
+        $id_ros,
+        $no_po,
+        $id_supplier,
+        $total_inventory,
+        $nilai_dp_rp,       // nilai PO PIB → dikreditkan ke COA DP
+        $uang_muka_idr_po,  // nilai DP yg sudah dibayar → hanya untuk referensi selisih kurs
+        $total_bm,
+        $total_ls,
+        $total_forwarding,
+        $total_insurance,
+        $total_others,
+        $selisih_kurs,
+        $pembulatan,
+        $kurs_pib
+    ) {
+        $tgl_inv    = date('Y-m-d');
+        $created_on = date('Y-m-d H:i:s');
+        $user_id    = $this->auth->user_id();
+
+        // ── COA sesuai konsep Excel & gambar ──
+        $coa = [
+            'transit' => '1105-01-02', // PERSEDIAAN IN TRANSIT         → DEBET
+            'dp'      => '1104-01-02', // ADVANCE PURCHASE ($)           → KREDIT (selalu USD untuk impor)
+            'bm'      => '1108-01-09', // BM DIBAYAR DIMUKA              → KREDIT
+            'ls'      => '1111-01-01', // PREPAID EXPENSE LS             → KREDIT
+            'fwd'     => '2104-01-14', // HUTANG BIAYA FORWARDING        → KREDIT
+            'ins'     => '1111-01-02', // PREPAID EXPENSE INSURANCE      → KREDIT
+            'oth'     => '1111-01-03', // PREPAID EXPENSE OTHER          → KREDIT
+            'kurs'    => '7201-01-07', // B. SELISIH KURS                → DEBET/KREDIT
+            'round'   => '7201-01-05', // B. PEMBULATAN                  → DEBET/KREDIT
+        ];
+
+        $keterangan = "ROS: {$id_ros} | PO: {$no_po}";
+        $nomor_jv   = $this->_generate_nomor_jv_ros();
+
+        // ── Insert header GL Interface ──
+        $this->db->insert('gl_interface', [
+            'nomor'           => $nomor_jv,
+            'tgl'             => $tgl_inv,
+            'bulan'           => date('m'),
+            'tahun'           => date('Y'),
+            'kdcab'           => '101',
+            'jenis'           => 'JV',
+            'keterangan'      => $keterangan,
+            'jenis_transaksi' => 'ros',
+            'status'          => 'pending',
+            'user_id'         => $user_id,
+            'memo'            => json_encode([
+                'id_supplier' => $id_supplier,
+                'no_reff'     => $no_po,
+                'no_request'  => $id_ros,
+                'kurs_pib'    => $kurs_pib,
+                'nilai_dp_rp' => $nilai_dp_rp,
+                'dp_dibayar'  => $uang_muka_idr_po,
+            ]),
+        ]);
+        $id_gl = $this->db->insert_id();
+
+        // ── Helper insert detail ──
+        // Skip jika debet dan kredit keduanya 0
+        $ins = function ($no_coa, $desc, $debet, $kredit) use ($id_gl, $tgl_inv, $no_po, $id_ros, $created_on) {
+            if (round($debet, 2) == 0 && round($kredit, 2) == 0) return;
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => null,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $no_coa,
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => null,
+                'no_coil'         => null,
+                'keterangan'      => $desc,
+                'no_reff'         => $no_po,
+                'no_request'      => $id_ros,
+                'debet'           => round($debet,  2),
+                'kredit'          => round($kredit, 2),
+                'created_at'      => $created_on,
+            ]);
+        };
+
+        // ── Insert detail jurnal ──
+
+        // 1. DEBET — Persediaan In Transit
+        //    Nilai = total_inventory (nilai PO×kurs + BM + LS + forwarding + insurance + others)
+        $ins($coa['transit'], "Persediaan In Transit | {$keterangan}", $total_inventory, 0);
+
+        // 2. KREDIT — Advance Purchase ($)
+        //    Nilai = nilai_po_pib_rp (nilai_po_usd × kurs_pib)
+        $ins($coa['dp'], "Advance Purchase USD | {$keterangan}", 0, $nilai_dp_rp);
+
+        // 3. KREDIT — BM Dibayar Dimuka
+        $ins($coa['bm'], "BM Dibayar Dimuka | {$keterangan}", 0, $total_bm);
+
+        // 4. KREDIT — Prepaid Expense LS
+        $ins($coa['ls'], "Prepaid Expense LS | {$keterangan}", 0, $total_ls);
+
+        // 5. KREDIT — Hutang Biaya Forwarding (rate Rp 200/kg)
+        $ins($coa['fwd'], "Hutang Biaya Forwarding | {$keterangan}", 0, $total_forwarding);
+
+        // 6. KREDIT — Prepaid Expense Insurance (jika ada)
+        $ins($coa['ins'], "Prepaid Expense Insurance | {$keterangan}", 0, $total_insurance);
+
+        // 7. KREDIT — Prepaid Expense Other (jika ada)
+        $ins($coa['oth'], "Prepaid Expense Other | {$keterangan}", 0, $total_others);
+
+        // 8. DEBET/KREDIT — Selisih Kurs (Nilai PIB - Nilai DP dibayar)
+        //    Positif (nilai PIB > DP) → rugi kurs → KREDIT
+        //    Negatif (nilai PIB < DP) → untung kurs → DEBET
+        $ins(
+            $coa['kurs'],
+            "Selisih Kurs (PIB: " . number_format($kurs_pib, 0, ',', '.') . ") | {$keterangan}",
+            ($selisih_kurs < 0) ? abs($selisih_kurs) : 0,
+            ($selisih_kurs > 0) ? $selisih_kurs       : 0
+        );
+
+        // 9. DEBET/KREDIT — Pembulatan (Total Kredit - Total Debet)
+        //    Positif → kredit lebih besar → DEBET pembulatan
+        //    Negatif → debet lebih besar  → KREDIT pembulatan
+        $ins(
+            $coa['round'],
+            "Biaya Pembulatan | {$keterangan}",
+            ($pembulatan > 0) ? $pembulatan       : 0,
+            ($pembulatan < 0) ? abs($pembulatan)  : 0
+        );
+    }
+
+
+    // ─── AJAX: Get data ROS untuk preview modal close ────────────────
+    public function get_ros_preview()
+    {
+        $id_ros = $this->input->post('id_ros');
+
+        $header = $this->New_ros_model->get_header($id_ros);
+        if (!$header) {
+            echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan.']);
+            return;
+        }
+
+        $materials = $this->New_ros_model->get_materials($id_ros);
+        foreach ($materials as &$mat) {
+            $mat['coils'] = $this->New_ros_model->get_coils($mat['id']);
+        }
+        $others = $this->New_ros_model->get_others($id_ros);
+
+        // Hitung total others
+        $total_others_val = 0;
+        foreach ($others as $ot) {
+            $total_others_val += (float) $ot['nilai'];
+        }
+
+        // Hitung total FC
+        $total_fc = $header['cost_bm'] + $header['cost_bm_kite'] + $header['cost_bmt']
+            + $header['cost_cukai'] + $header['cost_ppn'] + $header['cost_ppnbm']
+            + $header['cost_pph_import'];
+
+        // Hitung total coil & coil stats
+        $total_coil = 0;
+        $total_nw   = 0;
+        $total_gw   = 0;
+        foreach ($materials as $mat) {
+            if (!empty($mat['coils'])) {
+                $total_coil += count($mat['coils']);
+                foreach ($mat['coils'] as $coil) {
+                    $total_nw += (float) $coil['berat_bersih'];
+                    $total_gw += (float) $coil['berat_kotor'];
+                }
+            }
+        }
+
+        echo json_encode([
+            'status'           => 1,
+            'header'           => $header,
+            'materials'        => $materials,
+            'others'           => $others,
+            'total_others_val' => $total_others_val,
+            'total_fc'         => $total_fc,
+            'total_coil'       => $total_coil,
+            'total_nw'         => $total_nw,
+            'total_gw'         => $total_gw,
+        ]);
     }
 }
