@@ -64,7 +64,7 @@ class Warehouse_model extends BF_Model
         $where_gudang = '';
         if (!empty($kd_gudang)) {
             $kd = $this->db->escape($kd_gudang);
-            $where_gudang = " AND ws.kd_gudang = {$kd}";
+            $where_gudang = " AND wsc.kd_gudang = {$kd}";
         }
 
         $where_search = '';
@@ -77,17 +77,18 @@ class Warehouse_model extends BF_Model
         }
 
         $base_from = "
-            FROM warehouse_stock_coil wsc
-            JOIN warehouse_stock ws
-                ON CONVERT(ws.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
-            JOIN warehouse w
-                ON w.id = ws.id_gudang
-            LEFT JOIN new_inventory_4 ni
-                ON CONVERT(ni.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
-            WHERE 1=1
-            {$where_gudang}
-            {$where_search}
-        ";
+    FROM warehouse_stock_coil wsc
+    LEFT JOIN warehouse w
+        ON w.kd_gudang = wsc.kd_gudang
+    LEFT JOIN warehouse_stock ws
+        ON ws.code_lv4 = wsc.id_material
+        AND ws.id_gudang = wsc.id_gudang
+    LEFT JOIN new_inventory_4 ni
+        ON ni.code_lv4 = wsc.id_material
+    WHERE 1=1
+    {$where_gudang}
+    {$where_search}
+";
 
         // Hitung total & filtered — pakai raw query agar tidak konflik CI builder
         $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_from}")->row();
@@ -95,24 +96,24 @@ class Warehouse_model extends BF_Model
 
         // Data utama
         $sql = "
-            SELECT
-                wsc.id,
-                wsc.id_material,
-                wsc.no_coil,
-                wsc.kode_internal,
-                wsc.gross_weight,
-                wsc.net_weight,
-                wsc.length,
-                ws.kd_gudang,
-                ws.id_gudang,
-                ws.harga_beli,
-                ni.nama AS nm_barang,
-                ni.trade_name,
-                w.nm_gudang
-            {$base_from}
-            ORDER BY {$order_by} {$order_dir}
-            LIMIT {$start}, {$length}
-        ";
+    SELECT
+        wsc.id,
+        wsc.id_material,
+        wsc.no_coil,
+        wsc.kode_internal,
+        wsc.gross_weight,
+        wsc.net_weight,
+        wsc.length,
+        wsc.kd_gudang,      
+        wsc.id_gudang,     
+        ws.harga_beli,
+        ni.nama AS nm_barang,
+        ni.trade_name,
+        w.nm_gudang
+    {$base_from}
+    ORDER BY {$order_by} {$order_dir}
+    LIMIT {$start}, {$length}
+";
 
         $rows = $this->db->query($sql)->result_array();
         $data = [];
@@ -122,12 +123,11 @@ class Warehouse_model extends BF_Model
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['nm_barang'] . '<br><small class="text-muted">' . $row['id_material'] . '</small>',
-                "<div class='text-center'>" . $row['no_coil'] . "</div>",
-                "<div class='text-center'>1</div>",
-                "<div class='text-right'>" . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
-                "<div class='text-right'>" . number_format((float) $row['gross_weight'], 3, ',', '.') . "</div>",
-                "<div class='text-right'>" . number_format((float) $row['length'],       3, ',', '.') . "</div>",
-                "<div class='text-center'>" . ($row['nm_gudang'] ?? $row['kd_gudang']) . "</div>",
+                "<div class='text-center'>" . $row['no_coil']       . "</div>",
+                "<div class='text-center'>" . ($row['kode_internal'] ?? '-') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['gross_weight'], 3, ',', '.') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['length'],       3, ',', '.') . "</div>",
             ];
             $no++;
         }
@@ -165,7 +165,7 @@ class Warehouse_model extends BF_Model
             7 => 'ws.total_nilai',
         ];
         $order_col = (int) ($requestData['order'][0]['column'] ?? 2);
-        $order_dir = in_array(strtolower($requestData['order'][0]['dir'] ?? ''), ['asc','desc'])
+        $order_dir = in_array(strtolower($requestData['order'][0]['dir'] ?? ''), ['asc', 'desc'])
             ? $requestData['order'][0]['dir'] : 'asc';
         $order_by  = $col_order[$order_col] ?? 'ws.nm_material';
 
@@ -197,17 +197,24 @@ class Warehouse_model extends BF_Model
         $no   = $start + 1;
 
         foreach ($rows as $row) {
-            $btn_history = "<button class='btn btn-xs btn-info'
+            $btn_history = "<button class='btn btn-sm btn-info'
                 onclick=\"showHistory('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}')\">
                 <i class='fa fa-history'></i> History
             </button>";
+
+            $jml_coil = (int) $row['jumlah_coil'];
+            $btn_coil  = "<div class='text-center'>
+                <a href='#'
+                onclick=\"showDetailCoil('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}'); return false;\">
+                    {$jml_coil} coil
+                </a>
+            </div>";
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['id_material'],
                 $row['nm_material'],
-                ($row['nm_gudang'] ?? '-') . ' <span class="text-muted">(' . $row['kd_gudang'] . ')</span>',
-                // "<div class='text-center'>" . (int) $row['jumlah_coil'] . "</div>",
+                $btn_coil,
                 "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
                 "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",
                 "<div class='text-right'>" . number_format((int) round($row['total_nilai']), 0, ',', '.') . "</div>",
@@ -259,8 +266,8 @@ class Warehouse_model extends BF_Model
             FROM warehouse_stock ws
             LEFT JOIN warehouse w ON w.id = ws.id_gudang
             LEFT JOIN warehouse_stock_coil wsc
-                ON CONVERT(wsc.id_material USING utf8mb4)
-                 = CONVERT(ws.code_lv4    USING utf8mb4)
+                ON wsc.id_material = ws.code_lv4
+                AND wsc.id_gudang = ws.id_gudang
             {$where}
         ";
     }
@@ -383,5 +390,16 @@ class Warehouse_model extends BF_Model
             'totalFiltered' => $totalFiltered,
             'query'         => $this->db->get(),
         ];
+    }
+
+    public function get_detail_coil_by_material($id_material, $id_gudang)
+    {
+        return $this->db->query("
+            SELECT no_coil, kode_internal, net_weight, gross_weight, length
+            FROM warehouse_stock_coil
+            WHERE id_material = ?
+            AND id_gudang     = ?
+            ORDER BY no_coil ASC
+        ", [$id_material, $id_gudang])->result_array();
     }
 }
