@@ -274,8 +274,27 @@ class Warehouse_model extends BF_Model
 
     public function get_grand_total_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
     {
-        $from = $this->_from_stock_value($kd_gudang, $id_gudang, $filter_material);
-        $row  = $this->db->query("SELECT SUM(ws.total_nilai) AS grand_total {$from}")->row();
+        $where = " WHERE ws.qty_stock > 0 ";
+
+        if (!empty($kd_gudang)) {
+            $kd    = $this->db->escape($kd_gudang);
+            $where .= " AND ws.kd_gudang = {$kd} ";
+        }
+        if (!empty($id_gudang)) {
+            $where .= " AND ws.id_gudang = " . (int) $id_gudang . " ";
+        }
+        if (!empty($filter_material)) {
+            $f     = $this->db->escape_like_str($filter_material);
+            $where .= " AND (ws.nm_material LIKE '%{$f}%' OR ws.code_lv4 LIKE '%{$f}%') ";
+        }
+
+        $row = $this->db->query("
+            SELECT SUM(ws.total_nilai) AS grand_total
+            FROM warehouse_stock ws
+            LEFT JOIN warehouse w ON w.id = ws.id_gudang
+            {$where}
+        ")->row();
+
         return $row ? (int) round($row->grand_total) : 0;
     }
 
