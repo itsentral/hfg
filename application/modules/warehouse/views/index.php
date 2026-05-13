@@ -1,9 +1,10 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
 
 <div class="card">
     <div class="card-body">
 
-        <!-- Tab Gudang -->
+        <!-- ── Tab Gudang ─────────────────────────────────────────────── -->
         <ul class="nav nav-tabs mb-3" id="tabStockCoil" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="tab-pusat-coil-tab"
@@ -15,6 +16,12 @@
                 <a class="nav-link" id="tab-penjualan-coil-tab"
                     data-bs-toggle="tab" href="#tab-penjualan-coil" role="tab">
                     <i class="fa fa-store"></i> Gudang Penjualan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-history-coil-tab"
+                    data-bs-toggle="tab" href="#tab-history-coil" role="tab">
+                    <i class="fa fa-history"></i> History Per Days
                 </a>
             </li>
         </ul>
@@ -63,88 +70,210 @@
                 </div>
             </div>
 
+            <!-- TAB HISTORY PER DAYS -->
+            <div class="tab-pane fade" id="tab-history-coil" role="tabpanel">
+
+                <!-- Filter -->
+                <div class="row mb-3 g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                            <i class="fa fa-calendar"></i> Tanggal Dari
+                        </label>
+                        <input type="text" id="hc_date_from" class="form-control form-control-sm"
+                            placeholder="dd/mm/yyyy" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                            <i class="fa fa-calendar"></i> Tanggal Sampai
+                        </label>
+                        <input type="text" id="hc_date_to" class="form-control form-control-sm"
+                            placeholder="dd/mm/yyyy" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                            <i class="fa fa-filter"></i> Gudang
+                        </label>
+                        <select id="hc_gudang" class="form-select form-select-sm">
+                            <option value="">-- Semua Gudang --</option>
+                            <option value="PUS">Gudang Pusat</option>
+                            <option value="PEN">Gudang Penjualan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary btn-sm" id="btn-filter-hc">
+                            <i class="fa fa-search"></i> Tampilkan
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-reset-hc">
+                            <i class="fa fa-refresh"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="table-history-coil"
+                        class="table table-bordered table-striped table-hover">
+                        <thead class="table-warning">
+                            <tr>
+                                <th width="4%">No</th>
+                                <th>Nama Material (Lv.4)</th>
+                                <th class="text-center">No. Coil</th>
+                                <th class="text-center">Kode Internal</th>
+                                <th class="text-right">Nett Weight (Kg)</th>
+                                <th class="text-right">Gross Weight (Kg)</th>
+                                <th class="text-right">Length (M)</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="fa fa-info-circle"></i>
+                                    Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <script>
-    $(document).ready(function() {
+$(document).ready(function () {
 
-        var colDef = [{
-                data: 0,
-                width: '4%'
-            },
-            {
-                data: 1
-            },
-            {
-                data: 2,
-                className: 'text-center'
-            }, // No. Coil
-            {
-                data: 3,
-                className: 'text-center'
-            }, // Kode Internal
-            {
-                data: 4,
-                className: 'text-end'
-            }, // Nett Weight
-            {
-                data: 5,
-                className: 'text-end'
-            }, // Gross Weight
-            {
-                data: 6,
-                className: 'text-end'
-            }, // Length
-        ];
+    // ── Kolom live (7 kolom) ──────────────────────────────────────────────
+    var colDefLive = [
+        { data: 0, width: '4%' },
+        { data: 1 },
+        { data: 2, className: 'text-center' },
+        { data: 3, className: 'text-center' },
+        { data: 4, className: 'text-end' },
+        { data: 5, className: 'text-end' },
+        { data: 6, className: 'text-end' },
+    ];
 
-        var dtOptions = function(endpoint, badgeId) {
-            return {
-                processing: true,
-                serverSide: true,
-                destroy: true,
-                autoWidth: false,
-                responsive: true,
-                sPaginationType: 'simple_numbers',
-                iDisplayLength: 25,
-                aLengthMenu: [
-                    [10, 25, 50, 100],
-                    [10, 25, 50, 100]
-                ],
-                ajax: {
-                    url: siteurl + 'warehouse/' + endpoint,
-                    type: 'POST',
-                    cache: false,
+    // ── Kolom history per days (9 kolom: +Status, +Tanggal) ───────────────
+    var colDefHistory = [
+        { data: 0, width: '4%' },
+        { data: 1 },
+        { data: 2, className: 'text-center' },
+        { data: 3, className: 'text-center' },
+        { data: 4, className: 'text-end' },
+        { data: 5, className: 'text-end' },
+        { data: 6, className: 'text-end' },
+        { data: 7, className: 'text-center' },
+        { data: 8, className: 'text-center' },
+    ];
+
+    // ── Tab Pusat (live) ──────────────────────────────────────────────────
+    var dtPusat = $('#table-stock-pusat').DataTable({
+        processing: true, serverSide: true, destroy: true,
+        autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
+        aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        ajax: { url: siteurl + 'warehouse/data_side_stock_pusat', type: 'POST', cache: false },
+        columns: colDefLive,
+        order: [[1, 'asc']],
+        language: {
+            processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
+            zeroRecords: 'Tidak ada data coil.', emptyTable: 'Tidak ada data.',
+        }
+    });
+
+    // ── Tab Penjualan (live, lazy) ────────────────────────────────────────
+    var dtPenjualan = null;
+    document.getElementById('tab-penjualan-coil-tab')
+        .addEventListener('shown.bs.tab', function () {
+            if (!dtPenjualan) {
+                dtPenjualan = $('#table-stock-penjualan').DataTable({
+                    processing: true, serverSide: true, destroy: true,
+                    autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
+                    aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    ajax: { url: siteurl + 'warehouse/data_side_stock_penjualan', type: 'POST', cache: false },
+                    columns: colDefLive,
+                    order: [[1, 'asc']],
+                    language: {
+                        processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
+                        zeroRecords: 'Tidak ada data coil.', emptyTable: 'Tidak ada data.',
+                    }
+                });
+            }
+        });
+
+    // ── Flatpickr ─────────────────────────────────────────────────────────
+    var fpFrom = flatpickr('#hc_date_from', {
+        locale: 'id', dateFormat: 'd/m/Y',
+        onChange: function (sel) { fpTo.set('minDate', sel[0] || null); }
+    });
+    var fpTo = flatpickr('#hc_date_to', {
+        locale: 'id', dateFormat: 'd/m/Y',
+        onChange: function (sel) { fpFrom.set('maxDate', sel[0] || null); }
+    });
+
+    // ── Helper dd/mm/yyyy → yyyy-mm-dd ────────────────────────────────────
+    function getYmd(dmy) {
+        if (!dmy) return '';
+        var p = dmy.split('/');
+        return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
+    }
+
+    // ── Tab History Per Days (lazy, hanya dibuat saat tombol diklik) ──────
+    var dtHistory = null;
+
+    function buildHistoryDt() {
+        if (dtHistory) dtHistory.destroy();
+        dtHistory = $('#table-history-coil').DataTable({
+            processing: true, serverSide: true, destroy: true,
+            autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
+            aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            ajax: {
+                url: siteurl + 'warehouse/data_side_stock_perday',
+                type: 'POST',
+                data: function (d) {
+                    d.date_from = getYmd($('#hc_date_from').val());
+                    d.date_to   = getYmd($('#hc_date_to').val());
+                    d.kd_gudang = $('#hc_gudang').val();
                 },
-                columns: colDef,
-                order: [
-                    [1, 'asc']
-                ],
-                language: {
-                    processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-                    zeroRecords: 'Tidak ada data coil di gudang ini.',
-                    emptyTable: 'Tidak ada data.',
-                }
-            };
-        };
+                cache: false,
+            },
+            columns: colDefHistory,
+            order: [[8, 'desc']],
+            language: {
+                processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
+                zeroRecords: 'Tidak ada data untuk rentang tanggal ini.',
+                emptyTable: 'Tidak ada data.',
+            }
+        });
+    }
 
-       var dtPusat = $('#table-stock-pusat').DataTable(
-    dtOptions('data_side_stock_pusat')
-);
+    $('#btn-filter-hc').on('click', function () {
+        buildHistoryDt();
+    });
 
-var dtPenjualan = null;
-document.getElementById('tab-penjualan-coil-tab')
-    .addEventListener('shown.bs.tab', function () {
-        if (!dtPenjualan) {
-            dtPenjualan = $('#table-stock-penjualan').DataTable(
-                dtOptions('data_side_stock_penjualan')
+    $('#btn-reset-hc').on('click', function () {
+        fpFrom.clear();
+        fpTo.clear();
+        fpFrom.set('maxDate', null);
+        fpTo.set('minDate', null);
+        $('#hc_gudang').val('');
+        if (dtHistory) {
+            dtHistory.destroy();
+            dtHistory = null;
+            $('#table-history-coil tbody').html(
+                '<tr><td colspan="9" class="text-center text-muted py-4">' +
+                '<i class="fa fa-info-circle"></i> ' +
+                'Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>' +
+                '</td></tr>'
             );
         }
     });
 
-    });
+});
 </script>

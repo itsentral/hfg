@@ -1818,56 +1818,67 @@ class New_ros extends Admin_Controller
 
     // ─── AJAX: Get data ROS untuk preview modal close ────────────────
     public function get_ros_preview()
-    {
-        $id_ros = $this->input->post('id_ros');
+{
+    $id_ros = $this->input->post('id_ros');
 
-        $header = $this->New_ros_model->get_header($id_ros);
-        if (!$header) {
-            echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan.']);
-            return;
-        }
+    $header = $this->New_ros_model->get_header($id_ros);
+    if (!$header) {
+        echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan.']);
+        return;
+    }
 
-        $materials = $this->New_ros_model->get_materials($id_ros);
-        foreach ($materials as &$mat) {
-            $mat['coils'] = $this->New_ros_model->get_coils($mat['id']);
-        }
-        $others = $this->New_ros_model->get_others($id_ros);
+    $materials = $this->New_ros_model->get_materials($id_ros);
+    foreach ($materials as &$mat) {
+        $coils = $this->New_ros_model->get_coils($mat['id']);
 
-        // Hitung total others
-        $total_others_val = 0;
-        foreach ($others as $ot) {
-            $total_others_val += (float) $ot['nilai'];
-        }
-
-        // Hitung total FC
-        $total_fc = $header['cost_bm'] + $header['cost_bm_kite'] + $header['cost_bmt']
-            + $header['cost_cukai'] + $header['cost_ppn'] + $header['cost_ppnbm']
-            + $header['cost_pph_import'];
-
-        // Hitung total coil & coil stats
-        $total_coil = 0;
-        $total_nw   = 0;
-        $total_gw   = 0;
-        foreach ($materials as $mat) {
-            if (!empty($mat['coils'])) {
-                $total_coil += count($mat['coils']);
-                foreach ($mat['coils'] as $coil) {
-                    $total_nw += (float) $coil['berat_bersih'];
-                    $total_gw += (float) $coil['berat_kotor'];
-                }
+        // Deduplicate coils berdasarkan no_coil
+        $seen = [];
+        $unique_coils = [];
+        foreach ($coils as $coil) {
+            $key = $coil['no_coil'] . '_' . $coil['id_ros_material'];
+            if (!isset($seen[$key])) {
+                $seen[$key] = true;
+                $unique_coils[] = $coil;
             }
         }
-
-        echo json_encode([
-            'status'           => 1,
-            'header'           => $header,
-            'materials'        => $materials,
-            'others'           => $others,
-            'total_others_val' => $total_others_val,
-            'total_fc'         => $total_fc,
-            'total_coil'       => $total_coil,
-            'total_nw'         => $total_nw,
-            'total_gw'         => $total_gw,
-        ]);
+        $mat['coils'] = $unique_coils;
     }
+    unset($mat);
+
+    $others = $this->New_ros_model->get_others($id_ros);
+
+    $total_others_val = 0;
+    foreach ($others as $ot) {
+        $total_others_val += (float) $ot['nilai'];
+    }
+
+    $total_fc = $header['cost_bm'] + $header['cost_bm_kite'] + $header['cost_bmt']
+        + $header['cost_cukai'] + $header['cost_ppn'] + $header['cost_ppnbm']
+        + $header['cost_pph_import'];
+
+    $total_coil = 0;
+    $total_nw   = 0;
+    $total_gw   = 0;
+    foreach ($materials as $mat) {
+        if (!empty($mat['coils'])) {
+            $total_coil += count($mat['coils']);
+            foreach ($mat['coils'] as $coil) {
+                $total_nw += (float) $coil['berat_bersih'];
+                $total_gw += (float) $coil['berat_kotor'];
+            }
+        }
+    }
+
+    echo json_encode([
+        'status'           => 1,
+        'header'           => $header,
+        'materials'        => $materials,
+        'others'           => $others,
+        'total_others_val' => $total_others_val,
+        'total_fc'         => $total_fc,
+        'total_coil'       => $total_coil,
+        'total_nw'         => $total_nw,
+        'total_gw'         => $total_gw,
+    ]);
+}
 }

@@ -438,4 +438,54 @@ class Warehouse extends Admin_Controller
 
         echo json_encode($rows);
     }
+
+    public function data_side_stock_perday_pusat()
+    {
+        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_PUSAT);
+    }
+
+    public function data_side_stock_perday_penjualan()
+    {
+        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_PENJUALAN);
+    }
+
+    public function data_side_stock_value_perday()
+    {
+        $this->Warehouse_model->get_json_stock_value_perday('');
+    }
+
+    public function data_side_stock_value_perday_pusat()
+    {
+        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_PUSAT);
+    }
+
+    public function data_side_stock_value_perday_penjualan()
+    {
+        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_PENJUALAN);
+    }
+
+    public function get_grand_total_stock_value_perday()
+    {
+        $kd_gudang       = $this->input->post('kd_gudang')       ?? '';
+        $id_gudang       = $this->input->post('id_gudang')       ?? '';
+        $filter_material = $this->input->post('filter_material') ?? '';
+        $date_from       = $this->input->post('date_from')       ?? '';
+        $date_to         = $this->input->post('date_to')         ?? '';
+
+        $total = $this->Warehouse_model->get_grand_total_stock_value_perday(
+            $kd_gudang,
+            $id_gudang,
+            $filter_material,
+            $date_from,
+            $date_to
+        );
+
+        echo json_encode(['total' => number_format($total, 0, ',', '.')]);
+    }
+
+    public function data_side_stock_perday()
+    {
+        $kd_gudang = $this->input->post('kd_gudang') ?? '';
+        $this->Warehouse_model->get_json_warehouse_stock_perday($kd_gudang);
+    }
 }

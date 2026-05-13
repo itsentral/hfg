@@ -421,4 +421,285 @@ class Warehouse_model extends BF_Model
             ORDER BY no_coil ASC
         ", [$id_material, $id_gudang])->result_array();
     }
+
+    public function get_json_warehouse_stock_perday($kd_gudang = '')
+    {
+        $requestData = $_REQUEST;
+        $search      = $requestData['search']['value'] ?? '';
+        $start       = (int) ($requestData['start']  ?? 0);
+        $length      = (int) ($requestData['length'] ?? 10);
+        $order_col   = $requestData['order'][0]['column'] ?? 1;
+        $order_dir   = $requestData['order'][0]['dir']    ?? 'asc';
+
+        // Tanggal dari POST (dikirim bersama DataTables ajax.data)
+        $date_from = $_POST['date_from'] ?? '';
+        $date_to   = $_POST['date_to']   ?? '';
+
+        $col_map = [
+            1 => 'ni.nama',
+            2 => 'cpd.no_coil',
+            3 => 'cpd.net_weight',
+            4 => 'cpd.gross_weight',
+            5 => 'cpd.length',
+            6 => 'w.nm_gudang',
+            7 => 'cpd.status',
+            8 => 'cpd.hist_date',
+        ];
+        $order_by = $col_map[$order_col] ?? 'ni.nama';
+
+        // ── WHERE builder ──────────────────────────────────────────────────────
+        $where = " WHERE 1=1 ";
+
+        if (!empty($kd_gudang)) {
+            $kd     = $this->db->escape($kd_gudang);
+            $where .= " AND cpd.kd_gudang = {$kd} ";
+        }
+
+        if (!empty($date_from)) {
+            $df     = $this->db->escape($date_from);
+            $where .= " AND DATE(cpd.hist_date) >= {$df} ";
+        }
+
+        if (!empty($date_to)) {
+            $dt     = $this->db->escape($date_to);
+            $where .= " AND DATE(cpd.hist_date) <= {$dt} ";
+        }
+
+        if (!empty($search)) {
+            $s      = $this->db->escape_like_str($search);
+            $where .= " AND (
+            ni.nama           LIKE '%{$s}%'
+            OR cpd.no_coil    LIKE '%{$s}%'
+            OR cpd.id_material LIKE '%{$s}%'
+            OR w.nm_gudang    LIKE '%{$s}%'
+        ) ";
+        }
+
+        $base_from = "
+    FROM warehouse_coil_per_day cpd
+    LEFT JOIN warehouse w
+        ON w.kd_gudang = cpd.kd_gudang
+    LEFT JOIN new_inventory_4 ni
+        ON ni.code_lv4 = cpd.id_material
+    {$where}
+    ";
+
+        // ── Count ──────────────────────────────────────────────────────────────
+        $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_from}")->row();
+        $totalData = $total_q ? (int) $total_q->cnt : 0;
+
+        // ── Data ───────────────────────────────────────────────────────────────
+        $sql = "
+    SELECT
+        cpd.id,
+        cpd.id_material,
+        cpd.no_coil,
+        cpd.kode_internal,
+        cpd.gross_weight,
+        cpd.net_weight,
+        cpd.length,
+        cpd.kd_gudang,
+        cpd.id_gudang,
+        cpd.status,
+        cpd.hist_date,
+        ni.nama     AS nm_barang,
+        ni.trade_name,
+        w.nm_gudang
+    {$base_from}
+    ORDER BY {$order_by} {$order_dir}
+    LIMIT {$start}, {$length}
+    ";
+
+        $rows = $this->db->query($sql)->result_array();
+        $data = [];
+        $no   = $start + 1;
+
+        foreach ($rows as $row) {
+            $status_badge = $row['status'] === 'IN'
+                ? "<span class='badge bg-success'>IN</span>"
+                : "<span class='badge bg-danger'>OUT</span>";
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['nm_barang'] . '<br><small class="text-muted">' . $row['id_material'] . '</small>',
+                "<div class='text-center'>" . $row['no_coil'] . "</div>",
+                "<div class='text-center'>" . ($row['kode_internal'] ?? '-') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['gross_weight'], 3, ',', '.') . "</div>",
+                "<div class='text-end'>"    . number_format((float) $row['length'],       3, ',', '.') . "</div>",
+                "<div class='text-center'>" . $status_badge . "</div>",
+                "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalData,
+            'data'            => $data,
+        ]);
+    }
+
+    public function get_json_stock_value_perday($kd_gudang = '')
+    {
+        $requestData     = $_REQUEST;
+        $id_gudang       = $_POST['id_gudang']       ?? '';
+        $filter_material = $_POST['filter_material'] ?? '';
+        $date_from       = $_POST['date_from']       ?? '';
+        $date_to         = $_POST['date_to']         ?? '';
+
+        // ── WHERE ──────────────────────────────────────────────────────────────
+        $where = " WHERE 1=1 ";
+
+        if (!empty($kd_gudang)) {
+            $kd     = $this->db->escape($kd_gudang);
+            $where .= " AND spd.kd_gudang = {$kd} ";
+        }
+
+        if (!empty($id_gudang)) {
+            $where .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
+        }
+
+        if (!empty($filter_material)) {
+            $f      = $this->db->escape_like_str($filter_material);
+            $where .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
+        }
+
+        if (!empty($date_from)) {
+            $df     = $this->db->escape($date_from);
+            $where .= " AND DATE(spd.hist_date) >= {$df} ";
+        }
+
+        if (!empty($date_to)) {
+            $dt     = $this->db->escape($date_to);
+            $where .= " AND DATE(spd.hist_date) <= {$dt} ";
+        }
+
+        if (!empty($_POST['search']['value'])) {
+            $s      = $this->db->escape_like_str($_POST['search']['value']);
+            $where .= " AND (
+            spd.nm_material LIKE '%{$s}%'
+            OR spd.id_material LIKE '%{$s}%'
+            OR w.nm_gudang  LIKE '%{$s}%'
+        ) ";
+        }
+
+        $base_from = "
+            FROM warehouse_stock_per_day spd
+            LEFT JOIN warehouse w ON w.id = spd.id_gudang
+            {$where}
+            ";
+
+        // ── Count — DISTINCT id_material + id_gudang + tanggal ────────────────
+        $cnt_row   = $this->db->query("
+        SELECT COUNT(DISTINCT spd.id_material, spd.id_gudang, DATE(spd.hist_date)) AS cnt
+        {$base_from}
+    ")->row();
+        $totalData = $cnt_row ? (int) $cnt_row->cnt : 0;
+
+        // ── Order ──────────────────────────────────────────────────────────────
+        $col_order = [
+            1 => 'spd.id_material',
+            2 => 'spd.nm_material',
+            3 => 'w.nm_gudang',
+            4 => 'spd.qty_stock',
+            5 => 'spd.harga_beli',
+            6 => 'spd.total_nilai',
+            7 => 'spd.hist_date',
+        ];
+        $order_idx = (int) ($requestData['order'][0]['column'] ?? 2);
+        $order_dir = in_array(strtolower($requestData['order'][0]['dir'] ?? ''), ['asc', 'desc'])
+            ? $requestData['order'][0]['dir'] : 'asc';
+        $order_by  = $col_order[$order_idx] ?? 'spd.nm_material';
+
+        $start  = (int) ($requestData['start']  ?? 0);
+        $length = (int) ($requestData['length'] ?? 25);
+        $limit  = ($length != -1) ? "LIMIT {$start}, {$length}" : '';
+
+        $sql = "
+    SELECT
+        spd.id_material,
+        spd.nm_material,
+        spd.id_gudang,
+        spd.kd_gudang,
+        spd.qty_stock,
+        spd.qty_booking,
+        spd.qty_free,
+        spd.harga_beli,
+        spd.total_nilai,
+        spd.hist_date,
+        w.nm_gudang
+    {$base_from}
+    ORDER BY {$order_by} {$order_dir}
+    {$limit}
+    ";
+
+        $rows = $this->db->query($sql)->result_array();
+        $data = [];
+        $no   = $start + 1;
+
+        foreach ($rows as $row) {
+            $btn_history = "
+            <button class='btn btn-sm btn-info'
+                onclick=\"showHistory('{$row['id_material']}','{$row['nm_material']}','{$row['id_gudang']}')\">
+                <i class='fa fa-history'></i> History
+            </button>";
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['id_material'],
+                $row['nm_material'],
+                "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((int) round($row['total_nilai']), 0, ',', '.') . "</div>",
+                "<div class='text-center'>{$btn_history}</div>",
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalData,
+            'data'            => $data,
+        ]);
+    }
+
+    /**
+     * Grand total untuk footer DataTables stock value per-day
+     */
+    public function get_grand_total_stock_value_perday($kd_gudang = '', $id_gudang = '', $filter_material = '', $date_from = '', $date_to = '')
+    {
+        $where = " WHERE 1=1 ";
+
+        if (!empty($kd_gudang)) {
+            $kd     = $this->db->escape($kd_gudang);
+            $where .= " AND spd.kd_gudang = {$kd} ";
+        }
+        if (!empty($id_gudang)) {
+            $where .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
+        }
+        if (!empty($filter_material)) {
+            $f      = $this->db->escape_like_str($filter_material);
+            $where .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
+        }
+        if (!empty($date_from)) {
+            $df     = $this->db->escape($date_from);
+            $where .= " AND DATE(spd.hist_date) >= {$df} ";
+        }
+        if (!empty($date_to)) {
+            $dt     = $this->db->escape($date_to);
+            $where .= " AND DATE(spd.hist_date) <= {$dt} ";
+        }
+
+        $row = $this->db->query("
+        SELECT SUM(spd.total_nilai) AS grand_total
+        FROM warehouse_stock_per_day spd
+        {$where}
+    ")->row();
+
+        return $row ? (int) round($row->grand_total) : 0;
+    }
 }
