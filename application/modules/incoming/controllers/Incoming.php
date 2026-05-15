@@ -498,6 +498,7 @@ class Incoming extends Admin_Controller
     // FINALIZE (proses stok + jurnal + close)
     public function finalize()
     {
+        ob_start(); // Start output buffering untuk menangkap output debug jika ada
         $this->auth->restrict($this->managePermission);
         $no_ros = $this->input->post('no_ros');
 
@@ -555,6 +556,22 @@ class Incoming extends Admin_Controller
         } else {
             $link                = $ros_header->file_hash     ?? '';
             $file_original_final = $ros_header->file_original ?? '';
+        }
+
+        $coa_finalize = [
+            'pusat'     => '1105-01-01',
+            'penjualan' => '1105-01-02',
+            'intransit' => '1105-01-03',
+        ];
+
+        $coa_check_fin = $this->_validate_and_get_coa_names($coa_finalize);
+        if (!$coa_check_fin['valid']) {
+            echo json_encode([
+                'status' => 3,
+                'pesan'  => 'Nomor COA berikut belum terdaftar di Master COA dan harus ditambahkan terlebih dahulu: '
+                    . implode(', ', $coa_check_fin['not_found']),
+            ]);
+            return;
         }
 
         $this->db->trans_begin();
@@ -713,6 +730,7 @@ class Incoming extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            ob_clean();
             echo json_encode(['status' => 0, 'pesan' => 'Gagal memproses finalize!']);
             return;
         }
@@ -738,11 +756,15 @@ class Incoming extends Admin_Controller
             }
         }
 
+        ob_clean();
+        header('Content-Type: application/json');
+
         if ($jurnal_error) {
-            echo json_encode(['status' => 2, 'pesan' => 'Finalize berhasil, namun jurnal akuntansi gagal. Silakan repost via GL Interface.']);
+            echo json_encode(['status' => 2, 'pesan' => 'Finalize berhasil, namun jurnal akuntansi gagal: ' . $jurnal_error]);
         } else {
             echo json_encode(['status' => 1, 'pesan' => 'Finalize berhasil! Stok, Hutang, dan Jurnal telah diproses.']);
         }
+        exit;
     }
 
     private function _generate_jurnal_and_debt(
@@ -756,28 +778,50 @@ class Incoming extends Admin_Controller
         $no_ros = '',
         $id_gudang_ke = null
     ) {
-        $tgl_inv        = date('Y-m-d');
-        $user_id        = $this->auth->user_id();
-        $created_on     = date('Y-m-d H:i:s');
+        $tgl_inv    = date('Y-m-d');
+        $user_id    = $this->auth->user_id();
+        $created_on = date('Y-m-d H:i:s');
 
-        // Ambil nama supplier
-        $supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
+        $supplier      = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
         $supplier_name = $supplier ? $supplier->nama : '-';
 
-        $keterangan     = "Incoming PO: {$no_po} | ROS: {$no_ros}";
-        $nomor_jv       = $this->_generate_nomor_jv(); // Pastikan fungsi generate nomor JV sudah ada
+        $keterangan = "Incoming PO: {$no_po} | ROS: {$no_ros}";
+        $nomor_jv   = $this->_generate_nomor_jv();
 
-        // COA Mapping
-        $coa_in_transit = '1105-01-02'; // PERSEDIAAN IN TRANSIT (Kredit)
-        $coa_gudang_map = [
-            'PUS' => '1105-01-01', // PERSEDIAAN BAHAN BAKU (Debet)
-            'PEN' => '1105-01-03', // PERSEDIAAN BAHAN BAKU TR / JUALAN (Debet)
+        $coa_list = [
+            'pusat'     => '1105-01-01',
+            'penjualan' => '1105-01-02',
+            'intransit' => '1105-01-03',
         ];
-        $coa_gudang_default = '1105-01-01';
+
+        // ── Ambil & validasi nama COA dari DBACC ──
+        $coa_check = $this->_validate_and_get_coa_names($coa_list);
+        if (!$coa_check['valid']) {
+            throw new Exception('COA tidak ditemukan di Master: ' . implode(', ', $coa_check['not_found']));
+        }
+        $coa_names = $coa_check['names'];
+
+        // ── Hitung total per kelompok gudang ──
+        $total_pusat     = 0;
+        $total_penjualan = 0;
+
+        foreach ($materials as $mat) {
+            $kd_gudang = strtoupper(trim($mat['kd_gudang_ke'] ?? 'PUS'));
+            $nilai     = (float) $mat['total_persediaan'];
+
+            if ($kd_gudang === 'PEN') {
+                $total_penjualan += $nilai;
+            } else {
+                $total_pusat += $nilai;
+            }
+        }
+
+        $total_debet = $total_pusat + $total_penjualan;
+        if ($total_debet <= 0) return;
 
         $this->db->trans_begin();
 
-        // 1. Insert Header GL Interface
+        // ── Insert Header GL Interface ──
         $this->db->insert('gl_interface', [
             'nomor'           => $nomor_jv,
             'tgl'             => $tgl_inv,
@@ -798,279 +842,74 @@ class Incoming extends Admin_Controller
         ]);
         $id_gl = $this->db->insert_id();
 
-        // 2. Detail Jurnal: DEBET Persediaan Gudang (Per Material/Coil)
-        $total_debet_real = 0;
-        foreach ($materials as $mat) {
-            $kd_gudang      = $mat['kd_gudang_ke'] ?? 'PUS';
-            $coa_persediaan = $coa_gudang_map[$kd_gudang] ?? $coa_gudang_default;
-            $nilai_mat      = (float) $mat['total_persediaan'];
-            $total_debet_real += $nilai_mat;
-
+        // ── DEBET 1: Persediaan Bahan Baku Pusat ──
+        if ($total_pusat > 0) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl,
+                'no_batch'        => $nomor_jv,  
                 'tipe'            => 'JV',
                 'tanggal'         => $tgl_inv,
-                'no_perkiraan'    => $coa_persediaan,
-                'id_material'     => $mat['id_material'],
-                'nm_material'     => $mat['nm_material'],
-                'id_gudang'       => $mat['id_gudang_ke'] ?? null,
-                'no_coil'         => $mat['no_coil'] ?? null,
-                'keterangan'      => $keterangan . " | " . $mat['nm_material'] . " (Coil: " . ($mat['no_coil'] ?? '-') . ")",
+                'no_perkiraan'    => $coa_list['pusat'],
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => $id_gudang_ke,
+                'no_coil'         => null,
+                'keterangan'      => $keterangan . " | " . $coa_names['pusat'],
                 'no_reff'         => $no_po,
                 'no_request'      => $kode_trans,
-                'debet'           => $nilai_mat,
+                'debet'           => round($total_pusat, 2),
                 'kredit'          => 0,
                 'created_at'      => $created_on,
             ]);
         }
 
-        // 3. Detail Jurnal: KREDIT Persediaan In Transit (Total)
-        // Menggunakan $total_debet_real agar jurnal pasti balance 0
+        // ── DEBET 2: Persediaan Bahan Baku Intransit Penjualan ──
+        if ($total_penjualan > 0) {
+            $this->db->insert('gl_interface_detail', [
+                'id_gl_interface' => $id_gl,
+                'no_batch'        => $nomor_jv,
+                'tipe'            => 'JV',
+                'tanggal'         => $tgl_inv,
+                'no_perkiraan'    => $coa_list['penjualan'],
+                'id_material'     => null,
+                'nm_material'     => null,
+                'id_gudang'       => $id_gudang_ke,
+                'no_coil'         => null,
+                'keterangan'      => $keterangan . " | " . $coa_names['penjualan'],
+                'no_reff'         => $no_po,
+                'no_request'      => $kode_trans,
+                'debet'           => round($total_penjualan, 2),
+                'kredit'          => 0,
+                'created_at'      => $created_on,
+            ]);
+        }
+
+        // ── KREDIT: Persediaan In Transit ──
         $this->db->insert('gl_interface_detail', [
             'id_gl_interface' => $id_gl,
+            'no_batch'        => $nomor_jv,
             'tipe'            => 'JV',
             'tanggal'         => $tgl_inv,
-            'no_perkiraan'    => $coa_in_transit,
-            'keterangan'      => $keterangan . " | Balik In Transit",
+            'no_perkiraan'    => $coa_list['intransit'],
+            'id_material'     => null,
+            'nm_material'     => null,
+            'id_gudang'       => $id_gudang_ke,
+            'no_coil'         => null,
+            'keterangan'      => $keterangan . " | Balik " . $coa_names['intransit'],
             'no_reff'         => $no_po,
             'no_request'      => $kode_trans,
             'debet'           => 0,
-            'kredit'          => $total_debet_real,
+            'kredit'          => round($total_debet, 2),
             'created_at'      => $created_on,
         ]);
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             throw new Exception("Gagal membuat Jurnal Incoming.");
-        } else {
-            $this->db->trans_commit();
         }
+
+        $this->db->trans_commit();
     }
-
-    // private function _update_stock_and_history(
-    //     $id_material,
-    //     $nm_material,
-    //     $qty_in,
-    //     $price_unit_idr,
-    //     $kode_trans,
-    //     $no_po,
-    //     $no_coil,
-    //     $id_gudang = 1,
-    //     $kd_gudang = 'PUS',
-    //     $no_ros = ''
-    // ) {
-    //     // ── 1. Ambil data coil dari ROS ───────────────────────────────────────
-    //     $ros_coil = $this->db->query("
-    //     SELECT
-    //         c.id              AS id_coil,
-    //         c.no_coil,
-    //         c.berat_kotor,
-    //         c.berat_bersih,
-    //         c.panjang,
-    //         c.kode_internal,
-    //         c.status_qc,
-    //         m.id              AS id_ros_material,
-    //         m.nm_erp,
-    //         m.cost_book,
-    //         m.total_nilai_inventory,
-    //         inv.code_lv1,
-    //         inv.code_lv2,
-    //         inv.code_lv3,
-    //         inv.id_unit,
-    //         inv.id_unit_packing
-    //     FROM tr_ros_material_coil c
-    //     JOIN tr_ros_material m        ON m.id = c.id_ros_material
-    //     LEFT JOIN new_inventory_4 inv ON inv.code_lv4 = m.id_barang
-    //     WHERE c.no_coil = ? AND m.id_barang = ?
-    //     LIMIT 1
-    //     ", [$no_coil, $id_material])->row();
-
-    //     $code_lv1        = $ros_coil->code_lv1        ?? '';
-    //     $code_lv2        = $ros_coil->code_lv2        ?? '';
-    //     $code_lv3        = $ros_coil->code_lv3        ?? '';
-    //     $id_unit         = $ros_coil->id_unit         ?? null;
-    //     $id_unit_packing = $ros_coil->id_unit_packing ?? null;
-    //     $berat_kotor     = (float) ($ros_coil->berat_kotor  ?? 0);
-    //     $berat_bersih    = (float) ($ros_coil->berat_bersih ?? $qty_in);
-    //     $panjang         = (float) ($ros_coil->panjang      ?? 0);
-    //     $kode_internal   = $ros_coil->kode_internal ?? '';
-
-    //     // ── 2. Ambil ROS header ───────────────────────────────────────────────
-    //     $ros_header = null;
-    //     if (!empty($no_ros)) {
-    //         $ros_header = $this->db->query(
-    //             "SELECT * FROM tr_ros_header WHERE id = ? LIMIT 1",
-    //             [$no_ros]
-    //         )->row();
-    //     }
-    //     $kurs_pib = $ros_header ? (float) $ros_header->kurs_pib : 0;
-
-    //     // ── 3. Lock & ambil warehouse_stock ───────────────────────────────────
-    //     $get_stock = $this->db->query("
-    //     SELECT * FROM warehouse_stock
-    //     WHERE code_lv4 = ? AND id_gudang = ?
-    //     LIMIT 1 FOR UPDATE
-    //     ", [$id_material, $id_gudang])->row();
-
-    //     $qty_awal      = $get_stock ? (float) $get_stock->qty_stock   : 0;
-    //     $harga_lama    = $get_stock ? (float) $get_stock->harga_beli  : 0;
-    //     $qty_book_awal = $get_stock ? (float) $get_stock->qty_booking : 0;
-    //     $qty_free_awal = $get_stock ? (float) $get_stock->qty_free    : 0;
-    //     $saldo_awal    = $get_stock ? (int) round($get_stock->total_nilai) : 0;
-    //     $incoming_lama = $get_stock ? (float) $get_stock->incoming    : 0;
-
-    //     // ── 4. Hitung moving average ──────────────────────────────────────────
-    //     $nilai_baru        = (int) round($qty_in * $price_unit_idr);
-    //     $qty_akhir         = $qty_awal + $qty_in;
-    //     $total_nilai_akhir = $saldo_awal + $nilai_baru;
-    //     $costbook          = $qty_akhir > 0
-    //         ? ($total_nilai_akhir / $qty_akhir)
-    //         : $price_unit_idr;
-
-    //     // ── 5. Upsert warehouse_stock ─────────────────────────────────────────
-    //     $now     = date('Y-m-d H:i:s');
-    //     $user_id = $this->auth->user_id();
-
-    //     if (empty($get_stock)) {
-    //         $this->db->insert('warehouse_stock', [
-    //             'code_lv1'        => $code_lv1,
-    //             'code_lv2'        => $code_lv2,
-    //             'code_lv3'        => $code_lv3,
-    //             'code_lv4'        => $id_material,
-    //             'code_incoming'   => $kode_trans,
-    //             'nm_material'     => $nm_material,
-    //             'id_gudang'       => $id_gudang,
-    //             'kd_gudang'       => $kd_gudang,
-    //             'id_unit'         => $id_unit,
-    //             'id_unit_packing' => $id_unit_packing,
-    //             'begining'        => 0,
-    //             'incoming'        => $qty_in,
-    //             'outgoing'        => 0,
-    //             'qty_stock'       => $qty_akhir,
-    //             'qty_booking'     => 0,       // incoming baru, belum ada booking
-    //             'qty_free'        => $qty_akhir,
-    //             'use_qty_free'    => 0,
-    //             'harga_beli'      => $costbook,
-    //             'total_nilai'     => $total_nilai_akhir,
-    //             'update_by'       => $user_id,
-    //             'update_date'     => $now,
-    //         ]);
-    //     } else {
-    //         $this->db->update('warehouse_stock', [
-    //             'code_incoming'   => $kode_trans,
-    //             'incoming'        => $incoming_lama + $qty_in,
-    //             'qty_stock'       => $qty_akhir,
-    //             'qty_free'        => $qty_free_awal + $qty_in,
-    //             'harga_beli'      => $costbook,
-    //             'total_nilai'     => $total_nilai_akhir,
-    //             'update_by'       => $user_id,
-    //             'update_date'     => $now,
-    //         ], ['id' => $get_stock->id]);
-    //     }
-
-    //     // ── 6. Snapshot harian warehouse_stock_per_day ────────────────────────
-    //     $today = date('Y-m-d');
-    //     $snap  = $this->db->query("
-    //     SELECT id FROM warehouse_stock_per_day
-    //     WHERE id_material = ? AND id_gudang = ? AND DATE(hist_date) = ?
-    //     LIMIT 1
-    //     ", [$id_material, $id_gudang, $today])->row();
-
-    //     $snap_data = [
-    //         'qty_stock'   => $qty_akhir,
-    //         'qty_booking' => $qty_book_awal,
-    //         'qty_free'    => $qty_free_awal + $qty_in,
-    //         'harga_beli'  => $costbook,         
-    //         'total_nilai' => $total_nilai_akhir,
-    //         'kd_gudang'   => $kd_gudang,        
-    //         'hist_date'   => $now,
-    //         'hist_by'     => $user_id,
-    //     ];
-
-    //     if (empty($snap)) {
-    //         $this->db->insert('warehouse_stock_per_day', array_merge([
-    //             'id_material' => $id_material,
-    //             'nm_material' => $nm_material,
-    //             'id_gudang'   => $id_gudang,
-    //         ], $snap_data));
-    //     } else {
-    //         $this->db->update('warehouse_stock_per_day', $snap_data, ['id' => $snap->id]);
-    //     }
-
-    //     // ── 7. Insert warehouse_stock_coil ────────────────────────────────────
-    //     // Cek duplikat per no_coil + gudang (bukan hanya no_coil)
-    //     $existing_coil = $this->db->query("
-    //     SELECT id FROM warehouse_stock_coil
-    //     WHERE id_material = ? AND no_coil = ? AND id_gudang = ?
-    //     LIMIT 1
-    //     ", [$id_material, $no_coil, $id_gudang])->row();
-
-    //     if (empty($existing_coil)) {
-    //         $this->db->insert('warehouse_stock_coil', [
-    //             'id_material'   => $id_material,
-    //             'no_coil'       => $no_coil,
-    //             'kode_internal' => $kode_internal,
-    //             'gross_weight'  => $berat_kotor,
-    //             'net_weight'    => $berat_bersih,
-    //             'length'        => $panjang,
-    //             'id_gudang'     => $id_gudang,
-    //             'kd_gudang'     => $kd_gudang,
-    //             'no_ipp'        => $kode_trans,
-    //             'no_ros'        => $no_ros,
-    //         ]);
-    //     }
-
-    //     // ── 8. warehouse_history ──────────────────────────────────────────────
-    //     $this->db->insert('warehouse_history', [
-    //         'id_material'     => $id_material,
-    //         'nm_material'     => $nm_material,
-    //         'id_gudang'       => $id_gudang,
-    //         'kd_gudang'       => $kd_gudang,
-    //         'id_gudang_dari'  => $id_gudang,
-    //         'kd_gudang_dari'  => $kd_gudang,
-    //         'id_gudang_ke'    => $id_gudang,
-    //         'kd_gudang_ke'    => $kd_gudang,
-    //         'qty_stock_awal'  => $qty_awal,
-    //         'qty_stock_akhir' => $qty_akhir,
-    //         'no_ipp'          => $kode_trans,
-    //         'jumlah_mat'      => $qty_in,
-    //         'ket'             => 'QC Incoming Coil Check'
-    //             . ' (Coil: ' . $no_coil
-    //             . ', PO: '   . $no_po
-    //             . ', Kurs: ' . number_format($kurs_pib, 0, ',', '.') . ')',
-    //         'no_coil'         => $no_coil,
-    //         'harga_beli'      => (int) round($price_unit_idr),
-    //         'total_harga'     => $nilai_baru,
-    //         'saldo_awal'      => $saldo_awal,
-    //         'saldo_akhir'     => $total_nilai_akhir,
-    //         'harga_baru'      => (int) round($costbook),  // ← harga setelah avg
-    //         'harga_lama'      => (int) round($harga_lama), // ← harga sebelum
-    //         'update_by'       => $user_id,
-    //         'update_date'     => $now,
-    //     ]);
-
-    //     // ── 9. kartu_stok ─────────────────────────────────────────────────────
-    //     $this->db->insert('kartu_stok', [
-    //         'no_transaksi'     => $kode_trans,
-    //         'id_gudang'        => $id_gudang,
-    //         'transaksi'        => 'Incoming Material',
-    //         'tgl_transaksi'    => $now,
-    //         'code_lv4'         => $id_material,
-    //         'code_material'    => $id_material,
-    //         'nm_material'      => $nm_material,
-    //         'qty'              => $qty_awal,           // saldo awal qty
-    //         'qty_book'         => $qty_book_awal,      // booking tidak berubah
-    //         'qty_free'         => $qty_free_awal,      // free sebelum transaksi
-    //         'qty_akhir'        => $qty_akhir,          // saldo akhir qty
-    //         'qty_transaksi'    => $qty_in,             // qty yang masuk
-    //         'qty_book_akhir'   => $qty_book_awal,      // booking tetap sama
-    //         'qty_free_akhir'   => $qty_free_awal + $qty_in, // free bertambah
-    //         'harga_stok'       => (int) round($costbook),
-    //         'status_transaksi' => 'in',
-    //         'created_by'       => $user_id,
-    //         'created_on'       => $now,
-    //     ]);
-    // }
 
     private function _update_stock_and_history(
         $id_material,
@@ -1753,10 +1592,10 @@ class Incoming extends Admin_Controller
 
     //     // COA
     //     $coa_in_transit     = '1105-01-02'; // PERSEDIAAN IN TRANSIT  → KREDIT
-    //     // Gudang produksi → 1105-01-01, Gudang jualan → 1105-01-03
+    //     // Gudang produksi → 1105-01-01, Gudang jualan → 1105-01-02
     //     $coa_gudang_map = [
     //         'PUS' => '1105-01-01', // PERSEDIAAN BAHAN BAKU
-    //         'PEN' => '1105-01-03', // PERSEDIAAN BAHAN BAKU TR (gudang jualan/penjualan)
+    //         'PEN' => '1105-01-02', // PERSEDIAAN BAHAN BAKU TR (gudang jualan/penjualan)
     //     ];
     //     $coa_gudang_default = '1105-01-01';
 
@@ -2207,5 +2046,27 @@ class Incoming extends Admin_Controller
             'header' => $header,
             'coils'  => $coils,
         ]);
+    }
+
+    private function _validate_and_get_coa_names(array $coa_list)
+    {
+        $db_acc    = $this->load->database(DBACC, TRUE);
+        $not_found = [];
+        $names     = [];
+
+        foreach ($coa_list as $key => $no_perkiraan) {
+            $row = $db_acc->get_where('coa_master', ['no_perkiraan' => $no_perkiraan])->row();
+            if (!$row) {
+                $not_found[] = $no_perkiraan;
+            } else {
+                $names[$key] = $row->nama;
+            }
+        }
+
+        return [
+            'valid'     => empty($not_found),
+            'names'     => $names,
+            'not_found' => $not_found,
+        ];
     }
 }

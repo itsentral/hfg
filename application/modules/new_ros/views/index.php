@@ -8,8 +8,8 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
 
 <style>
     .swal2-container {
-    z-index: 99999 !important;
-}
+        z-index: 99999 !important;
+    }
 </style>
 
 <div class="card">
@@ -327,6 +327,58 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
         // ══════════════════════════════════════════════════════════════
         // CLOSE ROS — Konfirmasi
         // ══════════════════════════════════════════════════════════════
+        // $('#btn_confirm_close_ros').on('click', function() {
+        //     if (!currentCloseRosId) return;
+
+        //     Swal.fire({
+        //         title: 'Close ROS ' + currentCloseRosId + '?',
+        //         text: 'Setelah di-close, ROS akan masuk ke Incoming dan tidak bisa diedit lagi.',
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#198754',
+        //         cancelButtonColor: '#6c757d',
+        //         confirmButtonText: '<i class="fas fa-check-double"></i> Ya, Close!',
+        //         cancelButtonText: 'Batal'
+        //     }).then(function(result) {
+        //         if (!result.isConfirmed) return;
+
+        //         $.ajax({
+        //             url: siteurl + 'new_ros/close_ros',
+        //             type: 'POST',
+        //             data: {
+        //                 id_ros: currentCloseRosId
+        //             },
+        //             dataType: 'json',
+        //             beforeSend: function() {
+        //                 Swal.fire({
+        //                     title: 'Memproses...',
+        //                     allowOutsideClick: false,
+        //                     didOpen: function() {
+        //                         Swal.showLoading();
+        //                     }
+        //                 });
+        //             },
+        //             success: function(res) {
+        //                 Swal.close();
+        //                 $('#modalCloseROS').modal('hide');
+        //                 if (res.status == 1) {
+        //                     Swal.fire('Berhasil!', res.msg, 'success').then(function() {
+        //                         tblDraft.ajax.reload();
+        //                         tblClose.ajax.reload();
+        //                         closeTabLoaded = true;
+        //                     });
+        //                 } else {
+        //                     Swal.fire('Gagal!', res.msg, 'error');
+        //                 }
+        //             },
+        //             error: function() {
+        //                 Swal.close();
+        //                 Swal.fire('Error', 'Gagal memproses close ROS.', 'error');
+        //             }
+        //         });
+        //     });
+        // });
+
         $('#btn_confirm_close_ros').on('click', function() {
             if (!currentCloseRosId) return;
 
@@ -348,7 +400,6 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
                     data: {
                         id_ros: currentCloseRosId
                     },
-                    dataType: 'json',
                     beforeSend: function() {
                         Swal.fire({
                             title: 'Memproses...',
@@ -360,12 +411,27 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
                     },
                     success: function(res) {
                         Swal.close();
-                        $('#modalCloseROS').modal('hide');
                         if (res.status == 1) {
+                            $('#modalCloseROS').modal('hide');
                             Swal.fire('Berhasil!', res.msg, 'success').then(function() {
                                 tblDraft.ajax.reload();
                                 tblClose.ajax.reload();
                                 closeTabLoaded = true;
+                            });
+                        } else if (res.status == 2) {
+                            Swal.fire('Perhatian', res.msg, 'warning');
+                        } else if (res.status == 3) {
+                            // COA tidak ditemukan di master
+                            Swal.fire({
+                                title: 'Master COA Tidak Lengkap!',
+                                html: '<div class="text-start">' +
+                                    '<p>Proses <b>Close ROS</b> dibatalkan karena nomor COA berikut belum terdaftar di Master COA:</p>' +
+                                    '<div class="alert alert-danger fw-bold">' + res.msg.replace(/:\s*/, ':<br><code>').replace(/$/, '</code>') + '</div>' +
+                                    '<p class="mb-0 text-muted small">Silakan tambahkan nomor COA tersebut di menu <b>Master COA</b> terlebih dahulu, lalu ulangi proses ini.</p>' +
+                                    '</div>',
+                                icon: 'error',
+                                confirmButtonText: 'Mengerti',
+                                confirmButtonColor: '#dc3545',
                             });
                         } else {
                             Swal.fire('Gagal!', res.msg, 'error');

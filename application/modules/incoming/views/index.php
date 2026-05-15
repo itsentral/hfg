@@ -395,6 +395,76 @@
         });
 
         /* ── Tombol konfirmasi di dalam modal ── */
+        // $(document).on('click', '#btn-confirm-finalize', function() {
+        //     var no_ros = $(this).data('ros');
+        //     var tanggal = $('#modal-tanggal').val();
+
+        //     if (!tanggal) {
+        //         Swal.fire({
+        //             title: 'Peringatan',
+        //             text: 'Tanggal incoming wajib diisi!',
+        //             icon: 'warning'
+        //         });
+        //         return;
+        //     }
+
+        //     // Tutup modal lalu proses
+        //     bootstrap.Modal.getInstance(document.getElementById('modalFinalize')).hide();
+
+        //     Swal.fire({
+        //         title: 'Proses Finalize?',
+        //         html: '<b>ROS: ' + no_ros + '</b><br>Stok dan jurnal akuntansi akan diproses. Tidak dapat dibatalkan!',
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Ya, Finalize!',
+        //         cancelButtonText: 'Batal',
+        //         confirmButtonColor: '#28a745'
+        //     }).then(function(result) {
+        //         if (!result.isConfirmed) return;
+
+        //         $.ajax({
+        //             url: siteurl + active_controller + 'finalize',
+        //             type: 'POST',
+        //             data: {
+        //                 no_ros: no_ros,
+        //                 tanggal: tanggal
+        //             },
+        //             dataType: 'json',
+        //             success: function(r) {
+        //                 if (r.status == 1) {
+        //                     Swal.fire({
+        //                         title: 'Berhasil!',
+        //                         text: r.pesan,
+        //                         icon: 'success',
+        //                         timer: 1800,
+        //                         showConfirmButton: false
+        //                     }).then(function() {
+        //                         tableDraft.ajax.reload();
+        //                         tableOpen.ajax.reload();
+        //                         tableClose.ajax.reload();
+        //                     });
+        //                 } else if (r.status == 2) {
+        //                     Swal.fire({
+        //                             title: 'Perhatian',
+        //                             text: r.pesan,
+        //                             icon: 'warning'
+        //                         })
+        //                         .then(function() {
+        //                             tableDraft.ajax.reload();
+        //                             tableClose.ajax.reload();
+        //                         });
+        //                 } else {
+        //                     Swal.fire({
+        //                         title: 'Gagal',
+        //                         text: r.pesan,
+        //                         icon: 'error'
+        //                     });
+        //                 }
+        //             }
+        //         });
+        //     });
+        // });
+
         $(document).on('click', '#btn-confirm-finalize', function() {
             var no_ros = $(this).data('ros');
             var tanggal = $('#modal-tanggal').val();
@@ -408,7 +478,6 @@
                 return;
             }
 
-            // Tutup modal lalu proses
             bootstrap.Modal.getInstance(document.getElementById('modalFinalize')).hide();
 
             Swal.fire({
@@ -422,6 +491,14 @@
             }).then(function(result) {
                 if (!result.isConfirmed) return;
 
+                Swal.fire({
+                    title: 'Memproses...',
+                    allowOutsideClick: false,
+                    didOpen: function() {
+                        Swal.showLoading();
+                    }
+                });
+
                 $.ajax({
                     url: siteurl + active_controller + 'finalize',
                     type: 'POST',
@@ -429,8 +506,8 @@
                         no_ros: no_ros,
                         tanggal: tanggal
                     },
-                    dataType: 'json',
                     success: function(r) {
+                        Swal.close();
                         if (r.status == 1) {
                             Swal.fire({
                                 title: 'Berhasil!',
@@ -453,6 +530,19 @@
                                     tableDraft.ajax.reload();
                                     tableClose.ajax.reload();
                                 });
+                        } else if (r.status == 3) {
+                            // COA tidak ditemukan di master
+                            Swal.fire({
+                                title: 'Master COA Tidak Lengkap!',
+                                html: '<div class="text-start">' +
+                                    '<p>Proses <b>Finalize</b> dibatalkan karena nomor COA berikut belum terdaftar di Master COA:</p>' +
+                                    '<div class="alert alert-danger fw-bold">' + r.pesan.replace(/:\s*/, ':<br><code>').replace(/$/, '</code>') + '</div>' +
+                                    '<p class="mb-0 text-muted small">Silakan tambahkan nomor COA tersebut di menu <b>Master COA</b> terlebih dahulu, lalu ulangi proses ini.</p>' +
+                                    '</div>',
+                                icon: 'error',
+                                confirmButtonText: 'Mengerti',
+                                confirmButtonColor: '#dc3545',
+                            });
                         } else {
                             Swal.fire({
                                 title: 'Gagal',
@@ -460,6 +550,10 @@
                                 icon: 'error'
                             });
                         }
+                    },
+                    error: function() {
+                        Swal.close();
+                        Swal.fire('Error', 'Gagal memproses finalize.', 'error');
                     }
                 });
             });
