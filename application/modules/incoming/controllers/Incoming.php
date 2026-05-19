@@ -941,7 +941,8 @@ class Incoming extends Admin_Controller
             inv.code_lv2,
             inv.code_lv3,
             inv.id_unit,
-            inv.id_unit_packing
+            inv.id_unit_packing,
+            inv.trade_name  
         FROM tr_ros_material_coil c
         JOIN tr_ros_material m        ON m.id = c.id_ros_material
         LEFT JOIN new_inventory_4 inv ON inv.code_lv4 = m.id_barang
@@ -958,6 +959,7 @@ class Incoming extends Admin_Controller
         $berat_bersih    = (float) ($ros_coil->berat_bersih ?? $qty_in);
         $panjang         = (float) ($ros_coil->panjang      ?? 0);
         $kode_internal   = $ros_coil->kode_internal ?? '';
+        $trade_name      = $ros_coil->trade_name ?? '';
 
         // ── 2. Ambil ROS header ───────────────────────────────────────────────
         $ros_header = null;
@@ -1004,6 +1006,7 @@ class Incoming extends Admin_Controller
                 'code_lv4'        => $id_material,
                 'code_incoming'   => $kode_trans,
                 'nm_material'     => $nm_material,
+                'trade_name'      => $trade_name,
                 'id_gudang'       => $id_gudang,
                 'kd_gudang'       => $kd_gudang,
                 'id_unit'         => $id_unit,
@@ -1023,6 +1026,7 @@ class Incoming extends Admin_Controller
         } else {
             $this->db->update('warehouse_stock', [
                 'code_incoming'   => $kode_trans,
+                'trade_name'      => $trade_name,
                 'incoming'        => $incoming_lama + $qty_in,
                 'qty_stock'       => $qty_akhir,
                 'qty_free'        => $qty_free_awal + $qty_in,
@@ -1107,6 +1111,8 @@ class Incoming extends Admin_Controller
                 'id_material'   => $id_material,
                 'no_coil'       => $no_coil,
                 'kode_internal' => $kode_internal,
+                'nm_material'   => $nm_material,
+                'trade_name'    => $trade_name, 
                 'gross_weight'  => $berat_kotor,
                 'net_weight'    => $berat_bersih,
                 'length'        => $panjang,

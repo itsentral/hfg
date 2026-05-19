@@ -261,26 +261,27 @@ class Warehouse extends Admin_Controller
         }
 
         $data = $this->db->query("
-            SELECT
-                ws.code_lv4     AS id_material,
-                ws.nm_material,
-                ws.id_gudang,
-                ws.kd_gudang,
-                ws.qty_stock,
-                ws.harga_beli,
-                ws.total_nilai,
-                w.nm_gudang,
-                COUNT(wsc.id)   AS jumlah_coil
-            FROM warehouse_stock ws
-            LEFT JOIN warehouse w
-                ON w.id = ws.id_gudang
-            LEFT JOIN warehouse_stock_coil wsc
-                ON CONVERT(wsc.id_material USING utf8mb4)
-                = CONVERT(ws.code_lv4    USING utf8mb4)
-            {$where}
-            GROUP BY ws.code_lv4, ws.id_gudang
-            ORDER BY ws.nm_material ASC
-        ")->result_array();
+        SELECT
+            ws.code_lv4     AS id_material,
+            ws.nm_material,
+            ws.trade_name,
+            ws.id_gudang,
+            ws.kd_gudang,
+            ws.qty_stock,
+            ws.harga_beli,
+            ws.total_nilai,
+            w.nm_gudang,
+            COUNT(wsc.id)   AS jumlah_coil
+        FROM warehouse_stock ws
+        LEFT JOIN warehouse w
+            ON w.id = ws.id_gudang
+        LEFT JOIN warehouse_stock_coil wsc
+            ON CONVERT(wsc.id_material USING utf8mb4)
+            = CONVERT(ws.code_lv4    USING utf8mb4)
+        {$where}
+        GROUP BY ws.code_lv4, ws.id_gudang
+        ORDER BY ws.nm_material ASC
+    ")->result_array();
 
         $label_gudang = 'Semua Gudang';
         if ($kd_gudang === 'PUS') $label_gudang = 'Gudang Pusat';
@@ -293,28 +294,29 @@ class Warehouse extends Admin_Controller
         $sheet       = $objPHPExcel->getActiveSheet();
         $sheet->setTitle('Stock Value');
 
-        // ── Header ────────────────────────────────────────────────────────────
-        $sheet->mergeCells('A1:H1');
+        // ── Judul ─────────────────────────────────────────────────────────────
+        $sheet->mergeCells('A1:I1');
         $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper($label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-        $sheet->mergeCells('A2:H2');
+        $sheet->mergeCells('A2:I2');
         $sheet->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
         $sheet->getStyle('A2')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-        // ── Kolom header ──────────────────────────────────────────────────────
+        // ── Header kolom ──────────────────────────────────────────────────────
         $headers = [
             'A' => 'No',
             'B' => 'Kode Material',
             'C' => 'Nama Material',
-            'D' => 'Gudang',
-            'E' => 'Jumlah Coil',
-            'F' => 'Qty Stock (Kg)',
-            'G' => 'Harga Beli (Avg)',
-            'H' => 'Total Nilai',
+            'D' => 'Nama Lain (Trade Name)',
+            'E' => 'Gudang',
+            'F' => 'Jumlah Coil',
+            'G' => 'Qty Stock (Kg)',
+            'H' => 'Harga Beli (Avg)',
+            'I' => 'Total Nilai',
         ];
 
         foreach ($headers as $col => $label) {
@@ -335,12 +337,13 @@ class Warehouse extends Admin_Controller
         // ── Lebar kolom ───────────────────────────────────────────────────────
         $sheet->getColumnDimension('A')->setWidth(5);
         $sheet->getColumnDimension('B')->setWidth(20);
-        $sheet->getColumnDimension('C')->setWidth(45);
-        $sheet->getColumnDimension('D')->setWidth(25);
-        $sheet->getColumnDimension('E')->setWidth(12);
-        $sheet->getColumnDimension('F')->setWidth(15);
-        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(40);
+        $sheet->getColumnDimension('D')->setWidth(30);
+        $sheet->getColumnDimension('E')->setWidth(25);
+        $sheet->getColumnDimension('F')->setWidth(12);
+        $sheet->getColumnDimension('G')->setWidth(15);
         $sheet->getColumnDimension('H')->setWidth(20);
+        $sheet->getColumnDimension('I')->setWidth(20);
 
         // ── Data rows ─────────────────────────────────────────────────────────
         $row         = 5;
@@ -352,31 +355,38 @@ class Warehouse extends Admin_Controller
             $total_nilai = (int) round((float) $d['total_nilai']);
             $qty_stock   = (float) $d['qty_stock'];
             $jml_coil    = (int) $d['jumlah_coil'];
+            $trade_name  = $d['trade_name'] ?? '';
             $nm_gudang   = ($d['nm_gudang'] ?? $d['kd_gudang']) . ' (' . $d['kd_gudang'] . ')';
 
-            $sheet->setCellValueExplicit('A' . $row, $no + 1,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('A' . $row, $no + 1,           PHPExcel_Cell_DataType::TYPE_NUMERIC);
             $sheet->setCellValueExplicit('B' . $row, $d['id_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $row, $d['nm_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('D' . $row, $nm_gudang,         PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('E' . $row, $jml_coil,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('F' . $row, $qty_stock,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('G' . $row, $harga_beli,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('H' . $row, $total_nilai,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('D' . $row, $trade_name,        PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('E' . $row, $nm_gudang,         PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('F' . $row, $jml_coil,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('G' . $row, $qty_stock,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('H' . $row, $harga_beli,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('I' . $row, $total_nilai,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
 
-            $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()
+            // Border
+            $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
                 ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-            $sheet->getStyle('E' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+
+            // Format angka
             $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode($fmt_number);
-            $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+            $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode('#,##0.###');
             $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+            $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+
+            // Alignment center
             $sheet->getStyle('A' . $row)->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('E' . $row)->getAlignment()
+            $sheet->getStyle('F' . $row)->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-            // Warna baris selang-seling
+            // Warna selang-seling
             if ($no % 2 === 0) {
-                $sheet->getStyle('A' . $row . ':H' . $row)->getFill()
+                $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
                     ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
                     ->getStartColor()->setRGB('EBF3FA');
             }
@@ -385,19 +395,19 @@ class Warehouse extends Admin_Controller
             $row++;
         }
 
-        // ── Grand total row ───────────────────────────────────────────────────
-        $sheet->mergeCells('A' . $row . ':G' . $row);
-        $sheet->setCellValueExplicit('A' . $row, 'GRAND TOTAL', PHPExcel_Cell_DataType::TYPE_STRING);
-        $sheet->setCellValueExplicit('H' . $row, $grand_total,  PHPExcel_Cell_DataType::TYPE_NUMERIC);
-        $sheet->getStyle('A' . $row . ':H' . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':H' . $row)->getFill()
+        // ── Grand total ───────────────────────────────────────────────────────
+        $sheet->mergeCells('A' . $row . ':H' . $row);
+        $sheet->setCellValueExplicit('A' . $row, 'GRAND TOTAL',  PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit('I' . $row, $grand_total,   PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
             ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
             ->getStartColor()->setRGB('D9E1F2');
-        $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()
+        $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
             ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $sheet->getStyle('A' . $row)->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+        $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
 
         // ── Output ────────────────────────────────────────────────────────────
         $filename  = 'Stock_Value_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';
@@ -409,7 +419,6 @@ class Warehouse extends Admin_Controller
         $objWriter->save('php://output');
         exit;
     }
-
     // ── KARTU STOK ────────────────────────────────────────────────────────
 
     public function data_side_kartu_stok()

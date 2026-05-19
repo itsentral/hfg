@@ -77,18 +77,18 @@ class Warehouse_model extends BF_Model
         }
 
         $base_from = "
-    FROM warehouse_stock_coil wsc
-    LEFT JOIN warehouse w
-        ON w.kd_gudang = wsc.kd_gudang
-    LEFT JOIN warehouse_stock ws
-        ON ws.code_lv4 = wsc.id_material
-        AND ws.id_gudang = wsc.id_gudang
-    LEFT JOIN new_inventory_4 ni
-        ON ni.code_lv4 = wsc.id_material
-    WHERE 1=1
-    {$where_gudang}
-    {$where_search}
-";
+            FROM warehouse_stock_coil wsc
+            LEFT JOIN warehouse w
+                ON w.kd_gudang = wsc.kd_gudang
+            LEFT JOIN warehouse_stock ws
+                ON ws.code_lv4 = wsc.id_material
+                AND ws.id_gudang = wsc.id_gudang
+            LEFT JOIN new_inventory_4 ni
+                ON ni.code_lv4 = wsc.id_material
+            WHERE 1=1
+            {$where_gudang}
+            {$where_search}
+        ";
 
         // Hitung total & filtered — pakai raw query agar tidak konflik CI builder
         $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_from}")->row();
@@ -96,24 +96,24 @@ class Warehouse_model extends BF_Model
 
         // Data utama
         $sql = "
-    SELECT
-        wsc.id,
-        wsc.id_material,
-        wsc.no_coil,
-        wsc.kode_internal,
-        wsc.gross_weight,
-        wsc.net_weight,
-        wsc.length,
-        wsc.kd_gudang,      
-        wsc.id_gudang,     
-        ws.harga_beli,
-        ni.nama AS nm_barang,
-        ni.trade_name,
-        w.nm_gudang
-    {$base_from}
-    ORDER BY {$order_by} {$order_dir}
-    LIMIT {$start}, {$length}
-";
+            SELECT
+                wsc.id,
+                wsc.id_material,
+                wsc.no_coil,
+                wsc.kode_internal,
+                wsc.gross_weight,
+                wsc.net_weight,
+                wsc.length,
+                wsc.kd_gudang,      
+                wsc.id_gudang,     
+                ws.harga_beli,
+                ni.nama AS nm_barang,
+                ni.trade_name,
+                w.nm_gudang
+            {$base_from}
+            ORDER BY {$order_by} {$order_dir}
+            LIMIT {$start}, {$length}
+        ";
 
         $rows = $this->db->query($sql)->result_array();
         $data = [];
@@ -122,7 +122,9 @@ class Warehouse_model extends BF_Model
         foreach ($rows as $row) {
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
-                $row['nm_barang'] . '<br><small class="text-muted">' . $row['id_material'] . '</small>',
+                $row['nm_barang']
+                    . '<br><small class="text-muted">' . $row['id_material'] . '</small>'
+                    . ($row['trade_name'] ? '<br><small class="text-info">' . $row['trade_name'] . '</small>' : ''),
                 "<div class='text-center'>" . $row['no_coil']       . "</div>",
                 "<div class='text-center'>" . ($row['kode_internal'] ?? '-') . "</div>",
                 "<div class='text-end'>"    . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
@@ -177,6 +179,7 @@ class Warehouse_model extends BF_Model
             SELECT
                 ws.code_lv4    AS id_material,
                 ws.nm_material,
+                ws.trade_name,
                 ws.id_gudang,
                 ws.kd_gudang,
                 ws.qty_stock,
@@ -213,7 +216,7 @@ class Warehouse_model extends BF_Model
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['id_material'],
-                $row['nm_material'],
+                $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
                 $btn_coil,
                 "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
                 "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",
@@ -257,18 +260,17 @@ class Warehouse_model extends BF_Model
         return $where;
     }
 
-    // FROM + JOIN bersama (raw SQL — CONVERT menghindari collation mismatch)
     private function _from_stock_value($kd_gudang = '', $id_gudang = '', $filter_material = '')
     {
         $where = $this->_where_stock_value($kd_gudang, $id_gudang, $filter_material);
 
         return "
-            FROM warehouse_stock ws
-            LEFT JOIN warehouse w ON w.id = ws.id_gudang
-            LEFT JOIN warehouse_stock_coil wsc
-                ON wsc.id_material = ws.code_lv4
-                AND wsc.id_gudang = ws.id_gudang
-            {$where}
+        FROM warehouse_stock ws
+        LEFT JOIN warehouse w ON w.id = ws.id_gudang
+        LEFT JOIN warehouse_stock_coil wsc
+            ON wsc.id_material = ws.code_lv4
+            AND wsc.id_gudang = ws.id_gudang
+        {$where}
         ";
     }
 
@@ -324,7 +326,7 @@ class Warehouse_model extends BF_Model
                 $row['no_transaksi'],
                 $row['transaksi'],
                 $row['code_lv4'],
-                $row['nm_material'],
+                $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
                 number_format($row['qty']),
                 number_format($row['qty_book']),
                 number_format($row['qty_free']),
@@ -521,7 +523,9 @@ class Warehouse_model extends BF_Model
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
-                $row['nm_barang'] . '<br><small class="text-muted">' . $row['id_material'] . '</small>',
+                $row['nm_barang']
+                    . '<br><small class="text-muted">' . $row['id_material'] . '</small>'
+                    . ($row['trade_name'] ? '<br><small class="text-info">' . $row['trade_name'] . '</small>' : ''),
                 "<div class='text-center'>" . $row['no_coil'] . "</div>",
                 "<div class='text-center'>" . ($row['kode_internal'] ?? '-') . "</div>",
                 "<div class='text-end'>"    . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
@@ -588,8 +592,11 @@ class Warehouse_model extends BF_Model
         $base_from = "
             FROM warehouse_stock_per_day spd
             LEFT JOIN warehouse w ON w.id = spd.id_gudang
+            LEFT JOIN warehouse_stock ws  
+                ON ws.code_lv4  = spd.id_material
+                AND ws.id_gudang = spd.id_gudang
             {$where}
-            ";
+        ";
 
         // ── Count — DISTINCT id_material + id_gudang + tanggal ────────────────
         $cnt_row   = $this->db->query("
@@ -629,7 +636,8 @@ class Warehouse_model extends BF_Model
         spd.harga_beli,
         spd.total_nilai,
         spd.hist_date,
-        w.nm_gudang
+        w.nm_gudang,
+        ws.trade_name
     {$base_from}
     ORDER BY {$order_by} {$order_dir}
     {$limit}
@@ -649,7 +657,7 @@ class Warehouse_model extends BF_Model
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['id_material'],
-                $row['nm_material'],
+                $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
                 "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
                 "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
                 "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",

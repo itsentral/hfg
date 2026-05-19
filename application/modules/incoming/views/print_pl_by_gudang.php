@@ -124,6 +124,7 @@
             border-collapse: collapse;
             margin-top: 8px;
             font-size: 12px;
+            page-break-inside: auto;
         }
 
         table.detail-table th {
@@ -209,6 +210,16 @@
             color: #fff;
         }
 
+        table.detail-table tbody tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        table.detail-table tfoot {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
         /* ── Print rules ─────────────────────────────────────────────── */
         @media print {
             .no-print {
@@ -235,6 +246,17 @@
                 background-color: #1a6e3c !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+
+            table.detail-table tbody tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            table.detail-table tfoot {
+                display: table-row-group;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
         }
     </style>
@@ -339,6 +361,7 @@
                         <tr>
                             <th style="width:24px;">No.</th>
                             <th style="width:200px;">Nama Barang</th>
+                            <th style="width:200px;">Nama Lain</th>
                             <th style="width:36px;">Satuan</th>
                             <th style="width:80px;">Length</th>
                             <th style="width:100px;">No. Coil</th>
@@ -353,7 +376,8 @@
                             foreach ($items as $row): ?>
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
-                                    <td><?= htmlspecialchars($row['trade_name'] ?: $row['nm_material']) ?></td>
+                                    <td><?= htmlspecialchars($row['nm_material']) ?></td>
+                                    <td><?= htmlspecialchars($row['trade_name']) ?></td>
                                     <td class="text-center"><?= ucfirst($row['unit_satuan']) ?></td>
                                     <td class="text-end"><?= number_format((float)($row['length'] ?? 0), 2) ?></td>
                                     <td class="text-center"><?= htmlspecialchars($row['no_coil']) ?></td>
@@ -366,7 +390,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center" style="color:#999; padding:20px;">
+                                <td colspan="9" class="text-center" style="color:#999; padding:20px;">
                                     Tidak ada data coil.
                                 </td>
                             </tr>
@@ -374,7 +398,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6" class="text-end">Total</td>
+                            <td colspan="7" class="text-end">Total</td>
                             <td class="text-end"><?= number_format($ttl_kotor, 2) ?></td>
                             <td class="text-end"><?= number_format($ttl_bersih, 2) ?></td>
                         </tr>
