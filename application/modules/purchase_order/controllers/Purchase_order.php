@@ -94,7 +94,7 @@ class Purchase_order extends Admin_Controller
 				a.close_po IS NULL 
 				AND EXISTS ( SELECT 1 FROM dt_trans_po aa WHERE aa.no_po = a.no_po ) 
 				ORDER BY
-				a.no_po ASC;
+				a.no_po DESC;
 		")->result();
 
 		$link_no_incoming = [];
