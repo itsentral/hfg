@@ -1,8 +1,8 @@
 <?php
-    $ENABLE_ADD     = has_permission('Product_Category.Add');
-    $ENABLE_MANAGE  = has_permission('Product_Category.Manage');
-    $ENABLE_VIEW    = has_permission('Product_Category.View');
-    $ENABLE_DELETE  = has_permission('Product_Category.Delete');
+$ENABLE_ADD     = has_permission('Product_Category.Add');
+$ENABLE_MANAGE  = has_permission('Product_Category.Manage');
+$ENABLE_VIEW    = has_permission('Product_Category.View');
+$ENABLE_DELETE  = has_permission('Product_Category.Delete');
 ?>
 
 <div class="card shadow-sm border-0">
@@ -29,7 +29,8 @@
                 </thead>
                 <tbody>
                     <?php if (!empty($result)) : ?>
-                        <?php $numb = 0; foreach ($result as $record) : $numb++;
+                        <?php $numb = 0;
+                        foreach ($result as $record) : $numb++;
                             $product_type = (!empty($get_level_1[$record->code_lv1]['nama'])) ? $get_level_1[$record->code_lv1]['nama'] : '';
                         ?>
                             <tr>
@@ -99,7 +100,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $('#example1').DataTable({
             responsive: true,
@@ -109,12 +110,16 @@
                 search: "Search:",
                 lengthMenu: "Show _MENU_ entries",
                 info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                paginate: { previous: "Prev", next: "Next" }
+                paginate: {
+                    previous: "Prev",
+                    next: "Next"
+                }
             }
         });
 
         // ADD / EDIT
-        $(document).on('click', '.add', function () {
+        // ADD / EDIT
+        $(document).on('click', '.add', function() {
             var id = ($(this).data('id') === undefined) ? '' : $(this).data('id');
             let title = (id === '') ? 'Add' : 'Edit';
             $("#head_title").html(`${title} Product Category`);
@@ -122,63 +127,125 @@
             $.ajax({
                 type: 'POST',
                 url: base_url + active_controller + 'add/' + id,
-                success: function (data) {
+                success: function(data) {
                     $("#dialog-popup").modal('show');
                     $("#ModalView").html(data);
+
+                    // --- TAMBAHKAN KODE INI ---
+                    // Inisialisasi Select2 setelah form dirender di dalam modal
+                    $('#ModalView').find('.chosen-select').select2({
+                        width: '100%',
+                        // Ini kunci utamanya agar bisa diketik di dalam modal
+                        dropdownParent: $('#dialog-popup .modal-content')
+                    });
                 }
             });
         });
 
         // SUBMIT
-        $(document).on('submit', '#data_form', function (e) {
+        $(document).on('submit', '#data_form', function(e) {
             e.preventDefault();
             var data = $('#data_form').serialize();
             var code_lv1 = $('#code_lv1').val();
 
             if (code_lv1 == '0') {
-                swal({ title: "Error Message!", text: 'Product type not selected...', type: "warning" });
+                swal({
+                    title: "Error Message!",
+                    text: 'Product type not selected...',
+                    type: "warning"
+                });
                 return false;
             }
 
             swal({
-                title: "Are you sure?", text: "Process this data", type: "warning",
-                showCancelButton: true, confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+                title: "Are you sure?",
+                text: "Process this data",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "Ya, Simpan!",
+                cancelButtonText: "Batal",
+                closeOnConfirm: false
+            }, function() {
                 $.ajax({
-                    type: 'POST', url: base_url + active_controller + 'add', dataType: "json", data: data,
-                    success: function (res) {
+                    type: 'POST',
+                    url: base_url + active_controller + 'add',
+                    dataType: "json",
+                    data: data,
+                    success: function(res) {
                         if (res.status == '1') {
-                            swal({ title: "Success", text: res.pesan, type: "success" }, function () { window.location.reload(true); });
+                            swal({
+                                title: "Success",
+                                text: res.pesan,
+                                type: "success"
+                            }, function() {
+                                window.location.reload(true);
+                            });
                         } else {
-                            swal({ title: "Error", text: res.pesan, type: "error" });
+                            swal({
+                                title: "Error",
+                                text: res.pesan,
+                                type: "error"
+                            });
                         }
                     },
-                    error: function () { swal({ title: "Error", text: "Error Process!", type: "error" }); }
+                    error: function() {
+                        swal({
+                            title: "Error",
+                            text: "Error Process!",
+                            type: "error"
+                        });
+                    }
                 });
             });
         });
 
         // DELETE
-        $(document).on('click', '.delete', function (e) {
+        $(document).on('click', '.delete', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
 
             swal({
-                title: "Are you sure?", text: "Delete this data", type: "warning",
-                showCancelButton: true, confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+                title: "Are you sure?",
+                text: "Delete this data",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal",
+                closeOnConfirm: false
+            }, function() {
                 $.ajax({
-                    type: 'POST', url: base_url + active_controller + 'delete', dataType: "json", data: { id: id },
-                    success: function (res) {
+                    type: 'POST',
+                    url: base_url + active_controller + 'delete',
+                    dataType: "json",
+                    data: {
+                        id: id
+                    },
+                    success: function(res) {
                         if (res.status == '1') {
-                            swal({ title: "Success", text: res.pesan, type: "success" }, function () { window.location.reload(true); });
+                            swal({
+                                title: "Success",
+                                text: res.pesan,
+                                type: "success"
+                            }, function() {
+                                window.location.reload(true);
+                            });
                         } else {
-                            swal({ title: "Error", text: res.pesan, type: "error" });
+                            swal({
+                                title: "Error",
+                                text: res.pesan,
+                                type: "error"
+                            });
                         }
                     },
-                    error: function () { swal({ title: "Error", text: "Error Process!", type: "error" }); }
+                    error: function() {
+                        swal({
+                            title: "Error",
+                            text: "Error Process!",
+                            type: "error"
+                        });
+                    }
                 });
             });
         });
