@@ -79,7 +79,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 							<td><?= $numb; ?></td>
 							<td><?= $record->no_surat ?></td>
 							<td><?= $no_pr ?></td>
-							<td><?= $list_no_incoming[$record->no_po] ?></td>
+							<td><?= isset($list_no_incoming) && isset($list_no_incoming[$record->no_po]) ? $list_no_incoming[$record->no_po] : '-' ?></td>
 							<td><?= date('d-M-Y', strtotime($record->tanggal)) ?></td>
 							<td><?= $record->nm_supplier ?></td>
 							<td class="text-right"><?= number_format($record->total_barang - $record->nilai_disc + $record->total_ppn + $record->taxtotal) ?></td>

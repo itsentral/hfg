@@ -11,6 +11,8 @@ $page_mode = $page_mode ?? 'add';
 $is_view   = ($page_mode === 'view');
 $is_edit   = ($page_mode === 'edit_draft');
 $is_add    = ($page_mode === 'add');
+$tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : date('Y-m-d');
+
 ?>
 
 <style>
@@ -226,7 +228,8 @@ $is_add    = ($page_mode === 'add');
                             <div class="form-group row mb-3">
                                 <div class="col-md-4"><label class="col-form-label">Tgl. Incoming</label></div>
                                 <div class="col-md-8">
-                                    <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>">
+                                    <input type="text" name="tanggal" id="tgl-incoming" class="form-control"
+                                        value="<?= htmlspecialchars($tgl_default) ?>" placeholder="Pilih tanggal" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="form-group row mb-3">
@@ -276,32 +279,58 @@ $is_add    = ($page_mode === 'add');
 
                     <hr>
 
+                    <!-- Gudang Check All & Search -->
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold me-2">Assign Semua ke Gudang:</label>
+                            <?php foreach ($list_gudang as $idx => $gd): ?>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input check-all-gudang" type="checkbox"
+                                        id="checkall-gudang-<?= $gd['id'] ?>"
+                                        data-gudang-id="<?= $gd['id'] ?>"
+                                        data-gudang-kd="<?= htmlspecialchars($gd['kd_gudang']) ?>">
+                                    <label class="form-check-label" for="checkall-gudang-<?= $gd['id'] ?>">
+                                        <?= htmlspecialchars($gd['nm_gudang']) ?> (<?= htmlspecialchars($gd['kd_gudang']) ?>)
+                                    </label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-coil-table"
+                                    placeholder="Cari material / no coil...">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Tabel Coil -->
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="table-coil">
                             <thead>
                                 <tr>
                                     <th rowspan="2" class="text-center" style="vertical-align:middle;" width="3%">No</th>
-                                    <th rowspan="2" class="text-center" style="vertical-align:middle;" width="15%">Material</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle;" width="18%">Material</th>
                                     <th rowspan="2" class="text-center" style="vertical-align:middle;" width="8%">Qty Order</th>
                                     <th rowspan="2" class="text-center" style="vertical-align:middle;" width="5%">Uom</th>
                                     <th rowspan="2" class="text-center" style="vertical-align:middle;" width="8%">Qty Belum Kirim</th>
                                     <th colspan="4" class="text-center" style="background-color:#d2d6de !important; color:#000;">Dari Data ROS (Packing List)</th>
-                                    <th colspan="2" class="text-center" style="background-color:#f3b44e !important;">Checklist Visual</th>
-                                    <th rowspan="2" class="text-center" style="vertical-align:middle; background-color:#c8e6c9 !important; color:#000;" width="14%">Gudang Tujuan</th>
+                                    <?php foreach ($list_gudang as $gd): ?>
+                                        <th rowspan="2" class="text-center" style="vertical-align:middle; background-color:#c8e6c9 !important; color:#000;" width="10%">
+                                            <?= htmlspecialchars($gd['nm_gudang']) ?><br><small>(<?= htmlspecialchars($gd['kd_gudang']) ?>)</small>
+                                        </th>
+                                    <?php endforeach; ?>
                                 </tr>
                                 <tr>
                                     <th class="text-center" style="background-color:#d2d6de !important; color:#000;">No. Coil</th>
                                     <th class="text-center" style="background-color:#d2d6de !important; color:#000;">Berat Kotor</th>
                                     <th class="text-center" style="background-color:#d2d6de !important; color:#000;">Berat Bersih</th>
                                     <th class="text-center" style="background-color:#d2d6de !important; color:#000;">Panjang</th>
-                                    <th class="text-center" style="background-color:#f3b44e !important;">OK</th>
-                                    <th class="text-center" style="background-color:#f3b44e !important;">Reject</th>
                                 </tr>
                             </thead>
                             <tbody id="list-item-coil">
                                 <tr>
-                                    <td colspan="12" class="text-center">
+                                    <td colspan="<?= 9 + count($list_gudang) ?>" class="text-center">
                                         <i class="fa fa-spinner fa-spin"></i> Memuat data coil...
                                     </td>
                                 </tr>
@@ -317,7 +346,12 @@ $is_add    = ($page_mode === 'add');
 
                         <button type="button" class="btn btn-primary" id="save-draft">
                             <i class="fa fa-save"></i>
-                            <?= $is_edit ? 'Update Draft' : 'Simpan Draft' ?>
+                            <?= $is_edit ? 'Update' : 'Simpan' ?>
+                        </button>
+
+                        <button type="button" class="btn btn-success" id="save-and-submit">
+                            <i class="fa fa-paper-plane"></i>
+                            Simpan & Ajukan
                         </button>
 
                         <?php if ($is_edit && !empty($no_ros_default)): ?>
@@ -340,11 +374,21 @@ $is_add    = ($page_mode === 'add');
 
 <!-- SweetAlert2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <?php if (!$is_view): ?>
     <script>
         $(document).ready(function() {
+
+            flatpickr('#tgl-incoming', {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: false,
+                defaultDate: document.getElementById('tgl-incoming').value || '<?= date('Y-m-d') ?>',
+            });
 
             /* ── File upload handler ── */
             (function() {
@@ -404,13 +448,14 @@ $is_add    = ($page_mode === 'add');
             <?php endif; ?>
 
             /* ── Load tabel coil via AJAX ── */
+            var listGudang = <?= json_encode($list_gudang ?? []) ?>;
+
             function loadCoilTable(no_ros) {
+                var colSpan = 9 + listGudang.length;
                 $('#list-item-coil').html(
-                    '<tr><td colspan="12" class="text-center">' +
+                    '<tr><td colspan="' + colSpan + '" class="text-center">' +
                     '<i class="fa fa-spinner fa-spin"></i> Memuat data...</td></tr>'
                 );
-
-                var listGudang = <?= json_encode($list_gudang ?? []) ?>;
 
                 $.ajax({
                     url: siteurl + active_controller + 'get_ros_detail_to_table',
@@ -431,7 +476,6 @@ $is_add    = ($page_mode === 'add');
                                 var saved = draftCoilsMap[item.id_ros_coil_detail] || {};
                                 var savedGudang = saved.id_gudang_ke || '';
                                 var savedKdGudang = saved.kd_gudang_ke || '';
-                                var savedQC = saved.status_qc || 'OK';
 
                                 /* Kolom material — hanya muncul di baris pertama per material */
                                 var rowMaterial = '';
@@ -449,29 +493,30 @@ $is_add    = ($page_mode === 'add');
                                     rowMaterial = '<td colspan="5" style="border-top:none;border-bottom:none;"></td>';
                                 }
 
-                                /* Build opsi gudang */
-                                var gudangOptsCoil = '<option value="">-- Pilih --</option>';
+                                /* Build checkbox gudang per coil */
+                                var gudangCheckboxes = '';
                                 listGudang.forEach(function(g) {
-                                    var isSelected = (String(g.id) === String(savedGudang)) ? ' selected' : '';
-                                    gudangOptsCoil +=
-                                        '<option value="' + g.id + '" data-kd="' + g.kd_gudang + '"' + isSelected + '>' +
-                                        g.nm_gudang + ' (' + g.kd_gudang + ')</option>';
+                                    var isChecked = (String(g.id) === String(savedGudang)) ? ' checked' : '';
+                                    gudangCheckboxes +=
+                                        '<td class="text-center" style="background-color:#f1f8e9;">' +
+                                        '<input type="checkbox" class="form-check-input gudang-checkbox" ' +
+                                        'name="detail[' + index + '][gudang_' + g.id + ']" ' +
+                                        'data-index="' + index + '" ' +
+                                        'data-gudang-id="' + g.id + '" ' +
+                                        'data-gudang-kd="' + g.kd_gudang + '"' + isChecked + '>' +
+                                        '</td>';
                                 });
 
                                 html +=
-                                    '<tr>' +
+                                    '<tr class="coil-row" data-material="' + (item.nm_material || '').toLowerCase() + '" data-nocoil="' + (item.no_coil || '').toLowerCase() + '" data-group="' + rowCounter + '">' +
                                     rowMaterial +
                                     '<td class="text-center bg-light">' + item.no_coil + '</td>' +
                                     '<td class="text-end bg-light">' + parseFloat(item.ros_kotor).toLocaleString('id-ID') + '</td>' +
                                     '<td class="text-end bg-light">' + parseFloat(item.ros_bersih).toLocaleString('id-ID') + '</td>' +
                                     '<td class="text-end bg-light">' + (parseFloat(item.panjang || 0)).toLocaleString('id-ID') + '</td>' +
-                                    /* Radio OK */
-                                    '<td class="text-center">' +
-                                    '<input type="radio" name="detail[' + index + '][status_qc]" value="OK"' + (savedQC === 'OK' ? ' checked' : '') + '>' +
-                                    '</td>' +
-                                    /* Radio REJECT + hidden inputs */
-                                    '<td class="text-center">' +
-                                    '<input type="radio" name="detail[' + index + '][status_qc]" value="REJECT"' + (savedQC === 'REJECT' ? ' checked' : '') + '>' +
+                                    gudangCheckboxes +
+                                    /* Hidden inputs in last td */
+                                    '<td class="d-none">' +
                                     '<input type="hidden" name="detail[' + index + '][id_ros_header]"   value="' + item.no_ros + '">' +
                                     '<input type="hidden" name="detail[' + index + '][id_ros_material]" value="' + item.id_ros_material + '">' +
                                     '<input type="hidden" name="detail[' + index + '][id_ros_coil]"     value="' + item.id_ros_coil_detail + '">' +
@@ -479,29 +524,21 @@ $is_add    = ($page_mode === 'add');
                                     '<input type="hidden" name="detail[' + index + '][id_material]"     value="' + item.id_material + '">' +
                                     '<input type="hidden" name="detail[' + index + '][no_coil]"         value="' + item.no_coil + '">' +
                                     '<input type="hidden" name="detail[' + index + '][aktual_bersih]"   value="' + item.ros_bersih + '">' +
-                                    '</td>' +
-                                    /* Select gudang */
-                                    '<td class="text-center" style="background-color:#f1f8e9;">' +
-                                    '<select name="detail[' + index + '][id_gudang_ke]" class="form-control form-control-sm select-gudang-coil" required>' +
-                                    gudangOptsCoil +
-                                    '</select>' +
-                                    '<input type="hidden" name="detail[' + index + '][kd_gudang_ke]" class="kd-gudang-coil" value="' + savedKdGudang + '">' +
+                                    '<input type="hidden" name="detail[' + index + '][id_gudang_ke]" class="hidden-gudang-id" value="' + savedGudang + '">' +
+                                    '<input type="hidden" name="detail[' + index + '][kd_gudang_ke]" class="hidden-gudang-kd" value="' + savedKdGudang + '">' +
                                     '</td>' +
                                     '</tr>';
                             });
                         } else {
-                            html = '<tr><td colspan="12" class="text-center text-warning">Data Coil tidak ditemukan untuk ROS ini.</td></tr>';
+                            html = '<tr><td colspan="' + (9 + listGudang.length) + '" class="text-center text-warning">Data Coil tidak ditemukan untuk ROS ini.</td></tr>';
                         }
 
                         $('#list-item-coil').html(html);
-                        $('.select-gudang-coil').select2({
-                            width: '100%'
-                        });
                     },
                     error: function(xhr) {
                         console.error('Error load coil:', xhr.responseText);
                         $('#list-item-coil').html(
-                            '<tr><td colspan="12" class="text-center text-danger">Gagal memuat data coil.</td></tr>'
+                            '<tr><td colspan="' + (9 + listGudang.length) + '" class="text-center text-danger">Gagal memuat data coil.</td></tr>'
                         );
                     }
                 });
@@ -512,17 +549,126 @@ $is_add    = ($page_mode === 'add');
                 loadCoilTable('<?= addslashes($ros_data->id) ?>');
             <?php endif; ?>
 
-            /* ── Sync kd_gudang saat select berubah ── */
-            $(document).on('change', '.select-gudang-coil', function() {
-                var kd = $(this).find('option:selected').data('kd') || '';
-                $(this).siblings('.kd-gudang-coil').val(kd);
+            /* ── Checkbox gudang: hanya boleh pilih 1 per coil (mutual exclusive) ── */
+            $(document).on('change', '.gudang-checkbox', function() {
+                var idx = $(this).data('index');
+                var gudangId = $(this).data('gudang-id');
+                var gudangKd = $(this).data('gudang-kd');
+                var row = $(this).closest('tr');
+
+                if ($(this).is(':checked')) {
+                    // Uncheck checkbox gudang lain di baris yang sama
+                    row.find('.gudang-checkbox').not(this).prop('checked', false);
+                    // Update hidden fields
+                    row.find('.hidden-gudang-id').val(gudangId);
+                    row.find('.hidden-gudang-kd').val(gudangKd);
+                } else {
+                    // Jika uncheck, kosongkan hidden
+                    row.find('.hidden-gudang-id').val('');
+                    row.find('.hidden-gudang-kd').val('');
+                }
+            });
+
+            /* ── Check All per gudang ── */
+            $(document).on('change', '.check-all-gudang', function() {
+                var gudangId = $(this).data('gudang-id');
+                var gudangKd = $(this).data('gudang-kd');
+                var isChecked = $(this).is(':checked');
+
+                if (isChecked) {
+                    // Uncheck "check all" gudang lain
+                    $('.check-all-gudang').not(this).prop('checked', false);
+
+                    // Set semua coil ke gudang ini
+                    $('#list-item-coil .coil-row').each(function() {
+                        var row = $(this);
+                        // Uncheck semua checkbox gudang di row
+                        row.find('.gudang-checkbox').prop('checked', false);
+                        // Check yang sesuai gudang ini
+                        row.find('.gudang-checkbox[data-gudang-id="' + gudangId + '"]').prop('checked', true);
+                        // Update hidden
+                        row.find('.hidden-gudang-id').val(gudangId);
+                        row.find('.hidden-gudang-kd').val(gudangKd);
+                    });
+                } else {
+                    // Uncheck semua coil dari gudang ini
+                    $('#list-item-coil .coil-row').each(function() {
+                        var row = $(this);
+                        row.find('.gudang-checkbox[data-gudang-id="' + gudangId + '"]').prop('checked', false);
+                        // Cek apakah masih ada gudang lain yang checked
+                        var anyChecked = row.find('.gudang-checkbox:checked');
+                        if (anyChecked.length === 0) {
+                            row.find('.hidden-gudang-id').val('');
+                            row.find('.hidden-gudang-kd').val('');
+                        }
+                    });
+                }
+            });
+
+            /* ── Search / filter tabel coil ── */
+            $(document).on('keyup', '#search-coil-table', function() {
+                var keyword = $(this).val().toLowerCase().trim();
+                var $rows = $('#list-item-coil .coil-row');
+
+                // Hapus highlight sebelumnya
+                $rows.find('.highlight-search').each(function() {
+                    var parent = $(this).parent();
+                    $(this).replaceWith($(this).text());
+                    parent.get(0).normalize();
+                });
+
+                if (!keyword) {
+                    $rows.show();
+                    $('#no-result-coil').remove();
+                    return;
+                }
+
+                // Cari group yang punya match
+                var matchedGroups = {};
+                $rows.each(function() {
+                    var group = $(this).data('group');
+                    var material = $(this).data('material') || '';
+                    var nocoil = $(this).data('nocoil') || '';
+                    if (material.indexOf(keyword) > -1 || nocoil.indexOf(keyword) > -1) {
+                        matchedGroups[group] = true;
+                    }
+                });
+
+                // Show/hide + highlight teks yang match
+                var regex = new RegExp('(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                $rows.each(function() {
+                    var group = $(this).data('group');
+                    if (matchedGroups[group]) {
+                        $(this).show();
+                        $(this).find('td').each(function() {
+                            var td = $(this);
+                            if (td.find('input,select,button').length) return;
+                            var text = td.text();
+                            if (text.toLowerCase().indexOf(keyword) > -1) {
+                                td.html(td.html().replace(regex, '<span class="highlight-search" style="background-color:#ffe066;border-radius:2px;padding:0 2px;">$1</span>'));
+                            }
+                        });
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // Tampilkan keterangan jika tidak ada hasil
+                $('#no-result-coil').remove();
+                if (Object.keys(matchedGroups).length === 0) {
+                    var colSpan = 9 + listGudang.length;
+                    $('#list-item-coil').append(
+                        '<tr id="no-result-coil"><td colspan="' + colSpan + '" class="text-center text-muted py-3">' +
+                        '<i class="fa fa-search"></i> Tidak ditemukan hasil untuk "<b>' + keyword + '</b>"</td></tr>'
+                    );
+                }
             });
 
             /* ── Validasi gudang semua coil sudah dipilih ── */
             function validateGudang() {
                 var kosong = false;
-                $('.select-gudang-coil').each(function() {
-                    if (!$(this).val()) kosong = true;
+                $('#list-item-coil .coil-row').each(function() {
+                    if (!$(this).find('.hidden-gudang-id').val()) kosong = true;
                 });
                 return !kosong;
             }
@@ -552,10 +698,51 @@ $is_add    = ($page_mode === 'add');
                 }).then(function(result) {
                     if (!result.isConfirmed) return;
 
+                    // ── detail sebagai array JSON ──
+                    var details = [];
+                    $('#list-item-coil .coil-row').each(function() {
+                        var row = $(this);
+                        var idCoil = row.find('input[name*="[id_ros_coil]"]').val();
+                        if (!idCoil) return; // skip baris tanpa coil
+
+                        details.push({
+                            id_ros_coil: idCoil,
+                            id_ros_header: row.find('input[name*="[id_ros_header]"]').val(),
+                            id_ros_material: row.find('input[name*="[id_ros_material]"]').val(),
+                            id_po_detail: row.find('input[name*="[id_po_detail]"]').val(),
+                            id_material: row.find('input[name*="[id_material]"]').val(),
+                            no_coil: row.find('input[name*="[no_coil]"]').val(),
+                            aktual_bersih: row.find('input[name*="[aktual_bersih]"]').val(),
+                            id_gudang_ke: row.find('.hidden-gudang-id').val(),
+                            kd_gudang_ke: row.find('.hidden-gudang-kd').val(),
+                            status_qc: 'OK',
+                        });
+                    });
+
+                    // ── Kirim via FormData (untuk support file upload) ──
+                    var fd = new FormData();
+                    fd.append('no_ros', $('input[name="no_ros"]').val());
+                    fd.append('id_supplier', $('input[name="id_supplier"]').val());
+                    fd.append('no_po', $('input[name="no_po"]').val());
+                    fd.append('tanggal', $('input[name="tanggal"]').val());
+                    fd.append('uang_muka', $('input[name="uang_muka"]').val());
+                    fd.append('uang_muka_idr', $('input[name="uang_muka_idr"]').val());
+                    fd.append('existing_file_original', $('input[name="existing_file_original"]').val());
+                    fd.append('existing_file_hash', $('input[name="existing_file_hash"]').val());
+                    fd.append('detail_json', JSON.stringify(details));
+
+                    // Append file jika ada
+                    var fileInput = document.getElementById('file_incoming_material');
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (var i = 0; i < fileInput.files.length; i++) {
+                            fd.append('file_incoming_material[]', fileInput.files[i]);
+                        }
+                    }
+
                     $.ajax({
                         url: siteurl + active_controller + endpoint,
                         type: 'POST',
-                        data: new FormData($('#data-form')[0]),
+                        data: fd,
                         cache: false,
                         contentType: false,
                         processData: false,
@@ -587,6 +774,97 @@ $is_add    = ($page_mode === 'add');
                                     text: res.pesan,
                                     icon: 'error'
                                 });
+                            }
+                        }
+                    });
+                });
+            });
+
+            /* ── SIMPAN & AJUKAN DRAFT ── */
+            $(document).on('click', '#save-and-submit', function(e) {
+                e.preventDefault();
+
+                if (!validateGudang()) {
+                    Swal.fire({
+                        title: 'Peringatan',
+                        text: 'Semua coil harus dipilih gudang tujuannya!',
+                        icon: 'warning'
+                    });
+                    return;
+                }
+
+                var endpoint = '<?= $is_edit ? "update_draft" : "save_draft" ?>';
+
+                Swal.fire({
+                    title: 'Simpan & Ajukan?',
+                    text: 'Data akan disimpan dan langsung diajukan ke Finalize Incoming.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan & Ajukan!',
+                    cancelButtonText: 'Batal'
+                }).then(function(result) {
+                    if (!result.isConfirmed) return;
+
+                    var details = [];
+                    $('#list-item-coil .coil-row').each(function() {
+                        var row = $(this);
+                        var idCoil = row.find('input[name*="[id_ros_coil]"]').val();
+                        if (!idCoil) return;
+
+                        details.push({
+                            id_ros_coil: idCoil,
+                            id_ros_header: row.find('input[name*="[id_ros_header]"]').val(),
+                            id_ros_material: row.find('input[name*="[id_ros_material]"]').val(),
+                            id_po_detail: row.find('input[name*="[id_po_detail]"]').val(),
+                            id_material: row.find('input[name*="[id_material]"]').val(),
+                            no_coil: row.find('input[name*="[no_coil]"]').val(),
+                            aktual_bersih: row.find('input[name*="[aktual_bersih]"]').val(),
+                            id_gudang_ke: row.find('.hidden-gudang-id').val(),
+                            kd_gudang_ke: row.find('.hidden-gudang-kd').val(),
+                            status_qc: 'OK',
+                        });
+                    });
+
+                    var fd = new FormData();
+                    fd.append('no_ros', $('input[name="no_ros"]').val());
+                    fd.append('id_supplier', $('input[name="id_supplier"]').val());
+                    fd.append('no_po', $('input[name="no_po"]').val());
+                    fd.append('tanggal', $('input[name="tanggal"]').val());
+                    fd.append('uang_muka', $('input[name="uang_muka"]').val());
+                    fd.append('uang_muka_idr', $('input[name="uang_muka_idr"]').val());
+                    fd.append('existing_file_original', $('input[name="existing_file_original"]').val());
+                    fd.append('existing_file_hash', $('input[name="existing_file_hash"]').val());
+                    fd.append('detail_json', JSON.stringify(details));
+                    fd.append('submit_after_save', '1'); // Flag untuk langsung ajukan
+
+                    var fileInput = document.getElementById('file_incoming_material');
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (var i = 0; i < fileInput.files.length; i++) {
+                            fd.append('file_incoming_material[]', fileInput.files[i]);
+                        }
+                    }
+
+                    $.ajax({
+                        url: siteurl + active_controller + endpoint,
+                        type: 'POST',
+                        data: fd,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(res) {
+                            if (res.status == 1) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: 'Data berhasil disimpan dan diajukan ke Finalize Incoming.',
+                                    icon: 'success',
+                                    timer: 1800,
+                                    showConfirmButton: false
+                                }).then(function() {
+                                    window.location.href = siteurl + active_controller;
+                                });
+                            } else {
+                                Swal.fire({ title: 'Gagal', text: res.pesan, icon: 'error' });
                             }
                         }
                     });

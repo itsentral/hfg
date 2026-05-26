@@ -551,7 +551,8 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
             });
             html += '</tr></thead><tbody>';
 
-            var sum_usd = 0,
+            var sum_kg = 0,
+                sum_usd = 0,
                 sum_rp = 0,
                 sum_bm = 0,
                 sum_ls = 0,
@@ -561,6 +562,7 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
                 sum_inv = 0;
 
             $.each(materials, function(idx, m) {
+                sum_kg += parseFloat(m.kg_unit) || 0;
                 sum_usd += parseFloat(m.total_value_usd) || 0;
                 sum_rp += parseFloat(m.total_value_rp) || 0;
                 sum_bm += parseFloat(m.bm_rp) || 0;
@@ -591,7 +593,9 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
 
             html += '</tbody>';
             html += '<tfoot><tr class="table-secondary" style="font-weight:bold;">';
-            html += '<td colspan="5" class="text-end">Total PO</td>';
+            html += '<td colspan="3" class="text-end">Total PO</td>';
+            html += '<td class="text-end">' + fmt(sum_kg, 4) + '</td>';
+            html += '<td></td>';
             html += '<td class="text-end">' + fmt(sum_usd, 4) + '</td>';
             html += '<td class="text-end">' + fmt(sum_rp) + '</td>';
             html += '<td></td>';

@@ -3873,7 +3873,7 @@ class Purchase_order extends Admin_Controller
 		$this->db->trans_start();
 
 		$data_update = [
-			'close_po' => 1,
+			'close_po'      => 1,
 			'close_po_desc' => $post['close_po_reason']
 		];
 
