@@ -675,4 +675,40 @@ class Warehouse extends Admin_Controller
         $kd_gudang = $this->input->post('kd_gudang') ?? '';
         $this->Warehouse_model->get_json_warehouse_stock_perday($kd_gudang);
     }
+
+    // Untuk tabel history modal (menggantikan / melengkapi get_history_material)
+    public function get_history_summary()
+    {
+        $id_material = $this->input->post('id_material');
+        $id_gudang   = $this->input->post('id_gudang');
+
+        $rows = $this->db->query("
+        SELECT *
+        FROM warehouse_incoming_summary
+        WHERE id_material = ?
+          AND id_gudang   = ?
+        ORDER BY tanggal ASC, id ASC
+    ", [$id_material, $id_gudang])->result_array();
+
+        echo json_encode($rows);
+    }
+
+    // Untuk modal drill-down coil per transaksi
+    public function get_summary_detail_coil()
+    {
+        $no_ipp      = $this->input->post('no_ipp');
+        $id_material = $this->input->post('id_material');
+        $id_gudang   = $this->input->post('id_gudang');
+
+        $rows = $this->db->query("
+        SELECT *
+        FROM warehouse_incoming_summary_detail
+        WHERE no_ipp      = ?
+          AND id_material = ?
+          AND id_gudang   = ?
+        ORDER BY id ASC
+    ", [$no_ipp, $id_material, $id_gudang])->result_array();
+
+        echo json_encode($rows);
+    }
 }

@@ -20,6 +20,150 @@ class Incoming extends Admin_Controller
         $this->template->render('index');
     }
 
+    public function data_side_all()
+    {
+        $ENABLE_ADD    = has_permission('Incoming.Add');
+        $ENABLE_MANAGE = has_permission('Incoming.Manage');
+
+        $requestData = $_REQUEST;
+        $search      = $requestData['search']['value'] ?? '';
+        $start       = (int) ($requestData['start'] ?? 0);
+        $length      = (int) ($requestData['length'] ?? 10);
+        $order_col   = $requestData['order'][0]['column'] ?? 1;
+        $order_dir   = $requestData['order'][0]['dir']    ?? 'desc';
+
+        $col_map = [
+            1 => 'r.id',
+            2 => 'r.no_po',
+            3 => 's.nama',
+            4 => 'r.kurs_pib',
+            5 => 'r.status_incoming',
+        ];
+        $order_by = $col_map[$order_col] ?? 'r.id';
+
+        $where_search = '';
+        if (!empty($search)) {
+            $s = $this->db->escape_like_str($search);
+            $where_search = " AND (r.id LIKE '%{$s}%' OR r.no_po LIKE '%{$s}%' OR s.nama LIKE '%{$s}%')";
+        }
+
+        $base_sql = " FROM tr_ros_header r
+          LEFT JOIN new_supplier s ON r.id_supplier = s.kode_supplier
+          WHERE r.status = '1'
+          AND (r.status_incoming IS NULL OR r.status_incoming IN ('open', 'saved'))
+          {$where_search}";
+
+        $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_sql}")->row();
+        $totalData = $total_q ? (int) $total_q->cnt : 0;
+
+        $sql = "
+        SELECT r.*, s.nama AS nm_supplier,
+               u.nm_lengkap AS draft_by_name,
+               GROUP_CONCAT(DISTINCT p.no_surat ORDER BY p.no_surat SEPARATOR ', ') AS no_surat_list
+        FROM tr_ros_header r
+        LEFT JOIN new_supplier s ON r.id_supplier = s.kode_supplier
+        LEFT JOIN tr_purchase_order p ON FIND_IN_SET(p.no_po, REPLACE(r.no_po, ' ', ''))
+        LEFT JOIN users u ON u.id_user = r.draft_by
+        WHERE r.status = '1'
+        AND (r.status_incoming IS NULL OR r.status_incoming IN ('open', 'saved'))
+        {$where_search}
+        GROUP BY r.id
+        ORDER BY {$order_by} {$order_dir}
+        LIMIT {$start}, {$length}
+        ";
+
+        $rows = $this->db->query($sql)->result_array();
+        $data = [];
+        $no   = $start + 1;
+
+        foreach ($rows as $row) {
+            $status = $row['status_incoming'];
+            $no_po_display = !empty($row['no_surat_list']) ? $row['no_surat_list'] : $row['no_po'];
+
+            // Badge status
+            if (empty($status) || $status === 'open') {
+                $sts_badge = '<span class="badge rounded-pill bg-warning text-dark">Open</span>';
+            } else {
+                $sts_badge = '<span class="badge rounded-pill bg-primary text-white">Saved</span>';
+            }
+
+            // Tombol aksi
+            $aksi = '';
+            if (empty($status) || $status === 'open') {
+                if ($ENABLE_ADD) {
+                    $aksi = '<a href="' . base_url('incoming/add/' . $row['id']) . '" 
+                            class="btn btn-sm btn-success" title="Proses Incoming">
+                            <i class="fa fa-sign-in-alt"></i> Incoming
+                         </a>';
+                }
+            } else {
+                // Status saved — tampilkan Edit, Ajukan, Print
+                $revision_info = '';
+                if (!empty($row['revision_note'])) {
+                    $revision_info = '<br><small class="text-danger"><i class="fa fa-exclamation-circle"></i> Revisi: '
+                        . htmlspecialchars($row['revision_note']) . '</small>';
+                }
+
+                $btn_edit = '<a href="' . base_url('incoming/edit_draft/' . $row['id']) . '" 
+                            class="btn btn-sm btn-warning" style="width:100px">
+                            <i class="fa fa-edit"></i> Edit
+                         </a>';
+
+                $btn_submit = '<button class="btn btn-sm btn-success btn-submit-draft" 
+                                data-id="' . $row['id'] . '" style="width:100px">
+                                <i class="fa fa-paper-plane"></i> Ajukan
+                           </button>';
+
+                $coil_ids = $this->db->query(
+                    "SELECT GROUP_CONCAT(c.id SEPARATOR '-') AS ids
+                 FROM tr_ros_material_coil c
+                 JOIN tr_ros_material m ON m.id = c.id_ros_material
+                 WHERE m.id_ros = ?",
+                    [$row['id']]
+                )->row();
+                $coil_ids_str = $coil_ids ? $coil_ids->ids : '';
+
+                $btn_print = $coil_ids_str
+                    ? '<a href="' . base_url('incoming/print_qr/' . $coil_ids_str) . '" target="_blank" 
+                      class="btn btn-sm btn-info" style="width:100px">
+                      <i class="fa fa-print"></i> Print QR
+                   </a>'
+                    : '';
+
+                $btn_print_pl = '<a href="' . base_url('incoming/print_pl_by_gudang/' . $row['id']) . '" target="_blank" 
+                                class="btn btn-sm btn-secondary" style="width:100px">
+                                <i class="fa fa-file-alt"></i> Print PL
+                             </a>';
+
+                $aksi = "<div class='d-flex flex-column align-items-center gap-1'>
+                        <div class='d-flex gap-1'>{$btn_edit} {$btn_submit}</div>
+                        <div class='d-flex gap-1'>{$btn_print} {$btn_print_pl}</div>
+                     </div>";
+
+                // Sertakan revision note di kolom No ROS
+                $row['id'] .= $revision_info;
+            }
+
+            $data[] = [
+                "<div class='text-center'>{$no}</div>",
+                $row['id'],
+                $no_po_display,
+                $row['nm_supplier'],
+                "<div class='text-right'>" . number_format((float) $row['kurs_pib'], 0, ',', '.') . "</div>",
+                "<div class='text-center'>{$sts_badge}</div>",
+                "<div class='text-center'>{$aksi}</div>",
+            ];
+            $no++;
+        }
+
+        echo json_encode([
+            'draw'            => intval($requestData['draw'] ?? 1),
+            'recordsTotal'    => $totalData,
+            'recordsFiltered' => $totalData,
+            'data'            => $data,
+        ]);
+    }
+
     // DATA TABLE — Tab OPEN
     public function data_side_incoming()
     {
@@ -1083,6 +1227,82 @@ class Incoming extends Admin_Controller
             $this->db->update('dt_trans_po');
         }
 
+        // ── Susun summary per material per gudang ────────────────────────────────
+        // $details_to_insert sudah terisi lengkap dari loop di atas
+        $summary_map = [];
+        foreach ($details_to_insert as $d) {
+            if ((float)$d['berat_bersih'] <= 0) continue;
+
+            $key = $d['id_material'] . '_' . $d['id_gudang_ke'];
+
+            if (!isset($summary_map[$key])) {
+                // Ambil snapshot qty_awal & saldo_awal dari warehouse_history
+                // (data terakhir sebelum transaksi ini — ambil dari _update_stock_and_history yang sudah jalan)
+                // Kita ambil row pertama coil material ini dari warehouse_history
+                $first_hist = $this->db->query("
+            SELECT saldo_awal, qty_stock_awal, harga_lama
+            FROM warehouse_history
+            WHERE no_ipp = ? AND id_material = ? AND id_gudang = ?
+            ORDER BY id ASC LIMIT 1
+            ", [$kode_incoming, $d['id_material'], $d['id_gudang_ke']])->row();
+
+                // Ambil saldo_akhir & qty_akhir dari row terakhir
+                $last_hist = $this->db->query("
+            SELECT saldo_akhir, qty_stock_akhir, harga_baru
+            FROM warehouse_history
+            WHERE no_ipp = ? AND id_material = ? AND id_gudang = ?
+            ORDER BY id DESC LIMIT 1
+            ", [$kode_incoming, $d['id_material'], $d['id_gudang_ke']])->row();
+
+                $summary_map[$key] = [
+                    'no_ipp'        => $kode_incoming,
+                    'id_material'   => $d['id_material'],
+                    'nm_material'   => $d['nm_material'],
+                    'id_gudang'     => $d['id_gudang_ke'],
+                    'kd_gudang'     => $d['kd_gudang_ke'],
+                    'tanggal'       => $tanggal,
+                    'jumlah_coil'   => 0,
+                    'qty_awal'      => $first_hist ? (float)$first_hist->qty_stock_awal : 0,
+                    'qty_transaksi' => 0,
+                    'qty_akhir'     => $last_hist  ? (float)$last_hist->qty_stock_akhir : 0,
+                    'costbook'      => $last_hist  ? (float)$last_hist->harga_baru      : 0,
+                    'total_harga'   => 0,
+                    'saldo_awal'    => $first_hist ? (int)$first_hist->saldo_awal       : 0,
+                    'saldo_akhir'   => $last_hist  ? (int)$last_hist->saldo_akhir       : 0,
+                    'harga_lama'    => $first_hist ? (float)$first_hist->harga_lama     : 0,
+                    'created_by'    => $this->auth->user_id(),
+                    'created_at'    => date('Y-m-d H:i:s'),
+                ];
+            }
+
+            $summary_map[$key]['jumlah_coil']++;
+            $summary_map[$key]['qty_transaksi'] += (float)$d['berat_bersih'];
+            $summary_map[$key]['total_harga']   += (float)$d['price_per_coil'];
+
+            // Insert detail snapshot coil
+            $this->db->insert('warehouse_incoming_summary_detail', [
+                'no_ipp'        => $kode_incoming,
+                'id_material'   => $d['id_material'],
+                'nm_material'   => $d['nm_material'],
+                'id_gudang'     => $d['id_gudang_ke'],
+                'kd_gudang'     => $d['kd_gudang_ke'],
+                'no_coil'       => $d['no_coil'],
+                'kode_internal' => $d['kode_internal'],
+                'gross_weight'  => $d['berat_kotor'],
+                'net_weight'    => $d['berat_bersih'],
+                'length'        => $d['panjang'],
+                'price_per_coil' => $d['price_per_coil'],
+                'cost_book'     => $d['cost_book'],
+                'status_qc'     => $d['status_qc'],
+                'created_at'    => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        // Insert summary per material
+        foreach ($summary_map as $s) {
+            $this->db->insert('warehouse_incoming_summary', $s);
+        }
+
         // Insert header incoming baru
         $supplier_row = $this->db->get_where('new_supplier', ['kode_supplier' => $ros_header->id_supplier])->row();
         $nm_supplier  = $supplier_row ? $supplier_row->nama : '';
@@ -1669,18 +1889,21 @@ class Incoming extends Admin_Controller
     public function print_qr($ids)
     {
         $array_id = explode('-', $ids);
+        $escaped_ids = implode(',', array_map('intval', $array_id));
 
         $data_coil = $this->db->query("
-            SELECT c.*, m.nm_barang, m.nm_alias, m.nm_erp,
-                   h.id as no_ros, h.nm_supplier,
-                   w.nm_gudang AS nm_gudang_tujuan,
-                   c.kd_gudang_ke
-            FROM tr_ros_material_coil c
-            JOIN tr_ros_material m  ON m.id = c.id_ros_material
-            JOIN tr_ros_header h    ON h.id = m.id_ros
-            LEFT JOIN warehouse w   ON w.id  = c.id_gudang_ke
-            WHERE c.id IN (" . implode(',', array_map('intval', $array_id)) . ")
-        ")->result_array();
+        SELECT c.*, m.nm_barang, m.nm_alias, m.nm_erp, m.id_barang,
+               h.id as no_ros, h.nm_supplier, h.incoming_date,
+               w.nm_gudang AS nm_gudang_tujuan,
+               c.kd_gudang_ke,
+               i4.thickness
+                FROM tr_ros_material_coil c
+                JOIN tr_ros_material m  ON m.id = c.id_ros_material
+                JOIN tr_ros_header h    ON h.id = m.id_ros
+                LEFT JOIN warehouse w   ON w.id  = c.id_gudang_ke
+                LEFT JOIN new_inventory_4 i4 ON i4.code_lv4 = m.id_barang
+                WHERE c.id IN ($escaped_ids)
+            ")->result_array();
 
         if (empty($data_coil)) {
             die("Data tidak ditemukan.");

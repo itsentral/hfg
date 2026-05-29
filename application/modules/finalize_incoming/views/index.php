@@ -1,3 +1,11 @@
+<?php
+$ENABLE_ADD     = has_permission('Finalize_Incoming.Add');
+$ENABLE_MANAGE  = has_permission('Finalize_Incoming.Manage');
+$ENABLE_VIEW    = has_permission('Finalize_Incoming.View');
+$ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
+
+?>
+
 <div class="card">
     <div class="card-body">
         <!-- Tab Navigation -->
@@ -47,6 +55,7 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>No. Transaksi</th>
                                     <th>No. ROS</th>
                                     <th>No. PO / Surat</th>
                                     <th>Supplier</th>
@@ -226,26 +235,35 @@
             },
             columns: [{
                     data: 0
-                }, {
+                }, // No
+                {
                     data: 1
-                }, {
+                }, // No. Transaksi
+                {
                     data: 2
-                }, {
+                }, // No. ROS
+                {
                     data: 3
-                },
+                }, // No. PO / Surat
                 {
                     data: 4
-                }, {
+                }, // Supplier
+                {
                     data: 5
-                }, {
+                }, // Tgl Finalize
+                {
                     data: 6
-                }, {
-                    data: 7,
+                }, // Kode Incoming
+                {
+                    data: 7
+                }, // Status
+                {
+                    data: 8,
                     orderable: false
-                }
+                } // Aksi
             ],
             order: [
-                [4, 'desc']
+                [5, 'desc']
             ]
         });
 
@@ -273,7 +291,6 @@
             var modal = new bootstrap.Modal(document.getElementById('modalFinalize'));
             modal.show();
 
-            // Load preview data coil
             $.ajax({
                 url: siteurl + active_controller + 'get_draft_preview',
                 type: 'POST',
@@ -295,7 +312,6 @@
                     var tglDb = res.header.incoming_date || new Date().toISOString().split('T')[0];
                     fpModalTanggal.setDate(tglDb, true);
 
-                    // Render tabel coil dengan radio QC
                     var html = '';
                     var grouped = {};
                     var coilIndex = 0;
@@ -571,6 +587,5 @@
                 });
             });
         });
-        });
-
+    });
 </script>

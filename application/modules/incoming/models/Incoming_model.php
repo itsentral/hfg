@@ -18,7 +18,13 @@ class Incoming_model extends BF_Model
         $huruf  = "INC";
         $prefix = $huruf . "-" . $tahun . "-";
 
-        $query = $this->db->query("SELECT MAX(kode_trans) AS max_id FROM tr_incoming_check WHERE kode_trans LIKE '$prefix%'");
+        $query = $this->db->query("
+        SELECT MAX(kode_trans) AS max_id 
+        FROM tr_incoming_header 
+        WHERE kode_trans LIKE ?
+        FOR UPDATE
+        ", [$prefix . '%']);
+
         $row = $query->row();
 
         if ($row && $row->max_id != null) {
