@@ -39,7 +39,7 @@ class Warehouse_model extends BF_Model
     }
 
     // ── STOCK PER COIL (index) — sumber: warehouse_stock_coil ─────────────
-    // $kd_gudang: 'PUS' = Pusat, 'PEN' = Penjualan (sesuaikan dengan data)
+    // $kd_gudang: 'PRO' = Produksi, 'SLI' = Slitting
 
     public function get_json_warehouse_stock($kd_gudang = '')
     {

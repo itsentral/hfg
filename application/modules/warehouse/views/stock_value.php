@@ -63,17 +63,17 @@
         <!-- ── Tab ───────────────────────────────────────────────────── -->
         <ul class="nav nav-tabs mb-3" id="tabStockValue" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab-sv-pusat-tab"
-                    data-bs-toggle="tab" data-bs-target="#tab-sv-pusat"
+                <button class="nav-link active" id="tab-sv-produksi-tab"
+                    data-bs-toggle="tab" data-bs-target="#tab-sv-produksi"
                     type="button" role="tab">
-                    <i class="fa fa-warehouse"></i> Gudang Pusat
+                    <i class="fa fa-warehouse"></i> Gudang Produksi
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-sv-penjualan-tab"
-                    data-bs-toggle="tab" data-bs-target="#tab-sv-penjualan"
+                <button class="nav-link" id="tab-sv-slitting-tab"
+                    data-bs-toggle="tab" data-bs-target="#tab-sv-slitting"
                     type="button" role="tab">
-                    <i class="fa fa-store"></i> Gudang Penjualan
+                    <i class="fa fa-store"></i> Gudang Slitting
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -87,10 +87,10 @@
 
         <div class="tab-content" id="tabStockValueContent">
 
-            <!-- TAB PUSAT -->
-            <div class="tab-pane fade show active" id="tab-sv-pusat" role="tabpanel">
+            <!-- TAB produksi -->
+            <div class="tab-pane fade show active" id="tab-sv-produksi" role="tabpanel">
                 <div class="table-responsive">
-                    <table id="table-sv-pusat" class="table table-bordered table-striped table-hover">
+                    <table id="table-sv-produksi" class="table table-bordered table-striped table-hover">
                         <thead class="table-primary">
                             <tr>
                                 <th width="4%">No</th>
@@ -105,8 +105,8 @@
                         </thead>
                         <tfoot>
                             <tr>
-                                <th colspan="6" class="text-end"><strong>GRAND TOTAL PUSAT</strong></th>
-                                <th class="text-end" id="grand-total-pusat">—</th>
+                                <th colspan="6" class="text-end"><strong>GRAND TOTAL PRODUKSI</strong></th>
+                                <th class="text-end" id="grand-total-produksi">—</th>
                                 <th></th>
                             </tr>
                         </tfoot>
@@ -115,10 +115,10 @@
                 </div>
             </div>
 
-            <!-- TAB PENJUALAN -->
-            <div class="tab-pane fade" id="tab-sv-penjualan" role="tabpanel">
+            <!-- TAB slitting -->
+            <div class="tab-pane fade" id="tab-sv-slitting" role="tabpanel">
                 <div class="table-responsive">
-                    <table id="table-sv-penjualan" class="table table-bordered table-striped table-hover">
+                    <table id="table-sv-slitting" class="table table-bordered table-striped table-hover">
                         <thead class="table-success">
                             <tr>
                                 <th width="4%">No</th>
@@ -133,8 +133,8 @@
                         </thead>
                         <tfoot>
                             <tr>
-                                <th colspan="6" class="text-end"><strong>GRAND TOTAL PENJUALAN</strong></th>
-                                <th class="text-end" id="grand-total-penjualan">—</th>
+                                <th colspan="6" class="text-end"><strong>GRAND TOTAL SLITTING</strong></th>
+                                <th class="text-end" id="grand-total-slitting">—</th>
                                 <th></th>
                             </tr>
                         </tfoot>
@@ -175,8 +175,8 @@
                         </label>
                         <select id="sv_hist_gudang" class="form-select form-select-sm">
                             <option value="">-- Semua --</option>
-                            <option value="PUS">Gudang Pusat</option>
-                            <option value="PEN">Gudang Penjualan</option>
+                            <option value="PRO">Gudang Produksi</option>
+                            <option value="SLI">Gudang Slitting</option>
                         </select>
                     </div>
                     <div class="col-md-3 text-end">
@@ -466,33 +466,33 @@
             };
         }
 
-        var dtPusat = $('#table-sv-pusat').DataTable(
-            dtOptions('data_side_stock_value_pusat', 'grand-total-pusat', 'PUS')
+        var dtProduksi = $('#table-sv-produksi').DataTable(
+            dtOptions('data_side_stock_value_produksi', 'grand-total-produksi', 'PRO')
         );
 
-        var dtPenjualan = null;
-        document.getElementById('tab-sv-penjualan-tab')
+        var dtSlitting = null;
+        document.getElementById('tab-sv-slitting-tab')
             .addEventListener('shown.bs.tab', function() {
-                if (!dtPenjualan) {
-                    dtPenjualan = $('#table-sv-penjualan').DataTable(
-                        dtOptions('data_side_stock_value_penjualan', 'grand-total-penjualan', 'PEN')
+                if (!dtSlitting) {
+                    dtSlitting = $('#table-sv-slitting').DataTable(
+                        dtOptions('data_side_stock_value_slitting', 'grand-total-slitting', 'SLI')
                     );
                 }
             });
 
         $('#btn-filter').on('click', function() {
-            dtPusat.ajax.reload();
-            if (dtPenjualan) dtPenjualan.ajax.reload();
+            dtProduksi.ajax.reload();
+            if (dtSlitting) dtSlitting.ajax.reload();
         });
 
         $('#btn-reset').on('click', function() {
             $('#filter_material').val('');
-            dtPusat.ajax.reload();
-            if (dtPenjualan) dtPenjualan.ajax.reload();
+            dtProduksi.ajax.reload();
+            if (dtSlitting) dtSlitting.ajax.reload();
         });
 
         $('#btn-excel').on('click', function() {
-            var kd = document.getElementById('tab-sv-pusat').classList.contains('active') ? 'PUS' : 'PEN';
+            var kd = document.getElementById('tab-sv-produksi').classList.contains('active') ? 'PRO' : 'SLI';
             window.location.href = siteurl + 'warehouse/export_excel_stock_value?kd_gudang=' + kd;
         });
 
@@ -522,8 +522,8 @@
 
             // Pilih endpoint berdasarkan gudang
             var endpoint = 'data_side_stock_value_perday';
-            if (kdGudang === 'PUS') endpoint = 'data_side_stock_value_perday_pusat';
-            if (kdGudang === 'PEN') endpoint = 'data_side_stock_value_perday_penjualan';
+            if (kdGudang === 'PRO') endpoint = 'data_side_stock_value_perday_produksi';
+            if (kdGudang === 'SLI') endpoint = 'data_side_stock_value_perday_slitting';
 
             dtHistory = $('#table-sv-history').DataTable({
                 processing: true,

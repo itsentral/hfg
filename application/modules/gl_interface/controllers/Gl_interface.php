@@ -85,6 +85,8 @@ class Gl_interface extends Admin_Controller
     // ─── POST TO ACCOUNTING (manual) ─────────────────────────────────
     public function post()
     {
+        while (ob_get_level()) ob_end_clean();
+        header('Content-Type: application/json; charset=utf-8');
         $this->auth->restrict($this->managePermission);
 
         $id = $this->input->post('id');
@@ -266,7 +268,8 @@ class Gl_interface extends Admin_Controller
                 foreach ($details as &$line) {
                     if ($line['no_perkiraan'] === '2101-01-06') {
                         $line['kredit'] = round($line['kredit'] + $selisih);
-                        $this->db->update('gl_interface_detail',
+                        $this->db->update(
+                            'gl_interface_detail',
                             ['kredit' => $line['kredit']],
                             ['id'     => $line['id']]
                         );

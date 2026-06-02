@@ -862,8 +862,8 @@ class Incoming extends Admin_Controller
     //     }
 
     //     $coa_finalize = [
-    //         'pusat'     => '1105-01-01',
-    //         'penjualan' => '1105-01-02',
+    //         'produksi'  => '1105-01-01',
+    //         'slitting'  => '1105-01-02',
     //         'intransit' => '1105-01-03',
     //     ];
 
@@ -1000,7 +1000,7 @@ class Incoming extends Admin_Controller
     //         'category'               => 'incoming material',
     //         'jumlah_mat'             => $total_berat_check,
     //         'id_gudang_dari'         => 1,
-    //         'kd_gudang_dari'         => 'PUS',
+    //         'kd_gudang_dari'         => 'PRO',
     //         'id_gudang_ke'           => null,
     //         'kd_gudang_ke'           => 'MULTI',
     //         'checked'                => 'Y',
@@ -1160,7 +1160,7 @@ class Incoming extends Admin_Controller
         unset($c);
 
         // Validasi COA
-        $coa_map = ['pusat' => '1105-01-01', 'penjualan' => '1105-01-02', 'intransit' => '1105-01-03'];
+        $coa_map = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
             echo json_encode(['status' => 3, 'pesan' => 'COA belum terdaftar: ' . implode(', ', $coa_check['not_found'])]);
@@ -1377,7 +1377,7 @@ class Incoming extends Admin_Controller
         $created_on = date('Y-m-d H:i:s');
         $user_id    = $this->auth->user_id();
 
-        $coa_map   = ['pusat' => '1105-01-01', 'penjualan' => '1105-01-02', 'intransit' => '1105-01-03'];
+        $coa_map   = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
             throw new Exception('COA tidak ditemukan: ' . implode(', ', $coa_check['not_found']));
@@ -1397,12 +1397,12 @@ class Incoming extends Admin_Controller
             if ($d['status_qc'] !== 'OK') continue;
 
             $kd         = strtoupper(trim($d['kd_gudang_ke']));
-            $coa_gudang = ($kd === 'PEN') ? $coa_map['penjualan'] : $coa_map['pusat'];
+            $coa_gudang = ($kd === 'SLI') ? $coa_map['slitting'] : $coa_map['produksi'];
 
             if (!isset($debet_per_gudang[$coa_gudang])) {
                 $debet_per_gudang[$coa_gudang] = [
                     'coa'    => $coa_gudang,
-                    'nm_coa' => ($kd === 'PEN') ? $coa_names['penjualan'] : $coa_names['pusat'],
+                    'nm_coa' => ($kd === 'SLI') ? $coa_names['slitting'] : $coa_names['produksi'],
                     'total'  => 0,
                 ];
             }
@@ -1499,8 +1499,8 @@ class Incoming extends Admin_Controller
     //     $nomor_jv   = $this->_generate_nomor_jv();
 
     //     $coa_list = [
-    //         'pusat'     => '1105-01-01',
-    //         'penjualan' => '1105-01-02',
+    //         'produksi'  => '1105-01-01',
+    //         'slitting'  => '1105-01-02',
     //         'intransit' => '1105-01-03',
     //     ];
 
@@ -1512,21 +1512,21 @@ class Incoming extends Admin_Controller
     //     $coa_names = $coa_check['names'];
 
     //     // ── Hitung total per kelompok gudang ──
-    //     $total_pusat     = 0;
-    //     $total_penjualan = 0;
+    //     $total_produksi     = 0;
+    //     $total_slitting = 0;
 
     //     foreach ($materials as $mat) {
-    //         $kd_gudang = strtoupper(trim($mat['kd_gudang_ke'] ?? 'PUS'));
+    //         $kd_gudang = strtoupper(trim($mat['kd_gudang_ke'] ?? 'PRO'));
     //         $nilai     = (float) $mat['total_persediaan'];
 
-    //         if ($kd_gudang === 'PEN') {
-    //             $total_penjualan += $nilai;
+    //         if ($kd_gudang === 'SLI') {
+    //             $total_slitting += $nilai;
     //         } else {
-    //             $total_pusat += $nilai;
+    //             $total_produksi += $nilai;
     //         }
     //     }
 
-    //     $total_debet = $total_pusat + $total_penjualan;
+    //     $total_debet = $total_produksi + $total_slitting;
     //     if ($total_debet <= 0) return;
 
     //     $this->db->trans_begin();
@@ -1552,43 +1552,43 @@ class Incoming extends Admin_Controller
     //     ]);
     //     $id_gl = $this->db->insert_id();
 
-    //     // ── DEBET 1: Persediaan Bahan Baku Pusat ──
-    //     if ($total_pusat > 0) {
+    //     // ── DEBET 1: Persediaan Bahan Baku Produksi ──
+    //     if ($total_produksi > 0) {
     //         $this->db->insert('gl_interface_detail', [
     //             'id_gl_interface' => $id_gl,
     //             'no_batch'        => $nomor_jv,
     //             'tipe'            => 'JV',
     //             'tanggal'         => $tgl_inv,
-    //             'no_perkiraan'    => $coa_list['pusat'],
+    //             'no_perkiraan'    => $coa_list['produksi'],
     //             'id_material'     => null,
     //             'nm_material'     => null,
     //             'id_gudang'       => $id_gudang_ke,
     //             'no_coil'         => null,
-    //             'keterangan'      => $keterangan . " | " . $coa_names['pusat'],
+    //             'keterangan'      => $keterangan . " | " . $coa_names['produksi'],
     //             'no_reff'         => $no_po,
     //             'no_request'      => $kode_trans,
-    //             'debet'           => round($total_pusat, 2),
+    //             'debet'           => round($total_produksi, 2),
     //             'kredit'          => 0,
     //             'created_at'      => $created_on,
     //         ]);
     //     }
 
-    //     // ── DEBET 2: Persediaan Bahan Baku Intransit Penjualan ──
-    //     if ($total_penjualan > 0) {
+    //     // ── DEBET 2: Persediaan Bahan Baku Intransit Slitting ──
+    //     if ($total_slitting > 0) {
     //         $this->db->insert('gl_interface_detail', [
     //             'id_gl_interface' => $id_gl,
     //             'no_batch'        => $nomor_jv,
     //             'tipe'            => 'JV',
     //             'tanggal'         => $tgl_inv,
-    //             'no_perkiraan'    => $coa_list['penjualan'],
+    //             'no_perkiraan'    => $coa_list['slitting'],
     //             'id_material'     => null,
     //             'nm_material'     => null,
     //             'id_gudang'       => $id_gudang_ke,
     //             'no_coil'         => null,
-    //             'keterangan'      => $keterangan . " | " . $coa_names['penjualan'],
+    //             'keterangan'      => $keterangan . " | " . $coa_names['slitting'],
     //             'no_reff'         => $no_po,
     //             'no_request'      => $kode_trans,
-    //             'debet'           => round($total_penjualan, 2),
+    //             'debet'           => round($total_slitting, 2),
     //             'kredit'          => 0,
     //             'created_at'      => $created_on,
     //         ]);
@@ -1630,7 +1630,7 @@ class Incoming extends Admin_Controller
         $no_po,
         $no_coil,
         $id_gudang = 1,
-        $kd_gudang = 'PUS',
+        $kd_gudang = 'PRO',
         $no_ros = ''
     ) {
         // ── 1. Ambil data coil dari ROS ───────────────────────────────────────
@@ -2056,7 +2056,7 @@ class Incoming extends Admin_Controller
             if ($val['status_qc'] == 'OK') {
                 $id_gudang_ke = (int) $val['id_gudang_ke'];
                 $gd           = $this->db->get_where('warehouse', ['id' => $id_gudang_ke])->row();
-                $kd_gudang_ke = $gd ? $gd->kd_gudang : 'PUS';
+                $kd_gudang_ke = $gd ? $gd->kd_gudang : 'PRO';
 
                 $nilai_coil = (int) round($aktual_bersih * $price_per_kg, 0);
 
@@ -2111,7 +2111,7 @@ class Incoming extends Admin_Controller
             'category'               => 'incoming material',
             'jumlah_mat'             => $total_berat_check,
             'id_gudang_dari'         => 1,
-            'kd_gudang_dari'         => 'PUS',
+            'kd_gudang_dari'         => 'PRO',
             'id_gudang_ke'           => null,
             'kd_gudang_ke'           => 'MULTI',
             'checked'                => 'Y',
@@ -2178,7 +2178,7 @@ class Incoming extends Admin_Controller
     }
 
     // UPDATE STOK & HISTORY
-    // private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil, $id_gudang = 1, $kd_gudang = 'PUS', $no_ros = '')
+    // private function _update_stock_and_history($id_material, $nm_material, $qty_in, $price_unit_idr, $kode_trans, $no_po, $no_coil, $id_gudang = 1, $kd_gudang = 'PRO', $no_ros = '')
     // {
     //     $get_stock = $this->db->query(
     //         "SELECT * FROM warehouse_stock WHERE id_material = ? AND id_gudang = ? LIMIT 1 FOR UPDATE",
@@ -2312,8 +2312,8 @@ class Incoming extends Admin_Controller
     //     $coa_in_transit     = '1105-01-02'; // PERSEDIAAN IN TRANSIT  → KREDIT
     //     // Gudang produksi → 1105-01-01, Gudang jualan → 1105-01-02
     //     $coa_gudang_map = [
-    //         'PUS' => '1105-01-01', // PERSEDIAAN BAHAN BAKU
-    //         'PEN' => '1105-01-02', // PERSEDIAAN BAHAN BAKU TR (gudang jualan/penjualan)
+    //         'PRO' => '1105-01-01', // PERSEDIAAN BAHAN BAKU
+    //         'SLI' => '1105-01-02', // PERSEDIAAN BAHAN BAKU
     //     ];
     //     $coa_gudang_default = '1105-01-01';
 

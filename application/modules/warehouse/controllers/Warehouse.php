@@ -17,8 +17,8 @@ class Warehouse extends Admin_Controller
     protected $managePermission = 'Warehouse.Manage';
     protected $deletePermission = 'Warehouse.Delete';
 
-    const GUDANG_PUSAT    = 'PUS';
-    const GUDANG_PENJUALAN = 'PEN';
+    const GUDANG_PRODUKSI   = 'PRO';
+    const GUDANG_SLITTING   = 'SLI';
 
     public function __construct()
     {
@@ -61,31 +61,30 @@ class Warehouse extends Admin_Controller
     }
 
     // ── SERVER SIDE — STOCK PER COIL (index) ──────────────────────────────
-    // Tab Pusat
-
-    public function data_side_stock_pusat()
+    // Tab Produksi
+    public function data_side_stock_produksi()
     {
-        $this->Warehouse_model->get_json_warehouse_stock(self::GUDANG_PUSAT);
+        $this->Warehouse_model->get_json_warehouse_stock(self::GUDANG_PRODUKSI);
     }
 
-    // Tab Penjualan
-    public function data_side_stock_penjualan()
+    // Tab Slitting
+    public function data_side_stock_slitting()
     {
-        $this->Warehouse_model->get_json_warehouse_stock(self::GUDANG_PENJUALAN);
+        $this->Warehouse_model->get_json_warehouse_stock(self::GUDANG_SLITTING);
     }
 
     // ── SERVER SIDE — STOCK VALUE PER MATERIAL ────────────────────────────
-    // Tab Pusat
+    // Tab Produksi
 
-    public function data_side_stock_value_pusat()
+    public function data_side_stock_value_produksi()
     {
-        $this->Warehouse_model->get_json_stock_value(self::GUDANG_PUSAT);
+        $this->Warehouse_model->get_json_stock_value(self::GUDANG_PRODUKSI);
     }
 
-    // Tab Penjualan
-    public function data_side_stock_value_penjualan()
+    // Tab Slitting
+    public function data_side_stock_value_slitting()
     {
-        $this->Warehouse_model->get_json_stock_value(self::GUDANG_PENJUALAN);
+        $this->Warehouse_model->get_json_stock_value(self::GUDANG_SLITTING);
     }
 
     // Backward-compat (semua gudang)
@@ -284,8 +283,8 @@ class Warehouse extends Admin_Controller
         ")->result_array();
 
         $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PUS') $label_gudang = 'Gudang Pusat';
-        if ($kd_gudang === 'PEN') $label_gudang = 'Gudang Penjualan';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -453,8 +452,8 @@ class Warehouse extends Admin_Controller
     ")->result_array();
 
         $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PUS') $label_gudang = 'Gudang Pusat';
-        if ($kd_gudang === 'PEN') $label_gudang = 'Gudang Penjualan';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -626,14 +625,14 @@ class Warehouse extends Admin_Controller
         echo json_encode($rows);
     }
 
-    public function data_side_stock_perday_pusat()
+    public function data_side_stock_perday_produksi()
     {
-        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_PUSAT);
+        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_PRODUKSI);
     }
 
-    public function data_side_stock_perday_penjualan()
+    public function data_side_stock_perday_slitting()
     {
-        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_PENJUALAN);
+        $this->Warehouse_model->get_json_warehouse_stock_perday(self::GUDANG_SLITTING);
     }
 
     public function data_side_stock_value_perday()
@@ -641,14 +640,14 @@ class Warehouse extends Admin_Controller
         $this->Warehouse_model->get_json_stock_value_perday('');
     }
 
-    public function data_side_stock_value_perday_pusat()
+    public function data_side_stock_value_perday_produksi()
     {
-        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_PUSAT);
+        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_PRODUKSI);
     }
 
-    public function data_side_stock_value_perday_penjualan()
+    public function data_side_stock_value_perday_slitting()
     {
-        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_PENJUALAN);
+        $this->Warehouse_model->get_json_stock_value_perday(self::GUDANG_SLITTING);
     }
 
     public function get_grand_total_stock_value_perday()

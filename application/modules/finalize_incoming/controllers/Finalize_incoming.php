@@ -411,7 +411,7 @@ class Finalize_incoming extends Admin_Controller
         unset($c);
 
         // Validasi COA
-        $coa_map = ['pusat' => '1105-01-01', 'penjualan' => '1105-01-02', 'intransit' => '1105-01-03'];
+        $coa_map = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
             echo json_encode(['status' => 3, 'pesan' => 'COA belum terdaftar: ' . implode(', ', $coa_check['not_found'])]);
@@ -656,7 +656,7 @@ class Finalize_incoming extends Admin_Controller
         $no_po,
         $no_coil,
         $id_gudang = 1,
-        $kd_gudang = 'PUS',
+        $kd_gudang = 'PRO',
         $no_ros = ''
     ) {
         // ── 1. Ambil data coil dari ROS ───────────────────────────────────────
@@ -917,7 +917,7 @@ class Finalize_incoming extends Admin_Controller
         $created_on = date('Y-m-d H:i:s');
         $user_id    = $this->auth->user_id();
 
-        $coa_map   = ['pusat' => '1105-01-01', 'penjualan' => '1105-01-02', 'intransit' => '1105-01-03'];
+        $coa_map   = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
             throw new Exception('COA tidak ditemukan: ' . implode(', ', $coa_check['not_found']));
@@ -937,17 +937,17 @@ class Finalize_incoming extends Admin_Controller
             if ($d['status_qc'] !== 'OK') continue;
 
             $kd         = strtoupper(trim($d['kd_gudang_ke']));
-            $coa_gudang = ($kd === 'PEN') ? $coa_map['penjualan'] : $coa_map['pusat'];
+            $coa_gudang = ($kd === 'SLI') ? $coa_map['slitting'] : $coa_map['produksi'];
 
             if (!isset($debet_per_gudang[$coa_gudang])) {
                 $debet_per_gudang[$coa_gudang] = [
                     'coa'    => $coa_gudang,
-                    'nm_coa' => ($kd === 'PEN') ? $coa_names['penjualan'] : $coa_names['pusat'],
+                    'nm_coa' => ($kd === 'SLI') ? $coa_names['slitting'] : $coa_names['produksi'],
                     'total'  => 0,
                 ];
             }
 
-            // Keduanya pakai price_per_coil → DEBET = KREDIT, selalu balance tanpa selisih
+            // Keduanya pakai price_per_coil → DEBET = KREDIT
             $debet_per_gudang[$coa_gudang]['total'] += (float) $d['price_per_coil'];
             $total_kredit                           += (float) $d['price_per_coil'];
         }

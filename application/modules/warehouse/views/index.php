@@ -7,15 +7,15 @@
         <!-- ── Tab Gudang ─────────────────────────────────────────────── -->
         <ul class="nav nav-tabs mb-3" id="tabStockCoil" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="tab-pusat-coil-tab"
-                    data-bs-toggle="tab" href="#tab-pusat-coil" role="tab">
-                    <i class="fa fa-warehouse"></i> Gudang Pusat
+                <a class="nav-link active" id="tab-produksi-coil-tab"
+                    data-bs-toggle="tab" href="#tab-produksi-coil" role="tab">
+                    <i class="fa fa-warehouse"></i> Gudang Produksi
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-penjualan-coil-tab"
-                    data-bs-toggle="tab" href="#tab-penjualan-coil" role="tab">
-                    <i class="fa fa-store"></i> Gudang Penjualan
+                <a class="nav-link" id="tab-slitting-coil-tab"
+                    data-bs-toggle="tab" href="#tab-slitting-coil" role="tab">
+                    <i class="fa fa-store"></i> Gudang Slitting
                 </a>
             </li>
             <li class="nav-item">
@@ -28,15 +28,15 @@
 
         <div class="tab-content" id="tabStockCoilContent">
 
-            <!-- TAB PUSAT -->
-            <div class="tab-pane fade show active" id="tab-pusat-coil" role="tabpanel">
+            <!-- TAB produksi -->
+            <div class="tab-pane fade show active" id="tab-produksi-coil" role="tabpanel">
                 <div class="mb-2 text-end">
-                    <button class="btn btn-success btn-sm" id="btn-excel-pusat">
+                    <button class="btn btn-success btn-sm" id="btn-excel-produksi">
                         <i class="fa fa-file-excel-o"></i> Download Excel
                     </button>
                 </div>
                 <div class="table-responsive">
-                    <table id="table-stock-pusat"
+                    <table id="table-stock-produksi"
                         class="table table-bordered table-striped table-hover">
                         <thead class="bg-blue">
                             <tr>
@@ -54,15 +54,15 @@
                 </div>
             </div>
 
-            <!-- TAB PENJUALAN -->
-            <div class="tab-pane fade" id="tab-penjualan-coil" role="tabpanel">
+            <!-- TAB slitting -->
+            <div class="tab-pane fade" id="tab-slitting-coil" role="tabpanel">
                 <div class="mb-2 text-end">
-                    <button class="btn btn-success btn-sm" id="btn-excel-penjualan">
+                    <button class="btn btn-success btn-sm" id="btn-excel-slitting">
                         <i class="fa fa-file-excel-o"></i> Download Excel
                     </button>
                 </div>
                 <div class="table-responsive">
-                    <table id="table-stock-penjualan"
+                    <table id="table-stock-slitting"
                         class="table table-bordered table-striped table-hover">
                         <thead class="bg-green">
                             <tr>
@@ -105,8 +105,8 @@
                         </label>
                         <select id="hc_gudang" class="form-select form-select-sm">
                             <option value="">-- Semua Gudang --</option>
-                            <option value="PUS">Gudang Pusat</option>
-                            <option value="PEN">Gudang Penjualan</option>
+                            <option value="PRO">Gudang Produksi</option>
+                            <option value="SLI">Gudang Slitting</option>
                         </select>
                     </div>
                     <div class="col-md-3 text-end">
@@ -227,8 +227,8 @@
             },
         ];
 
-        // ── Tab Pusat (live) ──────────────────────────────────────────────────
-        var dtPusat = $('#table-stock-pusat').DataTable({
+        // ── Tab produksi (live) ──────────────────────────────────────────────────
+        var dtProduksi = $('#table-stock-produksi').DataTable({
             processing: true,
             serverSide: true,
             destroy: true,
@@ -240,7 +240,7 @@
                 [10, 25, 50, 100]
             ],
             ajax: {
-                url: siteurl + 'warehouse/data_side_stock_pusat',
+                url: siteurl + 'warehouse/data_side_stock_produksi',
                 type: 'POST',
                 cache: false
             },
@@ -255,12 +255,12 @@
             }
         });
 
-        // ── Tab Penjualan (live, lazy) ────────────────────────────────────────
-        var dtPenjualan = null;
-        document.getElementById('tab-penjualan-coil-tab')
+        // ── Tab slitting (live, lazy) ────────────────────────────────────────
+        var dtSlitting = null;
+        document.getElementById('tab-slitting-coil-tab')
             .addEventListener('shown.bs.tab', function() {
-                if (!dtPenjualan) {
-                    dtPenjualan = $('#table-stock-penjualan').DataTable({
+                if (!dtSlitting) {
+                    dtSlitting = $('#table-stock-slitting').DataTable({
                         processing: true,
                         serverSide: true,
                         destroy: true,
@@ -272,7 +272,7 @@
                             [10, 25, 50, 100]
                         ],
                         ajax: {
-                            url: siteurl + 'warehouse/data_side_stock_penjualan',
+                            url: siteurl + 'warehouse/data_side_stock_slitting',
                             type: 'POST',
                             cache: false
                         },
@@ -372,11 +372,11 @@
             }
         });
 
-        $('#btn-excel-pusat').on('click', function() {
+        $('#btn-excel-produksi').on('click', function() {
             window.location.href = siteurl + 'warehouse/export_excel_stock_coil?kd_gudang=PUS';
         });
 
-        $('#btn-excel-penjualan').on('click', function() {
+        $('#btn-excel-slitting').on('click', function() {
             window.location.href = siteurl + 'warehouse/export_excel_stock_coil?kd_gudang=PEN';
         });
 

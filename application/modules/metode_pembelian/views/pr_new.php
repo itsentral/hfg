@@ -47,18 +47,16 @@ $ENABLE_DELETE = has_permission('Metode_Pembelian.Delete');
 		</div>
 	</div>
 
-	<div class="modal fade" id="ModalView2" style="overflow-y: auto;">
-		<div class="modal-dialog" style="width: 80%;">
+	<div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title" id="head_title2"></h4>
+					<h5 class="modal-title" id="head_title2"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="view2"></div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
@@ -88,7 +86,7 @@ $ENABLE_DELETE = has_permission('Metode_Pembelian.Delete');
 					'tipe_pr': $(this).data('tipe_pr')
 				},
 				success: function(data) {
-					$("#ModalView2").modal();
+					$("#ModalView2").modal('show');
 					$("#view2").html(data);
 				},
 				error: function() {
