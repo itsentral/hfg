@@ -273,7 +273,7 @@ class Finalize_incoming extends Admin_Controller
         $coils = $this->db->query("
             SELECT c.no_coil, c.berat_kotor, c.berat_bersih, c.panjang,
                 c.status_qc, c.kd_gudang_ke,
-                m.nm_erp AS nm_material, m.id_barang AS id_material,
+                m.nm_erp AS nm_material, m.nm_alias, m.id_barang AS id_material,
                 d.qty AS qty_po
             FROM tr_ros_material_coil c
             JOIN tr_ros_material m  ON m.id = c.id_ros_material

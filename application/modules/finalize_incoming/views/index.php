@@ -13,7 +13,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
             <li class="nav-item">
                 <a class="nav-link active" id="tab-draft-tab" data-bs-toggle="tab" href="#tab-draft" role="tab">
                     <i class="fa fa-clock"></i> Draft (Submitted)
-                    <span class="badge bg-info ms-1" id="draft-count"></span>
+                    <!-- <span class="badge bg-info ms-1" id="draft-count"></span> -->
                 </a>
             </li>
             <li class="nav-item">
@@ -196,7 +196,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                 url: siteurl + active_controller + 'data_side_draft',
                 type: 'POST',
                 dataSrc: function(json) {
-                    $('#draft-count').text(json.recordsTotal > 0 ? json.recordsTotal : '');
+                    // $('#draft-count').text(json.recordsTotal > 0 ? json.recordsTotal : '');
                     return json.data;
                 }
             },
@@ -332,7 +332,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                                     '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">' + no + '</td>' +
                                     '<td rowspan="' + rows.length + '" style="vertical-align:middle;">' +
                                     '<b>' + row.nm_material + '</b><br>' +
-                                    '<small class="text-muted">' + row.id_material + '</small>' +
+                                    '<small class="text-muted" style="font-style: italic;">' + (row.nm_alias || '') + '</small>' +
                                     '</td>' +
                                     '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">Kg</td>' +
                                     '<td class="text-end" rowspan="' + rows.length + '" style="vertical-align:middle;">' +
