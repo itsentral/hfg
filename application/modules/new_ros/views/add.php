@@ -1373,10 +1373,21 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
         $(document).on('click', '#btn_confirm_upload', function() {
             var added = 0;
+            var affectedIdx = {};
+            $.each(parsedCoils, function(i, coil) {
+                if (coil._matched_idx !== null) {
+                    affectedIdx[coil._matched_idx] = true;
+                }
+            });
+
+            $.each(affectedIdx, function(idx) {
+                materialsData[idx].coils = [];
+            });
+
+            // Isi ulang dengan coil dari file upload
             $.each(parsedCoils, function(i, coil) {
                 if (coil._matched_idx !== null) {
                     var idx = coil._matched_idx;
-                    if (!materialsData[idx].coils) materialsData[idx].coils = [];
                     materialsData[idx].coils.push({
                         no_coil: coil.no_coil,
                         berat_bersih: coil.berat_bersih,
