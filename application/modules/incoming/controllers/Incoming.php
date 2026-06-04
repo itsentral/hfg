@@ -549,6 +549,9 @@ class Incoming extends Admin_Controller
             'draft_coils'    => [],
         ];
 
+        // echo '<pre>';
+        // var_dump($data);die;
+        // echo '</pre>';
         $this->template->set($data);
         $this->template->title('Incoming Based on ROS');
         $this->template->render('form');
@@ -1949,7 +1952,7 @@ class Incoming extends Admin_Controller
                 SELECT c.id AS id_ros_coil_detail, c.no_coil,
                 c.berat_kotor AS ros_kotor, c.berat_bersih AS ros_bersih, c.panjang,
                 c.id_gudang_ke, c.kd_gudang_ke, c.status_qc,
-                b.id AS id_ros_material, b.nm_erp AS nm_material,
+                b.id AS id_ros_material, b.nm_erp AS nm_material, b.nm_alias,
                 b.id_barang AS id_material, b.unit_price_usd AS price_coil,
                 b.total_value_rp AS price_coil_idr, b.bm_rp, b.forwarding_cost,
                 d.qty AS qty_po, d.qty_in, d.id AS id_po_detail, b.id_ros AS no_ros

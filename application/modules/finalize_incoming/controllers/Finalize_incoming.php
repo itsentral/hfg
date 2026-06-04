@@ -175,7 +175,7 @@ class Finalize_incoming extends Admin_Controller
         SELECT 
             inc.kode_trans    AS kode_incoming,
             inc.no_ros        AS id_ros,
-            inc.no_po         AS no_po_display, 
+            inc.no_surat         AS no_po_display, 
             inc.nm_supplier,
             inc.created_at    AS tgl_finalize
         FROM tr_incoming_header inc
@@ -926,7 +926,7 @@ class Finalize_incoming extends Admin_Controller
 
         $supplier      = $this->db->get_where('new_supplier', ['kode_supplier' => $id_supplier])->row();
         $supplier_name = $supplier ? $supplier->nama : '-';
-        $keterangan    = "Incoming PO: {$no_surat} | ROS: {$no_ros}";
+        $keterangan    = "Incoming Material: {$no_surat} | ROS: {$no_ros} | No Incoming: {$kode_trans}";
         $nomor_jv      = $this->_generate_nomor_jv();
 
         // Hitung DEBET per gudang & KREDIT — keduanya dari price_per_coil

@@ -484,7 +484,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                     rowCounter++;
                                     rowMaterial =
                                         '<td class="text-center" style="vertical-align:top;">' + rowCounter + '</td>' +
-                                        '<td style="vertical-align:top;"><b>' + item.nm_material + '</b></td>' +
+                                        '<td style="vertical-align:top;"><b>' + item.nm_alias + '</b><br><small><i>' + item.nm_material + '</i></small></td>' +
                                         '<td class="text-right" style="vertical-align:top;">' + (parseFloat(item.qty_po) || 0).toLocaleString('id-ID') + '</td>' +
                                         '<td class="text-center" style="vertical-align:top;">Kg</td>' +
                                         '<td class="text-right" style="vertical-align:top;">' + qty_belum.toLocaleString('id-ID') + '</td>';

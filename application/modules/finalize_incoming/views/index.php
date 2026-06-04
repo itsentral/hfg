@@ -331,8 +331,8 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                                 html +=
                                     '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">' + no + '</td>' +
                                     '<td rowspan="' + rows.length + '" style="vertical-align:middle;">' +
-                                    '<b>' + row.nm_material + '</b><br>' +
-                                    '<small class="text-muted" style="font-style: italic;">' + (row.nm_alias || '') + '</small>' +
+                                    '<b>' + row.nm_alias + '</b><br>' +
+                                    '<small class="text-muted" style="font-style: italic;">' + (row.nm_material || '') + '</small>' +
                                     '</td>' +
                                     '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">Kg</td>' +
                                     '<td class="text-end" rowspan="' + rows.length + '" style="vertical-align:middle;">' +
