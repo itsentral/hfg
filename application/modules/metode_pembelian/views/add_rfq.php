@@ -1,3 +1,22 @@
+<style>
+	#my-grid3.table-striped tbody tr:nth-child(odd),
+	#my-grid3.table-striped tbody tr:nth-child(even) {
+		background-color: transparent !important;
+	}
+
+	#my-grid3 tbody tr.row-group-odd {
+		background-color: #ffffff !important;
+	}
+
+	#my-grid3 tbody tr.row-group-even {
+		background-color: #f2f2f2 !important;
+	}
+
+	#my-grid3 tbody td {
+		vertical-align: middle !important;
+	}
+</style>
+
 <form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data" autocomplete='off'>
 	<div class="card shadow-sm border-0">
 		<div class="card-body">
@@ -242,9 +261,9 @@
 			"processing": true,
 			"serverSide": true,
 			"stateSave": true,
-			"bAutoWidth": true,
+			"bAutoWidth": false,
 			"destroy": true,
-			"responsive": true,
+			"responsive": false,
 			"aaSorting": [
 				[1, "asc"]
 			],
@@ -266,10 +285,49 @@
 				},
 				cache: false,
 				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
 					$("#my-grid_processing").css("display", "none");
 				}
+			},
+			"createdRow": function(row, data, dataIndex) {
+				$(row).find('td').each(function(colIndex) {
+					var cellContent = $(this).html();
+
+					if (cellContent.indexOf('skip') === 0) {
+						$(this).remove();
+
+					} else if (cellContent.indexOf('rowspan|') === 0) {
+						var parts = cellContent.split('|');
+						var spanCount = parseInt(parts[1]);
+						var actualContent = parts.slice(2).join('|');
+						$(this).attr('rowspan', spanCount).html(actualContent);
+						$(this).css('vertical-align', 'middle');
+					}
+				});
+			},
+			"drawCallback": function(settings) {
+				// Warnai baris per grup PR setelah tabel dirender
+				var groupIndex = 0;
+				var lastNoPR = null;
+
+				$('#my-grid3 tbody tr').each(function() {
+					// Cek apakah baris ini punya cell dengan rowspan (baris pertama grup)
+					var firstTd = $(this).find('td').first();
+					var hasRowspan = firstTd.attr('rowspan') && parseInt(firstTd.attr('rowspan')) > 1;
+					var isSkipRow = $(this).find('td').length < 9; // baris lanjutan (cell sudah dihapus)
+
+					if (!isSkipRow || lastNoPR === null) {
+						if (!isSkipRow) {
+							groupIndex++;
+							lastNoPR = groupIndex;
+						}
+					}
+
+					if (groupIndex % 2 === 0) {
+						$(this).addClass('row-group-even').removeClass('row-group-odd');
+					} else {
+						$(this).addClass('row-group-odd').removeClass('row-group-even');
+					}
+				});
 			}
 		});
 	}
