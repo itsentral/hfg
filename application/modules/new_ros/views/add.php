@@ -1040,23 +1040,39 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 if (m === undefined || m === null) return;
 
                 var kg = parseFloat(m.kg_unit) || 0;
-                var total_usd = parseFloat(m.total_value_usd) || 0;
+                var unit_price = parseFloat(m.unit_price_usd) || 0;
+                var total_usd = kg * unit_price;
+
                 var total_rp = total_usd * kurs;
                 var bm_persen = parseFloat(m.bm_persen) || 0;
                 var bm_rp = total_rp * (bm_persen / 100);
 
+                // Prorate LS
                 var prorate_ls = 0;
-                if (m.ls_flag === 'YA' && total_kg_ls > 0) prorate_ls = biaya_ls * (kg / total_kg_ls);
+                if (m.ls_flag === 'YA' && total_kg_ls > 0) {
+                    prorate_ls = biaya_ls * (kg / total_kg_ls);
+                }
 
+                // Forwarding
                 var forwarding = FORWARDING_RATE * kg;
 
+                // Prorate Insurance & Others (basis: total_kg_bersih)
                 var pro_ins = (total_kg_bersih > 0) ? insurance * (kg / total_kg_bersih) : 0;
                 var pro_oth = (total_kg_bersih > 0) ? total_others * (kg / total_kg_bersih) : 0;
 
+                // Total Inventory & Cost Book
                 var total_inv = total_rp + bm_rp + prorate_ls + forwarding + pro_ins + pro_oth;
                 var cost_book = (kg > 0) ? total_inv / kg : 0;
 
-                $(this).find('.mat-kg').html(formatNum(kg, 4) + '<input type="hidden" name="mat[' + idx + '][kg_unit]" value="' + kg + '">');
+                // ── Update DOM ──
+                $(this).find('.mat-kg').html(
+                    formatNum(kg, 4) +
+                    '<input type="hidden" name="mat[' + idx + '][kg_unit]" value="' + kg + '">'
+                );
+                $(this).find('.mat-total-usd').html(
+                    formatNum(total_usd, 4) +
+                    '<input type="hidden" name="mat[' + idx + '][total_value_usd]" value="' + total_usd + '">'
+                );
                 $(this).find('.mat-total-rp').text(formatNum(total_rp, 0));
                 $(this).find('.mat-bm-rp').text(formatNum(bm_rp, 0));
                 $(this).find('.mat-prorate-ls').text(formatNum(prorate_ls, 0));
@@ -1067,6 +1083,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 $(this).find('.mat-cost-book').text(formatNum(cost_book, 0));
                 $(this).find('.mat-ls-flag').val(m.ls_flag);
 
+                // ── Akumulasi footer ──
                 sum_kg_unit += kg;
                 sum_total_usd += total_usd;
                 sum_total_rp += total_rp;
@@ -1078,6 +1095,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 sum_inv += total_inv;
             });
 
+            // ── Footer summary row ──
             $('#sum_kg_unit').text(formatNum(sum_kg_unit, 4));
             $('#sum_total_value_usd').text(formatNum(sum_total_usd, 4));
             $('#sum_total_value_rp').text(formatNum(sum_total_rp, 0));
@@ -1088,6 +1106,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('#sum_others').text(formatNum(sum_oth, 0));
             $('#sum_total_inventory').text(formatNum(sum_inv, 0));
 
+            // ── Baris Nilai PIB ──
             var nilai_pib_rp = getAutoVal('#nilai_po_pib_rp');
             var nilai_pib_usd = getAutoVal('#nilai_po_usd');
             var bm_pib = getAutoVal('#cost_bm');
@@ -1099,6 +1118,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('#foot_insurance_pib').text(formatNum(insurance, 0));
             $('#foot_others_pib').text(formatNum(total_others, 0));
 
+            // ── Baris Selisih ──
             $('#selisih_usd').text(formatNum(sum_total_usd - nilai_pib_usd, 4));
             $('#selisih_rp').text(formatNum(sum_total_rp - nilai_pib_rp, 0));
             $('#selisih_bm').text(formatNum(sum_bm - bm_pib, 2));
@@ -1260,19 +1280,19 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
             var isMatched = Math.abs(totalExcelNW - totalPoKg) < 0.01;
             var alertClass = isMatched ? 'alert-success' : 'alert-danger';
-            var matchStatusText = isMatched ? 
-                '<span class="badge bg-success" style="font-size: 13px;"><i class="fas fa-check-circle"></i> Cocok (Match)</span>' : 
+            var matchStatusText = isMatched ?
+                '<span class="badge bg-success" style="font-size: 13px;"><i class="fas fa-check-circle"></i> Cocok (Match)</span>' :
                 '<span class="badge bg-danger" style="font-size: 13px;"><i class="fas fa-times-circle"></i> Tidak Cocok</span>';
 
             var summaryHtml = '<div class="alert ' + alertClass + ' p-3 mb-3 d-flex justify-content-between align-items-center" style="font-size:14px; border-radius:6px;">' +
                 '<div>' +
-                    '<strong>Total Net Weight Excel:</strong> <span class="fw-bold">' + formatNum(totalExcelNW, 2) + ' Kg</span>' +
-                    '&nbsp;&nbsp;&nbsp;&nbsp;' +
-                    '<strong>Total Kg Unit PO:</strong> <span class="fw-bold">' + formatNum(totalPoKg, 4) + ' Kg</span>' +
+                '<strong>Total Net Weight Excel:</strong> <span class="fw-bold">' + formatNum(totalExcelNW, 2) + ' Kg</span>' +
+                '&nbsp;&nbsp;&nbsp;&nbsp;' +
+                '<strong>Total Kg Unit PO:</strong> <span class="fw-bold">' + formatNum(totalPoKg, 4) + ' Kg</span>' +
                 '</div>' +
                 '<div>' + matchStatusText + '</div>' +
                 '</div>';
-            
+
             if (!isMatched) {
                 summaryHtml += '<div class="alert alert-warning p-2 mb-3" style="font-size:12px;"><i class="fas fa-exclamation-triangle"></i> Peringatan: Total Net Weight Excel harus sama dengan Total Kg Unit PO agar dapat disimpan. Silakan sesuaikan kolom Net Weight di tabel Prorate LS atau periksa kembali file Excel Anda.</div>';
             }
@@ -1313,7 +1333,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             html += '<td colspan="3"></td>';
             html += '</tr></tfoot>';
             html += '</table></div>';
-            
+
             html += '<p class="text-muted small mt-2"><i class="fas fa-info-circle"></i> ' +
                 matchCount + ' matched, ' + (parsedCoils.length - matchCount) + ' not match.</p>';
 
