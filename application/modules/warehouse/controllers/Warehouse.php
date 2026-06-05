@@ -128,33 +128,44 @@ class Warehouse extends Admin_Controller
 
     // public function export_excel_stock_value()
     // {
-    //     $id_gudang  = $this->input->get('id_gudang');
-    //     $kd_gudang  = $this->input->get('kd_gudang');
+    //     $kd_gudang = $this->input->get('kd_gudang');
+    //     $id_gudang = $this->input->get('id_gudang');
 
-    //     $this->db->select('
-    //         ws.code_lv4 AS id_material,
+    //     $where = "WHERE ws.qty_stock > 0";
+    //     if (!empty($kd_gudang)) {
+    //         $kd     = $this->db->escape($kd_gudang);
+    //         $where .= " AND ws.kd_gudang = {$kd}";
+    //     }
+    //     if (!empty($id_gudang)) {
+    //         $where .= " AND ws.id_gudang = " . (int) $id_gudang;
+    //     }
+
+    //     $data = $this->db->query("
+    //     SELECT
+    //         ws.code_lv4     AS id_material,
     //         ws.nm_material,
+    //         ws.trade_name,
     //         ws.id_gudang,
     //         ws.kd_gudang,
     //         ws.qty_stock,
     //         ws.harga_beli,
     //         ws.total_nilai,
     //         w.nm_gudang,
-    //         COUNT(wsc.id) AS jumlah_coil
-    //     ');
-    //     $this->db->from('warehouse_stock ws');
-    //     $this->db->join('warehouse w',              'w.id = ws.id_gudang',          'left');
-    //     $this->db->join('warehouse_stock_coil wsc', 'wsc.id_material = ws.code_lv4', 'left');
-    //     $this->db->where('ws.qty_stock >', 0);
-    //     if (!empty($kd_gudang)) {
-    //         $this->db->where('ws.kd_gudang', $kd_gudang);
-    //     }
-    //     if (!empty($id_gudang)) {
-    //         $this->db->where('ws.id_gudang', $id_gudang);
-    //     }
-    //     $this->db->group_by('ws.code_lv4, ws.id_gudang');
-    //     $this->db->order_by('ws.nm_material', 'ASC');
-    //     $data = $this->db->get()->result_array();
+    //         COUNT(wsc.id)   AS jumlah_coil
+    //     FROM warehouse_stock ws
+    //     LEFT JOIN warehouse w
+    //         ON w.id = ws.id_gudang
+    //     LEFT JOIN warehouse_stock_coil wsc
+    //         ON CONVERT(wsc.id_material USING utf8mb4)
+    //         = CONVERT(ws.code_lv4    USING utf8mb4)
+    //     {$where}
+    //     GROUP BY ws.code_lv4, ws.id_gudang
+    //     ORDER BY ws.nm_material ASC
+    //     ")->result_array();
+
+    //     $label_gudang = 'Semua Gudang';
+    //     if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
+    //     if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
     //     ini_set('memory_limit', '512M');
     //     $this->load->library('PHPExcel');
@@ -163,37 +174,58 @@ class Warehouse extends Admin_Controller
     //     $sheet       = $objPHPExcel->getActiveSheet();
     //     $sheet->setTitle('Stock Value');
 
-    //     $sheet->mergeCells('A1:H1');
-    //     $sheet->setCellValue('A1', 'STOCK VALUE REPORT');
+    //     // ── Judul ─────────────────────────────────────────────────────────────
+    //     $sheet->mergeCells('A1:I1');
+    //     $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper($label_gudang));
     //     $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-    //     $sheet->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('A1')->getAlignment()
+    //         ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-    //     $sheet->mergeCells('A2:H2');
+    //     $sheet->mergeCells('A2:I2');
     //     $sheet->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
-    //     $sheet->getStyle('A2')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('A2')->getAlignment()
+    //         ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-    //     $headers = ['No', 'Kode Material', 'Nama Material', 'Gudang', 'Jumlah Coil', 'Qty Stock', 'Harga Beli (Avg)', 'Total Nilai'];
-    //     $cols    = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    //     // ── Header kolom ──────────────────────────────────────────────────────
+    //     $headers = [
+    //         'A' => 'No',
+    //         'B' => 'Kode Material',
+    //         'C' => 'Nama Material',
+    //         'D' => 'Nama Lain (Trade Name)',
+    //         'E' => 'Gudang',
+    //         'F' => 'Jumlah Coil',
+    //         'G' => 'Qty Stock (Kg)',
+    //         'H' => 'Harga Beli (Avg)',
+    //         'I' => 'Total Nilai',
+    //     ];
 
-    //     foreach ($headers as $i => $h) {
-    //         $cell = $cols[$i] . '4';
-    //         $sheet->setCellValue($cell, $h);
-    //         $sheet->getStyle($cell)->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
-    //         $sheet->getStyle($cell)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('1F4E79');
-    //         $sheet->getStyle($cell)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-    //         $sheet->getStyle($cell)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+    //     foreach ($headers as $col => $label) {
+    //         $cell = $col . '4';
+    //         $sheet->setCellValue($cell, $label);
+    //         $sheet->getStyle($cell)->getFont()->setBold(true)
+    //             ->getColor()->setRGB('FFFFFF');
+    //         $sheet->getStyle($cell)->getFill()
+    //             ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+    //             ->getStartColor()->setRGB('1F4E79');
+    //         $sheet->getStyle($cell)->getAlignment()
+    //             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //         $sheet->getStyle($cell)->getBorders()->getAllBorders()
+    //             ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
     //     }
     //     $sheet->getRowDimension(4)->setRowHeight(20);
 
+    //     // ── Lebar kolom ───────────────────────────────────────────────────────
     //     $sheet->getColumnDimension('A')->setWidth(5);
     //     $sheet->getColumnDimension('B')->setWidth(20);
-    //     $sheet->getColumnDimension('C')->setWidth(45);
-    //     $sheet->getColumnDimension('D')->setWidth(25);
-    //     $sheet->getColumnDimension('E')->setWidth(12);
-    //     $sheet->getColumnDimension('F')->setWidth(15);
-    //     $sheet->getColumnDimension('G')->setWidth(20);
+    //     $sheet->getColumnDimension('C')->setWidth(40);
+    //     $sheet->getColumnDimension('D')->setWidth(30);
+    //     $sheet->getColumnDimension('E')->setWidth(25);
+    //     $sheet->getColumnDimension('F')->setWidth(12);
+    //     $sheet->getColumnDimension('G')->setWidth(15);
     //     $sheet->getColumnDimension('H')->setWidth(20);
+    //     $sheet->getColumnDimension('I')->setWidth(20);
 
+    //     // ── Data rows ─────────────────────────────────────────────────────────
     //     $row         = 5;
     //     $grand_total = 0;
     //     $fmt_number  = '#,##0';
@@ -203,39 +235,62 @@ class Warehouse extends Admin_Controller
     //         $total_nilai = (int) round((float) $d['total_nilai']);
     //         $qty_stock   = (float) $d['qty_stock'];
     //         $jml_coil    = (int) $d['jumlah_coil'];
+    //         $trade_name  = $d['trade_name'] ?? '';
+    //         $nm_gudang   = ($d['nm_gudang'] ?? $d['kd_gudang']) . ' (' . $d['kd_gudang'] . ')';
 
-    //         $sheet->setCellValueExplicit('A' . $row, $no + 1,               PHPExcel_Cell_DataType::TYPE_NUMERIC);
-    //         $sheet->setCellValueExplicit('B' . $row, $d['id_material'],      PHPExcel_Cell_DataType::TYPE_STRING);
-    //         $sheet->setCellValueExplicit('C' . $row, $d['nm_material'],      PHPExcel_Cell_DataType::TYPE_STRING);
-    //         $sheet->setCellValueExplicit('D' . $row, $d['nm_gudang'] . ' (' . $d['kd_gudang'] . ')', PHPExcel_Cell_DataType::TYPE_STRING);
-    //         $sheet->setCellValueExplicit('E' . $row, $jml_coil,              PHPExcel_Cell_DataType::TYPE_NUMERIC);
-    //         $sheet->setCellValueExplicit('F' . $row, $qty_stock,             PHPExcel_Cell_DataType::TYPE_NUMERIC);
-    //         $sheet->setCellValueExplicit('G' . $row, $harga_beli,            PHPExcel_Cell_DataType::TYPE_NUMERIC);
-    //         $sheet->setCellValueExplicit('H' . $row, $total_nilai,           PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //         $sheet->setCellValueExplicit('A' . $row, $no + 1,           PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //         $sheet->setCellValueExplicit('B' . $row, $d['id_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValueExplicit('C' . $row, $d['nm_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValueExplicit('D' . $row, $trade_name,        PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValueExplicit('E' . $row, $nm_gudang,         PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValueExplicit('F' . $row, $jml_coil,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //         $sheet->setCellValueExplicit('G' . $row, $qty_stock,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //         $sheet->setCellValueExplicit('H' . $row, $harga_beli,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //         $sheet->setCellValueExplicit('I' . $row, $total_nilai,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
 
-    //         $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-    //         $sheet->getStyle('E' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+    //         // Border
+    //         $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
+    //             ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+    //         // Format angka
     //         $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode($fmt_number);
-    //         $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+    //         $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode('#,##0.###');
     //         $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
-    //         $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-    //         $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //         $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+
+    //         // Alignment center
+    //         $sheet->getStyle('A' . $row)->getAlignment()
+    //             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //         $sheet->getStyle('F' . $row)->getAlignment()
+    //             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+    //         // Warna selang-seling
+    //         if ($no % 2 === 0) {
+    //             $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+    //                 ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+    //                 ->getStartColor()->setRGB('EBF3FA');
+    //         }
 
     //         $grand_total += $total_nilai;
     //         $row++;
     //     }
 
-    //     // Grand total row
-    //     $sheet->mergeCells('A' . $row . ':G' . $row);
+    //     // ── Grand total ───────────────────────────────────────────────────────
+    //     $sheet->mergeCells('A' . $row . ':H' . $row);
     //     $sheet->setCellValueExplicit('A' . $row, 'GRAND TOTAL',  PHPExcel_Cell_DataType::TYPE_STRING);
-    //     $sheet->setCellValueExplicit('H' . $row, $grand_total,   PHPExcel_Cell_DataType::TYPE_NUMERIC);
-    //     $sheet->getStyle('A' . $row . ':H' . $row)->getFont()->setBold(true);
-    //     $sheet->getStyle('A' . $row . ':H' . $row)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('D9E1F2');
-    //     $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-    //     $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //     $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+    //     $sheet->setCellValueExplicit('I' . $row, $grand_total,   PHPExcel_Cell_DataType::TYPE_NUMERIC);
+    //     $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
+    //     $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+    //         ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+    //         ->getStartColor()->setRGB('D9E1F2');
+    //     $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
+    //         ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+    //     $sheet->getStyle('A' . $row)->getAlignment()
+    //         ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+    //     $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
 
-    //     $filename  = 'Stock_Value_' . date('Ymd_His') . '.xls';
+    //     // ── Output ────────────────────────────────────────────────────────────
+    //     $filename  = 'Stock_Value_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';
     //     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
     //     ob_end_clean();
     //     header('Content-Type: application/vnd.ms-excel');
@@ -260,26 +315,54 @@ class Warehouse extends Admin_Controller
         }
 
         $data = $this->db->query("
+            SELECT
+                ws.code_lv4     AS id_material,
+                ws.nm_material,
+                ws.trade_name,
+                ws.id_gudang,
+                ws.kd_gudang,
+                ws.qty_stock,
+                ws.harga_beli,
+                ws.total_nilai,
+                w.nm_gudang,
+                COUNT(wsc.id)   AS jumlah_coil
+            FROM warehouse_stock ws
+            LEFT JOIN warehouse w
+                ON w.id = ws.id_gudang
+            LEFT JOIN warehouse_stock_coil wsc
+                ON CONVERT(wsc.id_material USING utf8mb4)
+                = CONVERT(ws.code_lv4    USING utf8mb4)
+            {$where}
+            GROUP BY ws.code_lv4, ws.id_gudang
+            ORDER BY ws.nm_material ASC
+            ")->result_array();
+
+        // ── Query data coil ───────────────────────────────────────────────────────
+        $where_coil = "WHERE wsc.status = 1";
+        if (!empty($kd_gudang)) {
+            $kd          = $this->db->escape($kd_gudang);
+            $where_coil .= " AND wsc.kd_gudang = {$kd}";
+        }
+        if (!empty($id_gudang)) {
+            $where_coil .= " AND wsc.id_gudang = " . (int) $id_gudang;
+        }
+
+        $data_coil = $this->db->query("
         SELECT
-            ws.code_lv4     AS id_material,
-            ws.nm_material,
-            ws.trade_name,
-            ws.id_gudang,
-            ws.kd_gudang,
-            ws.qty_stock,
-            ws.harga_beli,
-            ws.total_nilai,
-            w.nm_gudang,
-            COUNT(wsc.id)   AS jumlah_coil
-        FROM warehouse_stock ws
-        LEFT JOIN warehouse w
-            ON w.id = ws.id_gudang
-        LEFT JOIN warehouse_stock_coil wsc
-            ON CONVERT(wsc.id_material USING utf8mb4)
-            = CONVERT(ws.code_lv4    USING utf8mb4)
-        {$where}
-        GROUP BY ws.code_lv4, ws.id_gudang
-        ORDER BY ws.nm_material ASC
+            wsc.nm_material,
+            wsc.trade_name,
+            wsc.kode_internal,
+            wsc.no_coil,
+            wsc.gross_weight,
+            wsc.net_weight,
+            wsc.length,
+            ws.harga_beli
+        FROM warehouse_stock_coil wsc
+        LEFT JOIN warehouse_stock ws
+            ON CONVERT(ws.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
+            AND ws.id_gudang = wsc.id_gudang
+        {$where_coil}
+        ORDER BY wsc.nm_material ASC, wsc.no_coil ASC
         ")->result_array();
 
         $label_gudang = 'Semua Gudang';
@@ -290,32 +373,35 @@ class Warehouse extends Admin_Controller
         $this->load->library('PHPExcel');
 
         $objPHPExcel = new PHPExcel();
-        $sheet       = $objPHPExcel->getActiveSheet();
+
+        // ══════════════════════════════════════════════════════════════════════════
+        // SHEET 1 — Stock Value
+        // ══════════════════════════════════════════════════════════════════════════
+        $sheet = $objPHPExcel->getActiveSheet();
         $sheet->setTitle('Stock Value');
 
         // ── Judul ─────────────────────────────────────────────────────────────
-        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A1:H1'); // Diubah dari I1 ke H1 karena kolom berkurang satu
         $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper($label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A2:H2');
         $sheet->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
         $sheet->getStyle('A2')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-        // ── Header kolom ──────────────────────────────────────────────────────
+        // ── Header kolom ──────────────────────────────────
         $headers = [
             'A' => 'No',
             'B' => 'Kode Material',
             'C' => 'Nama Material',
             'D' => 'Nama Lain (Trade Name)',
-            'E' => 'Gudang',
-            'F' => 'Jumlah Coil',
-            'G' => 'Qty Stock (Kg)',
-            'H' => 'Harga Beli (Avg)',
-            'I' => 'Total Nilai',
+            'E' => 'Jumlah Coil',
+            'F' => 'Qty Stock (Kg)',
+            'G' => 'Harga Beli (Avg)',
+            'H' => 'Total Nilai',
         ];
 
         foreach ($headers as $col => $label) {
@@ -338,11 +424,10 @@ class Warehouse extends Admin_Controller
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(40);
         $sheet->getColumnDimension('D')->setWidth(30);
-        $sheet->getColumnDimension('E')->setWidth(25);
-        $sheet->getColumnDimension('F')->setWidth(12);
-        $sheet->getColumnDimension('G')->setWidth(15);
-        $sheet->getColumnDimension('H')->setWidth(20);
-        $sheet->getColumnDimension('I')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(12); // Jumlah Coil
+        $sheet->getColumnDimension('F')->setWidth(15); // Qty Stock
+        $sheet->getColumnDimension('G')->setWidth(20); // Harga Beli
+        $sheet->getColumnDimension('H')->setWidth(20); // Total Nilai
 
         // ── Data rows ─────────────────────────────────────────────────────────
         $row         = 5;
@@ -355,37 +440,31 @@ class Warehouse extends Admin_Controller
             $qty_stock   = (float) $d['qty_stock'];
             $jml_coil    = (int) $d['jumlah_coil'];
             $trade_name  = $d['trade_name'] ?? '';
-            $nm_gudang   = ($d['nm_gudang'] ?? $d['kd_gudang']) . ' (' . $d['kd_gudang'] . ')';
 
             $sheet->setCellValueExplicit('A' . $row, $no + 1,           PHPExcel_Cell_DataType::TYPE_NUMERIC);
             $sheet->setCellValueExplicit('B' . $row, $d['id_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $row, $d['nm_material'],  PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('D' . $row, $trade_name,        PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('E' . $row, $nm_gudang,         PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('F' . $row, $jml_coil,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('G' . $row, $qty_stock,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('H' . $row, $harga_beli,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('I' . $row, $total_nilai,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('E' . $row, $jml_coil,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('F' . $row, $qty_stock,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('G' . $row, $harga_beli,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('H' . $row, $total_nilai,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
 
-            // Border
-            $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
+            $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()
                 ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
-            // Format angka
-            $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode($fmt_number);
-            $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode('#,##0.###');
+            $sheet->getStyle('E' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+            $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('#,##0.000'); 
+            $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode($fmt_number);
             $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
-            $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
 
-            // Alignment center
             $sheet->getStyle('A' . $row)->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('F' . $row)->getAlignment()
+            $sheet->getStyle('E' . $row)->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-            // Warna selang-seling
             if ($no % 2 === 0) {
-                $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+                $sheet->getStyle('A' . $row . ':H' . $row)->getFill()
                     ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
                     ->getStartColor()->setRGB('EBF3FA');
             }
@@ -395,18 +474,153 @@ class Warehouse extends Admin_Controller
         }
 
         // ── Grand total ───────────────────────────────────────────────────────
-        $sheet->mergeCells('A' . $row . ':H' . $row);
+        $sheet->mergeCells('A' . $row . ':G' . $row);
         $sheet->setCellValueExplicit('A' . $row, 'GRAND TOTAL',  PHPExcel_Cell_DataType::TYPE_STRING);
-        $sheet->setCellValueExplicit('I' . $row, $grand_total,   PHPExcel_Cell_DataType::TYPE_NUMERIC);
-        $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':I' . $row)->getFill()
+        $sheet->setCellValueExplicit('H' . $row, $grand_total,   PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->getStyle('A' . $row . ':H' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':H' . $row)->getFill()
             ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
             ->getStartColor()->setRGB('D9E1F2');
-        $sheet->getStyle('A' . $row . ':I' . $row)->getBorders()->getAllBorders()
+        $sheet->getStyle('A' . $row . ':H' . $row)->getBorders()->getAllBorders()
             ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $sheet->getStyle('A' . $row)->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+        $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode($fmt_number);
+
+        // ══════════════════════════════════════════════════════════════════════════
+        // SHEET 2 — Detail Coil
+        // ══════════════════════════════════════════════════════════════════════════
+        $objPHPExcel->createSheet();
+        $sheet2 = $objPHPExcel->getSheet(1);
+        $sheet2->setTitle('Detail Coil');
+
+        // ── Judul ─────────────────────────────────────────────────────────────
+        $sheet2->mergeCells('A1:J1');
+        $sheet2->setCellValue('A1', 'DETAIL COIL — ' . strtoupper($label_gudang));
+        $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet2->getStyle('A1')->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        $sheet2->mergeCells('A2:J2');
+        $sheet2->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
+        $sheet2->getStyle('A2')->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        // ── Header kolom ──────────────────────────────────────────────────────
+        $headers2 = [
+            'A' => 'No',
+            'B' => 'Nama Material',
+            'C' => 'Trade Name',
+            'D' => 'Kode Internal',
+            'E' => 'No Coil',
+            'F' => 'Gross Weight (Kg)',
+            'G' => 'Net Weight (Kg)',
+            'H' => 'Length (m)',
+            'I' => 'Costbook',
+            'J' => 'Total Value',
+        ];
+
+        foreach ($headers2 as $col => $label) {
+            $cell = $col . '4';
+            $sheet2->setCellValue($cell, $label);
+            $sheet2->getStyle($cell)->getFont()->setBold(true)
+                ->getColor()->setRGB('FFFFFF');
+            $sheet2->getStyle($cell)->getFill()
+                ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('1F4E79');
+            $sheet2->getStyle($cell)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet2->getStyle($cell)->getBorders()->getAllBorders()
+                ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        }
+        $sheet2->getRowDimension(4)->setRowHeight(20);
+
+        // ── Lebar kolom ───────────────────────────────────────────────────────
+        $sheet2->getColumnDimension('A')->setWidth(5);
+        $sheet2->getColumnDimension('B')->setWidth(40);
+        $sheet2->getColumnDimension('C')->setWidth(30);
+        $sheet2->getColumnDimension('D')->setWidth(20);
+        $sheet2->getColumnDimension('E')->setWidth(20);
+        $sheet2->getColumnDimension('F')->setWidth(18);
+        $sheet2->getColumnDimension('G')->setWidth(18);
+        $sheet2->getColumnDimension('H')->setWidth(15);
+        $sheet2->getColumnDimension('I')->setWidth(20);
+        $sheet2->getColumnDimension('J')->setWidth(20);
+
+        // ── Data rows ─────────────────────────────────────────────────────────
+        $row2              = 5;
+        $total_gross       = 0;
+        $total_net         = 0;
+        $total_length      = 0;
+        $grand_total_value = 0; 
+
+        foreach ($data_coil as $no => $c) {
+            $gross_weight = (float) $c['gross_weight'];
+            $net_weight   = (float) $c['net_weight'];  
+            $length       = (float) $c['length'];      
+            $costbook     = (int) round((float) $c['harga_beli']);
+            $total_value  = (int) round($costbook * $net_weight);
+
+            $sheet2->setCellValueExplicit('A' . $row2, $no + 1,             PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet2->setCellValueExplicit('B' . $row2, $c['nm_material'],   PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet2->setCellValueExplicit('C' . $row2, $c['trade_name'],    PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet2->setCellValueExplicit('D' . $row2, $c['kode_internal'], PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet2->setCellValueExplicit('E' . $row2, $c['no_coil'],       PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet2->setCellValueExplicit('F' . $row2, $gross_weight,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet2->setCellValueExplicit('G' . $row2, $net_weight,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet2->setCellValueExplicit('H' . $row2, $length,             PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet2->setCellValueExplicit('I' . $row2, $costbook,           PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet2->setCellValueExplicit('J' . $row2, $total_value,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+
+            $sheet2->getStyle('A' . $row2 . ':J' . $row2)->getBorders()->getAllBorders()
+                ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+            $sheet2->getStyle('F' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet2->getStyle('G' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet2->getStyle('H' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet2->getStyle('I' . $row2)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet2->getStyle('J' . $row2)->getNumberFormat()->setFormatCode('#,##0');
+
+            $sheet2->getStyle('A' . $row2)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+            if ($no % 2 === 0) {
+                $sheet2->getStyle('A' . $row2 . ':J' . $row2)->getFill()
+                    ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('EBF3FA');
+            }
+
+            $total_gross       += $gross_weight;
+            $total_net         += $net_weight;
+            $total_length      += $length;
+            $grand_total_value += $total_value;
+            $row2++;
+        }
+
+        // ── Total baris ───────────────────────────────────────────────────────
+        $sheet2->mergeCells('A' . $row2 . ':E' . $row2);
+        $sheet2->setCellValueExplicit('A' . $row2, 'TOTAL',             PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet2->setCellValueExplicit('F' . $row2, $total_gross,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet2->setCellValueExplicit('G' . $row2, $total_net,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet2->setCellValueExplicit('H' . $row2, $total_length,       PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet2->setCellValueExplicit('I' . $row2, '',                  PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet2->setCellValueExplicit('J' . $row2, $grand_total_value,  PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet2->getStyle('A' . $row2 . ':J' . $row2)->getFont()->setBold(true);
+        $sheet2->getStyle('A' . $row2 . ':J' . $row2)->getFill()
+            ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D9E1F2');
+        $sheet2->getStyle('A' . $row2 . ':J' . $row2)->getBorders()->getAllBorders()
+            ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $sheet2->getStyle('A' . $row2)->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+
+        $sheet2->getStyle('F' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet2->getStyle('G' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet2->getStyle('H' . $row2)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet2->getStyle('J' . $row2)->getNumberFormat()->setFormatCode('#,##0');
+
+        // ── Set sheet aktif ke Sheet 1 sebelum output ─────────────────────────
+        $objPHPExcel->setActiveSheetIndex(0);
 
         // ── Output ────────────────────────────────────────────────────────────
         $filename  = 'Stock_Value_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';

@@ -70,31 +70,28 @@
 				</thead>
 
 				<tbody id="listDetail">
-					<?php foreach ($permissions as $key => $pr) : ?>
+					<?php foreach ($permissions as $pr) : ?>
+						<!-- LEVEL 1 -->
 						<tr class="table-group">
 							<td class="fw-semibold text-primary">
 								<i class="ti ti-folder me-2"></i><?= $pr['nama_menu'] ?>
 							</td>
-
 							<td class="text-center">
 								<div class="form-check d-flex justify-content-center">
 									<input type="checkbox" class="form-check-input all_baris" data-id="<?= $pr['id']; ?>">
 								</div>
 							</td>
-
-							<?php
-							if (!empty($ArrActionPers[$pr['id']])) {
-								foreach ($ArrActionPers[$pr['id']] as $value6) {
-									$id_permission = $value6['id_permission'];
-									$x = explode(".", $value6['nm_permission']);
+							<?php if (!empty($ArrActionPers[$pr['id']])) : ?>
+								<?php foreach ($ArrActionPers[$pr['id']] as $value6) : ?>
+									<?php
+									$id_permission   = $value6['id_permission'];
+									$x               = explode(".", $value6['nm_permission']);
 									$id_roll_permission = (isset($auth_permissions[$id_permission]->is_role_permission) && $auth_permissions[$id_permission]->is_role_permission == 1) ? 1 : '';
-									$action_value = isset($auth_permissions[$id_permission]) ? 1 : 0;
-							?>
+									$action_value    = isset($auth_permissions[$id_permission]) ? 1 : 0;
+									?>
 									<td class="text-center">
 										<div class="form-check d-flex justify-content-center">
-											<input
-												type="checkbox"
-												name="id_permissions[]"
+											<input type="checkbox" name="id_permissions[]"
 												class="form-check-input det<?= $x[1]; ?> menuID<?= $pr['id']; ?>"
 												value="<?= $id_permission ?>"
 												title="<?= $x[0] ?>"
@@ -102,39 +99,32 @@
 												<?= ($id_roll_permission == 1) ? "disabled='disabled'" : '' ?> />
 										</div>
 									</td>
-							<?php
-								}
-							}
-							?>
+								<?php endforeach; ?>
+							<?php endif; ?>
 						</tr>
 
-						<?php
-						if (!empty($ArrPermissionDetail[$pr['id']])) {
-							foreach ($ArrPermissionDetail[$pr['id']] as $value) {
-						?>
+						<!-- LEVEL 2 -->
+						<?php if (!empty($ArrPermissionDetail[$pr['id']])) : ?>
+							<?php foreach ($ArrPermissionDetail[$pr['id']] as $value) : ?>
 								<tr>
 									<td class="ps-4">
 										<i class="ti ti-subtask me-2 text-muted"></i><?= $value['nama_menu'] ?>
 									</td>
-
 									<td class="text-center">
 										<div class="form-check d-flex justify-content-center">
 											<input type="checkbox" class="form-check-input all_baris" data-id="<?= $value['id']; ?>">
 										</div>
 									</td>
-
-									<?php
-									if (!empty($ArrActionPers[$value['id']])) {
-										foreach ($ArrActionPers[$value['id']] as $value3) {
+									<?php if (!empty($ArrActionPers[$value['id']])) : ?>
+										<?php foreach ($ArrActionPers[$value['id']] as $value3) : ?>
+											<?php
 											$x = explode(".", $value3['nm_permission']);
 											$id_roll_permission = (isset($auth_permissions[$value3['id_permission']]->is_role_permission) && $auth_permissions[$value3['id_permission']]->is_role_permission == 1) ? 1 : '';
 											$action_value = isset($auth_permissions[$value3['id_permission']]) ? 1 : 0;
-									?>
+											?>
 											<td class="text-center">
 												<div class="form-check d-flex justify-content-center">
-													<input
-														type="checkbox"
-														name="id_permissions[]"
+													<input type="checkbox" name="id_permissions[]"
 														class="form-check-input det<?= $x[1]; ?> menuID<?= $value['id']; ?>"
 														value="<?= $value3['id_permission'] ?>"
 														title="<?= $x[0] ?>"
@@ -142,15 +132,47 @@
 														<?= ($id_roll_permission == 1) ? "disabled='disabled'" : '' ?> />
 												</div>
 											</td>
-									<?php
-										}
-									}
-									?>
+										<?php endforeach; ?>
+									<?php endif; ?>
 								</tr>
-						<?php
-							}
-						}
-						?>
+
+								<!-- LEVEL 3 -->
+								<?php if (!empty($ArrPermissionDetail[$value['id']])) : ?>
+									<?php foreach ($ArrPermissionDetail[$value['id']] as $value_lv3) : ?>
+										<tr>
+											<td class="ps-5">
+												<i class="ti ti-corner-down-right me-2 text-muted"></i><?= $value_lv3['nama_menu'] ?>
+											</td>
+											<td class="text-center">
+												<div class="form-check d-flex justify-content-center">
+													<input type="checkbox" class="form-check-input all_baris" data-id="<?= $value_lv3['id']; ?>">
+												</div>
+											</td>
+											<?php if (!empty($ArrActionPers[$value_lv3['id']])) : ?>
+												<?php foreach ($ArrActionPers[$value_lv3['id']] as $value_act) : ?>
+													<?php
+													$x = explode(".", $value_act['nm_permission']);
+													$id_roll_permission = (isset($auth_permissions[$value_act['id_permission']]->is_role_permission) && $auth_permissions[$value_act['id_permission']]->is_role_permission == 1) ? 1 : '';
+													$action_value = isset($auth_permissions[$value_act['id_permission']]) ? 1 : 0;
+													?>
+													<td class="text-center">
+														<div class="form-check d-flex justify-content-center">
+															<input type="checkbox" name="id_permissions[]"
+																class="form-check-input det<?= $x[1]; ?> menuID<?= $value_lv3['id']; ?>"
+																value="<?= $value_act['id_permission'] ?>"
+																title="<?= $x[0] ?>"
+																<?= ($action_value == 1) ? "checked='checked'" : '' ?>
+																<?= ($id_roll_permission == 1) ? "disabled='disabled'" : '' ?> />
+														</div>
+													</td>
+												<?php endforeach; ?>
+											<?php endif; ?>
+										</tr>
+									<?php endforeach; ?>
+								<?php endif; ?>
+
+							<?php endforeach; ?>
+						<?php endif; ?>
 
 					<?php endforeach; ?>
 				</tbody>

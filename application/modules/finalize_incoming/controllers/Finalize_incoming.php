@@ -289,7 +289,7 @@ class Finalize_incoming extends Admin_Controller
         ]);
     }
 
-    
+
     // REVISI — Kembalikan ke incoming (status saved)
     public function revisi()
     {
@@ -321,7 +321,7 @@ class Finalize_incoming extends Admin_Controller
 
         echo json_encode(['status' => 1, 'pesan' => 'Data berhasil dikembalikan ke Incoming untuk direvisi.']);
     }
-    
+
     // FINALIZE — Proses stok + jurnal + close
     public function finalize()
     {
@@ -948,8 +948,9 @@ class Finalize_incoming extends Admin_Controller
             }
 
             // Keduanya pakai price_per_coil → DEBET = KREDIT
-            $debet_per_gudang[$coa_gudang]['total'] += (float) $d['price_per_coil'];
-            $total_kredit                           += (float) $d['price_per_coil'];
+            // Inisialisasi sebagai integer
+            $debet_per_gudang[$coa_gudang]['total'] += (int) round((float) $d['price_per_coil']);
+            $total_kredit                           += (int) round((float) $d['price_per_coil']);
         }
 
         if ($total_kredit <= 0) return;
@@ -992,8 +993,8 @@ class Finalize_incoming extends Admin_Controller
                 'keterangan'      => $ket,
                 'no_reff'         => $no_surat,
                 'no_request'      => $kode_trans,
-                'debet'           => round($debet,  2),
-                'kredit'          => round($kredit, 2),
+                'debet'           => (int) $debet,
+                'kredit'          => (int) $kredit,
                 'created_at'      => $created_on,
             ]);
         };

@@ -1525,17 +1525,17 @@ class New_ros extends Admin_Controller
         $total_inventory  = 0;
         $total_bm         = 0;
         $total_forwarding = 0;
-        $total_ls         = (float) $header['biaya_ls'];
-        $total_insurance  = (float) $header['insurance'];
+        $total_ls          = (int) round((float) $header['biaya_ls']);
+        $total_insurance   = (int) round((float) $header['insurance']);
         $total_others_val = 0;
 
         foreach ($materials as $mat) {
-            $total_inventory  += (float) $mat['total_nilai_inventory'];
-            $total_bm         += (float) $mat['bm_rp'];
-            $total_forwarding += (float) $mat['forwarding_cost'];
+            $total_inventory  += (int) round((float) $mat['total_nilai_inventory']);
+            $total_bm         += (int) round((float) $mat['bm_rp']);
+            $total_forwarding += (int) round((float) $mat['forwarding_cost']);
         }
         foreach ($others as $ot) {
-            $total_others_val += (float) $ot['nilai'];
+            $total_others_val += (int) round((float) $ot['nilai']);
         }
 
         // ── Nilai DP ──
@@ -1760,8 +1760,8 @@ class New_ros extends Admin_Controller
                 'keterangan'      => $desc,
                 'no_reff'         => $no_surat,
                 'no_request'      => $id_ros,
-                'debet'           => round($debet,  2),
-                'kredit'          => round($kredit, 2),
+                'debet'           => (int) round($debet),
+                'kredit'          => (int) round($kredit),
                 'created_at'      => $created_on,
             ]);
         };
