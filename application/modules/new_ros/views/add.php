@@ -412,7 +412,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     </tbody>
                     <tfoot>
                         <tr class="summary-row">
-                            <td colspan="5" class="text-end">Total PO</td>
+                            <td colspan="3" class="text-end fw-bold">Total PO</td>
+                            <td class="text-end fw-bold" id="sum_kg_unit">0</td>
+                            <td></td>
                             <td class="text-end" id="sum_total_value_usd">0</td>
                             <td class="text-end" id="sum_total_value_rp">0</td>
                             <td></td>
@@ -490,6 +492,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                                 <th class="text-center">N.W. (Kg)</th>
                                 <th class="text-center">G.W. (Kg)</th>
                                 <th class="text-center">Length (M)</th>
+                                <th class="text-center">BPM</th>
                             </tr>
                         </thead>
                         <tbody id="coil_result_body">
@@ -504,6 +507,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                                 <td></td>
                                 <td class="text-end fw-bold" id="total_nw">0</td>
                                 <td class="text-end fw-bold" id="total_gw">0</td>
+                                <td></td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -556,6 +560,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
     var poLoadingActive = false;
 
     $(document).ready(function() {
+        var isInit = true;
 
         // ── Init Select2 & autoNumeric ──
         $('#id_supplier').select2({
@@ -620,6 +625,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
         // SUPPLIER → Populate PO dropdown
         // ═══════════════════════════════════════════════════════════
         $('#id_supplier').on('change', function() {
+            if (isInit) return;
             var id_supplier = $(this).val();
             var $selectPo = $('#select_po');
 
@@ -663,6 +669,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
         // ── PO selection → set hidden fields + auto-load materials ──
         $('#select_po').on('change', function() {
+            if (isInit) return;
             var no_po = $(this).val();
             var no_surat = $(this).find('option:selected').text();
 
@@ -768,15 +775,20 @@ $list_po_data = isset($list_po) ? $list_po : [];
             var total_kg_ls = 0;
 
             $('#prorate_ls_body tr').each(function() {
+                var idx = $(this).data('idx');
+                if (materialsData[idx] === undefined) return;
+                var net_weight = getAutoVal($(this).find('.ls-net-weight'));
                 if ($(this).find('.ls-select').val() === 'YA') {
-                    total_kg_ls += parseFloat($(this).data('kg')) || 0;
+                    total_kg_ls += net_weight;
                 }
             });
 
             var total_prorate = 0;
             $('#prorate_ls_body tr').each(function() {
+                var idx = $(this).data('idx');
+                if (materialsData[idx] === undefined) return;
                 var ls_flag = $(this).find('.ls-select').val();
-                var net_weight = parseFloat($(this).data('kg')) || 0;
+                var net_weight = getAutoVal($(this).find('.ls-net-weight'));
                 var kg_ls = 0,
                     prorate = 0;
                 if (ls_flag === 'YA') {
@@ -795,6 +807,15 @@ $list_po_data = isset($list_po) ? $list_po : [];
         $(document).on('change', '.ls-select', function() {
             var idx = $(this).data('idx');
             if (materialsData[idx]) materialsData[idx].ls_flag = $(this).val();
+            calcProrateLS();
+            recalculate();
+        });
+        $(document).on('keyup blur change', '.ls-net-weight', function() {
+            var idx = $(this).data('idx');
+            var val = getAutoVal($(this));
+            if (materialsData[idx]) {
+                materialsData[idx].kg_unit = val;
+            }
             calcProrateLS();
             recalculate();
         });
@@ -861,9 +882,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
             var html = '';
             $.each(materialsData, function(i, m) {
                 var ls = m.ls_flag || 'YA';
-                html += '<tr data-idx="' + i + '" data-kg="' + m.kg_unit + '">';
+                html += '<tr data-idx="' + i + '">';
                 html += '<td>' + (m.nm_alias || m.nm_barang) + '</td>';
-                html += '<td class="text-end">' + formatNum(m.kg_unit, 4) + '</td>';
+                html += '<td><input type="text" class="form-control form-control-sm text-end auto_num ls-net-weight" data-idx="' + i + '" value="' + m.kg_unit + '"></td>';
                 html += '<td class="text-center"><select class="form-control form-control-sm ls-select" data-idx="' + i + '">';
                 html += '<option value="YA"' + (ls === 'YA' ? ' selected' : '') + '>YA</option>';
                 html += '<option value="TIDAK"' + (ls === 'TIDAK' ? ' selected' : '') + '>TIDAK</option>';
@@ -873,6 +894,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 html += '</tr>';
             });
             $('#prorate_ls_body').html(html || '<tr><td colspan="5" class="text-center text-muted">Belum ada material.</td></tr>');
+            initAutoNum();
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -930,6 +952,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 var nm_asli = m.nm_barang || m.nm_erp || '';
                 var nm_alias = m.nm_alias || m.nm_barang || '';
 
+                var total_inv = parseFloat(m.total_nilai_inventory) || 0;
+                var jumlah_coil = m.coils.length;
+                var price_per_coil = (jumlah_coil > 0) ? total_inv / jumlah_coil : 0;
+
                 $.each(m.coils, function(j, coil) {
                     total_nw += parseFloat(coil.berat_bersih) || 0;
                     total_gw += parseFloat(coil.berat_kotor) || 0;
@@ -945,11 +971,13 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     html += '<td class="text-end">' + formatNum(coil.berat_bersih, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.berat_kotor, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.panjang, 2) + '</td>';
+                    html += '<td class="text-end">' + formatNum(coil.bpm || 0, 2) + '</td>';
 
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][no_coil]"       value="' + coil.no_coil + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_bersih]"  value="' + coil.berat_bersih + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_kotor]"   value="' + coil.berat_kotor + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][panjang]"       value="' + coil.panjang + '">';
+                    html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][bpm]" value="' + (coil.bpm || 0) + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][kode_internal]" value="' + (coil.kode_internal || '') + '">';
 
                     html += '</tr>';
@@ -1004,6 +1032,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 sum_ins = 0,
                 sum_oth = 0,
                 sum_inv = 0;
+            var sum_kg_unit = 0;
 
             $('#data_po_body tr').each(function() {
                 var idx = $(this).data('idx');
@@ -1011,22 +1040,39 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 if (m === undefined || m === null) return;
 
                 var kg = parseFloat(m.kg_unit) || 0;
-                var total_usd = parseFloat(m.total_value_usd) || 0;
+                var unit_price = parseFloat(m.unit_price_usd) || 0;
+                var total_usd = kg * unit_price;
+
                 var total_rp = total_usd * kurs;
                 var bm_persen = parseFloat(m.bm_persen) || 0;
                 var bm_rp = total_rp * (bm_persen / 100);
 
+                // Prorate LS
                 var prorate_ls = 0;
-                if (m.ls_flag === 'YA' && total_kg_ls > 0) prorate_ls = biaya_ls * (kg / total_kg_ls);
+                if (m.ls_flag === 'YA' && total_kg_ls > 0) {
+                    prorate_ls = biaya_ls * (kg / total_kg_ls);
+                }
 
+                // Forwarding
                 var forwarding = FORWARDING_RATE * kg;
 
+                // Prorate Insurance & Others (basis: total_kg_bersih)
                 var pro_ins = (total_kg_bersih > 0) ? insurance * (kg / total_kg_bersih) : 0;
                 var pro_oth = (total_kg_bersih > 0) ? total_others * (kg / total_kg_bersih) : 0;
 
+                // Total Inventory & Cost Book
                 var total_inv = total_rp + bm_rp + prorate_ls + forwarding + pro_ins + pro_oth;
                 var cost_book = (kg > 0) ? total_inv / kg : 0;
 
+                // ── Update DOM ──
+                $(this).find('.mat-kg').html(
+                    formatNum(kg, 4) +
+                    '<input type="hidden" name="mat[' + idx + '][kg_unit]" value="' + kg + '">'
+                );
+                $(this).find('.mat-total-usd').html(
+                    formatNum(total_usd, 4) +
+                    '<input type="hidden" name="mat[' + idx + '][total_value_usd]" value="' + total_usd + '">'
+                );
                 $(this).find('.mat-total-rp').text(formatNum(total_rp, 0));
                 $(this).find('.mat-bm-rp').text(formatNum(bm_rp, 0));
                 $(this).find('.mat-prorate-ls').text(formatNum(prorate_ls, 0));
@@ -1037,6 +1083,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 $(this).find('.mat-cost-book').text(formatNum(cost_book, 0));
                 $(this).find('.mat-ls-flag').val(m.ls_flag);
 
+                // ── Akumulasi footer ──
+                sum_kg_unit += kg;
                 sum_total_usd += total_usd;
                 sum_total_rp += total_rp;
                 sum_bm += bm_rp;
@@ -1047,6 +1095,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 sum_inv += total_inv;
             });
 
+            // ── Footer summary row ──
+            $('#sum_kg_unit').text(formatNum(sum_kg_unit, 4));
             $('#sum_total_value_usd').text(formatNum(sum_total_usd, 4));
             $('#sum_total_value_rp').text(formatNum(sum_total_rp, 0));
             $('#sum_bm_rp').text(formatNum(sum_bm, 0));
@@ -1056,6 +1106,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('#sum_others').text(formatNum(sum_oth, 0));
             $('#sum_total_inventory').text(formatNum(sum_inv, 0));
 
+            // ── Baris Nilai PIB ──
             var nilai_pib_rp = getAutoVal('#nilai_po_pib_rp');
             var nilai_pib_usd = getAutoVal('#nilai_po_usd');
             var bm_pib = getAutoVal('#cost_bm');
@@ -1067,6 +1118,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('#foot_insurance_pib').text(formatNum(insurance, 0));
             $('#foot_others_pib').text(formatNum(total_others, 0));
 
+            // ── Baris Selisih ──
             $('#selisih_usd').text(formatNum(sum_total_usd - nilai_pib_usd, 4));
             $('#selisih_rp').text(formatNum(sum_total_rp - nilai_pib_rp, 0));
             $('#selisih_bm').text(formatNum(sum_bm - bm_pib, 2));
@@ -1203,40 +1255,69 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
         function showUploadReview(res) {
             parsedCoils = res.coils;
-            var html = '<p class="mb-2"><small class="text-muted">' + res.msg + '</small></p>';
-            html += '<div class="table-responsive"><table class="table table-bordered table-sm" style="font-size:11px;">';
-            // Kolom "Nama Alias" menggantikan "Nama Sesuai PO", tambah kolom "Nama Asli"
-            html += '<thead class="table-light"><tr>' +
-                '<th>No</th><th>No. Coil</th><th>Nama Alias</th><th>Nama Asli</th>' +
-                '<th>Match Material</th><th>Kode Internal</th>' +
-                '<th>N.W.</th><th>G.W.</th><th>Length</th><th>Status</th>' +
-                '</tr></thead><tbody>';
-
+            var totalExcelNW = 0;
             var matchCount = 0;
+
             $.each(parsedCoils, function(i, coil) {
-                // Gunakan nama_alias untuk matching (bukan nama_sesuai_po)
                 var matched = findMaterialMatch(coil.nama_alias);
                 coil._matched_idx = matched.idx;
                 coil._matched_name = matched.name;
 
-                // Fallback: kalau alias tidak match, coba nm_barang
                 if (matched.idx === null && coil.nm_barang) {
                     matched = findMaterialMatch(coil.nm_barang);
                     coil._matched_idx = matched.idx;
                     coil._matched_name = matched.name;
                 }
 
-                var statusBadge = matched.idx !== null ?
+                if (matched.idx !== null) matchCount++;
+                totalExcelNW += parseFloat(coil.berat_bersih) || 0;
+            });
+
+            var totalPoKg = 0;
+            $.each(materialsData, function(i, m) {
+                totalPoKg += parseFloat(m.kg_unit) || 0;
+            });
+
+            var isMatched = Math.abs(totalExcelNW - totalPoKg) < 0.01;
+            var alertClass = isMatched ? 'alert-success' : 'alert-danger';
+            var matchStatusText = isMatched ?
+                '<span class="badge bg-success" style="font-size: 13px;"><i class="fas fa-check-circle"></i> Cocok (Match)</span>' :
+                '<span class="badge bg-danger" style="font-size: 13px;"><i class="fas fa-times-circle"></i> Tidak Cocok</span>';
+
+            var summaryHtml = '<div class="alert ' + alertClass + ' p-3 mb-3 d-flex justify-content-between align-items-center" style="font-size:14px; border-radius:6px;">' +
+                '<div>' +
+                '<strong>Total Net Weight Excel:</strong> <span class="fw-bold">' + formatNum(totalExcelNW, 2) + ' Kg</span>' +
+                '&nbsp;&nbsp;&nbsp;&nbsp;' +
+                '<strong>Total Kg Unit PO:</strong> <span class="fw-bold">' + formatNum(totalPoKg, 4) + ' Kg</span>' +
+                '</div>' +
+                '<div>' + matchStatusText + '</div>' +
+                '</div>';
+
+            if (!isMatched) {
+                summaryHtml += '<div class="alert alert-warning p-2 mb-3" style="font-size:12px;"><i class="fas fa-exclamation-triangle"></i> Peringatan: Total Net Weight Excel harus sama dengan Total Kg Unit PO agar dapat disimpan. Silakan sesuaikan kolom Net Weight di tabel Prorate LS atau periksa kembali file Excel Anda.</div>';
+            }
+
+            var html = summaryHtml;
+            html += '<p class="mb-2"><small class="text-muted">' + res.msg + '</small></p>';
+            html += '<div class="table-responsive"><table class="table table-bordered table-sm" style="font-size:11px;">';
+            html += '<thead class="table-light"><tr>' +
+                '<th>No</th><th>No. Coil</th><th>Nama Alias</th><th>Nama Asli</th>' +
+                '<th>Match Material</th><th>Kode Internal</th>' +
+                '<th>N.W.</th><th>G.W.</th><th>Length</th><th>Status</th>' +
+                '</tr></thead><tbody>';
+
+            $.each(parsedCoils, function(i, coil) {
+                var matchedName = coil._matched_name || '';
+                var statusBadge = coil._matched_idx !== null ?
                     '<span class="badge bg-success">Matched</span>' :
                     '<span class="badge bg-danger">Not Match</span>';
-                if (matched.idx !== null) matchCount++;
 
-                html += '<tr class="' + (matched.idx !== null ? '' : 'table-warning') + '">' +
+                html += '<tr class="' + (coil._matched_idx !== null ? '' : 'table-warning') + '">' +
                     '<td class="text-center">' + (i + 1) + '</td>' +
                     '<td>' + coil.no_coil + '</td>' +
                     '<td>' + coil.nama_alias + '</td>' +
                     '<td>' + (coil.nm_barang || '-') + '</td>' +
-                    '<td>' + (matched.name || '<span class="text-danger">-</span>') + '</td>' +
+                    '<td>' + (matchedName || '<span class="text-danger">-</span>') + '</td>' +
                     '<td><small>' + coil.kode_internal + '</small></td>' +
                     '<td class="text-end">' + formatNum(coil.berat_bersih, 2) + '</td>' +
                     '<td class="text-end">' + formatNum(coil.berat_kotor, 2) + '</td>' +
@@ -1245,11 +1326,19 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     '</tr>';
             });
 
-            html += '</tbody></table></div>';
+            html += '</tbody>';
+            html += '<tfoot><tr class="table-secondary">';
+            html += '<td colspan="6" class="text-end fw-bold">Total Net Weight Excel</td>';
+            html += '<td class="text-end fw-bold">' + formatNum(totalExcelNW, 2) + '</td>';
+            html += '<td colspan="3"></td>';
+            html += '</tr></tfoot>';
+            html += '</table></div>';
+
             html += '<p class="text-muted small mt-2"><i class="fas fa-info-circle"></i> ' +
                 matchCount + ' matched, ' + (parsedCoils.length - matchCount) + ' not match.</p>';
 
             $('#modal_body_review').html(html);
+            $('#btn_confirm_upload').prop('disabled', !isMatched);
             $('#modalReviewUpload').modal('show');
         }
 
@@ -1284,10 +1373,21 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
         $(document).on('click', '#btn_confirm_upload', function() {
             var added = 0;
+            var affectedIdx = {};
+            $.each(parsedCoils, function(i, coil) {
+                if (coil._matched_idx !== null) {
+                    affectedIdx[coil._matched_idx] = true;
+                }
+            });
+
+            $.each(affectedIdx, function(idx) {
+                materialsData[idx].coils = [];
+            });
+
+            // Isi ulang dengan coil dari file upload
             $.each(parsedCoils, function(i, coil) {
                 if (coil._matched_idx !== null) {
                     var idx = coil._matched_idx;
-                    if (!materialsData[idx].coils) materialsData[idx].coils = [];
                     materialsData[idx].coils.push({
                         no_coil: coil.no_coil,
                         berat_bersih: coil.berat_bersih,
@@ -1410,6 +1510,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 loadCoilDataEdit();
             <?php endif; ?>
         }
+        isInit = false;
 
         // Load coil dari DB pada edit mode
         function loadCoilDataEdit() {

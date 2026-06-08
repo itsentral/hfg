@@ -120,7 +120,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									<?php endif; ?>
 
 									<?php if ($ENABLE_DELETE) : ?>
-										<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" title="Close PO"><i class="fas fa-ban"></i></button>
+										<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" data-no_surat="<?= $record->no_surat ?>" title="Close PO"><i class="fas fa-ban"></i></button>
 									<?php endif; ?>
 								</td>
 							</tr>
@@ -157,29 +157,6 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 	$(document).ready(function() {
 		$('#example1').DataTable();
 
-		// Close PO Modal Logic
-		$(document).on('click', '.close_po_modal', function() {
-			var no_po = $(this).data('no_po');
-			$.ajax({
-				type: 'POST',
-				url: siteurl + active_controller + 'close_po_modal',
-				data: {
-					'no_po': no_po
-				},
-				success: function(result) {
-					$('#ModalViewCP').html(result);
-					$('#dialog-popupCP').modal('show');
-				},
-				error: function() {
-					swal({
-						title: 'Error!',
-						text: 'Please try again later!',
-						type: 'error'
-					});
-				}
-			});
-		});
-
 		// Submit Close PO Form
 		$(document).on('submit', '#CP-frm-data', function() {
 			var data = new FormData($('#CP-frm-data')[0]);
@@ -213,6 +190,65 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 					});
 				}
 			});
+		});
+
+		// Trigger Close PO using SweetAlert Input
+		$(document).on('click', '.close_po_modal', function(e) {
+			e.preventDefault();
+			var no_po = $(this).data('no_po');
+			var no_surat = $(this).data('no_surat');
+			swal({
+					title: "Close PO?",
+					text: "Masukkan alasan untuk close " + no_surat + ":",
+					type: "input",
+					showCancelButton: true,
+					closeOnConfirm: false,
+					animation: "slide-from-top",
+					inputPlaceholder: "Tulis alasan di sini...",
+					showLoaderOnConfirm: true 
+				},
+				function(inputValue) {
+					if (inputValue === false) return false;
+
+					if (inputValue === "") {
+						swal.showInputError("Alasan closing PO wajib diisi!");
+						return false;
+					}
+
+					$.ajax({
+						type: 'POST',
+						url: siteurl + active_controller + 'close_po',
+						data: {
+							'no_po': no_po,
+							'close_po_reason': inputValue 
+						},
+						dataType: 'json',
+						success: function(result) {
+							if (result.status == 1) {
+								swal({
+									title: 'Success!',
+									text: 'PO has been closed.',
+									type: 'success'
+								}, function() {
+									location.reload();
+								});
+							} else {
+								swal({
+									title: 'Failed!',
+									text: 'PO has not been closed.',
+									type: 'warning'
+								});
+							}
+						},
+						error: function() {
+							swal({
+								title: 'Error!',
+								text: 'Please try again later!',
+								type: 'error'
+							});
+						}
+					});
+				});
 		});
 	});
 </script>

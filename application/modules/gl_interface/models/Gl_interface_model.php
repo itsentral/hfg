@@ -61,7 +61,13 @@ class Gl_interface_model extends CI_Model
 
     public function get_header($id)
     {
-        return $this->db->get_where('gl_interface', ['id' => $id])->row_array();
+        return $this->db
+            ->select('gl_interface.*, users.nm_lengkap')
+            ->from('gl_interface')
+            ->join('users', 'users.id_user = gl_interface.user_id', 'left')
+            ->where('gl_interface.id', $id)
+            ->get()
+            ->row_array();
     }
 
     public function get_details($id)

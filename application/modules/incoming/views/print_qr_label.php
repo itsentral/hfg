@@ -12,6 +12,11 @@
             .page-break {
                 page-break-after: always;
             }
+
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         body {
@@ -42,6 +47,19 @@
         .qr-code {
             float: right;
             margin-left: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .thickness-badge {
+            position: absolute;
+            bottom: -7px;
+            right: 0;
+            background-color: #fff;
+            padding: 1px 6px;
+            font-size: 7px;
+            font-weight: bold;
+            text-align: center;
         }
 
         .info-table td {
@@ -70,7 +88,14 @@
                 <?php
                 require_once APPPATH . 'third_party/phpqrcode/qrlib.php';
 
-                $qr_content = $row['kode_internal'];
+                $kode_internal = $row['kode_internal'];
+                if (!empty($row['incoming_date'])) {
+                    $tgl_in = date('d-m-Y', strtotime($row['incoming_date']));
+                } else {
+                    $tgl_in = '-';
+                }
+                $gudang = !empty($row['nm_gudang_tujuan']) ? $row['nm_gudang_tujuan'] : '-';
+                $qr_content = $kode_internal . '/' . $tgl_in . '/' . $gudang;
 
                 ob_start();
                 QRcode::png($qr_content, null, QR_ECLEVEL_M, 4, 1);
@@ -79,7 +104,13 @@
 
                 $base64 = base64_encode($imageData);
                 ?>
-                <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px;">
+                <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px; display: block;">
+
+                <?php if (!empty($row['thickness'])): ?>
+                    <div class="thickness-badge">
+                        <?= $row['thickness'] ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <table class="info-table">
@@ -88,20 +119,18 @@
                     <td>: <?= $row['no_ros'] ?></td>
                 </tr>
                 <tr>
-                    <td><b>Supplier</b></td>
-                    <td>: <?= $row['nm_supplier'] ?></td>
-                </tr>
-                <tr>
-                    <td><b>Material</b></td>
-                    <td>: <?= $row['nm_erp'] ?></td>
-                </tr>
-                <tr>
-                    <td><b>Nama Alias</b></td>
-                    <td>: <?= $row['nm_alias'] ?></td>
-                </tr>
-                <tr>
-                    <td><b>No. Coil</b></td>
-                    <td>: <?= $row['no_coil'] ?></td>
+                    <td><b>Nama</b></td>
+                    <td>:
+                        <?php
+                        $nama_asli = $row['nm_alias'];
+
+                        $search = ['NON BORON ', 'BORON ', 'AZ70-'];
+                        $nama_bersih = str_replace($search, '', $nama_asli);
+                        $nama_bersih = rtrim($nama_bersih, '-');
+
+                        echo strtoupper($nama_bersih);
+                        ?>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>Kode Internal</b></td>
@@ -112,8 +141,18 @@
                     <td>: <?= number_format($row['berat_bersih'], 2) ?> Kg</td>
                 </tr>
                 <tr>
+                    <td><b>Gross Weight</b></td>
+                    <td>: <?= number_format($row['berat_kotor'], 2) ?> Kg</td>
+                </tr>
+                <tr>
                     <td><b>Gudang Tujuan</b></td>
-                    <td>: <?= !empty($row['nm_gudang_tujuan']) ? $row['nm_gudang_tujuan'] . ' (' . $row['kd_gudang_ke'] . ')' : '-' ?></td>
+                    <td>
+                        : <?= !empty($row['nm_gudang_tujuan']) ? $row['nm_gudang_tujuan'] . ' (' . $row['kd_gudang_ke'] . ')' : '-' ?>
+
+                        <?php if ($row['id_gudang_ke'] == 1): ?>
+                            <span style="display: inline-block; width: 12px; height: 12px; background-color: black; border-radius: 50%; margin-left: 1px; vertical-align: middle;"></span>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             </table>
             <div class="clear"></div>

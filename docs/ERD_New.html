@@ -1,0 +1,324 @@
+<style>
+  #erd-wrap {
+    padding: 8px 0;
+  }
+
+  #erd svg {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 14px 0 6px;
+  }
+
+  .leg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .leg-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+</style>
+<div id="erd-wrap">
+  <div class="legend">
+    <div class="leg">
+      <div class="leg-dot" style="background:#1abc9c"></div>Modul ROS
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#2980b9"></div>Modul Incoming
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#e67e22"></div>Modul GL Interface
+    </div>
+    <div class="leg">
+      <div class="leg-dot" style="background:#8e44ad"></div>Modul Warehouse
+    </div>
+  </div>
+  <div id="erd"></div>
+</div>
+<script type="module">
+  import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  await document.fonts.ready;
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    themeVariables: {
+      darkMode: dark,
+      fontSize: '12px',
+      fontFamily: '"Anthropic Sans", sans-serif',
+      lineColor: dark ? '#9c9a92' : '#73726c',
+      textColor: dark ? '#c2c0b6' : '#3d3d3a',
+      primaryColor: dark ? '#1e3a2f' : '#e8f8f5',
+      primaryBorderColor: dark ? '#1abc9c' : '#1abc9c',
+      primaryTextColor: dark ? '#9fe1cb' : '#0f6e56',
+      secondaryColor: dark ? '#1a2e40' : '#eaf2f8',
+      tertiaryColor: dark ? '#2d1f3d' : '#f4ecf7',
+      edgeLabelBackground: dark ? '#2a2a28' : '#ffffff',
+    },
+    er: {
+      diagramPadding: 30,
+      layoutDirection: 'TB',
+      minEntityWidth: 120,
+      minEntityHeight: 36,
+      entityPadding: 14,
+      useMaxWidth: true,
+    }
+  });
+
+  const diagram = `erDiagram
+  tr_ros_header {
+    varchar id PK "NROS-MM-YY-000001"
+    varchar id_supplier
+    varchar no_po
+    decimal nilai_po_usd
+    decimal kurs_pib
+    decimal cost_bm
+    decimal biaya_ls
+    decimal insurance
+    tinyint status "0=Draft 1=Final"
+    varchar status_incoming "saved/submitted/closed"
+  }
+  tr_ros_material {
+    int id PK
+    varchar id_ros FK
+    varchar id_barang
+    decimal kg_unit
+    decimal bm_persen
+    decimal total_nilai_inventory
+    decimal cost_book "total_nilai/kg_unit"
+  }
+  tr_ros_material_coil {
+    int id PK
+    int id_ros_material FK
+    varchar no_coil
+    decimal berat_bersih
+    decimal panjang
+    varchar kode_internal
+    int id_gudang_ke
+    varchar status_qc "OK/NG"
+    decimal price_per_coil
+  }
+  tr_ros_others {
+    int id PK
+    varchar id_ros FK
+    varchar keterangan
+    decimal nilai
+  }
+  tr_ros_upload_temp {
+    int id PK
+    varchar id_ros FK
+    varchar session_id
+    varchar no_coil
+    tinyint is_matched
+  }
+  tr_incoming_header {
+    varchar kode_trans PK "INC-YYMM-000001"
+    varchar no_ros FK
+    varchar no_po
+    varchar nm_supplier
+    date tanggal
+    decimal total_berat_bersih
+    decimal total_nilai
+    varchar status "finalized"
+  }
+  tr_incoming_detail {
+    int id PK
+    varchar kode_trans FK
+    int id_ros_material_coil FK
+    varchar id_material
+    varchar no_coil
+    decimal berat_bersih
+    decimal price_per_coil
+    decimal cost_book
+    varchar status_qc
+    int id_gudang_ke
+  }
+  gl_interface {
+    int id PK
+    varchar nomor "101-AJVyymm+urut"
+    date tgl
+    varchar jenis_transaksi "incoming/ros"
+    varchar status "pending/posted"
+    json memo "supplier reff ros"
+  }
+  gl_interface_detail {
+    int id PK
+    int id_gl_interface FK
+    varchar no_perkiraan "COA"
+    decimal debet
+    decimal kredit
+    varchar no_reff
+    varchar no_request
+  }
+  warehouse_stock {
+    int id PK
+    varchar code_lv4
+    int id_gudang
+    decimal qty_stock
+    decimal harga_beli "moving avg"
+    decimal total_nilai
+    decimal qty_booking
+    decimal qty_free
+  }
+  warehouse_stock_coil {
+    int id PK
+    varchar id_material
+    varchar no_coil
+    int id_gudang
+    decimal net_weight
+    varchar no_ipp
+    varchar no_ros
+  }
+  warehouse_history {
+    int id PK
+    varchar id_material
+    int id_gudang
+    varchar no_coil
+    varchar no_ipp
+    decimal qty_stock_awal
+    decimal qty_stock_akhir
+    decimal saldo_awal
+    decimal saldo_akhir
+    decimal harga_baru
+  }
+  warehouse_incoming_summary {
+    int id PK
+    varchar no_ipp FK
+    varchar id_material
+    int id_gudang
+    int jumlah_coil
+    decimal qty_transaksi
+    decimal costbook
+    decimal saldo_akhir
+  }
+  warehouse_incoming_summary_detail {
+    int id PK
+    varchar no_ipp FK
+    varchar no_coil
+    decimal net_weight
+    decimal price_per_coil
+    varchar status_qc
+  }
+  kartu_stok {
+    int id PK
+    varchar no_transaksi
+    varchar code_lv4
+    int id_gudang
+    decimal qty_transaksi
+    decimal qty_akhir
+    decimal harga_stok
+    varchar status_transaksi "in/out"
+  }
+
+  tr_ros_header ||--o{ tr_ros_material : "1:N id_ros"
+  tr_ros_header ||--o{ tr_ros_others : "1:N id_ros"
+  tr_ros_header ||--o{ tr_ros_upload_temp : "1:N id_ros"
+  tr_ros_material ||--o{ tr_ros_material_coil : "1:N id_ros_material"
+  tr_ros_header ||--|| tr_incoming_header : "1:1 no_ros"
+  tr_ros_material_coil ||--|| tr_incoming_detail : "1:1 id_ros_material_coil"
+  tr_incoming_header ||--o{ tr_incoming_detail : "1:N kode_trans"
+  tr_ros_header ||--o| gl_interface : "1:1 close-ROS"
+  tr_incoming_header ||--|| gl_interface : "1:1 finalize"
+  gl_interface ||--o{ gl_interface_detail : "1:N id_gl_interface"
+  tr_incoming_header ||--o{ warehouse_incoming_summary : "1:N no_ipp"
+  tr_incoming_header ||--o{ warehouse_incoming_summary_detail : "1:N no_ipp"
+  tr_incoming_detail }o--|| warehouse_stock : "N:1 update stok"
+  tr_incoming_detail ||--|| warehouse_stock_coil : "1:1 per coil"
+  tr_incoming_detail ||--|| warehouse_history : "1:1 per coil"
+  tr_incoming_detail }o--|| kartu_stok : "N:1 ledger"
+`;
+
+  const { svg } = await mermaid.render('erd-svg', diagram);
+  document.getElementById('erd').innerHTML = svg;
+
+  await new Promise(r => setTimeout(r, 80));
+
+  document.querySelectorAll('#erd svg.erDiagram .node').forEach(node => {
+    const firstPath = node.querySelector('path[d]');
+    if (!firstPath) return;
+    const d = firstPath.getAttribute('d');
+    const nums = d.match(/-?[\d.]+/g)?.map(Number);
+    if (!nums || nums.length < 8) return;
+    const xs = [nums[0], nums[2], nums[4], nums[6]];
+    const ys = [nums[1], nums[3], nums[5], nums[7]];
+    const x = Math.min(...xs), y = Math.min(...ys);
+    const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', w); rect.setAttribute('height', h);
+    rect.setAttribute('rx', '8');
+    for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+      if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+    }
+    firstPath.replaceWith(rect);
+  });
+
+  document.querySelectorAll('#erd svg.erDiagram .row-rect-odd path, #erd svg.erDiagram .row-rect-even path').forEach(p => {
+    p.setAttribute('stroke', 'none');
+  });
+
+  const entityColors = {
+    tr_ros_header: '#1abc9c',
+    tr_ros_material: '#1abc9c',
+    tr_ros_material_coil: '#1abc9c',
+    tr_ros_others: '#1abc9c',
+    tr_ros_upload_temp: '#1abc9c',
+    tr_incoming_header: '#2980b9',
+    tr_incoming_detail: '#2980b9',
+    gl_interface: '#e67e22',
+    gl_interface_detail: '#e67e22',
+    warehouse_stock: '#8e44ad',
+    warehouse_stock_coil: '#8e44ad',
+    warehouse_history: '#8e44ad',
+    warehouse_incoming_summary: '#8e44ad',
+    warehouse_incoming_summary_detail: '#8e44ad',
+    kartu_stok: '#8e44ad',
+  };
+
+  const svgEl = document.querySelector('#erd svg');
+  if (svgEl) {
+    svgEl.querySelectorAll('.label-container, .entityLabel').forEach(el => {
+      const id = el.closest('g[id]')?.id || '';
+      const name = Object.keys(entityColors).find(k => id.includes(k));
+      if (name) {
+        const color = entityColors[name];
+        const rect = el.querySelector('rect') || el;
+        if (rect.tagName === 'rect') {
+          rect.setAttribute('fill', color);
+          rect.setAttribute('stroke', color);
+        }
+      }
+    });
+
+    svgEl.querySelectorAll('g.er').forEach(g => {
+      const gId = g.getAttribute('id') || '';
+      const name = Object.keys(entityColors).find(k => gId.includes(k));
+      if (!name) return;
+      const color = entityColors[name];
+      const headerRect = g.querySelector('rect:first-of-type');
+      if (headerRect) {
+        headerRect.setAttribute('fill', color);
+        headerRect.setAttribute('stroke', color);
+        const alpha = dark ? '33' : '15';
+        const fillRect = g.querySelectorAll('rect')[1];
+        if (fillRect) fillRect.setAttribute('fill', color + alpha);
+      }
+      const titleText = g.querySelector('text.er.entityLabel');
+      if (titleText) titleText.setAttribute('fill', '#ffffff');
+    });
+  }
+</script>

@@ -58,9 +58,9 @@ if ($tanda != 'request') { ?>
         <tbody>
             <?php
             if (isset($detail_ros) && !empty($detail_ros)) {
-                // 1. Grouping data berdasarkan id_po_detail atau code_product
                 $grouped_data = [];
                 foreach ($detail_ros as $item) {
+                    // group by id_po_detail supaya rowspan per material tetap benar
                     $grouped_data[$item['id_po_detail']][] = $item;
                 }
 
@@ -70,18 +70,17 @@ if ($tanda != 'request') { ?>
                         echo "<tr>";
 
                         if ($index === 0) {
-                            // Kolom yang hanya muncul di baris pertama tiap grup material (Parent)
                             $rowspan = count($rows);
                             echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>$no</td>";
                             echo "<td align='left' rowspan='$rowspan' style='vertical-align:middle;'>
-                                    <b>{$valx['nm_barang']}</b><br>
-                                    <small>{$valx['id_barang']}</small>
-                                  </td>";
-                            echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>" . ucfirst($valx['unit_measure']) . "</td>";
-                            echo "<td align='right' rowspan='$rowspan' style='vertical-align:middle;'>" . number_format($valx['qty_order'], 2) . "</td>";
+                        <b>{$valx['nm_barang']}</b><br>
+                        <small>{$valx['id_barang']}</small>
+                        " . (!empty($valx['trade_name']) ? "<br><small class='text-muted'>{$valx['trade_name']}</small>" : "") . "
+                      </td>";
+                            echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>" . ucfirst($valx['unit_measure'] ?? '-') . "</td>";
+                            echo "<td align='right' rowspan='$rowspan' style='vertical-align:middle;'>" . number_format($valx['qty_order'] ?? 0, 2) . "</td>";
                         }
 
-                        // Kolom Data ROS yang muncul di setiap baris (Child)
                         echo "<td align='center' style='background-color: #f9f9f9;'>{$valx['no_coil']}</td>";
                         echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format($valx['berat_kotor'], 2) . "</td>";
                         echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format($valx['berat_bersih'], 2) . "</td>";

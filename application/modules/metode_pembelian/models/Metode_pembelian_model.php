@@ -628,9 +628,9 @@ class Metode_pembelian_model extends BF_Model
 		$urut2  = 0;
 
 		foreach ($query->result_array() as $row) {
-			$total_data     = $totalData;
-			$start_dari     = $requestData['start'];
-			$asc_desc       = $requestData['order'][0]['dir'];
+			$total_data = $totalData;
+			$start_dari = $requestData['start'];
+			$asc_desc   = $requestData['order'][0]['dir'];
 			if ($asc_desc == 'asc') {
 				$nomor = $urut1 + $start_dari;
 			}
@@ -638,18 +638,7 @@ class Metode_pembelian_model extends BF_Model
 				$nomor = ($total_data - $start_dari) - $urut2;
 			}
 
-			$username = $this->auth->user_name();
-
-			// $CHECK = ($username == $row['checklist_by'] and $row['checklist'] == '1') ? 'checked' : '';
-
-			$nestedData 	= array();
-			$nestedData[]	= "<div align='center'><center><input type='checkbox' name='check[]' class='chk_personal' data-nomor='" . $nomor . "' value='" . $row['no_pr'] . "' ></center><input type='hidden' name='category_" . $row['no_pr'] . "' value='" . $row['category'] . "'></div>";
-			$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
-
-			$list_barang = '';
-			$list_qty = '';
-			$nm_lain = '';
+			// Ambil list barang (sama seperti sebelumnya)
 			if ($row['category'] == 'pr material' || $row['category'] == 'pr stok') {
 				if ($row['category'] == 'pr stok') {
 					$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty, "" as nm_lain');
@@ -683,26 +672,9 @@ class Metode_pembelian_model extends BF_Model
 			}
 
 			$total_item = count($get_list_barang);
+			if ($total_item == 0) $total_item = 1; // hindari rowspan 0
 
-			foreach ($get_list_barang as $key => $barang) :
-
-				$is_last = ($key == $total_item - 1);
-				$style = $is_last
-					? "padding:4px 0;"
-					: "border-bottom:1px solid #ddd; padding:4px 0;";
-
-				$list_barang .= "<div style='{$style}'>" . $barang['nm_barang'] . "</div>";
-
-				$nm_lain .= "<div style='{$style}'>" . $barang['nm_lain'] . "</div>";
-
-				$list_qty .= "<div style='{$style}; text-align:right; font-weight:bold;'>"
-					. number_format($barang['qty']) .
-					"</div>";
-
-			endforeach;
-			$nestedData[]	= "<div align='left'>" . $list_barang . "</div>";
-			$nestedData[]	= "<div align='left'>" . $nm_lain . "</div>";
-			$nestedData[] = "<div align='center'>" . $list_qty . "</div>";
+			// Warna badge category
 			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {
@@ -713,20 +685,56 @@ class Metode_pembelian_model extends BF_Model
 				$warna = '#1bb885';
 			}
 
-			$category = $row['category'];
-			if ($category == 'pr stok') {
-				$category = 'pr stok';
+			$category_label = strtoupper($row['category']);
+
+			// Kolom yang pakai rowspan (hanya di baris pertama per PR)
+			$col_checkbox    = "<div align='center'>
+                            <input type='checkbox' name='check[]' class='chk_personal' 
+                                data-nomor='{$nomor}' value='{$row['no_pr']}'>
+                            <input type='hidden' name='category_{$row['no_pr']}' value='{$row['category']}'>
+                        </div>";
+			$col_no_pr       = "<div align='center'>{$row['no_pr']}</div>";
+			$col_tgl_pr      = "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
+			$col_category    = "<div align='center'><span class='badge' style='background-color:{$warna};'>{$category_label}</span></div>";
+			$col_dibutuhkan  = "<div align='center'>" . date('d F Y', strtotime($row['tgl_pr'])) . "</div>";
+			$col_request_by  = "<div align='center'>" . strtoupper($row['request_by']) . "</div>";
+			$col_request_date = "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['request_date'])) . "</div>";
+
+			foreach ($get_list_barang as $key => $barang) {
+				$nestedData = array();
+
+				if ($key == 0) {
+					// Baris pertama: tampilkan kolom rowspan dengan prefix "rowspan|jumlah|konten"
+					$nestedData[] = "rowspan|{$total_item}|" . $col_checkbox;
+					$nestedData[] = "rowspan|{$total_item}|" . $col_no_pr;
+					$nestedData[] = "rowspan|{$total_item}|" . $col_tgl_pr;
+				} else {
+					// Baris berikutnya: skip kolom rowspan
+					$nestedData[] = "skip";
+					$nestedData[] = "skip";
+					$nestedData[] = "skip";
+				}
+
+				// Kolom per item (tidak pakai rowspan)
+				$nestedData[] = "<div style='padding:4px 6px;'>" . $barang['nm_barang'] . "</div>";
+				$nestedData[] = "<div style='padding:4px 6px;'>" . $barang['nm_lain'] . "</div>";
+				$nestedData[] = "<div style='padding:4px 6px; text-align:right; font-weight:bold;'>" . number_format($barang['qty']) . "</div>";
+
+				if ($key == 0) {
+					$nestedData[] = "rowspan|{$total_item}|" . $col_category;
+					$nestedData[] = "rowspan|{$total_item}|" . $col_dibutuhkan;
+					$nestedData[] = "rowspan|{$total_item}|" . $col_request_by;
+					$nestedData[] = "rowspan|{$total_item}|" . $col_request_date;
+				} else {
+					$nestedData[] = "skip";
+					$nestedData[] = "skip";
+					$nestedData[] = "skip";
+					$nestedData[] = "skip";
+				}
+
+				$data[] = $nestedData;
 			}
 
-			if ($category == 'pr departemen') {
-				$category = 'pr departemen';
-			}
-
-			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
-			$nestedData[]	= "<div align='center'>" . date('d F Y', strtotime($row['tgl_pr'])) . "</div>";
-			$nestedData[]	= "<div align='center'>" . strtoupper($row['request_by']) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['request_date'])) . "</div>";
-			$data[] = $nestedData;
 			$urut1++;
 			$urut2++;
 		}
@@ -740,6 +748,145 @@ class Metode_pembelian_model extends BF_Model
 
 		echo json_encode($json_data);
 	}
+
+	// public function get_data_json_list_pr()
+	// {
+	// 	// $controller			= ucfirst(strtolower($this->uri->segment(1)));
+	// 	// $Arr_Akses			= getAcccesmenu($controller);
+
+	// 	$requestData	= $_REQUEST;
+	// 	$fetch			= $this->query_data_json_list_pr(
+	// 		$requestData['category'],
+	// 		$requestData['search']['value'],
+	// 		$requestData['order'][0]['column'],
+	// 		$requestData['order'][0]['dir'],
+	// 		$requestData['start'],
+	// 		$requestData['length']
+	// 	);
+	// 	$totalData		= $fetch['totalData'];
+	// 	$totalFiltered	= $fetch['totalFiltered'];
+	// 	$query			= $fetch['query'];
+
+	// 	// print_r($query);
+	// 	// exit;
+
+	// 	$data	= array();
+	// 	$urut1  = 1;
+	// 	$urut2  = 0;
+
+	// 	foreach ($query->result_array() as $row) {
+	// 		$total_data     = $totalData;
+	// 		$start_dari     = $requestData['start'];
+	// 		$asc_desc       = $requestData['order'][0]['dir'];
+	// 		if ($asc_desc == 'asc') {
+	// 			$nomor = $urut1 + $start_dari;
+	// 		}
+	// 		if ($asc_desc == 'desc') {
+	// 			$nomor = ($total_data - $start_dari) - $urut2;
+	// 		}
+
+	// 		$username = $this->auth->user_name();
+
+	// 		// $CHECK = ($username == $row['checklist_by'] and $row['checklist'] == '1') ? 'checked' : '';
+
+	// 		$nestedData 	= array();
+	// 		$nestedData[]	= "<div align='center'><center><input type='checkbox' name='check[]' class='chk_personal' data-nomor='" . $nomor . "' value='" . $row['no_pr'] . "' ></center><input type='hidden' name='category_" . $row['no_pr'] . "' value='" . $row['category'] . "'></div>";
+	// 		$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";
+	// 		$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
+
+	// 		$list_barang = '';
+	// 		$list_qty = '';
+	// 		$nm_lain = '';
+	// 		if ($row['category'] == 'pr material' || $row['category'] == 'pr stok') {
+	// 			if ($row['category'] == 'pr stok') {
+	// 				$this->db->select('b.stock_name as nm_barang, a.propose_purchase as qty, "" as nm_lain');
+	// 				$this->db->from('material_planning_base_on_produksi_detail a');
+	// 				$this->db->join('accessories b', 'b.id = a.id_material', 'left');
+	// 				$this->db->where('a.status_app', 'Y');
+	// 				$this->db->where('a.so_number', $row['so_number']);
+	// 				$get_list_barang = $this->db->get()->result_array();
+	// 			} else {
+	// 				$this->db->select('b.nama as nm_barang, a.propose_purchase as qty, b.trade_name as nm_lain');
+	// 				$this->db->from('material_planning_base_on_produksi_detail a');
+	// 				$this->db->join('new_inventory_4 b', 'b.code_lv4 = a.id_material', 'left');
+	// 				$this->db->where('a.status_app', 'Y');
+	// 				$this->db->where('a.so_number', $row['so_number']);
+	// 				$get_list_barang = $this->db->get()->result_array();
+	// 			}
+	// 		} else {
+	// 			if ($row['category'] == 'pr asset' || $row['category'] == 'asset') {
+	// 				$this->db->select('a.nama_asset as nm_barang, 1 as qty, "" as nm_lain');
+	// 				$this->db->from('asset_planning a');
+	// 				$this->db->where('a.status', 'Y');
+	// 				$this->db->where('a.no_pr', $row['no_pr']);
+	// 				$get_list_barang = $this->db->get()->result_array();
+	// 			} else {
+	// 				$this->db->select('a.nm_barang as nm_barang, a.qty as qty, "" as nm_lain');
+	// 				$this->db->from('rutin_non_planning_detail a');
+	// 				$this->db->where('a.sts_app', 'Y');
+	// 				$this->db->where('a.no_pr', $row['no_pr']);
+	// 				$get_list_barang = $this->db->get()->result_array();
+	// 			}
+	// 		}
+
+	// 		$total_item = count($get_list_barang);
+
+	// 		foreach ($get_list_barang as $key => $barang) :
+
+	// 			$is_last = ($key == $total_item - 1);
+	// 			$style = $is_last
+	// 				? "padding:4px 0;"
+	// 				: "border-bottom:1px solid #ddd; padding:4px 0;";
+
+	// 			$list_barang .= "<div style='{$style}'>" . $barang['nm_barang'] . "</div>";
+
+	// 			$nm_lain .= "<div style='{$style}'>" . $barang['nm_lain'] . "</div>";
+
+	// 			$list_qty .= "<div style='{$style}; text-align:right; font-weight:bold;'>"
+	// 				. number_format($barang['qty']) .
+	// 				"</div>";
+
+	// 		endforeach;
+	// 		$nestedData[]	= "<div align='left'>" . $list_barang . "</div>";
+	// 		$nestedData[]	= "<div align='left'>" . $nm_lain . "</div>";
+	// 		$nestedData[] = "<div align='center'>" . $list_qty . "</div>";
+	// 		if ($row['category'] == 'pr material') {
+	// 			$warna = '#a9179e';
+	// 		} elseif ($row['category'] == 'pr stok') {
+	// 			$warna = '#a19012';
+	// 		} elseif ($row['category'] == 'pr asset') {
+	// 			$warna = '#66ccff';
+	// 		} else {
+	// 			$warna = '#1bb885';
+	// 		}
+
+	// 		$category = $row['category'];
+	// 		if ($category == 'pr stok') {
+	// 			$category = 'pr stok';
+	// 		}
+
+	// 		if ($category == 'pr departemen') {
+	// 			$category = 'pr departemen';
+	// 		}
+
+	// 		$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+	// 		$nestedData[]	= "<div align='center'>" . date('d F Y', strtotime($row['tgl_pr'])) . "</div>";
+	// 		$nestedData[]	= "<div align='center'>" . strtoupper($row['request_by']) . "</div>";
+	// 		$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['request_date'])) . "</div>";
+	// 		$data[] = $nestedData;
+	// 		$urut1++;
+	// 		$urut2++;
+	// 	}
+
+	// 	$json_data = array(
+	// 		"draw"            	=> intval($requestData['draw']),
+	// 		"recordsTotal"    	=> intval($totalData),
+	// 		"recordsFiltered" 	=> intval($totalFiltered),
+	// 		"data"            	=> $data
+	// 	);
+
+	// 	echo json_encode($json_data);
+	// }
 
 	public function query_data_json_list_pr($category, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
 	{

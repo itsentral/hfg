@@ -123,15 +123,14 @@ class New_ros extends Admin_Controller
     public function get_po_by_supplier()
     {
         $id_supplier = $this->input->post('id_supplier');
-        $exclude_ros = $this->input->post('exclude_ros'); // untuk edit mode
 
-        $this->db->select('a.no_po, a.no_surat');
-        $this->db->from('tr_purchase_order a');
-        $this->db->join('tr_ros_header c', 'c.no_po = a.no_po' . ($exclude_ros ? " AND c.id != " . $this->db->escape($exclude_ros) : ''), 'left');
-        $this->db->where('a.id_suplier', $id_supplier);
-        $this->db->where('a.status', 2);
-        $this->db->where('c.id IS NULL');
-        $this->db->order_by('a.no_po', 'DESC');
+        $this->db->select('no_po, no_surat');
+        $this->db->from('tr_purchase_order');
+        $this->db->where('id_suplier', $id_supplier);
+        $this->db->where('status', 2);
+        $this->db->where("(close_po IS NULL OR close_po != '1')", NULL, FALSE);
+
+        $this->db->order_by('no_po', 'DESC');
         $list = $this->db->get()->result_array();
 
         echo json_encode(['status' => 1, 'data' => $list]);
@@ -155,15 +154,18 @@ class New_ros extends Admin_Controller
         $others        = $this->New_ros_model->get_others($id_ros);
         $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result_array();
 
-        // Ambil list PO untuk supplier ini (termasuk yang sudah dipilih)
-        $this->db->select('a.no_po, a.no_surat');
-        $this->db->from('tr_purchase_order a');
-        $this->db->join('tr_ros_header c', "c.no_po = a.no_po AND c.id != " . $this->db->escape($id_ros), 'left');
-        $this->db->where('a.id_suplier', $header['id_supplier']);
-        $this->db->where('a.status', 2);
-        $this->db->where('c.id IS NULL');
-        $this->db->order_by('a.no_po', 'DESC');
+        // ========================================================================
+        // UPDATE: Ambil list PO untuk supplier ini (tanpa JOIN ke ROS)
+        // Sesuai dengan logic get_po_by_supplier()
+        // ========================================================================
+        $this->db->select('no_po, no_surat');
+        $this->db->from('tr_purchase_order');
+        $this->db->where('id_suplier', $header['id_supplier']);
+        $this->db->where('status', 2);
+        $this->db->where("(close_po IS NULL OR close_po != '1')", NULL, FALSE);
+        $this->db->order_by('no_po', 'DESC');
         $list_po = $this->db->get()->result_array();
+        // ========================================================================
 
         $this->db->where('is_delete', '0');
         $master_forwarding = $this->db->get('master_forwarding_cost')->row();
@@ -464,22 +466,34 @@ class New_ros extends Admin_Controller
                 $id_ros_material = $this->db->insert_id();
 
                 // ── Coils ──
+                // ── Coils ──
                 if (isset($mat['coil']) && is_array($mat['coil'])) {
+                    // Hitung jumlah coil valid dulu
+                    $valid_coils = [];
                     foreach ($mat['coil'] as $coil) {
                         $berat_kotor  = (float) str_replace(',', '', $coil['berat_kotor']);
                         $berat_bersih = (float) str_replace(',', '', $coil['berat_bersih']);
                         if ($berat_kotor > 0 || !empty($coil['no_coil'])) {
-                            $this->db->insert('tr_ros_material_coil', [
-                                'id_ros_material' => $id_ros_material,
-                                'no_coil'         => $coil['no_coil'],
-                                'berat_kotor'     => $berat_kotor,
-                                'berat_bersih'    => $berat_bersih,
-                                'panjang'         => (float) str_replace(',', '', $coil['panjang']),
-                                'kode_internal'   => isset($coil['kode_internal']) ? $coil['kode_internal'] : '',
-                                'created_by'      => $this->auth->user_id(),
-                                'created_on'      => date('Y-m-d H:i:s')
-                            ]);
+                            $valid_coils[] = $coil;
                         }
+                    }
+
+                    $jumlah_coil   = count($valid_coils);
+                    $price_per_coil = ($jumlah_coil > 0) ? $total_nilai_inventory / $jumlah_coil : 0;
+
+                    foreach ($valid_coils as $coil) {
+                        $this->db->insert('tr_ros_material_coil', [
+                            'id_ros_material' => $id_ros_material,
+                            'no_coil'         => $coil['no_coil'],
+                            'berat_kotor'     => (float) str_replace(',', '', $coil['berat_kotor']),
+                            'berat_bersih'    => (float) str_replace(',', '', $coil['berat_bersih']),
+                            'panjang'         => (float) str_replace(',', '', $coil['panjang']),
+                            'kode_internal'   => isset($coil['kode_internal']) ? $coil['kode_internal'] : '',
+                            'bpm'             => isset($coil['bpm']) ? (float) str_replace(',', '', $coil['bpm']) : 0,
+                            'price_per_coil'  => $price_per_coil,
+                            'created_by'      => $this->auth->user_id(),
+                            'created_on'      => date('Y-m-d H:i:s')
+                        ]);
                     }
                 }
             }
@@ -1028,7 +1042,6 @@ class New_ros extends Admin_Controller
         $id_ros     = $this->input->post('id_ros');
         $session_id = session_id();
 
-        // Ambil data temp
         $temp_data = $this->db->get_where('tr_ros_upload_temp', [
             'id_ros'     => $id_ros,
             'session_id' => $session_id,
@@ -1036,28 +1049,49 @@ class New_ros extends Admin_Controller
         ])->result_array();
 
         if (empty($temp_data)) {
-            echo json_encode(['status' => 0, 'msg' => 'Tidak ada data yang bisa dikonfirmasi (tidak ada yang match).']);
+            echo json_encode(['status' => 0, 'msg' => 'Tidak ada data yang bisa dikonfirmasi.']);
             return;
+        }
+
+        // Hitung price_per_coil per material (jumlah coil matched per id_ros_material)
+        $coil_count_per_mat = [];
+        foreach ($temp_data as $row) {
+            $id_mat = $row['id_ros_material'];
+            $coil_count_per_mat[$id_mat] = isset($coil_count_per_mat[$id_mat])
+                ? $coil_count_per_mat[$id_mat] + 1 : 1;
+        }
+
+        // Ambil total_nilai_inventory per id_ros_material
+        $inventory_per_mat = [];
+        foreach (array_keys($coil_count_per_mat) as $id_mat) {
+            $mat = $this->db->get_where('tr_ros_material', ['id' => $id_mat])->row();
+            $inventory_per_mat[$id_mat] = $mat ? (float) $mat->total_nilai_inventory : 0;
         }
 
         $this->db->trans_begin();
 
         $inserted = 0;
         foreach ($temp_data as $row) {
+            $id_mat         = $row['id_ros_material'];
+            $jumlah_coil    = $coil_count_per_mat[$id_mat];
+            $total_inv      = $inventory_per_mat[$id_mat];
+            $price_per_coil = ($jumlah_coil > 0) ? $total_inv / $jumlah_coil : 0;
+
             $this->db->insert('tr_ros_material_coil', [
-                'id_ros_material' => $row['id_ros_material'],
+                'id_ros_material' => $id_mat,
                 'no_coil'         => $row['no_coil'],
                 'berat_kotor'     => $row['berat_kotor'],
                 'berat_bersih'    => $row['berat_bersih'],
                 'panjang'         => $row['panjang'],
                 'kode_internal'   => $row['kode_internal'],
+                'bpm'             => isset($row['bpm']) ? (float) $row['bpm'] : 0,
+                'price_per_coil'  => $price_per_coil,
                 'created_by'      => $this->auth->user_id(),
                 'created_on'      => date('Y-m-d H:i:s')
             ]);
             $inserted++;
         }
 
-        // Hapus semua data temp untuk session ini
         $this->db->delete('tr_ros_upload_temp', ['id_ros' => $id_ros, 'session_id' => $session_id]);
 
         if ($this->db->trans_status() === false) {
@@ -1265,7 +1299,6 @@ class New_ros extends Admin_Controller
             ];
         }
 
-        // Generate GL Interface
         // Generate GL Interface
         $jurnal_error = null;
         if ($total_inventory > 0) {
@@ -1475,7 +1508,7 @@ class New_ros extends Admin_Controller
 
     public function close_ros()
     {
-        ob_start(); // Start output buffering untuk menangkap output debug jika ada
+        ob_start();
         $id_ros = $this->input->post('id_ros');
 
         // Cek ROS exists & masih draft
@@ -1488,21 +1521,21 @@ class New_ros extends Admin_Controller
         $materials = $this->New_ros_model->get_materials($id_ros);
         $others    = $this->New_ros_model->get_others($id_ros);
 
-        // ── Hitung total komponen biaya ──
+        // ── total komponen biaya ──
         $total_inventory  = 0;
         $total_bm         = 0;
         $total_forwarding = 0;
-        $total_ls         = (float) $header['biaya_ls'];
-        $total_insurance  = (float) $header['insurance'];
+        $total_ls          = (int) round((float) $header['biaya_ls']);
+        $total_insurance   = (int) round((float) $header['insurance']);
         $total_others_val = 0;
 
         foreach ($materials as $mat) {
-            $total_inventory  += (float) $mat['total_nilai_inventory'];
-            $total_bm         += (float) $mat['bm_rp'];
-            $total_forwarding += (float) $mat['forwarding_cost'];
+            $total_inventory  += (int) round((float) $mat['total_nilai_inventory']);
+            $total_bm         += (int) round((float) $mat['bm_rp']);
+            $total_forwarding += (int) round((float) $mat['forwarding_cost']);
         }
         foreach ($others as $ot) {
-            $total_others_val += (float) $ot['nilai'];
+            $total_others_val += (int) round((float) $ot['nilai']);
         }
 
         // ── Nilai DP ──
@@ -1570,12 +1603,51 @@ class New_ros extends Admin_Controller
         }
         $this->db->trans_commit();
 
+        // data header untuk hitung raw
+        $total_kg_pib = (float) $header['total_kg_bersih_pib'];
+        $kurs_pib     = (float) $header['kurs_pib'];
+        $biaya_ls     = (float) $header['biaya_ls'];
+        $insurance    = (float) $header['insurance'];
+        $forwarding_master = $this->db->get_where('master_forwarding_cost', [
+            'is_delete' => 0
+        ])->row();
+
+        $tarif_forwarding = (float) $forwarding_master->value_cost;
+
+        foreach ($materials as $mat) {
+            // total_nilai_inventory on-the-fly
+            $total_value_rp_raw = (float)$mat['unit_price_usd'] * (float)$mat['kg_unit'] * $kurs_pib;
+            $bm_rp_raw          = $total_value_rp_raw * (float)$mat['bm_persen'] / 100;
+            $prorate_ls_raw     = $biaya_ls * (float)$mat['kg_unit'] / $total_kg_pib;
+            $forwarding_raw     = (float)$mat['kg_unit'] * $tarif_forwarding;
+            $insurance_raw      = $insurance * (float)$mat['kg_unit'] / $total_kg_pib;
+
+            $total_nilai_inv_raw = $total_value_rp_raw + $bm_rp_raw + $prorate_ls_raw
+                + $forwarding_raw + $insurance_raw;
+
+            $cost_book_raw = $total_nilai_inv_raw / (float)$mat['kg_unit'];
+            $coils_mat = $this->db->get_where('tr_ros_material_coil', [
+                'id_ros_material' => $mat['id']
+            ])->result_array();
+
+            foreach ($coils_mat as $coil) {
+                $berat_bersih   = (float) $coil['berat_bersih'];
+                $price_per_coil = round($berat_bersih * $cost_book_raw, 2);
+
+                $this->db->update('tr_ros_material_coil', [
+                    'cost_book_raw'  => $cost_book_raw,
+                    'price_per_coil' => $price_per_coil,
+                ], ['id' => $coil['id']]);
+            }
+        }
+
         // ── Generate Jurnal GL Interface ──
         if ($total_inventory > 0) {
             try {
                 $this->_generate_jurnal_ros(
                     $id_ros,
                     $header['no_po'],
+                    $header['no_surat'],
                     $header['id_supplier'],
                     $total_inventory,
                     $nilai_dp_rp,
@@ -1592,7 +1664,7 @@ class New_ros extends Admin_Controller
                 ob_clean();
                 header('Content-Type: application/json');
                 echo json_encode(['status' => 1, 'msg' => 'ROS berhasil di-close dan Jurnal JV telah dibuat.']);
-                exit; // Pastikan tidak ada kode lain yang berjalan setelah ini
+                exit;
             } catch (Exception $e) {
                 ob_clean();
                 header('Content-Type: application/json');
@@ -1610,6 +1682,7 @@ class New_ros extends Admin_Controller
     private function _generate_jurnal_ros(
         $id_ros,
         $no_po,
+        $no_surat,
         $id_supplier,
         $total_inventory,
         $nilai_dp_rp,
@@ -1639,14 +1712,14 @@ class New_ros extends Admin_Controller
             'round'   => '7201-01-05',
         ];
 
-        // ── Ambil nama COA dari DBACC ──
+        // ── nama COA dari DBACC ──
         $coa_check = $this->_validate_and_get_coa_names($coa);
         if (!$coa_check['valid']) {
             throw new Exception('COA tidak ditemukan di Master: ' . implode(', ', $coa_check['not_found']));
         }
         $coa_names = $coa_check['names'];
 
-        $keterangan = "ROS: {$id_ros} | PO: {$no_po}";
+        $keterangan = "ROS: {$id_ros} | PO: {$no_surat}";
         $nomor_jv   = $this->_generate_nomor_jv_ros();
 
         // ── Insert header GL Interface ──
@@ -1663,7 +1736,7 @@ class New_ros extends Admin_Controller
             'user_id'         => $user_id,
             'memo'            => json_encode([
                 'id_supplier' => $id_supplier,
-                'no_reff'     => $no_po,
+                'no_reff'     => $no_surat,
                 'no_request'  => $id_ros,
                 'kurs_pib'    => $kurs_pib,
                 'nilai_dp_rp' => $nilai_dp_rp,
@@ -1673,7 +1746,7 @@ class New_ros extends Admin_Controller
         $id_gl = $this->db->insert_id();
 
         // ── Helper insert detail ──
-        $ins = function ($no_coa, $desc, $debet, $kredit) use ($id_gl, $tgl_inv, $no_po, $id_ros, $created_on, $nomor_jv) {
+        $ins = function ($no_coa, $desc, $debet, $kredit) use ($id_gl, $tgl_inv, $no_surat, $id_ros, $created_on, $nomor_jv) {
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl,
                 'no_batch'        => $nomor_jv,
@@ -1685,10 +1758,10 @@ class New_ros extends Admin_Controller
                 'id_gudang'       => null,
                 'no_coil'         => null,
                 'keterangan'      => $desc,
-                'no_reff'         => $no_po,
+                'no_reff'         => $no_surat,
                 'no_request'      => $id_ros,
-                'debet'           => round($debet,  2),
-                'kredit'          => round($kredit, 2),
+                'debet'           => (int) round($debet),
+                'kredit'          => (int) round($kredit),
                 'created_at'      => $created_on,
             ]);
         };
@@ -1748,7 +1821,6 @@ class New_ros extends Admin_Controller
         foreach ($materials as &$mat) {
             $coils = $this->New_ros_model->get_coils($mat['id']);
 
-            // Deduplicate coils berdasarkan no_coil
             $seen = [];
             $unique_coils = [];
             foreach ($coils as $coil) {

@@ -201,8 +201,9 @@ class Product_master extends Admin_Controller
     } else {
       $this->auth->restrict($this->managePermission);
     }
+
     if ($this->input->post()) {
-      $post = $this->input->post();
+      $post        = $this->input->post();
       $generate_id = $this->Product_master_model->generate_id();
 
       $id         = $post['id'];
@@ -213,146 +214,129 @@ class Product_master extends Admin_Controller
       $status     = (!empty($id)) ? $post['status'] : 1;
       $nama       = $post['nama'];
       $retail     = $post['retail'];
+      $code       = $post['code'];
+      $trade_name = $post['trade_name'];
 
-      $code             = $post['code'];
-      $trade_name       = $post['trade_name'];
+      $id_unit_packing = $post['id_unit_packing'];
+      $id_unit         = $post['id_unit'];
+      $konversi        = str_replace(',', '', $post['konversi']);
 
-      $id_unit_packing  = $post['id_unit_packing'];
-      $id_unit          = $post['id_unit'];
-      $konversi         = str_replace(',', '', $post['konversi']);
+      $max_stok = str_replace(',', '', $post['max_stok']);
+      $min_stok = str_replace(',', '', $post['min_stok']);
+      $moq      = str_replace(',', '', $post['moq']);
 
-      $max_stok     = str_replace(',', '', $post['max_stok']);
-      $min_stok     = str_replace(',', '', $post['min_stok']);
-      $moq          = str_replace(',', '', $post['moq']);
+      $length = str_replace(',', '', $post['length']);
+      $wide   = str_replace(',', '', $post['wide']);
+      $high   = str_replace(',', '', $post['high']);
+      $weight = $post['weight'];
+      $cub    = str_replace(',', '', $post['cub']);
 
-      $length     = str_replace(',', '', $post['length']);
-      $wide       = str_replace(',', '', $post['wide']);
-      $high       = str_replace(',', '', $post['high']);
-      $weight       = $post['weight'];
-      $cub        = str_replace(',', '', $post['cub']);
-
-      $last_by    = (!empty($id)) ? 'updated_by' : 'created_by';
-      $last_date  = (!empty($id)) ? 'updated_date' : 'created_date';
-      $label      = (!empty($id)) ? 'Edit' : 'Add';
+      $last_by   = (!empty($id)) ? 'updated_by'   : 'created_by';
+      $last_date = (!empty($id)) ? 'updated_date'  : 'created_date';
+      $label     = (!empty($id)) ? 'Edit'          : 'Add';
 
       $dataProcess1 = [
-        'category'  => 'product',
-        'code_lv1'  => $code_lv1,
-        'code_lv2'  => $code_lv2,
-        'code_lv3'  => $code_lv3,
-        'code_lv4'  => $code_lv4,
-        'nama'      => $nama,
-        'retail'      => $retail,
-        'code'  => $code,
-        'trade_name'  => $trade_name,
-        'id_unit_packing'  => $id_unit_packing,
-        'id_unit'  => $id_unit,
-        'konversi'  => $konversi,
-        'length'      => $length,
-        'max_stok'    => $max_stok,
-        'min_stok'    => $min_stok,
-        'moq'    => $moq,
-        'wide'      => $wide,
-        'high'      => $high,
-        'weight'      => $weight,
-        'cub'      => $cub,
-        'status'    => $status,
-        $last_by    => $this->id_user,
-        $last_date  => $this->datetime
+        'category'        => 'product',
+        'code_lv1'        => $code_lv1,
+        'code_lv2'        => $code_lv2,
+        'code_lv3'        => $code_lv3,
+        'code_lv4'        => $code_lv4,
+        'nama'            => $nama,
+        'retail'          => $retail,
+        'code'            => $code,
+        'trade_name'      => $trade_name,
+        'id_unit_packing' => $id_unit_packing,
+        'id_unit'         => $id_unit,
+        'konversi'        => $konversi,
+        'length'          => $length,
+        'max_stok'        => $max_stok,
+        'min_stok'        => $min_stok,
+        'moq'             => $moq,
+        'wide'            => $wide,
+        'high'            => $high,
+        'weight'          => $weight,
+        'cub'             => $cub,
+        'status'          => $status,
+        $last_by          => $this->id_user,
+        $last_date        => $this->datetime,
       ];
 
-      //UPLOAD DOCUMENT
+      // Upload MSDS
       $dataProcess2 = [];
-      if (!empty($_FILES['photo']["tmp_name"])) {
-        $target_dir     = "assets/files/";
-        $target_dir_u   = get_root3() . "/assets/files/";
-        $name_file      = 'msds-' . $code_lv4 . "-" . date('Ymdhis');
-        $target_file    = $target_dir . basename($_FILES['photo']["name"]);
-        $name_file_ori  = basename($_FILES['photo']["name"]);
-        $imageFileType  = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $nama_upload    = $target_dir_u . $name_file . "." . $imageFileType;
+      if (!empty($_FILES['photo']['tmp_name'])) {
+        $upload_dir   = get_root3() . '/uploads/product_lv_4/msds/';
+        $link_dir     = 'uploads/product_lv_4/msds/';
 
-        // if($imageFileType == 'pdf' OR $imageFileType == 'jpeg' OR $imageFileType == 'jpg'){
+        // Buat folder jika belum ada
+        if (!is_dir($upload_dir)) {
+          mkdir($upload_dir, 0755, true);
+        }
 
-        $terupload = move_uploaded_file($_FILES['photo']["tmp_name"], $nama_upload);
-        $link_url      = $target_dir . $name_file . "." . $imageFileType;
+        $name_file     = 'msds-' . $code_lv4 . '-' . date('Ymdhis');
+        $target_file   = basename($_FILES['photo']['name']);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $nama_upload   = $upload_dir . $name_file . '.' . $imageFileType;
 
-        $dataProcess2  = array('file_msds' => $link_url);
-        // }
+        move_uploaded_file($_FILES['photo']['tmp_name'], $nama_upload);
+        $link_url = $link_dir . $name_file . '.' . $imageFileType;
+
+        $dataProcess2 = ['file_msds' => $link_url];
       }
 
       $dataProcess = array_merge($dataProcess1, $dataProcess2);
 
-      // print_r($dataProcess);
-      // exit;
-
-      // sekalian insert ke warehouse
-      $stockData = [
-        'code_lv1'       => $code_lv1,
-        'code_lv2'       => $code_lv2,
-        'code_lv3'       => $code_lv3,
-        'code_lv4'       => $code_lv4,
-        'code_product'   => $code,
-        'nm_product'     => $nama,
-        'id_unit'        => $id_unit,
-        'id_unit_packing' => $id_unit_packing,
-        'update_by'      => $this->id_user,
-        'update_date'    => $this->datetime
-      ];
-
       $this->db->trans_start();
-      if (empty($id)) {
-        $this->db->insert('product_lvl_4', $dataProcess);
 
-        //insert kek warehouse
-        $this->db->insert('warehouse_stock', $stockData);
+      if (empty($id)) {
+        // Insert product saja, tanpa warehouse
+        $this->db->insert('product_lvl_4', $dataProcess);
       } else {
+        // Update product
         $this->db->where('id', $id);
         $this->db->update('product_lvl_4', $dataProcess);
 
-        // update warehouse
-        $this->db->where('code_lv4', $code_lv4);
-        $this->db->update('warehouse_stock', $stockData);
-
-        //update nama product jika ada perubahan di product costing
+        // Update nama product di product_costing jika ada perubahan
         $this->db->where('code_lv4', $code_lv4);
         $this->db->update('product_costing', [
-          'product_name' => $nama
+          'product_name' => $nama,
         ]);
       }
+
       $this->db->trans_complete();
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
-        $status  = array(
-          'pesan'    => 'Failed process data!',
-          'status'  => 0
-        );
+        $result = [
+          'pesan'  => 'Failed process data!',
+          'status' => 0,
+        ];
       } else {
         $this->db->trans_commit();
-        $status  = array(
-          'pesan'    => 'Success process data!',
-          'status'  => 1
-        );
-        history($label . " product master: " . $code_lv4);
+        $result = [
+          'pesan'  => 'Success process data!',
+          'status' => 1,
+        ];
+        history($label . ' product master: ' . $code_lv4);
       }
-      echo json_encode($status);
-    } else {
-      $listData = $this->db->get_where('product_lvl_4', array('id' => $id))->result();
-      $code_lv1 = (!empty($listData[0]->code_lv1)) ? $listData[0]->code_lv1 : 0;
-      $code_lv2 = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : 0;
 
-      $satuan     = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
-      $satuan_packing = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'packing'))->result();
+      echo json_encode($result);
+    } else {
+
+      $listData       = $this->db->get_where('product_lvl_4', ['id' => $id])->result();
+      $code_lv1       = (!empty($listData[0]->code_lv1)) ? $listData[0]->code_lv1 : 0;
+      $code_lv2       = (!empty($listData[0]->code_lv2)) ? $listData[0]->code_lv2 : 0;
+      $satuan         = $this->db->get_where('ms_satuan', ['deleted_date' => NULL, 'category' => 'unit'])->result();
+      $satuan_packing = $this->db->get_where('ms_satuan', ['deleted_date' => NULL, 'category' => 'packing'])->result();
 
       $data = [
-        'listData' => $listData,
-        'listLevel1' => get_list_product_lv1('product'),
-        'listLevel2' => (!empty(get_list_product_lv2('product')[$code_lv1])) ? get_list_product_lv2('product')[$code_lv1] : array(),
-        'listLevel3' => (!empty(get_list_product_lv3('product')[$code_lv1][$code_lv2])) ? get_list_product_lv3('product')[$code_lv1][$code_lv2] : array(),
-        'satuan' => $satuan,
+        'listData'      => $listData,
+        'listLevel1'    => get_list_product_lv1('product'),
+        'listLevel2'    => (!empty(get_list_product_lv2('product')[$code_lv1]))             ? get_list_product_lv2('product')[$code_lv1]             : [],
+        'listLevel3'    => (!empty(get_list_product_lv3('product')[$code_lv1][$code_lv2])) ? get_list_product_lv3('product')[$code_lv1][$code_lv2] : [],
+        'satuan'        => $satuan,
         'satuan_packing' => $satuan_packing,
       ];
+
       $this->template->set($data);
       $this->template->render('add');
     }

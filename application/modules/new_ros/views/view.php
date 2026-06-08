@@ -56,8 +56,8 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
 
 <div class="card">
     <div class="card-body">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <h5 class="mb-0 fw-bold">View New ROS — <?= $h['id'] ?></h5>
+        <div class="d-flex align-items-center justify-content-between mb-2">            
+        <a href="<?= base_url('new_ros') ?>" class="btn btn-sm btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
             <span class="badge rounded-pill <?= $h['status'] == 1 ? 'bg-success' : 'bg-warning' ?>"><?= $h['status'] == 1 ? 'Final' : 'Draft' ?></span>
         </div>
         <hr>
@@ -66,7 +66,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         <div class="row mb-3">
             <div class="col-md-4"><strong>No. ROS:</strong> <?= $h['id'] ?></div>
             <div class="col-md-4"><strong>Supplier:</strong> <?= $h['nm_supplier'] ?></div>
-            <div class="col-md-4"><strong>No. PO:</strong> <?= $h['no_po'] ?></div>
+            <div class="col-md-4"><strong>No. PO:</strong> <?= $h['no_surat'] ?></div>
         </div>
 
         <!-- TAHAP 1 -->
@@ -330,26 +330,9 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         <?php if ($h['status'] == 0) : ?>
             <a href="<?= base_url('new_ros/edit/' . $h['id']) ?>" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
         <?php endif; ?>
-        <!-- <button type="button" class="btn btn-primary" id="btn_view_qr"><i class="fas fa-qrcode"></i> Print QR Code</button> -->
     </div>
 </div>
 
-<!-- Modal Print QR -->
-<!-- <div class="modal fade" id="modalPrintQR" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Daftar Coil — Print QR Code</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="modal_body_qr"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success btn-sm" id="btn-print-qr-action"><i class="fas fa-print"></i> Print Selected</button>
-            </div>
-        </div>
-    </div>
-</div> -->
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -371,17 +354,5 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         $(document).on('click', '#check_all_modal', function() {
             $('.check_item_modal').prop('checked', this.checked);
         });
-
-        // $(document).on('click', '#btn-print-qr-action', function() {
-        //     var ids = [];
-        //     $('.check_item_modal:checked').each(function() {
-        //         ids.push($(this).val());
-        //     });
-        //     if (ids.length === 0) {
-        //         Swal.fire('Perhatian', 'Pilih minimal 1 coil untuk print QR.', 'warning');
-        //         return;
-        //     }
-        //     window.open(siteurl + 'new_ros/print_qr/' + ids.join('-'), '_blank');
-        // });
     });
 </script>

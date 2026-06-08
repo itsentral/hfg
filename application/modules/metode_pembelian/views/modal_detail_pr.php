@@ -23,7 +23,7 @@
 		<thead id='head_table'>
 			<tr class='bg-blue'>
 				<th class="text-center" style='vertical-align:middle;' width='5%'>#</th>
-				<th class="text-center" style='vertical-align:middle;'>Name Barang</th>
+				<th class="text-center" style='vertical-align:middle;'>Nama Barang</th>
 				<th class="text-center" style='vertical-align:middle;'>Qty</th>
 				<th class="text-center" style='vertical-align:middle;'>Tgl Dibutuhkan</th>
 				<!-- <th class="text-center" style='vertical-align:middle;'>Jenis Pembelian</th>

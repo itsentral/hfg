@@ -86,7 +86,7 @@ $is_balance = (round($total_debet) === round($total_kredit));
                 </div>
                 <div class="col-md-3 mb-2">
                     <span class="info-label">User</span><br>
-                    <?= htmlspecialchars($header['user_id']) ?>
+                    <?= htmlspecialchars($header['nm_lengkap'] ?? $header['user_id']) ?>
                 </div>
             </div>
             <div class="row mt-2">

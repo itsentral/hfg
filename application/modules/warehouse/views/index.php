@@ -7,15 +7,15 @@
         <!-- ── Tab Gudang ─────────────────────────────────────────────── -->
         <ul class="nav nav-tabs mb-3" id="tabStockCoil" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="tab-pusat-coil-tab"
-                    data-bs-toggle="tab" href="#tab-pusat-coil" role="tab">
-                    <i class="fa fa-warehouse"></i> Gudang Pusat
+                <a class="nav-link active" id="tab-produksi-coil-tab"
+                    data-bs-toggle="tab" href="#tab-produksi-coil" role="tab">
+                    <i class="fa fa-warehouse"></i> Gudang Produksi
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-penjualan-coil-tab"
-                    data-bs-toggle="tab" href="#tab-penjualan-coil" role="tab">
-                    <i class="fa fa-store"></i> Gudang Penjualan
+                <a class="nav-link" id="tab-slitting-coil-tab"
+                    data-bs-toggle="tab" href="#tab-slitting-coil" role="tab">
+                    <i class="fa fa-store"></i> Gudang Slitting
                 </a>
             </li>
             <li class="nav-item">
@@ -28,10 +28,15 @@
 
         <div class="tab-content" id="tabStockCoilContent">
 
-            <!-- TAB PUSAT -->
-            <div class="tab-pane fade show active" id="tab-pusat-coil" role="tabpanel">
+            <!-- TAB produksi -->
+            <div class="tab-pane fade show active" id="tab-produksi-coil" role="tabpanel">
+                <div class="mb-2 text-end">
+                    <button class="btn btn-success btn-sm" id="btn-excel-produksi">
+                        <i class="fa fa-file-excel-o"></i> Download Excel
+                    </button>
+                </div>
                 <div class="table-responsive">
-                    <table id="table-stock-pusat"
+                    <table id="table-stock-produksi"
                         class="table table-bordered table-striped table-hover">
                         <thead class="bg-blue">
                             <tr>
@@ -49,10 +54,15 @@
                 </div>
             </div>
 
-            <!-- TAB PENJUALAN -->
-            <div class="tab-pane fade" id="tab-penjualan-coil" role="tabpanel">
+            <!-- TAB slitting -->
+            <div class="tab-pane fade" id="tab-slitting-coil" role="tabpanel">
+                <div class="mb-2 text-end">
+                    <button class="btn btn-success btn-sm" id="btn-excel-slitting">
+                        <i class="fa fa-file-excel-o"></i> Download Excel
+                    </button>
+                </div>
                 <div class="table-responsive">
-                    <table id="table-stock-penjualan"
+                    <table id="table-stock-slitting"
                         class="table table-bordered table-striped table-hover">
                         <thead class="bg-green">
                             <tr>
@@ -95,8 +105,8 @@
                         </label>
                         <select id="hc_gudang" class="form-select form-select-sm">
                             <option value="">-- Semua Gudang --</option>
-                            <option value="PUS">Gudang Pusat</option>
-                            <option value="PEN">Gudang Penjualan</option>
+                            <option value="PRO">Gudang Produksi</option>
+                            <option value="SLI">Gudang Slitting</option>
                         </select>
                     </div>
                     <div class="col-md-3 text-end">
@@ -147,133 +157,228 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <script>
-$(document).ready(function () {
+    $(document).ready(function() {
 
-    // ── Kolom live (7 kolom) ──────────────────────────────────────────────
-    var colDefLive = [
-        { data: 0, width: '4%' },
-        { data: 1 },
-        { data: 2, className: 'text-center' },
-        { data: 3, className: 'text-center' },
-        { data: 4, className: 'text-end' },
-        { data: 5, className: 'text-end' },
-        { data: 6, className: 'text-end' },
-    ];
-
-    // ── Kolom history per days (9 kolom: +Status, +Tanggal) ───────────────
-    var colDefHistory = [
-        { data: 0, width: '4%' },
-        { data: 1 },
-        { data: 2, className: 'text-center' },
-        { data: 3, className: 'text-center' },
-        { data: 4, className: 'text-end' },
-        { data: 5, className: 'text-end' },
-        { data: 6, className: 'text-end' },
-        { data: 7, className: 'text-center' },
-        { data: 8, className: 'text-center' },
-    ];
-
-    // ── Tab Pusat (live) ──────────────────────────────────────────────────
-    var dtPusat = $('#table-stock-pusat').DataTable({
-        processing: true, serverSide: true, destroy: true,
-        autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
-        aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-        ajax: { url: siteurl + 'warehouse/data_side_stock_pusat', type: 'POST', cache: false },
-        columns: colDefLive,
-        order: [[1, 'asc']],
-        language: {
-            processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-            zeroRecords: 'Tidak ada data coil.', emptyTable: 'Tidak ada data.',
-        }
-    });
-
-    // ── Tab Penjualan (live, lazy) ────────────────────────────────────────
-    var dtPenjualan = null;
-    document.getElementById('tab-penjualan-coil-tab')
-        .addEventListener('shown.bs.tab', function () {
-            if (!dtPenjualan) {
-                dtPenjualan = $('#table-stock-penjualan').DataTable({
-                    processing: true, serverSide: true, destroy: true,
-                    autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
-                    aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-                    ajax: { url: siteurl + 'warehouse/data_side_stock_penjualan', type: 'POST', cache: false },
-                    columns: colDefLive,
-                    order: [[1, 'asc']],
-                    language: {
-                        processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-                        zeroRecords: 'Tidak ada data coil.', emptyTable: 'Tidak ada data.',
-                    }
-                });
-            }
-        });
-
-    // ── Flatpickr ─────────────────────────────────────────────────────────
-    var fpFrom = flatpickr('#hc_date_from', {
-        locale: 'id', dateFormat: 'd/m/Y',
-        onChange: function (sel) { fpTo.set('minDate', sel[0] || null); }
-    });
-    var fpTo = flatpickr('#hc_date_to', {
-        locale: 'id', dateFormat: 'd/m/Y',
-        onChange: function (sel) { fpFrom.set('maxDate', sel[0] || null); }
-    });
-
-    // ── Helper dd/mm/yyyy → yyyy-mm-dd ────────────────────────────────────
-    function getYmd(dmy) {
-        if (!dmy) return '';
-        var p = dmy.split('/');
-        return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
-    }
-
-    // ── Tab History Per Days (lazy, hanya dibuat saat tombol diklik) ──────
-    var dtHistory = null;
-
-    function buildHistoryDt() {
-        if (dtHistory) dtHistory.destroy();
-        dtHistory = $('#table-history-coil').DataTable({
-            processing: true, serverSide: true, destroy: true,
-            autoWidth: false, sPaginationType: 'simple_numbers', iDisplayLength: 25,
-            aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            ajax: {
-                url: siteurl + 'warehouse/data_side_stock_perday',
-                type: 'POST',
-                data: function (d) {
-                    d.date_from = getYmd($('#hc_date_from').val());
-                    d.date_to   = getYmd($('#hc_date_to').val());
-                    d.kd_gudang = $('#hc_gudang').val();
-                },
-                cache: false,
+        // ── Kolom live (7 kolom) ──────────────────────────────────────────────
+        var colDefLive = [{
+                data: 0,
+                width: '4%'
             },
-            columns: colDefHistory,
-            order: [[8, 'desc']],
+            {
+                data: 1
+            },
+            {
+                data: 2,
+                className: 'text-center'
+            },
+            {
+                data: 3,
+                className: 'text-center'
+            },
+            {
+                data: 4,
+                className: 'text-end'
+            },
+            {
+                data: 5,
+                className: 'text-end'
+            },
+            {
+                data: 6,
+                className: 'text-end'
+            },
+        ];
+
+        // ── Kolom history per days (9 kolom: +Status, +Tanggal) ───────────────
+        var colDefHistory = [{
+                data: 0,
+                width: '4%'
+            },
+            {
+                data: 1
+            },
+            {
+                data: 2,
+                className: 'text-center'
+            },
+            {
+                data: 3,
+                className: 'text-center'
+            },
+            {
+                data: 4,
+                className: 'text-end'
+            },
+            {
+                data: 5,
+                className: 'text-end'
+            },
+            {
+                data: 6,
+                className: 'text-end'
+            },
+            {
+                data: 7,
+                className: 'text-center'
+            },
+            {
+                data: 8,
+                className: 'text-center'
+            },
+        ];
+
+        // ── Tab produksi (live) ──────────────────────────────────────────────────
+        var dtProduksi = $('#table-stock-produksi').DataTable({
+            processing: true,
+            serverSide: true,
+            destroy: true,
+            autoWidth: false,
+            sPaginationType: 'simple_numbers',
+            iDisplayLength: 25,
+            aLengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            ajax: {
+                url: siteurl + 'warehouse/data_side_stock_produksi',
+                type: 'POST',
+                cache: false
+            },
+            columns: colDefLive,
+            order: [
+                [1, 'asc']
+            ],
             language: {
                 processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-                zeroRecords: 'Tidak ada data untuk rentang tanggal ini.',
+                zeroRecords: 'Tidak ada data coil.',
                 emptyTable: 'Tidak ada data.',
             }
         });
-    }
 
-    $('#btn-filter-hc').on('click', function () {
-        buildHistoryDt();
-    });
+        // ── Tab slitting (live, lazy) ────────────────────────────────────────
+        var dtSlitting = null;
+        document.getElementById('tab-slitting-coil-tab')
+            .addEventListener('shown.bs.tab', function() {
+                if (!dtSlitting) {
+                    dtSlitting = $('#table-stock-slitting').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        destroy: true,
+                        autoWidth: false,
+                        sPaginationType: 'simple_numbers',
+                        iDisplayLength: 25,
+                        aLengthMenu: [
+                            [10, 25, 50, 100],
+                            [10, 25, 50, 100]
+                        ],
+                        ajax: {
+                            url: siteurl + 'warehouse/data_side_stock_slitting',
+                            type: 'POST',
+                            cache: false
+                        },
+                        columns: colDefLive,
+                        order: [
+                            [1, 'asc']
+                        ],
+                        language: {
+                            processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
+                            zeroRecords: 'Tidak ada data coil.',
+                            emptyTable: 'Tidak ada data.',
+                        }
+                    });
+                }
+            });
 
-    $('#btn-reset-hc').on('click', function () {
-        fpFrom.clear();
-        fpTo.clear();
-        fpFrom.set('maxDate', null);
-        fpTo.set('minDate', null);
-        $('#hc_gudang').val('');
-        if (dtHistory) {
-            dtHistory.destroy();
-            dtHistory = null;
-            $('#table-history-coil tbody').html(
-                '<tr><td colspan="9" class="text-center text-muted py-4">' +
-                '<i class="fa fa-info-circle"></i> ' +
-                'Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>' +
-                '</td></tr>'
-            );
+        // ── Flatpickr ─────────────────────────────────────────────────────────
+        var fpFrom = flatpickr('#hc_date_from', {
+            locale: 'id',
+            dateFormat: 'd/m/Y',
+            onChange: function(sel) {
+                fpTo.set('minDate', sel[0] || null);
+            }
+        });
+        var fpTo = flatpickr('#hc_date_to', {
+            locale: 'id',
+            dateFormat: 'd/m/Y',
+            onChange: function(sel) {
+                fpFrom.set('maxDate', sel[0] || null);
+            }
+        });
+
+        // ── Helper dd/mm/yyyy → yyyy-mm-dd ────────────────────────────────────
+        function getYmd(dmy) {
+            if (!dmy) return '';
+            var p = dmy.split('/');
+            return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
         }
-    });
 
-});
+        // ── Tab History Per Days (lazy, hanya dibuat saat tombol diklik) ──────
+        var dtHistory = null;
+
+        function buildHistoryDt() {
+            if (dtHistory) dtHistory.destroy();
+            dtHistory = $('#table-history-coil').DataTable({
+                processing: true,
+                serverSide: true,
+                destroy: true,
+                autoWidth: false,
+                sPaginationType: 'simple_numbers',
+                iDisplayLength: 25,
+                aLengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
+                ],
+                ajax: {
+                    url: siteurl + 'warehouse/data_side_stock_perday',
+                    type: 'POST',
+                    data: function(d) {
+                        d.date_from = getYmd($('#hc_date_from').val());
+                        d.date_to = getYmd($('#hc_date_to').val());
+                        d.kd_gudang = $('#hc_gudang').val();
+                    },
+                    cache: false,
+                },
+                columns: colDefHistory,
+                order: [
+                    [8, 'desc']
+                ],
+                language: {
+                    processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
+                    zeroRecords: 'Tidak ada data untuk rentang tanggal ini.',
+                    emptyTable: 'Tidak ada data.',
+                }
+            });
+        }
+
+        $('#btn-filter-hc').on('click', function() {
+            buildHistoryDt();
+        });
+
+        $('#btn-reset-hc').on('click', function() {
+            fpFrom.clear();
+            fpTo.clear();
+            fpFrom.set('maxDate', null);
+            fpTo.set('minDate', null);
+            $('#hc_gudang').val('');
+            if (dtHistory) {
+                dtHistory.destroy();
+                dtHistory = null;
+                $('#table-history-coil tbody').html(
+                    '<tr><td colspan="9" class="text-center text-muted py-4">' +
+                    '<i class="fa fa-info-circle"></i> ' +
+                    'Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>' +
+                    '</td></tr>'
+                );
+            }
+        });
+
+        $('#btn-excel-produksi').on('click', function() {
+            window.location.href = siteurl + 'warehouse/export_excel_stock_coil?kd_gudang=PUS';
+        });
+
+        $('#btn-excel-slitting').on('click', function() {
+            window.location.href = siteurl + 'warehouse/export_excel_stock_coil?kd_gudang=PEN';
+        });
+
+    });
 </script>
