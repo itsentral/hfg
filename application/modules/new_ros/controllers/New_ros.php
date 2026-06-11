@@ -3,10 +3,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class New_ros extends Admin_Controller
 {
-    protected $viewPermission   = 'New_ROS.View';
-    protected $addPermission    = 'New_ROS.Add';
-    protected $managePermission = 'New_ROS.Manage';
-    protected $deletePermission = 'New_ROS.Delete';
+    protected $viewPermission   = 'ROS_(Packing_List).View';
+    protected $addPermission    = 'ROS_(Packing_List).Add';
+    protected $managePermission = 'ROS_(Packing_List).Manage';
+    protected $deletePermission = 'ROS_(Packing_List).Delete';
 
     public function __construct()
     {
@@ -25,9 +25,9 @@ class New_ros extends Admin_Controller
 
     public function data_side()
     {
-        $ENABLE_MANAGE = has_permission('New_ROS.Manage');
-        $ENABLE_DELETE = has_permission('New_ROS.Delete');
-        $ENABLE_CLOSE  = has_permission('New_ROS.Manage');
+        $ENABLE_MANAGE = has_permission('ROS_(Packing_List).Manage');
+        $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
+        $ENABLE_CLOSE  = has_permission('ROS_(Packing_List).Manage');
 
         $tab   = $this->input->post('tab') ?: 'draft';
         $fetch = $this->New_ros_model->get_datatables($tab);

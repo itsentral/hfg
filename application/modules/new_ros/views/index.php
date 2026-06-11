@@ -1,8 +1,8 @@
 <?php
-$ENABLE_ADD    = has_permission('New_ROS.Add');
-$ENABLE_MANAGE = has_permission('New_ROS.Manage');
-$ENABLE_VIEW   = has_permission('New_ROS.View');
-$ENABLE_DELETE = has_permission('New_ROS.Delete');
+$ENABLE_ADD    = has_permission('ROS_(Packing_List).Add');
+$ENABLE_MANAGE = has_permission('ROS_(Packing_List).Manage');
+$ENABLE_VIEW   = has_permission('ROS_(Packing_List).View');
+$ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
 ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
@@ -324,61 +324,6 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
             });
         });
 
-        // ══════════════════════════════════════════════════════════════
-        // CLOSE ROS — Konfirmasi
-        // ══════════════════════════════════════════════════════════════
-        // $('#btn_confirm_close_ros').on('click', function() {
-        //     if (!currentCloseRosId) return;
-
-        //     Swal.fire({
-        //         title: 'Close ROS ' + currentCloseRosId + '?',
-        //         text: 'Setelah di-close, ROS akan masuk ke Incoming dan tidak bisa diedit lagi.',
-        //         icon: 'question',
-        //         showCancelButton: true,
-        //         confirmButtonColor: '#198754',
-        //         cancelButtonColor: '#6c757d',
-        //         confirmButtonText: '<i class="fas fa-check-double"></i> Ya, Close!',
-        //         cancelButtonText: 'Batal'
-        //     }).then(function(result) {
-        //         if (!result.isConfirmed) return;
-
-        //         $.ajax({
-        //             url: siteurl + 'new_ros/close_ros',
-        //             type: 'POST',
-        //             data: {
-        //                 id_ros: currentCloseRosId
-        //             },
-        //             dataType: 'json',
-        //             beforeSend: function() {
-        //                 Swal.fire({
-        //                     title: 'Memproses...',
-        //                     allowOutsideClick: false,
-        //                     didOpen: function() {
-        //                         Swal.showLoading();
-        //                     }
-        //                 });
-        //             },
-        //             success: function(res) {
-        //                 Swal.close();
-        //                 $('#modalCloseROS').modal('hide');
-        //                 if (res.status == 1) {
-        //                     Swal.fire('Berhasil!', res.msg, 'success').then(function() {
-        //                         tblDraft.ajax.reload();
-        //                         tblClose.ajax.reload();
-        //                         closeTabLoaded = true;
-        //                     });
-        //                 } else {
-        //                     Swal.fire('Gagal!', res.msg, 'error');
-        //                 }
-        //             },
-        //             error: function() {
-        //                 Swal.close();
-        //                 Swal.fire('Error', 'Gagal memproses close ROS.', 'error');
-        //             }
-        //         });
-        //     });
-        // });
-
         $('#btn_confirm_close_ros').on('click', function() {
             if (!currentCloseRosId) return;
 
@@ -658,7 +603,7 @@ $ENABLE_DELETE = has_permission('New_ROS.Delete');
             return html;
         }
 
-    }); // end ready
+    }); 
 </script>
 
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>

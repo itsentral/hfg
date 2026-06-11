@@ -1,6 +1,6 @@
 <?php
-$ENABLE_ADD    = has_permission('New_ROS.Add');
-$ENABLE_MANAGE = has_permission('New_ROS.Manage');
+$ENABLE_ADD    = has_permission('ROS_(Packing_List).Add');
+$ENABLE_MANAGE = has_permission('ROS_(Packing_List).Manage');
 
 $is_edit   = ($mode == 'edit');
 $id_ros    = $is_edit ? $header['id'] : 'New';
