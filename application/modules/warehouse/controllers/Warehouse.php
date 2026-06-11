@@ -186,7 +186,6 @@ class Warehouse extends Admin_Controller
         FROM warehouse_stock_coil wsc
         LEFT JOIN warehouse_stock ws
             ON CONVERT(ws.code_lv4 USING utf8mb4) = CONVERT(wsc.id_material USING utf8mb4)
-            AND ws.id_gudang = wsc.id_gudang
         {$where_coil}
         ORDER BY wsc.nm_material ASC, wsc.no_coil ASC
         ")->result_array();
@@ -853,7 +852,6 @@ class Warehouse extends Admin_Controller
             LEFT JOIN new_inventory_4 ni  ON ni.code_lv4  = cpd.id_material
             LEFT JOIN warehouse_stock ws
                 ON ws.code_lv4  = cpd.id_material
-                AND ws.kd_gudang  = cpd.kd_gudang
             LEFT JOIN warehouse w         ON w.kd_gudang  = cpd.kd_gudang
             {$where_coil}
             ORDER BY ni.nama ASC, cpd.hist_date ASC, cpd.no_coil ASC

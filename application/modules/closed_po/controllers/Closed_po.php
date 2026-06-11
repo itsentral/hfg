@@ -128,13 +128,12 @@ class Closed_po extends Admin_Controller
     }
 
     public function view_po($no_po)
-{
-    $session = $this->session->userdata('app_session');
+    {
+        $session = $this->session->userdata('app_session');
 
-    $get_po = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
+        $get_po = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
 
-    // Query sudah disamakan dengan fungsi edit()
-    $getitemso = $this->db->query("
+        $getitemso = $this->db->query("
         SELECT 
             a.id as id,
             a.idpr as idpr,
@@ -196,46 +195,46 @@ class Closed_po extends Admin_Controller
         GROUP BY id
     ")->result();
 
-    $customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
-    $mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
-    $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
-    $list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
-    $list_group_top = $this->db->get_where('list_help', ['group_by' => 'top', 'sts' => 'Y'])->result();
-    $term = $this->db->get_where('list_help', ['group_by' => 'top invoice', 'sts' => 'Y'])->result();
+        $customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
+        $mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
+        $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
+        $list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
+        $list_group_top = $this->db->get_where('list_help', ['group_by' => 'top', 'sts' => 'Y'])->result();
+        $term = $this->db->get_where('list_help', ['group_by' => 'top invoice', 'sts' => 'Y'])->result();
 
-    $this->db->select('a.*, b.no_credit, b.issue_date, b.expiry_date, b.value_contract, b.tolerance_plus, b.tolerance_minus, b.type_of_lc, b.valid_usen_until, b.bank_sender, b.bank_receiver, b.latest_shipment, b.no_sales_contract');
-    $this->db->from('tr_top_po a');
-    $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
-    $this->db->where('a.no_po', $no_po);
-    $list_top = $this->db->get()->result();
-    $num_top = count($list_top);
+        $this->db->select('a.*, b.no_credit, b.issue_date, b.expiry_date, b.value_contract, b.tolerance_plus, b.tolerance_minus, b.type_of_lc, b.valid_usen_until, b.bank_sender, b.bank_receiver, b.latest_shipment, b.no_sales_contract');
+        $this->db->from('tr_top_po a');
+        $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
+        $this->db->where('a.no_po', $no_po);
+        $list_top = $this->db->get()->result();
+        $num_top = count($list_top);
 
-    $nm_depart = [];
-    $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
-    if (!empty($get_nm_depart)) {
-        foreach ($get_nm_depart as $item_depart) {
-            $nm_depart[] = strtoupper($item_depart->nama);
+        $nm_depart = [];
+        $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
+        if (!empty($get_nm_depart)) {
+            foreach ($get_nm_depart as $item_depart) {
+                $nm_depart[] = strtoupper($item_depart->nama);
+            }
         }
+
+        $nm_depart = !empty($nm_depart) ? implode(', ', $nm_depart) : '';
+
+        $data = [
+            'customers'       => $customers,
+            'mata_uang'       => $mata_uang,
+            'get_po'          => $get_po,
+            'getitemso'       => $getitemso,
+            'list_supplier'   => $list_supplier,
+            'list_department' => $list_department,
+            'nm_depart'       => $nm_depart,
+            'list_top'        => $list_top,
+            'list_group_top'  => $list_group_top,
+            'num_po'          => $num_top,
+            'term'            => $term
+        ];
+
+        $this->template->set('results', $data);
+        $this->template->title('Detail Purchase Order');
+        $this->template->render('view_po');
     }
-    
-    $nm_depart = !empty($nm_depart) ? implode(', ', $nm_depart) : '';
-
-    $data = [
-        'customers'       => $customers,
-        'mata_uang'       => $mata_uang,
-        'get_po'          => $get_po,
-        'getitemso'       => $getitemso,
-        'list_supplier'   => $list_supplier,
-        'list_department' => $list_department,
-        'nm_depart'       => $nm_depart,
-        'list_top'        => $list_top,
-        'list_group_top'  => $list_group_top,
-        'num_po'          => $num_top,
-        'term'            => $term
-    ];
-
-    $this->template->set('results', $data);
-    $this->template->title('Detail Purchase Order');
-    $this->template->render('view_po');
-}
 }

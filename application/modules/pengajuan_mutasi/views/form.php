@@ -218,7 +218,10 @@ $details = $m['details'] ?? [];
                     <table class="table table-bordered table-hover align-middle" id="tblCoil">
                         <thead class="table-light">
                             <tr>
-                                <th width="40"><input type="checkbox" id="checkAllCoil"></th>
+                                <th width="50" class="text-center th-clickable" style="cursor: pointer; vertical-align: middle;">
+                                    <input type="checkbox" id="checkAllCoil" class="form-check-input"
+                                        style="width: 20px; height: 20px; margin: 0; cursor: pointer;">
+                                </th>
                                 <th>Kode Internal</th>
                                 <th>No. Coil</th>
                                 <th>No. IPP</th>
@@ -537,18 +540,19 @@ $details = $m['details'] ?? [];
             res.data.forEach(function(c) {
                 const isChecked = selectedIds.includes(parseInt(c.id)) ? 'checked' : '';
                 html += `
-            <tr>
-                <td class="text-center">
-                    <input type="checkbox" class="coil-check" value="${c.id}"
-                        data-json='${JSON.stringify(c)}' ${isChecked}>
-                </td>
-                <td><span class="badge bg-light text-dark border">${escHtml(c.kode_internal || '-')}</span></td>
-                <td><strong>${escHtml(c.no_coil)}</strong></td>
-                <td>${escHtml(c.no_ipp || '-')}</td>
-                <td>${formatNum(c.gross_weight, 2)}</td>
-                <td>${formatNum(c.net_weight, 2)}</td>
-                <td>${formatNum(c.length, 2)}</td>
-            </tr>`;
+        <tr>
+            <td class="text-center align-middle td-clickable" style="cursor: pointer; min-width: 50px;">
+                <input type="checkbox" class="form-check-input coil-check" value="${c.id}"
+                    style="width: 20px; height: 20px; margin: 0; cursor: pointer;"
+                    data-json='${JSON.stringify(c)}' ${isChecked}>
+            </td>
+            <td class="align-middle"><span class="badge bg-light text-dark border">${escHtml(c.kode_internal || '-')}</span></td>
+            <td class="align-middle"><strong>${escHtml(c.no_coil)}</strong></td>
+            <td class="align-middle">${escHtml(c.no_ipp || '-')}</td>
+            <td class="align-middle">${formatNum(c.gross_weight, 2)}</td>
+            <td class="align-middle">${formatNum(c.net_weight, 2)}</td>
+            <td class="align-middle">${formatNum(c.length, 2)}</td>
+        </tr>`;
             });
 
             $('#coilBody').html(html);
@@ -570,6 +574,17 @@ $details = $m['details'] ?? [];
                     page: 'current'
                 }).nodes();
                 $(cells).find('.coil-check').prop('checked', this.checked);
+            });
+
+            // BARU: Event Listener untuk membuat satu kolom TD bisa diklik
+            $('#tblCoil').off('click', '.td-clickable').on('click', '.td-clickable', function(e) {
+                // Mencegah trigger double jika yang diklik tepat di target input checkbox-nya
+                if ($(e.target).is('.coil-check')) {
+                    return;
+                }
+
+                const checkbox = $(this).find('.coil-check');
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
             });
 
         }, 'json');

@@ -29,7 +29,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 					<th>Vendor</th>
 					<th>Harga PO</th>
 					<th>Revisi</th>
-					<th>Reject Reason</th>
+					<th>Close Reason</th>
 					<?php if ($ENABLE_MANAGE) : ?>
 						<th>Action</th>
 					<?php endif; ?>
@@ -83,7 +83,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 							<td><?= $record->nm_supplier ?></td>
 							<td class="text-right"><?= number_format($record->total_barang - $record->nilai_disc + $record->total_ppn + $record->taxtotal) ?></td>
 							<td class="text-center"><?= $record->revisi ?></td>
-							<td><?= $record->reject_reason ?></td>
+							<td><?= $record->close_po_desc ?></td>
 							<td style="padding-left:20px">
 								<?php
 								if ($ENABLE_VIEW) {
