@@ -726,8 +726,8 @@ class Warehouse_model extends BF_Model
         $id_gudang = '',
         $filter_material = '',
         $date_snap = '',
-        $date_to = '' 
-    ) {
+        $date_to = ''  // $date_to diabaikan, tetap ada agar tidak breaking
+        ) {
         if (empty($date_snap)) return 0;
 
         $snap_datetime = $date_snap . ' 23:59:59';
@@ -746,20 +746,20 @@ class Warehouse_model extends BF_Model
         }
 
         $row = $this->db->query("
-            SELECT SUM(latest.total_nilai) AS grand_total
-            FROM (
-                SELECT spd.total_nilai
-                FROM warehouse_stock_per_day spd
-                INNER JOIN (
-                    SELECT id_material, id_gudang, MAX(hist_date) AS max_date
-                    FROM warehouse_stock_per_day
-                    WHERE hist_date <= '{$snap_datetime}'
-                    GROUP BY id_material, id_gudang
-                ) mx ON mx.id_material = spd.id_material
-                    AND mx.id_gudang   = spd.id_gudang
-                    AND mx.max_date    = spd.hist_date
-                {$where_sub}
-            ) latest
+        SELECT SUM(latest.total_nilai) AS grand_total
+        FROM (
+            SELECT spd.total_nilai
+            FROM warehouse_stock_per_day spd
+            INNER JOIN (
+                SELECT id_material, id_gudang, MAX(hist_date) AS max_date
+                FROM warehouse_stock_per_day
+                WHERE hist_date <= '{$snap_datetime}'
+                GROUP BY id_material, id_gudang
+            ) mx ON mx.id_material = spd.id_material
+                AND mx.id_gudang   = spd.id_gudang
+                AND mx.max_date    = spd.hist_date
+            {$where_sub}
+        ) latest
         ")->row();
 
         return $row ? (float) $row->grand_total : 0;
@@ -812,8 +812,7 @@ class Warehouse_model extends BF_Model
             LEFT JOIN new_inventory_4 ni
                 ON ni.code_lv4 = cpd.id_material
             LEFT JOIN warehouse_stock ws
-                ON ws.code_lv4  = cpd.id_material
-            AND ws.kd_gudang  = cpd.kd_gudang
+            ON ws.code_lv4 = cpd.id_material
             {$where}
             ORDER BY ni.nama ASC, cpd.no_coil ASC
         ")->result_array();
