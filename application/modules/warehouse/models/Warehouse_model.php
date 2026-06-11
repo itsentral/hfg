@@ -429,87 +429,98 @@ class Warehouse_model extends BF_Model
         $requestData = $_REQUEST;
         $search      = $requestData['search']['value'] ?? '';
         $start       = (int) ($requestData['start']  ?? 0);
-        $length      = (int) ($requestData['length'] ?? 10);
-        $order_col   = $requestData['order'][0]['column'] ?? 1;
-        $order_dir   = $requestData['order'][0]['dir']    ?? 'asc';
+        $length      = (int) ($requestData['length'] ?? 25);
 
-        // Tanggal dari POST (dikirim bersama DataTables ajax.data)
-        $date_from = $_POST['date_from'] ?? '';
-        $date_to   = $_POST['date_to']   ?? '';
+        $date_snap = $_POST['date_snap'] ?? '';
 
-        $col_map = [
-            1 => 'ni.nama',
-            2 => 'cpd.no_coil',
-            3 => 'cpd.net_weight',
-            4 => 'cpd.gross_weight',
-            5 => 'cpd.length',
-            6 => 'w.nm_gudang',
-            7 => 'cpd.status',
-            8 => 'cpd.hist_date',
-        ];
-        $order_by = $col_map[$order_col] ?? 'ni.nama';
+        if (empty($date_snap)) {
+            echo json_encode([
+                'draw'            => intval($requestData['draw'] ?? 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+            return;
+        }
 
-        // ── WHERE builder ──────────────────────────────────────────────────────
-        $where = " WHERE 1=1 ";
+        $snap_datetime = $date_snap . ' 23:59:59';
+
+        // ── Logika snapshot:
+        // Ambil coil yang punya status IN s.d. tanggal,
+        // tapi belum ada status OUT s.d. tanggal yang sama
+        // → artinya coil MASIH ADA di gudang per tanggal tersebut
+        $where = " WHERE cpd.hist_date <= '{$snap_datetime}'
+               AND cpd.status = 'IN'
+               AND NOT EXISTS (
+                   SELECT 1 FROM warehouse_coil_per_day cpd2
+                   WHERE cpd2.no_coil     = cpd.no_coil
+                     AND cpd2.id_gudang   = cpd.id_gudang
+                     AND cpd2.status      = 'OUT'
+                     AND cpd2.hist_date  <= '{$snap_datetime}'
+               ) ";
 
         if (!empty($kd_gudang)) {
             $kd     = $this->db->escape($kd_gudang);
             $where .= " AND cpd.kd_gudang = {$kd} ";
         }
 
-        if (!empty($date_from)) {
-            $df     = $this->db->escape($date_from);
-            $where .= " AND DATE(cpd.hist_date) >= {$df} ";
-        }
-
-        if (!empty($date_to)) {
-            $dt     = $this->db->escape($date_to);
-            $where .= " AND DATE(cpd.hist_date) <= {$dt} ";
-        }
-
         if (!empty($search)) {
             $s      = $this->db->escape_like_str($search);
             $where .= " AND (
-            ni.nama           LIKE '%{$s}%'
-            OR cpd.no_coil    LIKE '%{$s}%'
+            ni.nama            LIKE '%{$s}%'
+            OR cpd.no_coil     LIKE '%{$s}%'
             OR cpd.id_material LIKE '%{$s}%'
-            OR w.nm_gudang    LIKE '%{$s}%'
+            OR w.nm_gudang     LIKE '%{$s}%'
         ) ";
         }
 
+        $col_map = [
+            0 => 'cpd.id',
+            1 => 'ni.nama',
+            2 => 'w.nm_gudang',
+            3 => 'cpd.no_coil',
+            4 => 'cpd.kode_internal',
+            5 => 'cpd.net_weight',
+            6 => 'cpd.gross_weight',
+            7 => 'cpd.length',
+            8 => 'cpd.status',
+        ];
+
+        $order_col = $requestData['order'][0]['column'] ?? 1;
+        $order_dir = $requestData['order'][0]['dir']    ?? 'asc';
+        $order_by  = $col_map[$order_col] ?? 'ni.nama';
+
         $base_from = "
-    FROM warehouse_coil_per_day cpd
-    LEFT JOIN warehouse w
-        ON w.kd_gudang = cpd.kd_gudang
-    LEFT JOIN new_inventory_4 ni
-        ON ni.code_lv4 = cpd.id_material
-    {$where}
+        FROM warehouse_coil_per_day cpd
+        LEFT JOIN warehouse w
+            ON w.kd_gudang = cpd.kd_gudang
+        LEFT JOIN new_inventory_4 ni
+            ON ni.code_lv4 = cpd.id_material
+        {$where}
     ";
 
-        // ── Count ──────────────────────────────────────────────────────────────
+        // ── Count ──────────────────────────────────────────────────────────
         $total_q   = $this->db->query("SELECT COUNT(*) as cnt {$base_from}")->row();
         $totalData = $total_q ? (int) $total_q->cnt : 0;
 
-        // ── Data ───────────────────────────────────────────────────────────────
+        // ── Data ───────────────────────────────────────────────────────────
         $sql = "
-    SELECT
-        cpd.id,
-        cpd.id_material,
-        cpd.no_coil,
-        cpd.kode_internal,
-        cpd.gross_weight,
-        cpd.net_weight,
-        cpd.length,
-        cpd.kd_gudang,
-        cpd.id_gudang,
-        cpd.status,
-        cpd.hist_date,
-        ni.nama     AS nm_barang,
-        ni.trade_name,
-        w.nm_gudang
-    {$base_from}
-    ORDER BY {$order_by} {$order_dir}
-    LIMIT {$start}, {$length}
+        SELECT
+            cpd.id,
+            cpd.id_material,
+            cpd.no_coil,
+            cpd.kode_internal,
+            cpd.gross_weight,
+            cpd.net_weight,
+            cpd.length,
+            cpd.kd_gudang,
+            cpd.status,
+            ni.nama       AS nm_barang,
+            ni.trade_name,
+            w.nm_gudang
+        {$base_from}
+        ORDER BY {$order_by} {$order_dir}
+        LIMIT {$start}, {$length}
     ";
 
         $rows = $this->db->query($sql)->result_array();
@@ -517,22 +528,20 @@ class Warehouse_model extends BF_Model
         $no   = $start + 1;
 
         foreach ($rows as $row) {
-            $status_badge = $row['status'] === 'IN'
-                ? "<span class='badge bg-success'>IN</span>"
-                : "<span class='badge bg-danger'>OUT</span>";
+            $status_badge = "<span class='badge bg-success'>IN</span>"; // selalu IN
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['nm_barang']
                     . '<br><small class="text-muted">' . $row['id_material'] . '</small>'
                     . ($row['trade_name'] ? '<br><small class="text-info">' . $row['trade_name'] . '</small>' : ''),
+                "<div class='text-center'>" . $row['nm_gudang'] . "</div>",
                 "<div class='text-center'>" . $row['no_coil'] . "</div>",
                 "<div class='text-center'>" . ($row['kode_internal'] ?? '-') . "</div>",
                 "<div class='text-end'>"    . number_format((float) $row['net_weight'],   3, ',', '.') . "</div>",
                 "<div class='text-end'>"    . number_format((float) $row['gross_weight'], 3, ',', '.') . "</div>",
                 "<div class='text-end'>"    . number_format((float) $row['length'],       3, ',', '.') . "</div>",
                 "<div class='text-center'>" . $status_badge . "</div>",
-                "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
             ];
             $no++;
         }
@@ -550,98 +559,128 @@ class Warehouse_model extends BF_Model
         $requestData     = $_REQUEST;
         $id_gudang       = $_POST['id_gudang']       ?? '';
         $filter_material = $_POST['filter_material'] ?? '';
-        $date_from       = $_POST['date_from']       ?? '';
-        $date_to         = $_POST['date_to']         ?? '';
+        $date_snap       = $_POST['date_snap']        ?? '';
 
-        // ── WHERE ──────────────────────────────────────────────────────────────
-        $where = " WHERE 1=1 ";
+        if (empty($date_snap)) {
+            echo json_encode([
+                'draw'            => intval($requestData['draw'] ?? 1),
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => [],
+            ]);
+            return;
+        }
+
+        $snap_datetime = $date_snap . ' 23:59:59';
+
+        // ── Subquery: ambil row TERBARU per material per gudang s.d. tanggal ──
+        // Menggunakan subquery untuk dapat row terakhir (bukan GROUP BY yang ambil sembarang)
+        $where_sub = " WHERE spd.hist_date <= '{$snap_datetime}' ";
 
         if (!empty($kd_gudang)) {
-            $kd     = $this->db->escape($kd_gudang);
-            $where .= " AND spd.kd_gudang = {$kd} ";
+            $kd         = $this->db->escape($kd_gudang);
+            $where_sub .= " AND spd.kd_gudang = {$kd} ";
         }
-
         if (!empty($id_gudang)) {
-            $where .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
+            $where_sub .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
         }
-
         if (!empty($filter_material)) {
-            $f      = $this->db->escape_like_str($filter_material);
-            $where .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
+            $f          = $this->db->escape_like_str($filter_material);
+            $where_sub .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
         }
 
-        if (!empty($date_from)) {
-            $df     = $this->db->escape($date_from);
-            $where .= " AND DATE(spd.hist_date) >= {$df} ";
-        }
-
-        if (!empty($date_to)) {
-            $dt     = $this->db->escape($date_to);
-            $where .= " AND DATE(spd.hist_date) <= {$dt} ";
-        }
-
-        if (!empty($_POST['search']['value'])) {
-            $s      = $this->db->escape_like_str($_POST['search']['value']);
-            $where .= " AND (
-            spd.nm_material LIKE '%{$s}%'
+        $search = $_POST['search']['value'] ?? '';
+        if (!empty($search)) {
+            $s          = $this->db->escape_like_str($search);
+            $where_sub .= " AND (
+            spd.nm_material  LIKE '%{$s}%'
             OR spd.id_material LIKE '%{$s}%'
-            OR w.nm_gudang  LIKE '%{$s}%'
+            OR spd.kd_gudang   LIKE '%{$s}%'
         ) ";
         }
 
-        $base_from = "
+        // ── Count total distinct material+gudang yang punya data s.d. tanggal ─
+        $cnt_row = $this->db->query("
+        SELECT COUNT(*) AS cnt
+        FROM (
+            SELECT spd.id_material, spd.id_gudang
             FROM warehouse_stock_per_day spd
-            LEFT JOIN warehouse w ON w.id = spd.id_gudang
-            LEFT JOIN warehouse_stock ws  
-                ON ws.code_lv4  = spd.id_material
-                AND ws.id_gudang = spd.id_gudang
-            {$where}
-        ";
-
-        // ── Count — DISTINCT id_material + id_gudang + tanggal ────────────────
-        $cnt_row   = $this->db->query("
-        SELECT COUNT(DISTINCT spd.id_material, spd.id_gudang, DATE(spd.hist_date)) AS cnt
-        {$base_from}
-    ")->row();
+            {$where_sub}
+            GROUP BY spd.id_material, spd.id_gudang
+        ) t
+        ")->row();
         $totalData = $cnt_row ? (int) $cnt_row->cnt : 0;
 
-        // ── Order ──────────────────────────────────────────────────────────────
+        // ── Order ─────────────────────────────────────────────────────────────
         $col_order = [
-            1 => 'spd.id_material',
-            2 => 'spd.nm_material',
-            3 => 'w.nm_gudang',
-            4 => 'spd.qty_stock',
-            5 => 'spd.harga_beli',
-            6 => 'spd.total_nilai',
-            7 => 'spd.hist_date',
+            1 => 'latest.id_material',
+            2 => 'latest.nm_material',
+            3 => 'latest.kd_gudang',
+            4 => 'latest.qty_stock',
+            5 => 'latest.harga_beli',
+            6 => 'latest.total_nilai',
         ];
         $order_idx = (int) ($requestData['order'][0]['column'] ?? 2);
         $order_dir = in_array(strtolower($requestData['order'][0]['dir'] ?? ''), ['asc', 'desc'])
             ? $requestData['order'][0]['dir'] : 'asc';
-        $order_by  = $col_order[$order_idx] ?? 'spd.nm_material';
+        $order_by  = $col_order[$order_idx] ?? 'latest.nm_material';
 
         $start  = (int) ($requestData['start']  ?? 0);
         $length = (int) ($requestData['length'] ?? 25);
         $limit  = ($length != -1) ? "LIMIT {$start}, {$length}" : '';
 
+        // ── Query utama: row terbaru per material+gudang s.d. tanggal ─────────
+        // Pakai JOIN ke subquery MAX(hist_date) agar dapat nilai snapshot terakhir
         $sql = "
-    SELECT
-        spd.id_material,
-        spd.nm_material,
-        spd.id_gudang,
-        spd.kd_gudang,
-        spd.qty_stock,
-        spd.qty_booking,
-        spd.qty_free,
-        spd.harga_beli,
-        spd.total_nilai,
-        spd.hist_date,
-        w.nm_gudang,
-        ws.trade_name
-    {$base_from}
-    ORDER BY {$order_by} {$order_dir}
-    {$limit}
-    ";
+        SELECT
+            latest.id_material,
+            latest.nm_material,
+            latest.id_gudang,
+            latest.kd_gudang,
+            latest.qty_stock,
+            latest.harga_beli,
+            latest.total_nilai,
+            latest.hist_date,
+            w.nm_gudang,
+            ws.trade_name,
+            -- Jumlah coil netto sampai tanggal ini:
+            -- IN yang masuk s.d. tanggal dikurangi OUT s.d. tanggal
+            (
+                SELECT COUNT(*)
+                FROM warehouse_coil_per_day cpd
+                WHERE cpd.id_material  = latest.id_material
+                  AND cpd.id_gudang    = latest.id_gudang
+                  AND cpd.hist_date   <= '{$snap_datetime}'
+                  AND cpd.status       = 'IN'
+            ) -
+            (
+                SELECT COUNT(*)
+                FROM warehouse_coil_per_day cpd
+                WHERE cpd.id_material  = latest.id_material
+                  AND cpd.id_gudang    = latest.id_gudang
+                  AND cpd.hist_date   <= '{$snap_datetime}'
+                  AND cpd.status       = 'OUT'
+            ) AS jumlah_coil
+        FROM (
+            SELECT spd.*
+            FROM warehouse_stock_per_day spd
+            INNER JOIN (
+                SELECT id_material, id_gudang, MAX(hist_date) AS max_date
+                FROM warehouse_stock_per_day
+                WHERE hist_date <= '{$snap_datetime}'
+                GROUP BY id_material, id_gudang
+            ) mx ON mx.id_material = spd.id_material
+                AND mx.id_gudang   = spd.id_gudang
+                AND mx.max_date    = spd.hist_date
+            {$where_sub}
+        ) latest
+        LEFT JOIN warehouse w  ON w.id        = latest.id_gudang
+        LEFT JOIN warehouse_stock ws
+               ON ws.code_lv4  = latest.id_material
+              AND ws.id_gudang  = latest.id_gudang
+        ORDER BY {$order_by} {$order_dir}
+        {$limit}
+        ";
 
         $rows = $this->db->query($sql)->result_array();
         $data = [];
@@ -654,14 +693,18 @@ class Warehouse_model extends BF_Model
                 <i class='fa fa-history'></i> History
             </button>";
 
+            $jml_coil = max(0, (int) $row['jumlah_coil']);
+
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $row['id_material'],
                 $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
+                $row['nm_gudang'],
                 "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
-                "<div class='text-right'>" . number_format((float) $row['qty_stock'],        3, ',', '.') . "</div>",
-                "<div class='text-right'>" . number_format((int) round($row['harga_beli']),  0, ',', '.') . "</div>",
-                "<div class='text-right'>" . number_format((int) round($row['total_nilai']), 0, ',', '.') . "</div>",
+                "<div class='text-center'>{$jml_coil}</div>",
+                "<div class='text-right'>" . number_format((float) $row['qty_stock'],   3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['harga_beli'],  3, ',', '.') . "</div>",
+                "<div class='text-right'>" . number_format((float) $row['total_nilai'], 3, ',', '.') . "</div>",
                 "<div class='text-center'>{$btn_history}</div>",
             ];
             $no++;
@@ -678,36 +721,278 @@ class Warehouse_model extends BF_Model
     /**
      * Grand total untuk footer DataTables stock value per-day
      */
-    public function get_grand_total_stock_value_perday($kd_gudang = '', $id_gudang = '', $filter_material = '', $date_from = '', $date_to = '')
-    {
-        $where = " WHERE 1=1 ";
+    public function get_grand_total_stock_value_perday(
+        $kd_gudang = '',
+        $id_gudang = '',
+        $filter_material = '',
+        $date_snap = '',
+        $date_to = '' 
+    ) {
+        if (empty($date_snap)) return 0;
 
+        $snap_datetime = $date_snap . ' 23:59:59';
+
+        $where_sub = " WHERE spd.hist_date <= '{$snap_datetime}' ";
         if (!empty($kd_gudang)) {
-            $kd     = $this->db->escape($kd_gudang);
-            $where .= " AND spd.kd_gudang = {$kd} ";
+            $kd         = $this->db->escape($kd_gudang);
+            $where_sub .= " AND spd.kd_gudang = {$kd} ";
         }
         if (!empty($id_gudang)) {
-            $where .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
+            $where_sub .= " AND spd.id_gudang = " . (int) $id_gudang . " ";
         }
         if (!empty($filter_material)) {
-            $f      = $this->db->escape_like_str($filter_material);
-            $where .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
-        }
-        if (!empty($date_from)) {
-            $df     = $this->db->escape($date_from);
-            $where .= " AND DATE(spd.hist_date) >= {$df} ";
-        }
-        if (!empty($date_to)) {
-            $dt     = $this->db->escape($date_to);
-            $where .= " AND DATE(spd.hist_date) <= {$dt} ";
+            $f          = $this->db->escape_like_str($filter_material);
+            $where_sub .= " AND (spd.nm_material LIKE '%{$f}%' OR spd.id_material LIKE '%{$f}%') ";
         }
 
         $row = $this->db->query("
-        SELECT SUM(spd.total_nilai) AS grand_total
-        FROM warehouse_stock_per_day spd
-        {$where}
-    ")->row();
+            SELECT SUM(latest.total_nilai) AS grand_total
+            FROM (
+                SELECT spd.total_nilai
+                FROM warehouse_stock_per_day spd
+                INNER JOIN (
+                    SELECT id_material, id_gudang, MAX(hist_date) AS max_date
+                    FROM warehouse_stock_per_day
+                    WHERE hist_date <= '{$snap_datetime}'
+                    GROUP BY id_material, id_gudang
+                ) mx ON mx.id_material = spd.id_material
+                    AND mx.id_gudang   = spd.id_gudang
+                    AND mx.max_date    = spd.hist_date
+                {$where_sub}
+            ) latest
+        ")->row();
 
-        return $row ? (int) round($row->grand_total) : 0;
+        return $row ? (float) $row->grand_total : 0;
+    }
+
+    public function export_excel_coil_perday($kd_gudang = '', $date_snap = '')
+    {
+        if (empty($date_snap)) {
+            echo 'Tanggal tidak boleh kosong.';
+            return;
+        }
+
+        $snap_datetime = $date_snap . ' 23:59:59';
+
+        // ── WHERE (logika snapshot) ────────────────────────────────────────
+        $where = " WHERE cpd.hist_date <= '{$snap_datetime}'
+               AND cpd.status = 'IN'
+               AND NOT EXISTS (
+                   SELECT 1 FROM warehouse_coil_per_day cpd2
+                   WHERE cpd2.no_coil    = cpd.no_coil
+                     AND cpd2.id_gudang  = cpd.id_gudang
+                     AND cpd2.status     = 'OUT'
+                     AND cpd2.hist_date <= '{$snap_datetime}'
+               ) ";
+
+        if (!empty($kd_gudang)) {
+            $kd     = $this->db->escape($kd_gudang);
+            $where .= " AND cpd.kd_gudang = {$kd} ";
+        }
+
+        // ── Query — tambah join ke warehouse_stock untuk costbook ──────────
+        $rows = $this->db->query("
+            SELECT
+                cpd.id_material,
+                cpd.no_coil,
+                cpd.kode_internal,
+                cpd.gross_weight,
+                cpd.net_weight,
+                cpd.length,
+                cpd.kd_gudang,
+                cpd.status,
+                cpd.hist_date,
+                ni.nama        AS nm_barang,
+                ni.trade_name,
+                ws.harga_beli,
+                w.nm_gudang
+            FROM warehouse_coil_per_day cpd
+            LEFT JOIN warehouse w
+                ON w.kd_gudang = cpd.kd_gudang
+            LEFT JOIN new_inventory_4 ni
+                ON ni.code_lv4 = cpd.id_material
+            LEFT JOIN warehouse_stock ws
+                ON ws.code_lv4  = cpd.id_material
+            AND ws.kd_gudang  = cpd.kd_gudang
+            {$where}
+            ORDER BY ni.nama ASC, cpd.no_coil ASC
+        ")->result_array();
+
+        // ── Label ──────────────────────────────────────────────────────────
+        $label_gudang = 'Semua Gudang';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
+
+        $label_date   = ' | Per Tanggal: ' . date('d/m/Y', strtotime($date_snap));
+
+        ini_set('memory_limit', '512M');
+        $this->load->library('PHPExcel');
+        $objPHPExcel = new PHPExcel();
+        $sheet       = $objPHPExcel->getActiveSheet();
+        $sheet->setTitle('Stock Coil Per Day');
+
+        // ── Judul ──────────────────────────────────────────────────────────
+        $sheet->mergeCells('A1:L1');
+        $sheet->setCellValue(
+            'A1',
+            'STOCK COIL — ' . strtoupper($label_gudang) . $label_date
+        );
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        $sheet->mergeCells('A2:L2');
+        $sheet->setCellValue('A2', 'Dicetak: ' . date('d F Y H:i'));
+        $sheet->getStyle('A2')->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        // ── Header ─────────────────────────────────────────────────────────
+        $headers = [
+            'A' => 'No',
+            'B' => 'Nama Material (Lv.4)',
+            'C' => 'Trade Name',
+            'D' => 'Gudang',
+            'E' => 'No. Coil',
+            'F' => 'Kode Internal',
+            'G' => 'Status',
+            'H' => 'Nett Weight (Kg)',
+            'I' => 'Gross Weight (Kg)',
+            'J' => 'Length (M)',
+            'K' => 'Costbook',
+            'L' => 'Total Value',
+        ];
+
+        foreach ($headers as $col => $label) {
+            $cell = $col . '4';
+            $sheet->setCellValue($cell, $label);
+            $sheet->getStyle($cell)->getFont()->setBold(true)
+                ->getColor()->setRGB('FFFFFF');
+            $sheet->getStyle($cell)->getFill()
+                ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('1F4E79');
+            $sheet->getStyle($cell)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle($cell)->getBorders()->getAllBorders()
+                ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        }
+        $sheet->getRowDimension(4)->setRowHeight(20);
+
+        // ── Lebar kolom ────────────────────────────────────────────────────
+        $sheet->getColumnDimension('A')->setWidth(5);
+        $sheet->getColumnDimension('B')->setWidth(40);
+        $sheet->getColumnDimension('C')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(22);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(18);
+        $sheet->getColumnDimension('G')->setWidth(10);
+        $sheet->getColumnDimension('H')->setWidth(18);
+        $sheet->getColumnDimension('I')->setWidth(18);
+        $sheet->getColumnDimension('J')->setWidth(15);
+        $sheet->getColumnDimension('K')->setWidth(20);
+        $sheet->getColumnDimension('L')->setWidth(22);
+
+        // ── Data rows ──────────────────────────────────────────────────────
+        $row               = 5;
+        $total_nett        = 0.0;
+        $total_gross       = 0.0;
+        $total_len         = 0.0;
+        $grand_total_value = 0.0;
+
+        foreach ($rows as $no => $d) {
+            $net_weight   = (float) ($d['net_weight']   ?? 0);
+            $gross_weight = (float) ($d['gross_weight'] ?? 0);
+            $length       = (float) ($d['length']       ?? 0);
+            $costbook     = (float) ($d['harga_beli']   ?? 0);
+            $total_value  = $costbook * $net_weight;
+            $status       = $d['status'] ?? 'IN';
+
+            $sheet->setCellValueExplicit('A' . $row, $no + 1,                  PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('B' . $row, $d['nm_barang'],          PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('C' . $row, $d['trade_name'] ?? '',   PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('D' . $row, $d['nm_gudang'],          PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('E' . $row, $d['no_coil'],            PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('F' . $row, $d['kode_internal'] ?? '-', PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('G' . $row, $status,                  PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('H' . $row, $net_weight,              PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('I' . $row, $gross_weight,            PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('J' . $row, $length,                  PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('K' . $row, $costbook,                PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('L' . $row, $total_value,             PHPExcel_Cell_DataType::TYPE_NUMERIC);
+
+            // ── Border ────────────────────────────────────────────────────
+            $sheet->getStyle('A' . $row . ':L' . $row)->getBorders()->getAllBorders()
+                ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+            // ── Format angka ──────────────────────────────────────────────
+            $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet->getStyle('J' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet->getStyle('K' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('L' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+            // ── Alignment ─────────────────────────────────────────────────
+            $sheet->getStyle('A' . $row)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('D' . $row)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('G' . $row)->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+            // ── Warna status (IN = hijau, OUT = merah) ────────────────────
+            $bg_status = $status === 'IN' ? 'E2EFDA' : 'FCE4D6';
+            $sheet->getStyle('G' . $row)->getFill()
+                ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                ->getStartColor()->setRGB($bg_status);
+
+            // ── Zebra stripe (skip kolom G agar warna status tidak tertimpa)
+            if ($no % 2 === 0) {
+                foreach (['A', 'B', 'C', 'D', 'E', 'F', 'H', 'I', 'J', 'K', 'L'] as $col) {
+                    $sheet->getStyle($col . $row)->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()->setRGB('EBF3FA');
+                }
+            }
+
+            $total_nett        += $net_weight;
+            $total_gross       += $gross_weight;
+            $total_len         += $length;
+            $grand_total_value += $total_value;
+            $row++;
+        }
+
+        // ── Total row ──────────────────────────────────────────────────────
+        $sheet->mergeCells('A' . $row . ':G' . $row);
+        $sheet->setCellValueExplicit('A' . $row, 'TOTAL',             PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit('H' . $row, $total_nett,         PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('I' . $row, $total_gross,        PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('J' . $row, $total_len,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('K' . $row, '',                  PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit('L' . $row, $grand_total_value,  PHPExcel_Cell_DataType::TYPE_NUMERIC);
+
+        $sheet->getStyle('A' . $row . ':L' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':L' . $row)->getFill()
+            ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D9E1F2');
+        $sheet->getStyle('A' . $row . ':L' . $row)->getBorders()->getAllBorders()
+            ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A' . $row)->getAlignment()
+            ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('H' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet->getStyle('J' . $row)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet->getStyle('L' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+        // ── Output ─────────────────────────────────────────────────────────
+        $filename  = 'Stock_Coil_PerDay_'
+            . str_replace(' ', '_', $label_gudang)
+            . '_' . date('Ymd', strtotime($date_snap)) . '.xls';
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        ob_end_clean();
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        $objWriter->save('php://output');
+        exit;
     }
 }

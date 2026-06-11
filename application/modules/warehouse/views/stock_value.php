@@ -28,7 +28,6 @@
         z-index: 1055;
     }
 
-    /* Blur modal history ketika modal transaksi terbuka */
     #modal-history.blur-background .modal-content {
         filter: blur(3px);
         transition: filter 0.2s ease;
@@ -41,20 +40,19 @@
 <div class="card">
     <div class="card-body">
 
-        <!-- ── Filter material (global, hanya untuk tab live) ─────────── -->
         <div class="row mb-3 g-2 align-items-end" id="bar-filter-live">
             <div class="col-md-4">
                 <input type="text" id="filter_material" class="form-control"
                     placeholder="Cari kode / nama material...">
             </div>
             <div class="col-md-8 text-end">
-                <button class="btn btn-primary" id="btn-filter">
+                <button class="btn btn-sm btn-primary" id="btn-filter">
                     <i class="fa fa-search"></i> Filter
                 </button>
-                <button class="btn btn-secondary" id="btn-reset">
+                <button class="btn btn-sm btn-secondary" id="btn-reset">
                     <i class="fa fa-refresh"></i> Reset
                 </button>
-                <button class="btn btn-success" id="btn-excel">
+                <button class="btn btn-sm btn-success" id="btn-excel">
                     <i class="fa fa-file-excel-o"></i> Download Excel
                 </button>
             </div>
@@ -146,50 +144,51 @@
             <!-- TAB HISTORY PER DAYS -->
             <div class="tab-pane fade" id="tab-sv-history" role="tabpanel">
 
-                <!-- Filter date range -->
-                <div class="row mb-3 g-2 align-items-end">
-                    <div class="col-md-3">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-search"></i> Cari Material
-                        </label>
-                        <input type="text" id="sv_hist_material" class="form-control form-control-sm"
-                            placeholder="Kode / nama material...">
+                <div class="row mb-3 g-2 align-items-end justify-content-between">
+
+                    <div class="col-md-8">
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                                    <i class="fa fa-search"></i> Cari Material
+                                </label>
+                                <input type="text" id="sv_hist_material" class="form-control form-control-sm"
+                                    placeholder="Kode / nama material...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                                    <i class="fa fa-calendar"></i> Per Tanggal
+                                </label>
+                                <input type="text" id="sv_date_snap" class="form-control form-control-sm"
+                                    placeholder="dd/mm/yyyy" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
+                                    <i class="fa fa-filter"></i> Gudang
+                                </label>
+                                <select id="sv_hist_gudang" class="form-select form-select-sm">
+                                    <option value="">-- Semua --</option>
+                                    <option value="PRO">Gudang Produksi</option>
+                                    <option value="SLI">Gudang Slitting</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-calendar"></i> Tanggal Dari
-                        </label>
-                        <input type="text" id="sv_date_from" class="form-control form-control-sm"
-                            placeholder="dd/mm/yyyy" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-calendar"></i> Tanggal Sampai
-                        </label>
-                        <input type="text" id="sv_date_to" class="form-control form-control-sm"
-                            placeholder="dd/mm/yyyy" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-filter"></i> Gudang
-                        </label>
-                        <select id="sv_hist_gudang" class="form-select form-select-sm">
-                            <option value="">-- Semua --</option>
-                            <option value="PRO">Gudang Produksi</option>
-                            <option value="SLI">Gudang Slitting</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 text-end">
+
+                    <div class="col-md-4 text-end">
                         <button class="btn btn-primary btn-sm" id="btn-filter-svh">
                             <i class="fa fa-search"></i> Tampilkan
                         </button>
                         <button class="btn btn-secondary btn-sm" id="btn-reset-svh">
                             <i class="fa fa-refresh"></i> Reset
                         </button>
+                        <button class="btn btn-success btn-sm d-none" id="btn-excel-history">
+                            <i class="fa fa-file-excel-o"></i> Download Excel
+                        </button>
                     </div>
+
                 </div>
 
-                <!-- Grand total history -->
                 <div class="row mb-2">
                     <div class="col text-end">
                         <span style="font-size:13px;">Grand Total:</span>
@@ -204,7 +203,9 @@
                                 <th width="4%">No</th>
                                 <th>Kode Material</th>
                                 <th>Nama Material</th>
+                                <th class="text-center">Gudang</th>
                                 <th class="text-center">Tanggal</th>
+                                <th class="text-center">Jml Coil</th>
                                 <th class="text-end">Qty Stock (Kg)</th>
                                 <th class="text-end">Harga Beli (Avg)</th>
                                 <th class="text-end">Total Nilai</th>
@@ -213,7 +214,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
+                                <td colspan="10" class="text-center text-muted py-4">
                                     <i class="fa fa-info-circle"></i>
                                     Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>
                                 </td>
@@ -245,11 +246,10 @@
                             <th>No</th>
                             <th>Tanggal</th>
                             <th>No. Transaksi</th>
-                            <th class="text-center">Jml Coil</th> <!-- BARU -->
+                            <th class="text-center">Jml Coil</th>
                             <th class="text-end">Qty Awal (Kg)</th>
                             <th class="text-end">Qty Transaksi (Kg)</th>
                             <th class="text-end">Qty Akhir (Kg)</th>
-                            <th class="text-end">Costbook (Avg)</th>
                             <th class="text-end">Total Harga</th>
                             <th class="text-end">Saldo Awal</th>
                             <th class="text-end">Saldo Akhir</th>
@@ -382,35 +382,44 @@
 
         // ── Kolom history per days ────────────────────────────────────────────
         var colDefHistory = [{
-                data: 0,
-                width: '4%'
-            },
-            {
-                data: 1
-            }, {
-                data: 2
-            },
-            {
-                data: 3,
-                className: 'text-center'
-            },
-            {
-                data: 4,
-                className: 'text-end'
-            },
-            {
-                data: 5,
-                className: 'text-end'
-            },
-            {
-                data: 6,
-                className: 'text-end'
-            },
-            {
-                data: 7,
-                className: 'text-center',
+                targets: 0,
                 orderable: false
-            },
+            }, // No
+            {
+                targets: 1
+            }, // Kode Material
+            {
+                targets: 2
+            }, // Nama Material
+            {
+                targets: 3,
+                className: 'text-center'
+            }, // Gudang
+            {
+                targets: 4,
+                className: 'text-center'
+            }, // Tanggal Snapshot
+            {
+                targets: 5,
+                className: 'text-center'
+            }, // Jml Coil
+            {
+                targets: 6,
+                className: 'text-right'
+            }, // Qty Stock
+            {
+                targets: 7,
+                className: 'text-right'
+            }, // Harga Beli
+            {
+                targets: 8,
+                className: 'text-right'
+            }, // Total Nilai
+            {
+                targets: 9,
+                orderable: false,
+                className: 'text-center'
+            } // Aksi
         ];
 
         // ── Helper dd/mm/yyyy → yyyy-mm-dd ────────────────────────────────────
@@ -497,19 +506,9 @@
         });
 
         // ── Flatpickr untuk tab History Per Days ─────────────────────────────
-        var fpFrom = flatpickr('#sv_date_from', {
+        var fpSnap = flatpickr('#sv_date_snap', {
             locale: 'id',
             dateFormat: 'd/m/Y',
-            onChange: function(sel) {
-                fpTo.set('minDate', sel[0] || null);
-            }
-        });
-        var fpTo = flatpickr('#sv_date_to', {
-            locale: 'id',
-            dateFormat: 'd/m/Y',
-            onChange: function(sel) {
-                fpFrom.set('maxDate', sel[0] || null);
-            }
         });
 
         // ── DataTable History Per Days (lazy) ─────────────────────────────────
@@ -519,8 +518,8 @@
             if (dtHistory) dtHistory.destroy();
 
             var kdGudang = $('#sv_hist_gudang').val();
+            var dateSnap = getYmd($('#sv_date_snap').val());
 
-            // Pilih endpoint berdasarkan gudang
             var endpoint = 'data_side_stock_value_perday';
             if (kdGudang === 'PRO') endpoint = 'data_side_stock_value_perday_produksi';
             if (kdGudang === 'SLI') endpoint = 'data_side_stock_value_perday_slitting';
@@ -546,8 +545,7 @@
                     type: 'POST',
                     data: function(d) {
                         d.filter_material = $('#sv_hist_material').val();
-                        d.date_from = getYmd($('#sv_date_from').val());
-                        d.date_to = getYmd($('#sv_date_to').val());
+                        d.date_snap = dateSnap; // kirim 1 tanggal
                         d.kd_gudang = kdGudang;
                     },
                     cache: false,
@@ -558,15 +556,14 @@
                 ],
                 language: {
                     processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-                    zeroRecords: 'Tidak ada data untuk rentang tanggal ini.',
+                    zeroRecords: 'Tidak ada data untuk tanggal ini.',
                     emptyTable: 'Tidak ada data.',
                 },
                 drawCallback: function() {
                     $.post(siteurl + 'warehouse/get_grand_total_stock_value_perday', {
                         kd_gudang: kdGudang,
                         filter_material: $('#sv_hist_material').val(),
-                        date_from: getYmd($('#sv_date_from').val()),
-                        date_to: getYmd($('#sv_date_to').val()),
+                        date_snap: dateSnap,
                     }, function(res) {
                         $('#grand-total-history').text(res.total);
                     }, 'json');
@@ -576,26 +573,34 @@
 
         $('#btn-filter-svh').on('click', function() {
             buildHistoryDt();
+            $('#btn-excel-history').removeClass('d-none');
         });
 
         $('#btn-reset-svh').on('click', function() {
-            fpFrom.clear();
-            fpTo.clear();
-            fpFrom.set('maxDate', null);
-            fpTo.set('minDate', null);
+            fpSnap.clear();
             $('#sv_hist_material').val('');
             $('#sv_hist_gudang').val('');
             $('#grand-total-history').text('—');
+            $('#btn-excel-history').addClass('d-none');
             if (dtHistory) {
                 dtHistory.destroy();
                 dtHistory = null;
                 $('#table-sv-history tbody').html(
                     '<tr><td colspan="8" class="text-center text-muted py-4">' +
                     '<i class="fa fa-info-circle"></i> ' +
-                    'Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>' +
+                    'Pilih tanggal lalu klik <strong>Tampilkan</strong>' +
                     '</td></tr>'
                 );
             }
+        });
+
+        $('#btn-excel-history').on('click', function() {
+            var params = new URLSearchParams({
+                kd_gudang: $('#sv_hist_gudang').val(),
+                filter_material: $('#sv_hist_material').val(),
+                date_snap: getYmd($('#sv_date_snap').val()),
+            });
+            window.location.href = siteurl + 'warehouse/export_excel_stock_value_history?' + params.toString();
         });
 
     });
@@ -665,12 +670,11 @@
                     '<td class="text-end">' + fmtDec(r.qty_awal) + '</td>' +
                     '<td class="text-end">' + fmtDec(r.qty_transaksi) + '</td>' +
                     '<td class="text-end">' + fmtDec(r.qty_akhir) + '</td>' +
-                    '<td class="text-end">' + fmtNum(r.costbook) + '</td>' +
                     '<td class="text-end">' + fmtNum(r.total_harga) + '</td>' +
                     '<td class="text-end">' + fmtNum(r.saldo_awal) + '</td>' +
                     '<td class="text-end">' + fmtNum(r.saldo_akhir) + '</td>' +
                     '<td class="text-end">' + fmtNum(r.harga_lama) + '</td>' +
-                    '<td class="text-end">' + fmtNum(r.costbook) + '</td>' + // harga baru = costbook
+                    '<td class="text-end">' + fmtNum(r.costbook) + '</td>' +
                     '</tr>';
             });
             $('#tbody-history').html(html);
@@ -744,17 +748,16 @@
         }, 'json');
     }
 
-    function fmtNum(val) {
+    function fmtNum(val, decimal = 2) {
         if (val == null || val === '') return '-';
-        return Number(val).toLocaleString('id-ID');
+        return Number(val).toLocaleString('id-ID', {
+            minimumFractionDigits: decimal,
+            maximumFractionDigits: decimal
+        });
     }
 
     function fmtDec(val) {
-        if (val == null || val === '') return '-';
-        return Number(val).toLocaleString('id-ID', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
-        });
+        return fmtNum(val, 3);
     }
 
     // Blur modal history saat modal transaksi muncul
@@ -778,4 +781,19 @@
             table.style.setProperty('border-spacing', '0', 'important');
         }
     });
+
+    document.getElementById('tab-sv-history-tab')
+        .addEventListener('shown.bs.tab', function() {
+            document.getElementById('bar-filter-live').classList.add('d-none');
+        });
+
+    document.getElementById('tab-sv-produksi-tab')
+        .addEventListener('shown.bs.tab', function() {
+            document.getElementById('bar-filter-live').classList.remove('d-none');
+        });
+
+    document.getElementById('tab-sv-slitting-tab')
+        .addEventListener('shown.bs.tab', function() {
+            document.getElementById('bar-filter-live').classList.remove('d-none');
+        });
 </script>

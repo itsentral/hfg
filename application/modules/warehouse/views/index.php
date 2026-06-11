@@ -1,5 +1,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
 <div class="card">
     <div class="card-body">
@@ -87,16 +90,9 @@
                 <div class="row mb-3 g-2 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-calendar"></i> Tanggal Dari
+                            <i class="fa fa-calendar"></i> Per Tanggal
                         </label>
-                        <input type="text" id="hc_date_from" class="form-control form-control-sm"
-                            placeholder="dd/mm/yyyy" readonly>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-calendar"></i> Tanggal Sampai
-                        </label>
-                        <input type="text" id="hc_date_to" class="form-control form-control-sm"
+                        <input type="text" id="hc_date_snap" class="form-control form-control-sm"
                             placeholder="dd/mm/yyyy" readonly>
                     </div>
                     <div class="col-md-3">
@@ -116,6 +112,9 @@
                         <button class="btn btn-secondary btn-sm" id="btn-reset-hc">
                             <i class="fa fa-refresh"></i> Reset
                         </button>
+                        <button class="btn btn-success btn-sm d-none" id="btn-excel-hc">
+                            <i class="fa fa-file-excel-o"></i> Download Excel
+                        </button>
                     </div>
                 </div>
 
@@ -126,13 +125,13 @@
                             <tr>
                                 <th width="4%">No</th>
                                 <th>Nama Material (Lv.4)</th>
+                                <th>Gudang</th>
                                 <th class="text-center">No. Coil</th>
                                 <th class="text-center">Kode Internal</th>
                                 <th class="text-right">Nett Weight (Kg)</th>
                                 <th class="text-right">Gross Weight (Kg)</th>
                                 <th class="text-right">Length (M)</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center">Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,8 +150,9 @@
     </div>
 </div>
 
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
@@ -189,42 +189,42 @@
             },
         ];
 
-        // ── Kolom history per days (9 kolom: +Status, +Tanggal) ───────────────
+        // ── Kolom history per days
         var colDefHistory = [{
                 data: 0,
                 width: '4%'
             },
             {
                 data: 1
-            },
+            }, // Nama Material
             {
                 data: 2,
                 className: 'text-center'
-            },
+            }, // Gudang
             {
                 data: 3,
                 className: 'text-center'
-            },
+            }, // No. Coil
             {
                 data: 4,
-                className: 'text-end'
-            },
+                className: 'text-center'
+            }, // Kode Internal
             {
                 data: 5,
                 className: 'text-end'
-            },
+            }, // Nett Weight
             {
                 data: 6,
                 className: 'text-end'
-            },
+            }, // Gross Weight
             {
                 data: 7,
-                className: 'text-center'
-            },
+                className: 'text-end'
+            }, // Length
             {
                 data: 8,
                 className: 'text-center'
-            },
+            }, // Status
         ];
 
         // ── Tab produksi (live) ──────────────────────────────────────────────────
@@ -290,19 +290,9 @@
             });
 
         // ── Flatpickr ─────────────────────────────────────────────────────────
-        var fpFrom = flatpickr('#hc_date_from', {
+        var fpSnap = flatpickr('#hc_date_snap', {
             locale: 'id',
             dateFormat: 'd/m/Y',
-            onChange: function(sel) {
-                fpTo.set('minDate', sel[0] || null);
-            }
-        });
-        var fpTo = flatpickr('#hc_date_to', {
-            locale: 'id',
-            dateFormat: 'd/m/Y',
-            onChange: function(sel) {
-                fpFrom.set('maxDate', sel[0] || null);
-            }
         });
 
         // ── Helper dd/mm/yyyy → yyyy-mm-dd ────────────────────────────────────
@@ -312,11 +302,12 @@
             return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : '';
         }
 
-        // ── Tab History Per Days (lazy, hanya dibuat saat tombol diklik) ──────
+        // ── Tab History Per Days ──────────────────────────────────────────────
         var dtHistory = null;
 
         function buildHistoryDt() {
             if (dtHistory) dtHistory.destroy();
+
             dtHistory = $('#table-history-coil').DataTable({
                 processing: true,
                 serverSide: true,
@@ -332,19 +323,18 @@
                     url: siteurl + 'warehouse/data_side_stock_perday',
                     type: 'POST',
                     data: function(d) {
-                        d.date_from = getYmd($('#hc_date_from').val());
-                        d.date_to = getYmd($('#hc_date_to').val());
+                        d.date_snap = getYmd($('#hc_date_snap').val()); // ← 1 tanggal
                         d.kd_gudang = $('#hc_gudang').val();
                     },
                     cache: false,
                 },
                 columns: colDefHistory,
                 order: [
-                    [8, 'desc']
+                    [1, 'desc']
                 ],
                 language: {
                     processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Memuat data...',
-                    zeroRecords: 'Tidak ada data untuk rentang tanggal ini.',
+                    zeroRecords: 'Tidak ada data untuk tanggal ini.',
                     emptyTable: 'Tidak ada data.',
                 }
             });
@@ -352,24 +342,31 @@
 
         $('#btn-filter-hc').on('click', function() {
             buildHistoryDt();
+            $('#btn-excel-hc').removeClass('d-none'); // ← tampilkan tombol excel
         });
 
         $('#btn-reset-hc').on('click', function() {
-            fpFrom.clear();
-            fpTo.clear();
-            fpFrom.set('maxDate', null);
-            fpTo.set('minDate', null);
+            fpSnap.clear();
             $('#hc_gudang').val('');
+            $('#btn-excel-hc').addClass('d-none'); // ← sembunyikan tombol excel
             if (dtHistory) {
                 dtHistory.destroy();
                 dtHistory = null;
                 $('#table-history-coil tbody').html(
                     '<tr><td colspan="9" class="text-center text-muted py-4">' +
                     '<i class="fa fa-info-circle"></i> ' +
-                    'Pilih rentang tanggal lalu klik <strong>Tampilkan</strong>' +
+                    'Pilih tanggal lalu klik <strong>Tampilkan</strong>' +
                     '</td></tr>'
                 );
             }
+        });
+
+        $('#btn-excel-hc').on('click', function() {
+            var params = new URLSearchParams({
+                kd_gudang: $('#hc_gudang').val(),
+                date_snap: getYmd($('#hc_date_snap').val()),
+            });
+            window.location.href = siteurl + 'warehouse/export_excel_stock_coil_perday?' + params.toString();
         });
 
         $('#btn-excel-produksi').on('click', function() {
