@@ -661,30 +661,30 @@ class Finalize_incoming extends Admin_Controller
     ) {
         // ── 1. Ambil data coil dari ROS ───────────────────────────────────────
         $ros_coil = $this->db->query("
-        SELECT
-            c.id              AS id_coil,
-            c.no_coil,
-            c.berat_kotor,
-            c.berat_bersih,
-            c.panjang,
-            c.kode_internal,
-            c.status_qc,
-            m.id              AS id_ros_material,
-            m.nm_erp,
-            m.cost_book,
-            m.total_nilai_inventory,
-            inv.code_lv1,
-            inv.code_lv2,
-            inv.code_lv3,
-            inv.id_unit,
-            inv.id_unit_packing,
-            inv.trade_name  
-        FROM tr_ros_material_coil c
-        JOIN tr_ros_material m        ON m.id = c.id_ros_material
-        LEFT JOIN new_inventory_4 inv ON inv.code_lv4 = m.id_barang
-        WHERE c.no_coil = ? AND m.id_barang = ?
-        LIMIT 1
-        ", [$no_coil, $id_material])->row();
+            SELECT
+                c.id              AS id_coil,
+                c.no_coil,
+                c.berat_kotor,
+                c.berat_bersih,
+                c.panjang,
+                c.kode_internal,
+                c.status_qc,
+                m.id              AS id_ros_material,
+                m.nm_erp,
+                m.cost_book,
+                m.total_nilai_inventory,
+                inv.code_lv1,
+                inv.code_lv2,
+                inv.code_lv3,
+                inv.id_unit,
+                inv.id_unit_packing,
+                inv.trade_name  
+            FROM tr_ros_material_coil c
+            JOIN tr_ros_material m        ON m.id = c.id_ros_material
+            LEFT JOIN new_inventory_4 inv ON inv.code_lv4 = m.id_barang
+            WHERE c.no_coil = ? AND m.id_barang = ?
+            LIMIT 1
+            ", [$no_coil, $id_material])->row();
 
         $code_lv1        = $ros_coil->code_lv1        ?? '';
         $code_lv2        = $ros_coil->code_lv2        ?? '';
@@ -718,11 +718,11 @@ class Finalize_incoming extends Admin_Controller
         $harga_lama    = $get_stock ? (float) $get_stock->harga_beli  : 0;
         $qty_book_awal = $get_stock ? (float) $get_stock->qty_booking : 0;
         $qty_free_awal = $get_stock ? (float) $get_stock->qty_free    : 0;
-        $saldo_awal    = $get_stock ? (int) round($get_stock->total_nilai) : 0;
+        $saldo_awal    = $get_stock ? (float) $get_stock->total_nilai  : 0;  // ubah dari (int) round() ke (float)
         $incoming_lama = $get_stock ? (float) $get_stock->incoming    : 0;
 
         // ── 4. Hitung moving average ──────────────────────────────────────────
-        $nilai_baru        = (int) round($qty_in * $price_unit_idr);
+        $nilai_baru        = (float) $qty_in * (float) $price_unit_idr;  // hapus (int) round()
         $qty_akhir         = $qty_awal + $qty_in;
         $total_nilai_akhir = $saldo_awal + $nilai_baru;
         $costbook          = $qty_akhir > 0
@@ -754,8 +754,8 @@ class Finalize_incoming extends Admin_Controller
                 'qty_booking'     => 0,
                 'qty_free'        => $qty_akhir,
                 'use_qty_free'    => 0,
-                'harga_beli'      => $costbook,
-                'total_nilai'     => $total_nilai_akhir,
+                'harga_beli'      => $costbook,             // hapus (int) round()
+                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
                 'update_by'       => $user_id,
                 'update_date'     => $now,
             ]);
@@ -766,8 +766,8 @@ class Finalize_incoming extends Admin_Controller
                 'incoming'        => $incoming_lama + $qty_in,
                 'qty_stock'       => $qty_akhir,
                 'qty_free'        => $qty_free_awal + $qty_in,
-                'harga_beli'      => $costbook,
-                'total_nilai'     => $total_nilai_akhir,
+                'harga_beli'      => $costbook,             // hapus (int) round()
+                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
                 'update_by'       => $user_id,
                 'update_date'     => $now,
             ], ['id' => $get_stock->id]);
@@ -784,8 +784,8 @@ class Finalize_incoming extends Admin_Controller
             'qty_stock'   => $qty_akhir,
             'qty_booking' => $qty_book_awal,
             'qty_free'    => $qty_free_awal + $qty_in,
-            'harga_beli'  => $costbook,
-            'total_nilai' => $total_nilai_akhir,
+            'harga_beli'  => $costbook,             // hapus (int) round()
+            'total_nilai' => $total_nilai_akhir,    // hapus (int) round()
             'kd_gudang'   => $kd_gudang,
             'hist_date'   => $now,
             'hist_by'     => $user_id,
@@ -802,14 +802,12 @@ class Finalize_incoming extends Admin_Controller
         }
 
         // ── 6b. Snapshot harian warehouse_coil_per_day ───────────────────────
-        // Satu record per coil per hari; status 'IN' karena proses incoming.
-        // Jika pada hari yang sama coil sama dikirim ulang (koreksi), UPDATE saja.
         $coil_snap = $this->db->query("
         SELECT id FROM warehouse_coil_per_day
         WHERE id_material = ?
-          AND id_gudang   = ?
-          AND no_coil     = ?
-          AND DATE(hist_date) = ?
+        AND id_gudang   = ?
+        AND no_coil     = ?
+        AND DATE(hist_date) = ?
         LIMIT 1
         ", [$id_material, $id_gudang, $no_coil, $today])->row();
 
@@ -878,12 +876,12 @@ class Finalize_incoming extends Admin_Controller
                 . ', PO: '   . $no_po
                 . ', Kurs: ' . number_format($kurs_pib, 0, ',', '.') . ')',
             'no_coil'         => $no_coil,
-            'harga_beli'      => (int) round($price_unit_idr),
-            'total_harga'     => $nilai_baru,
-            'saldo_awal'      => $saldo_awal,
-            'saldo_akhir'     => $total_nilai_akhir,
-            'harga_baru'      => (int) round($costbook),
-            'harga_lama'      => (int) round($harga_lama),
+            'harga_beli'      => $price_unit_idr,       // hapus (int) round()
+            'total_harga'     => $nilai_baru,            // hapus (int) round()
+            'saldo_awal'      => $saldo_awal,            // hapus (int) round()
+            'saldo_akhir'     => $total_nilai_akhir,     // hapus (int) round()
+            'harga_baru'      => $costbook,              // hapus (int) round()
+            'harga_lama'      => $harga_lama,            // hapus (int) round()
             'update_by'       => $user_id,
             'update_date'     => $now,
         ]);
@@ -904,7 +902,7 @@ class Finalize_incoming extends Admin_Controller
             'qty_transaksi'    => $qty_in,
             'qty_book_akhir'   => $qty_book_awal,
             'qty_free_akhir'   => $qty_free_awal + $qty_in,
-            'harga_stok'       => (int) round($costbook),
+            'harga_stok'       => $costbook,             // hapus (int) round()
             'status_transaksi' => 'in',
             'created_by'       => $user_id,
             'created_on'       => $now,
@@ -943,14 +941,13 @@ class Finalize_incoming extends Admin_Controller
                 $debet_per_gudang[$coa_gudang] = [
                     'coa'    => $coa_gudang,
                     'nm_coa' => ($kd === 'SLI') ? $coa_names['slitting'] : $coa_names['produksi'],
-                    'total'  => 0,
+                    'total'  => 0.0,
                 ];
             }
 
-            // Keduanya pakai price_per_coil → DEBET = KREDIT
-            // Inisialisasi sebagai integer
-            $debet_per_gudang[$coa_gudang]['total'] += (int) round((float) $d['price_per_coil']);
-            $total_kredit                           += (int) round((float) $d['price_per_coil']);
+            // Hapus (int) round() — simpan as is
+            $debet_per_gudang[$coa_gudang]['total'] += (float) $d['price_per_coil'];
+            $total_kredit                           += (float) $d['price_per_coil'];
         }
 
         if ($total_kredit <= 0) return;
@@ -979,7 +976,7 @@ class Finalize_incoming extends Admin_Controller
 
         $ins = function ($coa, $ket, $debet, $kredit)
         use ($id_gl, $tgl, $no_surat, $kode_trans, $created_on, $nomor_jv) {
-            if (round($debet, 2) == 0 && round($kredit, 2) == 0) return;
+            if ($debet == 0 && $kredit == 0) return;
             $this->db->insert('gl_interface_detail', [
                 'id_gl_interface' => $id_gl,
                 'no_batch'        => $nomor_jv,
@@ -993,8 +990,8 @@ class Finalize_incoming extends Admin_Controller
                 'keterangan'      => $ket,
                 'no_reff'         => $no_surat,
                 'no_request'      => $kode_trans,
-                'debet'           => (int) $debet,
-                'kredit'          => (int) $kredit,
+                'debet'           => (float) $debet,    // hapus (int)
+                'kredit'          => (float) $kredit,   // hapus (int)
                 'created_at'      => $created_on,
             ]);
         };
