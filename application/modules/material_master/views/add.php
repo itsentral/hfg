@@ -421,7 +421,14 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			dropdownParent: $('#dialog-popup')
 		});
 		$('.maskM').autoNumeric();
-		$('#thickness').autoNumeric('update', { mDec: 3 });
+		$('#thickness').autoNumeric('init', {
+			aSep: ',',
+			aDec: '.',
+			mDec: 3,
+			mInt: 4,
+			vMin: '0.000',
+			vMax: '9999.999'
+		});
 	});
 
 	function generateNama() {
