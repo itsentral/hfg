@@ -106,7 +106,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									?>
 								</td>
 								<td><?= $record->nm_supplier ?></td>
-								<td class="text-right"><?= number_format($record->subtotal) ?></td>
+								<td class="text-right"><?= number_format($record->subtotal, 4, ',', '.') ?></td>
 								<td class="text-center"><?= $record->revisi ?></td>
 								<td><?= $record->reject_reason ?></td>
 								<td>

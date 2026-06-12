@@ -1959,6 +1959,7 @@ class Purchase_order extends Admin_Controller
 			for ($i = 1; $i <= $num_top; $i++) {
 				if (isset($post['group_top_' . $i])) {
 					$tipe_bayar = $this->input->post('tipe_bayar_' . $i); // Pastikan index sesuai view
+					$jatuh_tempo = $this->input->post('jatuh_tempo_' . $i);
 					$data_top = [
 						'no_po'      => $code,
 						'group_top'  => $this->input->post('group_top_' . $i),
@@ -1966,7 +1967,7 @@ class Purchase_order extends Admin_Controller
 						'nilai'      => str_replace(',', '', $this->input->post('nilai_top_' . $i)),
 						'keterangan' => $this->input->post('keterangan_top_' . $i),
 						'tipe_bayar' => $tipe_bayar,
-						'jatuh_tempo' => $this->input->post('jatuh_tempo_' . $i),
+						'jatuh_tempo' => (!empty($jatuh_tempo)) ? $jatuh_tempo : NULL,
 						'created_by' => $this->auth->user_id(),
 						'created_on' => date('Y-m-d H:i:s')
 					];
@@ -2105,7 +2106,7 @@ class Purchase_order extends Admin_Controller
 			for ($i = 1; $i <= $num_top; $i++) {
 				if (isset($post['group_top_' . $i])) {
 					$tipe_bayar = $this->input->post('tipe_bayar_' . $i); // Pastikan index sesuai name di view
-
+					$jatuh_tempo = $this->input->post('jatuh_tempo_' . $i);
 					$data_top = [
 						'no_po'       => $code,
 						'group_top'   => $this->input->post('group_top_' . $i),
@@ -2113,7 +2114,7 @@ class Purchase_order extends Admin_Controller
 						'nilai'       => str_replace(',', '', $this->input->post('nilai_top_' . $i)),
 						'keterangan'  => $this->input->post('keterangan_top_' . $i),
 						'tipe_bayar'  => $tipe_bayar,
-						'jatuh_tempo' => $this->input->post('jatuh_tempo_' . $i),
+						'jatuh_tempo' => (!empty($jatuh_tempo)) ? $jatuh_tempo : NULL,
 						'created_by'  => $this->auth->user_id(),
 						'created_on'  => date('Y-m-d H:i:s')
 					];

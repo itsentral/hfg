@@ -19,6 +19,19 @@ if (!empty($results['headerso'])) {
 			<input type="hidden" name="so_number" value="<?= implode(',', $results['param']) ?>">
 			<input type="hidden" class="count_all_prod" value="<?= count($results['getitemso']) ?>">
 			<input type="hidden" name="no_pr" value="<?= implode(',', $noPrList) ?>">
+			<input type="hidden" id="h_subtotal" name="subtotal" value="0">
+			<input type="hidden" id="h_totalinppn" name="totalinppn" value="0">
+			<input type="hidden" id="h_hargatotal" name="hargatotal" value="0">
+			<input type="hidden" id="h_diskontotal" name="diskontotal" value="0">
+			<input type="hidden" id="h_diskonkhusus" name="diskonkhusus" value="0">
+			<input type="hidden" id="h_kirim" name="kirim" value="0">
+			<input type="hidden" id="h_ppn" name="ppn" value="0">
+			<input type="hidden" id="h_persenppn" name="persenppn" value="0">
+			<input type="hidden" id="h_persendisc" name="persendisc" value="0">
+			<input type="hidden" id="h_totaldisc" name="totaldisc" value="0">
+			<input type="hidden" id="h_expect_tanggal" name="expect_tanggal" value="">
+			<input type="hidden" id="h_taxtotal" name="taxtotal" value="0">
+			<input type="hidden" id="h_dpp" name="dpp" value="0">
 			<div class="col-sm-12">
 				<div class="form-group row mb-3">
 					<!-- <div class="col-sm-6">
@@ -523,7 +536,7 @@ if (!empty($results['headerso'])) {
 								</div>
 								<div class="col-md-8" id="ForTax">
 									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-									<input type="text" class="form-control auto_num" id="kirim" onblur="cariTotal()" required name="kirim" disabled>
+									<input type="text" class="form-control auto_num" id="kirim" onblur="cariTotal()" required disabled>
 								</div>
 							</div>
 						</div>
@@ -560,7 +573,7 @@ if (!empty($results['headerso'])) {
 									<label for="id_customer">Total Order</label>
 								</div>
 								<div class="col-md-8" id="ForSum">
-									<input readonly type="text" class="form-control" id="subtotal" required name="subtotal" disabled>
+									<input readonly type="text" class="form-control" id="subtotal" disabled>
 								</div>
 							</div>
 						</div>
@@ -711,9 +724,35 @@ if (!empty($results['headerso'])) {
 	var base_url = '<?php echo base_url(); ?>';
 	var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
 	var num_top = getNum($('.num_top').val());
+
+	function syncHiddenFields(formData) {
+		// Update hidden fields dari visible input
+		$('#h_subtotal').val($('#subtotal').val() || '0');
+		$('#h_totalinppn').val($('#totalinppn').val() || '0');
+		$('#h_hargatotal').val($('#hargatotal').val() || '0');
+		$('#h_diskontotal').val($('#diskontotal').val() || '0');
+		$('#h_diskonkhusus').val($('#diskonkhusus').val() || '0');
+		$('#h_kirim').val($('#kirim').val() || '0');
+		$('#h_ppn').val($('#ppn').val() || '0');
+		$('#h_persenppn').val($('#persenppn').val() || '0');
+		$('#h_persendisc').val($('#persendisc').val() || '0');
+		$('#h_totaldisc').val($('#totaldisc').val() || '0');
+
+		// expect_tanggal — set default hari ini jika kosong
+		var exp = $('#expect_tanggal').val();
+		if (!exp) exp = new Date().toISOString().slice(0, 10);
+		$('#h_expect_tanggal').val(exp);
+	}
+
 	$(document).ready(function() {
 		TotalSemua()
 		checkShowTax()
+
+		if ($('#expect_tanggal').val() === '') {
+			var today = new Date().toISOString().slice(0, 10);
+			$('#expect_tanggal').val(today);
+			$('#h_expect_tanggal').val(today);
+		}
 
 		$('input[id^="dt_qty_"]').each(function() {
 			let id = $(this).attr('id').replace('dt_qty_', '');
@@ -809,76 +848,116 @@ if (!empty($results['headerso'])) {
 			TotalSemua()
 		});
 
+		// $('#select_all').change(function() {
+		// 	var count_all_prod = $('.count_all_prod').val();
+		// 	// If the checkbox being changed is checked
+		// 	if ($(this).prop('checked')) {
+		// 		// Set all checkboxes to checked
+		// 		$('input[type="checkbox"]').prop('checked', true);
+		// 		for (var i = 1; i <= count_all_prod; i++) {
+		// 			$('input[name="dt[' + i + '][description]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][description]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][qty]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][qty]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][hargasatuan]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][hargasatuan]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][ppn]"]').prop('disabled', false);
+		// 			$('input[name="dt[' + i + '][ppn]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][jumlahharga]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][disc_persen]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][disc_persen]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][disc_num]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][disc_num]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][nilai_ppn]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][persen_ppn]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][totalharga]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][note]"]').prop('readonly', false);
+		// 			$('input[name="dt[' + i + '][note]"]').val('');
+		// 		}
+		// 	} else {
+		// 		// If the checkbox being changed is unchecked, uncheck all checkboxes
+		// 		$('input[type="checkbox"]').prop('checked', false);
+		// 		for (var i = 1; i <= count_all_prod; i++) {
+		// 			$('input[name="dt[' + i + '][description]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][description]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][qty]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][qty]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][hargasatuan]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][hargasatuan]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][ppn]"]').prop('disabled', true);
+		// 			$('input[name="dt[' + i + '][ppn]"]').val('');
+
+		// 			$('input[name="dt[' + i + '][jumlahharga]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][disc_persen]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][disc_persen]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][disc_num]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][disc_num]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][nilai_ppn]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][persen_ppn]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][totalharga]"]').val('0');
+
+		// 			$('input[name="dt[' + i + '][note]"]').prop('readonly', true);
+		// 			$('input[name="dt[' + i + '][note]"]').val('');
+		// 		}
+		// 	}
+		// });
+
+		// Ganti fungsi di dalam $('#select_all').change(...)
 		$('#select_all').change(function() {
-			var count_all_prod = $('.count_all_prod').val();
-			// If the checkbox being changed is checked
-			if ($(this).prop('checked')) {
-				// Set all checkboxes to checked
-				$('input[type="checkbox"]').prop('checked', true);
-				for (var i = 1; i <= count_all_prod; i++) {
-					$('input[name="dt[' + i + '][description]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][description]"]').val('');
+			var isChecked = $(this).prop('checked');
 
-					$('input[name="dt[' + i + '][qty]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][qty]"]').val('');
+			// Set semua checkbox item
+			$('.checked_point').prop('checked', isChecked);
 
-					$('input[name="dt[' + i + '][hargasatuan]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][hargasatuan]"]').val('');
+			if (isChecked) {
+				// ✅ Loop cukup SEKALI per row, update semua field sekaligus
+				$('.checked_point').each(function() {
+					var no = $(this).data('no');
+					var $row = $(this).closest('tr');
 
-					$('input[name="dt[' + i + '][ppn]"]').prop('disabled', false);
-					$('input[name="dt[' + i + '][ppn]"]').val('');
+					// Enable semua input dalam row ini sekaligus
+					$row.find('input[name*="[qty]"], input[name*="[hargasatuan]"], input[name*="[description]"], input[name*="[note]"], input[name*="[disc_persen]"], input[name*="[disc_num]"]')
+						.prop('readonly', false).val('');
 
-					$('input[name="dt[' + i + '][jumlahharga]"]').val('0');
+					$row.find('input[name*="[ppn]"]').prop('disabled', false).val('');
 
-					$('input[name="dt[' + i + '][disc_persen]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][disc_persen]"]').val('0');
-
-					$('input[name="dt[' + i + '][disc_num]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][disc_num]"]').val('0');
-
-					$('input[name="dt[' + i + '][nilai_ppn]"]').val('0');
-
-					$('input[name="dt[' + i + '][persen_ppn]"]').val('0');
-
-					$('input[name="dt[' + i + '][totalharga]"]').val('0');
-
-					$('input[name="dt[' + i + '][note]"]').prop('readonly', false);
-					$('input[name="dt[' + i + '][note]"]').val('');
-				}
+					// Reset nilai kalkulasi
+					$row.find('input[name*="[jumlahharga]"], input[name*="[nilai_ppn]"], input[name*="[persen_ppn]"], input[name*="[totalharga]"]').val('0');
+					$row.find('input[name*="[disc_persen]"], input[name*="[disc_num]"]').val('0');
+				});
 			} else {
-				// If the checkbox being changed is unchecked, uncheck all checkboxes
-				$('input[type="checkbox"]').prop('checked', false);
-				for (var i = 1; i <= count_all_prod; i++) {
-					$('input[name="dt[' + i + '][description]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][description]"]').val('');
+				$('.checked_point').each(function() {
+					var $row = $(this).closest('tr');
 
-					$('input[name="dt[' + i + '][qty]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][qty]"]').val('');
+					$row.find('input[name*="[qty]"], input[name*="[hargasatuan]"], input[name*="[description]"], input[name*="[note]"], input[name*="[disc_persen]"], input[name*="[disc_num]"]')
+						.prop('readonly', true).val('');
 
-					$('input[name="dt[' + i + '][hargasatuan]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][hargasatuan]"]').val('');
+					$row.find('input[name*="[ppn]"]').prop('disabled', true).val('');
 
-					$('input[name="dt[' + i + '][ppn]"]').prop('disabled', true);
-					$('input[name="dt[' + i + '][ppn]"]').val('');
-
-					$('input[name="dt[' + i + '][jumlahharga]"]').val('0');
-
-					$('input[name="dt[' + i + '][disc_persen]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][disc_persen]"]').val('0');
-
-					$('input[name="dt[' + i + '][disc_num]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][disc_num]"]').val('0');
-
-					$('input[name="dt[' + i + '][nilai_ppn]"]').val('0');
-
-					$('input[name="dt[' + i + '][persen_ppn]"]').val('0');
-
-					$('input[name="dt[' + i + '][totalharga]"]').val('0');
-
-					$('input[name="dt[' + i + '][note]"]').prop('readonly', true);
-					$('input[name="dt[' + i + '][note]"]').val('');
-				}
+					$row.find('input[name*="[jumlahharga]"], input[name*="[nilai_ppn]"], input[name*="[persen_ppn]"], input[name*="[totalharga]"]').val('0');
+				});
 			}
+
+			// ✅ Panggil TotalSemua SEKALI saja di akhir, bukan per-item
+			TotalSemua();
 		});
 
 		$(document).on('change', '#id_suplier', function() {
@@ -951,7 +1030,6 @@ if (!empty($results['headerso'])) {
 				}
 			});
 
-
 			var data, xhr;
 			if (loi == '' || loi == null) {
 				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
@@ -988,12 +1066,16 @@ if (!empty($results['headerso'])) {
 					},
 					function(isConfirm) {
 						if (isConfirm) {
+							// syncHiddenFields();
 							var formData = new FormData($('#data-form')[0]);
+
+							syncHiddenFields(formData);
+
+							console.log('subtotal dikirim:', formData.get('subtotal'));
 
 							$('.list_tbody_top tr').each(function(index) {
 								var row = $(this);
 								var lcData = row.attr('data-lc_detail');
-
 								if (lcData) {
 									formData.append('detail_lc[' + (index + 1) + ']', lcData);
 								}
