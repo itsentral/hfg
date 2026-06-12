@@ -134,7 +134,6 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                                 <th class="text-center" rowspan="2" style="vertical-align:middle;" width="3%">No</th>
                                 <th class="text-center" rowspan="2" style="vertical-align:middle;" width="18%">Material</th>
                                 <th class="text-center" rowspan="2" style="vertical-align:middle;" width="6%">Unit</th>
-                                <th class="text-center" rowspan="2" style="vertical-align:middle;" width="8%">Qty PO</th>
                                 <th class="text-center" colspan="4" style="background-color:#69c79d !important;">Data ROS (Packing List)</th>
                                 <th class="text-center" colspan="2" style="background-color:#f3b44e !important;">Status QC</th>
                                 <th class="text-center" rowspan="2" style="vertical-align:middle; background-color:#c8e6c9 !important;" width="10%">Gudang Tujuan</th>
@@ -150,7 +149,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                         </thead>
                         <tbody id="modal-body-coil">
                             <tr>
-                                <td colspan="11" class="text-center">
+                                <td colspan="10" class="text-center">
                                     <i class="fa fa-spinner fa-spin"></i> Memuat data...
                                 </td>
                             </tr>
@@ -283,7 +282,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
             $('#modal-tanggal').val(new Date().toISOString().split('T')[0]);
             $('#search-modal-coil').val('');
             $('#modal-body-coil').html(
-                '<tr><td colspan="11" class="text-center">' +
+                '<tr><td colspan="10" class="text-center">' +
                 '<i class="fa fa-spinner fa-spin"></i> Memuat data...</td></tr>'
             );
             $('#btn-confirm-finalize').data('ros', no_ros);
@@ -301,7 +300,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                 success: function(res) {
                     if (!res || res.status === 0) {
                         $('#modal-body-coil').html(
-                            '<tr><td colspan="11" class="text-center text-danger">' +
+                            '<tr><td colspan="10" class="text-center text-danger">' +
                             (res.pesan || 'Gagal memuat data.') + '</td></tr>'
                         );
                         return;
@@ -334,10 +333,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
                                     '<b>' + row.nm_alias + '</b><br>' +
                                     '<small class="text-muted" style="font-style: italic;">' + (row.nm_material || '') + '</small>' +
                                     '</td>' +
-                                    '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">Kg</td>' +
-                                    '<td class="text-end" rowspan="' + rows.length + '" style="vertical-align:middle;">' +
-                                    parseFloat(row.qty_po || 0).toLocaleString('id-ID') +
-                                    '</td>';
+                                    '<td class="text-center" rowspan="' + rows.length + '" style="vertical-align:middle;">Kg</td>';
                             }
                             html +=
                                 '<td class="text-center bg-light">' + row.no_coil + '</td>' +
@@ -421,7 +417,7 @@ $ENABLE_DELETE  = has_permission('Finalize_Incoming.Delete');
             $('#no-result-modal-coil').remove();
             if (Object.keys(matchedGroups).length === 0) {
                 $('#modal-body-coil').append(
-                    '<tr id="no-result-modal-coil"><td colspan="11" class="text-center text-muted py-3">' +
+                    '<tr id="no-result-modal-coil"><td colspan="10" class="text-center text-muted py-3">' +
                     '<i class="fa fa-search"></i> Tidak ditemukan hasil untuk "<b>' + keyword + '</b>"</td></tr>'
                 );
             }
