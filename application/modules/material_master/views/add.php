@@ -173,7 +173,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<label>Thickness <span class='text-danger'>*</span></label>
 	</div>
 	<div class="col-md-4">
-		<input type="text" class="form-control maskM" id="thickness" name="thickness" value="<?= $thickness ?>" placeholder="Thickness" onkeyup="generateNama()">
+		<input type="text" class="form-control maskThickness" id="thickness" name="thickness" value="<?= $thickness ?>" placeholder="Thickness" onkeyup="generateNama()">
 	</div>
 	<div class="col-md-2">
 		<label>Warna</label>
@@ -421,6 +421,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			dropdownParent: $('#dialog-popup')
 		});
 		$('.maskM').autoNumeric();
+		$('#thickness').autoNumeric('update', { mDec: 3 });
 	});
 
 	function generateNama() {
