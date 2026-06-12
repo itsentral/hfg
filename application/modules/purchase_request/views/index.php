@@ -85,52 +85,12 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 						$ttl_detail_po += $item_ttl_detail_po->qty;
 					}
 
-
-
-					// $get_ttl_detail_po = $this->db->query("
-					// 		SELECT
-					// 			a.qty
-					// 		FROM
-					// 			dt_trans_po a
-					// 			JOIN tr_purchase_order b ON b.no_po = a.no_po
-					// 		WHERE
-					// 			a.idpr IN (SELECT aa.id FROM rutin_non_planning_detail aa WHERE aa.no_pengajuan = '" . $record->no_pengajuan . "')
-					// 	")
-					// 	->result();
-					// foreach ($get_ttl_detail_po as $item_ttl_detail_po) {
-					// 	$ttl_detail_po += $item_ttl_detail_po->qty;
-					// }
-
 					if ($record->pr_non_depart == '1') {
 					} else {
 					}
 
 					$all_pr_po = 1;
 					$po_stat = 0;
-
-					// $get_barang_pr = $this->db->get_where('material_planning_base_on_produksi', ['so_number' => $record->no_pr])->result();
-					// foreach ($get_barang_pr as $barang_pr) {
-					// 	$this->db->select('IF(a.qty IS NULL, 0, a.qty) as qty_po, a.no_po');
-					// 	$this->db->from('dt_trans_po a');
-					// 	$this->db->where('a.idpr', $barang_pr->id);
-					// 	$get_barang_po = $this->db->get()->row();
-
-					// 	if ($all_pr_po > 0) {
-					// 		if ($get_barang_po->qty_po < $barang_pr->propose_purchase) {
-					// 			$all_pr_po = 0;
-					// 		}
-					// 	}
-
-					// 	$this->db->select('IF(a.status IS NULL, 0, a.status) as status_po');
-					// 	$this->db->from('tr_purchase_order a');
-					// 	$this->db->where('a.no_po', $get_barang_po->no_po);
-					// 	$get_po = $this->db->get()->row();
-
-					// 	if ($po_stat < 1) {
-					// 		$po_stat = $get_po->status_po;
-					// 	}
-					// }
-
 
 					$status = '<div class="badge bg-danger">Outstanding</div>';
 					$stat = 3;
@@ -142,14 +102,6 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 							$stat = 1;
 						}
 					}
-					// if ($jum_barang_po > 0) {
-					// 	$status = '<div class="badge bg-yellow">Partial</div>';
-					// 	$stat = 2;
-					// }
-					// if (($jum_barang_pr == $jum_barang_po) && $all_pr_po > 0) {
-					// 	$status = '<div class="badge bg-green">Close</div>';
-					// 	$stat = 1;
-					// }
 
 					$view_cls = 'view';
 					if ($record->pr_depart == '1') {
@@ -284,22 +236,23 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 	</div>
 </div>
 
-<div class="modal modal-default fade" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg mx-wd-md-90p-force mx-wd-lg-90p-force">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel"><i class="fa fa-list"></i> Detail PR</h4>
-			</div>
-			<div class="modal-body" id="ModalView">
-				...
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-dismiss="modal">
-					<span class="glyphicon glyphicon-remove"></span> Close</button>
-			</div>
-		</div>
-	</div>
+<div class="modal fade" id="dialog-popup" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><i class="fa fa-list"></i> Detail PR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="ModalView">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                    <i class="fa fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- DataTables -->
@@ -343,19 +296,28 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 
 	$(document).on('click', '.view', function() {
 		var id = $(this).data('no_pr');
-		// alert(id);
+		var url_target = siteurl + 'purchase_request/View/' + id; 
+
+		if ($(this).hasClass('view_depart')) {
+			url_target = siteurl + 'purchase_request/view_depart/' + id;
+		}
+
 		$("#head_title").html("<i class='fa fa-list-alt'></i><b>View PR</b>");
+
 		$.ajax({
 			type: 'POST',
-			url: siteurl + 'purchase_request/View/' + id,
+			url: url_target,
 			data: {
 				'id': id
 			},
 			success: function(data) {
-				$("#dialog-popup").modal();
+				$("#dialog-popup").modal('show'); 
 				$("#ModalView").html(data);
+			},
+			error: function(xhr, status, error) {
+				alert("Terjadi kesalahan: " + error);
 			}
-		})
+		});
 	});
 
 	$(document).on('click', '.view_depart', function() {

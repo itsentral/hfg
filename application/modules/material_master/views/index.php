@@ -125,6 +125,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 
 	function initMaskInModal() {
 		$('.maskM').autoNumeric();
+		$('#thickness').autoNumeric('update', { mDec: 3 });
 	}
 
 	$(document).on('click', '.edit', function() {
