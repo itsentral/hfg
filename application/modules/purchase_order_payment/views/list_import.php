@@ -90,16 +90,7 @@ $url_search = 'search_import';
                     title="Lihat Invoice">
                     <i class="fa fa-eye"></i>
                 </button>';
-
-                        if ($status_enum === 'draft') {
-                            $buttons .= '
-                            <button type="button" class="btn btn-sm btn-warning btn-req-payment"
-                                data-id_receive="' . $item['id_receive_il'] . '"
-                                data-tipe="import"
-                                title="Request Payment">
-                                <i class="fa fa-paper-plane"></i>
-                            </button>';
-                        }
+                        // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
                     }
 
                     $action_btn = '<div class="d-inline-flex align-items-center justify-content-center gap-2">' . $buttons . '</div>';

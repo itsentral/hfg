@@ -69,16 +69,7 @@
                             title="Lihat Invoice">
                             <i class="fa fa-eye"></i>
                         </button>';
-
-                        if ($status_enum === 'draft') {
-                            $action_btn .= '
-                            <button type="button" class="btn btn-sm btn-warning btn-req-payment ms-1"
-                                data-id_receive="' . $item['id_receive_dp'] . '"
-                                data-tipe="dp"
-                                title="Request Payment">
-                                <i class="fa fa-paper-plane"></i>
-                            </button>';
-                        }
+                        // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
                     }
                     ?>
                     <tr>

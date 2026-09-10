@@ -46,13 +46,8 @@
                             data-tipe="local"
                             title="Lihat Invoice">
                             <i class="fa fa-eye"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-warning ms-1 btn-req-payment"
-                            data-id_receive="' . $item['id_receive_il'] . '"
-                            data-tipe="local"
-                            title="Request Payment">
-                            <i class="fa fa-paper-plane"></i>
                         </button>';
+                    // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
 
                 } elseif ($sudah_request && !$sudah_bayar) {
                     $badge = '<span class="badge bg-warning text-dark">Menunggu Pembayaran</span>';

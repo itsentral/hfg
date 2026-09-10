@@ -388,4 +388,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
             locale: 'id'
         });
     });
+
+    // Reset state modal setiap kali ditutup agar tidak "bocor" ke modal berikutnya:
+    // - kosongkan isi body
+    // - kembalikan tombol Save ke tampil (default). Handler view akan meng-hide
+    //   kembali saat membuka modal mode view.
+    $(document).on('hidden.bs.modal', '#dialog-popup', function() {
+        $('#ModalView').html('');
+        $('.save_btn_modal').show();
+    });
 </script>

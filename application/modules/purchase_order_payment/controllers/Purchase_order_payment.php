@@ -444,9 +444,12 @@ class Purchase_order_payment extends Admin_Controller
 				log_message('error', 'Generate jurnal DP failed: ' . $e->getMessage());
 			}
 
+			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
+			$this->_auto_request_payment($id_dp, 'dp');
+
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice DP berhasil disimpan.']);
+			echo json_encode(['status' => 1, 'message' => 'Invoice DP berhasil disimpan & diajukan.']);
 		} else {
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
@@ -612,9 +615,12 @@ class Purchase_order_payment extends Admin_Controller
 				log_message('error', 'Generate jurnal invoice import failed: ' . $e->getMessage());
 			}
 
+			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
+			$this->_auto_request_payment($id_receive, 'import');
+
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice Import berhasil disimpan.']);
+			echo json_encode(['status' => 1, 'message' => 'Invoice Import berhasil disimpan & diajukan.']);
 		} else {
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
@@ -770,9 +776,12 @@ class Purchase_order_payment extends Admin_Controller
 				log_message('error', 'Generate jurnal invoice local failed: ' . $e->getMessage());
 			}
 
+			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
+			$this->_auto_request_payment($id_receive, 'local');
+
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
-			echo json_encode(['status' => 1, 'message' => 'Invoice Local berhasil disimpan.']);
+			echo json_encode(['status' => 1, 'message' => 'Invoice Local berhasil disimpan & diajukan.']);
 		} else {
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
@@ -3328,6 +3337,92 @@ class Purchase_order_payment extends Admin_Controller
 			$this->db->trans_commit();
 			echo json_encode(['status' => 1, 'message' => 'Request payment berhasil diajukan. Silakan isi tanggal pembayaran di menu Request Payment.']);
 		}
+	}
+
+	/**
+	 * Auto-ajukan request payment untuk sebuah invoice receive (dp/import/local).
+	 * Dipanggil langsung dari save_dp/save_import/save_local agar tidak perlu
+	 * proses "Ajukan" manual di daftar. Mengubah status tr_receive_invoice
+	 * menjadi 'request payment' dan meng-insert baris request_payment (status 'open').
+	 *
+	 * @return array{status:int, message:string}
+	 */
+	private function _auto_request_payment($id_receive, $tipe)
+	{
+		if (empty($id_receive) || empty($tipe)) {
+			return ['status' => 0, 'message' => 'Data tidak valid untuk pengajuan.'];
+		}
+
+		$tipe_rp_map = [
+			'dp'     => 'invoice_dp',
+			'import' => 'invoice_import',
+			'local'  => 'invoice_local',
+		];
+		if (!isset($tipe_rp_map[$tipe])) {
+			return ['status' => 0, 'message' => 'Tipe tidak valid untuk pengajuan.'];
+		}
+		$tipe_rp = $tipe_rp_map[$tipe];
+
+		$data = $this->db->get_where('tr_receive_invoice', ['id' => $id_receive])->row_array();
+		if (empty($data)) {
+			return ['status' => 0, 'message' => 'Data invoice tidak ditemukan.'];
+		}
+
+		// Cek duplikat di request_payment
+		$cek_rp_cond = ['no_doc' => $data['no_po'], 'tipe' => $tipe_rp];
+		if ($tipe === 'import' && !empty($data['id_ros'])) {
+			$cek_rp_cond['id_ros'] = $data['id_ros'];
+		}
+		if ($tipe === 'local' && !empty($data['id_incoming'])) {
+			$cek_rp_cond['ids'] = (string) $id_receive;
+		}
+		$cek_rp = $this->db->get_where('request_payment', $cek_rp_cond)->row();
+		if ($cek_rp) {
+			return ['status' => 0, 'message' => 'Request payment untuk invoice ini sudah pernah dibuat.'];
+		}
+
+		$data_po = $this->db->get_where('tr_purchase_order', ['no_po' => $data['no_po']])->row_array();
+		$get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $data_po['id_suplier'] ?? ''])->row_array();
+
+		$jumlah       = (float) ($data['nilai_invoice'] ?? 0);
+		$jumlah_total = $jumlah + (float) ($data['nilai_ppn'] ?? 0);
+
+		$get_user = $this->db->get_where('users', ['id_user' => $this->auth->user_id()])->row_array();
+
+		$data_insert = [
+			'no_doc'      => $data['no_po'] ?? '',
+			'no_surat'    => $data['no_surat'] ?? '',
+			'nama'        => $get_user['nm_lengkap'] ?? $this->auth->user_name(),
+			'tgl_doc'     => $data['invoice_date'] ?? date('Y-m-d'),
+			'keperluan'   => 'Pembayaran ' . ucfirst(str_replace('_', ' ', $tipe_rp)) . ' - ' . ($data['no_surat'] ?? '') . ' - ' . ($data['nomor_invoice'] ?? ''),
+			'tipe'        => $tipe_rp,
+			'jumlah'      => $jumlah_total,
+			'status'      => 'open',
+			'tanggal'     => null,
+			'currency'    => $data['currency'] ?? 'IDR',
+			'bank_id'     => $data['bank'] ?? '',
+			'accnumber'   => $data['no_bank'] ?? '',
+			'accname'     => $data['nm_acc_bank'] ?? '',
+			'bank_name'   => $data['bank'] ?? '',
+			'ids'         => (string) $id_receive,
+			'id_ros'      => $data['id_ros'] ?? null,
+			'admin_bank'  => 0,
+			'total_pph'   => 0,
+			'id_supplier' => $data_po['id_suplier'] ?? '',
+			'nm_supplier' => $get_supplier['nama'] ?? '',
+			'created_by'  => $get_user['nm_lengkap'] ?? $this->auth->user_name(),
+			'created_on'  => date('Y-m-d H:i:s'),
+		];
+
+		$this->db->update('tr_receive_invoice', [
+			'status'     => 'request payment',
+			'updated_by' => $this->auth->user_id(),
+			'updated_on' => date('Y-m-d H:i:s'),
+		], ['id' => $id_receive]);
+
+		$this->db->insert('request_payment', $data_insert);
+
+		return ['status' => 1, 'message' => 'Request payment berhasil diajukan.'];
 	}
 
 	// ═══════════════════════════════════════════════════════════════════
