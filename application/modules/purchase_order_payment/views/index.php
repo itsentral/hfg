@@ -252,7 +252,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
                 no_po: $(this).data('no_po'),
                 tipe: tipe,
                 id_dp: $(this).data('id_dp'),
-                id_ros: $(this).data('id_ros')
+                id_ros: $(this).data('id_ros'),
+                id_incoming: $(this).data('id_incoming')
             },
             cache: false,
             success: function(result) {
@@ -386,5 +387,14 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
             allowInput: false,
             locale: 'id'
         });
+    });
+
+    // Reset state modal setiap kali ditutup agar tidak "bocor" ke modal berikutnya:
+    // - kosongkan isi body
+    // - kembalikan tombol Save ke tampil (default). Handler view akan meng-hide
+    //   kembali saat membuka modal mode view.
+    $(document).on('hidden.bs.modal', '#dialog-popup', function() {
+        $('#ModalView').html('');
+        $('.save_btn_modal').show();
     });
 </script>

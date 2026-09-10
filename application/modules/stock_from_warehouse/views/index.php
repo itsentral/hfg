@@ -135,8 +135,9 @@
                         </label>
                         <select id="hist_source" class="form-select form-select-sm">
                             <option value="">-- Semua Sumber --</option>
-                            <option value="PRO">Production (PRO)</option>
+                            <option value="PRT">Production 2 (PRT)</option>
                             <option value="WIP">WIP</option>
+                            <option value="HLD">On Hold (HLD)</option>
                         </select>
                     </div>
 

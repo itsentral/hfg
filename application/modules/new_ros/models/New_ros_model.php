@@ -88,9 +88,20 @@ class New_ros_model extends BF_Model
         ];
 
         // Filter status berdasarkan tab
-        $status_filter = ($tab === 'draft') ? '0' : '1';
-
-        $where = "a.status = '{$status_filter}'";
+        // - open              : status = 0 (draft, belum di-close)
+        // - payment_process   : status = 1 & status_payment = proses_payment (Import menunggu pembayaran)
+        // - payment_completed : status = 1 & status_payment = close (Lokal / Import lunas)
+        // (nilai lama 'draft'/'close' tetap didukung untuk kompatibilitas)
+        if ($tab === 'open' || $tab === 'draft') {
+            $where = "a.status = '0'";
+        } elseif ($tab === 'payment_process') {
+            $where = "a.status = '1' AND a.status_payment = 'proses_payment'";
+        } elseif ($tab === 'payment_completed') {
+            $where = "a.status = '1' AND a.status_payment = 'close'";
+        } else {
+            // fallback ('close' lama) → semua yang sudah final
+            $where = "a.status = '1'";
+        }
 
         if ($search) {
             $like = $this->db->escape_like_str($search);
@@ -273,5 +284,21 @@ class New_ros_model extends BF_Model
             ->get_where('tr_ros_others', ['id_ros' => $id_ros])
             ->row();
         return $row ? (float) $row->total : 0;
+    }
+
+    /**
+     * Generate pack code: PCK-YYMM-XXX (global counter)
+     */
+    public function generate_pack_code()
+    {
+        $prefix = 'PCK-' . date('ym');
+        $row = $this->db->query("SELECT MAX(pack_code) AS max_code FROM tr_ros_pack WHERE pack_code LIKE '{$prefix}%'")->row();
+        $urutan = 0;
+        if ($row && $row->max_code) {
+            // PCK-YYMM-XXX → ambil 3 digit terakhir
+            $urutan = (int) substr($row->max_code, -3);
+        }
+        $urutan++;
+        return $prefix . '-' . sprintf("%03d", $urutan);
     }
 }

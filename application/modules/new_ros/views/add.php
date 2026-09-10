@@ -128,6 +128,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
         <input type="hidden" name="id_ros" id="id_ros" value="<?= $id_ros ?>">
         <input type="hidden" name="no_po" id="no_po" value="<?= $no_po_val ?>">
         <input type="hidden" name="no_surat" id="no_surat" value="<?= $is_edit ? $header['no_surat'] : '' ?>">
+        <?php if ($is_edit) : ?>
+            <input type="hidden" name="id_supplier" value="<?= $h['id_supplier'] ?>">
+        <?php endif; ?>
 
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -144,7 +147,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 </div>
                 <div class="col-md-4">
                     <label>Supplier <span class="text-danger">*</span></label>
-                    <select name="id_supplier" id="id_supplier" class="form-control form-control-sm select2" required style="width:100%">
+                    <select name="id_supplier" id="id_supplier" class="form-control form-control-sm select2" required style="width:100%" <?= $is_edit ? 'disabled' : '' ?>>
                         <option value="">-- Select Supplier --</option>
                         <?php foreach ($list_supplier as $s) : ?>
                             <option value="<?= $s['kode_supplier'] ?>" <?= ($h['id_supplier'] == $s['kode_supplier']) ? 'selected' : '' ?>><?= $s['nama'] ?></option>
@@ -154,11 +157,11 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 <div class="col-md-5">
                     <label>No. PO <span class="text-danger">*</span></label>
                     <div class="d-flex align-items-center gap-1">
-                        <select id="select_po" class="form-control form-control-sm select2" required style="width:100%">
+                        <select id="select_po" class="form-control form-control-sm select2" required style="width:100%" <?= $is_edit ? 'disabled' : '' ?>>
                             <option value="">-- Select Supplier first --</option>
                             <?php if ($is_edit) : ?>
                                 <?php foreach ($list_po_data as $po) : ?>
-                                    <option value="<?= $po['no_po'] ?>" <?= ($no_po_val == $po['no_po']) ? 'selected' : '' ?>>
+                                    <option value="<?= $po['no_po'] ?>" data-loi="<?= $po['loi'] ?? 'Import' ?>" <?= ($no_po_val == $po['no_po']) ? 'selected' : '' ?>>
                                         <?= $po['no_surat'] ?: $po['no_po'] ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -231,6 +234,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
             </div>
 
 
+            <!-- F&C Estimation + Step 2-4 (Hidden for Lokal PO) -->
+            <div id="section_import_only">
             <!-- F&C Estimation -->
             <h6 class="fw-bold mt-3">F&C Estimation</h6>
             <div class="row mb-3">
@@ -406,6 +411,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     </table>
                 </div>
             </div>
+            </div><!-- /#section_import_only -->
         </div>
 
         <!-- DATA PO & KALKULASI -->
@@ -436,12 +442,12 @@ $list_po_data = isset($list_po) ? $list_po : [];
                             <th class="text-center" width="8%">Unit Price (U$)</th>
                             <th class="text-center" width="8%">Total Value (U$)</th>
                             <th class="text-center" style="min-width:120px">Total Value (Rp)</th>
-                            <th class="text-center" width="5%">BM %</th>
-                            <th class="text-center" style="min-width:110px">BM (Rp)</th>
-                            <th class="text-center" style="min-width:110px">Prorate LS</th>
-                            <th class="text-center" style="min-width:110px">Forwarding Cost</th>
-                            <th class="text-center" style="min-width:110px">Pro Rate Insurance</th>
-                            <th class="text-center" style="min-width:110px">Pro Rate Other Costs</th>
+                            <th class="text-center col-bm" width="5%">BM %</th>
+                            <th class="text-center col-bm" style="min-width:110px">BM (Rp)</th>
+                            <th class="text-center col-ls" style="min-width:110px">Prorate LS</th>
+                            <th class="text-center col-forwarding" style="min-width:110px">Forwarding Cost</th>
+                            <th class="text-center col-insurance" style="min-width:110px">Pro Rate Insurance</th>
+                            <th class="text-center col-others" style="min-width:110px">Pro Rate Other Costs</th>
                             <th class="text-center" style="min-width:130px">Total Inventory Value</th>
                             <th class="text-center" style="min-width:100px">Cost Book</th>
                         </tr>
@@ -460,12 +466,12 @@ $list_po_data = isset($list_po) ? $list_po : [];
                             <td></td>
                             <td class="text-end" id="sum_total_value_usd">0</td>
                             <td class="text-end" id="sum_total_value_rp">0</td>
-                            <td></td>
-                            <td class="text-end" id="sum_bm_rp">0</td>
-                            <td class="text-end" id="sum_prorate_ls">0</td>
-                            <td class="text-end" id="sum_forwarding">0</td>
-                            <td class="text-end" id="sum_insurance">0</td>
-                            <td class="text-end" id="sum_others">0</td>
+                            <td class="col-bm"></td>
+                            <td class="text-end col-bm" id="sum_bm_rp">0</td>
+                            <td class="text-end col-ls" id="sum_prorate_ls">0</td>
+                            <td class="text-end col-forwarding" id="sum_forwarding">0</td>
+                            <td class="text-end col-insurance" id="sum_insurance">0</td>
+                            <td class="text-end col-others" id="sum_others">0</td>
                             <td class="text-end" id="sum_total_inventory">0</td>
                             <td></td>
                         </tr>
@@ -473,24 +479,24 @@ $list_po_data = isset($list_po) ? $list_po : [];
                             <td colspan="5" class="text-end">PIB Value (Rp)</td>
                             <td class="text-end" id="foot_nilai_pib_usd">-</td>
                             <td class="text-end" id="foot_nilai_pib_rp">0</td>
-                            <td></td>
-                            <td class="text-end" id="foot_bm_pib">0</td>
-                            <td class="text-end" id="foot_ls_pib">0</td>
-                            <td></td>
-                            <td class="text-end" id="foot_insurance_pib">0</td>
-                            <td class="text-end" id="foot_others_pib">0</td>
+                            <td class="col-bm"></td>
+                            <td class="text-end col-bm" id="foot_bm_pib">0</td>
+                            <td class="text-end col-ls" id="foot_ls_pib">0</td>
+                            <td class="col-forwarding"></td>
+                            <td class="text-end col-insurance" id="foot_insurance_pib">0</td>
+                            <td class="text-end col-others" id="foot_others_pib">0</td>
                             <td colspan="2"></td>
                         </tr>
                         <tr class="selisih-row">
                             <td colspan="5" class="text-end">Variance</td>
                             <td class="text-end" id="selisih_usd">0</td>
                             <td class="text-end" id="selisih_rp">0</td>
-                            <td></td>
-                            <td class="text-end" id="selisih_bm">0</td>
-                            <td class="text-end" id="selisih_ls">0</td>
-                            <td></td>
-                            <td class="text-end" id="selisih_insurance">0</td>
-                            <td class="text-end" id="selisih_others">0</td>
+                            <td class="col-bm"></td>
+                            <td class="text-end col-bm" id="selisih_bm">0</td>
+                            <td class="text-end col-ls" id="selisih_ls">0</td>
+                            <td class="col-forwarding"></td>
+                            <td class="text-end col-insurance" id="selisih_insurance">0</td>
+                            <td class="text-end col-others" id="selisih_others">0</td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
@@ -534,11 +540,13 @@ $list_po_data = isset($list_po) ? $list_po : [];
                                 <th class="text-center">G.W. (Kg)</th>
                                 <th class="text-center">Length (M)</th>
                                 <th class="text-center">BPM</th>
+                                <th class="text-center">Pack</th>
+                                <th class="text-center">Baby</th>
                             </tr>
                         </thead>
                         <tbody id="coil_result_body">
                             <tr id="tr_empty_coil">
-                                <td colspan="8" class="text-center text-muted py-2">No coil data yet.</td>
+                                <td colspan="11" class="text-center text-muted py-2">No coil data yet.</td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -548,6 +556,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                                 <td></td>
                                 <td class="text-end fw-bold" id="total_nw">0</td>
                                 <td class="text-end fw-bold" id="total_gw">0</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
@@ -598,6 +608,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
     var materialsData = <?= json_encode($materials_data) ?>;
     var FORWARDING_RATE = <?= isset($forwarding_rate) ? $forwarding_rate : 0 ?>;
     var poLoadingActive = false;
+    var isLokal = false; // Flag untuk PO Lokal
 
     $(document).ready(function() {
         var isInit = true;
@@ -646,6 +657,95 @@ $list_po_data = isset($list_po) ? $list_po : [];
             $('.auto_num').each(function() {
                 if (!$(this).data('autoNumeric')) $(this).autoNumeric('init');
             });
+        }
+
+
+        // ── Lokal/Import PO Mode ──
+        function applyLokalMode(totalPoValue) {
+            isLokal = true;
+
+            // PIB Exchange Rate = 1 dan disabled
+            var $kurs = $('#kurs_pib');
+            if ($kurs.data('autoNumeric')) {
+                $kurs.autoNumeric('set', '1');
+            } else {
+                $kurs.val('1');
+            }
+            $kurs.prop('readonly', true).addClass('readonly-field');
+
+            // PO Value auto-fill dari total PO dan disabled
+            var $poUsd = $('#nilai_po_usd');
+            if ($poUsd.data('autoNumeric')) {
+                $poUsd.autoNumeric('set', totalPoValue.toFixed(2));
+            } else {
+                $poUsd.val(totalPoValue);
+            }
+            $poUsd.prop('readonly', true).addClass('readonly-field');
+
+            // Hide F&C Estimation + Step 2-4
+            $('#section_import_only').slideUp(300);
+
+            // Hide kolom BM, Prorate LS, Forwarding, Insurance, Others di tabel PO Data
+            $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-forwarding, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+
+            // Reset F&C values to 0
+            $('.fc-cost').each(function() {
+                if ($(this).data('autoNumeric')) {
+                    $(this).autoNumeric('set', '0');
+                } else {
+                    $(this).val('0');
+                }
+            });
+
+            // Reset LS, Insurance values to 0
+            var fieldsToZero = ['#biaya_ls', '#ppn_ls', '#pph_ls', '#insurance'];
+            $.each(fieldsToZero, function(i, sel) {
+                var $f = $(sel);
+                if ($f.data('autoNumeric')) {
+                    $f.autoNumeric('set', '0');
+                } else {
+                    $f.val('0');
+                }
+            });
+
+            // Recalculate
+            calcNilaiPibRp();
+        }
+
+        function resetLokalMode() {
+            isLokal = false;
+
+            // Re-enable PIB Exchange Rate dan clear value
+            var $kurs = $('#kurs_pib');
+            $kurs.prop('readonly', false).removeClass('readonly-field');
+            if ($kurs.data('autoNumeric')) {
+                $kurs.autoNumeric('set', '0');
+            } else {
+                $kurs.val('');
+            }
+
+            // Re-enable PO Value dan clear value
+            var $poUsd = $('#nilai_po_usd');
+            $poUsd.prop('readonly', false).removeClass('readonly-field');
+            if ($poUsd.data('autoNumeric')) {
+                $poUsd.autoNumeric('set', '0');
+            } else {
+                $poUsd.val('');
+            }
+
+            // Clear PO PIB Value (Rp)
+            var $poRp = $('#nilai_po_pib_rp');
+            if ($poRp.data('autoNumeric')) {
+                $poRp.autoNumeric('set', '0');
+            } else {
+                $poRp.val('');
+            }
+
+            // Show F&C Estimation + Step 2-4
+            $('#section_import_only').slideDown(300);
+
+            // Show kolom BM, Prorate LS, Forwarding, Insurance, Others di tabel PO Data
+            $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-forwarding, #tbl_data_po .col-insurance, #tbl_data_po .col-others').show();
         }
 
 
@@ -700,7 +800,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     if (res.status == 1 && res.data.length > 0) {
                         $.each(res.data, function(i, po) {
                             var label = po.no_surat ? po.no_surat : po.no_po;
-                            $selectPo.append('<option value="' + po.no_po + '">' + label + '</option>');
+                            $selectPo.append('<option value="' + po.no_po + '" data-loi="' + (po.loi || 'Import') + '">' + label + '</option>');
                         });
                     }
                     $selectPo.trigger('change');
@@ -724,12 +824,62 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 renderProrateLS();
                 renderDataPO();
                 recalculate();
+                resetLokalMode();
                 return;
             }
             var clean_surat = no_surat.split(' (')[0];
             $('#no_surat').val(clean_surat);
 
-            loadPOMaterials(no_po);
+            // Validasi DP sebelum load materials
+            Swal.fire({
+                title: '<i class="fas fa-spinner fa-spin"></i> Memeriksa Status PO...',
+                html: 'Sedang memeriksa status pembayaran DP untuk PO ini.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: function() {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: siteurl + 'new_ros/check_dp_status',
+                type: 'POST',
+                data: { no_po: no_po },
+                dataType: 'json',
+                success: function(res) {
+                    Swal.close();
+                    if (res.status == 1 && res.dp_required) {
+                        // DP belum dibayar — block dan tampilkan warning
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'DP Belum Dibayar',
+                            html: '<p>' + res.message + '</p>' +
+                                  '<a href="' + res.link + '" class="btn btn-primary btn-sm mt-2" target="_blank">' +
+                                  '<i class="fas fa-external-link-alt"></i> Buka Menu Payment DP</a>',
+                            confirmButtonText: 'Mengerti',
+                            confirmButtonColor: '#6c757d'
+                        });
+
+                        // Reset PO selection
+                        $('#select_po').val('').trigger('change.select2');
+                        $('#no_po').val('');
+                        $('#no_surat').val('');
+                        materialsData = [];
+                        renderProrateLS();
+                        renderDataPO();
+                        recalculate();
+                    } else {
+                        // Validasi passed — lanjut load materials
+                        loadPOMaterials(no_po);
+                    }
+                },
+                error: function() {
+                    Swal.close();
+                    // Jika gagal cek, tetap lanjut load (fail-open)
+                    loadPOMaterials(no_po);
+                }
+            });
         });
 
         // ── Load PO Materials (dipanggil otomatis saat PO dipilih) ──
@@ -769,6 +919,13 @@ $list_po_data = isset($list_po) ? $list_po : [];
                         renderDataPO();
                         calcProrateLS();
                         recalculate();
+
+                        // Handle Lokal/Import mode
+                        if (res.loi && res.loi === 'Lokal') {
+                            applyLokalMode(res.total_po_value || 0);
+                        } else {
+                            resetLokalMode();
+                        }
                     } else {
                         Swal.fire('Info', 'No materials found for this PO.', 'info');
                         materialsData = [];
@@ -989,24 +1146,30 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 html += '<td class="text-end mat-price">' + formatNum(m.unit_price_usd, 6) + '<input type="hidden" name="mat[' + i + '][unit_price_usd]" value="' + m.unit_price_usd + '"></td>';
                 html += '<td class="text-end mat-total-usd">' + formatNum(m.total_value_usd, 4) + '<input type="hidden" name="mat[' + i + '][total_value_usd]" value="' + m.total_value_usd + '"></td>';
                 html += '<td class="text-end mat-total-rp">0</td>';
-                html += '<td class="text-end mat-bm-persen">' + formatNum(m.bm_persen, 0) + '%<input type="hidden" name="mat[' + i + '][bm_persen]" value="' + m.bm_persen + '"></td>';
-                html += '<td class="text-end mat-bm-rp">0</td>';
-                html += '<td class="text-end mat-prorate-ls">0</td>';
-                html += '<td class="text-end mat-forwarding">0</td>';
-                html += '<td class="text-end mat-insurance">0</td>';
-                html += '<td class="text-end mat-others">0</td>';
+                html += '<td class="text-end mat-bm-persen col-bm">' + formatNum(m.bm_persen, 0) + '%<input type="hidden" name="mat[' + i + '][bm_persen]" value="' + m.bm_persen + '"></td>';
+                html += '<td class="text-end mat-bm-rp col-bm">0</td>';
+                html += '<td class="text-end mat-prorate-ls col-ls">0</td>';
+                html += '<td class="text-end mat-forwarding col-forwarding">0</td>';
+                html += '<td class="text-end mat-insurance col-insurance">0</td>';
+                html += '<td class="text-end mat-others col-others">0</td>';
                 html += '<td class="text-end mat-total-inv fw-bold">0</td>';
                 html += '<td class="text-end mat-cost-book fw-bold">0</td>';
                 html += '<input type="hidden" name="mat[' + i + '][ls_flag]" class="mat-ls-flag" value="' + (m.ls_flag || 'YA') + '">';
                 html += '</tr>';
             });
             $('#data_po_body').html(html);
+
+            // Jika mode Lokal, sembunyikan kolom biaya pada baris yang baru dirender
+            if (isLokal) {
+                $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-forwarding, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+            }
         }
 
 
         // RENDER TABEL COIL (terpisah)
         function renderCoilTable() {
             var html = '';
+            var hiddenHtml = ''; // hidden inputs untuk mother coils yang tidak ditampilkan
             var no = 1;
             var total = 0;
             var total_nw = 0;
@@ -1017,20 +1180,52 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 if (!m.coils || m.coils.length === 0) return;
                 hasCoil = true;
 
-                var rowspan = m.coils.length;
                 var nm_asli = m.nm_barang || m.nm_erp || '';
                 var nm_alias = m.nm_alias || m.nm_barang || '';
 
                 var total_inv = parseFloat(m.total_nilai_inventory) || 0;
-                var jumlah_coil = m.coils.length;
+
+                // Filter: tampilkan hanya coil yang bukan mother-with-baby
+                // Mother coil (is_baby_coil=0, qty_roll > 1) → hidden, tidak ditampilkan
+                var displayCoils = [];
+                $.each(m.coils, function(j, coil) {
+                    var isMother = (!coil.is_baby_coil || parseInt(coil.is_baby_coil) === 0);
+                    var qtyRoll = parseInt(coil.qty_roll) || 1;
+                    if (isMother && qtyRoll > 1) {
+                        // Mother coil yang punya baby → tidak ditampilkan, tapi tetap submit
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][no_coil]"       value="' + coil.no_coil + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_bersih]"  value="' + coil.berat_bersih + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_kotor]"   value="' + coil.berat_kotor + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][panjang]"       value="' + coil.panjang + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][bpm]" value="' + (coil.bpm || 0) + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][kode_internal]" value="' + (coil.kode_internal || '') + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][pack_no]" value="' + (coil.pack_no || '') + '">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][is_baby_coil]" value="0">';
+                        hiddenHtml += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][qty_roll]" value="' + qtyRoll + '">';
+                    } else {
+                        displayCoils.push({coil: coil, origIdx: j});
+                    }
+                });
+
+                if (displayCoils.length === 0) return;
+
+                var rowspan = displayCoils.length;
+                var jumlah_coil = displayCoils.length;
                 var price_per_coil = (jumlah_coil > 0) ? total_inv / jumlah_coil : 0;
 
-                $.each(m.coils, function(j, coil) {
+                $.each(displayCoils, function(dj, item) {
+                    var coil = item.coil;
+                    var j = item.origIdx;
+
                     total_nw += parseFloat(coil.berat_bersih) || 0;
                     total_gw += parseFloat(coil.berat_kotor) || 0;
 
+                    var packLabel = coil.pack_no ? '<span class="badge bg-info">' + coil.pack_no + '</span>' : '-';
+                    var babyLabel = coil.is_baby_coil ?
+                        '<span class="badge bg-warning text-dark" title="Baby coil dari ' + (coil.parent_no_coil || '') + '"><i class="fas fa-cut"></i></span>' : '-';
+
                     html += '<tr>';
-                    if (j === 0) {
+                    if (dj === 0) {
                         html += '<td class="text-center align-middle" rowspan="' + rowspan + '">' + no + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_asli + '</td>';
                         html += '<td class="align-middle" rowspan="' + rowspan + '">' + nm_alias + '</td>';
@@ -1041,6 +1236,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     html += '<td class="text-end">' + formatNum(coil.berat_kotor, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.panjang, 2) + '</td>';
                     html += '<td class="text-end">' + formatNum(coil.bpm || 0, 2) + '</td>';
+                    html += '<td class="text-center">' + packLabel + '</td>';
+                    html += '<td class="text-center">' + babyLabel + '</td>';
 
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][no_coil]"       value="' + coil.no_coil + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][berat_bersih]"  value="' + coil.berat_bersih + '">';
@@ -1048,6 +1245,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][panjang]"       value="' + coil.panjang + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][bpm]" value="' + (coil.bpm || 0) + '">';
                     html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][kode_internal]" value="' + (coil.kode_internal || '') + '">';
+                    html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][pack_no]" value="' + (coil.pack_no || '') + '">';
+                    html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][is_baby_coil]" value="' + (coil.is_baby_coil || 0) + '">';
+                    html += '<input type="hidden" name="mat[' + i + '][coil][' + j + '][qty_roll]" value="' + (coil.qty_roll || 1) + '">';
 
                     html += '</tr>';
                     total++;
@@ -1056,8 +1256,11 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 no++;
             });
 
+            // Append hidden inputs untuk mother coils yang tidak ditampilkan
+            html += hiddenHtml;
+
             if (!hasCoil) {
-                $('#coil_result_body').html('<tr id="tr_empty_coil"><td colspan="8" class="text-center text-muted py-2">No coil data yet.</td></tr>');
+                $('#coil_result_body').html('<tr id="tr_empty_coil"><td colspan="11" class="text-center text-muted py-2">No coil data yet.</td></tr>');
                 $('#total_coil_count').text('0');
                 $('#total_nw').text('0');
                 $('#total_gw').text('0');
@@ -1126,6 +1329,15 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 // Prorate Insurance & Others (basis: total_kg_bersih)
                 var pro_ins = (total_kg_bersih > 0) ? insurance * (kg / total_kg_bersih) : 0;
                 var pro_oth = (total_kg_bersih > 0) ? total_others * (kg / total_kg_bersih) : 0;
+
+                // PO Lokal: BM, Prorate LS, Forwarding, Insurance, Others tidak diperhitungkan
+                if (isLokal) {
+                    bm_rp = 0;
+                    prorate_ls = 0;
+                    forwarding = 0;
+                    pro_ins = 0;
+                    pro_oth = 0;
+                }
 
                 // Total Inventory & Cost Book
                 var total_inv = total_rp + bm_rp + prorate_ls + forwarding + pro_ins + pro_oth;
@@ -1321,6 +1533,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
             parsedCoils = res.coils;
             var totalExcelNW = 0;
             var matchCount = 0;
+            var countedCoils = 0;
 
             $.each(parsedCoils, function(i, coil) {
                 var matched = findMaterialMatch(coil.nama_alias);
@@ -1333,6 +1546,13 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     coil._matched_name = matched.name;
                 }
 
+                // Skip mother coil yang punya baby (qty_roll > 1, is_baby_coil = 0).
+                // Mother dihitung hanya jika tidak punya baby, mengikuti pola yang ditampilkan.
+                var isMother = (!coil.is_baby_coil || parseInt(coil.is_baby_coil) === 0);
+                var qtyRoll = parseInt(coil.qty_roll) || 1;
+                if (isMother && qtyRoll > 1) return; // mother dengan baby: tidak dihitung
+
+                countedCoils++;
                 if (matched.idx !== null) matchCount++;
                 totalExcelNW += parseFloat(coil.berat_bersih) || 0;
             });
@@ -1362,22 +1582,32 @@ $list_po_data = isset($list_po) ? $list_po : [];
             }
 
             var html = summaryHtml;
-            html += '<p class="mb-2"><small class="text-muted">' + res.msg + '</small></p>';
+            html += '<p class="mb-2"><small class="text-muted">Successfully read ' + countedCoils + ' coil rows.</small></p>';
             html += '<div class="table-responsive"><table class="table table-bordered table-sm" style="font-size:11px;">';
             html += '<thead class="table-light"><tr>' +
                 '<th>No</th><th>Coil No.</th><th>Alias Name</th><th>Original Name</th>' +
                 '<th>Match Material</th><th>Internal Code</th>' +
-                '<th>N.W.</th><th>G.W.</th><th>Length</th><th>Status</th>' +
+                '<th>N.W.</th><th>G.W.</th><th>Length</th><th>Pack</th><th>Baby</th><th>Status</th>' +
                 '</tr></thead><tbody>';
 
+            var displayNo = 0;
             $.each(parsedCoils, function(i, coil) {
+                // Skip mother coil yang punya baby (qty_roll > 1, is_baby_coil = 0)
+                var isMother = (!coil.is_baby_coil || parseInt(coil.is_baby_coil) === 0);
+                var qtyRoll = parseInt(coil.qty_roll) || 1;
+                if (isMother && qtyRoll > 1) return; // skip dari tampilan
+
+                displayNo++;
                 var matchedName = coil._matched_name || '';
                 var statusBadge = coil._matched_idx !== null ?
                     '<span class="badge bg-success">Matched</span>' :
                     '<span class="badge bg-danger">Not Match</span>';
+                var babyBadge = coil.is_baby_coil ?
+                    '<span class="badge bg-warning text-dark" title="Baby coil dari ' + (coil.parent_no_coil || '') + '"><i class="fas fa-cut"></i></span>' : '-';
+                var packLabel = coil.pack_no ? '<span class="badge bg-info">' + coil.pack_no + '</span>' : '-';
 
                 html += '<tr class="' + (coil._matched_idx !== null ? '' : 'table-warning') + '">' +
-                    '<td class="text-center">' + (i + 1) + '</td>' +
+                    '<td class="text-center">' + displayNo + '</td>' +
                     '<td>' + coil.no_coil + '</td>' +
                     '<td>' + coil.nama_alias + '</td>' +
                     '<td>' + (coil.nm_barang || '-') + '</td>' +
@@ -1386,6 +1616,8 @@ $list_po_data = isset($list_po) ? $list_po : [];
                     '<td class="text-end">' + formatNum(coil.berat_bersih, 2) + '</td>' +
                     '<td class="text-end">' + formatNum(coil.berat_kotor, 2) + '</td>' +
                     '<td class="text-end">' + formatNum(coil.panjang, 2) + '</td>' +
+                    '<td class="text-center">' + packLabel + '</td>' +
+                    '<td class="text-center">' + babyBadge + '</td>' +
                     '<td class="text-center">' + statusBadge + '</td>' +
                     '</tr>';
             });
@@ -1394,12 +1626,12 @@ $list_po_data = isset($list_po) ? $list_po : [];
             html += '<tfoot><tr class="table-secondary">';
             html += '<td colspan="6" class="text-end fw-bold">Total Net Weight Excel</td>';
             html += '<td class="text-end fw-bold">' + formatNum(totalExcelNW, 2) + '</td>';
-            html += '<td colspan="3"></td>';
+            html += '<td colspan="5"></td>';
             html += '</tr></tfoot>';
             html += '</table></div>';
 
             html += '<p class="text-muted small mt-2"><i class="fas fa-info-circle"></i> ' +
-                matchCount + ' matched, ' + (parsedCoils.length - matchCount) + ' not match.</p>';
+                matchCount + ' matched, ' + (countedCoils - matchCount) + ' not match.</p>';
 
             $('#modal_body_review').html(html);
             $('#btn_confirm_upload').prop('disabled', !isMatched);
@@ -1458,9 +1690,19 @@ $list_po_data = isset($list_po) ? $list_po : [];
                         berat_kotor: coil.berat_kotor,
                         panjang: coil.panjang,
                         kode_internal: coil.kode_internal,
-                        bpm: coil.bpm
+                        bpm: coil.bpm,
+                        pack_no: coil.pack_no || null,
+                        is_baby_coil: coil.is_baby_coil || 0,
+                        qty_roll: coil.qty_roll || 1,
+                        parent_no_coil: coil.parent_no_coil || null
                     });
-                    added++;
+
+                    // Hitung hanya coil fisik: mother coil yang punya baby
+                    // (is_baby_coil = 0 && qty_roll > 1) tidak dihitung
+                    var isMotherWithBaby = (parseInt(coil.is_baby_coil) === 0 && parseInt(coil.qty_roll) > 1);
+                    if (!isMotherWithBaby) {
+                        added++;
+                    }
                 }
             });
 
@@ -1580,6 +1822,16 @@ $list_po_data = isset($list_po) ? $list_po : [];
         }
         isInit = false;
 
+        // ── Check Lokal mode on page load (edit mode) ──
+        var $selectedPo = $('#select_po option:selected');
+        if ($selectedPo.val() && $selectedPo.data('loi') === 'Lokal') {
+            var totalPoUsd = 0;
+            $.each(materialsData, function(i, m) {
+                totalPoUsd += parseFloat(m.total_value_usd) || 0;
+            });
+            applyLokalMode(totalPoUsd);
+        }
+
         function loadCoilDataEdit() {
             var id_ros = $('#id_ros').val();
             if (!id_ros || id_ros === 'New') return;
@@ -1602,7 +1854,11 @@ $list_po_data = isset($list_po) ? $list_po : [];
                                 berat_kotor: parseFloat(c.berat_kotor) || 0,
                                 panjang: parseFloat(c.panjang) || 0,
                                 kode_internal: c.kode_internal,
-                                bpm: 0
+                                bpm: parseFloat(c.bpm) || 0,
+                                pack_no: c.pack_no || null,
+                                is_baby_coil: parseInt(c.is_baby_coil) || 0,
+                                qty_roll: parseInt(c.qty_roll) || 1,
+                                parent_no_coil: c.parent_no_coil || null
                             });
                         }
                     });
