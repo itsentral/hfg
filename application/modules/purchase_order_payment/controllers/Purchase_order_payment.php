@@ -923,7 +923,7 @@ class Purchase_order_payment extends Admin_Controller
         e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
         ril.id as id_receive_il,
         ril.nomor_invoice,
-        rid.id as id_dp, rid.value_dp as nilai_dp,
+        rid.id as id_dp, rid.value_dp_idr as nilai_dp,
         rp.id as id_request_payment, rp.status as status_request,
         pa.id_payment as no_payment
     ');
