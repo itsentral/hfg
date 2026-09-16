@@ -30,6 +30,7 @@ if ($is_view) {
     // Local: DPP/PPn dari data tersimpan (nilai_ppn sudah dihitung saat save)
     $ppn_local_val = (float)($data['nilai_ppn'] ?? 0);
     $dpp_local_val = $sisa_tagihan_val * 11 / 12;
+    $show_tax = strtoupper(trim($data['show_tax'] ?? 'Y'));
 } else {
     $no_surat    = $data_po['no_surat'];
     $nm_supplier = $get_supplier['nama'] ?? '-';
@@ -42,13 +43,23 @@ if ($is_view) {
     $id_incoming_val = $id_incoming ?? '';
     $sisa_tagihan_val = $sisa_tagihan ?? 0;
     $total_dp_rupiah_val = $total_dp_rupiah ?? 0;
+    // show_tax dari PO (mode form ada di $data_po)
+    $show_tax = strtoupper(trim($data_po['show_tax'] ?? 'Y'));
+
     // Local selalu IDR: kurs dikunci ke 1, dan ada perhitungan DPP + PPn
     if ($tipe === 'local') {
         $kurs = 1;
-        // DPP = sisa tagihan * 11/12 ; PPn = DPP * 12% ; Jumlah Invoice = sisa tagihan + PPn
-        $dpp_local_val     = $sisa_tagihan_val * 11 / 12;
-        $ppn_local_val     = $dpp_local_val * 0.12;
-        $jumlah_rupiah_val = $sisa_tagihan_val + $ppn_local_val;
+        if ($show_tax === 'N') {
+            // Tanpa pajak: DPP & PPn tidak dihitung, Jumlah Invoice = sisa tagihan
+            $dpp_local_val     = 0;
+            $ppn_local_val     = 0;
+            $jumlah_rupiah_val = $sisa_tagihan_val;
+        } else {
+            // DPP = sisa tagihan * 11/12 ; PPn = DPP * 12% ; Jumlah Invoice = sisa tagihan + PPn
+            $dpp_local_val     = $sisa_tagihan_val * 11 / 12;
+            $ppn_local_val     = $dpp_local_val * 0.12;
+            $jumlah_rupiah_val = $sisa_tagihan_val + $ppn_local_val;
+        }
     } else {
         $kurs = 0;
         $dpp_local_val     = 0;
@@ -114,21 +125,24 @@ if ($is_view) {
     <?php $is_local = ($tipe === 'local'); ?>
 
     <?php if ($is_local): ?>
+        <?php $tax_on = (strtoupper(trim($show_tax ?? 'Y')) !== 'N'); ?>
         <!-- Kurs local selalu 1 (hidden, tetap terkirim) -->
         <input type="hidden" name="kurs" id="input_kurs_il" value="1">
 
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">DPP (IDR)</label>
-            <input type="text" id="dpp_local_display"
-                class="form-control form-control-sm text-end bg-light"
-                value="<?= number_format($dpp_local_val, 2) ?>" readonly tabindex="-1">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">PPn (IDR)</label>
-            <input type="text" id="ppn_local_display"
-                class="form-control form-control-sm text-end bg-light"
-                value="<?= number_format($ppn_local_val, 2) ?>" readonly tabindex="-1">
-        </div>
+        <?php if ($tax_on): ?>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">DPP (IDR)</label>
+                <input type="text" id="dpp_local_display"
+                    class="form-control form-control-sm text-end bg-light"
+                    value="<?= number_format($dpp_local_val, 2) ?>" readonly tabindex="-1">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">PPn (IDR)</label>
+                <input type="text" id="ppn_local_display"
+                    class="form-control form-control-sm text-end bg-light"
+                    value="<?= number_format($ppn_local_val, 2) ?>" readonly tabindex="-1">
+            </div>
+        <?php endif; ?>
         <div class="col-md-6">
             <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
             <input type="text" id="jumlah_invoice_idr"
@@ -303,6 +317,7 @@ if ($is_view) {
 
             var sisaTagihan = <?= (float)$sisa_tagihan_val ?>;
             var isLocal = <?= $is_local ? 'true' : 'false' ?>;
+            var taxOn = <?= (isset($tax_on) && $tax_on) ? 'true' : 'false' ?>;
 
             function formatNumber(num) {
                 return num.toLocaleString('id-ID', {
@@ -313,15 +328,22 @@ if ($is_view) {
 
             function hitungSemua() {
                 if (isLocal) {
-                    // Local: kurs = 1. DPP = sisa * 11/12, PPn = DPP * 12%, Jumlah = sisa + PPn
-                    var dpp = sisaTagihan * 11 / 12;
-                    var ppn = dpp * 0.12;
-                    var jumlahIdr = sisaTagihan + ppn;
+                    // Local: kurs = 1.
+                    if (taxOn) {
+                        // DPP = sisa * 11/12, PPn = DPP * 12%, Jumlah = sisa + PPn
+                        var dpp = sisaTagihan * 11 / 12;
+                        var ppn = dpp * 0.12;
+                        var jumlahIdr = sisaTagihan + ppn;
 
-                    $('#dpp_local_display').val(formatNumber(dpp));
-                    $('#ppn_local_display').val(formatNumber(ppn));
-                    $('#jumlah_invoice_idr').val(formatNumber(jumlahIdr));
-                    $('#input_nilai_ppn').val(ppn);
+                        $('#dpp_local_display').val(formatNumber(dpp));
+                        $('#ppn_local_display').val(formatNumber(ppn));
+                        $('#jumlah_invoice_idr').val(formatNumber(jumlahIdr));
+                        $('#input_nilai_ppn').val(ppn);
+                    } else {
+                        // Tanpa pajak: Jumlah = sisa tagihan, PPn = 0
+                        $('#jumlah_invoice_idr').val(formatNumber(sisaTagihan));
+                        $('#input_nilai_ppn').val(0);
+                    }
                 } else {
                     var kursRaw = $('#input_kurs_il').autoNumeric('get');
                     var kurs = parseFloat(kursRaw) || 0;

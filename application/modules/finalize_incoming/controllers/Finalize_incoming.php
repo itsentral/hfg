@@ -865,6 +865,7 @@ class Finalize_incoming extends Admin_Controller
         $now     = date('Y-m-d H:i:s');
         $today   = date('Y-m-d');
         $user_id = $this->auth->user_id();
+        $id_pack_val = isset($extra['id_pack']) ? (int) $extra['id_pack'] : null;
 
         if (empty($get_stock)) {
             $this->db->insert('warehouse_stock', [
@@ -879,6 +880,7 @@ class Finalize_incoming extends Admin_Controller
                 'kd_gudang'       => $kd_gudang,
                 'id_unit'         => $id_unit,
                 'id_unit_packing' => $id_unit_packing,
+                'id_pack'         => $id_pack_val,
                 'begining'        => 0,
                 'incoming'        => $qty_in,
                 'outgoing'        => 0,
@@ -895,6 +897,7 @@ class Finalize_incoming extends Admin_Controller
             $this->db->update('warehouse_stock', [
                 'code_incoming'   => $kode_trans,
                 'trade_name'      => $trade_name,
+                'id_pack'         => $id_pack_val,
                 'incoming'        => $incoming_lama + $qty_in,
                 'qty_stock'       => $qty_akhir,
                 'qty_free'        => $qty_free_awal + $qty_in,

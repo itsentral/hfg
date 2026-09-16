@@ -194,11 +194,19 @@ class Purchase_order_payment extends Admin_Controller
 			'kode_supplier' => $data_po['id_suplier']
 		])->row_array();
 
-		// DPP = value_dp (tr_top_po.nilai) × 11/12
-		$dpp = (float)($data_po['nilai'] ?? 0) * (11 / 12);
+		// show_tax menentukan apakah DPP & PPN dihitung/ditampilkan.
+		$show_tax = strtoupper(trim($data_po['show_tax'] ?? 'Y'));
 
-		// Nilai PPN = DPP × 12% (konsisten dengan tab local)
-		$nilai_ppn = $dpp * 0.12;
+		if ($show_tax === 'N') {
+			// Tanpa pajak: DPP & PPN tidak dihitung
+			$dpp       = 0;
+			$nilai_ppn = 0;
+		} else {
+			// DPP = value_dp (tr_top_po.nilai) × 11/12
+			$dpp = (float)($data_po['nilai'] ?? 0) * (11 / 12);
+			// Nilai PPN = DPP × 12% (konsisten dengan tab local)
+			$nilai_ppn = $dpp * 0.12;
+		}
 
 		// Jumlah PO murni dari database (hargatotal)
 		$jumlah_po = (float)($data_po['hargatotal'] ?? 0);
@@ -366,9 +374,15 @@ class Purchase_order_payment extends Admin_Controller
 
 		// Recompute PPN server-side (anti-manipulasi), konsisten dengan tab local:
 		// DPP = value_dp × 11/12 ; nilai_ppn = DPP × 12%
+		// Hormati show_tax PO: jika 'N' maka tanpa PPN.
 		$value_dp      = $clean($this->input->post('value_dp'));
-		$dpp_dp        = $value_dp * 11 / 12;
-		$nilai_ppn_dp  = $dpp_dp * 0.12;
+		$po_show_tax   = strtoupper(trim($this->db->select('show_tax')->get_where('tr_purchase_order', ['no_po' => $no_po])->row()->show_tax ?? 'Y'));
+		if ($po_show_tax === 'N') {
+			$nilai_ppn_dp = 0;
+		} else {
+			$dpp_dp       = $value_dp * 11 / 12;
+			$nilai_ppn_dp = $dpp_dp * 0.12;
+		}
 		// jumlah_rupiah = (value_dp + nilai_ppn) × kurs
 		$jumlah_rupiah = ($value_dp + $nilai_ppn_dp) * $kurs;
 
@@ -705,11 +719,18 @@ class Purchase_order_payment extends Admin_Controller
 
 		$sisa_nilai = $clean($this->input->post('sisa_nilai'));
 
-		// Local selalu IDR (kurs = 1). Hitung ulang PPn server-side (anti-manipulasi):
+		// Local selalu IDR (kurs = 1). Hitung ulang PPn server-side (anti-manipulasi),
+		// hormati show_tax PO: jika 'N' maka tanpa PPN.
 		// DPP = sisa tagihan * 11/12 ; PPn = DPP * 12% ; Jumlah Invoice = sisa tagihan + PPn
-		$dpp_local     = $sisa_nilai * 11 / 12;
-		$nilai_ppn     = $dpp_local * 0.12;
-		$jumlah_rupiah = $sisa_nilai + $nilai_ppn;
+		$po_show_tax = strtoupper(trim($this->db->select('show_tax')->get_where('tr_purchase_order', ['no_po' => $no_po])->row()->show_tax ?? 'Y'));
+		if ($po_show_tax === 'N') {
+			$nilai_ppn     = 0;
+			$jumlah_rupiah = $sisa_nilai;
+		} else {
+			$dpp_local     = $sisa_nilai * 11 / 12;
+			$nilai_ppn     = $dpp_local * 0.12;
+			$jumlah_rupiah = $sisa_nilai + $nilai_ppn;
+		}
 		$gl_hutang_dagang = round($jumlah_rupiah);
 
 		// Hitung unbill dan selisih kurs dari incoming header (gl_unbill_from_ros)
@@ -809,7 +830,7 @@ class Purchase_order_payment extends Admin_Controller
             r.invoice_date as invoice_date,
             r.invoice_date_real as invoice_date_real,
             r.nilai_ppn as nilai_ppn,
-            p.no_po, p.no_surat, p.matauang, p.hargatotal,
+            p.no_po, p.no_surat, p.matauang, p.hargatotal, p.show_tax,
             s.nama as nm_supplier,
             e.progress as persen_dp, e.nilai, e.keterangan as keterangan_top,
             pa.no_doc as no_payment, r.status as status_payment, pa.id_payment,
@@ -854,7 +875,7 @@ class Purchase_order_payment extends Admin_Controller
             r.nomor_invoice as nomor_invoice,
             r.nilai_invoice as nilai_invoice,
             r.file_invoice,
-            p.no_po, p.no_surat as no_surat_po, p.matauang, p.hargatotal,
+            p.no_po, p.no_surat as no_surat_po, p.matauang, p.hargatotal, p.show_tax,
             s.nama as nm_supplier,
             e.progress, e.nilai, e.keterangan as keterangan_top,
             rh.gl_advance_purchase as total_dp_rupiah_val,
