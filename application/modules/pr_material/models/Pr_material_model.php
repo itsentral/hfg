@@ -13,6 +13,21 @@ class Pr_material_model extends BF_Model
         $this->ENABLE_DELETE  = has_permission('PR_Material.Delete');
     }
 
+    public function get_kategori_material()
+    {
+        // Ambil daftar kategori (level 1) dari material aktif untuk mengisi filter select.
+        $this->db->distinct();
+        $this->db->select('z.nama AS category');
+        $this->db->from('new_inventory_4 a');
+        $this->db->join('new_inventory_1 z', 'a.code_lv1 = z.code_lv1', 'left');
+        $this->db->where('a.category', 'material');
+        $this->db->where('a.deleted_date IS NULL');
+        $this->db->where('z.nama IS NOT NULL');
+        $this->db->order_by('z.nama', 'asc');
+
+        return $this->db->get()->result_array();
+    }
+
     public function get_data_json_reorder_point()
     {
         $requestData = $_REQUEST;
@@ -22,7 +37,8 @@ class Pr_material_model extends BF_Model
             $requestData['order'][0]['column'],
             $requestData['order'][0]['dir'],
             $requestData['start'],
-            $requestData['length']
+            $requestData['length'],
+            isset($requestData['kategori']) ? $requestData['kategori'] : null
         );
 
         $totalData     = $fetch['totalData'];
@@ -84,7 +100,7 @@ class Pr_material_model extends BF_Model
         ]);
     }
 
-    public function get_query_json_reorder_point($like = null, $column_order = null, $column_dir = null, $limit_start = 0, $limit_length = 10)
+    public function get_query_json_reorder_point($like = null, $column_order = null, $column_dir = null, $limit_start = 0, $limit_length = 10, $kategori = null)
     {
         $columns_order_by = [
             0 => 'a.code',
@@ -118,6 +134,11 @@ class Pr_material_model extends BF_Model
         $this->db->join('warehouse_stock b', 'a.code_lv4 = b.code_lv4 AND b.id_gudang = 1', 'left');
         $this->db->where('a.category', 'material');
         $this->db->where('a.deleted_date IS NULL');
+
+        // Filter berdasarkan kategori (level 1) jika dipilih dari select di view.
+        if ($kategori !== null && $kategori !== '') {
+            $this->db->where('z.nama', $kategori);
+        }
 
         if ($like) {
             $this->db->group_start();

@@ -28,8 +28,11 @@ class Pr_material extends Admin_Controller
 
     public function add()
     {
+        $data['list_kategori'] = $this->pr_material_model->get_kategori_material();
+
         $this->template->page_icon('fa fa-cubes');
         $this->template->title('Re-order Point Material');
+        $this->template->set($data);
         $this->template->render('add');
     }
 

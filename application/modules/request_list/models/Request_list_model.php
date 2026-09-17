@@ -602,7 +602,60 @@ class Request_list_model extends BF_Model
         return $count == 0;
     }
 
+    /**
+     * Konfirmasi coil: PURE PINDAH POSISI GUDANG (status), TANPA perubahan nilai.
+     *
+     * Aturan bisnis:
+     * - Coil dipindah ke gudang PRT (id_gudang=3, kd_gudang='PRT', status_proses='in_transit').
+     * - warehouse_pack induk ikut dipindah ke PRT.
+     * - SELURUH coil dalam pack yang sama ikut dipindah ke PRT (walaupun tidak masuk detail SPK).
+     * - TIDAK ADA perubahan nilai apa pun pada warehouse_stock (qty_stock/total_nilai/harga_beli).
+     * - Ledger tetap dicatat sebagai keterangan pergerakan (history, transaction_detail, coil_per_day).
+     * - Nilai pada ledger memakai info coil itu sendiri (total_nilai = net_weight x harga_beli).
+     *
+     * @param int    $id_coil    ID coil yang dikonfirmasi (dari detail SPK)
+     * @param string $kode_trans Nomor SPK Coil (spk_coil_no)
+     * @param int    $created_by ID user
+     * @return array Array of result per coil (bisa lebih dari 1 karena companion pack). Kosong jika tidak ada yang diproses.
+     */
     public function reduce_coil_stock($id_coil, $kode_trans, $created_by)
+    {
+        $results = [];
+
+        // Proses coil utama
+        $main = $this->_move_coil_to_prt((int) $id_coil, $kode_trans, $created_by);
+        if ($main === false) {
+            return $results; // coil tidak valid / sudah diproses
+        }
+        $results[] = $main;
+
+        // Proses seluruh coil companion dalam pack yang sama (jika ada id_pack)
+        if (!empty($main['id_pack'])) {
+            $companions = $this->db->query(
+                "SELECT id FROM warehouse_stock_coil
+                 WHERE id_pack = ? AND status = 1 AND id != ?
+                   AND (status_proses IS NULL OR status_proses != 'in_transit')",
+                [$main['id_pack'], (int) $id_coil]
+            )->result_array();
+
+            foreach ($companions as $c) {
+                $res = $this->_move_coil_to_prt((int) $c['id'], $kode_trans, $created_by);
+                if ($res !== false) {
+                    $results[] = $res;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Pindahkan SATU coil ke gudang PRT + catat ledger. TANPA perubahan nilai warehouse_stock.
+     * Idempoten: coil yang sudah in_transit akan di-skip (return false).
+     *
+     * @return array|false Ringkasan per coil, atau false jika di-skip/invalid.
+     */
+    private function _move_coil_to_prt($id_coil, $kode_trans, $created_by)
     {
         $coil = $this->db->query(
             "SELECT * FROM warehouse_stock_coil WHERE id = ? AND status = 1 LIMIT 1 FOR UPDATE",
@@ -613,147 +666,22 @@ class Request_list_model extends BF_Model
             return false;
         }
 
+        // Guard idempoten: jika sudah in_transit (mis. sudah diproses sebagai companion), skip.
+        if (isset($coil['status_proses']) && $coil['status_proses'] === 'in_transit') {
+            return false;
+        }
+
         $source_id_gudang = $coil['id_gudang'];
         $source_kd_gudang = $coil['kd_gudang'];
-        $is_from_wip       = ($coil['status_proses'] === 'wip');
-        $now               = date('Y-m-d H:i:s');
-        $today             = date('Y-m-d');
+        $now              = date('Y-m-d H:i:s');
+        $today            = date('Y-m-d');
 
-        // ========================================================================
-        // SKENARIO B: Coil berasal dari WIP -> hanya di-BOOKING, TIDAK berubah
-        // (TIDAK ADA PERUBAHAN DI SINI)
-        // ========================================================================
-        if ($is_from_wip) {
-            $harga_lama = (float) $coil['harga_beli'];
-
-            $this->db->where('id', $id_coil)->update('warehouse_stock_coil', [
-                'status_proses' => 'booked',
-            ]);
-
-            $this->db->insert('warehouse_history', [
-                'id_material'     => $coil['id_material'],
-                'nm_material'     => $coil['nm_material'],
-                'id_gudang'       => $source_id_gudang,
-                'kd_gudang'       => $source_kd_gudang,
-                'id_gudang_dari'  => $source_id_gudang,
-                'kd_gudang_dari'  => $source_kd_gudang,
-                'id_gudang_ke'    => $source_id_gudang,
-                'kd_gudang_ke'    => $source_kd_gudang,
-                'qty_stock_awal'  => 0,
-                'qty_stock_akhir' => 0,
-                'no_ipp'          => $kode_trans,
-                'jumlah_mat'      => $coil['net_weight'],
-                'ket'             => 'WIP coil dibooking untuk SPK ' . $kode_trans . ' (Coil: ' . $coil['no_coil'] . ', tetap di WIP)',
-                'no_coil'         => $coil['no_coil'],
-                'harga_beli'      => $harga_lama,
-                'total_harga'     => isset($coil['total_nilai']) ? $coil['total_nilai'] : 0,
-                'saldo_awal'      => 0,
-                'saldo_akhir'     => 0,
-                'harga_baru'      => $harga_lama,
-                'harga_lama'      => $harga_lama,
-                'update_by'       => $created_by,
-                'update_date'     => $now,
-            ]);
-
-            $this->db->insert('warehouse_stock_transaction_detail', [
-                'kode_trans'     => $kode_trans,
-                'id_material'    => $coil['id_material'],
-                'nm_material'    => $coil['nm_material'],
-                'id_gudang'      => $source_id_gudang,
-                'kd_gudang'      => $source_kd_gudang,
-                'no_coil'        => $coil['no_coil'],
-                'parent_no_coil' => isset($coil['parent_coil_id']) ? $coil['parent_coil_id'] : null,
-                'kode_internal'  => $coil['kode_internal'],
-                'gross_weight'   => !empty($coil['gross_weight']) ? $coil['gross_weight'] : 0,
-                'net_weight'     => !empty($coil['net_weight'])   ? $coil['net_weight']   : 0,
-                'length'         => !empty($coil['length'])       ? $coil['length']       : 0,
-                'price_per_coil' => $harga_lama,
-                'cost_book'      => $harga_lama,
-                'status_qc'      => 'OUT',
-                'to_status'      => 'booked',
-                'created_at'     => $now,
-            ]);
-
-            $coil_snap = $this->db->query("
-            SELECT id FROM warehouse_coil_per_day
-            WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
-            LIMIT 1
-        ", [$coil['id_material'], $source_id_gudang, $coil['no_coil'], $today])->row();
-
-            $snap_data = [
-                'nm_material'   => $coil['nm_material'],
-                'kd_gudang'     => $source_kd_gudang,
-                'kode_internal' => $coil['kode_internal'],
-                'gross_weight'  => $coil['gross_weight'],
-                'net_weight'    => $coil['net_weight'],
-                'length'        => $coil['length'],
-                'harga_beli'    => $harga_lama,
-                'total_nilai'   => $coil['net_weight'] * $harga_lama,
-                'status'        => 'BOOKED',
-                'hist_date'     => $now,
-                'hist_by'       => $created_by,
-            ];
-
-            if (empty($coil_snap)) {
-                $this->db->insert('warehouse_coil_per_day', array_merge([
-                    'id_material' => $coil['id_material'],
-                    'id_gudang'   => $source_id_gudang,
-                    'no_coil'     => $coil['no_coil'],
-                ], $snap_data));
-            } else {
-                $this->db->update('warehouse_coil_per_day', $snap_data, ['id' => $coil_snap->id]);
-            }
-
-            return [
-                'id_material' => $coil['id_material'],
-                'nm_material' => $coil['nm_material'],
-                'id_gudang'   => $source_id_gudang,
-                'kd_gudang'   => $source_kd_gudang,
-                'from_wip'    => true,
-                'net_weight'  => $coil['net_weight'],
-                'qty_awal'    => 0,
-                'qty_akhir'   => 0,
-                'saldo_awal'  => 0,
-                'saldo_akhir' => 0,
-                'total_nilai' => $coil['net_weight'] * $harga_lama,
-                'costbook'    => $harga_lama,
-                'harga_lama'  => $harga_lama,
-            ];
-        }
-
-        // ========================================================================
-        // SKENARIO A: Coil normal dari PRO/SLI -> pindah fisik ke PRT
-        // RUMUS BARU: total_harga, saldo_akhir, harga_baru berbasis pengurangan
-        // dari nilai warehouse_stock SEBELUM transaksi (bukan recalc SUM lagi)
-        // ========================================================================
-        $stock_source = $this->db->query(
-            "SELECT * FROM warehouse_stock WHERE code_lv4 = ? AND kd_gudang = ? LIMIT 1 FOR UPDATE",
-            [$coil['id_material'], $source_kd_gudang]
-        )->row_array();
-
-        $qty_awal_source   = $stock_source ? (float) $stock_source['qty_stock']   : 0;
-        $saldo_awal_source = $stock_source ? (float) $stock_source['total_nilai'] : 0;
-        $harga_lama        = $stock_source ? (float) $stock_source['harga_beli']  : 0; // harga_baru sebelumnya
-
-        $qty_transaksi = (float) $coil['net_weight'];
-
-        // ===== RUMUS BARU: total_harga = qty_transaksi × harga_lama =====
-        $total_harga = $qty_transaksi * $harga_lama;
-
-        // ===== RUMUS BARU: qty_akhir & saldo_akhir gudang sumber (dikurangi) =====
-        $qty_akhir_source   = $qty_awal_source - $qty_transaksi;
-        $saldo_akhir_source = $saldo_awal_source - $total_harga;
-
-        // ===== RUMUS BARU: harga_baru = saldo_akhir / qty_akhir =====
-        // Guard divide-by-zero / qty_akhir <= 0 (misal stok jadi habis / minus karena data tidak konsisten)
-        if ($qty_akhir_source > 0) {
-            $harga_baru_source = $saldo_akhir_source / $qty_akhir_source;
-        } else {
-            $harga_baru_source = $harga_lama; // fallback: pertahankan harga lama kalau qty habis/negatif
-            if ($qty_akhir_source < 0) {
-                log_message('error', "reduce_coil_stock: qty_akhir_source NEGATIF ({$qty_akhir_source}) untuk material {$coil['id_material']} gudang {$source_kd_gudang}. Kemungkinan data qty_awal di header tidak sinkron dengan kondisi real.");
-            }
-        }
+        // Nilai info coil (opsi c) — TIDAK dipakai untuk mengubah warehouse_stock.
+        $harga_coil  = isset($coil['harga_beli']) ? (float) $coil['harga_beli'] : 0;
+        $net_weight  = isset($coil['net_weight']) ? (float) $coil['net_weight'] : 0;
+        $total_nilai = isset($coil['total_nilai']) && $coil['total_nilai'] !== null
+            ? (float) $coil['total_nilai']
+            : ($net_weight * $harga_coil);
 
         // ===== UPDATE COIL: pindah ke PRT + set stage =====
         $this->db->where('id', $id_coil)->update('warehouse_stock_coil', [
@@ -762,56 +690,16 @@ class Request_list_model extends BF_Model
             'status_proses' => 'in_transit',
         ]);
 
-        // ===== UPDATE warehouse_stock GUDANG SUMBER =====
-        if ($stock_source) {
-            $this->db->where('code_lv4', $coil['id_material'])
-                ->where('kd_gudang', $source_kd_gudang)
-                ->set('qty_stock', $qty_akhir_source)
-                ->set('total_nilai', $saldo_akhir_source)
-                ->set('harga_beli', $harga_baru_source)
-                ->update('warehouse_stock');
-        } else {
-            log_message('warning', "reduce_coil_stock: stock_source tidak ditemukan untuk material {$coil['id_material']} gudang {$source_kd_gudang}, update warehouse_stock sumber di-skip.");
-        }
-
-        // ===== RUMUS BARU: gudang PRT (dibalik — ditambah) =====
-        $stock_prt = $this->db->query(
-            "SELECT * FROM warehouse_stock WHERE code_lv4 = ? AND kd_gudang = ? LIMIT 1 FOR UPDATE",
-            [$coil['id_material'], 'PRT']
-        )->row_array();
-
-        $qty_awal_prt   = $stock_prt ? (float) $stock_prt['qty_stock']   : 0;
-        $saldo_awal_prt = $stock_prt ? (float) $stock_prt['total_nilai'] : 0;
-
-        $qty_akhir_prt   = $qty_awal_prt + $qty_transaksi;
-        $saldo_akhir_prt = $saldo_awal_prt + $total_harga; // total_harga SAMA dengan yang di sumber
-
-        $harga_baru_prt = $qty_akhir_prt > 0
-            ? ($saldo_akhir_prt / $qty_akhir_prt)
-            : $harga_lama;
-
-        if ($stock_prt) {
-            $this->db->where('code_lv4', $coil['id_material'])
-                ->where('kd_gudang', 'PRT')
-                ->set('qty_stock', $qty_akhir_prt)
-                ->set('total_nilai', $saldo_akhir_prt)
-                ->set('harga_beli', $harga_baru_prt)
-                ->update('warehouse_stock');
-        } else {
-            $this->db->insert('warehouse_stock', [
-                'code_lv4'    => $coil['id_material'],
-                'nm_material' => $coil['nm_material'],
-                'id_gudang'   => 3,
-                'kd_gudang'   => 'PRT',
-                'qty_stock'   => $qty_akhir_prt,     // = qty_transaksi (karena qty_awal_prt = 0)
-                'total_nilai' => $saldo_akhir_prt,   // = total_harga
-                'harga_beli'  => $harga_baru_prt,    // = harga_lama (karena qty_awal_prt = 0)
+        // ===== UPDATE warehouse_pack: pindahkan pack ke PRT mengikuti coil =====
+        // Idempoten: aman meski dipanggil berkali-kali untuk coil pada pack yang sama.
+        if (!empty($coil['id_pack'])) {
+            $this->db->where('id', $coil['id_pack'])->update('warehouse_pack', [
+                'id_gudang' => 3,
+                'kd_gudang' => 'PRT',
             ]);
         }
 
-        // ===== LEDGER: warehouse_history =====
-        // Catatan: harga_baru di sini merepresentasikan harga_baru SISI SUMBER
-        // (harga_baru_prt tersimpan terpisah di header warehouse_stock PRT)
+        // ===== LEDGER: warehouse_history (tanpa perubahan saldo) =====
         $this->db->insert('warehouse_history', [
             'id_material'     => $coil['id_material'],
             'nm_material'     => $coil['nm_material'],
@@ -821,25 +709,23 @@ class Request_list_model extends BF_Model
             'kd_gudang_dari'  => $source_kd_gudang,
             'id_gudang_ke'    => 3,
             'kd_gudang_ke'    => 'PRT',
-            'qty_stock_awal'  => $qty_awal_source,
-            'qty_stock_akhir' => $qty_akhir_source,
+            'qty_stock_awal'  => 0,
+            'qty_stock_akhir' => 0,
             'no_ipp'          => $kode_trans,
-            'jumlah_mat'      => $coil['net_weight'],
+            'jumlah_mat'      => $net_weight,
             'ket'             => 'Coil pindah ke PRT via SPK ' . $kode_trans . ' (Coil: ' . $coil['no_coil'] . ', dari ' . $source_kd_gudang . ')',
             'no_coil'         => $coil['no_coil'],
-            'harga_beli'      => $harga_lama,
-            'total_harga'     => $total_harga,          // <-- pakai hasil rumus baru
-            'saldo_awal'      => $saldo_awal_source,
-            'saldo_akhir'     => $saldo_akhir_source,    // <-- pakai hasil rumus baru
-            'harga_baru'      => $harga_baru_source,     // <-- pakai hasil rumus baru
-            'harga_lama'      => $harga_lama,
+            'harga_beli'      => $harga_coil,
+            'total_harga'     => $total_nilai,
+            'saldo_awal'      => 0,
+            'saldo_akhir'     => 0,
+            'harga_baru'      => $harga_coil,
+            'harga_lama'      => $harga_coil,
             'update_by'       => $created_by,
             'update_date'     => $now,
         ]);
 
         // ===== TRANSACTION DETAIL: 2 baris — OUT dari sumber, IN ke PRT =====
-        // cost_book tetap harga_lama (harga barang yang benar-benar berpindah,
-        // bukan harga rata-rata baru hasil rumus)
         $this->db->insert('warehouse_stock_transaction_detail', [
             'kode_trans'     => $kode_trans,
             'id_material'    => $coil['id_material'],
@@ -850,10 +736,10 @@ class Request_list_model extends BF_Model
             'parent_no_coil' => null,
             'kode_internal'  => $coil['kode_internal'],
             'gross_weight'   => !empty($coil['gross_weight']) ? $coil['gross_weight'] : 0,
-            'net_weight'     => !empty($coil['net_weight'])   ? $coil['net_weight']   : 0,
-            'length'         => !empty($coil['length'])       ? $coil['length']       : 0,
-            'price_per_coil' => !empty($coil['harga_beli']) ? $coil['harga_beli'] : 0,
-            'cost_book'      => $harga_lama,
+            'net_weight'     => $net_weight,
+            'length'         => !empty($coil['length']) ? $coil['length'] : 0,
+            'price_per_coil' => $harga_coil,
+            'cost_book'      => $harga_coil,
             'status_qc'      => 'OUT',
             'to_status'      => 'in_transit',
             'created_at'     => $now,
@@ -869,10 +755,10 @@ class Request_list_model extends BF_Model
             'parent_no_coil' => null,
             'kode_internal'  => $coil['kode_internal'],
             'gross_weight'   => !empty($coil['gross_weight']) ? $coil['gross_weight'] : 0,
-            'net_weight'     => !empty($coil['net_weight'])   ? $coil['net_weight']   : 0,
-            'length'         => !empty($coil['length'])       ? $coil['length']       : 0,
-            'price_per_coil' => !empty($coil['harga_beli']) ? $coil['harga_beli'] : 0,
-            'cost_book'      => $harga_lama,
+            'net_weight'     => $net_weight,
+            'length'         => !empty($coil['length']) ? $coil['length'] : 0,
+            'price_per_coil' => $harga_coil,
+            'cost_book'      => $harga_coil,
             'status_qc'      => 'IN',
             'to_status'      => 'in_transit',
             'created_at'     => $now,
@@ -880,10 +766,10 @@ class Request_list_model extends BF_Model
 
         // ===== SNAPSHOT HARIAN: sisi OUT dari gudang sumber =====
         $coil_snap_out = $this->db->query("
-        SELECT id FROM warehouse_coil_per_day
-        WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
-        LIMIT 1
-    ", [$coil['id_material'], $source_id_gudang, $coil['no_coil'], $today])->row();
+            SELECT id FROM warehouse_coil_per_day
+            WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
+            LIMIT 1
+        ", [$coil['id_material'], $source_id_gudang, $coil['no_coil'], $today])->row();
 
         $coil_snap_out_data = [
             'nm_material'   => $coil['nm_material'],
@@ -892,8 +778,8 @@ class Request_list_model extends BF_Model
             'gross_weight'  => $coil['gross_weight'],
             'net_weight'    => $coil['net_weight'],
             'length'        => $coil['length'],
-            'harga_beli'    => $harga_lama,
-            'total_nilai'   => $coil['net_weight'] * $harga_lama,
+            'harga_beli'    => $harga_coil,
+            'total_nilai'   => $total_nilai,
             'status'        => 'OUT',
             'hist_date'     => $now,
             'hist_by'       => $created_by,
@@ -911,10 +797,10 @@ class Request_list_model extends BF_Model
 
         // ===== SNAPSHOT HARIAN: sisi IN ke gudang PRT =====
         $coil_snap_in = $this->db->query("
-        SELECT id FROM warehouse_coil_per_day
-        WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
-        LIMIT 1
-    ", [$coil['id_material'], 3, $coil['no_coil'], $today])->row();
+            SELECT id FROM warehouse_coil_per_day
+            WHERE id_material = ? AND id_gudang = ? AND no_coil = ? AND DATE(hist_date) = ?
+            LIMIT 1
+        ", [$coil['id_material'], 3, $coil['no_coil'], $today])->row();
 
         $coil_snap_in_data = [
             'nm_material'   => $coil['nm_material'],
@@ -923,8 +809,8 @@ class Request_list_model extends BF_Model
             'gross_weight'  => $coil['gross_weight'],
             'net_weight'    => $coil['net_weight'],
             'length'        => $coil['length'],
-            'harga_beli'    => $harga_lama,
-            'total_nilai'   => $coil['net_weight'] * $harga_lama,
+            'harga_beli'    => $harga_coil,
+            'total_nilai'   => $total_nilai,
             'status'        => 'IN',
             'hist_date'     => $now,
             'hist_by'       => $created_by,
@@ -940,19 +826,21 @@ class Request_list_model extends BF_Model
             $this->db->update('warehouse_coil_per_day', $coil_snap_in_data, ['id' => $coil_snap_in->id]);
         }
 
+        // Ringkasan per coil — TANPA nilai saldo (tidak menggerakkan warehouse_stock).
         return [
-            'id_material'   => $coil['id_material'],
-            'nm_material'   => $coil['nm_material'],
-            'id_gudang'     => $source_id_gudang,
-            'kd_gudang'     => $source_kd_gudang,
-            'qty_awal'      => $qty_awal_source,
-            'qty_akhir'     => $qty_akhir_source,
-            'saldo_awal'    => $saldo_awal_source,
-            'saldo_akhir'   => $saldo_akhir_source,
-            'net_weight'    => $coil['net_weight'],
-            'total_nilai'   => $total_harga,        // <-- pakai hasil rumus baru
-            'costbook'      => $harga_baru_source,  // <-- harga baru hasil rumus (sisi sumber)
-            'harga_lama'    => $harga_lama,
+            'id_material' => $coil['id_material'],
+            'nm_material' => $coil['nm_material'],
+            'id_gudang'   => $source_id_gudang,
+            'kd_gudang'   => $source_kd_gudang,
+            'id_pack'     => isset($coil['id_pack']) ? $coil['id_pack'] : null,
+            'qty_awal'    => 0,
+            'qty_akhir'   => 0,
+            'saldo_awal'  => 0,
+            'saldo_akhir' => 0,
+            'net_weight'  => $net_weight,
+            'total_nilai' => $total_nilai,
+            'costbook'    => $harga_coil,
+            'harga_lama'  => $harga_coil,
         ];
     }
 

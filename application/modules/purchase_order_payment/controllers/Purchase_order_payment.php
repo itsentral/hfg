@@ -110,11 +110,19 @@ class Purchase_order_payment extends Admin_Controller
 			$this->db->where('a.loi', 'Import');
 			$this->db->where('rh.status', 1);
 			// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
-			$this->db->where("NOT EXISTS (
-				SELECT 1 FROM tr_top_po dptop
-				JOIN tr_receive_invoice dpri ON dpri.id_top = dptop.id AND dpri.tipe = 'dp' AND dpri.status = 'payment'
-				WHERE dptop.no_po = a.no_po AND dptop.group_top = 76 AND dptop.progress >= 100
-			)", null, false);
+			$this->db->where("(
+				SELECT COALESCE(SUM(paid_terms.progress), 0)
+				FROM (
+					SELECT DISTINCT dptop.id, dptop.progress
+					FROM tr_top_po dptop
+					JOIN tr_receive_invoice dpri 
+						ON dpri.id_top = dptop.id 
+						AND dpri.tipe = 'dp' 
+						AND dpri.status = 'payment'
+					WHERE dptop.no_po = a.no_po 
+					AND dptop.group_top = 76
+				) paid_terms
+			) < 100", null, false);
 			$this->db->group_by('rh.id');
 			$this->db->order_by('rh.created_on', 'desc');
 			$list_po = $this->db->get()->result_array();
@@ -143,11 +151,19 @@ class Purchase_order_payment extends Admin_Controller
 			$this->db->where('a.loi', 'Lokal');
 			$this->db->where('ih.status', 'finalized');
 			// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
-			$this->db->where("NOT EXISTS (
-				SELECT 1 FROM tr_top_po dptop
-				JOIN tr_receive_invoice dpri ON dpri.id_top = dptop.id AND dpri.tipe = 'dp' AND dpri.status = 'payment'
-				WHERE dptop.no_po = a.no_po AND dptop.group_top = 76 AND dptop.progress >= 100
-			)", null, false);
+			$this->db->where("(
+				SELECT COALESCE(SUM(paid_terms.progress), 0)
+				FROM (
+					SELECT DISTINCT dptop.id, dptop.progress
+					FROM tr_top_po dptop
+					JOIN tr_receive_invoice dpri 
+						ON dpri.id_top = dptop.id 
+						AND dpri.tipe = 'dp' 
+						AND dpri.status = 'payment'
+					WHERE dptop.no_po = a.no_po 
+					AND dptop.group_top = 76
+				) paid_terms
+			) < 100", null, false);
 			$this->db->group_by('ih.id');
 			$this->db->order_by('ih.created_at', 'desc');
 			$list_po = $this->db->get()->result_array();
@@ -439,6 +455,9 @@ class Purchase_order_payment extends Admin_Controller
 		if ($this->db->affected_rows() > 0) {
 			$id_dp = $this->db->insert_id();
 			$data_insert['id'] = $id_dp;
+
+			// Update status_bayar pada TOP terkait menjadi 'receive_invoice'
+			$this->db->update('tr_top_po', ['status_bayar' => 'receive_invoice'], ['id' => $id_top]);
 
 			try {
 				$this->load->model('gl_interface/Gl_interface_model');
@@ -961,11 +980,19 @@ class Purchase_order_payment extends Admin_Controller
 		$this->db->where('rh.status_incoming', 'closed');
 		$this->db->where('a.id_suplier', $kode_supplier);
 		// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
-		$this->db->where("NOT EXISTS (
-			SELECT 1 FROM tr_top_po dptop
-			JOIN tr_receive_invoice dpri ON dpri.id_top = dptop.id AND dpri.tipe = 'dp' AND dpri.status = 'payment'
-			WHERE dptop.no_po = a.no_po AND dptop.group_top = 76 AND dptop.progress >= 100
-		)", null, false);
+		$this->db->where("(
+			SELECT COALESCE(SUM(paid_terms.progress), 0)
+			FROM (
+				SELECT DISTINCT dptop.id, dptop.progress
+				FROM tr_top_po dptop
+				JOIN tr_receive_invoice dpri 
+					ON dpri.id_top = dptop.id 
+					AND dpri.tipe = 'dp' 
+					AND dpri.status = 'payment'
+				WHERE dptop.no_po = a.no_po 
+				AND dptop.group_top = 76
+			) paid_terms
+		) < 100", null, false);
 		$this->db->group_by('e.id');
 		$this->db->order_by('a.created_on', 'desc');
 		$list_po = $this->db->get()->result_array();
@@ -999,11 +1026,19 @@ class Purchase_order_payment extends Admin_Controller
 		$this->db->where('ih.status', 'finalized');
 		$this->db->where('a.id_suplier', $kode_supplier);
 		// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
-		$this->db->where("NOT EXISTS (
-			SELECT 1 FROM tr_top_po dptop
-			JOIN tr_receive_invoice dpri ON dpri.id_top = dptop.id AND dpri.tipe = 'dp' AND dpri.status = 'payment'
-			WHERE dptop.no_po = a.no_po AND dptop.group_top = 76 AND dptop.progress >= 100
-		)", null, false);
+		$this->db->where("(
+			SELECT COALESCE(SUM(paid_terms.progress), 0)
+			FROM (
+				SELECT DISTINCT dptop.id, dptop.progress
+				FROM tr_top_po dptop
+				JOIN tr_receive_invoice dpri 
+					ON dpri.id_top = dptop.id 
+					AND dpri.tipe = 'dp' 
+					AND dpri.status = 'payment'
+				WHERE dptop.no_po = a.no_po 
+				AND dptop.group_top = 76
+			) paid_terms
+		) < 100", null, false);
 		$this->db->group_by('ih.id');
 		$this->db->order_by('ih.created_at', 'desc');
 		$list_po = $this->db->get()->result_array();
@@ -3389,14 +3424,12 @@ class Purchase_order_payment extends Admin_Controller
 			return ['status' => 0, 'message' => 'Data invoice tidak ditemukan.'];
 		}
 
-		// Cek duplikat di request_payment
-		$cek_rp_cond = ['no_doc' => $data['no_po'], 'tipe' => $tipe_rp];
-		if ($tipe === 'import' && !empty($data['id_ros'])) {
-			$cek_rp_cond['id_ros'] = $data['id_ros'];
-		}
-		if ($tipe === 'local' && !empty($data['id_incoming'])) {
-			$cek_rp_cond['ids'] = (string) $id_receive;
-		}
+		// Cek duplikat di request_payment.
+		// Duplikat harus dicek per-invoice (ids = id_receive), BUKAN per-no_po.
+		// Satu PO bisa punya banyak invoice (mis. beberapa TOP DP), sehingga
+		// pengecekan berbasis no_po akan salah menganggap invoice kedua sebagai duplikat
+		// dan menyebabkan status invoice tetap 'draft'.
+		$cek_rp_cond = ['ids' => (string) $id_receive, 'tipe' => $tipe_rp];
 		$cek_rp = $this->db->get_where('request_payment', $cek_rp_cond)->row();
 		if ($cek_rp) {
 			return ['status' => 0, 'message' => 'Request payment untuk invoice ini sudah pernah dibuat.'];

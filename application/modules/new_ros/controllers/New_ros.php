@@ -2014,11 +2014,13 @@ class New_ros extends Admin_Controller
         }
 
         // ── 2. ADVANCE PURCHASE (1104-01-02) ──
-        // SUM jumlah_rupiah dari tr_receive_invoice WHERE no_po AND tipe = 'dp'
+        // SUM gl_value_dp dari tr_receive_invoice WHERE no_po AND tipe = 'dp'
+        // Jumlahkan semua DP yang BELUM payment, kecualikan yang sudah 'payment'.
         $gl_advance_purchase = (float) ($this->db
             ->select_sum('gl_value_dp')
             ->where('no_po', $no_po)
             ->where('tipe', 'dp')
+            ->where("(status IS NULL OR status != 'payment')", null, false)
             ->get('tr_receive_invoice')
             ->row()
             ->gl_value_dp ?? 0);
@@ -2377,6 +2379,7 @@ class New_ros extends Admin_Controller
                 'payment_type'  => $r['payment_type'],
                 'keterangan'    => $r['keterangan'],
                 'nominal'       => $r['nominal'],
+                'gl_nominal'    => round($r['nominal']),
                 'status'        => 'belum_diajukan',
                 'created_by'    => $user_id,
                 'created_on'    => $now,

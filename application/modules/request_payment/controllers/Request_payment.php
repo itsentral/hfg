@@ -2754,6 +2754,9 @@ class Request_payment extends Admin_Controller
 						'id_request_payment' => $ros_row->id,
 						'status'             => 'diajukan',
 					]);
+
+					// Update status_bayar TOP terkait menjadi 'request_payment'
+					$this->_update_status_bayar_top_by_request_payment('id', $ros_row->id);
 				} else {
 					// ── Jalur lama (tipe lain): per no_doc, TIDAK diubah ──
 					$this->db->update('request_payment', [
@@ -2762,6 +2765,9 @@ class Request_payment extends Admin_Controller
 					], [
 						'no_doc' => $key
 					]);
+
+					// Update status_bayar TOP terkait menjadi 'request_payment'
+					$this->_update_status_bayar_top_by_request_payment('no_doc', $key);
 				}
 			}
 		}
@@ -2782,6 +2788,49 @@ class Request_payment extends Admin_Controller
 			'status' => $valid,
 			'msg' => $msg
 		]);
+	}
+
+	/**
+	 * Update status_bayar pada tr_top_po menjadi 'request_payment' berdasarkan
+	 * baris request_payment yang diproses. Relasi:
+	 *   request_payment.no_doc = tr_receive_invoice.id  (untuk tipe invoice_*)
+	 *   tr_receive_invoice.id_top = tr_top_po.id
+	 *
+	 * @param string $by     Kolom identifikasi request_payment ('id' atau 'no_doc')
+	 * @param mixed  $value  Nilai identifikasi
+	 */
+	private function _update_status_bayar_top_by_request_payment($by, $value)
+	{
+		// Ambil baris request_payment yang diproses
+		$rp_rows = $this->db
+			->select('no_doc, tipe')
+			->from('request_payment')
+			->where($by, $value)
+			->get()
+			->result();
+
+		if (empty($rp_rows)) {
+			return;
+		}
+
+		foreach ($rp_rows as $rp) {
+			// Hanya tipe invoice PO yang terhubung ke tr_receive_invoice -> tr_top_po
+			if (strpos((string) $rp->tipe, 'invoice_') !== 0) {
+				continue;
+			}
+
+			// no_doc menyimpan id tr_receive_invoice
+			$ri = $this->db
+				->select('id_top')
+				->from('tr_receive_invoice')
+				->where('id', $rp->no_doc)
+				->get()
+				->row();
+
+			if ($ri && !empty($ri->id_top)) {
+				$this->db->update('tr_top_po', ['status_bayar' => 'request_payment'], ['id' => $ri->id_top]);
+			}
+		}
 	}
 
 	public function reset_choosed_req_payment()

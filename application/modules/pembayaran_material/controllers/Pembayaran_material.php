@@ -1247,6 +1247,22 @@ class Pembayaran_material extends Admin_Controller
 				->get_where('tr_purchase_order', ['no_po' => $first_req->no_doc])
 				->row();
 			$loi_po = strtolower(trim($po_ref->loi ?? ''));
+
+			// Update status_bayar pada tr_top_po menjadi 'payment'
+			// Relasi: detail['ids'] = tr_receive_invoice.id -> tr_receive_invoice.id_top -> tr_top_po.id
+			if (!empty($post['dt'])) {
+				foreach ($post['dt'] as $detail) {
+					if (!empty($detail['ids'])) {
+						$ri_top = $this->db->select('id_top')
+							->get_where('tr_receive_invoice', ['id' => $detail['ids']])
+							->row();
+						if ($ri_top && !empty($ri_top->id_top)) {
+							$this->db->update('tr_top_po', ['status_bayar' => 'payment'], ['id' => $ri_top->id_top]);
+						}
+					}
+				}
+			}
+
 			if ($loi_po === 'import') {
 				$action_jurnal = 'save_payment_po_import';
 			} else {

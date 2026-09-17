@@ -941,16 +941,21 @@ class Request_list extends Admin_Controller
         $summary_map = []; // accumulator: key = id_material_kd_gudang
 
         foreach ($coil_details as $coil) {
-            // Proses semua coil (PRO id_gudang_sumber=1 dan WIP id_gudang_sumber=4)
-            // reduce_coil_stock sekarang: UPDATE coil ke PRT + recalc warehouse_stock
-            $reduce_result = $this->Request_list_model->reduce_coil_stock(
+            // reduce_coil_stock: PURE pindah posisi coil (+ pack + companion pack) ke PRT.
+            // TIDAK mengubah nilai warehouse_stock. Return ARRAY of result per coil
+            // (bisa >1 karena seluruh coil dalam 1 pack ikut dipindah).
+            $reduce_results = $this->Request_list_model->reduce_coil_stock(
                 $coil['id_coil'],
                 $request['spk_coil_no'],
                 $this->id_user
             );
 
-            // Accumulate summary per material + gudang sumber
-            if ($reduce_result) {
+            if (empty($reduce_results) || !is_array($reduce_results)) {
+                continue;
+            }
+
+            // Accumulate summary per material + gudang sumber untuk setiap coil yang dipindah
+            foreach ($reduce_results as $reduce_result) {
                 $key = $reduce_result['id_material'] . '_' . $reduce_result['kd_gudang'];
 
                 if (!isset($summary_map[$key])) {

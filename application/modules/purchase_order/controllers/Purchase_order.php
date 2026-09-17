@@ -1947,9 +1947,30 @@ class Purchase_order extends Admin_Controller
 		}
 
 		// 5. Simpan TOP & LC (Hapus dulu jika Edit)
+		// PENTING: baris TOP yang sudah punya status_bayar (bukan NULL) TIDAK boleh dihapus/diubah,
+		// karena field-nya di-disable di view sehingga tidak ikut terkirim saat submit.
 		if ($is_edit) {
-			$this->db->delete('tr_top_po', ['no_po' => $code]);
-			$this->db->delete('tr_po_detail_lc', ['no_po' => $code]);
+			// Ambil id baris TOP yang terkunci (punya status_bayar) agar LC-nya juga dipertahankan
+			$locked_top = $this->db->select('id')
+				->from('tr_top_po')
+				->where('no_po', $code)
+				->where('status_bayar IS NOT NULL', null, false)
+				->get()->result();
+			$locked_top_ids = array_map(function ($r) {
+				return $r->id;
+			}, $locked_top);
+
+			// Hapus hanya baris TOP yang BELUM punya status_bayar
+			$this->db->where('no_po', $code)
+				->where('status_bayar IS NULL', null, false)
+				->delete('tr_top_po');
+
+			// Hapus LC milik baris yang dihapus saja (pertahankan LC baris terkunci)
+			$this->db->where('no_po', $code);
+			if (!empty($locked_top_ids)) {
+				$this->db->where_not_in('id_top', $locked_top_ids);
+			}
+			$this->db->delete('tr_po_detail_lc');
 		}
 
 		$num_top = $this->input->post('num_top');
