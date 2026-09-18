@@ -2003,14 +2003,17 @@ class New_ros extends Admin_Controller
 
         // ── 1. PERSEDIAAN BAHAN BAKU INTRANSIT (1105-01-03) ──
         // SUM total_nilai_inventory dari semua material
+        // Sekaligus hitung nilai_po_usd KHUSUS porsi ROS ini (bukan total PO)
         $gl_persediaan_intransit = 0;
         $gl_bm_dibayar_dimuka    = 0;
         $gl_hutang_forwarding    = 0;
+        $nilai_po_usd_ros        = 0;
 
         foreach ($materials as $mat) {
             $gl_persediaan_intransit += (int) round((float) $mat['total_nilai_inventory']);
             $gl_bm_dibayar_dimuka    += (int) round((float) $mat['bm_rp']);
             $gl_hutang_forwarding    += (int) round((float) $mat['forwarding_cost']);
+            $nilai_po_usd_ros        += (float) $mat['total_value_usd'];
         }
 
         // ── 2. ADVANCE PURCHASE (1104-01-02) ──
@@ -2044,18 +2047,21 @@ class New_ros extends Admin_Controller
         }
 
         // ── 3. UNBILL / HUTANG BELUM TERTAGIH (2101-01-06) ──
-        // (nilai_po_usd - SUM(tr_top_po.nilai WHERE group_top=76)) × kurs_pib
-        $nilai_po_usd = (float) ($header['nilai_po_usd'] ?? 0);
-
+        // (nilai_po_usd_ros - SUM(tr_top_po.nilai WHERE group_top=76, tapi HANYA
+        //  baris top yang sudah diklaim ROS ini via tr_receive_invoice.id_ros)) × kurs_pib
         $sum_top_76 = (float) ($this->db
-            ->select_sum('nilai')
-            ->where('no_po', $no_po)
-            ->where('group_top', 76)
-            ->get('tr_top_po')
+            ->select_sum('tr_top_po.nilai', 'total_nilai')
+            ->from('tr_top_po')
+            ->join('tr_receive_invoice', 'tr_receive_invoice.id_top = tr_top_po.id', 'inner')
+            ->where('tr_top_po.no_po', $no_po)
+            ->where('tr_top_po.group_top', 76)
+            ->where('tr_receive_invoice.id_ros', $id_ros)
+            ->where('tr_receive_invoice.tipe', 'dp')
+            ->get()
             ->row()
-            ->nilai ?? 0);
+            ->total_nilai ?? 0);
 
-        $gl_unbill = (int) round(($nilai_po_usd - $sum_top_76) * $kurs_pib);
+        $gl_unbill = (int) round(($nilai_po_usd_ros - $sum_top_76) * $kurs_pib);
 
         // ── 4. BM DIBAYAR DIMUKA (1108-01-09) ──
         // Sudah dihitung di loop materials di atas
@@ -2078,33 +2084,32 @@ class New_ros extends Admin_Controller
         $gl_prepaid_other = (int) round((float) ($others_sum->nilai ?? 0));
 
         // ── 9. B. SELISIH KURS (7201-01-07) ──
-        // Rumus: (kurs_pib_form - kurs_receive_invoice) × nilai_invoice
-        // Data diambil dari tr_receive_invoice WHERE no_po = no_po AND tipe = 'dp'
+        // Rumus: (kurs_receive_invoice - kurs_pib_form) × nilai_invoice
+        // Data diambil dari tr_receive_invoice yang SUDAH DIKLAIM ROS INI (id_ros = $id_ros)
         $receive_invoice_dp = $this->db
             ->select('kurs, nilai_invoice')
             ->where('no_po', $no_po)
             ->where('tipe', 'dp')
+            ->where('id_ros', $id_ros)
             ->get('tr_receive_invoice')
             ->row();
 
-        $gl_selisih_kurs = 0;
+        $gl_selisih_kurs          = 0;
         $gl_advance_purchase_kurs = 0;
 
         if ($receive_invoice_dp) {
             $kurs_ri       = (float) $receive_invoice_dp->kurs;
             $nilai_invoice = (float) $receive_invoice_dp->nilai_invoice;
 
-            // $gl_selisih_kurs = (int) round(($kurs_pib - $kurs_ri) * $nilai_invoice);
-            $gl_selisih_kurs = (int) round(($kurs_ri - $kurs_pib) * $nilai_invoice);
+            $gl_selisih_kurs          = (int) round(($kurs_ri - $kurs_pib) * $nilai_invoice);
             $gl_advance_purchase_kurs = $nilai_invoice;
         }
 
-        // Hitung unbill kurs
-        $gl_unbill_kurs = $nilai_po_usd - $gl_advance_purchase_kurs;
+        // Hitung unbill kurs (basis porsi ROS ini)
+        $gl_unbill_kurs = $nilai_po_usd_ros - $gl_advance_purchase_kurs;
 
         // ── 10. B. PEMBULATAN (7201-01-05) ──
         // Hitung balance: total debet vs total kredit
-        // Kondisi debet/kredit ikut dibalik
         $total_debet_calc = $gl_persediaan_intransit
             + (($gl_selisih_kurs > 0) ? $gl_selisih_kurs : 0);
 
@@ -2121,38 +2126,6 @@ class New_ros extends Admin_Controller
         $gl_pembulatan = (int) round($total_kredit_calc - $total_debet_calc);
 
         // ── Update tr_ros_header dengan GL values ──
-        // $gl_data = [
-        //     'gl_persediaan_intransit'  => $gl_persediaan_intransit,
-        //     'gl_advance_purchase'      => $gl_advance_purchase,
-        //     'gl_unbill'                => $gl_unbill,
-        //     'gl_bm_dibayar_dimuka'     => $gl_bm_dibayar_dimuka,
-        //     'gl_prepaid_ls'            => $gl_prepaid_ls,
-        //     'gl_hutang_forwarding'     => $gl_hutang_forwarding,
-        //     'gl_prepaid_insurance'     => $gl_prepaid_insurance,
-        //     'gl_prepaid_other'         => $gl_prepaid_other,
-        //     'gl_selisih_kurs'          => $gl_selisih_kurs,
-        //     'gl_pembulatan'            => $gl_pembulatan,
-        //     'gl_unbill_kurs'           => $gl_unbill_kurs,
-        //     'gl_advance_purchase_kurs' => $gl_advance_purchase_kurs,
-        // ];
-
-        // echo '<pre>';
-        // echo '=== GL VALUES DEBUG ===<br>';
-        // echo 'id_ros: ' . $id_ros . '<br>';
-        // echo 'no_po: ' . $no_po . '<br>';
-        // echo 'kurs_pib: ' . $kurs_pib . '<br>';
-        // echo 'nilai_po_usd: ' . $nilai_po_usd . '<br>';
-        // echo 'sum_top_76: ' . $sum_top_76 . '<br>';
-        // echo 'gl_advance_purchase_kurs (nilai_invoice DP): ' . $gl_advance_purchase_kurs . '<br>';
-        // echo 'gl_unbill_kurs: ' . $gl_unbill_kurs . '<br>';
-        // echo 'kurs_receive_invoice (DP): ' . ($kurs_ri ?? 'N/A') . '<br>';
-        // echo 'total_debet_calc: ' . $total_debet_calc . '<br>';
-        // echo 'total_kredit_calc: ' . $total_kredit_calc . '<br>';
-        // echo '<br>';
-        // var_dump($gl_data);
-        // echo '</pre>';
-        // die;
-
         $this->db->update('tr_ros_header', [
             'gl_persediaan_intransit'  => $gl_persediaan_intransit,
             'gl_advance_purchase'      => $gl_advance_purchase,
