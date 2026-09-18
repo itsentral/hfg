@@ -2014,16 +2014,34 @@ class New_ros extends Admin_Controller
         }
 
         // ── 2. ADVANCE PURCHASE (1104-01-02) ──
-        // SUM gl_value_dp dari tr_receive_invoice WHERE no_po AND tipe = 'dp'
-        // Jumlahkan semua DP yang BELUM payment, kecualikan yang sudah 'payment'.
-        $gl_advance_purchase = (float) ($this->db
-            ->select_sum('gl_value_dp')
+        // Lepas dulu klaim DP lama milik ROS ini (jika ini proses edit/update),
+        // supaya perhitungan ulang tidak "mengunci" baris DP yang seharusnya bisa dilepas.
+        $this->db->where('id_ros', $id_ros)
+            ->update('tr_receive_invoice', ['id_ros' => null]);
+
+        // Ambil semua DP yang statusnya 'payment' dan BELUM diklaim ROS manapun (id_ros masih NULL)
+        $dp_available = $this->db
+            ->select('id, gl_value_dp')
             ->where('no_po', $no_po)
             ->where('tipe', 'dp')
-            ->where("(status IS NULL OR status != 'payment')", null, false)
+            ->where('status', 'payment')
+            ->where('id_ros', null)
             ->get('tr_receive_invoice')
-            ->row()
-            ->gl_value_dp ?? 0);
+            ->result_array();
+
+        $gl_advance_purchase = 0;
+        $dp_ids_to_claim     = [];
+
+        foreach ($dp_available as $dp) {
+            $gl_advance_purchase += (float) $dp['gl_value_dp'];
+            $dp_ids_to_claim[]    = $dp['id'];
+        }
+
+        // Tandai semua baris DP yang dipakai oleh ROS ini
+        if (!empty($dp_ids_to_claim)) {
+            $this->db->where_in('id', $dp_ids_to_claim)
+                ->update('tr_receive_invoice', ['id_ros' => $id_ros]);
+        }
 
         // ── 3. UNBILL / HUTANG BELUM TERTAGIH (2101-01-06) ──
         // (nilai_po_usd - SUM(tr_top_po.nilai WHERE group_top=76)) × kurs_pib
@@ -2275,11 +2293,11 @@ class New_ros extends Admin_Controller
                 $this->load->model('gl_interface/Gl_interface_model');
                 $data_source = $header;
                 $data_source['tanggal'] = date('Y-m-d');
-                
+
                 $mapping = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'ROS', 'action' => 'close_ros'])->row();
                 $kode_jurnal = $mapping ? $mapping->kode_master_jurnal : 'JV006'; // fallback
                 $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $data_source);
-                
+
                 ob_clean();
                 header('Content-Type: application/json');
                 echo json_encode(['status' => 1, 'msg' => 'ROS closed successfully and JV journal has been created.']);
