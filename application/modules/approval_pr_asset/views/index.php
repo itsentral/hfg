@@ -1,27 +1,23 @@
 <div class="container-fluid">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+        <div class="card-header bg-white py-3">
             <h5 class="card-title fw-bold mb-0 text-primary">
-                <i class="fa fa-plus-circle me-2"></i><?= $title; ?>
+                <i class="fa fa-check-square-o me-2"></i><?= $title; ?>
             </h5>
-            <a href="<?= site_url('pr_asset'); ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-arrow-left me-1"></i> Back to PR List
-            </a>
         </div>
         <div class="card-body">
-            <p class="text-muted small mb-3">Select asset planning item below to request a Purchase Request (PR).</p>
             <div class="table-responsive">
                 <table class="table table-hover table-striped border align-middle w-100" id="my-grid">
                     <thead class="table-primary text-center">
                         <tr>
                             <th width="5%">#</th>
+                            <th width="15%">No PR</th>
+                            <th width="15%">Tanggal PR</th>
                             <th>Nama Barang</th>
-                            <th width="15%">Department</th>
-                            <th width="15%">Costcenter</th>
-                            <th width="8%">Qty</th>
-                            <th width="13%">Created By</th>
-                            <th width="13%">Created Date</th>
-                            <th width="8%">Option</th>
+                            <th width="15%">PR By</th>
+                            <th width="15%">PR Date</th>
+                            <th width="15%">Status</th>
+                            <th width="10%">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -40,59 +36,41 @@
             $('.child-' + idOfParent).toggle('slow');
         });
 
-        $(document).on('click', '.add_pr', function() {
+        $(document).on('click', '.approve', function() {
             var nomor = $(this).data('id');
-            var qty_rev = $('#qty_rev_' + nomor).val().split(",").join("");
-            var nil_pr = $('#nil_pr_' + nomor).val().split(",").join("");
-            var tgl_butuh = $('#tgl_butuh_' + nomor).val();
-            var code_plan = $('#code_plan_' + nomor).val();
+            var no_pr = $('#no_pr_' + nomor).val();
+            var action = $('#action_' + nomor).val();
+            var reason = $('#reason_' + nomor).val();
 
-            if (qty_rev == '' || qty_rev == '0') {
+            if (action == 'D' && (reason == '' || reason == null)) {
                 swal({
-                    title: "Error Message!",
-                    text: 'Qty is empty, please input first ...',
+                    title: "Warning!",
+                    text: 'Reason is required when rejecting PR.',
                     type: "warning"
                 });
                 return false;
             }
 
-            if (nil_pr == '' || nil_pr == '0') {
-                swal({
-                    title: "Error Message!",
-                    text: 'Nilai PR is empty, please input first ...',
-                    type: "warning"
-                });
-                return false;
-            }
-
-            if (tgl_butuh == '') {
-                swal({
-                    title: "Error Message!",
-                    text: 'Date dibutuhkan is empty, please input first ...',
-                    type: "warning"
-                });
-                return false;
-            }
+            var act_text = (action == 'Y') ? 'Approve' : 'Reject';
 
             swal({
                 title: "Are you sure?",
-                text: "Process PR request for this item?",
+                text: "Process " + act_text + " for PR " + no_pr + "?",
                 type: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-success",
-                confirmButtonText: "Yes, Create PR!",
+                confirmButtonClass: (action == 'Y') ? "btn-success" : "btn-danger",
+                confirmButtonText: "Yes, " + act_text + "!",
                 cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {
                     $.ajax({
-                        url: base_url + active_controller + '/add_pr',
+                        url: base_url + active_controller + '/approve_pr',
                         type: "POST",
                         data: {
-                            "code_plan": code_plan,
-                            "qty_rev": qty_rev,
-                            "nil_pr": nil_pr,
-                            "tgl_butuh": tgl_butuh
+                            "no_pr": no_pr,
+                            "action": action,
+                            "reason": reason
                         },
                         cache: false,
                         dataType: 'json',
@@ -104,7 +82,7 @@
                                     type: "success",
                                     timer: 3000
                                 });
-                                window.location.href = base_url + 'pr_asset';
+                                DataTables();
                             } else {
                                 swal({
                                     title: "Failed!",
@@ -116,7 +94,7 @@
                         error: function() {
                             swal({
                                 title: "Error!",
-                                text: 'An error occurred during process.',
+                                text: 'An error occurred during approval process.',
                                 type: "error"
                             });
                         }
@@ -134,7 +112,7 @@
             "destroy": true,
             "processing": true,
             "responsive": true,
-            "aaSorting": [[1, "asc"]],
+            "aaSorting": [[1, "desc"]],
             "columnDefs": [{
                 "targets": 'no-sort',
                 "orderable": false,
@@ -145,7 +123,7 @@
                 [10, 20, 50, 100]
             ],
             "ajax": {
-                url: base_url + active_controller + '/server_side_add_pr_asset',
+                url: base_url + active_controller + '/server_side_approval',
                 type: "post",
                 cache: false,
                 error: function() {
