@@ -9,6 +9,12 @@ class Asset_model extends BF_Model
 
     public function getList($table)
     {
+        if ($this->db->field_exists('status', $table)) {
+            $this->db->where('status', 'Y');
+        }
+        if ($this->db->field_exists('deleted', $table)) {
+            $this->db->where('deleted', 'N');
+        }
         $query = $this->db->get($table);
         return $query->result_array();
     }
@@ -50,29 +56,34 @@ class Asset_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
+            $tgl_perolehan = '-';
+            if (!empty($row['tgl_perolehan']) && $row['tgl_perolehan'] != '0000-00-00') {
+                $tgl_perolehan = date('d M Y', strtotime($row['tgl_perolehan']));
+            }
+
             $nestedData   = array();
             $nestedData[] = "<div align='center'>" . $nomor . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper($row['kd_asset']) . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper($row['nm_asset']) . "</div>";
-            $nestedData[] = "<div align='center'>" . $row['tgl_perolehan'] . "</div>";
+            $nestedData[] = "<div align='center'>" . $tgl_perolehan . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
             $nestedData[] = "<div align='right'>" . number_format($row['nilai_asset']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['depresiasi'] . " Tahun</div>";
             $nestedData[] = "<div align='right'>" . number_format($row['value']) . "</div>";
 
-            $view = "<button type='button' class='btn btn-sm btn-warning detail' data-id='" . $row['id'] . "' title='View Data'><i class='fa fa-eye'></i></button>";
-            $edit = "";
+            $view   = "<button type='button' class='btn btn-sm btn-warning detail' data-id='" . $row['id'] . "' title='View Data'><i class='fa fa-eye'></i></button>";
+            $edit   = "";
             $delete = "";
 
-            if ($this->auth->has_permission('Assets.Manage')) {
-                $edit = "<a href='" . site_url('asset/edit/' . $row['id']) . "' class='btn btn-sm btn-primary' title='Edit Data'><i class='fa fa-edit'></i></a>";
+            if ($this->auth->has_permission('Asset.Manage') || $this->auth->has_permission('Assets.Manage')) {
+                $edit = "<a href='" . site_url('asset/add/' . $row['id']) . "' class='btn btn-sm btn-primary ms-1' title='Edit Data'><i class='fa fa-edit'></i></a>";
             }
-            if ($this->auth->has_permission('Assets.Delete')) {
-                $delete = "<button type='button' class='btn btn-sm btn-danger delete' data-id='" . $row['kd_asset'] . "' title='Delete Data'><i class='fa fa-trash'></i></button>";
+            if ($this->auth->has_permission('Asset.Delete') || $this->auth->has_permission('Assets.Delete')) {
+                $delete = "<button type='button' class='btn btn-sm btn-danger ms-1 delete' data-id='" . $row['kd_asset'] . "' title='Delete Data'><i class='fa fa-trash'></i></button>";
             }
 
-            $nestedData[] = "<div align='center' class='btn-group'>" . $view . " " . $edit . " " . $delete . "</div>";
+            $nestedData[] = "<div align='center' class='btn-group'>" . $view . $edit . $delete . "</div>";
             $data[]       = $nestedData;
             $urut1++;
             $urut2++;
@@ -98,8 +109,8 @@ class Asset_model extends BF_Model
         $sql = "
             SELECT
                 a.*,
-                b.nm_category,
-                c.nm_dept
+                COALESCE(b.nm_category, '') as nm_category,
+                COALESCE(c.nm_dept, '') as nm_dept
             FROM
                 asset a
                 LEFT JOIN asset_category b ON a.category = b.id

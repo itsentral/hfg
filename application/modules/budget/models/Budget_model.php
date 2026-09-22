@@ -79,15 +79,6 @@ class Budget_model extends BF_Model
                         $approve = "<a href='" . site_url('budget/approve_asset/' . $row['code_plan']) . "' class='btn btn-sm btn-info ms-1' title='Approve Data'><i class='fa fa-check'></i> Approve</a>";
                     }
                 }
-            } else if ($row['status'] == 'D' || $row['status'] == 'R') {
-                if (empty($tanda)) {
-                    if ($this->auth->has_permission('Budget.Manage')) {
-                        $edit = "<a href='" . site_url('budget/add_asset/' . $row['code_plan']) . "' class='btn btn-sm btn-primary ms-1' title='Edit Data'><i class='fa fa-edit'></i></a>";
-                    }
-                    if ($this->auth->has_permission('Budget.Delete')) {
-                        $delete = "<button type='button' class='btn btn-sm btn-danger ms-1 hapus' data-id='" . $row['code_plan'] . "' title='Delete Data'><i class='fa fa-trash'></i></button>";
-                    }
-                }
             }
 
             $nestedData   = array();
