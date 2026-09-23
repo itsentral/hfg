@@ -43,8 +43,6 @@ class Price_sup_raw_material extends Admin_Controller
     $data = [
       'result' =>  $listData
     ];
-
-    history("View index price from supplier raw materials");
     $this->template->set($data);
     $this->template->title('Price Material From Supplier');
     $this->template->render('index');
@@ -121,13 +119,14 @@ class Price_sup_raw_material extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Price Sup Raw Material', 'Update', 'Gagal update price supplier: ' . $code_lv4, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history("Update price supplier raw material: " . $code_lv4);
+        write_log('Price Sup Raw Material', 'Update', 'Update price supplier: ' . $code_lv4, $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -168,6 +167,7 @@ class Price_sup_raw_material extends Admin_Controller
         'status'  => 0,
         'kurs' => number_format($kurs[0]->kurs)
       );
+      write_log('Price Sup Raw Material', 'Update Kurs', 'Gagal update kurs material ID: ' . $id, $ArrHeader, null, 0);
     } else {
       $this->db->trans_commit();
       $Arr_Data  = array(
@@ -175,7 +175,7 @@ class Price_sup_raw_material extends Admin_Controller
         'status'  => 1,
         'kurs' => number_format($kurs[0]->kurs)
       );
-      history("Update Kurs di master material");
+      write_log('Price Sup Raw Material', 'Update Kurs', 'Update kurs material ID: ' . $id . ' ke ' . number_format($kurs[0]->kurs), $ArrHeader, null, 1);
     }
 
     echo json_encode($Arr_Data);

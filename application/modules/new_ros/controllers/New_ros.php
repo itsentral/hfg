@@ -913,9 +913,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Save ROS', 'Failed to save ROS data: ' . $id_ros, $post, null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to save ROS data.']);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Save ROS', 'ROS data saved successfully: ' . $id_ros, $post, null, 1);
             echo json_encode(['status' => 1, 'msg' => 'ROS data saved successfully.', 'id' => $id_ros]);
         }
     }
@@ -939,9 +941,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Delete ROS', 'Failed to delete ROS: ' . $id, array('id' => $id), null, 0);
             echo json_encode(['status' => 0]);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Delete ROS', 'Successfully deleted ROS: ' . $id, array('id' => $id), null, 1);
             echo json_encode(['status' => 1]);
         }
     }
@@ -1762,9 +1766,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Confirm Upload Packing List', 'Failed to save coil data for ROS: ' . $id_ros, array('id_ros' => $id_ros), null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to save coil data.']);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Confirm Upload Packing List', "Successfully saved {$inserted} coils for ROS: " . $id_ros, array('id_ros' => $id_ros, 'inserted' => $inserted), null, 1);
             echo json_encode(['status' => 1, 'msg' => "Successfully saved {$inserted} coils.", 'total' => $inserted]);
         }
     }
@@ -1861,6 +1867,7 @@ class New_ros extends Admin_Controller
         }
 
         $data = ['results' => $data_coil];
+        write_log('New ROS', 'Print QR Label', 'Print QR labels for items: ' . $ids, array('ids' => $ids), null, 1);
         $this->load->view('print_qr_label', $data);
     }
 
@@ -1903,11 +1910,13 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Finalize ROS', 'Failed to finalize ROS: ' . $id, array('id' => $id), null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to finalize ROS.']);
             return;
         }
 
         $this->db->trans_commit();
+        write_log('New ROS', 'Finalize ROS', 'Successfully finalized ROS: ' . $id, array('id' => $id), null, 1);
 
         // Hitung total untuk GL Interface
         $total_inventory = 0;

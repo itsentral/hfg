@@ -37,17 +37,17 @@ class Auth
 
     public function user_name()
     {
-        return $this->user['username'];
+        return isset($this->user['username']) ? $this->user['username'] : '';
     }
 
     public function user_cab()
     {
-        return $this->user['kdcab'];
+        return isset($this->user['kdcab']) ? $this->user['kdcab'] : '';
     }
 
     public function nama()
     {
-        return $this->user['nm_lengkap'];
+        return isset($this->user['nm_lengkap']) ? $this->user['nm_lengkap'] : '';
     }
 
     public function userdata()
@@ -75,18 +75,28 @@ class Auth
 
         $user     = $this->ci->users_model->find_by(array('username' => $username));
 
+        // Pesan ambigu bahasa Inggris untuk tampilan user (OWASP - username enumeration prevention)
+        $generic_fail_msg = 'Invalid username or password.';
+
         if (!$user) {
-            $this->ci->template->set_message(lang('users_login_fail'), 'error');
+            $this->ci->template->set_message($generic_fail_msg, 'error');
+            $this->ci->session->set_flashdata('error', $generic_fail_msg);
+            write_log('Auth', 'Login', 'Gagal login: Username "' . $username . '" tidak ditemukan', ['username' => $username], null, 0);
             return FALSE;
         }
 
         if ($user->deleted == 1) {
-            $this->ci->template->set_message(lang('users_already_deleted'), 'error');
+            $this->ci->template->set_message($generic_fail_msg, 'error');
+            $this->ci->session->set_flashdata('error', $generic_fail_msg);
+            write_log('Auth', 'Login', 'Gagal login: Akun user "' . $username . '" telah dihapus', ['username' => $username, 'id_user' => $user->id_user], null, 0);
             return FALSE;
         }
 
         if ($user->st_aktif == 0) {
-            $this->ci->template->set_message(lang('users_not_active'), 'error');
+            $msg_inactive = 'Your account is currently inactive. Please contact the administrator.';
+            $this->ci->template->set_message($msg_inactive, 'error');
+            $this->ci->session->set_flashdata('error', $msg_inactive);
+            write_log('Auth', 'Login', 'Gagal login: Akun user "' . $username . '" non-aktif', ['username' => $username, 'id_user' => $user->id_user], null, 0);
             return FALSE;
         }
 
@@ -104,6 +114,9 @@ class Auth
             $ip_address = ($this->ci->input->ip_address()) == "::1" ? "127.0.0.1" : $this->ci->input->ip_address();
             $this->ci->users_model->update($this->user_id(), array('login_terakhir' => date('Y-m-d H:i:s'), 'ip' => $ip_address));
 
+            // Log Sukses Login
+            write_log('Auth', 'Login', 'User "' . $username . '" berhasil login', ['username' => $username, 'id_user' => $user->id_user], null, 1);
+
             $requested_page = $this->ci->session->userdata('requested_page');
             if ($requested_page != '') {
                 redirect("dashboard");
@@ -112,13 +125,21 @@ class Auth
             redirect("dashboard");
         }
 
-        $this->ci->template->set_message(lang('users_wrong_password'), 'error');
-        $this->ci->template->message();
+        $this->ci->template->set_message($generic_fail_msg, 'error');
+        $this->ci->session->set_flashdata('error', $generic_fail_msg);
+        write_log('Auth', 'Login', 'Gagal login: Password salah untuk username "' . $username . '"', ['username' => $username, 'id_user' => $user->id_user], null, 0);
         return FALSE;
     }
 
     public function logout()
     {
+        $username = $this->user_name();
+        $userId   = $this->user_id();
+
+        if (!empty($username) || !empty($userId)) {
+            write_log('Auth', 'Logout', 'User "' . $username . '" melakukan logout', ['username' => $username, 'id_user' => $userId], null, 1);
+        }
+
         $this->ci->session->sess_destroy();
         redirect('login');
     }

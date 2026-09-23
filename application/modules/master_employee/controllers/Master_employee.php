@@ -33,8 +33,6 @@ class Master_employee extends Admin_Controller
 		$data = [
 			'result' =>  $listData
 		];
-
-		history("View data employee");
 		$this->template->set($data);
 		$this->template->title('Master Employee');
 		$this->template->render('index');
@@ -160,13 +158,14 @@ class Master_employee extends Admin_Controller
 					'pesan'		=> 'Process data failed. Please try again later ...',
 					'status'	=> 2
 				);
+				write_log('Master Employee', $tandax, 'Gagal ' . strtolower($tandax) . ' employee: ' . $nik, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(
 					'pesan'		=> 'Process data Success. Thank you & have a nice day ...',
 					'status'	=> 1
 				);
-				history($tandax . ' employee ' . $nik);
+				write_log('Master Employee', $tandax, $tandax . ' employee: ' . $nik . ' (' . $nama . ')', $ArrHeader, null, 1);
 			}
 			echo json_encode($Arr_Kembali);
 		} else {
@@ -217,13 +216,14 @@ class Master_employee extends Admin_Controller
 				'pesan'		=> 'Failed process data!',
 				'status'	=> 0
 			);
+			write_log('Master Employee', 'Delete', 'Gagal delete employee ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success process data!',
 				'status'	=> 1
 			);
-			history("Delete employee master : " . $id);
+			write_log('Master Employee', 'Delete', 'Delete employee ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 		echo json_encode($status);
 	}

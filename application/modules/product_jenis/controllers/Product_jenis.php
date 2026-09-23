@@ -44,8 +44,6 @@ class Product_jenis extends Admin_Controller
           'get_level_1' =>  get_list_product_lv1('product'),
           'get_level_2' =>  get_list_product_lv2('product')
         ];
-        
-        history("View index product jenis");
         $this->template->set($data);
         $this->template->title('Product Jenis');
         $this->template->render('index');
@@ -102,13 +100,14 @@ class Product_jenis extends Admin_Controller
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
+          write_log('Product Jenis', $label, 'Gagal ' . strtolower($label) . ' product jenis: ' . $code, $dataProcess, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(
             'pesan'		=>'Success process data!',
             'status'	=> 1
           );
-          history($label." product category: ".$code);
+          write_log('Product Jenis', $label, $label . ' product jenis: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
         }
         echo json_encode($status);
       }
@@ -143,13 +142,14 @@ class Product_jenis extends Admin_Controller
           'pesan'		=>'Failed process data!',
           'status'	=> 0
         );
+        write_log('Product Jenis', 'Delete', 'Gagal delete product jenis ID: ' . $id, ['id' => $id], null, 0);
       } else {
         $this->db->trans_commit();
         $status	= array(
           'pesan'		=>'Success process data!',
           'status'	=> 1
         );
-        history("Delete product category : ".$id);
+        write_log('Product Jenis', 'Delete', 'Delete product jenis ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
       }
       echo json_encode($status);
     }

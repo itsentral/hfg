@@ -27,8 +27,6 @@ class Unit extends Admin_Controller
 		$this->template->page_icon('fa fa-users');
 
 		$data = $this->db->get_where('ms_satuan', array('deleted' => 'N', 'category' => 'unit'))->result();
-
-		history("View data satuan");
 		$this->template->set('results', $data);
 		$this->template->title('Unit Measurement');
 		$this->template->render('index');
@@ -78,13 +76,14 @@ class Unit extends Admin_Controller
 					'pesan'		=> 'Process Failed !',
 					'status'	=> 0
 				);
+				write_log('Unit', $field_hist, 'Gagal ' . strtolower($field_hist) . ' unit: ' . $code, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
 					'pesan'		=> 'Process Success !',
 					'status'	=> 1
 				);
-				history($field_hist . " data unit " . $id);
+				write_log('Unit', $field_hist, $field_hist . ' unit: ' . $code . ' (' . $nama . ')', $ArrHeader, null, 1);
 			}
 
 			echo json_encode($Arr_Data);
@@ -124,13 +123,14 @@ class Unit extends Admin_Controller
 				'pesan'		=> 'Process Failed !',
 				'status'	=> 0
 			);
+			write_log('Unit', 'Delete', 'Gagal delete unit ID: ' . $code_material, ['id' => $code_material], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data	= array(
 				'pesan'		=> 'Process Success !',
 				'status'	=> 1
 			);
-			history("Delete data unit " . $code_material);
+			write_log('Unit', 'Delete', 'Delete unit ID: ' . $code_material, ['id' => $code_material, 'data' => $ArrHeader], null, 1);
 		}
 
 		echo json_encode($Arr_Data);

@@ -23,8 +23,6 @@ class Master_sound extends Admin_Controller
         if (!has_permission($this->viewPermission)) {
             // Fallback allow if permission not registered in db
         }
-        history("View Master Sound App");
-
         $this->template->title('Master Sound App');
         $this->template->render('index');
     }
@@ -253,8 +251,10 @@ class Master_sound extends Admin_Controller
         $result_id = $this->sound_model->save_data($save_data, $id);
 
         if ($result_id) {
+            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', (empty($id) ? 'Tambah' : 'Update') . ' sound: ' . ($save_data['sound_code'] ?? $id), $save_data, null, 1);
             echo json_encode(['status' => 1, 'msg' => 'Master Sound berhasil disimpan.']);
         } else {
+            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', 'Gagal simpan sound: ' . ($save_data['sound_code'] ?? $id), $save_data, null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Gagal menyimpan Master Sound.']);
         }
     }
@@ -279,8 +279,10 @@ class Master_sound extends Admin_Controller
                     @unlink($file_path);
                 }
             }
+            write_log('Master Sound', 'Delete', 'Delete sound ID: ' . $id . ' (' . ($deleted_row['sound_code'] ?? '') . ')', $deleted_row, null, 1);
             echo json_encode(['status' => 1, 'msg' => 'Master Sound berhasil dihapus.']);
         } else {
+            write_log('Master Sound', 'Delete', 'Gagal delete sound ID: ' . $id, ['id' => $id], null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Gagal menghapus Master Sound.']);
         }
     }

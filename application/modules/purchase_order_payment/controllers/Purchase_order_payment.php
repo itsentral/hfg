@@ -480,10 +480,12 @@ class Purchase_order_payment extends Admin_Controller
 			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
 			$this->_auto_request_payment($id_dp, 'dp');
 
+			write_log('Purchase Order Payment', 'Save Invoice DP', 'Invoice DP berhasil disimpan & diajukan untuk PO: ' . $no_po, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 1, 'message' => 'Invoice DP berhasil disimpan & diajukan.']);
 		} else {
+			write_log('Purchase Order Payment', 'Save Invoice DP', 'Gagal menyimpan invoice DP untuk PO: ' . $no_po, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
@@ -651,10 +653,12 @@ class Purchase_order_payment extends Admin_Controller
 			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
 			$this->_auto_request_payment($id_receive, 'import');
 
+			write_log('Purchase Order Payment', 'Save Invoice Import', 'Invoice Import berhasil disimpan & diajukan untuk ROS: ' . $id_ros, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 1, 'message' => 'Invoice Import berhasil disimpan & diajukan.']);
 		} else {
+			write_log('Purchase Order Payment', 'Save Invoice Import', 'Gagal menyimpan invoice import untuk ROS: ' . $id_ros, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
@@ -819,10 +823,12 @@ class Purchase_order_payment extends Admin_Controller
 			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
 			$this->_auto_request_payment($id_receive, 'local');
 
+			write_log('Purchase Order Payment', 'Save Invoice Local', 'Invoice Local berhasil disimpan & diajukan untuk Incoming: ' . $id_incoming, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 1, 'message' => 'Invoice Local berhasil disimpan & diajukan.']);
 		} else {
+			write_log('Purchase Order Payment', 'Save Invoice Local', 'Gagal menyimpan invoice local untuk Incoming: ' . $id_incoming, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);
@@ -2422,9 +2428,11 @@ class Purchase_order_payment extends Admin_Controller
 		// ================================================================
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
+			write_log('Purchase Order Payment', 'Save Invoice PO', 'Transaksi simpan invoice gagal untuk: ' . $no_invoice, $post, null, 0);
 			echo json_encode(['status' => 0, 'message' => 'Transaksi gagal, semua perubahan dibatalkan']);
 		} else {
 			$this->db->trans_commit();
+			write_log('Purchase Order Payment', 'Save Invoice PO', 'Transaksi simpan invoice berhasil untuk: ' . $no_invoice, $post, null, 1);
 			echo json_encode(['status' => 1]);
 		}
 	}
@@ -3388,9 +3396,11 @@ class Purchase_order_payment extends Admin_Controller
 
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
+			write_log('Purchase Order Payment', 'Request Payment DP', 'Gagal mengajukan request payment ID receive: ' . $id_receive, $data_insert, null, 0);
 			echo json_encode(['status' => 0, 'message' => 'Gagal mengajukan request payment.']);
 		} else {
 			$this->db->trans_commit();
+			write_log('Purchase Order Payment', 'Request Payment DP', 'Berhasil mengajukan request payment ID receive: ' . $id_receive, $data_insert, null, 1);
 			echo json_encode(['status' => 1, 'message' => 'Request payment berhasil diajukan. Silakan isi tanggal pembayaran di menu Request Payment.']);
 		}
 	}

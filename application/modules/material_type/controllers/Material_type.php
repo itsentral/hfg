@@ -43,8 +43,6 @@ class Material_type extends Admin_Controller
     $data = [
       'result' =>  $listData
     ];
-
-    history("View index material type");
     $this->template->set($data);
     $this->template->title('Metal Type');
     $this->template->render('index');
@@ -94,13 +92,14 @@ class Material_type extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Material Type', $label, 'Gagal ' . strtolower($label) . ' material type: ' . $code, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history($label . " material type: " . $code);
+        write_log('Material Type', $label, $label . ' material type: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -153,7 +152,7 @@ class Material_type extends Admin_Controller
     $kode_universal = $id;
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
-    simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+    write_log('Material Type', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
 
     // Kembalikan hasil sebagai JSON
     echo json_encode([
@@ -183,13 +182,14 @@ class Material_type extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Material Type', 'Delete', 'Gagal delete material type ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete material type : " . $id);
+      write_log('Material Type', 'Delete', 'Delete material type ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

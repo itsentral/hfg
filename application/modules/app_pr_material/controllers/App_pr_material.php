@@ -91,8 +91,7 @@ class App_pr_material extends Admin_Controller
                     'pesan'    => 'Save successful. Thank you.',
                     'status'  => 1
                 );
-                history("Create material planning  : " . $so_number);
-            }
+                }
             echo json_encode($Arr_Data);
         } else {
             // Ambil header
@@ -247,6 +246,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 0,
                 'so_number'  => $so_number
             );
+            write_log('Approval PR Material', 'Approval Satuan', 'Gagal ' . $action . ' satuan PR material ID: ' . $id, ['id' => $id, 'so_number' => $so_number, 'action' => $action], null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
@@ -254,7 +254,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 1,
                 'so_number'  => $so_number
             );
-            history($action . " satuan pr material  : " . $id);
+            write_log('Approval PR Material', 'Approval Satuan', $action . ' satuan PR material ID: ' . $id . ' SO: ' . $so_number, ['id' => $id, 'so_number' => $so_number, 'action' => $action], null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -311,6 +311,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 0,
                 'so_number'  => $so_number
             );
+            write_log('Approval PR Material', 'Approve All', 'Gagal approve PR material SO: ' . $so_number . ' (Level ' . $tingkat_approval . ')', ['so_number' => $so_number, 'level' => $tingkat_approval], null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
@@ -318,7 +319,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 1,
                 'so_number'  => $so_number
             );
-            history("Approve pr material  : " . $so_number);
+            write_log('Approval PR Material', 'Approve All', 'Approve PR material SO: ' . $so_number . ' (Level ' . $tingkat_approval . ')', ['so_number' => $so_number, 'level' => $tingkat_approval], null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -353,6 +354,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 0,
                 'so_number'  => $so_number
             );
+            write_log('Approval PR Material', 'Reject', 'Gagal reject PR material SO: ' . $so_number, ['so_number' => $so_number, 'reason' => $data['reject_reason'] ?? ''], null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
@@ -360,7 +362,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 1,
                 'so_number'  => $so_number
             );
-            history("Approve pr material  : " . $so_number);
+            write_log('Approval PR Material', 'Reject', 'Reject PR material SO: ' . $so_number . ' Alasan: ' . ($data['reject_reason'] ?? ''), ['so_number' => $so_number, 'reason' => $data['reject_reason'] ?? ''], null, 1);
         }
         echo json_encode($Arr_Data);
     }

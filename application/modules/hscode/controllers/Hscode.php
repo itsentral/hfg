@@ -211,26 +211,17 @@ class Hscode extends Admin_Controller
                 'msg' => 'Failed save data HS Code.  Please try again.',
                 'status' => 0,
             ];
-            $keterangan = 'FAILED save data HS Code ' . $data['id'] . ', HS Code name : ' . $data['description'] . '. ' . $errorMsg;
-            $status = 1;
-            $nm_hak_akses = $this->addPermission;
-            $kode_universal = $data['id'];
-            $jumlah = 1;
-            $sql = $this->db->last_query();
+            $keterangan = 'Gagal simpan HS Code ' . $data['id'] . ' (' . $data['description'] . '). ' . $errorMsg;
+            write_log('Hscode', 'Save', $keterangan, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $return = [
                 'msg' => 'Success Save data HS Code.',
                 'status' => 1,
             ];
-            $keterangan = 'SUCCESS save data HS Code ' . $data['id'] . ', HS Code name : ' . $data['description'];
-            $status = 1;
-            $nm_hak_akses = $this->addPermission;
-            $kode_universal = $data['id'];
-            $jumlah = 1;
-            $sql = $this->db->last_query();
+            $keterangan = 'Simpan HS Code ' . $data['id'] . ' (' . $data['description'] . ')';
+            write_log('Hscode', 'Save', $keterangan, $data, null, 1);
         }
-        simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
         echo json_encode($return);
     }
 
@@ -254,10 +245,11 @@ class Hscode extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Hscode', 'Update Kuota', 'Gagal tambah kuota HS ID: ' . $id, ['id' => $id, 'tambah_kuota' => $tambah_kuota], null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Gagal mengupdate kuota']);
         } else {
             $this->db->trans_commit();
-            history("Add New Kuota HS ID: " . $id . " sebesar " . $tambah_kuota);
+            write_log('Hscode', 'Update Kuota', 'Tambah kuota HS ID: ' . $id . ' sebesar ' . $tambah_kuota, ['id' => $id, 'tambah_kuota' => $tambah_kuota], null, 1);
             echo json_encode(['status' => 1, 'pesan' => 'Kuota berhasil ditambahkan']);
         }
     }
@@ -272,30 +264,19 @@ class Hscode extends Admin_Controller
         $errMsg = $this->db->error()['message'];
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-            $keterangan = 'FAILD ' . $errMsg;
-            $status = 0;
-            $nm_hak_akses = $this->addPermission;
-            $kode_universal = $data['id'];
-            $jumlah = 1;
-            $sql = $this->db->last_query();
+            write_log('Hscode', 'Delete', 'Gagal delete HS Code ID: ' . $id, ['id' => $id], null, 0);
             $return = [
                 'msg' => 'Failed delete data HS Codes. Please try again. ' . $errMsg,
                 'status' => 0,
             ];
         } else {
             $this->db->trans_commit();
+            write_log('Hscode', 'Delete', 'Delete HS Code ID: ' . $id . ' (' . ($data['description'] ?? '') . ')', ['id' => $id], null, 1);
             $return = [
                 'msg' => 'Delete data HS Codes.',
                 'status' => 1,
             ];
-            $keterangan = 'Delete data HS Codes ' . $data['id'] . ', HS Codes name : ' . $data['description'];
-            $status = 1;
-            $nm_hak_akses = $this->addPermission;
-            $kode_universal = $data['id'];
-            $jumlah = 1;
-            $sql = $this->db->last_query();
         }
-        simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
         echo json_encode($return);
     }
 }

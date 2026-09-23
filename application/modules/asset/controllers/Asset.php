@@ -24,7 +24,7 @@ class Asset extends Admin_Controller
             'kategori' => $this->asset_model->getList('asset_category')
         );
 
-        history('View index asset');
+        // legacy history view removed
         $this->template->title('Index Of Assets');
         $this->template->render('index', $data);
     }
@@ -50,7 +50,7 @@ class Asset extends Admin_Controller
             'list_catg'  => $this->asset_model->getList('asset_category'),
             'list_coa'   => $this->asset_model->getList('asset_coa')
         );
-        history('View detail asset ' . $id);
+        // legacy history view removed
         $this->load->view('asset/modal_view', $data);
     }
 
@@ -229,10 +229,11 @@ class Asset extends Admin_Controller
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $Arr_Data = array('pesan' => 'Asset gagal disimpan ...', 'status' => 0);
+                write_log('Asset', 'Save Asset', $tanda . ' asset failed: ' . $tanda2, $data, null, 0);
             } else {
                 $this->db->trans_commit();
                 $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-                history($tanda . 'asset ' . $tanda2);
+                write_log('Asset', 'Save Asset', $tanda . ' asset success: ' . $tanda2, $data, null, 1);
             }
 
             echo json_encode($Arr_Data);
@@ -294,10 +295,11 @@ class Asset extends Admin_Controller
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $Arr_Data = array('pesan' => 'Asset gagal disimpan ...', 'status' => 0);
+            write_log('Asset', 'Update Asset', 'Update asset failed: ' . $kd_asset, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-            history('Update asset ' . $kd_asset);
+            write_log('Asset', 'Update Asset', 'Update asset success: ' . $kd_asset, $data, null, 1);
         }
 
         echo json_encode($Arr_Data);
@@ -340,10 +342,11 @@ class Asset extends Admin_Controller
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $Arr_Data = array('pesan' => 'Asset gagal dipindahkan ...', 'status' => 0);
+            write_log('Asset', 'Move Asset', 'Move asset failed: ' . $kd_asset, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil dipindahkan. Thanks ...', 'status' => 1);
-            history('Move asset ' . $kd_asset);
+            write_log('Asset', 'Move Asset', 'Move asset success: ' . $kd_asset, $data, null, 1);
         }
 
         echo json_encode($Arr_Data);
@@ -376,10 +379,11 @@ class Asset extends Admin_Controller
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $Arr_Data = array('pesan' => 'Asset gagal dihapus ...', 'status' => 0);
+            write_log('Asset', 'Delete Asset', 'Delete asset failed: ' . $kd_asset, array('kd_asset' => $kd_asset), null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil dihapus. Thanks ...', 'status' => 1);
-            history('Delete asset ' . $kd_asset);
+            write_log('Asset', 'Delete Asset', 'Delete asset success: ' . $kd_asset, array('kd_asset' => $kd_asset), null, 1);
         }
 
         echo json_encode($Arr_Data);

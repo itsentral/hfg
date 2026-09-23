@@ -24,7 +24,7 @@ class Budget extends Admin_Controller
             'tanda'  => ''
         );
 
-        history('View Data Budget Assets');
+        // legacy history view removed
         $this->template->title('Index Of Budget Assets');
         $this->template->render('index', $data);
     }
@@ -39,7 +39,7 @@ class Budget extends Admin_Controller
             'tanda'  => 'approve'
         );
 
-        history('View Data Approval Budget Assets');
+        // legacy history view removed
         $this->template->title('Approval Of Budget Assets');
         $this->template->render('index_approve', $data);
     }
@@ -128,10 +128,11 @@ class Budget extends Admin_Controller
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $Arr_Kembali = array('pesan' => 'Process data failed. Please try again later...', 'status' => 0);
+                write_log('Budget Asset', 'Save Pengajuan Budget Asset', 'Process data failed: ' . $code_plan, $data, null, 0);
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Process data success. Thanks...', 'status' => 1);
-                history('Save Pengajuan Budget Asset ' . $code_plan);
+                write_log('Budget Asset', 'Save Pengajuan Budget Asset', 'Process data success: ' . $code_plan, $data, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {
@@ -227,10 +228,11 @@ class Budget extends Admin_Controller
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $Arr_Kembali = array('pesan' => 'Approval failed. Please try again later...', 'status' => 0);
+                write_log('Budget Asset', 'Approval Budget Asset', 'Approval failed: ' . $code_planx, $data, null, 0);
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Approval processed successfully. Thanks...', 'status' => 1);
-                history('Approval Budget Asset ' . $code_planx);
+                write_log('Budget Asset', 'Approval Budget Asset', 'Approval processed successfully: ' . $code_planx, $data, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {

@@ -32,7 +32,7 @@ class Metode_pembelian extends Admin_Controller
 			'action'		=> 'index',
 			'row_group'		=> $data_Group
 		);
-		history('View Progress PR Asset, Rutin, Non Rutin');
+		// legacy history view removed: View Progress PR Asset, Rutin, Non Rutin
 		$this->template->set($data);
 		$this->template->title('Metode Pembelian');
 		$this->template->render('pr_new');
@@ -188,9 +188,8 @@ class Metode_pembelian extends Admin_Controller
 				'pesan'		=> 'Save process success. Thanks ...',
 				'status'	=> 1
 			);
-			history($Hist . ' PR for RFQ : ' . $id);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', $Hist . ' PR for RFQ : ' . $id, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	public function changeSpec()
@@ -224,9 +223,8 @@ class Metode_pembelian extends Admin_Controller
 			$Arr_Data	= array(
 				'status'	=> 1
 			);
-			history('Change spec : ' . $no_pr . '/' . $no_rfq);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Change spec : ' . $no_pr . '/' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	//==================================================================================================================
@@ -306,10 +304,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Insert data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Create Table Perbandingan ' . $no_rfq);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Create Table Perbandingan ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$no_rfq = $this->uri->segment(3);
 			$result = $this->db->order_by('id', 'ASC')->get_where('tran_rfq_header', array('no_rfq' => $no_rfq))->result_array();
 			$currency = $this->db->get_where('currency', array('flag' => 1))->result_array();
@@ -408,10 +405,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Insert purchase order data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Create Pemilihan Supplier ' . $no_rfq);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Create Pemilihan Supplier ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$no_rfq 	= $this->uri->segment(3);
 
 			$result		= $this->db
@@ -485,7 +481,7 @@ class Metode_pembelian extends Admin_Controller
 			'akses_menu'	=> $Arr_Akses,
 			'data_gudang'	=> $data_gudang
 		);
-		history('View approval pemilihan supplier final non material');
+		// legacy history view removed: View approval pemilihan supplier final non material
 		$this->load->view('Metode_pembelian/approval', $data);
 	}
 
@@ -551,10 +547,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Insert data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Close RFQ ' . $no_rfq);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Close RFQ ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$no_rfq 	= $this->uri->segment(3);
 
 			$result		= $this->db
@@ -741,10 +736,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Save data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Edit po custom and insert top : ' . $data['no_po']);
-			}
-			echo json_encode($Arr_Data);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit po custom and insert top : ' . $data['no_po'], isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$no_po 	= $this->uri->segment(3);
 
 			$result	= $this->db->get_where('tran_po_header', array('no_po' => $no_po))->result();
@@ -801,7 +795,7 @@ class Metode_pembelian extends Admin_Controller
 			'printby' => $printby,
 			'no_po' => $no_po
 		);
-		history('Print Purchase Order ' . $no_po);
+		// legacy history view removed: Print Purchase Order ' . $no_po
 		$this->load->view('Print/print_po_dotmatrik_non_material', $data);
 	}
 
@@ -893,10 +887,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Save data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Edit qty PO : ' . $no_po);
-			}
-			echo json_encode($Arr_Data);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit qty PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$no_po 	= $this->uri->segment(3);
 			$get_status = $this->db->select('*')->get_where('tran_po_header', array('no_po' => $no_po))->result_array();
 			$WHERE = [
@@ -975,9 +968,8 @@ class Metode_pembelian extends Admin_Controller
 				'status'	=> 1,
 				'no_po' 	=> $no_po
 			);
-			history('Delete sebagian PO Repeat : ' . $no_po);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Delete sebagian PO Repeat : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	public function delete_semua_po()
@@ -1016,7 +1008,7 @@ class Metode_pembelian extends Admin_Controller
 			'akses_menu'	=> $Arr_Akses,
 			'id'			=> $id
 		);
-		history('View receive invoice ' . $id);
+		// legacy history view removed: View receive invoice ' . $id
 		$this->load->view('Metode_pembelian/form_receive_invoice', $data);
 	}
 
@@ -1200,9 +1192,8 @@ class Metode_pembelian extends Admin_Controller
 				'status'	=> 1,
 				'id'		=> $id
 			);
-			history('Reeceive Invoice ' . $id);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Reeceive Invoice ' . $id, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Kembali);
 	}
 
 	public function invoice_receive_top($no_po)
@@ -1226,7 +1217,7 @@ class Metode_pembelian extends Admin_Controller
 			'dt_incoming'	=> $dt_incoming,
 			'id'			=> $no_po
 		);
-		history('View receive invoice ' . $no_po);
+		// legacy history view removed: View receive invoice ' . $no_po
 		$this->load->view('Metode_pembelian/form_receive_invoice_top', $data);
 	}
 
@@ -1408,9 +1399,8 @@ class Metode_pembelian extends Admin_Controller
 				'status'	=> 1,
 				'id'		=> $no_po
 			);
-			history('Reeceive Invoice ' . $no_po);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Reeceive Invoice ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Kembali);
 	}
 	//===Payment===
 	public function request_payment($id_top)
@@ -1566,9 +1556,8 @@ class Metode_pembelian extends Admin_Controller
 				'status'	=> 1,
 				'id_request' => $no_request
 			);
-			history('Add Request payment PO : ' . $no_po);
-		}
-		echo json_encode($Arr_Data);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Add Request payment PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+	}
 	}
 	function print_request($id_request)
 	{
@@ -1631,10 +1620,11 @@ class Metode_pembelian extends Admin_Controller
 		if ($this->db->trans_status()) {
 			$this->db->trans_commit();
 			$result         = TRUE;
-			history('Close PO : ' . $no_po);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Close PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		} else {
 			$this->db->trans_rollback();
-			$result = FALSE;
+			$result         = FALSE;
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Close PO failed : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 0);
 		}
 		$param = array(
 			'save' => $result
@@ -1731,10 +1721,9 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Process data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Expense report po non rutin ' . $code_plan);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Expense report po non rutin ' . $code_plan, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$controller			= ucfirst(strtolower($this->uri->segment(1))) . '/approval_non_po';
 			$Arr_Akses			= getAcccesmenu($controller);
 			if ($Arr_Akses['read'] != '1') {
@@ -1792,7 +1781,7 @@ class Metode_pembelian extends Admin_Controller
 			'akses_menu'	=> $Arr_Akses,
 			'id'			=> $id
 		);
-		history('View approval po rutin ' . $id);
+		// legacy history view removed: View approval po rutin ' . $id
 		$this->load->view('Metode_pembelian/approval_po', $data);
 	}
 
@@ -1859,10 +1848,9 @@ class Metode_pembelian extends Admin_Controller
 					'status'	=> 1,
 					'id'		=> $id
 				);
-				history('Approval ' . $id . ' / ' . $no_po . ' / ' . $status);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Approval ' . $id . ' / ' . $no_po . ' / ' . $status, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$id 	= $this->uri->segment(4);
 			$no_po 	= $this->uri->segment(3);
 
@@ -1902,7 +1890,7 @@ class Metode_pembelian extends Admin_Controller
 			'row_group'		=> $data_Group,
 			'akses_menu'	=> $Arr_Akses
 		);
-		history('View data repeat po non-material');
+		// legacy history view removed: View data repeat po non-material
 		$this->load->view('Metode_pembelian/repeat_po', $data);
 	}
 
@@ -2183,8 +2171,7 @@ class Metode_pembelian extends Admin_Controller
 				'pesan'		=> 'Process data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Repeat PO Non-material ' . $po_repeat . ', new po number ' . $no_po);
-		}
-		echo json_encode($Arr_Kembali);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Repeat PO Non-material ' . $po_repeat . ', new po number ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 	}
+}
 }

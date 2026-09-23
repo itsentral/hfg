@@ -42,8 +42,6 @@ class Department extends Admin_Controller
     $data = [
       'result' =>  $listData
     ];
-
-    history("View index master department");
     $this->template->set($data);
     $this->template->title('Department');
     $this->template->render('index');
@@ -89,13 +87,14 @@ class Department extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Department', $label, 'Gagal ' . strtolower($label) . ' department: ' . $nama, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history($label . " department: " . $id);
+        write_log('Department', $label, $label . ' department: ' . $nama, $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -136,12 +135,8 @@ class Department extends Admin_Controller
       $status = 1;
     }
 
-    $nm_hak_akses = $this->managePermission;
-    $kode_universal = $id;
-    $jumlah = 1;
     $sql = $this->db->last_query();
-    simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
-
+    write_log('Department', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
     echo json_encode([
       'status' => $status,
       'new_status' => $new_status,
@@ -168,13 +163,14 @@ class Department extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Department', 'Delete', 'Gagal delete department ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete department : " . $id);
+      write_log('Department', 'Delete', 'Delete department ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

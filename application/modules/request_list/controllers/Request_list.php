@@ -255,12 +255,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->delete_spk_coil_by_id($request_id);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -285,12 +287,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->delete_spk_coil_detail_item($detail_id);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -320,12 +324,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->add_coils_to_spkc($request_id, $coils);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -662,6 +668,7 @@ class Request_list extends Admin_Controller
         $data['coil_details'] = $coil_details;
 
         // Load view standalone — no template
+        write_log('Request List', 'Print SPK Coil', 'Print SPK Coil: ' . $request_id, array('request_id' => $request_id), null, 1);
         $this->load->view('print_spk_coil', $data);
     }
 

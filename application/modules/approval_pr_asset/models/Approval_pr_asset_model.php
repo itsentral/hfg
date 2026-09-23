@@ -147,12 +147,14 @@ class Approval_pr_asset_model extends BF_Model
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
             $Arr_Data = array('pesan' => 'Proses approval gagal...', 'status' => 0);
+            write_log('Approval PR Asset', 'Approval PR Asset', 'Proses ' . $status_lbl . ' PR asset failed: ' . $no_pr, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
             $Arr_Data   = array('pesan' => 'Berhasil ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
-            history($status_lbl . ' PR asset ' . $no_pr);
+            write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $data, null, 1);
         }
 
         echo json_encode($Arr_Data);

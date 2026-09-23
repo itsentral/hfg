@@ -22,7 +22,6 @@ class Ms_top extends Admin_Controller
 			'action'		=> 'ms_top',
 			'row_group'		=> $data_Group
 		);
-		history('View Data TOP');
 		$this->template->set($data);
 		$this->template->title('Master TOP');
 		$this->template->render('index');
@@ -171,13 +170,14 @@ class Ms_top extends Admin_Controller
 					'pesan'		=> $TandaI . ' data failed. Please try again later ...',
 					'status'	=> 0
 				);
+				write_log('Master TOP', $TandaI, 'Gagal ' . strtolower($TandaI) . ' TOP: ' . $name, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(
 					'pesan'		=> $TandaI . ' data success.',
 					'status'	=> 1
 				);
-				history($TandaI . ' TOP  ' . $id . ' / ' . $name);
+				write_log('Master TOP', $TandaI, $TandaI . ' TOP: ' . $name, $ArrHeader, null, 1);
 			}
 			echo json_encode($Arr_Kembali);
 		} else {
@@ -215,13 +215,14 @@ class Ms_top extends Admin_Controller
 				'pesan'		=> 'Delete data failed. Please try again later ...',
 				'status'	=> 0
 			);
+			write_log('Master TOP', 'Delete', 'Gagal delete TOP ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data	= array(
 				'pesan'		=> 'Delete data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Delete TOP Data : ' . $id);
+			write_log('Master TOP', 'Delete', 'Delete TOP ID: ' . $id, ['id' => $id], null, 1);
 		}
 		echo json_encode($Arr_Data);
 	}

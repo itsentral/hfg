@@ -323,10 +323,11 @@ class Pr_asset_model extends BF_Model
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $Arr_Data = array('pesan' => 'Create PR asset failed. Please try again...', 'status' => 0);
+            write_log('PR Asset', 'Create PR Asset', 'Create PR asset failed: ' . $no_pr . ' / ' . $code_plan, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Create PR asset success. Thanks...', 'status' => 1);
-            history('Create PR asset ' . $no_pr . ' / ' . $code_plan);
+            write_log('PR Asset', 'Create PR Asset', 'Create PR asset success: ' . $no_pr . ' / ' . $code_plan, $data, null, 1);
         }
 
         echo json_encode($Arr_Data);

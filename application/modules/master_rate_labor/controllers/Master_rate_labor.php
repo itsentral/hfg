@@ -49,8 +49,10 @@ class Master_rate_labor extends Admin_Controller
         $result  = $this->Master_rate_labor_model->save_rate_labor($id, $rate, $remark, $user_id);
 
         if ($result) {
+            write_log('Master Rate Labor', 'Edit', 'Update tarif labor ID: ' . $id . ' menjadi ' . $rate, ['id' => $id, 'rate' => $rate, 'remark' => $remark], null, 1);
             echo json_encode(['status' => 1, 'pesan' => 'Tarif labor berhasil diperbarui!']);
         } else {
+            write_log('Master Rate Labor', 'Edit', 'Gagal update tarif labor ID: ' . $id, ['id' => $id, 'rate' => $rate], null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Gagal memperbarui tarif labor']);
         }
     }
@@ -87,8 +89,10 @@ class Master_rate_labor extends Admin_Controller
         $result  = $this->Master_rate_labor_model->save_rate_process_product($products, $user_id);
 
         if ($result) {
+            write_log('Master Rate Labor', 'Save Process Product', 'Simpan Standard Biaya Gaji Produk (' . count($products) . ' items)', ['total_items' => count($products)], null, 1);
             echo json_encode(['status' => 1, 'pesan' => 'Data Standard Biaya Gaji Produk berhasil disimpan!']);
         } else {
+            write_log('Master Rate Labor', 'Save Process Product', 'Gagal simpan Standard Biaya Gaji Produk', ['total_items' => count($products)], null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan data Standard Biaya Gaji Produk']);
         }
     }

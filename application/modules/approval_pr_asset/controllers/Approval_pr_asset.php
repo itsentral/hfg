@@ -18,7 +18,7 @@ class Approval_pr_asset extends Admin_Controller
         $data = array(
             'title' => 'Approval PR Asset'
         );
-        history("View index Approval PR Asset");
+        // legacy history view removed
         $this->template->title('Approval PR Asset');
         $this->template->render('index', $data);
     }

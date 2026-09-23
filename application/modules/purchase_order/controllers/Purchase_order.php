@@ -1438,6 +1438,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -1445,6 +1446,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -1761,6 +1763,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save New PO', 'Save new PO failed: ' . $code . ' (' . $msg . ')', $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -1768,6 +1771,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save New PO', 'Save new PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2013,9 +2017,11 @@ class Purchase_order extends Admin_Controller
 			$this->db->trans_rollback();
 			$msg = ($valid_qty == 0) ? 'PO Qty exceeds PR Qty!' : 'Failed to save item.';
 			$status = ['pesan' => $msg, 'status' => 0];
+			write_log('Purchase Order', 'Save All PO', 'Save all PO failed: ' . (isset($code) ? $code : '') . ' (' . $msg . ')', $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status = ['pesan' => 'Success Save Item.', 'code' => $code, 'status' => 1];
+			write_log('Purchase Order', 'Save All PO', 'Save all PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2270,6 +2276,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2277,6 +2284,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2299,6 +2307,7 @@ class Purchase_order extends Admin_Controller
 		$html2pdf->pdf->SetDisplayMode('fullpage');
 		$html2pdf->WriteHTML($html);
 		ob_end_clean();
+		write_log('Purchase Order', 'Export PDF PO', 'Export PDF PO (PrintH): ' . $id, array('no_po' => $id), null, 1);
 		$html2pdf->Output('Penawran.pdf', 'I');
 	}
 
@@ -2533,6 +2542,7 @@ class Purchase_order extends Admin_Controller
 		// $html2pdf->Output('Purchase Order.pdf', 'I');
 
 		// Atau tampilkan HTML (debug / cetak dari browser):
+		write_log('Purchase Order', 'Print PO', 'Print Purchase Order: ' . $no_po, array('no_po' => $no_po), null, 1);
 		$this->load->view('print_po', $data);
 	}
 
@@ -2778,6 +2788,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2785,6 +2796,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2854,6 +2866,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $id_bentuk,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit Penawaran', 'Save edit child penawaran failed: ' . $id, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2861,6 +2874,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $id_bentuk,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit Penawaran', 'Save edit child penawaran success: ' . $id, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2878,12 +2892,14 @@ class Purchase_order extends Admin_Controller
 				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Delete Penawaran', 'Delete child penawaran failed: ' . $id, array('id' => $id), null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Item saved successfully.',
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Delete Penawaran', 'Delete child penawaran success: ' . $id, array('id' => $id), null, 1);
 		}
 
 		echo json_encode($status);
@@ -3904,9 +3920,11 @@ class Purchase_order extends Admin_Controller
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$valid = 0;
+			write_log('Purchase Order', 'Close PO', 'Close PO failed: ' . $post['no_po'], $post, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$valid = 1;
+			write_log('Purchase Order', 'Close PO', 'Close PO success: ' . $post['no_po'], $post, null, 1);
 		}
 
 		echo json_encode([

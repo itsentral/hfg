@@ -74,13 +74,14 @@ class Pr_material extends Admin_Controller
                 'pesan'    => 'Save process failed. Please try again later ...',
                 'status'  => 0
             );
+            write_log('PR Material', 'Save Planning', 'Gagal simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
                 'pesan'    => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            history('Change propose request material ' . $id_material . ' / ' . $purchase . ' / ' . $tanggal);
+            write_log('PR Material', 'Save Planning', 'Simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -152,13 +153,14 @@ class Pr_material extends Admin_Controller
                 'pesan'    => 'Save process failed. Please try again later ...',
                 'status'  => 0
             );
+            write_log('PR Material', 'Save Planning', 'Gagal simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
                 'pesan'    => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            history('Save pengajuan propose material all');
+            write_log('PR Material', 'Save Planning', 'Simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -185,13 +187,14 @@ class Pr_material extends Admin_Controller
                 'pesan'    => 'Save process failed. Please try again later ...',
                 'status'  => 0
             );
+            write_log('PR Material', 'Save Planning', 'Gagal simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
                 'pesan'    => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            history('Change propose request material tgl dibutuhkan all ' . $tanggal);
+            write_log('PR Material', 'Save Planning', 'Simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -238,7 +241,6 @@ class Pr_material extends Admin_Controller
                 'pesan'   => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            history('Set propose request material');
         }
         echo json_encode($Arr_Data);
     }
@@ -273,7 +275,6 @@ class Pr_material extends Admin_Controller
                 'pesan'   => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            history('Clear all propose request material');
         }
         echo json_encode($Arr_Data);
     }
@@ -519,6 +520,7 @@ class Pr_material extends Admin_Controller
                 'status'    => 0,
                 'so_number' => $so_number
             ];
+            write_log('PR Material', 'Update Qty', 'Gagal update qty PR material: ' . $so_number, ['so_number' => $so_number], null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = [
@@ -526,7 +528,7 @@ class Pr_material extends Admin_Controller
                 'status'    => 1,
                 'so_number' => $so_number
             ];
-            history("Update qty pr material: " . $so_number);
+            write_log('PR Material', 'Update Qty', 'Update qty PR material: ' . $so_number, ['so_number' => $so_number], null, 1);
         }
 
         echo json_encode($Arr_Data);
@@ -816,12 +818,12 @@ class Pr_material extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-
             $valid = 0;
+            write_log('PR Material', 'Close PR', 'Gagal close PR: ' . $so_number, ['so_number' => $so_number, 'reason' => $close_pr_reason], null, 0);
         } else {
             $this->db->trans_commit();
-
             $valid = 1;
+            write_log('PR Material', 'Close PR', 'Close PR: ' . $so_number . ' Alasan: ' . $close_pr_reason, ['so_number' => $so_number, 'reason' => $close_pr_reason], null, 1);
         }
 
         echo json_encode([

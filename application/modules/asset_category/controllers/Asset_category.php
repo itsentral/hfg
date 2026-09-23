@@ -25,7 +25,7 @@ class Asset_category extends Admin_Controller
             'row_group' => $data_Group
         );
 
-        history('View Data Master Asset category');
+        // legacy history view removed
         $this->template->title('Index Of Asset Category');
         $this->template->render('index', $data);
     }
@@ -80,13 +80,14 @@ class Asset_category extends Admin_Controller
                     'pesan'  => $TandaI . ' data failed. Please try again later ...',
                     'status' => 0
                 );
+                write_log('Asset Category', 'Save Category Asset', $TandaI . ' Category Asset failed: ' . $id . ' / ' . $nm_category, $data, null, 0);
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array(
                     'pesan'  => $TandaI . ' data success. Thanks ...',
                     'status' => 1
                 );
-                history($TandaI . ' Category Asset ' . $id . ' / ' . $nm_category);
+                write_log('Asset Category', 'Save Category Asset', $TandaI . ' Category Asset success: ' . $id . ' / ' . $nm_category, $data, null, 1);
             }
 
             echo json_encode($Arr_Kembali);
@@ -125,13 +126,14 @@ class Asset_category extends Admin_Controller
                 'pesan'  => 'Delete data failed. Please try again later ...',
                 'status' => 0
             );
+            write_log('Asset Category', 'Delete Category Asset', 'Delete Category Asset failed: ' . $id, array('id' => $id), null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array(
                 'pesan'  => 'Delete data success. Thanks ...',
                 'status' => 1
             );
-            history('Delete Category Asset : ' . $id);
+            write_log('Asset Category', 'Delete Category Asset', 'Delete Category Asset success: ' . $id, array('id' => $id), null, 1);
         }
         echo json_encode($Arr_Data);
     }

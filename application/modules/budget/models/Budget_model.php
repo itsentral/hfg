@@ -194,10 +194,11 @@ class Budget_model extends BF_Model
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Budget Asset', 'Hapus Pengajuan Budget Asset', 'Hapus Pengajuan Budget Asset failed: ' . $code_plan, array('code_plan' => $code_plan), null, 0);
             return array('pesan' => 'Process data failed. Please try again later ...', 'status' => 0);
         } else {
             $this->db->trans_commit();
-            history('Hapus Pengajuan Budget Asset ' . $code_plan);
+            write_log('Budget Asset', 'Hapus Pengajuan Budget Asset', 'Hapus Pengajuan Budget Asset success: ' . $code_plan, array('code_plan' => $code_plan), null, 1);
             return array('pesan' => 'Process data success. Thanks ...', 'status' => 1);
         }
     }

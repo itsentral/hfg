@@ -25,7 +25,7 @@ class Asset_coa extends Admin_Controller
             'row_group' => $data_Group
         );
 
-        history('View Data Asset COA');
+        // legacy history view removed
         $this->template->title('Indeks Of Asset COA');
         $this->template->render('index', $data);
     }
@@ -72,13 +72,14 @@ class Asset_coa extends Admin_Controller
                     'pesan'  => $TandaI . ' data failed. Please try again later ...',
                     'status' => 0
                 );
+                write_log('Asset COA', 'Save Asset COA', $TandaI . ' Asset COA failed: ' . $id . ' / ' . $keterangan, $data, null, 0);
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array(
                     'pesan'  => $TandaI . ' data success. Thanks ...',
                     'status' => 1
                 );
-                history($TandaI . ' Asset COA ' . $id . ' / ' . $keterangan);
+                write_log('Asset COA', 'Save Asset COA', $TandaI . ' Asset COA success: ' . $id . ' / ' . $keterangan, $data, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {
@@ -127,13 +128,14 @@ class Asset_coa extends Admin_Controller
                 'pesan'  => 'Delete data failed. Please try again later ...',
                 'status' => 0
             );
+            write_log('Asset COA', 'Delete Asset COA', 'Delete Asset COA failed: ' . $id, array('id' => $id), null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = array(
                 'pesan'  => 'Delete data success. Thanks ...',
                 'status' => 1
             );
-            history('Delete Asset COA ' . $id);
+            write_log('Asset COA', 'Delete Asset COA', 'Delete Asset COA success: ' . $id, array('id' => $id), null, 1);
         }
         echo json_encode($Arr_Data);
     }

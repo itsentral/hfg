@@ -1362,9 +1362,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = 0;
+			write_log('Request Payment', 'Save Request Payment', 'Save Request Payment failed: ' . $id, array('id' => $id), null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = 1;
+			write_log('Request Payment', 'Save Request Payment', 'Save Request Payment success: ' . $id, array('id' => $id), null, 1);
 		}
 		$param = array(
 			'hasil' => $result
@@ -2209,6 +2211,7 @@ class Request_payment extends Admin_Controller
 
 	public function excel_payment_list()
 	{
+		write_log('Request Payment', 'Export Excel Payment List', 'Export Excel Payment List', null, null, 1);
 		$tgl_from = $this->uri->segment(3);
 		$tgl_to = $this->uri->segment(4);
 		$bank = $this->uri->segment(5);
@@ -2958,6 +2961,7 @@ class Request_payment extends Admin_Controller
 
 	public function download_excel_request_payment()
 	{
+		write_log('Request Payment', 'Download Excel Request Payment', 'Download Excel Request Payment', null, null, 1);
 		require_once APPPATH . 'libraries/PHPExcel.php';
 		
 		$objPHPExcel = new PHPExcel();

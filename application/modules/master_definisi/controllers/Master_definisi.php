@@ -22,8 +22,7 @@ class Master_definisi extends Admin_Controller
 
 		$data = $this->db->get_where('ms_definisi', array('deleted' => 'N'))->result();
 
-		history("View data definisi");
-		$this->template->set('results', $data);
+				$this->template->set('results', $data);
 		$this->template->title('Master Definisi');
 		$this->template->render('index');
 	}
@@ -68,13 +67,14 @@ class Master_definisi extends Admin_Controller
 					'pesan'  => 'Process Failed !',
 					'status' => 0
 				);
+				write_log('Master Definisi', $field_hist, 'Gagal ' . strtolower($field_hist) . ' definisi: ' . $istilah, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data = array(
 					'pesan'  => 'Process Success !',
 					'status' => 1
 				);
-				history($field_hist . " data definisi " . $id);
+				write_log('Master Definisi', $field_hist, $field_hist . ' definisi: ' . $istilah, $ArrHeader, null, 1);
 			}
 
 			echo json_encode($Arr_Data);
@@ -135,13 +135,14 @@ class Master_definisi extends Admin_Controller
 				'pesan'  => 'Process Failed !',
 				'status' => 0
 			);
+			write_log('Master Definisi', 'Delete', 'Gagal delete definisi ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data = array(
 				'pesan'  => 'Process Success !',
 				'status' => 1
 			);
-			history("Delete data definisi " . $id);
+			write_log('Master Definisi', 'Delete', 'Delete definisi ID: ' . $id, ['id' => $id, 'data' => $ArrHeader], null, 1);
 		}
 
 		echo json_encode($Arr_Data);

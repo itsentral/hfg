@@ -21,7 +21,7 @@ class Pr_asset extends Admin_Controller
             'title' => 'PR Asset Management',
             'tanda' => ''
         );
-        history("View index PR Asset");
+        // legacy history view removed
         $this->template->title('PR Asset');
         $this->template->render('pr', $data);
     }

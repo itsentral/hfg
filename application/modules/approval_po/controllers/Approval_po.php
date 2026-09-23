@@ -25,7 +25,7 @@ class Approval_po extends Admin_Controller
     $this->auth->restrict($this->viewPermission);
     $session  = $this->session->userdata('app_session');
 
-    history("View index approval pr material");
+    // legacy history view removed
     $this->template->page_icon('fa fa-list');
     $this->template->title('Approval PO');
     $this->template->render('index');
@@ -94,13 +94,14 @@ class Approval_po extends Admin_Controller
           'pesan'    => 'Save failed.',
           'status'  => 0
         );
+        write_log('Approval PO', 'Create Material Planning', 'Create material planning failed: ' . $so_number, $data, null, 0);
       } else {
         $this->db->trans_commit();
         $Arr_Data  = array(
           'pesan'    => 'Save successful.',
           'status'  => 1
         );
-        history("Create material planning  : " . $so_number);
+        write_log('Approval PO', 'Create Material Planning', 'Create material planning success: ' . $so_number, $data, null, 1);
       }
       echo json_encode($Arr_Data);
     } else {
@@ -205,6 +206,7 @@ class Approval_po extends Admin_Controller
         'status'  => 0,
         'so_number'  => $so_number
       );
+      write_log('Approval PO', 'Process Satuan PR Material', $action . ' satuan pr material failed: ' . $id, $data, null, 0);
     } else {
       $this->db->trans_commit();
       $Arr_Data  = array(
@@ -212,7 +214,7 @@ class Approval_po extends Admin_Controller
         'status'  => 1,
         'so_number'  => $so_number
       );
-      history($action . " satuan pr material  : " . $id);
+      write_log('Approval PO', 'Process Satuan PR Material', $action . ' satuan pr material success: ' . $id, $data, null, 1);
     }
     echo json_encode($Arr_Data);
   }
@@ -245,6 +247,7 @@ class Approval_po extends Admin_Controller
         'status'  => 0,
         'so_number'  => $so_number
       );
+      write_log('Approval PO', 'Approve PR Material', 'Approve pr material failed: ' . $so_number, $data, null, 0);
     } else {
       $this->db->trans_commit();
       $Arr_Data  = array(
@@ -252,7 +255,7 @@ class Approval_po extends Admin_Controller
         'status'  => 1,
         'so_number'  => $so_number
       );
-      history("Approve pr material  : " . $so_number);
+      write_log('Approval PO', 'Approve PR Material', 'Approve pr material success: ' . $so_number, $data, null, 1);
     }
     echo json_encode($Arr_Data);
   }
@@ -498,6 +501,7 @@ class Approval_po extends Admin_Controller
         'code' => '0',
         'status'  => 0
       );
+      write_log('Approval PO', 'Approve PO', 'Approved PO process failed: ' . $post['no_po'], $post, null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
@@ -505,6 +509,7 @@ class Approval_po extends Admin_Controller
         'code' => $code,
         'status'  => 1
       );
+      write_log('Approval PO', 'Approve PO', 'PO has been Approved: ' . $post['no_po'], $post, null, 1);
     }
 
     echo json_encode($status);
@@ -528,6 +533,7 @@ class Approval_po extends Admin_Controller
         'code' => '0',
         'status'  => 0
       );
+      write_log('Approval PO', 'Reject PO', 'Reject PO process failed: ' . $post['no_po'], $post, null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
@@ -535,6 +541,7 @@ class Approval_po extends Admin_Controller
         'code' => $code,
         'status'  => 1
       );
+      write_log('Approval PO', 'Reject PO', 'PO has been Rejected: ' . $post['no_po'], $post, null, 1);
     }
 
     echo json_encode($status);

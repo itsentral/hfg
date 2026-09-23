@@ -26,8 +26,6 @@ class Master_forwarding_cost extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         $data['forwarding_cost'] = $this->Master_forwarding_cost_model->get_data();
-
-        history("View Master Forwarding Cost");
         $this->template->set($data);
         $this->template->title('Master Forwarding Cost');
         $this->template->render('index');
@@ -68,8 +66,10 @@ class Master_forwarding_cost extends Admin_Controller
         }
 
         if ($result) {
+            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', $msg, $data, null, 1);
             echo json_encode(['status' => 'success', 'message' => $msg]);
         } else {
+            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', 'Gagal menyimpan Forwarding Cost', $data, null, 0);
             echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
         }
     }
@@ -81,8 +81,10 @@ class Master_forwarding_cost extends Admin_Controller
         $result = $this->Master_forwarding_cost_model->delete_data($id, $this->auth->nama());
 
         if ($result) {
+            write_log('Master Forwarding Cost', 'Delete', 'Hapus Forwarding Cost ID: ' . $id, ['id' => $id], null, 1);
             echo json_encode(['status' => 'success', 'message' => 'Hapus Forwarding Cost berhasil']);
         } else {
+            write_log('Master Forwarding Cost', 'Delete', 'Gagal menghapus Forwarding Cost ID: ' . $id, ['id' => $id], null, 0);
             echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data']);
         }
     }

@@ -42,9 +42,15 @@ class Master_jurnal_mapping extends Admin_Controller
             ];
             
             $this->db->where('id', $id);
-            $this->db->update('ms_jurnal_mapping', $data_update);
+            $upd = $this->db->update('ms_jurnal_mapping', $data_update);
 
-            echo json_encode(['status' => 1, 'message' => 'Data berhasil diupdate']);
+            if ($upd) {
+                write_log('Master Jurnal Mapping', 'Edit', 'Update jurnal mapping ID: ' . $id . ' ke kode: ' . $post['kode_master_jurnal'], $data_update, null, 1);
+                echo json_encode(['status' => 1, 'message' => 'Data berhasil diupdate']);
+            } else {
+                write_log('Master Jurnal Mapping', 'Edit', 'Gagal update jurnal mapping ID: ' . $id, $data_update, null, 0);
+                echo json_encode(['status' => 0, 'message' => 'Gagal mengupdate data']);
+            }
         } else {
             echo json_encode(['status' => 0, 'message' => 'Data ID tidak ditemukan']);
         }

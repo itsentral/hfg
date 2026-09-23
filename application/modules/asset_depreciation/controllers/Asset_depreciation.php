@@ -25,7 +25,7 @@ class Asset_depreciation extends Admin_Controller
             'kategori' => $this->asset_depreciation_model->getList('asset_category')
         );
 
-        history('View index asset depreciation');
+        // legacy history view removed
         $this->template->title('Index Of Depreciation Assets');
         $this->template->render('index', $data);
     }
