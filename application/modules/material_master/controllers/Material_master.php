@@ -46,8 +46,6 @@ class Material_master extends Admin_Controller
       'get_level_2' =>  $this->db->order_by('nama', 'asc')->get_where('new_inventory_2', array('category' => 'material', 'deleted_date' => NULL))->result_array(),
       'get_level_3' =>  $this->db->order_by('nama', 'asc')->get_where('new_inventory_3', array('category' => 'material', 'deleted_date' => NULL))->result_array(),
     ];
-
-    history("View index material master");
     $this->template->set($data);
     $this->template->title('Material Master');
     $this->template->render('index');
@@ -195,13 +193,14 @@ class Material_master extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Material Master', $label, 'Gagal ' . strtolower($label) . ' material master: ' . $code_lv4, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history($label . " material master: " . $code_lv4);
+        write_log('Material Master', $label, $label . ' material master: ' . $code_lv4 . ' (' . $nama . ')', $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -272,7 +271,7 @@ class Material_master extends Admin_Controller
     $kode_universal = $id;
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
-    simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+    write_log('Material Master', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
 
     // Kembalikan hasil sebagai JSON
     echo json_encode([
@@ -301,13 +300,14 @@ class Material_master extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Material Master', 'Delete', 'Gagal delete material master ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete material master : " . $id);
+      write_log('Material Master', 'Delete', 'Delete material master ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

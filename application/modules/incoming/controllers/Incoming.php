@@ -788,11 +788,13 @@ class Incoming extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('Incoming', 'Save Draft Incoming', 'Failed to save draft incoming ROS: ' . $no_ros, $post, null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Failed to save draft!']);
             return;
         }
 
         $this->db->trans_commit();
+        write_log('Incoming', 'Save Draft Incoming', 'Save draft incoming success ROS: ' . $no_ros, $post, null, 1);
 
         // Jika flag submit_after_save, langsung ajukan
         $submit_after = $post['submit_after_save'] ?? '';

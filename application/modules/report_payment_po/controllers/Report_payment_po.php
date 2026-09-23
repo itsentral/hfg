@@ -45,6 +45,7 @@ class Report_payment_po extends Admin_Controller
     public function download_excel()
     {
         $no_po = $this->input->post('no_po');
+        write_log('Report Payment PO', 'Export Excel', 'Export Excel Report Payment PO' . (!empty($no_po) ? ' No PO: ' . $no_po : ' (All)'), ['no_po' => $no_po], null, 1);
         
         $data = $this->Report_payment_po_model->get_report_data($no_po);
 

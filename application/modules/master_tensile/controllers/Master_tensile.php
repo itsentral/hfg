@@ -23,8 +23,6 @@ class Master_tensile extends Admin_Controller
 		$this->auth->restrict($this->viewPermission);
 
 		$data = $this->db->get_where('ms_tensile', ['deleted' => 'N'])->result();
-
-		history("View data tensile");
 		$this->template->set('results', $data);
 		$this->template->title('Master Tensile');
 		$this->template->render('index');
@@ -68,13 +66,14 @@ class Master_tensile extends Admin_Controller
 					'pesan'		=> 'Process Failed !',
 					'status'	=> 0
 				);
+				write_log('Master Tensile', $field_hist, 'Gagal ' . strtolower($field_hist) . ' master tensile: ' . $nama, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
 					'pesan'		=> 'Process Success !',
 					'status'	=> 1
 				);
-				history($field_hist . " data unit " . $id);
+				write_log('Master Tensile', $field_hist, $field_hist . ' master tensile: ' . $nama, $ArrHeader, null, 1);
 			}
 
 			echo json_encode($Arr_Data);
@@ -114,13 +113,14 @@ class Master_tensile extends Admin_Controller
 				'pesan'		=> 'Process Failed !',
 				'status'	=> 0
 			);
+			write_log('Master Tensile', 'Delete', 'Gagal delete master tensile ID: ' . $code_material, ['id' => $code_material], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data	= array(
 				'pesan'		=> 'Process Success !',
 				'status'	=> 1
 			);
-			history("Delete data unit " . $code_material);
+			write_log('Master Tensile', 'Delete', 'Delete master tensile ID: ' . $code_material, ['id' => $code_material, 'data' => $ArrHeader], null, 1);
 		}
 
 		echo json_encode($Arr_Data);

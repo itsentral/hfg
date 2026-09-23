@@ -44,8 +44,6 @@ class Material_category extends Admin_Controller
       'result' =>  $listData,
       'get_level_1' =>  get_list_inventory_lv1('material')
     ];
-
-    history("View index material category");
     $this->template->set($data);
     $this->template->title('Slitted / Mother Coil');
     $this->template->render('index');
@@ -97,13 +95,14 @@ class Material_category extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Material Category', $label, 'Gagal ' . strtolower($label) . ' material category: ' . $code, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history($label . " material category: " . $code);
+        write_log('Material Category', $label, $label . ' material category: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -157,7 +156,7 @@ class Material_category extends Admin_Controller
     $kode_universal = $id;
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
-    simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+    write_log('Material Category', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
 
     // Kembalikan hasil sebagai JSON
     echo json_encode([
@@ -186,13 +185,14 @@ class Material_category extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Material Category', 'Delete', 'Gagal delete material category ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete material category : " . $id);
+      write_log('Material Category', 'Delete', 'Delete material category ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

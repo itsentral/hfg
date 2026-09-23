@@ -42,8 +42,6 @@ class Product_type extends Admin_Controller
         $data = [
           'result' =>  $listData
         ];
-        
-        history("View index product type");
         $this->template->set($data);
         $this->template->title('Product Type');
         $this->template->render('index');
@@ -96,13 +94,14 @@ class Product_type extends Admin_Controller
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
+          write_log('Product Type', $label, 'Gagal ' . strtolower($label) . ' product type: ' . $code, $dataProcess, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(
             'pesan'		=>'Success process data!',
             'status'	=> 1
           );
-          history($label." product type: ".$code);
+          write_log('Product Type', $label, $label . ' product type: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
         }
         echo json_encode($status);
       }
@@ -135,13 +134,14 @@ class Product_type extends Admin_Controller
           'pesan'		=>'Failed process data!',
           'status'	=> 0
         );
+        write_log('Product Type', 'Delete', 'Gagal delete product type ID: ' . $id, ['id' => $id], null, 0);
       } else {
         $this->db->trans_commit();
         $status	= array(
           'pesan'		=>'Success process data!',
           'status'	=> 1
         );
-        history("Delete product type : ".$id);
+        write_log('Product Type', 'Delete', 'Delete product type ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
       }
       echo json_encode($status);
     }

@@ -231,9 +231,11 @@ class Master_customers extends Admin_Controller
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
+			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', 'Gagal ' . ($isUpdate ? 'update' : 'tambah') . ' customer: ' . $code, $header, null, 0);
 			echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan data.']);
 		} else {
 			$this->db->trans_commit();
+			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', ($isUpdate ? 'Update' : 'Tambah') . ' customer: ' . $code . ' (' . $post['name_customer'] . ')', $header, null, 1);
 			echo json_encode(['status' => 1, 'pesan' => $isUpdate ? 'Berhasil update.' : 'Berhasil tambah data.']);
 		}
 	}
@@ -551,12 +553,14 @@ class Master_customers extends Admin_Controller
 				'pesan'		=> 'Gagal Save Item. Thanks ...',
 				'status'	=> 0
 			);
+			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success Save Item. Thanks ...',
 				'status'	=> 1
 			);
+			write_log('Master Customers', 'Delete', 'Delete customer ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);
@@ -579,12 +583,14 @@ class Master_customers extends Admin_Controller
 				'pesan'		=> 'Gagal Delete Item. Thanks ...',
 				'status'	=> 0
 			);
+			write_log('Master Customers', 'Delete Category', 'Gagal delete category customer ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success Delete Item. Thanks ...',
 				'status'	=> 1
 			);
+			write_log('Master Customers', 'Delete Category', 'Delete category customer ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);
@@ -607,12 +613,14 @@ class Master_customers extends Admin_Controller
 				'pesan'		=> 'Gagal Save Item. Thanks ...',
 				'status'	=> 0
 			);
+			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success Save Item. Thanks ...',
 				'status'	=> 1
 			);
+			write_log('Master Customers', 'Delete', 'Delete customer ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);
@@ -636,12 +644,14 @@ class Master_customers extends Admin_Controller
 				'pesan'		=> 'Gagal Save Item. Thanks ...',
 				'status'	=> 0
 			);
+			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success Save Item. Thanks ...',
 				'status'	=> 1
 			);
+			write_log('Master Customers', 'Delete', 'Delete customer ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);
@@ -701,12 +711,14 @@ class Master_customers extends Admin_Controller
 				'pesan'  => 'Gagal menyimpan data. Silakan coba lagi.',
 				'status' => 0
 			];
+			write_log('Master Customers', 'Save Category', 'Gagal menyimpan category customer', ['id' => $id, 'data' => $data], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status = [
 				'pesan'  => $pesan,
 				'status' => 1
 			];
+			write_log('Master Customers', 'Save Category', (!empty($id) ? 'Update' : 'Tambah') . ' category customer: ' . $nm_category_customer, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);
@@ -739,12 +751,8 @@ class Master_customers extends Admin_Controller
 			$status = 1;
 		}
 
-		$nm_hak_akses = $this->managePermission;
-		$kode_universal = $id;
-		$jumlah = 1;
 		$sql = $this->db->last_query();
-		simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
-
+		write_log('Master Customers', 'Update Status Category', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
 		echo json_encode([
 			'status' => $status,
 			'new_status' => $new_status,
@@ -1507,12 +1515,14 @@ class Master_customers extends Admin_Controller
 				'pesan'		=> 'Gagal Save Item. Thanks ...',
 				'status'	=> 0
 			);
+			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Success Save Item. Thanks ...',
 				'status'	=> 1
 			);
+			write_log('Master Customers', 'Delete', 'Delete customer ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
 		}
 
 		echo json_encode($status);

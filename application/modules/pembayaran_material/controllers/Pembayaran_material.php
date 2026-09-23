@@ -38,7 +38,7 @@ class Pembayaran_material extends Admin_Controller
 			'resultsnm'		=> $data_listnm,
 			'data_status'	=> $this->data_status
 		);
-		history('View Request Payment');
+		// legacy history view removed
 		$this->load->view('Pembayaran_material/index_request_payment', $data);
 	}
 
@@ -117,11 +117,12 @@ class Pembayaran_material extends Admin_Controller
 			$this->db->trans_commit();
 			$keterangan     = "SUKSES, simpan data ";
 			$result         = TRUE;
+			write_log('Pembayaran Material', 'Save Edit Request Payment', 'Save Edit Request Payment success, No ' . $id_req, $this->input->post(), null, 1);
 		} else {
 			$this->db->trans_rollback();
 			$keterangan     = "GAGAL, simpan data ";
 			$result = FALSE;
-			history('Save Edit Request Payment, No ' . $id_req);
+			write_log('Pembayaran Material', 'Save Edit Request Payment', 'Save Edit Request Payment failed, No ' . $id_req, $this->input->post(), null, 0);
 		}
 		$param = array(
 			'save' => $result
@@ -726,10 +727,11 @@ class Pembayaran_material extends Admin_Controller
 			if ($this->db->trans_status()) {
 				$this->db->trans_commit();
 				$result         = TRUE;
-				history('Save Payment');
+				write_log('Pembayaran Material', 'Save Payment', 'Save Payment success', $this->input->post(), null, 1);
 			} else {
 				$this->db->trans_rollback();
 				$result = FALSE;
+				write_log('Pembayaran Material', 'Save Payment', 'Save Payment failed', $this->input->post(), null, 0);
 			}
 		} catch (Exception $e) {
 			$this->db->trans_rollback();
@@ -1247,6 +1249,22 @@ class Pembayaran_material extends Admin_Controller
 				->get_where('tr_purchase_order', ['no_po' => $first_req->no_doc])
 				->row();
 			$loi_po = strtolower(trim($po_ref->loi ?? ''));
+
+			// Update status_bayar pada tr_top_po menjadi 'payment'
+			// Relasi: detail['ids'] = tr_receive_invoice.id -> tr_receive_invoice.id_top -> tr_top_po.id
+			if (!empty($post['dt'])) {
+				foreach ($post['dt'] as $detail) {
+					if (!empty($detail['ids'])) {
+						$ri_top = $this->db->select('id_top')
+							->get_where('tr_receive_invoice', ['id' => $detail['ids']])
+							->row();
+						if ($ri_top && !empty($ri_top->id_top)) {
+							$this->db->update('tr_top_po', ['status_bayar' => 'payment'], ['id' => $ri_top->id_top]);
+						}
+					}
+				}
+			}
+
 			if ($loi_po === 'import') {
 				$action_jurnal = 'save_payment_po_import';
 			} else {
@@ -2809,10 +2827,11 @@ class Pembayaran_material extends Admin_Controller
 			if ($this->db->trans_status()) {
 				$this->db->trans_commit();
 				$result         = TRUE;
-				history('Save Payment');
+				write_log('Pembayaran Material', 'Save Payment', 'Save Payment success', $this->input->post(), null, 1);
 			} else {
 				$this->db->trans_rollback();
 				$result = FALSE;
+				write_log('Pembayaran Material', 'Save Payment', 'Save Payment failed', $this->input->post(), null, 0);
 			}
 		} catch (Exception $e) {
 			$this->db->trans_rollback();

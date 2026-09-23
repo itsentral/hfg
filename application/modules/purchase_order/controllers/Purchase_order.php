@@ -1438,6 +1438,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -1445,6 +1446,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -1761,6 +1763,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save New PO', 'Save new PO failed: ' . $code . ' (' . $msg . ')', $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -1768,6 +1771,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save New PO', 'Save new PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -1947,9 +1951,30 @@ class Purchase_order extends Admin_Controller
 		}
 
 		// 5. Simpan TOP & LC (Hapus dulu jika Edit)
+		// PENTING: baris TOP yang sudah punya status_bayar (bukan NULL) TIDAK boleh dihapus/diubah,
+		// karena field-nya di-disable di view sehingga tidak ikut terkirim saat submit.
 		if ($is_edit) {
-			$this->db->delete('tr_top_po', ['no_po' => $code]);
-			$this->db->delete('tr_po_detail_lc', ['no_po' => $code]);
+			// Ambil id baris TOP yang terkunci (punya status_bayar) agar LC-nya juga dipertahankan
+			$locked_top = $this->db->select('id')
+				->from('tr_top_po')
+				->where('no_po', $code)
+				->where('status_bayar IS NOT NULL', null, false)
+				->get()->result();
+			$locked_top_ids = array_map(function ($r) {
+				return $r->id;
+			}, $locked_top);
+
+			// Hapus hanya baris TOP yang BELUM punya status_bayar
+			$this->db->where('no_po', $code)
+				->where('status_bayar IS NULL', null, false)
+				->delete('tr_top_po');
+
+			// Hapus LC milik baris yang dihapus saja (pertahankan LC baris terkunci)
+			$this->db->where('no_po', $code);
+			if (!empty($locked_top_ids)) {
+				$this->db->where_not_in('id_top', $locked_top_ids);
+			}
+			$this->db->delete('tr_po_detail_lc');
 		}
 
 		$num_top = $this->input->post('num_top');
@@ -1992,9 +2017,11 @@ class Purchase_order extends Admin_Controller
 			$this->db->trans_rollback();
 			$msg = ($valid_qty == 0) ? 'PO Qty exceeds PR Qty!' : 'Failed to save item.';
 			$status = ['pesan' => $msg, 'status' => 0];
+			write_log('Purchase Order', 'Save All PO', 'Save all PO failed: ' . (isset($code) ? $code : '') . ' (' . $msg . ')', $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status = ['pesan' => 'Success Save Item.', 'code' => $code, 'status' => 1];
+			write_log('Purchase Order', 'Save All PO', 'Save all PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2249,6 +2276,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2256,6 +2284,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2278,6 +2307,7 @@ class Purchase_order extends Admin_Controller
 		$html2pdf->pdf->SetDisplayMode('fullpage');
 		$html2pdf->WriteHTML($html);
 		ob_end_clean();
+		write_log('Purchase Order', 'Export PDF PO', 'Export PDF PO (PrintH): ' . $id, array('no_po' => $id), null, 1);
 		$html2pdf->Output('Penawran.pdf', 'I');
 	}
 
@@ -2512,6 +2542,7 @@ class Purchase_order extends Admin_Controller
 		// $html2pdf->Output('Purchase Order.pdf', 'I');
 
 		// Atau tampilkan HTML (debug / cetak dari browser):
+		write_log('Purchase Order', 'Print PO', 'Print Purchase Order: ' . $no_po, array('no_po' => $no_po), null, 1);
 		$this->load->view('print_po', $data);
 	}
 
@@ -2757,6 +2788,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO failed: ' . $code, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2764,6 +2796,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $code,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $code, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2833,6 +2866,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $id_bentuk,
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Save Edit Penawaran', 'Save edit child penawaran failed: ' . $id, $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
@@ -2840,6 +2874,7 @@ class Purchase_order extends Admin_Controller
 				'code' => $id_bentuk,
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Save Edit Penawaran', 'Save edit child penawaran success: ' . $id, $data, null, 1);
 		}
 
 		echo json_encode($status);
@@ -2857,12 +2892,14 @@ class Purchase_order extends Admin_Controller
 				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
+			write_log('Purchase Order', 'Delete Penawaran', 'Delete child penawaran failed: ' . $id, array('id' => $id), null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status	= array(
 				'pesan'		=> 'Item saved successfully.',
 				'status'	=> 1
 			);
+			write_log('Purchase Order', 'Delete Penawaran', 'Delete child penawaran success: ' . $id, array('id' => $id), null, 1);
 		}
 
 		echo json_encode($status);
@@ -3883,9 +3920,11 @@ class Purchase_order extends Admin_Controller
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$valid = 0;
+			write_log('Purchase Order', 'Close PO', 'Close PO failed: ' . $post['no_po'], $post, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$valid = 1;
+			write_log('Purchase Order', 'Close PO', 'Close PO success: ' . $post['no_po'], $post, null, 1);
 		}
 
 		echo json_encode([

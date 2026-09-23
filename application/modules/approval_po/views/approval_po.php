@@ -371,14 +371,14 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								</td>
 							</tr>
 							<?php
-								// total_dpp tidak disimpan di tr_purchase_order, jadi turunkan dari total_ppn.
-								// PPn = DPP * 12%  =>  DPP = PPn / 0.12
-								$dpp_val = 0;
-								if (!empty($results['header_po']->total_dpp)) {
-									$dpp_val = $results['header_po']->total_dpp;
-								} elseif (!empty($results['header_po']->total_ppn)) {
-									$dpp_val = $results['header_po']->total_ppn / 0.12;
-								}
+							// total_dpp tidak disimpan di tr_purchase_order, jadi turunkan dari total_ppn.
+							// PPn = DPP * 12%  =>  DPP = PPn / 0.12
+							$dpp_val = 0;
+							if (!empty($results['header_po']->total_dpp)) {
+								$dpp_val = $results['header_po']->total_dpp;
+							} elseif (!empty($results['header_po']->total_ppn)) {
+								$dpp_val = $results['header_po']->total_ppn / 0.12;
+							}
 							?>
 							<tr <?= ((isset($results['header_po']->show_tax) && $results['header_po']->show_tax == 'Y') ? '' : 'hidden') ?>>
 								<td class="text-end" colspan="9"><b>DPP</b></td>
@@ -426,9 +426,6 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				<div class="form-group row mb-3">
 					<div class="col-sm-12">
 						<input type="hidden" name="num_top" class="num_top" value="<?= $results['num_po'] ?>">
-						<!-- <button type="button" class="btn btn-sm btn-primary add_top mb-3">
-							<i class="fa fa-plus"></i> Add TOP
-						</button> -->
 						<table class="table table-bordered">
 							<thead class="bg-blue">
 								<tr>
@@ -438,7 +435,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<th class="text-center">Keterangan</th>
 									<th class="text-center">Tipe Pembayaran</th>
 									<th class="text-center">Jatuh Tempo</th>
-									<th class="text-center">Action</th>
+									<th class="text-center">Status</th>
 								</tr>
 							</thead>
 							<tbody class="list_tbody_top">
@@ -449,15 +446,31 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									$checked_tt = ($item_top->tipe_bayar == 'tt') ? 'checked' : '';
 									$display_btn_lc = ($item_top->tipe_bayar == 'lc') ? '' : 'display:none;';
 
+									// Validasi jatuh tempo
+									$tgl_jatuh_tempo = (!empty($item_top->jatuh_tempo) && $item_top->jatuh_tempo != '0000-00-00') ? $item_top->jatuh_tempo : '-';
+
+									// Mapping badge status bayar (Bootstrap 5)
+									switch ($item_top->status_bayar) {
+										case 'receive_invoice':
+											$badge_status = '<span class="badge bg-info text-dark">Receive Invoice</span>';
+											break;
+										case 'request_payment':
+											$badge_status = '<span class="badge bg-warning text-dark">Request Payment</span>';
+											break;
+										case 'payment':
+											$badge_status = '<span class="badge bg-success">Payment</span>';
+											break;
+										default:
+											$badge_status = '<span class="badge bg-secondary">Unprocessed</span>';
+											break;
+									}
+
 									echo '<tr class="top_' . $no . '">';
 
 									echo '<td>';
 									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
 									foreach ($results['list_group_top'] as $item_group_top) {
-										$selected = '';
-										if ($item_group_top->id == $item_top->group_top) {
-											$selected = 'selected';
-										}
+										$selected = ($item_group_top->id == $item_top->group_top) ? 'selected' : '';
 										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
 									}
 									echo '</select>';
@@ -477,18 +490,20 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 									echo '<td>';
 									echo '<div class="form-check">';
-									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="radio_tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '" disabled>';
 									echo '<label class="form-check-label" for="lc_' . $no . '">LC</label>';
 									echo '</div>';
 									echo '<div class="form-check">';
-									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="radio_tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '" disabled>';
 									echo '<label class="form-check-label" for="tt_' . $no . '">TT</label>';
 									echo '</div>';
 
-									// Tombol untuk buka modal LC
+									// Hidden input untuk tetap mengirim value tipe_bayar saat submit form (karena radio disabled tidak di-serialize)
+									echo '<input type="hidden" name="tipe_bayar_' . $no . '" value="' . $item_top->tipe_bayar . '">';
+
+									// Tombol modal detail LC
 									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> Detail LC</button>';
 
-									// --- INPUT HIDDEN UNTUK DATA LC (DARI TABEL tr_po_detail_lc) ---
 									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
 									echo '<input type="hidden" name="issue_date_' . $no . '" value="' . $item_top->issue_date . '">';
 									echo '<input type="hidden" name="expiry_date_' . $no . '" value="' . $item_top->expiry_date . '">';
@@ -503,12 +518,17 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '<input type="hidden" name="no_sales_contract_' . $no . '" value="' . $item_top->no_sales_contract . '">';
 									echo '</td>';
 
-									echo '<td class="">';
-									echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $item_top->jatuh_tempo . '">';
+									echo '<td class="text-center align-middle">';
+									if ($tgl_jatuh_tempo !== '-') {
+										echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $tgl_jatuh_tempo . '">';
+									} else {
+										echo '-';
+										echo '<input type="hidden" name="jatuh_tempo_' . $no . '" value="">';
+									}
 									echo '</td>';
 
-									echo '<td class="text-center">';
-									echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
+									echo '<td class="text-center align-middle">';
+									echo $badge_status;
 									echo '</td>';
 
 									echo '</tr>';
@@ -518,7 +538,6 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								?>
 							</tbody>
 						</table>
-
 					</div>
 				</div>
 

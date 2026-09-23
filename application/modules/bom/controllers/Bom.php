@@ -138,9 +138,11 @@ class Bom extends Admin_Controller
         $result = $this->Bom_model->save_bom($header, $details);
 
         if ($result) {
+            write_log('BOM', 'Save', 'Simpan BOM untuk produk: ' . $nm_produk . ' (ID Produk: ' . $id_produk . ')', ['header' => $header, 'total_materials' => count($details)], null, 1);
             $this->session->set_flashdata('success', 'BOM berhasil disimpan');
             redirect('bom/view/' . $result);
         } else {
+            write_log('BOM', 'Save', 'Gagal simpan BOM untuk produk: ' . $nm_produk, ['header' => $header], null, 0);
             $this->session->set_flashdata('error', 'Gagal menyimpan BOM');
             redirect('bom/add');
         }
@@ -151,6 +153,11 @@ class Bom extends Admin_Controller
     {
         $id     = $this->input->post('id');
         $result = $this->Bom_model->delete_bom($id, $this->auth->user_id());
+        if ($result) {
+            write_log('BOM', 'Delete', 'Hapus BOM ID: ' . $id, ['id' => $id], null, 1);
+        } else {
+            write_log('BOM', 'Delete', 'Gagal hapus BOM ID: ' . $id, ['id' => $id], null, 0);
+        }
         echo json_encode(['success' => $result]);
     }
 }

@@ -46,8 +46,6 @@ class Product_master extends Admin_Controller
       'get_level_2' =>  $this->db->order_by('nama', 'asc')->get_where('product_lvl_2', array('category' => 'product', 'deleted_date' => NULL))->result_array(),
       'get_level_3' =>  $this->db->order_by('nama', 'asc')->get_where('product_lvl_3', array('category' => 'product', 'deleted_date' => NULL))->result_array(),
     ];
-
-    history("View index product master");
     $this->template->set($data);
     $this->template->title('Product Master');
     $this->template->render('index');
@@ -316,13 +314,14 @@ class Product_master extends Admin_Controller
           'pesan'  => 'Failed process data!',
           'status' => 0,
         ];
+        write_log('Product Master', $label, 'Gagal ' . strtolower($label) . ' product master: ' . $code_lv4, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $result = [
           'pesan'  => 'Success process data!',
           'status' => 1,
         ];
-        history($label . ' product master: ' . $code_lv4);
+        write_log('Product Master', $label, $label . ' product master: ' . $code_lv4 . ' (' . $nama . ')', $dataProcess, null, 1);
       }
 
       echo json_encode($result);
@@ -367,13 +366,14 @@ class Product_master extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Product Master', 'Delete', 'Gagal delete product master ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete product master : " . $id);
+      write_log('Product Master', 'Delete', 'Delete product master ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

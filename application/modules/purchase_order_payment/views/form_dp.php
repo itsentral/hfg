@@ -26,6 +26,9 @@ $d = $is_view ? $data : array_merge($data_po, [
 
 $currency = $d['matauang'] ?? 'IDR';
 $ro       = $is_view ? 'readonly' : '';
+// show_tax dari PO: 'N' = tanpa pajak (DPP & PPN disembunyikan & tidak dihitung)
+$show_tax = strtoupper(trim($d['show_tax'] ?? 'Y'));
+$tax_on   = ($show_tax !== 'N');
 ?>
 
 <div class="row g-3">
@@ -73,15 +76,19 @@ $ro       = $is_view ? 'readonly' : '';
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">DPP</label>
-        <input type="text" name="dpp" class="form-control form-control-sm text-end"
-            value="<?= number_format($is_view ? $d['dpp'] : $dpp, 4) ?>" readonly>
+        <?php if ($tax_on): ?>
+            <label class="form-label fw-semibold">DPP</label>
+            <input type="text" name="dpp" class="form-control form-control-sm text-end"
+                value="<?= number_format($is_view ? $d['dpp'] : $dpp, 4) ?>" readonly>
+        <?php endif; ?>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai PPN</label>
-        <input type="text" name="nilai_ppn" class="form-control form-control-sm text-end"
-            value="<?= number_format($is_view ? $d['nilai_ppn'] : $nilai_ppn, 2) ?>" readonly>
+        <?php if ($tax_on): ?>
+            <label class="form-label fw-semibold">Nilai PPN</label>
+            <input type="text" name="nilai_ppn" class="form-control form-control-sm text-end"
+                value="<?= number_format($is_view ? $d['nilai_ppn'] : $nilai_ppn, 2) ?>" readonly>
+        <?php endif; ?>
     </div>
 
     <div class="col-md-6">

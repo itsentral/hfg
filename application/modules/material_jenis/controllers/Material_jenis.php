@@ -45,8 +45,6 @@ class Material_jenis extends Admin_Controller
       'get_level_1' =>  get_list_inventory_lv1('material'),
       'get_level_2' =>  get_list_inventory_lv2('material')
     ];
-
-    history("View index material jenis");
     $this->template->set($data);
     $this->template->title('Boron / Non Boron');
     $this->template->render('index');
@@ -100,13 +98,14 @@ class Material_jenis extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Material Jenis', $label, 'Gagal ' . strtolower($label) . ' material jenis: ' . $code, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history($label . " material category: " . $code);
+        write_log('Material Jenis', $label, $label . ' material jenis: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {
@@ -161,7 +160,7 @@ class Material_jenis extends Admin_Controller
     $kode_universal = $id;
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
-    simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+    write_log('Material Jenis', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
 
     // Kembalikan hasil sebagai JSON
     echo json_encode([
@@ -190,13 +189,14 @@ class Material_jenis extends Admin_Controller
         'pesan'    => 'Failed process data!',
         'status'  => 0
       );
+      write_log('Material Jenis', 'Delete', 'Gagal delete material jenis ID: ' . $id, ['id' => $id], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
         'pesan'    => 'Success process data!',
         'status'  => 1
       );
-      history("Delete material category : " . $id);
+      write_log('Material Jenis', 'Delete', 'Delete material jenis ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

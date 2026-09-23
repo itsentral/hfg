@@ -913,9 +913,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Save ROS', 'Failed to save ROS data: ' . $id_ros, $post, null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to save ROS data.']);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Save ROS', 'ROS data saved successfully: ' . $id_ros, $post, null, 1);
             echo json_encode(['status' => 1, 'msg' => 'ROS data saved successfully.', 'id' => $id_ros]);
         }
     }
@@ -939,9 +941,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Delete ROS', 'Failed to delete ROS: ' . $id, array('id' => $id), null, 0);
             echo json_encode(['status' => 0]);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Delete ROS', 'Successfully deleted ROS: ' . $id, array('id' => $id), null, 1);
             echo json_encode(['status' => 1]);
         }
     }
@@ -1762,9 +1766,11 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Confirm Upload Packing List', 'Failed to save coil data for ROS: ' . $id_ros, array('id_ros' => $id_ros), null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to save coil data.']);
         } else {
             $this->db->trans_commit();
+            write_log('New ROS', 'Confirm Upload Packing List', "Successfully saved {$inserted} coils for ROS: " . $id_ros, array('id_ros' => $id_ros, 'inserted' => $inserted), null, 1);
             echo json_encode(['status' => 1, 'msg' => "Successfully saved {$inserted} coils.", 'total' => $inserted]);
         }
     }
@@ -1861,6 +1867,7 @@ class New_ros extends Admin_Controller
         }
 
         $data = ['results' => $data_coil];
+        write_log('New ROS', 'Print QR Label', 'Print QR labels for items: ' . $ids, array('ids' => $ids), null, 1);
         $this->load->view('print_qr_label', $data);
     }
 
@@ -1903,11 +1910,13 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
+            write_log('New ROS', 'Finalize ROS', 'Failed to finalize ROS: ' . $id, array('id' => $id), null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Failed to finalize ROS.']);
             return;
         }
 
         $this->db->trans_commit();
+        write_log('New ROS', 'Finalize ROS', 'Successfully finalized ROS: ' . $id, array('id' => $id), null, 1);
 
         // Hitung total untuk GL Interface
         $total_inventory = 0;
@@ -2003,39 +2012,65 @@ class New_ros extends Admin_Controller
 
         // ── 1. PERSEDIAAN BAHAN BAKU INTRANSIT (1105-01-03) ──
         // SUM total_nilai_inventory dari semua material
+        // Sekaligus hitung nilai_po_usd KHUSUS porsi ROS ini (bukan total PO)
         $gl_persediaan_intransit = 0;
         $gl_bm_dibayar_dimuka    = 0;
         $gl_hutang_forwarding    = 0;
+        $nilai_po_usd_ros        = 0;
 
         foreach ($materials as $mat) {
             $gl_persediaan_intransit += (int) round((float) $mat['total_nilai_inventory']);
             $gl_bm_dibayar_dimuka    += (int) round((float) $mat['bm_rp']);
             $gl_hutang_forwarding    += (int) round((float) $mat['forwarding_cost']);
+            $nilai_po_usd_ros        += (float) $mat['total_value_usd'];
         }
 
         // ── 2. ADVANCE PURCHASE (1104-01-02) ──
-        // SUM jumlah_rupiah dari tr_receive_invoice WHERE no_po AND tipe = 'dp'
-        $gl_advance_purchase = (float) ($this->db
-            ->select_sum('gl_value_dp')
+        // Lepas dulu klaim DP lama milik ROS ini (jika ini proses edit/update),
+        // supaya perhitungan ulang tidak "mengunci" baris DP yang seharusnya bisa dilepas.
+        $this->db->where('id_ros', $id_ros)
+            ->update('tr_receive_invoice', ['id_ros' => null]);
+
+        // Ambil semua DP yang statusnya 'payment' dan BELUM diklaim ROS manapun (id_ros masih NULL)
+        $dp_available = $this->db
+            ->select('id, gl_value_dp')
             ->where('no_po', $no_po)
             ->where('tipe', 'dp')
+            ->where('status', 'payment')
+            ->where('id_ros', null)
             ->get('tr_receive_invoice')
-            ->row()
-            ->gl_value_dp ?? 0);
+            ->result_array();
+
+        $gl_advance_purchase = 0;
+        $dp_ids_to_claim     = [];
+
+        foreach ($dp_available as $dp) {
+            $gl_advance_purchase += (float) $dp['gl_value_dp'];
+            $dp_ids_to_claim[]    = $dp['id'];
+        }
+
+        // Tandai semua baris DP yang dipakai oleh ROS ini
+        if (!empty($dp_ids_to_claim)) {
+            $this->db->where_in('id', $dp_ids_to_claim)
+                ->update('tr_receive_invoice', ['id_ros' => $id_ros]);
+        }
 
         // ── 3. UNBILL / HUTANG BELUM TERTAGIH (2101-01-06) ──
-        // (nilai_po_usd - SUM(tr_top_po.nilai WHERE group_top=76)) × kurs_pib
-        $nilai_po_usd = (float) ($header['nilai_po_usd'] ?? 0);
-
+        // (nilai_po_usd_ros - SUM(tr_top_po.nilai WHERE group_top=76, tapi HANYA
+        //  baris top yang sudah diklaim ROS ini via tr_receive_invoice.id_ros)) × kurs_pib
         $sum_top_76 = (float) ($this->db
-            ->select_sum('nilai')
-            ->where('no_po', $no_po)
-            ->where('group_top', 76)
-            ->get('tr_top_po')
+            ->select_sum('tr_top_po.nilai', 'total_nilai')
+            ->from('tr_top_po')
+            ->join('tr_receive_invoice', 'tr_receive_invoice.id_top = tr_top_po.id', 'inner')
+            ->where('tr_top_po.no_po', $no_po)
+            ->where('tr_top_po.group_top', 76)
+            ->where('tr_receive_invoice.id_ros', $id_ros)
+            ->where('tr_receive_invoice.tipe', 'dp')
+            ->get()
             ->row()
-            ->nilai ?? 0);
+            ->total_nilai ?? 0);
 
-        $gl_unbill = (int) round(($nilai_po_usd - $sum_top_76) * $kurs_pib);
+        $gl_unbill = (int) round(($nilai_po_usd_ros - $sum_top_76) * $kurs_pib);
 
         // ── 4. BM DIBAYAR DIMUKA (1108-01-09) ──
         // Sudah dihitung di loop materials di atas
@@ -2058,33 +2093,32 @@ class New_ros extends Admin_Controller
         $gl_prepaid_other = (int) round((float) ($others_sum->nilai ?? 0));
 
         // ── 9. B. SELISIH KURS (7201-01-07) ──
-        // Rumus: (kurs_pib_form - kurs_receive_invoice) × nilai_invoice
-        // Data diambil dari tr_receive_invoice WHERE no_po = no_po AND tipe = 'dp'
+        // Rumus: (kurs_receive_invoice - kurs_pib_form) × nilai_invoice
+        // Data diambil dari tr_receive_invoice yang SUDAH DIKLAIM ROS INI (id_ros = $id_ros)
         $receive_invoice_dp = $this->db
             ->select('kurs, nilai_invoice')
             ->where('no_po', $no_po)
             ->where('tipe', 'dp')
+            ->where('id_ros', $id_ros)
             ->get('tr_receive_invoice')
             ->row();
 
-        $gl_selisih_kurs = 0;
+        $gl_selisih_kurs          = 0;
         $gl_advance_purchase_kurs = 0;
 
         if ($receive_invoice_dp) {
             $kurs_ri       = (float) $receive_invoice_dp->kurs;
             $nilai_invoice = (float) $receive_invoice_dp->nilai_invoice;
 
-            // $gl_selisih_kurs = (int) round(($kurs_pib - $kurs_ri) * $nilai_invoice);
-            $gl_selisih_kurs = (int) round(($kurs_ri - $kurs_pib) * $nilai_invoice);
+            $gl_selisih_kurs          = (int) round(($kurs_ri - $kurs_pib) * $nilai_invoice);
             $gl_advance_purchase_kurs = $nilai_invoice;
         }
 
-        // Hitung unbill kurs
-        $gl_unbill_kurs = $nilai_po_usd - $gl_advance_purchase_kurs;
+        // Hitung unbill kurs (basis porsi ROS ini)
+        $gl_unbill_kurs = $nilai_po_usd_ros - $gl_advance_purchase_kurs;
 
         // ── 10. B. PEMBULATAN (7201-01-05) ──
         // Hitung balance: total debet vs total kredit
-        // Kondisi debet/kredit ikut dibalik
         $total_debet_calc = $gl_persediaan_intransit
             + (($gl_selisih_kurs > 0) ? $gl_selisih_kurs : 0);
 
@@ -2101,38 +2135,6 @@ class New_ros extends Admin_Controller
         $gl_pembulatan = (int) round($total_kredit_calc - $total_debet_calc);
 
         // ── Update tr_ros_header dengan GL values ──
-        // $gl_data = [
-        //     'gl_persediaan_intransit'  => $gl_persediaan_intransit,
-        //     'gl_advance_purchase'      => $gl_advance_purchase,
-        //     'gl_unbill'                => $gl_unbill,
-        //     'gl_bm_dibayar_dimuka'     => $gl_bm_dibayar_dimuka,
-        //     'gl_prepaid_ls'            => $gl_prepaid_ls,
-        //     'gl_hutang_forwarding'     => $gl_hutang_forwarding,
-        //     'gl_prepaid_insurance'     => $gl_prepaid_insurance,
-        //     'gl_prepaid_other'         => $gl_prepaid_other,
-        //     'gl_selisih_kurs'          => $gl_selisih_kurs,
-        //     'gl_pembulatan'            => $gl_pembulatan,
-        //     'gl_unbill_kurs'           => $gl_unbill_kurs,
-        //     'gl_advance_purchase_kurs' => $gl_advance_purchase_kurs,
-        // ];
-
-        // echo '<pre>';
-        // echo '=== GL VALUES DEBUG ===<br>';
-        // echo 'id_ros: ' . $id_ros . '<br>';
-        // echo 'no_po: ' . $no_po . '<br>';
-        // echo 'kurs_pib: ' . $kurs_pib . '<br>';
-        // echo 'nilai_po_usd: ' . $nilai_po_usd . '<br>';
-        // echo 'sum_top_76: ' . $sum_top_76 . '<br>';
-        // echo 'gl_advance_purchase_kurs (nilai_invoice DP): ' . $gl_advance_purchase_kurs . '<br>';
-        // echo 'gl_unbill_kurs: ' . $gl_unbill_kurs . '<br>';
-        // echo 'kurs_receive_invoice (DP): ' . ($kurs_ri ?? 'N/A') . '<br>';
-        // echo 'total_debet_calc: ' . $total_debet_calc . '<br>';
-        // echo 'total_kredit_calc: ' . $total_kredit_calc . '<br>';
-        // echo '<br>';
-        // var_dump($gl_data);
-        // echo '</pre>';
-        // die;
-
         $this->db->update('tr_ros_header', [
             'gl_persediaan_intransit'  => $gl_persediaan_intransit,
             'gl_advance_purchase'      => $gl_advance_purchase,
@@ -2273,11 +2275,11 @@ class New_ros extends Admin_Controller
                 $this->load->model('gl_interface/Gl_interface_model');
                 $data_source = $header;
                 $data_source['tanggal'] = date('Y-m-d');
-                
+
                 $mapping = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'ROS', 'action' => 'close_ros'])->row();
                 $kode_jurnal = $mapping ? $mapping->kode_master_jurnal : 'JV006'; // fallback
                 $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $data_source);
-                
+
                 ob_clean();
                 header('Content-Type: application/json');
                 echo json_encode(['status' => 1, 'msg' => 'ROS closed successfully and JV journal has been created.']);
@@ -2377,6 +2379,7 @@ class New_ros extends Admin_Controller
                 'payment_type'  => $r['payment_type'],
                 'keterangan'    => $r['keterangan'],
                 'nominal'       => $r['nominal'],
+                'gl_nominal'    => round($r['nominal']),
                 'status'        => 'belum_diajukan',
                 'created_by'    => $user_id,
                 'created_on'    => $now,

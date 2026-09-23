@@ -28,9 +28,6 @@ class Supplier extends Admin_Controller
 	{
 		$this->auth->restrict($this->viewPermission);
 		$session = $this->session->userdata('app_session');
-
-		history("View index master supplier");
-
 		$this->template->page_icon('fa fa-users');
 		$this->template->title('Supplier');
 		$this->template->render('index');
@@ -134,13 +131,14 @@ class Supplier extends Admin_Controller
 					'pesan'		=> 'Save gagal disimpan ...',
 					'status'	=> 0
 				);
+				write_log('Supplier', $tanda, 'Gagal ' . strtolower($tanda) . ' supplier: ' . $kode_supplier, $ArrHeader, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
 					'pesan'		=> 'Save berhasil disimpan. Thanks ...',
 					'status'	=> 1
 				);
-				history($tanda . " supplier " . $kode_supplier);
+				write_log('Supplier', $tanda, $tanda . ' supplier: ' . $kode_supplier . ' (' . $nama . ')', $ArrHeader, null, 1);
 			}
 
 			echo json_encode($Arr_Data);
@@ -237,13 +235,14 @@ class Supplier extends Admin_Controller
 				'pesan'		=> 'Save gagal disimpan ...',
 				'status'	=> 0
 			);
+			write_log('Supplier', 'Delete', 'Gagal delete supplier ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data	= array(
 				'pesan'		=> 'Save berhasil disimpan. Thanks ...',
 				'status'	=> 1
 			);
-			history("Delete data supplier " . $id);
+			write_log('Supplier', 'Delete', 'Delete supplier ID: ' . $id, ['id' => $id, 'data' => $ArrHeader], null, 1);
 		}
 
 		echo json_encode($Arr_Data);

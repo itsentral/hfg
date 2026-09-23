@@ -17,6 +17,18 @@
                     ?>
                 </div>
 
+                <div class="col-md-3">
+                    <label for="filter_kategori" class="form-label mb-1"><b>Category</b></label>
+                    <select id="filter_kategori" name="filter_kategori" class="form-control">
+                        <option value="">-- All Category --</option>
+                        <?php if (!empty($list_kategori)) : ?>
+                            <?php foreach ($list_kategori as $kategori) : ?>
+                                <option value="<?= html_escape($kategori['category']) ?>"><?= html_escape($kategori['category']) ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
                 <div class="col-md-2" hidden>
                     <label class="form-label mb-1"><b>PR Priority</b></label>
                     <select name="tingkat_pr" class="form-control tingkat_pr">
@@ -25,7 +37,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-9 text-md-end">
+                <div class="col-md-6 text-md-end">
                     <!-- <button type="button" class="btn btn-primary btn-sm" id="autoPropose">
                         <i class="fa fa-magic me-1"></i> Set Auto Propose
                     </button> -->
@@ -211,6 +223,11 @@
             });
         });
 
+        $(document).on('change', '#filter_kategori', function() {
+            // Reload tabel saat kategori berubah, filter dikirim via ajax.data.
+            $('#example1').DataTable().ajax.reload();
+        });
+
         $(document).on('change', '.changeSaveDate', function() {
             var tanggal = $('#tgl_butuh').val();
 
@@ -365,6 +382,11 @@
                 url: base_url + active_controller + '/server_side_reorder_point',
                 type: "POST",
                 cache: false,
+                data: function(d) {
+                    // Kirim kategori terpilih untuk memfilter tabel di server side.
+                    d.kategori = $('#filter_kategori').val();
+                    return d;
+                },
                 error: function() {
                     $('#example1 tbody').remove();
                     $('#example1').append("<tbody class='my-grid-error'><tr><td colspan='15' class='text-center'>No data found in the server</td></tr></tbody>");

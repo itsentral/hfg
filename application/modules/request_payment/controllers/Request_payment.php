@@ -1362,9 +1362,11 @@ class Request_payment extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$result = 0;
+			write_log('Request Payment', 'Save Request Payment', 'Save Request Payment failed: ' . $id, array('id' => $id), null, 0);
 		} else {
 			$this->db->trans_commit();
 			$result = 1;
+			write_log('Request Payment', 'Save Request Payment', 'Save Request Payment success: ' . $id, array('id' => $id), null, 1);
 		}
 		$param = array(
 			'hasil' => $result
@@ -2209,6 +2211,7 @@ class Request_payment extends Admin_Controller
 
 	public function excel_payment_list()
 	{
+		write_log('Request Payment', 'Export Excel Payment List', 'Export Excel Payment List', null, null, 1);
 		$tgl_from = $this->uri->segment(3);
 		$tgl_to = $this->uri->segment(4);
 		$bank = $this->uri->segment(5);
@@ -2754,6 +2757,9 @@ class Request_payment extends Admin_Controller
 						'id_request_payment' => $ros_row->id,
 						'status'             => 'diajukan',
 					]);
+
+					// Update status_bayar TOP terkait menjadi 'request_payment'
+					$this->_update_status_bayar_top_by_request_payment('id', $ros_row->id);
 				} else {
 					// ── Jalur lama (tipe lain): per no_doc, TIDAK diubah ──
 					$this->db->update('request_payment', [
@@ -2762,6 +2768,9 @@ class Request_payment extends Admin_Controller
 					], [
 						'no_doc' => $key
 					]);
+
+					// Update status_bayar TOP terkait menjadi 'request_payment'
+					$this->_update_status_bayar_top_by_request_payment('no_doc', $key);
 				}
 			}
 		}
@@ -2782,6 +2791,49 @@ class Request_payment extends Admin_Controller
 			'status' => $valid,
 			'msg' => $msg
 		]);
+	}
+
+	/**
+	 * Update status_bayar pada tr_top_po menjadi 'request_payment' berdasarkan
+	 * baris request_payment yang diproses. Relasi:
+	 *   request_payment.no_doc = tr_receive_invoice.id  (untuk tipe invoice_*)
+	 *   tr_receive_invoice.id_top = tr_top_po.id
+	 *
+	 * @param string $by     Kolom identifikasi request_payment ('id' atau 'no_doc')
+	 * @param mixed  $value  Nilai identifikasi
+	 */
+	private function _update_status_bayar_top_by_request_payment($by, $value)
+	{
+		// Ambil baris request_payment yang diproses
+		$rp_rows = $this->db
+			->select('no_doc, tipe')
+			->from('request_payment')
+			->where($by, $value)
+			->get()
+			->result();
+
+		if (empty($rp_rows)) {
+			return;
+		}
+
+		foreach ($rp_rows as $rp) {
+			// Hanya tipe invoice PO yang terhubung ke tr_receive_invoice -> tr_top_po
+			if (strpos((string) $rp->tipe, 'invoice_') !== 0) {
+				continue;
+			}
+
+			// no_doc menyimpan id tr_receive_invoice
+			$ri = $this->db
+				->select('id_top')
+				->from('tr_receive_invoice')
+				->where('id', $rp->no_doc)
+				->get()
+				->row();
+
+			if ($ri && !empty($ri->id_top)) {
+				$this->db->update('tr_top_po', ['status_bayar' => 'request_payment'], ['id' => $ri->id_top]);
+			}
+		}
 	}
 
 	public function reset_choosed_req_payment()
@@ -2909,6 +2961,7 @@ class Request_payment extends Admin_Controller
 
 	public function download_excel_request_payment()
 	{
+		write_log('Request Payment', 'Download Excel Request Payment', 'Download Excel Request Payment', null, null, 1);
 		require_once APPPATH . 'libraries/PHPExcel.php';
 		
 		$objPHPExcel = new PHPExcel();

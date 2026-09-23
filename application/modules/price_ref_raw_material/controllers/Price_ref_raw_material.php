@@ -44,8 +44,6 @@ class Price_ref_raw_material extends Admin_Controller
     $data = [
       'result' =>  $listData
     ];
-
-    history("View index price reference raw materials");
     $this->template->set($data);
     $this->template->title('Price Reference Raw Materials');
     $this->template->render('index');
@@ -120,13 +118,14 @@ class Price_ref_raw_material extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
+        write_log('Price Ref Raw Material', 'Update', 'Gagal update price ref raw material: ' . $code_lv4, $dataProcess, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        history("Update price supplier raw material: " . $code_lv4);
+        write_log('Price Ref Raw Material', 'Update', 'Update price ref raw material: ' . $code_lv4, $dataProcess, null, 1);
       }
       echo json_encode($status);
     } else {

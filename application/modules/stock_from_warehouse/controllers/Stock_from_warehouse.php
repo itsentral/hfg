@@ -72,6 +72,7 @@ class Stock_from_warehouse extends Admin_Controller
 
     public function export_excel_transit()
     {
+        write_log('Stock From Warehouse', 'Export Excel Transit', 'Export Excel Transit Stock', null, null, 1);
         $this->auth->restrict($this->viewPermission);
         $this->Stock_from_warehouse_model->export_stock('PRT', 'WRH Production 2');
     }
@@ -82,6 +83,7 @@ class Stock_from_warehouse extends Admin_Controller
 
     public function export_excel_wip()
     {
+        write_log('Stock From Warehouse', 'Export Excel WIP', 'Export Excel WIP Stock', null, null, 1);
         $this->auth->restrict($this->viewPermission);
         $this->Stock_from_warehouse_model->export_stock('WIP', 'WIP (Coil Remains)');
     }
@@ -92,6 +94,7 @@ class Stock_from_warehouse extends Admin_Controller
 
     public function export_excel_on_hold()
     {
+        write_log('Stock From Warehouse', 'Export Excel On Hold', 'Export Excel On Hold Stock', null, null, 1);
         $this->auth->restrict($this->viewPermission);
         $this->Stock_from_warehouse_model->export_stock('HLD', 'On Hold', 5);
     }
@@ -102,6 +105,7 @@ class Stock_from_warehouse extends Admin_Controller
 
     public function export_excel_history()
     {
+        write_log('Stock From Warehouse', 'Export Excel History', 'Export Excel History Stock Warehouse', null, null, 1);
         $this->auth->restrict($this->viewPermission);
 
         $date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : '';

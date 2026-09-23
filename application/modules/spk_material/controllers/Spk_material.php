@@ -264,10 +264,12 @@ class Spk_material extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
+            write_log('SPK Material', 'Save SPK Material', 'Gagal menyimpan SPK Material: ' . $spk_no . ' (' . $mode . ')', $this->input->post(), null, 0);
             return $this->_json(['status' => 0, 'message' => 'Gagal menyimpan SPK. Silakan coba lagi.']);
         }
 
         $this->db->trans_commit();
+        write_log('SPK Material', 'Save SPK Material', 'Berhasil menyimpan SPK Material: ' . $spk_no . ' (' . $mode . ')', $this->input->post(), null, 1);
 
         $msg = ($mode === 'edit') ? 'SPK berhasil diupdate.' : 'SPK berhasil dibuat.';
         return $this->_json(['status' => 1, 'message' => $msg, 'spk_no' => $spk_no]);
@@ -469,9 +471,11 @@ class Spk_material extends Admin_Controller
         ]);
 
         if ($result) {
+            write_log('SPK Material', 'Update Status SPK', 'Status SPK ' . $spk_no . ' berhasil diubah ke: ' . $new_status, $this->input->post(), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Status SPK berhasil diubah ke "' . $new_status . '".']);
         }
 
+        write_log('SPK Material', 'Update Status SPK', 'Gagal mengubah status SPK ' . $spk_no . ' ke: ' . $new_status, $this->input->post(), null, 0);
         return $this->_json(['status' => 0, 'message' => 'Gagal mengubah status SPK.']);
     }
 

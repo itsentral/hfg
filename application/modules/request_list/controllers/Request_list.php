@@ -255,12 +255,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->delete_spk_coil_by_id($request_id);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -285,12 +287,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->delete_spk_coil_detail_item($detail_id);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -320,12 +324,14 @@ class Request_list extends Admin_Controller
         $res = $this->Request_list_model->add_coils_to_spkc($request_id, $coils);
 
         if ($res['status']) {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil success ID: ' . $request_id, array('request_id' => $request_id), null, 1);
             return $this->_json(array(
                 'status'  => 1,
                 'message' => $res['message'],
                 'spk_no'  => isset($res['spk_no']) ? $res['spk_no'] : ''
             ));
         } else {
+            write_log('Request List', 'Delete SPK Coil', 'Delete SPK Coil failed ID: ' . $request_id, array('request_id' => $request_id), null, 0);
             return $this->_json(array(
                 'status'  => 0,
                 'message' => $res['message']
@@ -662,6 +668,7 @@ class Request_list extends Admin_Controller
         $data['coil_details'] = $coil_details;
 
         // Load view standalone — no template
+        write_log('Request List', 'Print SPK Coil', 'Print SPK Coil: ' . $request_id, array('request_id' => $request_id), null, 1);
         $this->load->view('print_spk_coil', $data);
     }
 
@@ -941,16 +948,21 @@ class Request_list extends Admin_Controller
         $summary_map = []; // accumulator: key = id_material_kd_gudang
 
         foreach ($coil_details as $coil) {
-            // Proses semua coil (PRO id_gudang_sumber=1 dan WIP id_gudang_sumber=4)
-            // reduce_coil_stock sekarang: UPDATE coil ke PRT + recalc warehouse_stock
-            $reduce_result = $this->Request_list_model->reduce_coil_stock(
+            // reduce_coil_stock: PURE pindah posisi coil (+ pack + companion pack) ke PRT.
+            // TIDAK mengubah nilai warehouse_stock. Return ARRAY of result per coil
+            // (bisa >1 karena seluruh coil dalam 1 pack ikut dipindah).
+            $reduce_results = $this->Request_list_model->reduce_coil_stock(
                 $coil['id_coil'],
                 $request['spk_coil_no'],
                 $this->id_user
             );
 
-            // Accumulate summary per material + gudang sumber
-            if ($reduce_result) {
+            if (empty($reduce_results) || !is_array($reduce_results)) {
+                continue;
+            }
+
+            // Accumulate summary per material + gudang sumber untuk setiap coil yang dipindah
+            foreach ($reduce_results as $reduce_result) {
                 $key = $reduce_result['id_material'] . '_' . $reduce_result['kd_gudang'];
 
                 if (!isset($summary_map[$key])) {

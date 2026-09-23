@@ -236,6 +236,7 @@ class Warehouse extends Admin_Controller
 
     public function export_excel_history_pack()
     {
+        write_log('Warehouse', 'Export Excel History Pack', 'Export Excel History Packing List', null, null, 1);
         $date_snap = $this->input->get('date_snap') ?: date('Y-m-d');
         $kd_gudang = $this->input->get('kd_gudang') ?: '';
         $snap_datetime = $date_snap . ' 23:59:59';
@@ -461,6 +462,7 @@ class Warehouse extends Admin_Controller
 
     public function export_excel_stock_value()
     {
+        write_log('Warehouse', 'Export Excel Stock Value', 'Export Excel Stock Value', null, null, 1);
         $kd_gudang = $this->input->get('kd_gudang');
         $id_gudang = $this->input->get('id_gudang');
 
@@ -793,6 +795,7 @@ class Warehouse extends Admin_Controller
 
     public function export_excel_stock_coil()
     {
+        write_log('Warehouse', 'Export Excel Stock Coil', 'Export Excel Stock Coil', null, null, 1);
         $kd_gudang = $this->input->get('kd_gudang');
 
         $where = "WHERE 1=1";
@@ -1085,6 +1088,7 @@ class Warehouse extends Admin_Controller
 
     public function export_excel_stock_value_history()
     {
+        write_log('Warehouse', 'Export Excel Stock Value History', 'Export Excel Stock Value History', null, null, 1);
         $kd_gudang       = $this->input->get('kd_gudang')       ?? '';
         $filter_material = $this->input->get('filter_material') ?? '';
         $date_snap       = $this->input->get('date_snap')       ?? '';
@@ -1493,6 +1497,7 @@ class Warehouse extends Admin_Controller
 
     public function export_excel_stock_coil_perday()
     {
+        write_log('Warehouse', 'Export Excel Stock Coil Per Day', 'Export Excel Stock Coil Per Day', null, null, 1);
         $kd_gudang = $this->input->get('kd_gudang') ?? '';
         $date_snap = $this->input->get('date_snap') ?? '';
         $this->Warehouse_model->export_excel_coil_perday($kd_gudang, $date_snap);

@@ -82,6 +82,18 @@ class Pembayaran_material_model extends BF_Model
 		$this->db->join('tr_transport_req d', 'd.no_doc = a.no_doc', 'left');
 		$this->db->where('a.status', 'approve management');
 
+		// Untuk invoice PO (dp/import/local): kecualikan yang invoice-nya sudah dibayar.
+		// Sumber kebenaran pembayaran ada di tr_receive_invoice.status = 'payment'
+		// (request_payment.ids menyimpan id tr_receive_invoice). Ini mencegah invoice yang
+		// sudah payment tetap tertarik walau status request_payment belum ter-update / duplikat.
+		$this->db->where("(
+			a.tipe NOT IN ('invoice_dp', 'invoice_import', 'invoice_local')
+			OR NOT EXISTS (
+				SELECT 1 FROM tr_receive_invoice ri
+				WHERE ri.id = a.ids AND ri.status = 'payment'
+			)
+		)", null, false);
+
 		// Logika Filter Jenis Payment
 		if ($jenis_payment == 1) {
 			$this->db->group_start()

@@ -442,7 +442,7 @@ class Metode_pembelian_model extends BF_Model
 			'akses_menu'	=> $Arr_Akses,
 			'data_gudang'	=> $data_gudang
 		);
-		history('View RFQ Asset, Rutin, Non Rutin');
+		// legacy history view removed: View RFQ Asset, Rutin, Non Rutin
 		$this->load->view('Pembelian/rfq', $data);
 	}
 
@@ -1139,12 +1139,9 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> $pesan,
 				'status'	=> 1
 			);
-			// history('Create NON PO ' . $no_rfq . ', ' . $category . '/' . $jenis_pembelian);
-		}
+				}
 
-		echo json_encode($Arr_Kembali);
 	}
-
 	public function modal_detail_rfq()
 	{
 		$no_rfq 	= $this->uri->segment(3);
@@ -1197,7 +1194,7 @@ class Metode_pembelian_model extends BF_Model
 					'pesan'		=> 'Save data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Edit RFQ print custom : ' . $data['no_rfq']);
+				// legacy history view removed: Edit RFQ print custom : ' . $data['no_rfq']
 			}
 			echo json_encode($Arr_Data);
 		} else {
@@ -1342,9 +1339,8 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save process success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Update RFQ ' . $no_rfq);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Update RFQ ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	public function cancel_sebagian_rfq()
@@ -1398,9 +1394,8 @@ class Metode_pembelian_model extends BF_Model
 				'status'	=> 1,
 				'no_po'		=> $no_rfq
 			);
-			history('Cancel Sebagian RFQ ' . $no_rfq . '/' . $id_barang . '/' . $no_pr);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Cancel Sebagian RFQ ' . $no_rfq . '/' . $id_barang . '/' . $no_pr, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	public function print_rfq()
@@ -1420,7 +1415,7 @@ class Metode_pembelian_model extends BF_Model
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 		// $okeH  			= $this->session->userdata("ses_username");
 
-		history('Print Request From Quotation ' . $no_rfq);
+		// legacy history view removed: Print Request From Quotation ' . $no_rfq
 
 		print_rfq($Nama_Beda, $no_rfq, $koneksi, $printby);
 	}
@@ -1466,9 +1461,8 @@ class Metode_pembelian_model extends BF_Model
 				'status'	=> 1,
 				'no_po'		=> $no_rfq
 			);
-			history('Delete RFQ ' . $no_rfq);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Delete RFQ ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 
@@ -1495,7 +1489,7 @@ class Metode_pembelian_model extends BF_Model
 			'akses_menu'	=> $Arr_Akses,
 			'data_gudang'	=> $data_gudang
 		);
-		history('View Purchase Order Table Perbandingan');
+		// legacy history view removed: View Purchase Order Table Perbandingan
 		$this->load->view('Pembelian/perbandingan', $data);
 	}
 
@@ -1772,9 +1766,8 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save process success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Pengajuan Purchasing RFQ ' . $no_rfq);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Pengajuan Purchasing RFQ ' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	//==================================================================================================================
@@ -1799,7 +1792,7 @@ class Metode_pembelian_model extends BF_Model
 			'akses_menu'	=> $Arr_Akses,
 			'data_gudang'	=> $data_gudang
 		);
-		history('View Table Pengajuan');
+		// legacy history view removed: View Table Pengajuan
 		$this->load->view('Pembelian/pengajuan', $data);
 	}
 
@@ -2014,7 +2007,7 @@ class Metode_pembelian_model extends BF_Model
 			'printby' => $printby,
 			'no_rfq' => $no_rfq
 		);
-		history('Print Hasil Pemilihan RFQ ' . $no_rfq);
+		// legacy history view removed: Print Hasil Pemilihan RFQ ' . $no_rfq
 		$this->load->view('Print/print_pemilihan_non_material', $data);
 	}
 
@@ -2235,7 +2228,7 @@ class Metode_pembelian_model extends BF_Model
 			'row_group'		=> $data_Group,
 			'akses_menu'	=> $Arr_Akses
 		);
-		history('View purchase order non material');
+		// legacy history view removed: View purchase order non material
 		$this->load->view('Pembelian/purchase_order', $data);
 	}
 
@@ -2491,7 +2484,7 @@ class Metode_pembelian_model extends BF_Model
 			'printby' => $printby,
 			'no_po' => $no_po
 		);
-		history('Print Purchase Order ' . $no_po);
+		// legacy history view removed: Print Purchase Order ' . $no_po
 		$this->load->view('Print/print_po_non_material', $data);
 	}
 
@@ -2511,7 +2504,7 @@ class Metode_pembelian_model extends BF_Model
 			'printby' => $printby,
 			'no_po' => $no_po
 		);
-		history('Print Purchase Order ' . $no_po);
+		// legacy history view removed: Print Purchase Order ' . $no_po
 		$this->load->view('Print/print_po_non_material_new', $data);
 	}
 
@@ -2718,9 +2711,8 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Delete sebagian PO : ' . $no_po);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Delete sebagian PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 	public function delete_sebagian_po_new()
@@ -2879,9 +2871,8 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Delete sebagian PO : ' . $no_po);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Delete sebagian PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 
@@ -3043,9 +3034,8 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Delete semua PO : ' . $no_po . ' / ' . $no_pr_group);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Delete semua PO : ' . $no_po . ' / ' . $no_pr_group, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 		}
-		echo json_encode($Arr_Data);
 	}
 
 
@@ -3078,7 +3068,7 @@ class Metode_pembelian_model extends BF_Model
 			'akses_menu'	=> $Arr_Akses,
 			'tanda'			=> $tanda
 		);
-		history('View Data Approval Pengajuan Non PO');
+		// legacy history view removed: View Data Approval Pengajuan Non PO
 		$this->load->view('Pembelian/approval_non_po', $data);
 	}
 
@@ -3415,10 +3405,9 @@ class Metode_pembelian_model extends BF_Model
 					'status'	=> 1,
 					'approve'	=> $approve
 				);
-				history($tanda . ' pengajuan budget non rutin ' . $code_plan);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', $tanda . ' pengajuan budget non rutin ' . $code_plan, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$controller			= ucfirst(strtolower($this->uri->segment(1))) . '/approval_non_po';
 			$Arr_Akses			= getAcccesmenu($controller);
 			if ($Arr_Akses['read'] != '1') {
@@ -3611,10 +3600,9 @@ class Metode_pembelian_model extends BF_Model
 					'pesan'		=> 'Insert data success. Thanks ...',
 					'status'	=> 1
 				);
-				history('Create PO ' . $no_po . '/' . $valx22['hub_rfq'] . '/' . $valx22['id']);
-			}
-			echo json_encode($Arr_Kembali);
-		} else {
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Create PO ' . $no_po . '/' . $valx22['hub_rfq'] . '/' . $valx22['id'], isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
+	} else {
 			$query 		= "	SELECT 
 								a.id_supplier, 
 								b.nm_supplier 
@@ -3982,8 +3970,7 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> 'Save data success. Thanks ...',
 				'status'	=> 1
 			);
-			history('Edit PO custom TOP : ' . $data['no_po']);
-		}
-		echo json_encode($Arr_Data);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit PO custom TOP : ' . $data['no_po'], isset($data) ? $data : (isset($post) ? $post : null), null, 1);
 	}
+}
 }

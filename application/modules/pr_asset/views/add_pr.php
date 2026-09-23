@@ -1,299 +1,157 @@
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-<form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data">
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title"><?php echo $title; ?></h3>
-			<div class="box-tool pull-right">
+<div class="container-fluid">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+            <h5 class="card-title fw-bold mb-0 text-primary">
+                <i class="fa fa-plus-circle me-2"></i><?= $title; ?>
+            </h5>
+            <a href="<?= site_url('pr_asset'); ?>" class="btn btn-secondary btn-sm">
+                <i class="fa fa-arrow-left me-1"></i> Back to PR List
+            </a>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">Select asset planning item below to request a Purchase Request (PR).</p>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped border align-middle w-100" id="my-grid">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th>Nama Barang</th>
+                            <th width="15%">Department</th>
+                            <th width="15%">Costcenter</th>
+                            <th width="8%">Qty</th>
+                            <th width="13%">Created By</th>
+                            <th width="13%">Created Date</th>
+                            <th width="8%">Option</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-			</div>
-		</div>
-		<div class="box-body table-responsive">
-			<table class="table table-bordered table-striped" id="my-grid" width='100%'>
-				<thead>
-					<tr class='bg-blue'>
-						<th class="text-center" width='5%'>#</th>
-						<th class="text-center">Nama Barang</th>
-						<th class="text-center" width='15%'>Department</th>
-						<th class="text-center" width='8%'>Qty</th>
-						<th class="text-center" width='13%'>Created By</th>
-						<th class="text-center" width='13%'>Created Date</th>
-						<th class="text-center no-sort" width='7%'>Option</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-			<?php
-			echo form_button(array('type' => 'button', 'class' => 'btn btn-md btn-danger', 'style' => 'min-width:100px; float:right; margin: 5px 0px 5px 0px;', 'content' => 'Back', 'id' => 'back')) . ' ';
-			?>
-		</div>
-	</div>
-</form>
-
-<style>
-	.chosen-container-active .chosen-single {
-		border: none;
-		box-shadow: none;
-	}
-
-	.chosen-container-single .chosen-single {
-		height: 34px;
-		border: 1px solid #d2d6de;
-		border-radius: 0px;
-		background: none;
-		box-shadow: none;
-		color: #444;
-		line-height: 32px;
-	}
-
-	.chosen-container-single .chosen-single div {
-		top: 5px;
-	}
-</style>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <script>
-	$(document).ready(function() {
-		DataTables();
+    $(document).ready(function() {
+        DataTables();
 
-		$('.maskM').autoNumeric('init');
+        $(document).on('click', '.look_hide', function() {
+            var idOfParent = $(this).data('id');
+            $('.child-' + idOfParent).toggle('slow');
+        });
 
-		$(document).on('click', '.look_hide', function() {
-			var idOfParent = $(this).data('id');
-			$('.child-' + idOfParent).toggle('slow');
-		});
+        $(document).on('click', '.add_pr', function() {
+            var nomor = $(this).data('id');
+            var qty_rev = $('#qty_rev_' + nomor).val().split(",").join("");
+            var nil_pr = $('#nil_pr_' + nomor).val().split(",").join("");
+            var tgl_butuh = $('#tgl_butuh_' + nomor).val();
+            var code_plan = $('#code_plan_' + nomor).val();
 
-		$(document).on('click', '#back', function(e) {
-			window.location.href = base_url + active_controller + 'pr';
-		});
+            if (qty_rev == '' || qty_rev == '0') {
+                swal({
+                    title: "Error Message!",
+                    text: 'Qty is empty, please input first ...',
+                    type: "warning"
+                });
+                return false;
+            }
 
-		$(document).on('click', '.add_pr', function() {
-			var nomor = $(this).data('id');
-			var qty_rev = $('#qty_rev_' + nomor).val().split(",").join("");
-			var nil_pr = $('#nil_pr_' + nomor).val().split(",").join("");
-			var tgl_butuh = $('#tgl_butuh_' + nomor).val();
-			var code_plan = $('#code_plan_' + nomor).val();
-			var dokumen_pendukung = $('#dokumen_pendukung_' + nomor)[0].files[0];
+            if (nil_pr == '' || nil_pr == '0') {
+                swal({
+                    title: "Error Message!",
+                    text: 'Nilai PR is empty, please input first ...',
+                    type: "warning"
+                });
+                return false;
+            }
 
-			if (!dokumen_pendukung) {
-				swal({
-					type: 'warning',
-					title: 'Warning !',
-					text: 'Dokumen Pendukung tidak boleh kosong !'
-				});
-				return false;
-			}
+            if (tgl_butuh == '') {
+                swal({
+                    title: "Error Message!",
+                    text: 'Date dibutuhkan is empty, please input first ...',
+                    type: "warning"
+                });
+                return false;
+            }
 
-			if (qty_rev == '' || qty_rev == '0') {
-				swal({
-					title: "Error Message!",
-					text: 'Qty is empty, please input first ...',
-					type: "warning"
-				});
-				return false;
-			}
+            swal({
+                title: "Are you sure?",
+                text: "Process PR request for this item?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-success",
+                confirmButtonText: "Yes, Create PR!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: base_url + active_controller + '/add_pr',
+                        type: "POST",
+                        data: {
+                            "code_plan": code_plan,
+                            "qty_rev": qty_rev,
+                            "nil_pr": nil_pr,
+                            "tgl_butuh": tgl_butuh
+                        },
+                        cache: false,
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.status == 1) {
+                                swal({
+                                    title: "Success!",
+                                    text: data.pesan,
+                                    type: "success",
+                                    timer: 3000
+                                });
+                                window.location.href = base_url + 'pr_asset';
+                            } else {
+                                swal({
+                                    title: "Failed!",
+                                    text: data.pesan,
+                                    type: "warning"
+                                });
+                            }
+                        },
+                        error: function() {
+                            swal({
+                                title: "Error!",
+                                text: 'An error occurred during process.',
+                                type: "error"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
 
-			if (nil_pr == '' || nil_pr == '0') {
-				swal({
-					title: "Error Message!",
-					text: 'Nilai PR is empty, please input first ...',
-					type: "warning"
-				});
-				return false;
-			}
-
-			if (tgl_butuh == '') {
-				swal({
-					title: "Error Message!",
-					text: 'Date digunakan is empty, please input first ...',
-					type: "warning"
-				});
-				return false;
-			}
-
-			swal({
-					title: "Are you sure?",
-					text: "You will not be able to process again this data!",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonClass: "btn-danger",
-					confirmButtonText: "Yes, Process it!",
-					cancelButtonText: "No, cancel process!",
-					closeOnConfirm: false,
-					closeOnCancel: false
-				},
-				function(isConfirm) {
-					if (isConfirm) {
-						$.ajax({
-							url: base_url + active_controller + 'add_pr',
-							type: "POST",
-							data: {
-								"code_plan": code_plan,
-								"qty_rev": qty_rev,
-								"nil_pr": nil_pr,
-								"tgl_butuh": tgl_butuh
-							},
-							cache: false,
-							dataType: 'json',
-							success: function(data) {
-								if (data.status == 1) {
-									var formdata = new FormData();
-									var fileInput = $('#dokumen_pendukung_' + nomor)[0];
-
-									formdata.append('id_pr', data.id_pr);
-									formdata.append('dokumen_pendukung', fileInput.files[0]);
-
-									$.ajax({
-										type: 'post',
-										url: siteurl + active_controller + 'upload_dokumen_pendukung',
-										data: formdata,
-										dataType: 'json',
-										contentType: false,
-										processData: false,
-										cache: false,
-										success: function(result2) {
-											if (result2.status == '1') {
-												swal({
-													title: "Save Success!",
-													text: "Data has been saved !",
-													type: "success",
-													timer: 7000,
-													showCancelButton: false,
-													showConfirmButton: false,
-													allowOutsideClick: false
-												}, function(lanjut) {
-													window.location.href = base_url + active_controller + 'add_pr';
-												});
-											} else {
-												swal({
-													title: "Save Failed!",
-													text: "Data has not been saved !",
-													type: "warning",
-													showCancelButton: false,
-													allowOutsideClick: false
-												}, function(lanjut_fail) {
-													$.ajax({
-														type: 'post',
-														url: siteurl + active_controller + 'reset_pr_asset',
-														data: {
-															'id_pr': result2.id_pr
-														},
-														cache: false,
-														success: function(result_rst) {
-
-														}
-													});
-												});
-
-
-											}
-										},
-										error: function(result) {
-											swal({
-												title: "Error Message !",
-												text: 'An Error Occured During Process. Please try again..',
-												type: "warning",
-												timer: 7000,
-												showCancelButton: false,
-												showConfirmButton: false,
-												allowOutsideClick: false
-											});
-										}
-									});
-								} else if (data.status == 0) {
-									swal({
-										title: "Save Failed!",
-										text: data.pesan,
-										type: "warning",
-										showCancelButton: false,
-										allowOutsideClick: false
-									}, function(lanjut_fail) {
-										$.ajax({
-											type: 'post',
-											url: siteurl + active_controller + 'reset_pr_asset',
-											data: {
-												'id_pr': data.id_pr
-											},
-											cache: false,
-											success: function(result_rst) {
-
-											}
-										});
-									});
-								}
-							},
-							error: function() {
-								swal({
-									title: "Error Message !",
-									text: 'An Error Occured During Process. Please try again..',
-									type: "warning",
-									timer: 7000,
-									showCancelButton: false,
-									showConfirmButton: false,
-									allowOutsideClick: false
-								});
-							}
-						});
-
-					} else {
-						swal("Cancelled", "Data can be process again :)", "error");
-						return false;
-					}
-				});
-		});
-
-	});
-
-	function DataTables() {
-		var dataTable = $('#my-grid').DataTable({
-			"serverSide": true,
-			"stateSave": true,
-			"bAutoWidth": true,
-			"destroy": true,
-			"processing": true,
-			"responsive": true,
-			"fixedHeader": {
-				"header": true,
-				"footer": true
-			},
-			"oLanguage": {
-				"sSearch": "<b>Live Search : </b>",
-				"sLengthMenu": "_MENU_ &nbsp;&nbsp;<b>Records Per Page</b>&nbsp;&nbsp;",
-				"sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
-				"sInfoFiltered": "(filtered from _MAX_ total entries)",
-				"sZeroRecords": "No matching records found",
-				"sEmptyTable": "No data available in table",
-				"sLoadingRecords": "Please wait - loading...",
-				"oPaginate": {
-					"sPrevious": "Prev",
-					"sNext": "Next"
-				}
-			},
-			"aaSorting": [
-				[1, "asc"]
-			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
-			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
-				[10, 20, 50, 100, 150],
-				[10, 20, 50, 100, 150]
-			],
-			"ajax": {
-				url: base_url + active_controller + 'server_side_add_pr_asset',
-				type: "post",
-				// data: function(d){
-				// d.tanda = tanda
-				// },
-				cache: false,
-				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-					$("#my-grid_processing").css("display", "none");
-				}
-			}
-		});
-	}
+    function DataTables() {
+        $('#my-grid').DataTable({
+            "serverSide": true,
+            "stateSave": true,
+            "bAutoWidth": true,
+            "destroy": true,
+            "processing": true,
+            "responsive": true,
+            "aaSorting": [[1, "asc"]],
+            "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false,
+            }],
+            "iDisplayLength": 10,
+            "aLengthMenu": [
+                [10, 20, 50, 100],
+                [10, 20, 50, 100]
+            ],
+            "ajax": {
+                url: base_url + active_controller + '/server_side_add_pr_asset',
+                type: "post",
+                cache: false,
+                error: function() {
+                    $("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="8" class="text-center text-danger">No data found in the server</th></tr></tbody>');
+                }
+            }
+        });
+    }
 </script>

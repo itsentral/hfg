@@ -308,6 +308,17 @@
           Please sign in to continue
         </div>
 
+        <?php if (!empty($this->session->flashdata('error'))): ?>
+          <div class="alert alert-danger d-flex align-items-center mb-3" role="alert" style="border-radius: 12px; font-size: 0.9rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fff;">
+            <i class="ti ti-alert-circle me-2" style="font-size: 1.3rem;"></i>
+            <div><?= $this->session->flashdata('error'); ?></div>
+          </div>
+        <?php elseif (!empty(Template::message())): ?>
+          <div class="mb-3">
+            <?= Template::message(); ?>
+          </div>
+        <?php endif; ?>
+
         <?= form_open($this->uri->uri_string(), [
           'id' => 'frm_login',
           'name' => 'frm_login',

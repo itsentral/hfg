@@ -356,9 +356,11 @@ class Pengajuan_mutasi extends Admin_Controller
         $result = $this->pengajuan_mutasi_model->submit_mutation($id, $this->username);
 
         if ($result) {
+            write_log('Pengajuan Mutasi', 'Submit Mutasi', 'Mutation submitted successfully: ' . $id, array('id' => $id), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation submitted successfully.']);
         }
 
+        write_log('Pengajuan Mutasi', 'Submit Mutasi', 'Failed to submit mutation: ' . $id, array('id' => $id), null, 0);
         return $this->_json(['status' => 0, 'message' => 'Failed to submit mutation.']);
     }
 
@@ -377,9 +379,11 @@ class Pengajuan_mutasi extends Admin_Controller
         $result = $this->pengajuan_mutasi_model->cancel_mutation($id, $this->username, $reject_reason);
 
         if ($result) {
+            write_log('Pengajuan Mutasi', 'Cancel Mutasi', 'Mutation cancelled successfully: ' . $id . ' (' . $reject_reason . ')', array('id' => $id, 'reason' => $reject_reason), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation cancelled successfully.']);
         }
 
+        write_log('Pengajuan Mutasi', 'Cancel Mutasi', 'Failed to cancel mutation: ' . $id, array('id' => $id), null, 0);
         return $this->_json(['status' => 0, 'message' => 'Failed to cancel mutation or status has changed.']);
     }
 

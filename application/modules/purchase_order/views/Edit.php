@@ -560,16 +560,29 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</thead>
 							<tbody class="list_tbody_top">
 								<?php
+								// Mapping label & warna badge untuk status_bayar
+								$status_bayar_map = [
+									'receive_invoice' => ['label' => 'Receive Invoice', 'class' => 'bg-info text-dark'],
+									'request_payment' => ['label' => 'Request Payment', 'class' => 'bg-warning text-dark'],
+									'payment'         => ['label' => 'Payment', 'class' => 'bg-success'],
+								];
+
 								$no = 1;
 								foreach ($results['list_top'] as $item_top) {
 									$checked_lc = ($item_top->tipe_bayar == 'lc') ? 'checked' : '';
 									$checked_tt = ($item_top->tipe_bayar == 'tt') ? 'checked' : '';
 									$display_btn_lc = ($item_top->tipe_bayar == 'lc') ? '' : 'display:none;';
 
-									echo '<tr class="top_' . $no . '">';
+									// Baris terkunci jika status_bayar sudah terisi (bukan NULL/kosong)
+									$status_bayar = isset($item_top->status_bayar) ? $item_top->status_bayar : null;
+									$is_locked = !empty($status_bayar);
+									$disabled_attr = $is_locked ? ' disabled' : '';
+									$tr_lock_class = $is_locked ? ' top-locked' : '';
+
+									echo '<tr class="top_' . $no . $tr_lock_class . '">';
 
 									echo '<td>';
-									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
+									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm"' . $disabled_attr . '>';
 									foreach ($results['list_group_top'] as $item_group_top) {
 										$selected = '';
 										if ($item_group_top->id == $item_top->group_top) {
@@ -581,29 +594,29 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '</td>';
 
 									echo '<td>';
-									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
+									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '"' . $disabled_attr . '>';
 									echo '</td>';
 
 									echo '<td class="text-right">';
-									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '"' . $disabled_attr . '>';
 									echo '</td>';
 
 									echo '<td>';
-									echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm">' . $item_top->keterangan . '</textarea>';
+									echo '<textarea name="keterangan_top_' . $no . '" class="form-control form-control-sm"' . $disabled_attr . '>' . $item_top->keterangan . '</textarea>';
 									echo '</td>';
 
 									echo '<td>';
 									echo '<div class="form-check">';
-									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="lc_' . $no . '" name="tipe_bayar_' . $no . '" value="lc" ' . $checked_lc . ' data-no="' . $no . '"' . $disabled_attr . '>';
 									echo '<label class="form-check-label" for="lc_' . $no . '">LC</label>';
 									echo '</div>';
 									echo '<div class="form-check">';
-									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '">';
+									echo '<input class="form-check-input check_bayar" type="radio" id="tt_' . $no . '" name="tipe_bayar_' . $no . '" value="tt" ' . $checked_tt . ' data-no="' . $no . '"' . $disabled_attr . '>';
 									echo '<label class="form-check-label" for="tt_' . $no . '">TT</label>';
 									echo '</div>';
 
 									// Tombol untuk buka modal LC
-									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"><i class="fas fa-eye"></i> Detail LC</button>';
+									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"' . $disabled_attr . '><i class="fas fa-eye"></i> Detail LC</button>';
 
 									// --- INPUT HIDDEN UNTUK DATA LC (DARI TABEL tr_po_detail_lc) ---
 									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
@@ -621,11 +634,19 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '</td>';
 
 									echo '<td class="">';
-									echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $item_top->jatuh_tempo . '">';
+									echo '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' . $no . '" value="' . $item_top->jatuh_tempo . '"' . $disabled_attr . '>';
 									echo '</td>';
 
 									echo '<td class="text-center">';
-									echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
+									if ($is_locked) {
+										// Sudah ada status pembayaran -> tampilkan badge, tombol delete disembunyikan
+										$badge = isset($status_bayar_map[$status_bayar])
+											? $status_bayar_map[$status_bayar]
+											: ['label' => ucwords(str_replace('_', ' ', $status_bayar)), 'class' => 'bg-secondary'];
+										echo '<span class="badge ' . $badge['class'] . '">' . $badge['label'] . '</span>';
+									} else {
+										echo '<button type="button" class="btn btn-sm btn-danger del_top" data-top_no="' . $no . '"><i class="fa fa-trash"></i></button>';
+									}
 									echo '</td>';
 
 									echo '</tr>';
@@ -762,6 +783,9 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			mDec: 4,
 			vMin: 0
 		});
+
+		// Kunci baris Group TOP yang sudah punya status_bayar (autoNumeric bisa mengabaikan atribut disabled dari HTML)
+		$('tr.top-locked').find('input, select, textarea').prop('disabled', true).prop('readonly', true);
 
 		var max_fields2 = 10; //maximum input boxes allowed
 		var wrapper2 = $(".input_fields_wrap2"); //Fields wrapper

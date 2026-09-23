@@ -139,9 +139,12 @@ class Gl_interface extends Admin_Controller
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
+            write_log('GL Interface', 'Post Jurnal', 'Posting failed for ID: ' . $id, array('id' => $id), null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Posting failed (trans_status false)']);
             return;
         }
+
+        write_log('GL Interface', 'Post Jurnal', 'Posting successful for ID: ' . $id, array('id' => $id), null, 1);
 
         // Ambil nomor yang baru di-generate
         $updated = $this->Gl_interface_model->get_header($id);
