@@ -674,6 +674,14 @@ class Metode_pembelian_model extends BF_Model
 			$total_item = count($get_list_barang);
 			if ($total_item == 0) $total_item = 1; // hindari rowspan 0
 
+			// Jika PR tidak punya detail barang (mis. detail belum di-approve),
+			// tetap tampilkan 1 baris placeholder agar PR tidak hilang dari listing.
+			if (empty($get_list_barang)) {
+				$get_list_barang = array(
+					array('nm_barang' => '-', 'qty' => 0, 'nm_lain' => '')
+				);
+			}
+
 			// Warna badge category
 			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
@@ -930,8 +938,13 @@ class Metode_pembelian_model extends BF_Model
 					LEFT JOIN users b ON b.id_user = a.created_by
 				WHERE
 						a.metode_pembelian IS NULL AND
-						a.app_status_3 = "Y" AND 
-						a.close_pr IS NULL
+						a.close_pr IS NULL AND
+						EXISTS (
+							SELECT 1 FROM tran_pr_detail d
+							WHERE d.no_pr = a.no_pr
+								AND d.category = "asset"
+								AND d.app_status = "Y"
+						)
 						AND (
 							a.no_pr LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR
 							a.created_date LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR
@@ -1045,6 +1058,12 @@ class Metode_pembelian_model extends BF_Model
 				WHERE
 					a.metode_pembelian IS NULL AND
 					a.close_pr IS NULL AND
+					EXISTS (
+						SELECT 1 FROM tran_pr_detail d
+						WHERE d.no_pr = a.no_pr
+							AND d.category = "asset"
+							AND d.app_status = "Y"
+					) AND
 					(
 						a.no_pr LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR
 						a.created_date LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR
