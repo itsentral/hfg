@@ -1158,8 +1158,11 @@ class Metode_pembelian_model extends BF_Model
 				'pesan'		=> $pesan,
 				'status'	=> 1
 			);
-				}
+		}
 
+		$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode($Arr_Kembali));
 	}
 	public function modal_detail_rfq()
 	{
