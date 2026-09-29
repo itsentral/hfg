@@ -1175,7 +1175,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO
@@ -1436,7 +1436,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int) round($subtotal),
 				'gl_selisih_kurs'       => 0,
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per item ros_*
@@ -1730,7 +1730,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO
@@ -2261,7 +2261,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO
