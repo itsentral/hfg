@@ -586,12 +586,79 @@
                             }
 
                             if (d.data_json) {
-                                html += `
-                                <div class="col-12">
-                                    <label class="fw-bold small text-muted"><i class="fa fa-code me-1"></i>Payload Data (JSON):</label>
-                                    <pre class="code-viewer"><code>${escapeHtml(d.data_json)}</code></pre>
-                                </div>
-                            `;
+                                let parsedData = null;
+                                try {
+                                    parsedData = JSON.parse(d.data_json);
+                                } catch (e) {
+                                    parsedData = null;
+                                }
+
+                                if (parsedData && parsedData.type === 'diff' && parsedData.changes) {
+                                    const changeKeys = Object.keys(parsedData.changes);
+                                    html += `
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <label class="fw-bold small text-muted mb-0"><i class="fa fa-exchange me-1 text-primary"></i>Perubahan Data (Before & After):</label>
+                                            <span class="badge bg-primary rounded-pill">${parsedData.total_changes || changeKeys.length} Field Berubah</span>
+                                        </div>
+                                    `;
+
+                                    if (changeKeys.length > 0) {
+                                        html += `
+                                        <div class="table-responsive rounded-3 border mb-3">
+                                            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width: 25%;">Nama Field / Kolom</th>
+                                                        <th style="width: 37.5%;" class="text-danger"><i class="fa fa-arrow-down me-1"></i>Nilai Sebelum (Before)</th>
+                                                        <th style="width: 37.5%;" class="text-success"><i class="fa fa-arrow-up me-1"></i>Nilai Sesudah (After)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                        `;
+
+                                        changeKeys.forEach(key => {
+                                            const item = parsedData.changes[key];
+                                            const oldVal = (item.old === null || item.old === '') ? '<span class="text-muted fst-italic">[KOSONG/NULL]</span>' : escapeHtml(String(item.old));
+                                            const newVal = (item.new === null || item.new === '') ? '<span class="text-muted fst-italic">[KOSONG/NULL]</span>' : escapeHtml(String(item.new));
+
+                                            html += `
+                                                <tr>
+                                                    <td class="fw-semibold text-secondary"><code>${escapeHtml(key)}</code></td>
+                                                    <td class="bg-danger-subtle text-danger text-break">${oldVal}</td>
+                                                    <td class="bg-success-subtle text-success fw-bold text-break">${newVal}</td>
+                                                </tr>
+                                            `;
+                                        });
+
+                                        html += `
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        `;
+                                    } else {
+                                        html += `
+                                        <div class="alert alert-info py-2 px-3 mb-3 small">
+                                            <i class="fa fa-info-circle me-1"></i>Tidak ada nilai kolom yang berubah (nilai yang disubmit sama dengan data sebelumnya).
+                                        </div>
+                                        `;
+                                    }
+
+                                    html += `
+                                        <details class="mb-2">
+                                            <summary class="small text-muted fw-semibold" style="cursor: pointer;">Lihat Raw Payload Data (JSON)</summary>
+                                            <pre class="code-viewer mt-2"><code>${escapeHtml(d.data_json)}</code></pre>
+                                        </details>
+                                    </div>
+                                    `;
+                                } else {
+                                    html += `
+                                    <div class="col-12">
+                                        <label class="fw-bold small text-muted"><i class="fa fa-code me-1"></i>Payload Data (JSON):</label>
+                                        <pre class="code-viewer"><code>${escapeHtml(d.data_json)}</code></pre>
+                                    </div>
+                                    `;
+                                }
                             }
 
                             html += '</div>';

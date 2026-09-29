@@ -107,10 +107,14 @@ class Price_ref_raw_material extends Admin_Controller
         ];
       }
 
+      $oldData = (!empty($id)) ? $this->db->get_where('new_inventory_4', ['id' => $id])->row_array() : null;
+
       $this->db->trans_start();
       $this->db->where('id', $id);
       $this->db->update('new_inventory_4', $dataProcess);
       $this->db->trans_complete();
+
+      $logPayload = (!empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
@@ -118,14 +122,14 @@ class Price_ref_raw_material extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Price Ref Raw Material', 'Update', 'Gagal update price ref raw material: ' . $code_lv4, $dataProcess, null, 0);
+        write_log('Price Ref Raw Material', 'Update', 'Gagal update price ref raw material: ' . $code_lv4, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        write_log('Price Ref Raw Material', 'Update', 'Update price ref raw material: ' . $code_lv4, $dataProcess, null, 1);
+        write_log('Price Ref Raw Material', 'Update', 'Update price ref raw material: ' . $code_lv4, $logPayload, null, 1);
       }
       echo json_encode($status);
     } else {

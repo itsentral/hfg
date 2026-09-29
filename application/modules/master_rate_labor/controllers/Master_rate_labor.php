@@ -45,14 +45,21 @@ class Master_rate_labor extends Admin_Controller
             return;
         }
 
+        $oldData = $this->db->get_where('ms_rate_labor', ['id' => $id])->row_array();
+
         $user_id = $this->auth->nama() ?: 'admin';
         $result  = $this->Master_rate_labor_model->save_rate_labor($id, $rate, $remark, $user_id);
 
+        $logPayload = (!empty($oldData)) ? [
+            'old' => $oldData,
+            'new' => ['rate' => $rate, 'remark' => $remark]
+        ] : ['id' => $id, 'rate' => $rate, 'remark' => $remark];
+
         if ($result) {
-            write_log('Master Rate Labor', 'Edit', 'Update tarif labor ID: ' . $id . ' menjadi ' . $rate, ['id' => $id, 'rate' => $rate, 'remark' => $remark], null, 1);
+            write_log('Master Rate Labor', 'Edit', 'Update tarif labor ID: ' . $id . ' menjadi ' . $rate, $logPayload, null, 1);
             echo json_encode(['status' => 1, 'pesan' => 'Tarif labor berhasil diperbarui!']);
         } else {
-            write_log('Master Rate Labor', 'Edit', 'Gagal update tarif labor ID: ' . $id, ['id' => $id, 'rate' => $rate], null, 0);
+            write_log('Master Rate Labor', 'Edit', 'Gagal update tarif labor ID: ' . $id, $logPayload, null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Gagal memperbarui tarif labor']);
         }
     }

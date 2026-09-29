@@ -60,6 +60,8 @@ class Unit extends Admin_Controller
 			// print_r($ArrHeader);
 			// exit;
 
+			$oldData = (!empty($id)) ? $this->db->get_where('ms_satuan', ['id' => $id])->row_array() : null;
+
 			$this->db->trans_start();
 			if (empty($id)) {
 				$this->db->insert('ms_satuan', $ArrHeader);
@@ -70,20 +72,22 @@ class Unit extends Admin_Controller
 			}
 			$this->db->trans_complete();
 
+			$logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $ArrHeader] : $ArrHeader;
+
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
 				$Arr_Data	= array(
 					'pesan'		=> 'Process Failed !',
 					'status'	=> 0
 				);
-				write_log('Unit', $field_hist, 'Gagal ' . strtolower($field_hist) . ' unit: ' . $code, $ArrHeader, null, 0);
+				write_log('Unit', $field_hist, 'Gagal ' . strtolower($field_hist) . ' unit: ' . $code, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
 					'pesan'		=> 'Process Success !',
 					'status'	=> 1
 				);
-				write_log('Unit', $field_hist, $field_hist . ' unit: ' . $code . ' (' . $nama . ')', $ArrHeader, null, 1);
+				write_log('Unit', $field_hist, $field_hist . ' unit: ' . $code . ' (' . $nama . ')', $logPayload, null, 1);
 			}
 
 			echo json_encode($Arr_Data);

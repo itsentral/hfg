@@ -353,10 +353,12 @@ class Pengajuan_mutasi extends Admin_Controller
     {
         $this->auth->restrict($this->managePermission);
 
+        $old_mutation = $this->db->get_where('tr_material_mutation', array('id' => $id))->row_array();
         $result = $this->pengajuan_mutasi_model->submit_mutation($id, $this->username);
 
         if ($result) {
-            write_log('Pengajuan Mutasi', 'Submit Mutasi', 'Mutation submitted successfully: ' . $id, array('id' => $id), null, 1);
+            $new_mutation = $old_mutation ? array_merge($old_mutation, array('status' => 1)) : array('id' => $id, 'status' => 1);
+            write_log('Pengajuan Mutasi', 'Submit Mutasi', 'Mutation submitted successfully: ' . $id, array('old' => $old_mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation submitted successfully.']);
         }
 
@@ -376,10 +378,12 @@ class Pengajuan_mutasi extends Admin_Controller
             return $this->_json(['status' => 0, 'message' => 'Cancellation reason is required.']);
         }
 
+        $old_mutation = $this->db->get_where('tr_material_mutation', array('id' => $id))->row_array();
         $result = $this->pengajuan_mutasi_model->cancel_mutation($id, $this->username, $reject_reason);
 
         if ($result) {
-            write_log('Pengajuan Mutasi', 'Cancel Mutasi', 'Mutation cancelled successfully: ' . $id . ' (' . $reject_reason . ')', array('id' => $id, 'reason' => $reject_reason), null, 1);
+            $new_mutation = $old_mutation ? array_merge($old_mutation, array('status' => 5, 'reject_reason' => $reject_reason)) : array('id' => $id, 'status' => 5, 'reason' => $reject_reason);
+            write_log('Pengajuan Mutasi', 'Cancel Mutasi', 'Mutation cancelled successfully: ' . $id . ' (' . $reject_reason . ')', array('old' => $old_mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation cancelled successfully.']);
         }
 

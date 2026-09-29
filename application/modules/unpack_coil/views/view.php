@@ -82,6 +82,8 @@
                             <th>Babycoil</th>
                             <th class="actual-head">Net weight per Roll (Actual)</th>
                             <th class="actual-head">Gross Weight per Roll (Actual)</th>
+                            <th class="table-info">Kulit (kg)</th>
+                            <th class="table-info">Clamp / Ring (kg)</th>
                             <th class="pl-head">Net weight per Roll (PL)</th>
                             <th class="pl-head">Gross Weight per Roll (PL)</th>
                         </tr>
@@ -97,6 +99,8 @@
                                     <td><?= htmlspecialchars($b['babycoil_code']) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['net_weight_actual'], 2) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['gross_weight_actual'], 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) (isset($b['kulit']) ? $b['kulit'] : 0), 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) (isset($b['clamp_ring']) ? $b['clamp_ring'] : 0), 2) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['net_weight_pl'], 2) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['gross_weight_pl'], 2) ?></td>
                                 </tr>
@@ -106,8 +110,18 @@
                     <tfoot>
                         <tr class="fw-bold table-light">
                             <td colspan="3" class="text-end">Total</td>
+                            <?php
+                            $sum_kulit = 0;
+                            $sum_clamp = 0;
+                            foreach ($m['babies'] as $b) {
+                                $sum_kulit += (float) (isset($b['kulit']) ? $b['kulit'] : 0);
+                                $sum_clamp += (float) (isset($b['clamp_ring']) ? $b['clamp_ring'] : 0);
+                            }
+                            ?>
                             <td class="text-end"><?= number_format((float) $m['net_weight_actual'], 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['gross_weight_actual'], 2) ?></td>
+                            <td class="text-end"><?= number_format($sum_kulit, 2) ?></td>
+                            <td class="text-end"><?= number_format($sum_clamp, 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['net_weight_pl'], 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['gross_weight_pl'], 2) ?></td>
                         </tr>

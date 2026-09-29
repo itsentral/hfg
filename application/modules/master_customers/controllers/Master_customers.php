@@ -184,6 +184,8 @@ class Master_customers extends Admin_Controller
 			'created_by' => $this->auth->user_id()
 		];
 
+		$oldData = ($isUpdate && !empty($code)) ? $this->db->get_where('master_customers', ['id_customer' => $code])->row_array() : null;
+		$oldPic  = ($isUpdate && !empty($code)) ? $this->db->get_where('child_customer_pic', ['id_customer' => $code])->result_array() : [];
 		$this->db->trans_begin();
 
 		if ($isUpdate) {
@@ -229,13 +231,31 @@ class Master_customers extends Admin_Controller
 			$this->db->insert('child_customer_rate', $data);
 		}
 
+		$detail_changes = [];
+		if ($isUpdate && !empty($oldData)) {
+			// Bandingkan PIC customer lama vs baru
+			$newPic = isset($post['data1']) && is_array($post['data1']) ? $post['data1'] : [];
+			if (count($oldPic) !== count($newPic)) {
+				$detail_changes['Daftar PIC Customer'] = [
+					'old' => count($oldPic) . ' PIC terdaftar',
+					'new' => count($newPic) . ' PIC terdaftar'
+				];
+			}
+		}
+
+		$logPayload = ($isUpdate && !empty($oldData)) ? [
+			'old'            => $oldData,
+			'new'            => $header,
+			'detail_changes' => $detail_changes
+		] : $header;
+
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
-			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', 'Gagal ' . ($isUpdate ? 'update' : 'tambah') . ' customer: ' . $code, $header, null, 0);
+			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', 'Gagal ' . ($isUpdate ? 'update' : 'tambah') . ' customer: ' . $code, $logPayload, null, 0);
 			echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan data.']);
 		} else {
 			$this->db->trans_commit();
-			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', ($isUpdate ? 'Update' : 'Tambah') . ' customer: ' . $code . ' (' . $post['name_customer'] . ')', $header, null, 1);
+			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', ($isUpdate ? 'Update' : 'Tambah') . ' customer: ' . $code . ' (' . $post['name_customer'] . ')', $logPayload, null, 1);
 			echo json_encode(['status' => 1, 'pesan' => $isUpdate ? 'Berhasil update.' : 'Berhasil tambah data.']);
 		}
 	}

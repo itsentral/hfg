@@ -249,7 +249,7 @@ class Unpack_coil_model extends BF_Model
             ->delete('warehouse_stock_coil');
     }
 
-    public function insert_baby_stock_coil($induk, $babycoil_code, $no_coil, $net, $gross, $costbook, $unpack_no)
+    public function insert_baby_stock_coil($induk, $babycoil_code, $no_coil, $net, $gross, $costbook, $unpack_no, $kulit = 0, $clamp_ring = 0)
     {
         $this->db->insert('warehouse_stock_coil', array(
             'id_material'    => $induk['id_material'],
@@ -259,6 +259,8 @@ class Unpack_coil_model extends BF_Model
             'trade_name'     => isset($induk['trade_name']) ? $induk['trade_name'] : null,
             'gross_weight'   => $gross,
             'net_weight'     => $net,
+            'kulit'          => $kulit,
+            'clamp_ring'     => $clamp_ring,
             'length'         => isset($induk['length']) ? $induk['length'] : 0,
             'id_gudang'      => $induk['id_gudang'],
             'kd_gudang'      => $induk['kd_gudang'],

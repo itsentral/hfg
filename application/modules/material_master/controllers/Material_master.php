@@ -176,6 +176,12 @@ class Material_master extends Admin_Controller
         'update_date' => $this->datetime
       ];
 
+      // Ambil data lama sebelum proses update untuk audit log Before-After
+      $oldData = null;
+      if (!empty($id)) {
+        $oldData = $this->db->get_where('new_inventory_4', ['id' => $id])->row_array();
+      }
+
       $this->db->trans_start();
       if (empty($id)) {
         $dataProcess['status'] = !empty($status) ? $status : 1;
@@ -187,20 +193,23 @@ class Material_master extends Admin_Controller
       }
       $this->db->trans_complete();
 
+      // Siapkan payload log (jika update, sertakan data old & new)
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $status  = array(
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Material Master', $label, 'Gagal ' . strtolower($label) . ' material master: ' . $code_lv4, $dataProcess, null, 0);
+        write_log('Material Master', $label, 'Gagal ' . strtolower($label) . ' material master: ' . $code_lv4, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        write_log('Material Master', $label, $label . ' material master: ' . $code_lv4 . ' (' . $nama . ')', $dataProcess, null, 1);
+        write_log('Material Master', $label, $label . ' material master: ' . $code_lv4 . ' (' . $nama . ')', $logPayload, null, 1);
       }
       echo json_encode($status);
     } else {

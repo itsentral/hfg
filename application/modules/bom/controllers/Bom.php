@@ -135,14 +135,91 @@ class Bom extends Admin_Controller
             redirect('bom/add');
         }
 
+        // Ambil data lama jika ada (untuk mendeteksi Edit vs Add dan menghitung diff)
+        $existing = $this->Bom_model->get_bom_by_produk($id_produk);
+        $oldHeader = $existing ? (array) $existing : null;
+        $oldDetails = $existing ? $this->Bom_model->get_bom_details($existing->id) : [];
+
         $result = $this->Bom_model->save_bom($header, $details);
 
         if ($result) {
-            write_log('BOM', 'Save', 'Simpan BOM untuk produk: ' . $nm_produk . ' (ID Produk: ' . $id_produk . ')', ['header' => $header, 'total_materials' => count($details)], null, 1);
+            if ($existing) {
+                // Mode Update: Hitung perubahan Header & Detail Material
+                $detail_changes = [];
+
+                // Index old detail by id_material
+                $oldDetailMap = [];
+                foreach ($oldDetails as $od) {
+                    $oldDetailMap[$od->id_material] = (array) $od;
+                }
+
+                $newDetailMap = [];
+                foreach ($details as $nd) {
+                    $newDetailMap[$nd['id_material']] = $nd;
+                }
+
+                // Cek item yang diubah atau baru ditambahkan
+                foreach ($newDetailMap as $idMat => $nItem) {
+                    $matName = !empty($nItem['nm_material']) ? $nItem['nm_material'] : $idMat;
+                    if (isset($oldDetailMap[$idMat])) {
+                        $oItem = $oldDetailMap[$idMat];
+                        // Cek Qty
+                        $qtyOld = (float) $oItem['qty'];
+                        $qtyNew = (float) $nItem['qty'];
+                        if (abs($qtyOld - $qtyNew) > 0.0000001) {
+                            $detail_changes["Material [$matName] - Qty"] = [
+                                'old' => $oItem['qty'],
+                                'new' => $nItem['qty']
+                            ];
+                        }
+                        // Cek Unit / Satuan
+                        if (trim((string)($oItem['nm_unit'] ?? '')) !== trim((string)($nItem['nm_unit'] ?? ''))) {
+                            $detail_changes["Material [$matName] - Satuan"] = [
+                                'old' => $oItem['nm_unit'] ?? '-',
+                                'new' => $nItem['nm_unit'] ?? '-'
+                            ];
+                        }
+                        // Cek Keterangan
+                        if (trim((string)($oItem['keterangan'] ?? '')) !== trim((string)($nItem['keterangan'] ?? ''))) {
+                            $detail_changes["Material [$matName] - Keterangan"] = [
+                                'old' => $oItem['keterangan'] ?? '-',
+                                'new' => $nItem['keterangan'] ?? '-'
+                            ];
+                        }
+                    } else {
+                        $detail_changes["Material [$matName] (Ditambahkan)"] = [
+                            'old' => '-',
+                            'new' => 'Qty: ' . $nItem['qty'] . ' ' . ($nItem['nm_unit'] ?? '')
+                        ];
+                    }
+                }
+
+                // Cek item yang dihapus
+                foreach ($oldDetailMap as $idMat => $oItem) {
+                    if (!isset($newDetailMap[$idMat])) {
+                        $matName = !empty($oItem['nm_material']) ? $oItem['nm_material'] : $idMat;
+                        $detail_changes["Material [$matName] (Dihapus)"] = [
+                            'old' => 'Qty: ' . $oItem['qty'] . ' ' . ($oItem['nm_unit'] ?? ''),
+                            'new' => '-'
+                        ];
+                    }
+                }
+
+                $logPayload = [
+                    'old'            => $oldHeader,
+                    'new'            => array_merge($oldHeader, $header),
+                    'detail_changes' => $detail_changes
+                ];
+
+                write_log('BOM', 'Edit', 'Update BOM produk: ' . $nm_produk . ' (ID: ' . $id_produk . ')', $logPayload, null, 1);
+            } else {
+                write_log('BOM', 'Add', 'Tambah BOM baru untuk produk: ' . $nm_produk . ' (ID: ' . $id_produk . ')', ['header' => $header, 'total_materials' => count($details)], null, 1);
+            }
+
             $this->session->set_flashdata('success', 'BOM berhasil disimpan');
             redirect('bom/view/' . $result);
         } else {
-            write_log('BOM', 'Save', 'Gagal simpan BOM untuk produk: ' . $nm_produk, ['header' => $header], null, 0);
+            write_log('BOM', $existing ? 'Edit' : 'Add', 'Gagal simpan BOM untuk produk: ' . $nm_produk, ['header' => $header], null, 0);
             $this->session->set_flashdata('error', 'Gagal menyimpan BOM');
             redirect('bom/add');
         }

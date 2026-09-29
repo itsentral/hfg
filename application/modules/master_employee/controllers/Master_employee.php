@@ -142,6 +142,8 @@ class Master_employee extends Admin_Controller
 
 			$ArrHeader = array_merge($ArrHeader1, $ArrHeader2);
 
+			$oldData = (!empty($id)) ? $this->db->get_where('employee', ['id' => $id])->row_array() : null;
+
 			$this->db->trans_start();
 			if (empty($id)) {
 				$this->db->insert('employee', $ArrHeader);
@@ -152,20 +154,22 @@ class Master_employee extends Admin_Controller
 			}
 			$this->db->trans_complete();
 
+			$logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $ArrHeader] : $ArrHeader;
+
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
 				$Arr_Kembali	= array(
 					'pesan'		=> 'Process data failed. Please try again later ...',
 					'status'	=> 2
 				);
-				write_log('Master Employee', $tandax, 'Gagal ' . strtolower($tandax) . ' employee: ' . $nik, $ArrHeader, null, 0);
+				write_log('Master Employee', $tandax, 'Gagal ' . strtolower($tandax) . ' employee: ' . $nik, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(
 					'pesan'		=> 'Process data Success. Thank you & have a nice day ...',
 					'status'	=> 1
 				);
-				write_log('Master Employee', $tandax, $tandax . ' employee: ' . $nik . ' (' . $nama . ')', $ArrHeader, null, 1);
+				write_log('Master Employee', $tandax, $tandax . ' employee: ' . $nik . ' (' . $nama . ')', $logPayload, null, 1);
 			}
 			echo json_encode($Arr_Kembali);
 		} else {

@@ -490,9 +490,19 @@ class Approval_po extends Admin_Controller
 
     $code = $this->Pr_model->generate_code($post['tanggal']);
 
+    $oldPo = $this->db->get_where('tr_purchase_order', ['no_po' => $post['no_po']])->row_array();
+    $no_surat_disp = (!empty($oldPo['no_surat'])) ? $oldPo['no_surat'] : $post['no_po'];
+
     $this->db->trans_begin();
 
     $this->db->update('tr_purchase_order', ['status' => 2], ['no_po' => $post['no_po']]);
+
+    $logPayload = (!empty($oldPo)) ? [
+      'no_po'    => $post['no_po'],
+      'no_surat' => $no_surat_disp,
+      'old'      => ['status' => $oldPo['status']],
+      'new'      => ['status' => 2]
+    ] : $post;
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
@@ -501,7 +511,7 @@ class Approval_po extends Admin_Controller
         'code' => '0',
         'status'  => 0
       );
-      write_log('Approval PO', 'Approve PO', 'Approved PO process failed: ' . $post['no_po'], $post, null, 0);
+      write_log('Approval PO', 'Approve PO', 'Approved PO process failed: ' . $no_surat_disp, $logPayload, null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
@@ -509,7 +519,7 @@ class Approval_po extends Admin_Controller
         'code' => $code,
         'status'  => 1
       );
-      write_log('Approval PO', 'Approve PO', 'PO has been Approved: ' . $post['no_po'], $post, null, 1);
+      write_log('Approval PO', 'Approve PO', 'PO has been Approved: ' . $no_surat_disp, $logPayload, null, 1);
     }
 
     echo json_encode($status);
@@ -522,9 +532,19 @@ class Approval_po extends Admin_Controller
 
     $code = $this->Pr_model->generate_code($post['tanggal']);
 
+    $oldPo = $this->db->get_where('tr_purchase_order', ['no_po' => $post['no_po']])->row_array();
+    $no_surat_disp = (!empty($oldPo['no_surat'])) ? $oldPo['no_surat'] : $post['no_po'];
+
     $this->db->trans_begin();
 
     $this->db->update('tr_purchase_order', ['status' => 3, 'reject_reason' => $post['reject_reason']], ['no_po' => $post['no_po']]);
+
+    $logPayload = (!empty($oldPo)) ? [
+      'no_po'    => $post['no_po'],
+      'no_surat' => $no_surat_disp,
+      'old'      => ['status' => $oldPo['status'], 'reject_reason' => $oldPo['reject_reason'] ?? ''],
+      'new'      => ['status' => 3, 'reject_reason' => $post['reject_reason']]
+    ] : $post;
 
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
@@ -533,7 +553,7 @@ class Approval_po extends Admin_Controller
         'code' => '0',
         'status'  => 0
       );
-      write_log('Approval PO', 'Reject PO', 'Reject PO process failed: ' . $post['no_po'], $post, null, 0);
+      write_log('Approval PO', 'Reject PO', 'Reject PO process failed: ' . $no_surat_disp, $logPayload, null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
@@ -541,7 +561,7 @@ class Approval_po extends Admin_Controller
         'code' => $code,
         'status'  => 1
       );
-      write_log('Approval PO', 'Reject PO', 'PO has been Rejected: ' . $post['no_po'], $post, null, 1);
+      write_log('Approval PO', 'Reject PO', 'PO has been Rejected: ' . $no_surat_disp, $logPayload, null, 1);
     }
 
     echo json_encode($status);

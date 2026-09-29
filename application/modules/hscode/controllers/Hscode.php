@@ -235,21 +235,30 @@ class Hscode extends Admin_Controller
             return;
         }
 
-        $this->db->trans_begin();
+        $oldRow = $this->db->get_where('hscode', ['id' => $id])->row_array();
 
-        // $oldData = $this->db->get_where('hscode', ['id' => $id])->row();
+        $this->db->trans_begin();
 
         $this->db->set('kuota_internal', 'kuota_internal + ' . (float)$tambah_kuota, FALSE);
         $this->db->where('id', $id);
         $this->db->update('hscode');
 
+        $logPayload = ['id' => $id, 'tambah_kuota' => $tambah_kuota];
+        if (!empty($oldRow)) {
+            $newVal = (float)$oldRow['kuota_internal'] + (float)$tambah_kuota;
+            $logPayload = [
+                'old' => ['kuota_internal' => $oldRow['kuota_internal']],
+                'new' => ['kuota_internal' => $newVal]
+            ];
+        }
+
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            write_log('Hscode', 'Update Kuota', 'Gagal tambah kuota HS ID: ' . $id, ['id' => $id, 'tambah_kuota' => $tambah_kuota], null, 0);
+            write_log('Hscode', 'Update Kuota', 'Gagal tambah kuota HS ID: ' . $id, $logPayload, null, 0);
             echo json_encode(['status' => 0, 'pesan' => 'Gagal mengupdate kuota']);
         } else {
             $this->db->trans_commit();
-            write_log('Hscode', 'Update Kuota', 'Tambah kuota HS ID: ' . $id . ' sebesar ' . $tambah_kuota, ['id' => $id, 'tambah_kuota' => $tambah_kuota], null, 1);
+            write_log('Hscode', 'Update Kuota', 'Tambah kuota HS ID: ' . $id . ' sebesar ' . $tambah_kuota, $logPayload, null, 1);
             echo json_encode(['status' => 1, 'pesan' => 'Kuota berhasil ditambahkan']);
         }
     }

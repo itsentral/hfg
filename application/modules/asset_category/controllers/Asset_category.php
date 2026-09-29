@@ -65,6 +65,8 @@ class Asset_category extends Admin_Controller
                 $TandaI = "Update";
             }
 
+            $old_cat_data = (!empty($id)) ? $this->db->get_where('asset_category', array('id' => $id))->row_array() : null;
+
             $this->db->trans_start();
             if (empty($id)) {
                 $this->db->insert('asset_category', $ArrHeader);
@@ -87,7 +89,8 @@ class Asset_category extends Admin_Controller
                     'pesan'  => $TandaI . ' data success. Thanks ...',
                     'status' => 1
                 );
-                write_log('Asset Category', 'Save Category Asset', $TandaI . ' Category Asset success: ' . $id . ' / ' . $nm_category, $data, null, 1);
+                $log_payload = (!empty($id) && $old_cat_data) ? array('old' => $old_cat_data, 'new' => array_merge($old_cat_data, $ArrHeader)) : $data;
+                write_log('Asset Category', 'Save Category Asset', $TandaI . ' Category Asset success: ' . $id . ' / ' . $nm_category, $log_payload, null, 1);
             }
 
             echo json_encode($Arr_Kembali);

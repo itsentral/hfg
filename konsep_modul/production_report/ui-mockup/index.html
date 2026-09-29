@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan Produksi — Mockup UI/UX</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Laporan Produksi</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <a class="step" href="beranda.html">Daftar SPK</a>
+      <span class="step step--active">Input Produksi</span>
+      <a class="step" href="hpp.html">HPP</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Admin Produksi</span>
+      <span class="topbar__user-name">Budi S.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Laporan Produksi</h1>
+        <p class="muted">Input hasil produksi per SPK — konsep pemakaian baby coil dari Unpack, WIP, dan Hold.</p>
+      </div>
+      <div class="page__header-status">
+        <span class="badge badge--draft" id="docStatus">Draft</span>
+      </div>
+    </div>
+
+    <form id="prodForm" novalidate>
+
+      <!-- ============ SECTION: HEADER ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">1</span> Informasi Laporan</h2>
+          <p class="card__hint">SPK &amp; material sudah ditetapkan (read-only). Lengkapi data produksi di bawah.</p>
+        </div>
+        <div class="card__body">
+          <div class="meta-strip meta-strip--spk" id="spkMeta"></div>
+          <div class="grid grid--header">
+            <label class="field">
+              <span class="field__label">Tgl Produksi <em>*</em></span>
+              <input type="date" id="tglProduksi" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Mesin <em>*</em></span>
+              <select id="mesin" required></select>
+            </label>
+            <label class="field">
+              <span class="field__label">Helper Name</span>
+              <select id="helper"></select>
+            </label>
+            <label class="field">
+              <span class="field__label">Setter Name</span>
+              <select id="setter"></select>
+            </label>
+            <label class="field">
+              <span class="field__label">Start Time</span>
+              <input type="time" id="startTime" />
+            </label>
+            <label class="field">
+              <span class="field__label">Finished Time</span>
+              <input type="time" id="finishTime" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: ADD COIL ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">2</span> Add Coil (Sumber Material)</h2>
+          <p class="card__hint">Pilih baby coil dari Gudang Produksi 2 (Unpack), Gudang WIP, atau Gudang Material Hold. Setiap Add, pilih baby coil dulu — material, berat &amp; meter tarik otomatis (FR-08).</p>
+        </div>
+        <div class="card__body">
+          <div class="btn-row">
+            <button type="button" class="btn btn--soft" data-add-coil="unpack">+ Add Coil From Unpack</button>
+            <button type="button" class="btn btn--soft" data-add-coil="wip">+ Add Coil From WIP</button>
+            <button type="button" class="btn btn--soft" data-add-coil="hold">+ Add Coil From Hold</button>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl" id="coilTable">
+              <thead>
+                <tr>
+                  <th>Sumber</th>
+                  <th>Baby Coil</th>
+                  <th>Material Name</th>
+                  <th class="num">Nett Weight (kg)<br /><small>Packing List</small></th>
+                  <th class="num">Gross Weight (kg)<br /><small>Packing List</small></th>
+                  <th class="num">Total Meter</th>
+                  <th class="num">Kulit</th>
+                  <th class="num">Clamp/Ring (kg)</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="9" class="empty" id="coilEmpty">Belum ada coil ditambahkan.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: FG KW1 ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">3</span> Finish Good KW 1 &amp; Stok Bebas</h2>
+          <p class="card__hint">Produk KW 1 muncul otomatis dari SPK — isi Qty &amp; berat aktual. Stok Bebas ditambah manual dari master produk untuk sisa coil di luar SPK. %Selisih terhadap berat standar; konfirmasi diminta saat Save bila melebihi &plusmn; 0,7%.</p>
+        </div>
+        <div class="card__body">
+          <h3 class="subhead__solo">Produk KW 1 (dari SPK)</h3>
+          <div id="fgList" class="stack"></div>
+          <p class="empty" id="fgEmpty" hidden>SPK ini tidak memuat produk KW 1.</p>
+
+          <div class="subhead">
+            <h3>Stok Bebas</h3>
+            <button type="button" class="btn btn--tiny" data-add-fg="bebas">+ Add Stok Bebas</button>
+          </div>
+          <div id="bebasList" class="stack"></div>
+          <p class="empty" id="bebasEmpty">Belum ada Stok Bebas.</p>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: FG KW2 ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">4</span> Finish Good KW 2</h2>
+          <p class="card__hint">Dipisah Internal &amp; Supplier. Nama KW 2 di-generate otomatis: {Produk}-KW 2-01, -02, …</p>
+        </div>
+        <div class="card__body">
+          <div class="subhead">
+            <h3>KW 2 — Internal</h3>
+            <button type="button" class="btn btn--tiny" data-add-kw2="internal">+ Add KW 2 Internal</button>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl" id="kw2InternalTable">
+              <thead>
+                <tr>
+                  <th style="width:44px">No</th>
+                  <th>Produk Asal</th>
+                  <th class="num">Size (m)</th>
+                  <th class="num">Qty KW 2</th>
+                  <th class="num">Berat Total (kg)</th>
+                  <th class="num">Berat/Pcs (kg)</th>
+                  <th>Nama KW 2</th>
+                  <th>Keterangan</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot><tr><td colspan="9" class="empty">Belum ada KW 2 Internal.</td></tr></tfoot>
+            </table>
+          </div>
+
+          <div class="subhead">
+            <h3>KW 2 — Supplier</h3>
+            <button type="button" class="btn btn--tiny" data-add-kw2="supplier">+ Add KW 2 Supplier</button>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl" id="kw2SupplierTable">
+              <thead>
+                <tr>
+                  <th style="width:44px">No</th>
+                  <th>Produk Asal</th>
+                  <th class="num">Size (m)</th>
+                  <th class="num">Qty KW 2</th>
+                  <th class="num">Berat Total (kg)</th>
+                  <th class="num">Berat/Pcs (kg)</th>
+                  <th>Nama KW 2</th>
+                  <th>Keterangan</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot><tr><td colspan="9" class="empty">Belum ada KW 2 Supplier.</td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: SISA & HOLD COIL ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">5</span> Sisa Coil &amp; Hold Coil</h2>
+          <p class="card__hint">Sisa Coil masuk Gudang WIP. Bila ada Hold Coil, tombol Save nonaktif — harus lewat Hold &amp; Claim.</p>
+        </div>
+        <div class="card__body grid grid--2">
+          <div class="panel">
+            <div class="subhead">
+              <h3>Sisa Coil</h3>
+              <button type="button" class="btn btn--tiny" id="addSisa">+ Add Sisa Coil</button>
+            </div>
+            <div class="table-wrap">
+              <table class="tbl" id="sisaTable">
+                <thead>
+                  <tr><th>Baby Coil</th><th class="num">Berat Sisa (kg)</th><th></th></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot><tr><td colspan="3" class="empty">Tidak ada sisa coil.</td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="subhead">
+              <h3>Hold Coil</h3>
+              <button type="button" class="btn btn--tiny" id="addHold">+ Add Hold Coil</button>
+            </div>
+            <div class="table-wrap">
+              <table class="tbl" id="holdTable">
+                <thead>
+                  <tr><th>Baby Coil</th><th class="num">Berat Hold (kg)</th><th></th></tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot><tr><td colspan="3" class="empty">Tidak ada hold coil.</td></tr></tfoot>
+              </table>
+            </div>
+            <p class="note note--warn" id="holdNote" hidden>⚠ Ada Hold Coil — tombol Save dikunci, gunakan <strong>Hold &amp; Claim</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: SCRAP ============ -->
+      <section class="card">
+        <div class="card__head">
+          <h2><span class="card__num">6</span> Komponen Scrap</h2>
+        </div>
+        <div class="card__body">
+          <div class="grid grid--3">
+            <label class="field">
+              <span class="field__label">Tong Coil (kg)</span>
+              <input type="number" step="0.01" min="0" class="scrap-in" id="scrapTong" value="0" />
+            </label>
+            <label class="field">
+              <span class="field__label">Wrapping (kg)</span>
+              <input type="number" step="0.01" min="0" class="scrap-in" id="scrapWrapping" value="0" />
+            </label>
+            <label class="field">
+              <span class="field__label">Potongan Pisau (kg)</span>
+              <input type="number" step="0.01" min="0" class="scrap-in" id="scrapPisau" value="0" />
+            </label>
+          </div>
+          <h3 class="subhead__solo">Reject</h3>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Kelompok</th>
+                  <th class="num">Reject Product (kg)</th>
+                  <th class="num">Reject Material Plat (kg)</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Internal</td>
+                  <td class="num"><input type="number" step="0.01" min="0" class="scrap-in" id="rejProdInt" value="0" /></td>
+                  <td class="num"><input type="number" step="0.01" min="0" class="scrap-in" id="rejMatInt" value="0" /></td>
+                  <td><input type="text" id="rejKetInt" placeholder="Free text" /></td>
+                </tr>
+                <tr>
+                  <td>Supplier</td>
+                  <td class="num"><input type="number" step="0.01" min="0" class="scrap-in" id="rejProdSup" value="0" /></td>
+                  <td class="num"><input type="number" step="0.01" min="0" class="scrap-in" id="rejMatSup" value="0" /></td>
+                  <td><input type="text" id="rejKetSup" placeholder="Free text" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="total-line">
+            <span>Total Inventory Scrap</span>
+            <strong id="scrapTotal">0,00 kg</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECTION: SUMMARY ============ -->
+      <section class="card card--summary">
+        <div class="card__head">
+          <h2><span class="card__num">7</span> Summary — Packing List vs Aktual</h2>
+        </div>
+        <div class="card__body">
+          <div class="summary-grid" id="summaryGrid">
+            <div class="sm"><span class="sm__k">Finish Good (KW 1)</span><span class="sm__v" id="sumFG">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">KW 2</span><span class="sm__v" id="sumKW2">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">Scrap</span><span class="sm__v" id="sumScrap">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">Total Sisa Coil</span><span class="sm__v" id="sumSisa">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">Hold Coil</span><span class="sm__v" id="sumHold">0,00 kg</span></div>
+            <div class="sm sm--accent"><span class="sm__k">Net Weight Produksi</span><span class="sm__v" id="sumNetProd">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">Net Weight Packing List</span><span class="sm__v" id="sumNetPack">0,00 kg</span></div>
+            <div class="sm"><span class="sm__k">Selisih (kg)</span><span class="sm__v" id="sumSelisihKg">0,00 kg</span></div>
+            <div class="sm sm--result" id="sumSelisihBox"><span class="sm__k">Selisih (%)</span><span class="sm__v" id="sumSelisihPct">0,00 %</span></div>
+          </div>
+          <p class="note" id="tolNote">Toleransi &plusmn; 0,7% terhadap Net Weight Produksi.</p>
+        </div>
+      </section>
+
+      <!-- ============ AUDIT: KONFIRMASI SELISIH ============ -->
+      <section class="card" id="auditCard" hidden>
+        <div class="card__head">
+          <h2><span class="card__num">8</span> Jejak Konfirmasi Selisih</h2>
+          <p class="card__hint">Rekam jejak siapa mengonfirmasi selisih di luar toleransi &plusmn; 0,7% dan kapan (NFR-04 — Auditability).</p>
+        </div>
+        <div class="card__body">
+          <div class="table-wrap">
+            <table class="tbl" id="auditTable">
+              <thead>
+                <tr>
+                  <th style="width:44px">No</th>
+                  <th>Objek</th>
+                  <th class="num">% Selisih</th>
+                  <th>Pernyataan</th>
+                  <th>Dikonfirmasi oleh</th>
+                  <th>Waktu</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ACTION BAR ============ -->
+      <div class="actionbar">
+        <div class="actionbar__note">
+          <span id="gateMsg" class="muted">Save aktif bila tidak ada Hold Coil.</span>
+        </div>
+        <div class="actionbar__btns">
+          <a class="btn btn--ghost" href="hpp.html">Lihat HPP →</a>
+          <button type="button" class="btn btn--ghost" id="btnDraft">Save Draft</button>
+          <button type="button" class="btn btn--warn" id="btnHoldClaim" disabled>Hold &amp; Claim</button>
+          <button type="submit" class="btn btn--primary" id="btnSave">Save</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <!-- ============ TOLERANCE POPUP ============ -->
+  <div class="modal" id="tolModal" hidden>
+    <div class="modal__box">
+      <div class="modal__icon">⚠</div>
+      <h3 class="modal__title">Cek Ulang — Selisih Melebihi Toleransi</h3>
+      <p class="modal__body" id="tolModalBody"></p>
+      <p class="modal__signer">Konfirmasi akan dicatat atas nama <strong id="tolSigner">—</strong> beserta waktunya.</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="tolCancel">Perbaiki</button>
+        <button type="button" class="btn btn--primary" id="tolAck">Sudah sesuai aktual</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

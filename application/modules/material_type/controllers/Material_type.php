@@ -77,6 +77,8 @@ class Material_type extends Admin_Controller
         $last_date  => $this->datetime
       ];
 
+      $oldData = (!empty($id)) ? $this->db->get_where('new_inventory_1', ['id' => $id])->row_array() : null;
+
       $this->db->trans_start();
       if (empty($id)) {
         $this->db->insert('new_inventory_1', $dataProcess);
@@ -86,20 +88,22 @@ class Material_type extends Admin_Controller
       }
       $this->db->trans_complete();
 
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $status  = array(
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Material Type', $label, 'Gagal ' . strtolower($label) . ' material type: ' . $code, $dataProcess, null, 0);
+        write_log('Material Type', $label, 'Gagal ' . strtolower($label) . ' material type: ' . $code, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
           'pesan'    => 'Success process data!',
           'status'  => 1
         );
-        write_log('Material Type', $label, $label . ' material type: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
+        write_log('Material Type', $label, $label . ' material type: ' . $code . ' (' . $nama . ')', $logPayload, null, 1);
       }
       echo json_encode($status);
     } else {

@@ -234,10 +234,14 @@ class App_pr_material extends Admin_Controller
             'app_date'      => $this->datetime
         );
 
+        $oldData = $this->db->get_where('material_planning_base_on_produksi_detail', ['id' => $id])->row_array();
+
         $this->db->trans_start();
         $this->db->where('id', $id);
         $this->db->update('material_planning_base_on_produksi_detail', $ArrHeader);
         $this->db->trans_complete();
+
+        $logPayload = (!empty($oldData)) ? ['old' => $oldData, 'new' => $ArrHeader] : ['id' => $id, 'so_number' => $so_number, 'action' => $action];
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
@@ -246,7 +250,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 0,
                 'so_number'  => $so_number
             );
-            write_log('Approval PR Material', 'Approval Satuan', 'Gagal ' . $action . ' satuan PR material ID: ' . $id, ['id' => $id, 'so_number' => $so_number, 'action' => $action], null, 0);
+            write_log('Approval PR Material', 'Approval Satuan', 'Gagal ' . $action . ' satuan PR material ID: ' . $id, $logPayload, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
@@ -254,7 +258,7 @@ class App_pr_material extends Admin_Controller
                 'status'  => 1,
                 'so_number'  => $so_number
             );
-            write_log('Approval PR Material', 'Approval Satuan', $action . ' satuan PR material ID: ' . $id . ' SO: ' . $so_number, ['id' => $id, 'so_number' => $so_number, 'action' => $action], null, 1);
+            write_log('Approval PR Material', 'Approval Satuan', $action . ' satuan PR material ID: ' . $id . ' SO: ' . $so_number, $logPayload, null, 1);
         }
         echo json_encode($Arr_Data);
     }

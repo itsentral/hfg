@@ -56,6 +56,7 @@ class Asset_coa extends Admin_Controller
             );
 
             $TandaI = empty($id) ? "Insert" : "Update";
+            $old_coa_data = (!empty($id)) ? $this->db->get_where('asset_coa', array('id' => $id))->row_array() : null;
 
             $this->db->trans_start();
             if (empty($id)) {
@@ -79,7 +80,8 @@ class Asset_coa extends Admin_Controller
                     'pesan'  => $TandaI . ' data success. Thanks ...',
                     'status' => 1
                 );
-                write_log('Asset COA', 'Save Asset COA', $TandaI . ' Asset COA success: ' . $id . ' / ' . $keterangan, $data, null, 1);
+                $log_payload = (!empty($id) && $old_coa_data) ? array('old' => $old_coa_data, 'new' => array_merge($old_coa_data, $ArrHeader)) : $data;
+                write_log('Asset COA', 'Save Asset COA', $TandaI . ' Asset COA success: ' . $id . ' / ' . $keterangan, $log_payload, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {

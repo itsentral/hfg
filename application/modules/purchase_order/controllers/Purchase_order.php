@@ -1796,9 +1796,12 @@ class Purchase_order extends Admin_Controller
 
 		// 1. Logika Revisi & Tipe PR
 		$revisi = 0;
+		$old_po_data = null;
+		$old_details = [];
 		if ($is_edit) {
-			$old_po = $this->db->select('revisi')->get_where('tr_purchase_order', ['no_po' => $code])->row();
-			$revisi = $old_po ? ((int)$old_po->revisi + 1) : 1;
+			$old_po_data = $this->db->get_where('tr_purchase_order', ['no_po' => $code])->row_array();
+			$old_details = $this->db->get_where('dt_trans_po', ['no_po' => $code])->result_array();
+			$revisi = ($old_po_data && isset($old_po_data['revisi'])) ? ((int)$old_po_data['revisi'] + 1) : 1;
 		}
 
 		$po_pr_depart = '0';
@@ -2017,11 +2020,78 @@ class Purchase_order extends Admin_Controller
 			$this->db->trans_rollback();
 			$msg = ($valid_qty == 0) ? 'PO Qty exceeds PR Qty!' : 'Failed to save item.';
 			$status = ['pesan' => $msg, 'status' => 0];
-			write_log('Purchase Order', 'Save All PO', 'Save all PO failed: ' . (isset($code) ? $code : '') . ' (' . $msg . ')', $data, null, 0);
+			$no_surat_disp = !empty($no_surat) ? $no_surat : get_po_no_surat($code);
+			write_log('Purchase Order', ($is_edit ? 'Save Edit PO' : 'Save New PO'), ($is_edit ? 'Save edit PO failed: ' : 'Save new PO failed: ') . $no_surat_disp . ' (' . $msg . ')', $data, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$status = ['pesan' => 'Success Save Item.', 'code' => $code, 'status' => 1];
-			write_log('Purchase Order', 'Save All PO', 'Save all PO success: ' . $code, $data, null, 1);
+			$no_surat_disp = get_po_no_surat($code);
+			if ($is_edit && !empty($old_po_data)) {
+				// Hitung perubahan pada item detail (dt_trans_po)
+				$detail_changes = [];
+				$old_by_id = [];
+				foreach ($old_details as $od) {
+					$k = !empty($od['idmaterial']) ? $od['idmaterial'] : (!empty($od['idpr']) ? $od['idpr'] : $od['id_dt_po']);
+					$old_by_id[$k] = $od;
+				}
+
+				if (isset($post['dt']) && is_array($post['dt'])) {
+					$check_fields = [
+						'qty'         => 'Qty',
+						'hargasatuan' => 'Harga Satuan',
+						'jumlahharga' => 'Jumlah Harga',
+						'harga_total' => 'Harga Total',
+						'diskon'      => 'Diskon',
+						'nilai_ppn'   => 'Nilai PPN',
+						'persen_ppn'  => 'Persen PPN',
+						'disc_num'    => 'Nilai Disc',
+						'description' => 'Deskripsi',
+						'note'        => 'Note'
+					];
+
+					foreach ($post['dt'] as $used) {
+						$k = !empty($used['idmaterial']) ? $used['idmaterial'] : (!empty($used['idpr']) ? $used['idpr'] : '');
+						$item_name = !empty($used['namamaterial']) ? $used['namamaterial'] : (!empty($used['kode_barang']) ? $used['kode_barang'] : 'Barang');
+
+						if ($k && isset($old_by_id[$k])) {
+							$old_it = $old_by_id[$k];
+							foreach ($check_fields as $fld_post => $lbl) {
+								$fld_db = ($fld_post === 'nilai_ppn') ? 'ppn' : (($fld_post === 'persen_ppn') ? 'ppn_persen' : (($fld_post === 'disc_num') ? 'nilai_disc' : $fld_post));
+								if (isset($used[$fld_post]) && isset($old_it[$fld_db])) {
+									$val_new = $used[$fld_post];
+									$val_old = $old_it[$fld_db];
+
+									$c_old = str_replace(',', '', trim((string)$val_old));
+									$c_new = str_replace(',', '', trim((string)$val_new));
+
+									$is_same = false;
+									if ($c_old === $c_new) {
+										$is_same = true;
+									} elseif (is_numeric($c_old) && is_numeric($c_new) && abs((float)$c_old - (float)$c_new) < 0.0000001) {
+										$is_same = true;
+									}
+
+									if (!$is_same) {
+										$detail_changes["Item [$item_name] - $lbl"] = [
+											'old' => $val_old,
+											'new' => $val_new
+										];
+									}
+								}
+							}
+						}
+					}
+				}
+
+				$log_payload = [
+					'old'            => $old_po_data,
+					'new'            => array_merge($old_po_data, $data),
+					'detail_changes' => $detail_changes
+				];
+				write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $no_surat_disp, $log_payload, null, 1);
+			} else {
+				write_log('Purchase Order', 'Save New PO', 'Save new PO success: ' . $no_surat_disp, $data, null, 1);
+			}
 		}
 
 		echo json_encode($status);
@@ -3910,6 +3980,9 @@ class Purchase_order extends Admin_Controller
 
 		$this->db->trans_start();
 
+		$oldPo = $this->db->get_where('tr_purchase_order', ['no_po' => $post['no_po']])->row_array();
+		$no_surat_disp = (!empty($oldPo['no_surat'])) ? $oldPo['no_surat'] : $post['no_po'];
+
 		$data_update = [
 			'close_po'      => 1,
 			'close_po_desc' => $post['close_po_reason']
@@ -3917,14 +3990,21 @@ class Purchase_order extends Admin_Controller
 
 		$this->db->update('tr_purchase_order', $data_update, ['no_po' => $post['no_po']]);
 
+		$logPayload = (!empty($oldPo)) ? [
+			'no_po'    => $post['no_po'],
+			'no_surat' => $no_surat_disp,
+			'old'      => ['close_po' => $oldPo['close_po'] ?? 0, 'close_po_desc' => $oldPo['close_po_desc'] ?? ''],
+			'new'      => $data_update
+		] : $post;
+
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$valid = 0;
-			write_log('Purchase Order', 'Close PO', 'Close PO failed: ' . $post['no_po'], $post, null, 0);
+			write_log('Purchase Order', 'Close PO', 'Close PO failed: ' . $no_surat_disp, $logPayload, null, 0);
 		} else {
 			$this->db->trans_commit();
 			$valid = 1;
-			write_log('Purchase Order', 'Close PO', 'Close PO success: ' . $post['no_po'], $post, null, 1);
+			write_log('Purchase Order', 'Close PO', 'Close PO success: ' . $no_surat_disp, $logPayload, null, 1);
 		}
 
 		echo json_encode([

@@ -777,14 +777,16 @@ class Incoming extends Admin_Controller
             ], ['id' => (int) $val['id_ros_coil']]);
         }
 
-        $this->db->update('tr_ros_header', [
+        $old_ros_header = $this->db->get_where('tr_ros_header', ['id' => $no_ros])->row_array();
+        $update_ros_header = [
             'status_incoming'   => 'saved',
             'draft_by'          => $this->auth->user_id(),
             'draft_date'        => date('Y-m-d H:i:s'),
             'incoming_date'     => $tanggal,
             'file_original'     => $file_original,
             'file_hash'         => $file_hash,
-        ], ['id' => $no_ros]);
+        ];
+        $this->db->update('tr_ros_header', $update_ros_header, ['id' => $no_ros]);
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
@@ -794,7 +796,8 @@ class Incoming extends Admin_Controller
         }
 
         $this->db->trans_commit();
-        write_log('Incoming', 'Save Draft Incoming', 'Save draft incoming success ROS: ' . $no_ros, $post, null, 1);
+        $new_ros_header = array_merge($old_ros_header ?: [], $update_ros_header);
+        write_log('Incoming', 'Save Draft Incoming', 'Save draft incoming success ROS: ' . $no_ros, ['old' => $old_ros_header, 'new' => $new_ros_header], null, 1);
 
         // Jika flag submit_after_save, langsung ajukan
         $submit_after = $post['submit_after_save'] ?? '';
