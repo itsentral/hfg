@@ -1096,6 +1096,18 @@ class Pembayaran_material extends Admin_Controller
 			}
 
 			// Grand Total Payment = Subtotal + PPN - PPH + Bank Charge
+			// Cek LOI PO (Import vs Lokal) untuk normalisasi pembulatan desimal valas
+			$po_ref_pre = $this->db->select('loi')
+				->get_where('tr_purchase_order', ['no_po' => $first_req->no_doc])
+				->row();
+			$loi_po_pre = strtolower(trim($po_ref_pre->loi ?? ''));
+
+			// Untuk PO Import (tanpa PPN & PPH), pastikan subtotal persis sama dengan nilai_bank_idr
+			// agar terhindar dari selisih pembulatan desimal valas (seperti USD berkoma).
+			if ($loi_po_pre === 'import' && $subtotal > 0 && abs($subtotal - $nilai_bank_idr) < 500) {
+				$subtotal = $nilai_bank_idr;
+			}
+
 			$grand_total = $subtotal + $total_ppn - $total_pph + $bank_charge;
 
 			// Selisih Kurs: berdasarkan kurs_receive_invoice vs kurs_payment
@@ -1113,7 +1125,8 @@ class Pembayaran_material extends Admin_Controller
 					}
 				}
 				// Selisih Kurs = Nilai Bank IDR - Nominal dari tr_receive_invoice
-				$selisih_kurs_idr = $nilai_bank_idr - $nominal_kurs_receive;
+				// Penyeimbang jurnal agar selalu balance (Debet Hutang - Kredit Bank)
+				$selisih_kurs_idr = round($nilai_bank_idr) - round($nominal_kurs_receive);
 			}
 
 			// Nama COA Bank
@@ -1162,7 +1175,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO
@@ -1423,7 +1436,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int) round($subtotal),
 				'gl_selisih_kurs'       => 0,
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per item ros_*
@@ -1717,7 +1730,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO
@@ -2248,7 +2261,7 @@ class Pembayaran_material extends Admin_Controller
 				'id_payment'            => $id_payment_val,
 				'gl_hutang_dagang'      => (int)round($nominal_kurs_receive),
 				'gl_selisih_kurs'       => (int)round($selisih_kurs_idr),
-				'gl_total_payment'      => (int)round($subtotal),
+				'gl_total_payment'      => (int)round($nilai_bank_idr),
 			]);
 
 			// INSERT payment_approve_details per PO

@@ -208,10 +208,14 @@ class Metode_pembelian extends Admin_Controller
 		$this->db->where('no_pr', $no_pr);
 		$this->db->update('tran_pr_detail', $ArrUpdate);
 
+		$oldRfqDet = $this->db->get_where('tran_rfq_detail', ['no_pr' => $no_pr, 'no_rfq' => $no_rfq])->row_array();
+
 		$this->db->where('no_pr', $no_pr);
 		$this->db->where('no_rfq', $no_rfq);
 		$this->db->update('tran_rfq_detail', $ArrUpdate);
 		$this->db->trans_complete();
+
+		$logPayload = (!empty($oldRfqDet)) ? ['old' => $oldRfqDet, 'new' => $ArrUpdate] : (isset($data) ? $data : (isset($post) ? $post : null));
 
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
@@ -223,7 +227,7 @@ class Metode_pembelian extends Admin_Controller
 			$Arr_Data	= array(
 				'status'	=> 1
 			);
-			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Change spec : ' . $no_pr . '/' . $no_rfq, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Change spec : ' . $no_pr . '/' . $no_rfq, $logPayload, null, 1);
 		}
 	}
 
@@ -871,9 +875,13 @@ class Metode_pembelian extends Admin_Controller
 			$this->db->trans_start();
 			$this->db->update_batch('tran_po_detail', $ArrEdit, 'id');
 
+			$oldPoHeader = $this->db->get_where('tran_po_header', ['no_po' => $no_po])->row_array();
+
 			$this->db->where('no_po', $no_po);
 			$this->db->update('tran_po_header', $ArrHeader);
 			$this->db->trans_complete();
+
+			$logPayload = (!empty($oldPoHeader)) ? ['old' => $oldPoHeader, 'new' => $ArrHeader] : (isset($data) ? $data : (isset($post) ? $post : null));
 
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
@@ -887,7 +895,7 @@ class Metode_pembelian extends Admin_Controller
 					'pesan'		=> 'Save data success. Thanks ...',
 					'status'	=> 1
 				);
-				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit qty PO : ' . $no_po, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit qty PO : ' . $no_po, $logPayload, null, 1);
 		}
 	} else {
 			$no_po 	= $this->uri->segment(3);
