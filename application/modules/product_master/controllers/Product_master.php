@@ -289,6 +289,8 @@ class Product_master extends Admin_Controller
 
       $dataProcess = array_merge($dataProcess1, $dataProcess2);
 
+      $oldData = (!empty($id)) ? $this->db->get_where('product_lvl_4', ['id' => $id])->row_array() : null;
+
       $this->db->trans_start();
 
       if (empty($id)) {
@@ -308,20 +310,22 @@ class Product_master extends Admin_Controller
 
       $this->db->trans_complete();
 
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $result = [
           'pesan'  => 'Failed process data!',
           'status' => 0,
         ];
-        write_log('Product Master', $label, 'Gagal ' . strtolower($label) . ' product master: ' . $code_lv4, $dataProcess, null, 0);
+        write_log('Product Master', $label, 'Gagal ' . strtolower($label) . ' product master: ' . $code_lv4, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $result = [
           'pesan'  => 'Success process data!',
           'status' => 1,
         ];
-        write_log('Product Master', $label, $label . ' product master: ' . $code_lv4 . ' (' . $nama . ')', $dataProcess, null, 1);
+        write_log('Product Master', $label, $label . ' product master: ' . $code_lv4 . ' (' . $nama . ')', $logPayload, null, 1);
       }
 
       echo json_encode($result);

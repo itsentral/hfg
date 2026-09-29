@@ -480,12 +480,18 @@ class Purchase_order_payment extends Admin_Controller
 			// Auto-ajukan request payment (menggantikan proses "Ajukan" manual)
 			$this->_auto_request_payment($id_dp, 'dp');
 
-			write_log('Purchase Order Payment', 'Save Invoice DP', 'Invoice DP berhasil disimpan & diajukan untuk PO: ' . $no_po, $data_insert, null, 1);
+			$getPo = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row_array();
+			$no_surat_disp = (!empty($getPo['no_surat'])) ? $getPo['no_surat'] : $no_po;
+
+			write_log('Purchase Order Payment', 'Save Invoice DP', 'Invoice DP berhasil disimpan & diajukan untuk PO: ' . $no_surat_disp, $data_insert, null, 1);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 1, 'message' => 'Invoice DP berhasil disimpan & diajukan.']);
 		} else {
-			write_log('Purchase Order Payment', 'Save Invoice DP', 'Gagal menyimpan invoice DP untuk PO: ' . $no_po, $data_insert, null, 0);
+			$getPo = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row_array();
+			$no_surat_disp = (!empty($getPo['no_surat'])) ? $getPo['no_surat'] : $no_po;
+
+			write_log('Purchase Order Payment', 'Save Invoice DP', 'Gagal menyimpan invoice DP untuk PO: ' . $no_surat_disp, $data_insert, null, 0);
 			if (ob_get_length()) ob_clean();
 			header('Content-Type: application/json');
 			echo json_encode(['status' => 0, 'message' => 'Gagal menyimpan data.']);

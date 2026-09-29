@@ -46,6 +46,7 @@ class Master_forwarding_cost extends Admin_Controller
             'update_date' => $this->datetime
         ];
 
+        $oldData = ($id) ? $this->Master_forwarding_cost_model->get_data() : null;
         if ($id) {
             // Update
             $result = $this->Master_forwarding_cost_model->save_data($data, $id);
@@ -65,11 +66,13 @@ class Master_forwarding_cost extends Admin_Controller
             $msg = 'Tambah Forwarding Cost berhasil';
         }
 
+        $logPayload = ($id && !empty($oldData)) ? ['old' => $oldData, 'new' => $data] : $data;
+
         if ($result) {
-            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', $msg, $data, null, 1);
+            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', $msg, $logPayload, null, 1);
             echo json_encode(['status' => 'success', 'message' => $msg]);
         } else {
-            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', 'Gagal menyimpan Forwarding Cost', $data, null, 0);
+            write_log('Master Forwarding Cost', $id ? 'Edit' : 'Add', 'Gagal menyimpan Forwarding Cost', $logPayload, null, 0);
             echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
         }
     }

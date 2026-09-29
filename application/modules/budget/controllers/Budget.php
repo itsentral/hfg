@@ -116,6 +116,8 @@ class Budget extends Admin_Controller
                 );
             }
 
+            $old_plan_data = (!empty($code_planx)) ? $this->db->get_where('asset_planning', array('code_plan' => $code_planx))->row_array() : null;
+
             $this->db->trans_start();
             if (empty($code_planx)) {
                 $this->db->insert('asset_planning', $ArrHeader);
@@ -132,7 +134,8 @@ class Budget extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Process data success. Thanks...', 'status' => 1);
-                write_log('Budget Asset', 'Save Pengajuan Budget Asset', 'Process data success: ' . $code_plan, $data, null, 1);
+                $log_payload = (!empty($code_planx) && $old_plan_data) ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data, $ArrHeader)) : $data;
+                write_log('Budget Asset', 'Save Pengajuan Budget Asset', 'Process data success: ' . $code_plan, $log_payload, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {
@@ -220,6 +223,8 @@ class Budget extends Admin_Controller
                 'app_date'       => $dateTime
             );
 
+            $old_plan_data = $this->db->get_where('asset_planning', array('code_plan' => $code_planx))->row_array();
+
             $this->db->trans_start();
             $this->db->where('code_plan', $code_planx);
             $this->db->update('asset_planning', $ArrHeader);
@@ -232,7 +237,8 @@ class Budget extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Approval processed successfully. Thanks...', 'status' => 1);
-                write_log('Budget Asset', 'Approval Budget Asset', 'Approval processed successfully: ' . $code_planx, $data, null, 1);
+                $log_payload = $old_plan_data ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data, $ArrHeader)) : $data;
+                write_log('Budget Asset', 'Approval Budget Asset', 'Approval processed successfully: ' . $code_planx, $log_payload, null, 1);
             }
             echo json_encode($Arr_Kembali);
         } else {

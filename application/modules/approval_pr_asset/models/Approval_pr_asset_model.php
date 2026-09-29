@@ -137,6 +137,8 @@ class Approval_pr_asset_model extends BF_Model
             'app_date'   => date('Y-m-d H:i:s')
         );
 
+        $old_pr_header = $this->db->get_where('tran_pr_header', array('no_pr' => $no_pr))->row_array();
+
         $this->db->trans_start();
         $this->db->where('no_pr', $no_pr);
         $this->db->update('tran_pr_header', $ArrUpdate);
@@ -154,7 +156,8 @@ class Approval_pr_asset_model extends BF_Model
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
             $Arr_Data   = array('pesan' => 'Berhasil ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
-            write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $data, null, 1);
+            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header, $ArrUpdate)) : $data;
+            write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }
 
         echo json_encode($Arr_Data);

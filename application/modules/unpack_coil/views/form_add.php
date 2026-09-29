@@ -84,8 +84,8 @@ $ex      = $existing;
                     </thead>
                     <tbody>
                         <tr>
-                            <td><input type="text" id="pack-kulit" class="form-control form-control-sm"></td>
-                            <td><input type="text" id="pack-clamp" class="form-control form-control-sm"></td>
+                            <td><input type="number" step="0.01" id="pack-kulit" class="form-control form-control-sm text-end" value="0"></td>
+                            <td><input type="number" step="0.01" id="pack-clamp" class="form-control form-control-sm text-end" value="0"></td>
                             <td><input type="number" step="0.01" id="pack-net-actual" class="form-control form-control-sm text-end" value="0"></td>
                             <td><input type="number" step="0.01" id="pack-gross-actual" class="form-control form-control-sm text-end" value="0"></td>
                             <td class="text-end"><span id="pack-net-pl">0.00</span></td>
@@ -293,9 +293,13 @@ $ex      = $existing;
             var totalCoil = getTotalJumlahCoilAll();
             var netAct = parseFloat($('#pack-net-actual').val()) || 0;
             var grossAct = parseFloat($('#pack-gross-actual').val()) || 0;
+            var kulitTotal = parseFloat($('#pack-kulit').val()) || 0;
+            var clampTotal = parseFloat($('#pack-clamp').val()) || 0;
             return {
                 net: totalCoil > 0 ? (netAct / totalCoil) : 0,
                 gross: totalCoil > 0 ? (grossAct / totalCoil) : 0,
+                kulit: totalCoil > 0 ? (kulitTotal / totalCoil) : 0,
+                clamp: totalCoil > 0 ? (clampTotal / totalCoil) : 0,
                 totalCoil: totalCoil
             };
         }
@@ -344,7 +348,17 @@ $ex      = $existing;
                 }
 
                 tr += '<td>' + (m.nm_material || '') + '</td>' +
-                    '<td><span title="' + (m.no_coil || '') + '" style="display:inline-block;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (m.no_coil || '') + '</span></td>' +
+                    '<td>' + (function() {
+                        if (!m.no_coil) return '-';
+                        var coils = String(m.no_coil).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+                        if (coils.length === 0) return '-';
+                        var listHtml = '<div class="d-flex flex-column gap-1">';
+                        coils.forEach(function(c) {
+                            listHtml += '<span class="badge bg-light text-dark border text-start py-1 px-2 font-monospace" style="font-size:0.85rem;"><i class="fa fa-circle text-primary me-1" style="font-size:0.55rem;"></i>' + c + '</span>';
+                        });
+                        listHtml += '</div>';
+                        return listHtml;
+                    })() + '</td>' +
                     '<td class="text-center">' +
                     '<input type="number" min="0" class="form-control form-control-sm text-center jumlah-coil-input" ' +
                     'data-key="' + key + '" value="' + displayCount + '" style="width:70px;margin:0 auto;">' +
@@ -396,7 +410,7 @@ $ex      = $existing;
             $('#pack-gross-selisih').text(fmt(grossAct - grossPl));
         }
 
-        $('#pack-net-actual, #pack-gross-actual').on('input', function() {
+        $('#pack-net-actual, #pack-gross-actual, #pack-kulit, #pack-clamp').on('input', function() {
             recalcPackLevel();
             refreshBabiesWeights();
             renderMaterialTable(); // refresh angka Actual Weight yang digabung
@@ -435,17 +449,25 @@ $ex      = $existing;
             return String(sample).replace(/[-.]\d{2,4}$/, '');
         }
 
+        function getCleanBaseNoCoil(m) {
+            var sample = m.no_coil || m.kode_internal_sample || m.id_material;
+            if (String(sample).indexOf(',') !== -1) {
+                sample = String(sample).split(',')[0].trim();
+            }
+            return String(sample).replace(/-BC\.\d+$/i, '');
+        }
+
         function generatePlaceholderRows(m, n) {
             var rows = [];
             var nwAvg = n > 0 ? (m.net_weight_pl / n) : 0;
             var gwAvg = n > 0 ? (m.gross_weight_pl / n) : 0;
-            var baseNoCoil = m.no_coil || m.id_material;
+            var baseNoCoil = getCleanBaseNoCoil(m);
             var baseKode = getKodeInternalBase(m);
 
             for (var i = 1; i <= n; i++) {
                 rows.push({
-                    no_coil: baseNoCoil,
-                    babycoil_code: baseKode + '-' + String(i).padStart(3, '0'), // mengikuti format DB: ZBO-LYBB0007-001
+                    no_coil: baseNoCoil + '-BC.' + i,
+                    babycoil_code: baseKode + '-BC.' + i,
                     net_weight_pl: nwAvg,
                     gross_weight_pl: gwAvg
                 });
@@ -477,6 +499,8 @@ $ex      = $existing;
                 (m.babies || []).forEach(function(b) {
                     b.net_weight_actual = perActual.net;
                     b.gross_weight_actual = perActual.gross;
+                    b.kulit = perActual.kulit;
+                    b.clamp_ring = perActual.clamp;
                     b.net_weight_pl = perPL.net;
                     b.gross_weight_pl = perPL.gross;
                 });
@@ -497,6 +521,8 @@ $ex      = $existing;
                     m.babies.forEach(function(b) {
                         b.net_weight_actual = perActual.net;
                         b.gross_weight_actual = perActual.gross;
+                        b.kulit = perActual.kulit;
+                        b.clamp_ring = perActual.clamp;
                         b.net_weight_pl = perPL.net;
                         b.gross_weight_pl = perPL.gross;
                     });
@@ -504,14 +530,23 @@ $ex      = $existing;
                 }
 
                 return loadBabiesForMaterial(m, n).then(function(rawBabies) {
-                    m.babies = rawBabies.map(function(b) {
+                    m.babies = rawBabies.map(function(b, bIdx) {
+                        var baseCleanCoil = getCleanBaseNoCoil(m);
+                        var babyNoCoil = b.no_coil;
+                        if (!babyNoCoil || String(babyNoCoil).indexOf(',') !== -1) {
+                            babyNoCoil = baseCleanCoil + '-BC.' + (bIdx + 1);
+                        } else if (!/-BC\.\d+$/i.test(babyNoCoil)) {
+                            babyNoCoil = babyNoCoil + '-BC.' + (bIdx + 1);
+                        }
                         return {
-                            no_coil: m.no_coil || b.no_coil,
+                            no_coil: babyNoCoil,
                             babycoil_code: b.babycoil_code,
-                            net_weight_pl: perPL.net, // dari total pack, bukan m.net_weight_pl lagi
-                            gross_weight_pl: perPL.gross, // idem
+                            net_weight_pl: perPL.net,
+                            gross_weight_pl: perPL.gross,
                             net_weight_actual: perActual.net,
-                            gross_weight_actual: perActual.gross
+                            gross_weight_actual: perActual.gross,
+                            kulit: perActual.kulit,
+                            clamp_ring: perActual.clamp
                         };
                     });
                 });
@@ -539,13 +574,17 @@ $ex      = $existing;
             var sumNetPl = 0,
                 sumGrossPl = 0,
                 sumNetAct = 0,
-                sumGrossAct = 0;
+                sumGrossAct = 0,
+                sumKulit = 0,
+                sumClamp = 0;
 
             var html = '<div class="table-responsive"><table class="table table-bordered table-sm text-center align-middle">' +
                 '<thead><tr>' +
                 '<th width="4%">No</th><th>Material</th><th>No Coil</th><th>Babycoil</th>' +
                 '<th class="actual-head">Net weight per Roll (Actual)</th>' +
                 '<th class="actual-head">Gross Weight per Roll (Actual)</th>' +
+                '<th class="table-info">Kulit (kg)</th>' +
+                '<th class="table-info">Clamp / Ring (kg)</th>' +
                 '<th class="pl-head">Net weight per Roll (PL)</th>' +
                 '<th class="pl-head">Gross Weight per Roll (PL)</th>' +
                 '</tr></thead><tbody>';
@@ -560,6 +599,8 @@ $ex      = $existing;
                     sumGrossPl += b.gross_weight_pl;
                     sumNetAct += b.net_weight_actual;
                     sumGrossAct += b.gross_weight_actual;
+                    sumKulit += (b.kulit || 0);
+                    sumClamp += (b.clamp_ring || 0);
 
                     html += '<tr>';
 
@@ -572,6 +613,8 @@ $ex      = $existing;
                         '<td><input type="text" class="form-control form-control-sm" value="' + (b.babycoil_code || '') + '" readonly></td>' +
                         '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.net_weight_actual) + '" disabled></td>' +
                         '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.gross_weight_actual) + '" disabled></td>' +
+                        '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.kulit) + '" disabled></td>' +
+                        '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.clamp_ring) + '" disabled></td>' +
                         '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.net_weight_pl) + '" readonly></td>' +
                         '<td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="' + numVal(b.gross_weight_pl) + '" readonly></td>' +
                         '</tr>';
@@ -582,6 +625,8 @@ $ex      = $existing;
                 '<td colspan="4" class="text-end">Total</td>' +
                 '<td>' + fmt(sumNetAct) + '</td>' +
                 '<td>' + fmt(sumGrossAct) + '</td>' +
+                '<td>' + fmt(sumKulit) + '</td>' +
+                '<td>' + fmt(sumClamp) + '</td>' +
                 '<td>' + fmt(sumNetPl) + '</td>' +
                 '<td>' + fmt(sumGrossPl) + '</td>' +
                 '</tr></tfoot></table></div>';
@@ -753,6 +798,8 @@ $ex      = $existing;
                             no_coil: b.no_coil,
                             net_weight_actual: parseFloat(b.net_weight_actual) || 0,
                             gross_weight_actual: parseFloat(b.gross_weight_actual) || 0,
+                            kulit: parseFloat(b.kulit) || 0,
+                            clamp_ring: parseFloat(b.clamp_ring) || 0,
                             net_weight_pl: parseFloat(b.net_weight_pl) || 0,
                             gross_weight_pl: parseFloat(b.gross_weight_pl) || 0
                         };

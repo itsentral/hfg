@@ -41,14 +41,18 @@ class Master_jurnal_mapping extends Admin_Controller
                 'updated_on'         => date('Y-m-d H:i:s')
             ];
             
+            $oldData = $this->db->get_where('ms_jurnal_mapping', ['id' => $id])->row_array();
+
             $this->db->where('id', $id);
             $upd = $this->db->update('ms_jurnal_mapping', $data_update);
 
+            $logPayload = (!empty($oldData)) ? ['old' => $oldData, 'new' => $data_update] : $data_update;
+
             if ($upd) {
-                write_log('Master Jurnal Mapping', 'Edit', 'Update jurnal mapping ID: ' . $id . ' ke kode: ' . $post['kode_master_jurnal'], $data_update, null, 1);
+                write_log('Master Jurnal Mapping', 'Edit', 'Update jurnal mapping ID: ' . $id . ' ke kode: ' . $post['kode_master_jurnal'], $logPayload, null, 1);
                 echo json_encode(['status' => 1, 'message' => 'Data berhasil diupdate']);
             } else {
-                write_log('Master Jurnal Mapping', 'Edit', 'Gagal update jurnal mapping ID: ' . $id, $data_update, null, 0);
+                write_log('Master Jurnal Mapping', 'Edit', 'Gagal update jurnal mapping ID: ' . $id, $logPayload, null, 0);
                 echo json_encode(['status' => 0, 'message' => 'Gagal mengupdate data']);
             }
         } else {

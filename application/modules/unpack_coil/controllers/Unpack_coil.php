@@ -151,6 +151,11 @@ class Unpack_coil extends Admin_Controller
             redirect('unpack_coil');
         }
 
+        if ($header['status'] === 'Lock') {
+            $this->session->set_flashdata('error', 'Report unpack sudah di-Lock dan tidak dapat diedit.');
+            redirect('unpack_coil');
+        }
+
         $materials = $this->Unpack_coil_model->get_materials_by_unpack($unpack_no);
         foreach ($materials as &$m) {
             $m['babies'] = $this->Unpack_coil_model->get_babies_by_material($m['id']);
@@ -209,30 +214,23 @@ class Unpack_coil extends Admin_Controller
 
         $rows = $this->Unpack_coil_model->get_coils_by_material($id_pack, $id_material, $id_gudang);
         $babies = array();
+        $total_baby_idx = 1;
 
         foreach ($rows as $r) {
             $qty = max(1, (int) $r['qty_roll']);
+            $base_no_coil = trim(preg_replace('/-BC\.\d+$/i', '', $r['no_coil']));
+            $base_kode_internal = trim(preg_replace('/-BC\.\d+$/i', '', $r['kode_internal']));
 
-            if ($qty > 1) {
-                // Baris DB masih agregat (belum diexplode per roll) -> pecah rata & generate kode turunan
-                $nw_avg = $r['net_weight_pl'] / $qty;
-                $gw_avg = $r['gross_weight_pl'] / $qty;
-                for ($i = 1; $i <= $qty; $i++) {
-                    $babies[] = array(
-                        'no_coil'         => $r['no_coil'] . '-' . str_pad($i, 2, '0', STR_PAD_LEFT),
-                        'babycoil_code'   => $r['kode_internal'] . '-BC.' . str_pad($i, 2, '0', STR_PAD_LEFT),
-                        'net_weight_pl'   => round($nw_avg, 4),
-                        'gross_weight_pl' => round($gw_avg, 4),
-                    );
-                }
-            } else {
-                // Sudah 1 baris = 1 roll fisik di DB -> tinggal diteruskan
+            $nw_avg = $r['net_weight_pl'] / $qty;
+            $gw_avg = $r['gross_weight_pl'] / $qty;
+            for ($i = 1; $i <= $qty; $i++) {
                 $babies[] = array(
-                    'no_coil'         => $r['no_coil'],
-                    'babycoil_code'   => $r['kode_internal'],
-                    'net_weight_pl'   => $r['net_weight_pl'],
-                    'gross_weight_pl' => $r['gross_weight_pl'],
+                    'no_coil'         => $base_no_coil . '-BC.' . $total_baby_idx,
+                    'babycoil_code'   => $base_kode_internal . '-BC.' . $total_baby_idx,
+                    'net_weight_pl'   => round($nw_avg, 4),
+                    'gross_weight_pl' => round($gw_avg, 4),
                 );
+                $total_baby_idx++;
             }
         }
 
@@ -307,6 +305,9 @@ class Unpack_coil extends Admin_Controller
             $existing = $this->Unpack_coil_model->get_header($unpack_no);
             if (!$existing) {
                 return $this->_json(array('status' => 0, 'message' => 'Report unpack tidak ditemukan.'));
+            }
+            if ($existing['status'] === 'Lock') {
+                return $this->_json(array('status' => 0, 'message' => 'Report unpack sudah di-Lock dan tidak dapat diedit.'));
             }
         }
 
@@ -413,9 +414,22 @@ class Unpack_coil extends Admin_Controller
             // Unpack hanya memecah coil; nilai/harga per kg tidak berubah.
             $cb_per_kg = (float) (isset($rep['harga_beli']) ? $rep['harga_beli'] : 0);
 
+            $base_induk_coil = trim(preg_replace('/-BC\.\d+$/i', '', $rep['no_coil']));
+            if (strpos($base_induk_coil, ',') !== false) {
+                $parts_coil = explode(',', $base_induk_coil);
+                $base_induk_coil = trim($parts_coil[0]);
+            }
+            $base_induk_kode = trim(preg_replace('/-BC\.\d+$/i', '', $rep['kode_internal']));
+
             foreach ($babies as $idx => $b) {
-                $babycoil_code = isset($b['babycoil_code']) ? $b['babycoil_code'] : ($id_material . '-BC.' . ($idx + 1));
-                $no_coil_baby  = isset($b['no_coil']) ? $b['no_coil'] : $rep['no_coil'];
+                $seq = $idx + 1;
+                $no_coil_baby = (!empty($b['no_coil']) && strpos($b['no_coil'], ',') === false)
+                    ? trim($b['no_coil'])
+                    : ($base_induk_coil . '-BC.' . $seq);
+
+                $babycoil_code = (!empty($b['babycoil_code']) && strpos($b['babycoil_code'], ',') === false)
+                    ? trim($b['babycoil_code'])
+                    : ($base_induk_kode . '-BC.' . $seq);
                 $net_actual    = (float) (isset($b['net_weight_actual']) ? $b['net_weight_actual'] : 0);
                 $gross_actual  = (float) (isset($b['gross_weight_actual']) ? $b['gross_weight_actual'] : 0);
                 $net_pl        = (float) (isset($b['net_weight_pl']) ? $b['net_weight_pl'] : 0);
@@ -428,6 +442,9 @@ class Unpack_coil extends Admin_Controller
                     ? $rep['id']
                     : null;
 
+                $kulit_baby      = (float) (isset($b['kulit']) ? $b['kulit'] : 0);
+                $clamp_ring_baby = (float) (isset($b['clamp_ring']) ? $b['clamp_ring'] : 0);
+
                 $id_coil_baru = $this->Unpack_coil_model->insert_baby_stock_coil(
                     $induk_ref,
                     $babycoil_code,
@@ -435,7 +452,9 @@ class Unpack_coil extends Admin_Controller
                     $net_actual,
                     $gross_actual,
                     $cb_per_kg,
-                    $unpack_no
+                    $unpack_no,
+                    $kulit_baby,
+                    $clamp_ring_baby
                 );
 
                 $this->Unpack_coil_model->insert_baby(array(
@@ -446,6 +465,8 @@ class Unpack_coil extends Admin_Controller
                     'gross_weight_actual' => $gross_actual,
                     'net_weight_pl'       => $net_pl,
                     'gross_weight_pl'     => $gross_pl,
+                    'kulit'               => $kulit_baby,
+                    'clamp_ring'          => $clamp_ring_baby,
                     'costbook'            => $cb_per_kg,
                     'total_nilai'         => $nilai_baby,
                     'id_coil_baru'        => $id_coil_baru,
@@ -591,6 +612,10 @@ class Unpack_coil extends Admin_Controller
         $header = $this->Unpack_coil_model->get_header($unpack_no);
         if (!$header) {
             return $this->_json(array('status' => 0, 'message' => 'Report unpack tidak ditemukan.'));
+        }
+
+        if ($header['status'] === 'Lock') {
+            return $this->_json(array('status' => 0, 'message' => 'Report unpack sudah di-Lock dan tidak dapat dihapus.'));
         }
 
         $this->Unpack_coil_model->delete_req($unpack_no, $this->id_user);

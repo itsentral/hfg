@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beranda — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Beranda</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <span class="step step--active">Daftar SPK</span>
+      <span class="step">Input Produksi</span>
+      <span class="step">HPP</span>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Admin Produksi</span>
+      <span class="topbar__user-name">Budi S.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>SPK Menunggu Produksi</h1>
+        <p class="muted">Pilih SPK untuk meninjau data tarikan lalu menginput laporan produksi.</p>
+      </div>
+    </div>
+
+    <div class="stat-row" id="statRow"></div>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>Daftar Surat Perintah Kerja</h2>
+        <p class="card__hint">Setiap SPK memuat daftar produk Finish Good KW 1 yang akan diproduksi.</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl" id="spkTable">
+            <thead>
+              <tr>
+                <th>No. SPK</th>
+                <th>Tanggal</th>
+                <th>Customer</th>
+                <th>Material</th>
+                <th>Produk FG (KW 1)</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="beranda.js"></script>
+</body>
+</html>

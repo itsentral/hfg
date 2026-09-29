@@ -78,6 +78,8 @@ class Product_type extends Admin_Controller
           $last_date	=> $this->datetime
         ];
 
+        $oldData = (!empty($id)) ? $this->db->get_where('product_lvl_1', ['id' => $id])->row_array() : null;
+
         $this->db->trans_start();
           if(empty($id)){
             $this->db->insert('product_lvl_1',$dataProcess);
@@ -88,20 +90,22 @@ class Product_type extends Admin_Controller
           }
         $this->db->trans_complete();	
 
+        $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+
         if($this->db->trans_status() === FALSE){
           $this->db->trans_rollback();
           $status	= array(
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
-          write_log('Product Type', $label, 'Gagal ' . strtolower($label) . ' product type: ' . $code, $dataProcess, null, 0);
+          write_log('Product Type', $label, 'Gagal ' . strtolower($label) . ' product type: ' . $code, $logPayload, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(
             'pesan'		=>'Success process data!',
             'status'	=> 1
           );
-          write_log('Product Type', $label, $label . ' product type: ' . $code . ' (' . $nama . ')', $dataProcess, null, 1);
+          write_log('Product Type', $label, $label . ' product type: ' . $code . ' (' . $nama . ')', $logPayload, null, 1);
         }
         echo json_encode($status);
       }

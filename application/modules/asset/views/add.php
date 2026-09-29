@@ -21,14 +21,6 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
 ?>
 
 <div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
-        <h5 class="card-title mb-0 fw-bold text-primary">
-            <i class="fa fa-edit me-2"></i><?= $title ?>
-        </h5>
-        <a href="<?= site_url('asset') ?>" class="btn btn-sm btn-secondary">
-            <i class="fa fa-arrow-left me-1"></i> Back to Asset List
-        </a>
-    </div>
     <div class="card-body">
         <form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data">
             <input type="hidden" name="id" id="id" value="<?= $id ?>">
@@ -194,7 +186,9 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
 <script type="text/javascript">
     $(document).ready(function() {
         if ($('.select2').length > 0) {
-            $('.select2').select2({ width: '100%' });
+            $('.select2').select2({
+                width: '100%'
+            });
         }
 
         var id = $('#id').val();
@@ -294,15 +288,27 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         var nilai_asset = $('#nilai_asset').val();
 
         if (nm_asset === '') {
-            swal({ title: "Warning!", text: "Nama Asset tidak boleh kosong!", type: "warning" });
+            swal({
+                title: "Warning!",
+                text: "Nama Asset tidak boleh kosong!",
+                type: "warning"
+            });
             return false;
         }
         if (category === '0' || category === '') {
-            swal({ title: "Warning!", text: "Kategori Asset belum dipilih!", type: "warning" });
+            swal({
+                title: "Warning!",
+                text: "Kategori Asset belum dipilih!",
+                type: "warning"
+            });
             return false;
         }
         if (lokasi_asset === '0' || lokasi_asset === '') {
-            swal({ title: "Warning!", text: "Lokasi Department belum dipilih!", type: "warning" });
+            swal({
+                title: "Warning!",
+                text: "Lokasi Department belum dipilih!",
+                type: "warning"
+            });
             return false;
         }
 
@@ -348,7 +354,11 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         var cost_center_new = $('#cost_center_new').val();
 
         if (lokasi_asset_new === '0' || lokasi_asset_new === '') {
-            swal({ title: "Warning!", text: "Department New belum dipilih!", type: "warning" });
+            swal({
+                title: "Warning!",
+                text: "Department New belum dipilih!",
+                type: "warning"
+            });
             return false;
         }
 

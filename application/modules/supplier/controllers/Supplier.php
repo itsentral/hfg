@@ -115,6 +115,8 @@ class Supplier extends Admin_Controller
 				$created_date	  	=> date('Y-m-d H:i:s')
 			);
 
+			$oldData = (!empty($id)) ? $this->db->get_where('new_supplier', ['id' => $id])->row_array() : null;
+
 			$this->db->trans_start();
 			if (empty($id)) {
 				$this->db->insert('new_supplier', $ArrHeader);
@@ -125,20 +127,22 @@ class Supplier extends Admin_Controller
 			}
 			$this->db->trans_complete();
 
+			$logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $ArrHeader] : $ArrHeader;
+
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
 				$Arr_Data	= array(
 					'pesan'		=> 'Save gagal disimpan ...',
 					'status'	=> 0
 				);
-				write_log('Supplier', $tanda, 'Gagal ' . strtolower($tanda) . ' supplier: ' . $kode_supplier, $ArrHeader, null, 0);
+				write_log('Supplier', $tanda, 'Gagal ' . strtolower($tanda) . ' supplier: ' . $kode_supplier, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
 					'pesan'		=> 'Save berhasil disimpan. Thanks ...',
 					'status'	=> 1
 				);
-				write_log('Supplier', $tanda, $tanda . ' supplier: ' . $kode_supplier . ' (' . $nama . ')', $ArrHeader, null, 1);
+				write_log('Supplier', $tanda, $tanda . ' supplier: ' . $kode_supplier . ' (' . $nama . ')', $logPayload, null, 1);
 			}
 
 			echo json_encode($Arr_Data);

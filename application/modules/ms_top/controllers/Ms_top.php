@@ -157,6 +157,8 @@ class Ms_top extends Admin_Controller
 				);
 				$TandaI = "Update";
 			}
+			$oldData = (!empty($id)) ? $this->db->get_where('list_help', ['id' => $id])->row_array() : null;
+
 			$this->db->trans_start();
 			if (empty($id)) $this->db->insert('list_help', $ArrHeader);
 			if (!empty($id)) {
@@ -164,20 +166,23 @@ class Ms_top extends Admin_Controller
 				$this->db->update('list_help', $ArrHeader);
 			}
 			$this->db->trans_complete();
+
+			$logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $ArrHeader] : $ArrHeader;
+
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
 				$Arr_Kembali	= array(
 					'pesan'		=> $TandaI . ' data failed. Please try again later ...',
 					'status'	=> 0
 				);
-				write_log('Master TOP', $TandaI, 'Gagal ' . strtolower($TandaI) . ' TOP: ' . $name, $ArrHeader, null, 0);
+				write_log('Master TOP', $TandaI, 'Gagal ' . strtolower($TandaI) . ' TOP: ' . $name, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(
 					'pesan'		=> $TandaI . ' data success.',
 					'status'	=> 1
 				);
-				write_log('Master TOP', $TandaI, $TandaI . ' TOP: ' . $name, $ArrHeader, null, 1);
+				write_log('Master TOP', $TandaI, $TandaI . ' TOP: ' . $name, $logPayload, null, 1);
 			}
 			echo json_encode($Arr_Kembali);
 		} else {

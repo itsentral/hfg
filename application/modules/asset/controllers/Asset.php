@@ -214,6 +214,8 @@ class Asset extends Admin_Controller
 
             }
 
+            $old_asset_data = (!empty($id)) ? $this->db->get_where('asset', array('id' => $id))->row_array() : null;
+
             $this->db->trans_start();
             if (empty($id)) {
                 $this->db->insert('asset', $ArrHeader);
@@ -233,7 +235,8 @@ class Asset extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-                write_log('Asset', 'Save Asset', $tanda . ' asset success: ' . $tanda2, $data, null, 1);
+                $log_payload = (!empty($id) && $old_asset_data) ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrHeader)) : $data;
+                write_log('Asset', 'Save Asset', $tanda . ' asset success: ' . $tanda2, $log_payload, null, 1);
             }
 
             echo json_encode($Arr_Data);
@@ -287,6 +290,8 @@ class Asset extends Admin_Controller
             'modified_date' => date('Y-m-d H:i:s')
         );
 
+        $old_asset_data = $this->db->get_where('asset', array('kd_asset' => $kd_asset))->row_array();
+
         $this->db->trans_start();
         $this->db->where('kd_asset', $kd_asset);
         $this->db->update('asset', $ArrUpHeader);
@@ -299,7 +304,8 @@ class Asset extends Admin_Controller
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-            write_log('Asset', 'Update Asset', 'Update asset success: ' . $kd_asset, $data, null, 1);
+            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrUpHeader)) : $data;
+            write_log('Asset', 'Update Asset', 'Update asset success: ' . $kd_asset, $log_payload, null, 1);
         }
 
         echo json_encode($Arr_Data);
@@ -331,6 +337,8 @@ class Asset extends Admin_Controller
             'cost_center'  => $cost_center_new
         );
 
+        $old_asset_data = $this->db->get_where('asset', array('kd_asset' => $kd_asset))->row_array();
+
         $this->db->trans_start();
         $this->db->where('kd_asset', $kd_asset);
         $this->db->update('asset', $ArrUpHeader);
@@ -346,7 +354,8 @@ class Asset extends Admin_Controller
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil dipindahkan. Thanks ...', 'status' => 1);
-            write_log('Asset', 'Move Asset', 'Move asset success: ' . $kd_asset, $data, null, 1);
+            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrUpHeader)) : $data;
+            write_log('Asset', 'Move Asset', 'Move asset success: ' . $kd_asset, $log_payload, null, 1);
         }
 
         echo json_encode($Arr_Data);

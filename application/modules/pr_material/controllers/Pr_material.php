@@ -74,14 +74,14 @@ class Pr_material extends Admin_Controller
                 'pesan'    => 'Save process failed. Please try again later ...',
                 'status'  => 0
             );
-            write_log('PR Material', 'Save Planning', 'Gagal simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 0);
+            write_log('PR Material', 'Save Planning', 'Gagal update temporary material: ' . $id_material, $ArrHeader, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
                 'pesan'    => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            write_log('PR Material', 'Save Planning', 'Simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 1);
+            write_log('PR Material', 'Save Planning', 'Update temporary material: ' . $id_material, $ArrHeader, null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -187,14 +187,14 @@ class Pr_material extends Admin_Controller
                 'pesan'    => 'Save process failed. Please try again later ...',
                 'status'  => 0
             );
-            write_log('PR Material', 'Save Planning', 'Gagal simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 0);
+            write_log('PR Material', 'Save Planning', 'Gagal update temporary date: ' . $tanggal, $ArrUpdate, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data  = array(
                 'pesan'    => 'Save process success. Thanks ...',
                 'status'  => 1
             );
-            write_log('PR Material', 'Save Planning', 'Simpan pengajuan propose material: ' . $so_number, $ArrSaveHeader, null, 1);
+            write_log('PR Material', 'Save Planning', 'Update temporary date: ' . $tanggal, $ArrUpdate, null, 1);
         }
         echo json_encode($Arr_Data);
     }
@@ -507,12 +507,57 @@ class Pr_material extends Admin_Controller
             'app_post'         => 3,
         ], ['so_number' => $so_number]);
 
+        $oldDetails = $this->db->get_where('material_planning_base_on_produksi_detail', ['so_number' => $so_number])->result_array();
         if (!empty($ArrUpdate)) {
             $this->db->update_batch('material_planning_base_on_produksi_detail', $ArrUpdate, 'id');
         }
 
         $this->db->trans_complete();
 
+        // Hitung detail diff per item material
+        $detail_changes = [];
+        $oldMap = [];
+        foreach ($oldDetails as $od) {
+            $oldMap[$od['id']] = $od;
+        }
+
+        foreach ($ArrUpdate as $upItem) {
+            $idIt = $upItem['id'];
+            if (isset($oldMap[$idIt])) {
+                $oldIt = $oldMap[$idIt];
+                $nmMat = !empty($oldIt['nama_material']) ? $oldIt['nama_material'] : 'ID ' . $idIt;
+                
+                // Compare propose_purchase
+                if (abs((float)$oldIt['propose_purchase'] - (float)$upItem['propose_purchase']) > 0.0000001) {
+                    $detail_changes["Item [$nmMat] - Propose Purchase"] = [
+                        'old' => $oldIt['propose_purchase'],
+                        'new' => $upItem['propose_purchase']
+                    ];
+                }
+                // Compare note
+                if (trim((string)$oldIt['note']) !== trim((string)$upItem['note'])) {
+                    $detail_changes["Item [$nmMat] - Note"] = [
+                        'old' => $oldIt['note'],
+                        'new' => $upItem['note']
+                    ];
+                }
+            }
+        }
+
+        $oldHeader = (array)$get_pr;
+        $newHeader = array_merge($oldHeader, [
+            'no_rev'         => ($get_pr->no_rev + 1),
+            'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
+            'tingkat_pr'     => $data['tingkat_pr'],
+            'keterangan_3'   => $data['keterangan_3'],
+        ]);
+
+        $logPayload = [
+            'so_number'      => $so_number,
+            'old'            => $oldHeader,
+            'new'            => $newHeader,
+            'detail_changes' => $detail_changes
+        ];
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $Arr_Data = [
@@ -520,7 +565,7 @@ class Pr_material extends Admin_Controller
                 'status'    => 0,
                 'so_number' => $so_number
             ];
-            write_log('PR Material', 'Update Qty', 'Gagal update qty PR material: ' . $so_number, ['so_number' => $so_number], null, 0);
+            write_log('PR Material', 'Update Qty', 'Gagal update qty PR material: ' . $so_number, $logPayload, null, 0);
         } else {
             $this->db->trans_commit();
             $Arr_Data = [
@@ -528,7 +573,7 @@ class Pr_material extends Admin_Controller
                 'status'    => 1,
                 'so_number' => $so_number
             ];
-            write_log('PR Material', 'Update Qty', 'Update qty PR material: ' . $so_number, ['so_number' => $so_number], null, 1);
+            write_log('PR Material', 'Update Qty', 'Update qty PR material: ' . $so_number, $logPayload, null, 1);
         }
 
         echo json_encode($Arr_Data);

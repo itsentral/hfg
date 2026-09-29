@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan HPP — Mockup UI/UX</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Laporan HPP</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <a class="step" href="beranda.html">Daftar SPK</a>
+      <a class="step" href="index.html">Input Produksi</a>
+      <a class="step step--active" href="hpp.html">HPP</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Accounting</span>
+      <span class="topbar__user-name">Andri P.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Laporan HPP</h1>
+        <p class="muted">Perhitungan Harga Pokok Produksi per komponen — read-only, sumber tunggal untuk posting jurnal.</p>
+      </div>
+      <div class="page__header-status">
+        <a class="btn btn--ghost" href="index.html">← Kembali ke Laporan Produksi</a>
+      </div>
+    </div>
+
+    <!-- Ringkasan konteks laporan -->
+    <section class="card">
+      <div class="card__body meta-strip" id="metaStrip">
+        <div class="meta"><span class="meta__k">SPK</span><span class="meta__v" id="mSpk">—</span></div>
+        <div class="meta"><span class="meta__k">Tgl Produksi</span><span class="meta__v" id="mTgl">—</span></div>
+        <div class="meta"><span class="meta__k">Mesin</span><span class="meta__v" id="mMesin">—</span></div>
+        <div class="meta"><span class="meta__k">Report No</span><span class="meta__v" id="mReport">—</span></div>
+        <div class="meta"><span class="meta__k">Status</span><span class="meta__v"><span class="badge badge--draft">Draft</span></span></div>
+      </div>
+    </section>
+
+    <!-- ============ HPP FG KW 1 & STOK BEBAS ============ -->
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">1</span> HPP — Finish Good KW 1 &amp; Stok Bebas</h2>
+        <p class="card__hint">Biaya/Pcs = Berat/Pcs × Costbook Material (gudang asal) + rate Product Costing. Total = nilai/pcs × Qty FG. (FR-19)</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap table-wrap--wide">
+          <table class="tbl tbl--hpp" id="kw1Table">
+            <thead>
+              <tr>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Produk</th>
+                <th class="num" rowspan="2">Total Weight (kg)</th>
+                <th class="num" rowspan="2">Berat/Pcs</th>
+                <th class="num" rowspan="2">Qty FG</th>
+                <th class="num" rowspan="2">Costbook</th>
+                <th colspan="8" class="grp">Komponen Biaya / Pcs (Rp)</th>
+                <th class="num grp grp--total" rowspan="2">FG Value Total (Rp)</th>
+              </tr>
+              <tr>
+                <th class="num">Material</th>
+                <th class="num">Man Power</th>
+                <th class="num">FOH</th>
+                <th class="num">Bahan Pendukung</th>
+                <th class="num">Consumables</th>
+                <th class="num">Koordinasi</th>
+                <th class="num">Scrap</th>
+                <th class="num">FG Value/Pcs</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HPP FG KW 2 ============ -->
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">2</span> HPP — Finish Good KW 2</h2>
+        <p class="card__hint">Komponen biaya sama seperti KW 1, ditambah pembagian Inventory (80%) dan Biaya Loss KW 2 (20%). (FR-20)</p>
+      </div>
+      <div class="card__body">
+        <h3 class="subhead__solo">KW 2 — Internal <span class="badge badge--note">Nilai Inventory hanya 80%</span></h3>
+        <div class="table-wrap table-wrap--wide">
+          <table class="tbl tbl--hpp" id="kw2InternalTable">
+            <thead>
+              <tr>
+                <th>No</th><th>Produk</th>
+                <th class="num">Total Weight</th><th class="num">Berat/Pcs</th><th class="num">Qty FG</th>
+                <th class="num">FG Value/Pcs</th><th class="num grp--total">FG Value Total</th>
+                <th class="num grp">Inventory (80%)</th><th class="num grp">Biaya Loss (20%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+
+        <h3 class="subhead__solo">KW 2 — Supplier <span class="badge badge--note">Nilai Inventory hanya 80%</span></h3>
+        <div class="table-wrap table-wrap--wide">
+          <table class="tbl tbl--hpp" id="kw2SupplierTable">
+            <thead>
+              <tr>
+                <th>No</th><th>Produk</th>
+                <th class="num">Total Weight</th><th class="num">Berat/Pcs</th><th class="num">Qty FG</th>
+                <th class="num">FG Value/Pcs</th><th class="num grp--total">FG Value Total</th>
+                <th class="num grp">Inventory (80%)</th><th class="num grp">Biaya Loss (20%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HPP SCRAP ============ -->
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">3</span> Komponen Scrap</h2>
+        <p class="card__hint">Nilai = Total Weight × Costbook Material, dibagi Inventory Value (40%) dan Beban FOH Scrap/Tong/Wrapping (60%). (FR-21 / FR-27)</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl tbl--hpp" id="scrapTable">
+            <thead>
+              <tr>
+                <th>No</th><th>Item</th>
+                <th class="num">Total Weight (kg)</th>
+                <th class="num">Costbook /kg</th>
+                <th class="num">Nilai (Rp)</th>
+                <th class="num grp">Inventory Value (40%)</th>
+                <th class="num grp">Beban FOH (60%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SISA / HOLD / SELISIH ============ -->
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">4</span> Sisa Coil, Hold Coil &amp; Selisih Berat</h2>
+        <p class="card__hint">Nilai inventory = Total Weight × Costbook Material dari gudang asal (full, tanpa pembagian %). (FR-22 / FR-23)</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl tbl--hpp" id="othersTable">
+            <thead>
+              <tr>
+                <th>Kelompok</th><th>Item</th>
+                <th class="num">Total Weight (kg)</th>
+                <th class="num">Costbook /kg</th>
+                <th class="num grp--total">Inventory Value (Rp)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TOTAL BIAYA (JURNAL) ============ -->
+    <section class="card card--summary">
+      <div class="card__head">
+        <h2><span class="card__num">5</span> Total Biaya Finish Good — Jurnal Produksi (GL Interface)</h2>
+        <p class="card__hint">Nilai Material &amp; HPP hasil FR-19 s.d. FR-23 menjadi dasar posting jurnal (FR-24).</p>
+      </div>
+      <div class="card__body">
+        <div class="journal">
+          <div class="journal__col">
+            <h3>Ringkasan Nilai</h3>
+            <ul class="jlist" id="jSummary"></ul>
+          </div>
+          <div class="journal__col">
+            <h3>Preview Jurnal</h3>
+            <table class="tbl tbl--journal" id="journalTable">
+              <thead>
+                <tr><th>Akun</th><th class="num">Debit (Rp)</th><th class="num">Kredit (Rp)</th></tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="grand-total">
+          <span>Total HPP Keseluruhan</span>
+          <strong id="grandTotal">Rp 0</strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="actionbar">
+      <div class="actionbar__note">
+        <span class="muted">HPP bersifat read-only. Posting jurnal hanya oleh role Accounting (NFR-05).</span>
+      </div>
+      <div class="actionbar__btns">
+        <a class="btn btn--ghost" href="index.html">Kembali</a>
+        <button type="button" class="btn btn--primary" id="btnPost">Posting Jurnal ke GL</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="hpp.js"></script>
+</body>
+</html>

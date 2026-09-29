@@ -240,21 +240,25 @@ class Master_sound extends Admin_Controller
             }
         }
 
+        $oldData = null;
         if (empty($id)) {
             $save_data['created_by']   = $username;
             $save_data['created_date'] = $now;
         } else {
+            $oldData = $this->db->get_where('master_sounds', ['id' => $id])->row_array();
             $save_data['updated_by']   = $username;
             $save_data['updated_date'] = $now;
         }
 
         $result_id = $this->sound_model->save_data($save_data, $id);
 
+        $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $save_data] : $save_data;
+
         if ($result_id) {
-            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', (empty($id) ? 'Tambah' : 'Update') . ' sound: ' . ($save_data['sound_code'] ?? $id), $save_data, null, 1);
+            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', (empty($id) ? 'Tambah' : 'Update') . ' sound: ' . ($save_data['sound_code'] ?? $id), $logPayload, null, 1);
             echo json_encode(['status' => 1, 'msg' => 'Master Sound berhasil disimpan.']);
         } else {
-            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', 'Gagal simpan sound: ' . ($save_data['sound_code'] ?? $id), $save_data, null, 0);
+            write_log('Master Sound', empty($id) ? 'Add' : 'Edit', 'Gagal simpan sound: ' . ($save_data['sound_code'] ?? $id), $logPayload, null, 0);
             echo json_encode(['status' => 0, 'msg' => 'Gagal menyimpan Master Sound.']);
         }
     }
