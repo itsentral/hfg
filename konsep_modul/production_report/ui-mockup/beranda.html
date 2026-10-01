@@ -18,6 +18,9 @@
     <nav class="topbar__steps" aria-label="Alur proses">
       <span class="step step--active">Daftar SPK</span>
       <span class="step">Input Produksi</span>
+      <a class="step" href="material.html">Material</a>
+      <a class="step" href="costbook.html">Costbook</a>
+      <a class="step" href="rate.html">Rate</a>
       <span class="step">HPP</span>
     </nav>
     <div class="topbar__user">
@@ -31,6 +34,9 @@
       <div>
         <h1>SPK Menunggu Produksi</h1>
         <p class="muted">Pilih SPK untuk meninjau data tarikan lalu menginput laporan produksi.</p>
+      </div>
+      <div class="page__header-status">
+        <button type="button" class="btn btn--primary" id="btnAddSpk">+ Add SPK</button>
       </div>
     </div>
 
@@ -61,6 +67,57 @@
       </div>
     </section>
   </main>
+
+  <!-- ============ MODAL: ADD SPK ============ -->
+  <div class="modal" id="spkModal" hidden>
+    <div class="modal__box modal__box--wide">
+      <h3 class="modal__title">Buat SPK Baru</h3>
+      <p class="modal__body">Lengkapi data SPK dan pilih produk Finish Good (KW 1) beserta target qty.</p>
+
+      <div class="grid grid--header">
+        <label class="field">
+          <span class="field__label">No. SPK <em>*</em></span>
+          <input type="text" id="spkNo" placeholder="cth: SPK-2026-0915" />
+        </label>
+        <label class="field">
+          <span class="field__label">Tgl SPK <em>*</em></span>
+          <input type="date" id="spkTgl" />
+        </label>
+        <label class="field">
+          <span class="field__label">Customer <em>*</em></span>
+          <input type="text" id="spkCustomer" placeholder="Nama customer" />
+        </label>
+        <label class="field">
+          <span class="field__label">Material</span>
+          <input type="text" id="spkMaterial" placeholder="cth: Coil Galvanis 1.0mm" />
+        </label>
+      </div>
+
+      <div class="subhead">
+        <h3>Produk FG (KW 1)</h3>
+        <button type="button" class="btn btn--tiny" id="spkAddProduct">+ Tambah Produk</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl" id="spkProductTable">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th class="num" style="width:160px">Target Qty (pcs)</th>
+              <th style="width:44px"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot><tr><td colspan="3" class="empty">Belum ada produk. Tambahkan minimal satu.</td></tr></tfoot>
+        </table>
+      </div>
+      <p class="note" id="spkError" hidden></p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="spkCancel">Batal</button>
+        <button type="button" class="btn btn--primary" id="spkSave">Simpan SPK</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" hidden></div>
 

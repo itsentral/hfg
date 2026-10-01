@@ -19,6 +19,9 @@
     <nav class="topbar__steps" aria-label="Alur proses">
       <a class="step" href="beranda.html">Daftar SPK</a>
       <a class="step" href="index.html">Input Produksi</a>
+      <a class="step" href="material.html">Material</a>
+      <a class="step" href="costbook.html">Costbook</a>
+      <a class="step" href="rate.html">Rate</a>
       <a class="step step--active" href="hpp.html">HPP</a>
     </nav>
     <div class="topbar__user">
@@ -64,10 +67,11 @@
                 <th rowspan="2">Produk</th>
                 <th class="num" rowspan="2">Total Weight (kg)</th>
                 <th class="num" rowspan="2">Berat/Pcs</th>
+                <th class="num" rowspan="2">Size (m)</th>
                 <th class="num" rowspan="2">Qty FG</th>
                 <th class="num" rowspan="2">Costbook</th>
                 <th colspan="8" class="grp">Komponen Biaya / Pcs (Rp)</th>
-                <th class="num grp grp--total" rowspan="2">FG Value Total (Rp)</th>
+                <th colspan="8" class="grp grp--total">Total Biaya Finish Good (Rp)</th>
               </tr>
               <tr>
                 <th class="num">Material</th>
@@ -78,6 +82,14 @@
                 <th class="num">Koordinasi</th>
                 <th class="num">Scrap</th>
                 <th class="num">FG Value/Pcs</th>
+                <th class="num grp">Total Material</th>
+                <th class="num grp">Man Power</th>
+                <th class="num grp">FOH</th>
+                <th class="num grp">Bahan Pendukung</th>
+                <th class="num grp">Consumables</th>
+                <th class="num grp">Koordinasi</th>
+                <th class="num grp">Scrap</th>
+                <th class="num grp grp--total">FG Value Total</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -99,10 +111,35 @@
           <table class="tbl tbl--hpp" id="kw2InternalTable">
             <thead>
               <tr>
-                <th>No</th><th>Produk</th>
-                <th class="num">Total Weight</th><th class="num">Berat/Pcs</th><th class="num">Qty FG</th>
-                <th class="num">FG Value/Pcs</th><th class="num grp--total">FG Value Total</th>
-                <th class="num grp">Inventory (80%)</th><th class="num grp">Biaya Loss (20%)</th>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Produk</th>
+                <th class="num" rowspan="2">Total Weight (kg)</th>
+                <th class="num" rowspan="2">Berat/Pcs</th>
+                <th class="num" rowspan="2">Size (m)</th>
+                <th class="num" rowspan="2">Qty FG</th>
+                <th class="num" rowspan="2">Costbook</th>
+                <th colspan="8" class="grp">Komponen Biaya / Pcs (Rp)</th>
+                <th colspan="8" class="grp grp--total">Total Biaya Finish Good (Rp)</th>
+                <th class="num grp" rowspan="2">Inventory (80%)</th>
+                <th class="num grp" rowspan="2">Biaya Loss (20%)</th>
+              </tr>
+              <tr>
+                <th class="num">Material</th>
+                <th class="num">Man Power</th>
+                <th class="num">FOH</th>
+                <th class="num">Bahan Pendukung</th>
+                <th class="num">Consumables</th>
+                <th class="num">Koordinasi</th>
+                <th class="num">Scrap</th>
+                <th class="num">FG Value/Pcs</th>
+                <th class="num grp">Total Material</th>
+                <th class="num grp">Man Power</th>
+                <th class="num grp">FOH</th>
+                <th class="num grp">Bahan Pendukung</th>
+                <th class="num grp">Consumables</th>
+                <th class="num grp">Koordinasi</th>
+                <th class="num grp">Scrap</th>
+                <th class="num grp grp--total">FG Value Total</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -115,10 +152,35 @@
           <table class="tbl tbl--hpp" id="kw2SupplierTable">
             <thead>
               <tr>
-                <th>No</th><th>Produk</th>
-                <th class="num">Total Weight</th><th class="num">Berat/Pcs</th><th class="num">Qty FG</th>
-                <th class="num">FG Value/Pcs</th><th class="num grp--total">FG Value Total</th>
-                <th class="num grp">Inventory (80%)</th><th class="num grp">Biaya Loss (20%)</th>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Produk</th>
+                <th class="num" rowspan="2">Total Weight (kg)</th>
+                <th class="num" rowspan="2">Berat/Pcs</th>
+                <th class="num" rowspan="2">Size (m)</th>
+                <th class="num" rowspan="2">Qty FG</th>
+                <th class="num" rowspan="2">Costbook</th>
+                <th colspan="8" class="grp">Komponen Biaya / Pcs (Rp)</th>
+                <th colspan="8" class="grp grp--total">Total Biaya Finish Good (Rp)</th>
+                <th class="num grp" rowspan="2">Inventory (80%)</th>
+                <th class="num grp" rowspan="2">Biaya Loss (20%)</th>
+              </tr>
+              <tr>
+                <th class="num">Material</th>
+                <th class="num">Man Power</th>
+                <th class="num">FOH</th>
+                <th class="num">Bahan Pendukung</th>
+                <th class="num">Consumables</th>
+                <th class="num">Koordinasi</th>
+                <th class="num">Scrap</th>
+                <th class="num">FG Value/Pcs</th>
+                <th class="num grp">Total Material</th>
+                <th class="num grp">Man Power</th>
+                <th class="num grp">FOH</th>
+                <th class="num grp">Bahan Pendukung</th>
+                <th class="num grp">Consumables</th>
+                <th class="num grp">Koordinasi</th>
+                <th class="num grp">Scrap</th>
+                <th class="num grp grp--total">FG Value Total</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -154,18 +216,51 @@
       </div>
     </section>
 
-    <!-- ============ SISA / HOLD / SELISIH ============ -->
+    <!-- ============ SISA COIL / HOLD COIL / SELISIH BERAT ============ -->
     <section class="card">
       <div class="card__head">
         <h2><span class="card__num">4</span> Sisa Coil, Hold Coil &amp; Selisih Berat</h2>
         <p class="card__hint">Nilai inventory = Total Weight × Costbook Material dari gudang asal (full, tanpa pembagian %). (FR-22 / FR-23)</p>
       </div>
       <div class="card__body">
+        <h3 class="subhead__solo">Sisa Coil</h3>
         <div class="table-wrap">
-          <table class="tbl tbl--hpp" id="othersTable">
+          <table class="tbl tbl--hpp" id="sisaTable">
             <thead>
               <tr>
-                <th>Kelompok</th><th>Item</th>
+                <th style="width:44px">No</th><th>Item</th>
+                <th class="num">Total Weight (kg)</th>
+                <th class="num">Costbook /kg</th>
+                <th class="num grp--total">Inventory Value (Rp)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+
+        <h3 class="subhead__solo">Hold Coil</h3>
+        <div class="table-wrap">
+          <table class="tbl tbl--hpp" id="holdTable">
+            <thead>
+              <tr>
+                <th style="width:44px">No</th><th>Item</th>
+                <th class="num">Total Weight (kg)</th>
+                <th class="num">Costbook /kg</th>
+                <th class="num grp--total">Inventory Value (Rp)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+
+        <h3 class="subhead__solo">Selisih Berat</h3>
+        <div class="table-wrap">
+          <table class="tbl tbl--hpp" id="selisihTable">
+            <thead>
+              <tr>
+                <th style="width:44px">No</th><th>Item</th>
                 <th class="num">Total Weight (kg)</th>
                 <th class="num">Costbook /kg</th>
                 <th class="num grp--total">Inventory Value (Rp)</th>
@@ -178,31 +273,30 @@
       </div>
     </section>
 
-    <!-- ============ TOTAL BIAYA (JURNAL) ============ -->
+    <!-- ============ JURNAL PRODUKSI (GL INTERFACE) ============ -->
     <section class="card card--summary">
       <div class="card__head">
-        <h2><span class="card__num">5</span> Total Biaya Finish Good — Jurnal Produksi (GL Interface)</h2>
-        <p class="card__hint">Nilai Material &amp; HPP hasil FR-19 s.d. FR-23 menjadi dasar posting jurnal (FR-24).</p>
+        <h2><span class="card__num">5</span> Jurnal Produksi — GL Interface</h2>
+        <p class="card__hint">Jurnal Voucher (JV) dari Laporan Harian Produksi. Struktur &amp; akun mengikuti konsep "Tampilan Jurnal Produksi". (FR-24)</p>
       </div>
       <div class="card__body">
-        <div class="journal">
-          <div class="journal__col">
-            <h3>Ringkasan Nilai</h3>
-            <ul class="jlist" id="jSummary"></ul>
-          </div>
-          <div class="journal__col">
-            <h3>Preview Jurnal</h3>
-            <table class="tbl tbl--journal" id="journalTable">
-              <thead>
-                <tr><th>Akun</th><th class="num">Debit (Rp)</th><th class="num">Kredit (Rp)</th></tr>
-              </thead>
-              <tbody></tbody>
-              <tfoot></tfoot>
-            </table>
-          </div>
+        <div class="table-wrap table-wrap--wide">
+          <table class="tbl tbl--journal tbl--hpp" id="journalTable">
+            <thead>
+              <tr>
+                <th style="width:130px">Account COA</th>
+                <th>Nama Account</th>
+                <th>Formula</th>
+                <th class="num">Debit (Rp)</th>
+                <th class="num">Kredit (Rp)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
         </div>
-        <div class="grand-total">
-          <span>Total HPP Keseluruhan</span>
+        <div class="grand-total" id="balanceLine">
+          <span>Cek Balancing (Debit = Kredit)</span>
           <strong id="grandTotal">Rp 0</strong>
         </div>
       </div>

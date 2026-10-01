@@ -423,6 +423,7 @@
   <form id="prodForm" novalidate>
     <input type="hidden" name="spk_no" value="<?= htmlspecialchars($spk['spk_no']); ?>">
     <input type="hidden" name="id_tr_spk_detail" value="<?= !empty($spk['primary_spk_detail_id']) ? $spk['primary_spk_detail_id'] : ''; ?>">
+    <input type="hidden" name="report_id" id="reportId" value="<?= !empty($draft['header']['id']) ? $draft['header']['id'] : ''; ?>">
 
     <!-- 1. INFORMASI LAPORAN -->
     <section class="pr-card">
@@ -907,6 +908,7 @@
   var SPK = <?= json_encode($spk); ?>;
   var SPK_PRODUCTS = <?= json_encode($spk_products); ?>;
   var ALL_PRODUCTS = <?= json_encode($all_products); ?>;
+  var DRAFT_DATA = <?= !empty($draft) ? json_encode($draft) : 'null'; ?>;
   var CURRENT_USER = {
     name: <?= json_encode($this->auth->user_name()); ?>,
     role: "User"
@@ -1061,7 +1063,7 @@
     return opts;
   }
 
-  function babyCoilSelectOptions(source, selectedCode) {
+  function babyCoilSelectOptions(source, selectedCode, selectedMaterial) {
     var list = state.availableCoils[source] || [];
     var usedElsewhere = {};
     $.each(state.coils, function(i, c) {
@@ -1071,13 +1073,26 @@
     });
 
     var opts = '<option value="">— Pilih Baby Coil —</option>';
+    var foundSelected = false;
+
     $.each(list, function(i, c) {
       if (!usedElsewhere[c.no_coil]) {
-        var sel = (c.no_coil === selectedCode) ? ' selected' : '';
+        var sel = '';
+        if (c.no_coil === selectedCode) {
+          sel = ' selected';
+          foundSelected = true;
+        }
         var mat = c.nm_material || c.lot_material || 'Coil';
         opts += '<option value="' + c.no_coil + '"' + sel + '>' + c.no_coil + ' · ' + mat + '</option>';
       }
     });
+
+    // Fallback penting jika selectedCode ada tapi belum ada di list (misal saat buka draft / ajax belum selesai)
+    if (selectedCode && !foundSelected) {
+      var label = selectedCode + (selectedMaterial ? ' · ' + selectedMaterial : '');
+      opts += '<option value="' + selectedCode + '" selected>' + label + '</option>';
+    }
+
     return opts;
   }
 
@@ -1147,7 +1162,7 @@
       html += '<tr data-id="' + c.id + '">';
       html += '  <td><span class="src-tag src-tag-' + c.source + '">' + (SRC_LABEL[c.source] || c.source) + '</span></td>';
       html += '  <td><select data-coil-pick="' + c.id + '" class="form-select form-select-sm select2 ' + (chosen ? '' : 'border-primary') + '">' +
-        babyCoilSelectOptions(c.source, c.code) +
+        babyCoilSelectOptions(c.source, c.code, c.material) +
         '</select></td>';
       html += '  <td>' + (chosen ? c.material : '—') + '</td>';
       html += '  <td class="num">' + (c.nett != null ? formatNum(c.nett) : '—') + '</td>';
@@ -1167,7 +1182,21 @@
     } else {
       $('#coilEmpty').closest('tfoot').show();
     }
+
+    // Set nilai pada select sebelum dan sesudah initSelect2
+    $.each(state.coils, function(i, c) {
+      if (c.code) {
+        $('[data-coil-pick="' + c.id + '"]').val(c.code);
+      }
+    });
+
     initSelect2Search('#coilTable');
+
+    $.each(state.coils, function(i, c) {
+      if (c.code) {
+        $('[data-coil-pick="' + c.id + '"]').val(c.code);
+      }
+    });
   }
 
   function pickCoil(id, code) {
@@ -1179,6 +1208,11 @@
       }
     });
     if (!row) return;
+
+    // Jika code sama dengan yang sudah ada dan detail sudah terisi (misal saat restore draft), tidak perlu proses ulang
+    if (code && row.code === code && row.material) {
+      return;
+    }
 
     // Validasi: pastikan coil belum dipilih di baris Add Coil lainnya
     if (code) {
@@ -1936,6 +1970,7 @@
 
     // Build Payload
     var payload = {
+      report_id: $('#reportId').val(),
       spk_no: $('input[name="spk_no"]').val(),
       id_tr_spk_detail: $('input[name="id_tr_spk_detail"]').val(),
       tgl_produksi: $('#tglProduksi').val(),
@@ -2505,8 +2540,169 @@
       submitReport(0);
     });
 
+
+  // RESTORE DRAFT DATA BILA SEDANG EDIT / LANJUTKAN DRAFT
+  function restoreDraftData() {
+    if (!DRAFT_DATA) return;
+
+    var h = DRAFT_DATA.header || {};
+
+    // 1. Restore Info Header (Card 1)
+    if (h.tgl_produksi) $('#tglProduksi').val(h.tgl_produksi);
+    if (h.id_asset_machine) $('#id_asset_machine').val(h.id_asset_machine).trigger('change.select2');
+    if (h.employee_helper) $('#employee_helper').val(h.employee_helper).trigger('change.select2');
+    if (h.employee_setter) $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    if (h.start_time) $('#startTime').val(h.start_time.substring(0, 5));
+    if (h.finished_time) $('#finishedTime').val(h.finished_time.substring(0, 5));
+
+    // 2. Restore Materials / Coils (Card 2)
+    if (DRAFT_DATA.materials && DRAFT_DATA.materials.length > 0) {
+      state.coils = [];
+      var sourcesToLoad = {};
+      $.each(DRAFT_DATA.materials, function(i, m) {
+        var src = m.source_warehouse || 'unpack';
+        sourcesToLoad[src] = true;
+        state.coils.push({
+          id: uid(),
+          source: src,
+          id_warehouse_stock_coil: m.id_unpack_baby_coil,
+          code: m.coil_code,
+          material: m.material_name,
+          nett: getNum(m.nett_weight_packing),
+          gross: getNum(m.gross_weight),
+          meter: getNum(m.total_meter),
+          kulit: getNum(m.berat_kulit),
+          clamp: getNum(m.berat_clamp)
+        });
+      });
+      renderCoils();
+      refreshCoilSelectors();
+
+      // Preload pilihan coil dari warehouse di background agar jika user ingin mengganti coil dropdown tetap lengkap
+      $.each(Object.keys(sourcesToLoad), function(idx, src) {
+        loadCoilOptions(src, function() {
+          $.each(state.coils, function(i, c) {
+            if (c.source === src) {
+              var $sel = $('[data-coil-pick="' + c.id + '"]');
+              var currentCode = c.code;
+              $sel.html(babyCoilSelectOptions(c.source, c.code, c.material));
+              if (currentCode) {
+                $sel.val(currentCode);
+              }
+            }
+          });
+          initSelect2Search('#coilTable');
+        });
+      });
+    }
+
+    // 3. Restore Items (Card 3: KW1 & Bebas, Card 4: KW2)
+    if (DRAFT_DATA.items && DRAFT_DATA.items.length > 0) {
+      state.fg = [];
+      state.kw2.internal = [];
+      state.kw2.supplier = [];
+
+      $.each(DRAFT_DATA.items, function(i, it) {
+        var cat = it.category_type;
+        if (cat === 'kw_1' || cat === 'stok_bebas') {
+          state.fg.push({
+            id: uid(),
+            kind: (cat === 'stok_bebas') ? 'bebas' : 'kw1',
+            productId: it.product_lvl_4_id,
+            productName: it.nama_product_custom || '',
+            targetQty: 0,
+            method: 1,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            perPcs: getNum(it.berat_per_pcs),
+            std: getNum(it.berat_standard),
+            selisih: getNum(it.percentage_selisih),
+            coil: it.source_material_coil || ''
+          });
+        } else if (cat === 'kw_2_internal') {
+          state.kw2.internal.push({
+            id: uid(),
+            productId: it.product_lvl_4_id,
+            coil: it.source_material_coil || '',
+            size: 0,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            ket: it.keterangan || ''
+          });
+        } else if (cat === 'kw_2_supplier') {
+          state.kw2.supplier.push({
+            id: uid(),
+            productId: it.product_lvl_4_id,
+            coil: it.source_material_coil || '',
+            size: 0,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            ket: it.keterangan || ''
+          });
+        }
+      });
+
+      renderFg();
+      renderKw2('internal');
+      renderKw2('supplier');
+    }
+
+    // 4. Restore Scraps, Sisa, and Hold (Card 5 & Card 6)
+    if (DRAFT_DATA.scraps && DRAFT_DATA.scraps.length > 0) {
+      state.sisa = [];
+      state.hold = [];
+
+      $.each(DRAFT_DATA.scraps, function(i, sc) {
+        var st = sc.scrap_type;
+        var b = getNum(sc.berat_total);
+        if (st === 'tong_coil') {
+          $('#scrapTong').val(b);
+        } else if (st === 'wrapping') {
+          $('#scrapWrapping').val(b);
+        } else if (st === 'potongan_pisau') {
+          $('#scrapPisau').val(b);
+        } else if (st === 'reject_internal') {
+          $('#rejProdInt').val(b);
+          if (sc.keterangan) $('#rejKetInt').val(sc.keterangan);
+        } else if (st === 'reject_supplier') {
+          $('#rejProdSup').val(b);
+          if (sc.keterangan) $('#rejKetSup').val(sc.keterangan);
+        } else if (st === 'sisa_coil') {
+          state.sisa.push({
+            id: uid(),
+            coil: sc.target_coil_code || '',
+            berat: b
+          });
+        } else if (st === 'hold_coil') {
+          state.hold.push({
+            id: uid(),
+            coil: sc.target_coil_code || '',
+            berat: b
+          });
+        }
+      });
+
+      renderLines('sisa');
+      renderLines('hold');
+    }
+
+    // 5. Restore Confirmations
+    if (h.override_confirm_json) {
+      try {
+        state.confirmations = JSON.parse(h.override_confirm_json);
+      } catch (err) {}
+    }
+
+    // Ubah badge status di header
+    $('#docStatus').text('Lanjutkan Draft').removeClass('bg-secondary').addClass('bg-warning text-dark');
+  }
+
     // INIT DATA
-    initFgFromSpk();
+    if (DRAFT_DATA) {
+      restoreDraftData();
+    } else {
+      initFgFromSpk();
+    }
     recalc();
   });
 </script>

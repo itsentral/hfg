@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Material — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Master Material</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <a class="step" href="beranda.html">Daftar SPK</a>
+      <a class="step" href="index.html">Input Produksi</a>
+      <span class="step step--active">Material</span>
+      <a class="step" href="costbook.html">Costbook</a>
+      <a class="step" href="rate.html">Rate</a>
+      <a class="step" href="hpp.html">HPP</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Admin Produksi</span>
+      <span class="topbar__user-name">Budi S.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Master Material (Baby Coil)</h1>
+        <p class="muted">Daftar baby coil per gudang asal: Unpack, WIP, dan Hold. Menjadi sumber tunggal untuk Add Coil di Laporan Produksi dan daftar jenis material di Costbook. Nett &amp; Gross Weight dapat diedit untuk simulasi.</p>
+      </div>
+      <div class="page__header-status">
+        <span class="badge badge--draft" id="saveStatus">Siap diedit</span>
+      </div>
+    </div>
+
+    <!-- Kontainer tabel per gudang; di-generate oleh JS -->
+    <div id="warehouseSections"></div>
+
+    <div class="actionbar">
+      <div class="actionbar__note">
+        <span class="muted">Perubahan disimpan ke penyimpanan lokal browser (mockup).</span>
+      </div>
+      <div class="actionbar__btns">
+        <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Default</button>
+        <a class="btn btn--ghost" href="index.html">← Kembali ke Laporan Produksi</a>
+        <button type="button" class="btn btn--primary" id="btnSave">Simpan Master Material</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="material.js"></script>
+</body>
+</html>

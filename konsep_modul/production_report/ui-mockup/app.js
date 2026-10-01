@@ -57,11 +57,15 @@
     toast(`Pilih baby coil dari ${SRC_LABEL[source]}.`);
   }
 
-  // Opsi baby coil per sumber; sembunyikan yang sudah dipakai baris lain (dedup)
+  // Opsi baby coil per sumber; sembunyikan yang sudah dipakai baris lain (dedup),
+  // dan batasi ke material yang terdaftar di Master Costbook saja.
   function babyCoilOptions(source, selectedCode) {
     const usedElsewhere = new Set(state.coils.filter((c) => c.code && c.code !== selectedCode).map((c) => c.code));
+    const cbMaterials = new Set(M.costbook.materials());   // material yang ada di costbook
     const opts = M.COILS[source]
       .filter((c) => !usedElsewhere.has(c.code))
+      // hanya material yang ada di costbook; kecualikan yang sedang terpilih agar nilai tak hilang
+      .filter((c) => cbMaterials.has(c.material) || c.code === selectedCode)
       .map((c) => `<option value="${c.code}" ${c.code === selectedCode ? "selected" : ""}>${c.code} · ${c.material}</option>`)
       .join("");
     return `<option value="">— Pilih Baby Coil —</option>${opts}`;
@@ -113,7 +117,11 @@
 
   /* ============================================================
      FG KW1 (otomatis dari SPK) & STOK BEBAS (manual)
+     Satu produk (kartu) dapat memakai >1 sumber material/coil (sources[]).
      ============================================================ */
+  function newSource() {
+    return { id: uid(), coil: "", method: 1, qty: 0, total: 0, perPcs: 0, selisih: 0, confirmedAt: null };
+  }
   function seedFgFromSpk() {
     spk.products.forEach((sp) => {
       const p = productById(sp.productId);
@@ -121,7 +129,8 @@
         id: uid(), kind: "kw1",
         productId: sp.productId, productName: p ? p.name : sp.productId,
         targetQty: sp.targetQty,
-        method: 1, qty: 0, total: 0, perPcs: 0, std: p ? p.std : 0, selisih: 0,
+        std: p ? p.std : 0,
+        sources: [newSource()],
       });
     });
   }
@@ -129,8 +138,24 @@
   function addBebas() {
     state.fg.push({
       id: uid(), kind: "bebas", productId: "", productName: "",
-      method: 1, qty: 0, total: 0, perPcs: 0, std: 0, selisih: 0,
+      std: 0, sources: [newSource()],
     });
+    renderFg();
+    recalc();
+  }
+
+  function addFgSource(fid) {
+    const f = state.fg.find((x) => x.id === fid);
+    if (!f) return;
+    f.sources.push(newSource());
+    renderFg();
+    recalc();
+  }
+  function delFgSource(fid, sid) {
+    const f = state.fg.find((x) => x.id === fid);
+    if (!f) return;
+    f.sources = f.sources.filter((s) => s.id !== sid);
+    if (!f.sources.length) f.sources.push(newSource()); // selalu ada minimal satu
     renderFg();
     recalc();
   }
@@ -147,69 +172,95 @@
 
   function fgCard(f) {
     const isBebas = f.kind === "bebas";
-    const p1 = f.method === 1;
-    const confirmed = f.confirmedAt != null && f.confirmedAt === f.selisih && Math.abs(f.selisih) > TOLERANCE;
-    // Header produk: KW1 = label tetap dari SPK; Bebas = select master product
     const productHead = isBebas
       ? `<select data-fg-product="${f.id}">${productOptions()}</select>`
       : `<span class="fg-prod-name">${f.productName}</span>` +
         (f.targetQty != null ? `<span class="chip">Target ${f.targetQty} pcs</span>` : "");
-    const delBtn = isBebas ? `<button type="button" class="btn-icon" data-del-fg="${f.id}" title="Hapus">✕</button>` : "";
+    const delBtn = isBebas ? `<button type="button" class="btn-icon" data-del-fg="${f.id}" title="Hapus produk">✕</button>` : "";
+    const multi = f.sources.length > 1;
+    const sourcesHtml = f.sources.map((s, i) => fgSourceRow(f, s, i, multi)).join("");
     return `
     <div class="fg-card" data-id="${f.id}">
       <div class="fg-card__head">
         <span class="tag ${isBebas ? "tag--bebas" : ""}">${isBebas ? "Stok Bebas" : "KW 1"}</span>
         ${productHead}
-        <span class="confirm-badge" data-fg-confirm="${f.id}" ${confirmed ? "" : "hidden"}>✓ Selisih dikonfirmasi</span>
         ${delBtn}
       </div>
       <div class="fg-card__body">
-        <div class="method-toggle">
-          <label><input type="radio" name="m-${f.id}" value="1" ${p1 ? "checked" : ""} data-fg-method="${f.id}"><span>Pilihan 1 · Qty + Berat Total</span></label>
-          <label><input type="radio" name="m-${f.id}" value="2" ${!p1 ? "checked" : ""} data-fg-method="${f.id}"><span>Pilihan 2 · Qty + Berat/Pcs</span></label>
-        </div>
-        <div class="fg-row">
-          <label class="field">
-            <span class="field__label">Baby Coil Sumber</span>
-            <select data-fg-coil="${f.id}">${coilOptions()}</select>
-          </label>
-          <label class="field">
-            <span class="field__label">Qty (pcs)</span>
-            <input type="number" min="0" step="1" data-fg-qty="${f.id}" value="${f.qty || ""}" />
-          </label>
-          <label class="field">
-            <span class="field__label">${p1 ? "Berat Total (kg)" : "Berat/Pcs (kg)"}</span>
-            <input type="number" min="0" step="0.01" data-fg-input="${f.id}" value="${p1 ? (f.total || "") : (f.perPcs || "")}" />
-          </label>
-          <label class="field">
-            <span class="field__label">${p1 ? "Berat/Pcs (kg)" : "Berat Total (kg)"}</span>
-            <input type="text" class="calc" readonly data-fg-derived="${f.id}" value="${p1 ? fmtNum(f.perPcs) : fmtNum(f.total)}" />
-          </label>
-          <label class="field">
-            <span class="field__label">Berat Standard/Pcs</span>
-            <input type="text" class="calc" readonly data-fg-std="${f.id}" value="${f.std ? fmtNum(f.std) : ""}" />
-          </label>
-          <label class="field">
-            <span class="field__label">% Selisih</span>
-            <input type="text" class="calc selisih-cell ${Math.abs(f.selisih) > TOLERANCE ? "bad" : "ok"}" readonly data-fg-selisih="${f.id}" value="${fmtNum(f.selisih)} %" />
-          </label>
+        ${sourcesHtml}
+        <div class="btn-row">
+          <button type="button" class="btn btn--tiny" data-add-fg-source="${f.id}">+ Tambah Material / Coil</button>
         </div>
       </div>
     </div>`;
   }
 
+  // Satu baris sumber material/coil untuk sebuah produk FG.
+  function fgSourceRow(f, s, idx, multi) {
+    const p1 = s.method === 1;
+    const key = `${f.id}:${s.id}`;
+    const confirmed = s.confirmedAt != null && s.confirmedAt === s.selisih && Math.abs(s.selisih) > TOLERANCE;
+    const srcDel = multi ? `<button type="button" class="btn-icon" data-del-fg-source="${key}" title="Hapus sumber">✕</button>` : "";
+    return `
+    <div class="fg-source" data-key="${key}">
+      <div class="fg-source__bar">
+        <span class="fg-source__no">Sumber ${idx + 1}</span>
+        <div class="method-toggle">
+          <label><input type="radio" name="m-${key}" value="1" ${p1 ? "checked" : ""} data-fg-method="${key}"><span>Qty + Berat Total</span></label>
+          <label><input type="radio" name="m-${key}" value="2" ${!p1 ? "checked" : ""} data-fg-method="${key}"><span>Qty + Berat/Pcs</span></label>
+        </div>
+        <span class="confirm-badge" data-fg-confirm="${key}" ${confirmed ? "" : "hidden"}>✓ Selisih dikonfirmasi</span>
+        ${srcDel}
+      </div>
+      <div class="fg-row">
+        <label class="field">
+          <span class="field__label">Baby Coil Sumber</span>
+          <select data-fg-coil="${key}">${coilOptions()}</select>
+        </label>
+        <label class="field">
+          <span class="field__label">Qty (pcs)</span>
+          <input type="number" min="0" step="1" data-fg-qty="${key}" value="${s.qty || ""}" />
+        </label>
+        <label class="field">
+          <span class="field__label">${p1 ? "Berat Total (kg)" : "Berat/Pcs (kg)"}</span>
+          <input type="number" min="0" step="0.01" data-fg-input="${key}" value="${p1 ? (s.total || "") : (s.perPcs || "")}" />
+        </label>
+        <label class="field">
+          <span class="field__label">${p1 ? "Berat/Pcs (kg)" : "Berat Total (kg)"}</span>
+          <input type="text" class="calc" readonly data-fg-derived="${key}" value="${p1 ? fmtNum(s.perPcs) : fmtNum(s.total)}" />
+        </label>
+        <label class="field">
+          <span class="field__label">Berat Standard/Pcs</span>
+          <input type="text" class="calc" readonly data-fg-std="${key}" value="${f.std ? fmtNum(f.std) : ""}" />
+        </label>
+        <label class="field">
+          <span class="field__label">% Selisih</span>
+          <input type="text" class="calc selisih-cell ${Math.abs(s.selisih) > TOLERANCE ? "bad" : "ok"}" readonly data-fg-selisih="${key}" value="${fmtNum(s.selisih)} %" />
+        </label>
+      </div>
+    </div>`;
+  }
+
+  // Hitung ulang seluruh sumber di sebuah kartu FG (std produk dipakai semua sumber).
   function computeFg(f) {
     const p = productById(f.productId);
     f.std = p ? p.std : 0;
-    if (f.method === 1) f.perPcs = f.qty > 0 ? f.total / f.qty : 0;
-    else f.total = f.qty * f.perPcs;
-    f.selisih = f.std > 0 ? ((f.perPcs - f.std) / f.std) * 100 : 0;
+    f.sources.forEach((s) => {
+      if (s.method === 1) s.perPcs = s.qty > 0 ? s.total / s.qty : 0;
+      else s.total = s.qty * s.perPcs;
+      s.selisih = f.std > 0 ? ((s.perPcs - f.std) / f.std) * 100 : 0;
+    });
   }
+
+  // Total berat & qty seluruh sumber sebuah produk
+  function fgCardTotal(f) { return f.sources.reduce((a, s) => a + (s.total || 0), 0); }
 
   function restoreFg() {
     state.fg.forEach((f) => {
       const ps = $(`[data-fg-product="${f.id}"]`); if (ps) ps.value = f.productId || "";
-      const cs = $(`[data-fg-coil="${f.id}"]`); if (cs) cs.value = f.coil || "";
+      f.sources.forEach((s) => {
+        const cs = $(`[data-fg-coil="${f.id}:${s.id}"]`); if (cs) cs.value = s.coil || "";
+      });
     });
   }
 
@@ -222,7 +273,7 @@
      FG KW2 (Internal / Supplier)
      ============================================================ */
   function addKw2(type) {
-    state.kw2[type].push({ id: uid(), productId: "", size: 0, qty: 0, total: 0 });
+    state.kw2[type].push({ id: uid(), productId: "", coil: "", size: 0, qty: 0, total: 0 });
     renderKw2(type);
     recalc();
   }
@@ -240,6 +291,7 @@
       <tr data-id="${r.id}" data-type="${type}">
         <td>${i + 1}</td>
         <td><select data-kw2-product="${r.id}">${productOptions()}</select></td>
+        <td><select data-kw2-coil="${r.id}">${coilOptions()}</select></td>
         <td class="num"><input type="number" min="0" step="0.01" data-kw2-size="${r.id}" value="${r.size || ""}" /></td>
         <td class="num"><input type="number" min="0" step="1" data-kw2-qty="${r.id}" value="${r.qty || ""}" /></td>
         <td class="num"><input type="number" min="0" step="0.01" data-kw2-total="${r.id}" value="${r.total || ""}" /></td>
@@ -249,10 +301,16 @@
         <td><button type="button" class="btn-icon" data-del-kw2="${r.id}" data-type="${type}" title="Hapus">✕</button></td>
       </tr>`;
     }).join("");
-    rows.forEach((r) => { const s = tbody.querySelector(`[data-kw2-product="${r.id}"]`); if (s) s.value = r.productId; });
+    rows.forEach((r) => {
+      const s = tbody.querySelector(`[data-kw2-product="${r.id}"]`); if (s) s.value = r.productId;
+      const cs = tbody.querySelector(`[data-kw2-coil="${r.id}"]`); if (cs) cs.value = r.coil || "";
+    });
   }
   function restoreKw2(ty) {
-    state.kw2[ty].forEach((r) => { const s = $(`[data-kw2-product="${r.id}"]`); if (s) s.value = r.productId; });
+    state.kw2[ty].forEach((r) => {
+      const s = $(`[data-kw2-product="${r.id}"]`); if (s) s.value = r.productId;
+      const cs = $(`[data-kw2-coil="${r.id}"]`); if (cs) cs.value = r.coil || "";
+    });
   }
 
   /* ============================================================
@@ -285,8 +343,8 @@
      ============================================================ */
   function recalc() {
     state.fg.forEach(computeFg);
-    const fgTotal = state.fg.filter((f) => f.kind === "kw1").reduce((s, f) => s + f.total, 0);
-    const bebasTotal = state.fg.filter((f) => f.kind === "bebas").reduce((s, f) => s + f.total, 0);
+    const fgTotal = state.fg.filter((f) => f.kind === "kw1").reduce((s, f) => s + fgCardTotal(f), 0);
+    const bebasTotal = state.fg.filter((f) => f.kind === "bebas").reduce((s, f) => s + fgCardTotal(f), 0);
     const kw2Total =
       state.kw2.internal.reduce((s, r) => s + num(r.total), 0) +
       state.kw2.supplier.reduce((s, r) => s + num(r.total), 0);
@@ -296,7 +354,7 @@
 
     const netProd = fgTotal + bebasTotal + kw2Total + scrap + sisaTotal + holdTotal;
     const netPack = state.coils.reduce((s, c) => s + num(c.nett), 0);
-    const selisihKg = netProd - netPack;
+    const selisihKg = netPack - netProd;   // Net Weight Packing List - Net Weight Produksi
     const selisihPct = netProd > 0 ? (selisihKg / netProd) * 100 : 0;
 
     $("#sumFG").textContent = fmtKg(fgTotal + bebasTotal);
@@ -366,8 +424,8 @@
     state.confirmations = state.confirmations.filter((c) => c.ref !== ctx.ref);
     state.confirmations.push(entry);
     if (ctx.scope === "fg") {
-      const f = state.fg.find((x) => x.id === ctx.ref);
-      if (f) f.confirmedAt = f.selisih;
+      const s = fgSource(ctx.ref);
+      if (s) s.confirmedAt = s.selisih;
       const badge = $(`[data-fg-confirm="${ctx.ref}"]`);
       if (badge) badge.hidden = false;
     }
@@ -411,6 +469,8 @@
     if (t.dataset.addCoil) addCoil(t.dataset.addCoil);
     if (t.dataset.delCoil) { state.coils = state.coils.filter((c) => c.id !== t.dataset.delCoil); renderCoils(); refreshCoilSelectors(); recalc(); }
     if (t.dataset.addFg === "bebas") addBebas();
+    if (t.dataset.addFgSource) addFgSource(t.dataset.addFgSource);
+    if (t.dataset.delFgSource) { const [fid, sid] = t.dataset.delFgSource.split(":"); delFgSource(fid, sid); }
     if (t.dataset.addKw2) addKw2(t.dataset.addKw2);
     if (t.dataset.delFg) { state.fg = state.fg.filter((f) => f.id !== t.dataset.delFg); renderFg(); recalc(); }
     if (t.dataset.delKw2) { const ty = t.dataset.type; state.kw2[ty] = state.kw2[ty].filter((r) => r.id !== t.dataset.delKw2); renderKw2(ty); recalc(); }
@@ -435,30 +495,32 @@
       return; // pickCoil sudah rerender + recalc
     }
 
-    // FG product (hanya Stok Bebas yang punya select)
+    // FG product (hanya Stok Bebas yang punya select) — level kartu
     if (t.dataset.fgProduct != null) {
       const f = state.fg.find((x) => x.id === t.dataset.fgProduct);
       if (f) { f.productId = t.value; const p = productById(t.value); f.productName = p ? p.name : ""; touched = true; }
     }
+    // Sumber material/coil — key "fid:sid"
     if (t.dataset.fgCoil != null) {
-      const f = state.fg.find((x) => x.id === t.dataset.fgCoil);
-      if (f) f.coil = t.value;
+      const s = fgSource(t.dataset.fgCoil);
+      if (s) s.coil = t.value;
     }
     if (t.dataset.fgMethod != null && isChange) {
-      const f = state.fg.find((x) => x.id === t.dataset.fgMethod);
-      if (f) { f.method = parseInt(t.value, 10); renderFg(); recalc(); return; }
+      const s = fgSource(t.dataset.fgMethod);
+      if (s) { s.method = parseInt(t.value, 10); renderFg(); recalc(); return; }
     }
     if (t.dataset.fgQty != null) {
-      const f = state.fg.find((x) => x.id === t.dataset.fgQty);
-      if (f) { f.qty = num(t.value); touched = true; }
+      const s = fgSource(t.dataset.fgQty);
+      if (s) { s.qty = num(t.value); touched = true; }
     }
     if (t.dataset.fgInput != null) {
-      const f = state.fg.find((x) => x.id === t.dataset.fgInput);
-      if (f) { if (f.method === 1) f.total = num(t.value); else f.perPcs = num(t.value); touched = true; }
+      const s = fgSource(t.dataset.fgInput);
+      if (s) { if (s.method === 1) s.total = num(t.value); else s.perPcs = num(t.value); touched = true; }
     }
 
     ["internal", "supplier"].forEach((ty) => {
       if (t.dataset.kw2Product != null) { const r = find(ty, t.dataset.kw2Product); if (r) { r.productId = t.value; touched = true; renderKw2(ty); restoreKw2(ty); } }
+      if (t.dataset.kw2Coil != null) { const r = find(ty, t.dataset.kw2Coil); if (r) r.coil = t.value; }
       if (t.dataset.kw2Size != null) { const r = find(ty, t.dataset.kw2Size); if (r) r.size = num(t.value); }
       if (t.dataset.kw2Qty != null) { const r = find(ty, t.dataset.kw2Qty); if (r) { r.qty = num(t.value); touched = true; if (isChange) { renderKw2(ty); restoreKw2(ty); } } }
       if (t.dataset.kw2Total != null) { const r = find(ty, t.dataset.kw2Total); if (r) { r.total = num(t.value); touched = true; if (isChange) { renderKw2(ty); restoreKw2(ty); } } }
@@ -475,29 +537,214 @@
 
   function find(ty, id) { return state.kw2[ty].find((x) => x.id === id); }
 
+  // Resolusi sumber FG dari key "fid:sid"
+  function fgSource(key) {
+    const [fid, sid] = String(key).split(":");
+    const f = state.fg.find((x) => x.id === fid);
+    return f ? f.sources.find((s) => s.id === sid) : null;
+  }
+
   function updateFgDerived() {
     state.fg.forEach((f) => {
-      const der = $(`[data-fg-derived="${f.id}"]`);
-      const std = $(`[data-fg-std="${f.id}"]`);
-      const sel = $(`[data-fg-selisih="${f.id}"]`);
-      if (der) der.value = f.method === 1 ? fmtNum(f.perPcs) : fmtNum(f.total);
-      if (std) std.value = f.std ? fmtNum(f.std) : "";
-      if (sel) {
-        sel.value = fmtNum(f.selisih) + " %";
-        sel.classList.toggle("bad", Math.abs(f.selisih) > TOLERANCE);
-        sel.classList.toggle("ok", Math.abs(f.selisih) <= TOLERANCE);
-      }
-      const badge = $(`[data-fg-confirm="${f.id}"]`);
-      if (badge) badge.hidden = !(f.confirmedAt != null && f.confirmedAt === f.selisih && Math.abs(f.selisih) > TOLERANCE);
+      f.sources.forEach((s) => {
+        const key = `${f.id}:${s.id}`;
+        const der = $(`[data-fg-derived="${key}"]`);
+        const std = $(`[data-fg-std="${key}"]`);
+        const sel = $(`[data-fg-selisih="${key}"]`);
+        if (der) der.value = s.method === 1 ? fmtNum(s.perPcs) : fmtNum(s.total);
+        if (std) std.value = f.std ? fmtNum(f.std) : "";
+        if (sel) {
+          sel.value = fmtNum(s.selisih) + " %";
+          sel.classList.toggle("bad", Math.abs(s.selisih) > TOLERANCE);
+          sel.classList.toggle("ok", Math.abs(s.selisih) <= TOLERANCE);
+        }
+        const badge = $(`[data-fg-confirm="${key}"]`);
+        if (badge) badge.hidden = !(s.confirmedAt != null && s.confirmedAt === s.selisih && Math.abs(s.selisih) > TOLERANCE);
+      });
     });
   }
 
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
   /* ============================================================
+     SNAPSHOT UNTUK HPP (FR-19..FR-23) — bentuk data per SPK
+     ============================================================ */
+  // Resolusi coil terpilih (id baris coil) -> {material, gudang(source)}.
+  function coilInfo(coilId) {
+    const c = state.coils.find((x) => x.id === coilId);
+    return c ? { material: c.material || "", gudang: c.source || "unpack" } : { material: "", gudang: "unpack" };
+  }
+  // Material & gudang "utama" untuk item yang tak terikat coil (scrap/selisih):
+  // pakai coil pertama yang terpilih, default gudang unpack (sesuai Excel).
+  function primaryInfo() {
+    const c = state.coils.find((x) => x.code);
+    return { material: c ? c.material : "", gudang: c ? c.source : "unpack" };
+  }
+
+  function buildReport() {
+    const prim = primaryInfo();
+
+    // Satu produk dengan >1 sumber -> dipecah menjadi beberapa sub-baris HPP,
+    // satu per sumber (material/gudang bisa berbeda per sumber).
+    const fgRows = (f) => {
+      const p = productById(f.productId);
+      const base = f.productName || (f.kind === "bebas" ? "Stok Bebas" : "Produk");
+      const multi = f.sources.length > 1;
+      return f.sources.map((s) => {
+        const info = coilInfo(s.coil);
+        const label = multi && info.gudang ? `${base} (${SRC_LABEL[info.gudang] || info.gudang})` : base;
+        return {
+          produk: label,
+          kind: f.kind === "bebas" ? "Bebas" : "KW1",
+          totalWeight: s.total || 0,
+          beratPcs: s.perPcs || 0,
+          size: p ? p.size : 0,
+          qty: s.qty || 0,
+          material: info.material,
+          gudang: info.gudang,
+        };
+      });
+    };
+    const kw2Row = (r) => {
+      const info = coilInfo(r.coil);
+      const p = productById(r.productId);
+      const qty = num(r.qty), total = num(r.total);
+      return {
+        produk: p ? p.name : "Produk KW2",
+        totalWeight: total,
+        beratPcs: qty > 0 ? total / qty : 0,
+        size: num(r.size) || (p ? p.size : 0),
+        qty: qty,
+        material: info.material,
+        gudang: info.gudang,
+      };
+    };
+
+    const kw1 = state.fg.reduce((acc, f) => acc.concat(fgRows(f)), []);   // KW1 + Stok Bebas, dipecah per sumber
+    const kw2Internal = state.kw2.internal.map(kw2Row);
+    const kw2Supplier = state.kw2.supplier.map(kw2Row);
+
+    // Scrap 7 kategori (Excel baris 135-141) — costbook dari Gudang Produksi 2 (unpack)
+    const scrapVal = (id) => num($("#" + id).value);
+    const scrap = [
+      { item: "Reject Produk Internal", weight: scrapVal("rejProdInt") },
+      { item: "Reject Material Internal", weight: scrapVal("rejMatInt") },
+      { item: "Reject Produk Supplier", weight: scrapVal("rejProdSup") },
+      { item: "Reject Material Supplier", weight: scrapVal("rejMatSup") },
+      { item: "Tong Coil", weight: scrapVal("scrapTong") },
+      { item: "Wrapping", weight: scrapVal("scrapWrapping") },
+      { item: "Potongan Pisau", weight: scrapVal("scrapPisau") },
+    ].map((s) => ({ ...s, material: prim.material, gudang: "unpack" }));
+
+    const lineRow = (r) => {
+      const info = coilInfo(r.coil);
+      const c = state.coils.find((x) => x.id === r.coil);
+      return {
+        item: c && c.code ? `${c.code} · ${info.material}` : "(Baby Coil)",
+        weight: num(r.berat),
+        material: info.material,
+        gudang: info.gudang,
+      };
+    };
+    const sisa = state.sisa.map(lineRow);
+    const hold = state.hold.map(lineRow);
+
+    // ==== Selisih Berat per (material, gudang) — Hold digabung ke Unpack ====
+    // bucket: "unpack" (termasuk hold) atau "wip". WIP dipakai duluan sampai habis;
+    // KW2 & Scrap dibebankan ke Unpack. Scrap dialokasikan proporsional atas
+    // Nett Packing List tiap material Unpack. Sisa Coil = faktor pengurang.
+    const bucketOf = (g) => (g === "wip" ? "wip" : "unpack");   // hold -> unpack
+    const selMap = {};   // key "material|bucket" -> {material, bucket, gudangAsli, packing, kw1, kw2, sisa, scrap}
+    const selKey = (mat, b) => `${mat}|${b}`;
+    const ensure = (mat, b, gudangAsli) => {
+      const k = selKey(mat, b);
+      if (!selMap[k]) selMap[k] = { material: mat, bucket: b, gudang: gudangAsli || b, packing: 0, kw1: 0, kw2: 0, sisa: 0, scrap: 0 };
+      return selMap[k];
+    };
+
+    // Nett Packing List per material×bucket (dari coil yang di-Add)
+    state.coils.filter((c) => c.code).forEach((c) => {
+      const b = bucketOf(c.source);
+      ensure(c.material, b, c.source).packing += num(c.nett);
+    });
+    // Berat KW1 (per sumber) terpakai per material×bucket
+    state.fg.filter((f) => f.kind !== "bebasSkip").forEach((f) => {
+      f.sources.forEach((s) => {
+        const info = coilInfo(s.coil);
+        if (!info.material) return;
+        ensure(info.material, bucketOf(info.gudang), info.gudang).kw1 += (s.total || 0);
+      });
+    });
+    // Berat KW2 (Internal+Supplier) terpakai per material×bucket
+    [].concat(state.kw2.internal, state.kw2.supplier).forEach((r) => {
+      const info = coilInfo(r.coil);
+      if (!info.material) return;
+      ensure(info.material, bucketOf(info.gudang), info.gudang).kw2 += num(r.total);
+    });
+    // Sisa Coil (faktor pengurang) per material×bucket
+    state.sisa.forEach((r) => {
+      const info = coilInfo(r.coil);
+      if (!info.material) return;
+      ensure(info.material, bucketOf(info.gudang), info.gudang).sisa += num(r.berat);
+    });
+    // Scrap total -> alokasi proporsional atas Nett Packing material bucket Unpack
+    const scrapTotAll = scrap.reduce((s, r) => s + r.weight, 0);
+    const unpackKeys = Object.values(selMap).filter((e) => e.bucket === "unpack");
+    const unpackPackingTot = unpackKeys.reduce((s, e) => s + e.packing, 0);
+    if (scrapTotAll > 0 && unpackPackingTot > 0) {
+      unpackKeys.forEach((e) => { e.scrap += scrapTotAll * (e.packing / unpackPackingTot); });
+    } else if (scrapTotAll > 0 && unpackKeys.length) {
+      unpackKeys[0].scrap += scrapTotAll;   // fallback: bebankan ke material unpack pertama
+    }
+
+    // Selisih(kg) = Packing - KW1 - KW2 - Scrap - Sisa ; nilai = kg × costbook material
+    const selisih = Object.values(selMap).map((e) => {
+      const kgSel = e.packing - e.kw1 - e.kw2 - e.scrap - e.sisa;
+      return {
+        item: `Selisih Berat Material dari ${SRC_LABEL[e.bucket] || e.bucket}` + (e.material ? ` — ${e.material}` : ""),
+        weight: kgSel,
+        material: e.material,
+        gudang: e.gudang,
+      };
+    }).filter((r) => Math.abs(r.weight) > 1e-9 || r.material);
+
+    // Total selisih kg (untuk summary lama, tetap = netPack - netProd)
+    const fgTotal = state.fg.filter((f) => f.kind === "kw1").reduce((s, f) => s + fgCardTotal(f), 0);
+    const bebasTotal = state.fg.filter((f) => f.kind === "bebas").reduce((s, f) => s + fgCardTotal(f), 0);
+    const kw2Total =
+      state.kw2.internal.reduce((s, r) => s + num(r.total), 0) +
+      state.kw2.supplier.reduce((s, r) => s + num(r.total), 0);
+    const scrapTot = scrapTotAll;
+    const sisaTot = sisa.reduce((s, r) => s + r.weight, 0);
+    const holdTot = hold.reduce((s, r) => s + r.weight, 0);
+    const netProd = fgTotal + bebasTotal + kw2Total + scrapTot + sisaTot + holdTot;
+    const netPack = state.coils.reduce((s, c) => s + num(c.nett), 0);
+    const selisihKg = netPack - netProd;   // Net Weight Packing List - Net Weight Produksi
+
+    return {
+      spkNo: spk.no,
+      meta: {
+        spk: spk.no,
+        tgl: $("#tglProduksi").value || spk.tgl,
+        mesin: $("#mesin").value || "",
+        report: "RP-" + spk.no.replace(/[^0-9]/g, "").slice(-8),
+      },
+      kw1, kw2Internal, kw2Supplier, scrap, sisa, hold,
+      selisih,
+      coils: state.coils.filter((c) => c.code).map((c) => ({ source: c.source, material: c.material, nett: num(c.nett) })),
+      savedAt: new Date().toISOString(),
+    };
+  }
+
+  function persistReport() {
+    try { M.report.save(spk.no, buildReport()); } catch (e) { /* ignore in mockup */ }
+  }
+
+  /* ============================================================
      ACTIONS: Draft / Hold&Claim / Save
      ============================================================ */
   $("#btnDraft").addEventListener("click", () => {
+    persistReport();
     $("#docStatus").textContent = "Draft (tersimpan)";
     toast("Draft disimpan. Aktual dapat dicek terlebih dahulu.", "ok");
   });
@@ -512,9 +759,13 @@
 
     const items = [];
     state.fg.forEach((f) => {
-      if (f.std > 0 && Math.abs(f.selisih) > TOLERANCE) {
-        items.push({ scope: "fg", ref: f.id, label: productLabel(f), selisih: f.selisih, statement: "Sudah sesuai aktual" });
-      }
+      const multi = f.sources.length > 1;
+      f.sources.forEach((s, idx) => {
+        if (f.std > 0 && Math.abs(s.selisih) > TOLERANCE) {
+          const label = productLabel(f) + (multi ? ` — Sumber ${idx + 1}` : "");
+          items.push({ scope: "fg", ref: `${f.id}:${s.id}`, label, selisih: s.selisih, statement: "Sudah sesuai aktual" });
+        }
+      });
     });
     if (over) items.push({ scope: "summary", ref: "summary", label: "Total Produksi (Summary)", selisih: selisihPct, statement: "Sudah cek lapangan — sesuai aktual" });
 
@@ -528,11 +779,13 @@
       }
       $("#docStatus").textContent = "Menunggu Approval Toleransi";
       toast(`Laporan disubmit dengan ${items.length} konfirmasi selisih tercatat.`, "warn");
+      persistReport();
       M.spkStatus.markDone(spk.no);
       return;
     }
     $("#docStatus").textContent = "Submitted";
     $("#docStatus").className = "badge badge--role";
+    persistReport();
     M.spkStatus.markDone(spk.no);
     toast("Laporan Produksi berhasil disubmit ✓", "ok");
   });

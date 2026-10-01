@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Costbook Material — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Master Costbook Material</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <a class="step" href="beranda.html">Daftar SPK</a>
+      <a class="step" href="index.html">Input Produksi</a>
+      <a class="step" href="material.html">Material</a>
+      <span class="step step--active">Costbook</span>
+      <a class="step" href="rate.html">Rate</a>
+      <a class="step" href="hpp.html">HPP</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Accounting</span>
+      <span class="topbar__user-name">Andri P.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Master Costbook Material</h1>
+        <p class="muted">Nilai per kilogram (Rp/kg) tiap material, dipisah per gudang asal: Unpack, WIP, dan Hold. Nilai ini menjadi dasar perhitungan HPP (FR-19, NFR-07b).</p>
+      </div>
+      <div class="page__header-status">
+        <span class="badge badge--draft" id="saveStatus">Belum ada perubahan</span>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">1</span> Nilai Costbook per Material &amp; Gudang</h2>
+        <p class="card__hint">Isi nilai/kg untuk tiap material di masing-masing gudang. Material yang tercatat mengikuti baby coil yang tersedia di Laporan Produksi.</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl" id="costbookTable">
+            <thead>
+              <tr id="cbHeadRow">
+                <th>Material</th>
+                <!-- kolom gudang di-generate oleh JS -->
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="note" id="cbNote">Satuan Rupiah per kilogram (Rp/kg). Daftar material diambil dari <strong>Master Material</strong>. Kosongkan bila material belum memiliki nilai di gudang tersebut.</p>
+      </div>
+    </section>
+
+    <div class="actionbar">
+      <div class="actionbar__note">
+        <span class="muted" id="gateMsg">Perubahan disimpan ke penyimpanan lokal browser (mockup).</span>
+      </div>
+      <div class="actionbar__btns">
+        <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Default</button>
+        <a class="btn btn--ghost" href="index.html">← Kembali ke Laporan Produksi</a>
+        <button type="button" class="btn btn--primary" id="btnSave">Simpan Costbook</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="costbook.js"></script>
+</body>
+</html>
