@@ -129,6 +129,79 @@
     .swal2-container {
       z-index: 9999 !important;
     }
+  
+    /* Sidebar Menu Search Bar Styles */
+    .pc-sidebar-search {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      padding: 8px 14px 10px 14px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .pc-sidebar-search .form-control {
+      height: 38px;
+      padding-left: 34px;
+      padding-right: 28px;
+      border-radius: 8px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #293240;
+      transition: all 0.2s ease-in-out;
+      width: 100%;
+    }
+    .pc-sidebar-search .form-control:focus {
+      background-color: #ffffff;
+      border-color: #4680ff;
+      box-shadow: 0 0 0 3px rgba(70, 128, 255, 0.15);
+    }
+    .pc-sidebar-search .pc-search-icon {
+      position: absolute;
+      top: 50%;
+      left: 11px;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #8c98a4;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pc-sidebar-search .pc-search-clear {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #8c98a4;
+      background: transparent;
+      border: none;
+      padding: 0;
+      z-index: 2;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pc-sidebar-search .pc-search-clear:hover {
+      background-color: #e2e8f0;
+      color: #2d3748;
+    }
+    .pc-sidebar-search .pc-search-clear i {
+      font-size: 14px;
+    }
+
+    /* Highlight style in sidebar */
+    mark.pc-search-highlight {
+      background-color: #ffe082 !important;
+      color: #1a1a1a !important;
+      padding: 0 3px !important;
+      border-radius: 3px !important;
+      font-weight: 700 !important;
+    }
   </style>
 </head>
 
@@ -164,6 +237,16 @@
       </div>
 
       <div class="navbar-content">
+        <!-- SIDEBAR MENU SEARCH -->
+        <div class="pc-sidebar-search">
+          <div class="position-relative">
+            <input type="text" class="form-control" id="sidebar-menu-search" placeholder="Cari menu / sub menu... (Ctrl+K)" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn pc-search-clear" id="sidebar-menu-search-clear" style="display:none;" title="Bersihkan pencarian">
+              <i class="ti ti-x"></i>
+            </button>
+          </div>
+        </div>
+
         <?= $this->menu_generator->build_menus(); ?>
       </div>
     </div>
@@ -191,6 +274,7 @@
               <i data-feather="menu"></i>
             </a>
           </li>
+
 
         </ul>
       </div>
