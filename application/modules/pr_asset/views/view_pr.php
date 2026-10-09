@@ -39,7 +39,7 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
 
         <div class="table-responsive mt-2">
             <table class="table table-bordered table-striped align-middle w-100">
-                <thead class="table-primary text-center">
+                <thead class="text-center">
                     <tr>
                         <th width="5%">#</th>
                         <th>Nama Barang / Asset</th>

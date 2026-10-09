@@ -943,20 +943,21 @@ class Purchase_order_payment extends Admin_Controller
 			a.no_po, a.no_surat, a.id_suplier, a.tanggal, a.loi, a.status,
 			c.nama as nm_supplier,
 			e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
-			rid.id as id_receive_dp,
-			rid.nomor_invoice,
+			rid.id as id_receive_dp, rid.status as status_receive_dp, rid.nomor_invoice,
 			rp.id as id_request_payment, rp.status as status_request,
-			pa.id_payment as no_payment, rid.status as status_payment
+			pa.no_doc as no_payment, rid.status as status_payment
 		');
 		$this->db->from('tr_purchase_order a');
 		$this->db->join('new_supplier c', 'c.kode_supplier = a.id_suplier', 'left');
 		$this->db->join('tr_top_po e', 'e.no_po = a.no_po');
-		$this->db->join('tr_receive_invoice rid', 'rid.id_top = e.id', 'left');
+		$this->db->join('tr_receive_invoice rid', "rid.id_top = e.id AND rid.tipe = 'dp'", 'left');
 		$this->db->join('request_payment rp', "rp.no_doc = rid.id AND rp.tipe = 'invoice_dp'", 'left');
-		$this->db->join('payment_approve pa', 'pa.no_doc = rid.id', 'left');
+		$this->db->join('payment_approve pa', "pa.id_payment = rid.no_po AND pa.tipe = 'invoice_dp'", 'left');
 		$this->db->where('e.group_top', 76);
 		$this->db->where('a.status', '2');
-		$this->db->where('a.id_suplier', $kode_supplier);
+		if (!empty($kode_supplier)) {
+			$this->db->where('a.id_suplier', $kode_supplier);
+		}
 		$this->db->group_by('e.id');
 		$this->db->order_by('a.created_on', 'desc');
 		$list_po = $this->db->get()->result_array();
@@ -970,27 +971,27 @@ class Purchase_order_payment extends Admin_Controller
 		$kode_supplier = $this->input->post('kode_supplier');
 
 		$this->db->select('
-        a.no_po, a.no_surat, a.id_suplier, a.tanggal, a.loi,
-        c.nama as nm_supplier,
-        e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
-        ril.id as id_receive_il,
-        ril.nomor_invoice,
-        rid.id as id_dp, rid.value_dp_idr as nilai_dp,
-        rp.id as id_request_payment, rp.status as status_request,
-        pa.id_payment as no_payment
-    ');
-		$this->db->from('tr_purchase_order a');
+			a.no_po, a.no_surat, a.id_suplier, a.tanggal, a.loi,
+			c.nama as nm_supplier,
+			e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
+			rh.id as no_ros, rh.nilai_po_usd, rh.kurs_pib,
+			ril.id as id_receive_il, ril.nomor_invoice, ril.status as status_receive_il,
+			(SELECT COALESCE(SUM(dp.jumlah_rupiah), 0) FROM tr_receive_invoice dp WHERE dp.no_po = a.no_po AND dp.tipe = \'dp\') as total_dp_rupiah,
+			rp.id as id_request_payment, rp.status as status_request,
+			pa.no_doc as no_payment
+		');
+		$this->db->from('tr_ros_header rh');
+		$this->db->join('tr_purchase_order a', 'a.no_po = rh.no_po');
 		$this->db->join('new_supplier c', 'c.kode_supplier = a.id_suplier', 'left');
-		$this->db->join('tr_top_po e', 'e.no_po = a.no_po');
-		$this->db->join('tr_ros_header rh', 'rh.no_po = a.no_po');
-		$this->db->join('tr_receive_invoice ril', "ril.id_top = e.id AND ril.tipe = 'import'", 'left');
-		$this->db->join('tr_receive_invoice rid', "rid.no_po = a.no_po AND rid.tipe = 'dp'", 'left');
-		$this->db->join('request_payment rp', "rp.no_doc = ril.id AND rp.tipe = 'invoice_import'", 'left');
-		$this->db->join('payment_approve pa', 'pa.no_doc = ril.id', 'left');
+		$this->db->join('tr_top_po e', 'e.no_po = a.no_po AND e.group_top = 101', 'left');
+		$this->db->join('tr_receive_invoice ril', "ril.id_ros = rh.id AND ril.tipe = 'import'", 'left');
+		$this->db->join('request_payment rp', "rp.no_doc = a.no_po AND rp.tipe = 'invoice_import'", 'left');
+		$this->db->join('payment_approve pa', "pa.id_payment = ril.no_po AND pa.tipe = 'invoice_import'", 'left');
 		$this->db->where('a.loi', 'Import');
-		$this->db->where('e.group_top', 101);
-		$this->db->where('rh.status_incoming', 'closed');
-		$this->db->where('a.id_suplier', $kode_supplier);
+		$this->db->where('rh.status', 1);
+		if (!empty($kode_supplier)) {
+			$this->db->where('a.id_suplier', $kode_supplier);
+		}
 		// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
 		$this->db->where("(
 			SELECT COALESCE(SUM(paid_terms.progress), 0)
@@ -1005,11 +1006,12 @@ class Purchase_order_payment extends Admin_Controller
 				AND dptop.group_top = 76
 			) paid_terms
 		) < 100", null, false);
-		$this->db->group_by('e.id');
-		$this->db->order_by('a.created_on', 'desc');
+		$this->db->group_by('rh.id');
+		$this->db->order_by('rh.created_on', 'desc');
 		$list_po = $this->db->get()->result_array();
 
 		$this->template->set('list_po', $list_po);
+		$this->template->set('tipe_btn', 'import');
 		$this->template->render('_partial/table_import');
 	}
 
@@ -1018,15 +1020,15 @@ class Purchase_order_payment extends Admin_Controller
 		$kode_supplier = $this->input->post('kode_supplier');
 
 		$this->db->select('
-        a.no_po, a.no_surat, a.id_suplier, a.loi,
-        c.nama as nm_supplier,
-        e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
-        ih.id as id_incoming, ih.kode_trans, ih.no_ros, ih.tanggal, ih.gl_unbill_from_ros,
-        ril.id as id_receive_il, ril.nomor_invoice, ril.status as status_receive_il,
-        (SELECT COALESCE(SUM(dp.jumlah_rupiah), 0) FROM tr_receive_invoice dp WHERE dp.no_po = a.no_po AND dp.tipe = \'dp\') as total_dp_rupiah,
-        rp.id as id_request_payment, rp.status as status_request,
-        pa.no_doc as no_payment
-    ');
+			a.no_po, a.no_surat, a.id_suplier, a.loi,
+			c.nama as nm_supplier,
+			e.id as id_top, e.progress, e.nilai, e.keterangan as keterangan_top,
+			ih.id as id_incoming, ih.kode_trans, ih.no_ros, ih.tanggal, ih.gl_unbill_from_ros,
+			ril.id as id_receive_il, ril.nomor_invoice, ril.status as status_receive_il,
+			(SELECT COALESCE(SUM(dp.jumlah_rupiah), 0) FROM tr_receive_invoice dp WHERE dp.no_po = a.no_po AND dp.tipe = \'dp\') as total_dp_rupiah,
+			rp.id as id_request_payment, rp.status as status_request,
+			pa.no_doc as no_payment
+		');
 		$this->db->from('tr_incoming_header ih');
 		$this->db->join('tr_purchase_order a', 'a.no_po = ih.no_po');
 		$this->db->join('new_supplier c', 'c.kode_supplier = a.id_suplier', 'left');
@@ -1036,7 +1038,9 @@ class Purchase_order_payment extends Admin_Controller
 		$this->db->join('payment_approve pa', "pa.id_payment = ril.no_po AND pa.tipe = 'invoice_local'", 'left');
 		$this->db->where('a.loi', 'Lokal');
 		$this->db->where('ih.status', 'finalized');
-		$this->db->where('a.id_suplier', $kode_supplier);
+		if (!empty($kode_supplier)) {
+			$this->db->where('a.id_suplier', $kode_supplier);
+		}
 		// Sembunyikan PO yang DP-nya 100% DAN sudah lunas (tidak ada sisa tagihan)
 		$this->db->where("(
 			SELECT COALESCE(SUM(paid_terms.progress), 0)
@@ -1056,6 +1060,7 @@ class Purchase_order_payment extends Admin_Controller
 		$list_po = $this->db->get()->result_array();
 
 		$this->template->set('list_po', $list_po);
+		$this->template->set('tipe_btn', 'local');
 		$this->template->render('_partial/table_local');
 	}
 

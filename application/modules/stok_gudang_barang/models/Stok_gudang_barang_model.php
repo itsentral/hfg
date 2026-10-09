@@ -73,10 +73,10 @@ class Stok_gudang_barang_model extends BF_Model
 			// $nestedData[]	= "<div align='right'>".number_format($booking, 2)."</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($available, 2)."</div>";
 			// $nestedData[]	= "<div align='center'></div>";
-			$history 		= "<button type='button' class='btn btn-sm btn-primary hist' data-gudang='" . $id_gudang . "' data-material='" . $id_material . "'><i class='fa fa-history'></i></button>";
+			$history 		= "<button type='button' class='btn btn-sm btn-primary hist' data-gudang='" . $id_gudang . "' data-material='" . $id_material . "' title='Riwayat Kartu Stok'><i class='fa fa-history'></i></button>";
 			$download		= "";
 			if (empty($date_filter)) {
-				$download 	= "&nbsp;<button type='button' class='btn btn-sm btn-default hist_excel' data-gudang='" . $id_gudang . "' data-material='" . $id_material . "'><i class='fa fa-file-excel-o'></i></button>";
+				$download 	= "&nbsp;<button type='button' class='btn btn-sm btn-success hist_excel' data-gudang='" . $id_gudang . "' data-material='" . $id_material . "' title='Download Excel History'><i class='fa fa-file-excel'></i></button>";
 			}
 
 			$nestedData[]	= "<div align='center'>" . $history . $download . "</div>";

@@ -13,50 +13,43 @@
         </tr>
     </thead>
     <tbody>
-        <?php $no = 1; foreach ($list_po as $item): ?>
+        <?php $no = 1;
+        foreach ($list_po as $item): ?>
             <?php
-                $sudah_receive = !empty($item['id_receive_dp']);
-                $sudah_request = !empty($item['id_request_payment']);
-                $sudah_bayar   = !empty($item['no_payment']) && $item['status_payment'] == 2;
+            $sudah_receive = !empty($item['id_receive_dp']);
+            $sudah_request = !empty($item['id_request_payment']);
+            $sudah_bayar   = !empty($item['no_payment']) && $item['status_payment'] == 'payment';
 
-                if (!$sudah_receive) {
-                    $badge = '<span class="badge bg-secondary">Belum Receive</span>';
-                    $action = '
-                        <button type="button" class="btn btn-sm btn-primary btn-req-dp"
-                            data-id_top="' . $item['id_top'] . '"
-                            data-no_po="' . $item['no_po'] . '"
-                            title="Receive Invoice DP">
-                            <i class="fa fa-plus"></i>
-                        </button>';
+            if (!$sudah_receive) {
+                // Belum receive invoice
+                $badge = '<span class="badge bg-secondary">Belum Receive</span>';
+                $action_btn = '
+                <button type="button" class="btn btn-sm btn-primary btn-req-dp"
+                    data-id_top="' . $item['id_top'] . '"
+                    data-no_po="' . $item['no_po'] . '"
+                    title="Receive Invoice DP">
+                    <i class="fa fa-plus"></i>
+                </button>';
+            } else {
+                // Jika sudah receive, tampilkan status ENUM
+                $status_enum = strtolower($item['status_receive_dp'] ?? '');
+                $status_uc   = ucwords($status_enum);
 
-                } elseif ($sudah_receive && !$sudah_request) {
-                    $badge = '<span class="badge bg-info text-dark">Sudah Receive</span>';
-                    $action = '
-                        <button type="button" class="btn btn-sm btn-info btn-view-dp"
-                            data-id="' . $item['id_receive_dp'] . '"
-                            title="Lihat Invoice">
-                            <i class="fa fa-eye"></i>
-                        </button>';
-                    // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
-
-                } elseif ($sudah_request && !$sudah_bayar) {
-                    $badge = '<span class="badge bg-warning text-dark">Menunggu Pembayaran</span>';
-                    $action = '
-                        <button type="button" class="btn btn-sm btn-info btn-view-dp"
-                            data-id="' . $item['id_receive_dp'] . '"
-                            title="Lihat Invoice">
-                            <i class="fa fa-eye"></i>
-                        </button>';
-
+                if ($status_enum === 'draft') {
+                    $badge = '<span class="badge bg-info text-dark">Draft</span>';
+                } elseif ($status_enum === 'payment') {
+                    $badge = '<span class="badge bg-success">Payment</span>';
                 } else {
-                    $badge = '<span class="badge bg-success">Lunas</span>';
-                    $action = '
-                        <button type="button" class="btn btn-sm btn-info btn-view-dp"
-                            data-id="' . $item['id_receive_dp'] . '"
-                            title="Lihat Invoice">
-                            <i class="fa fa-eye"></i>
-                        </button>';
+                    $badge = '<span class="badge bg-warning text-dark">' . $status_uc . '</span>';
                 }
+
+                $action_btn = '
+                <button type="button" class="btn btn-sm btn-info btn-view-dp"
+                    data-id="' . $item['id_receive_dp'] . '"
+                    title="Lihat Invoice">
+                    <i class="fa fa-eye"></i>
+                </button>';
+            }
             ?>
             <tr>
                 <td class="text-center"><?= $no++ ?></td>
@@ -67,14 +60,13 @@
                 <td class="text-center"><?= date('d F Y', strtotime($item['tanggal'])) ?></td>
                 <td><?= $item['keterangan_top'] ?? '-' ?></td>
                 <td class="text-center"><?= $badge ?></td>
-                <td class="text-center"><?= $action ?></td>
+                <td class="text-center"><?= $action_btn ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
 
 <script>
-// Re-init DataTable setelah search
 if ($.fn.DataTable.isDataTable('.table_req_pay_dp')) {
     $('.table_req_pay_dp').DataTable().destroy();
 }

@@ -59,7 +59,7 @@ class Budget_periodik_model extends BF_Model
 	// list data
 	public function GetBudgetRutinGroup($key = '')
 	{
-		$sql = "select a.departement from " . $this->table_name . " a  ";
+		$sql = "select a.departement, count(a.id) as total_item, sum(a.nilai) as total_nilai from " . $this->table_name . " a ";
 		if ($key != '') $sql .= " where a.departement='" . $key . "' ";
 		$sql .= " group by a.departement ";
 		$query = $this->db->query($sql);

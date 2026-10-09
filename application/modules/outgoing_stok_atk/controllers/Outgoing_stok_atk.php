@@ -12,7 +12,7 @@ class Outgoing_stok_atk extends Admin_Controller
   protected $id_user;
   protected $datetime;
 
-  protected $hris;
+  // protected $hris;
 
   public function __construct()
   {
@@ -28,7 +28,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
     $this->id_user  = $this->auth->user_id();
     $this->datetime = date('Y-m-d H:i:s');
-    $this->hris = $this->load->database('hris', true);
+    // $this->hris = $this->load->database('hris', true);
   }
 
   public function index()
@@ -83,7 +83,7 @@ class Outgoing_stok_atk extends Admin_Controller
             $qty_berat = $qty_packing;
 
             $qty_stock = 0;
-            $get_qty_stock = $this->db->get_where('warehouse_stock', ['id_material' => $valx['id'], 'id_gudang' => 1])->row();
+            $get_qty_stock = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $valx['id'], 'id_gudang' => 1])->row();
             if (!empty($get_qty_stock)) {
               $qty_stock = $get_qty_stock->qty_stock;
             }
@@ -153,13 +153,13 @@ class Outgoing_stok_atk extends Admin_Controller
 
 
           $stock_terakhir = 0;
-          $get_stock_material = $this->db->get_where('warehouse_stock', ['id_material' => $item_detail->id_material, 'id_gudang' => $id_gudang_dari])->row();
+          $get_stock_material = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $item_detail->id_material, 'id_gudang' => $id_gudang_dari])->row();
           if (!empty($get_stock_material)) {
             $stock_terakhir = ($get_stock_material->qty_stock);
           }
 
           $stock_terakhir1 = 0;
-          $get_stock_material = $this->db->get_where('warehouse_stock', ['id_material' => $item_detail->id_material, 'id_gudang' => $id_gudang_ke])->row();
+          $get_stock_material = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $item_detail->id_material, 'id_gudang' => $id_gudang_ke])->row();
           if (!empty($get_stock_material)) {
             $stock_terakhir1 = ($get_stock_material->qty_stock);
           }
@@ -300,17 +300,17 @@ class Outgoing_stok_atk extends Admin_Controller
           $ttl_qty_prod = 0;
           $ttl_qty_pusat = 0;
 
-          $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
+          $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock_non_material WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
           if (!empty($get_ttl_qty_sub)) {
             $ttl_qty_sub = $get_ttl_qty_sub->ttl_qty_sub;
           }
 
-          $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
+          $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock_non_material WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
           if (!empty($get_ttl_qty_prod)) {
             $ttl_qty_prod = $get_ttl_qty_prod->ttl_qty_prod;
           }
 
-          $get_ttl_qty_pusat = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_pusat FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "'  AND id_gudang = '1'")->row();
+          $get_ttl_qty_pusat = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_pusat FROM warehouse_stock_non_material WHERE id_material = '" . $item_detail->id_material . "'  AND id_gudang = '1'")->row();
           if (!empty($get_ttl_qty_pusat)) {
             $ttl_qty_pusat = $get_ttl_qty_pusat->ttl_qty_pusat;
           }
@@ -358,16 +358,25 @@ class Outgoing_stok_atk extends Admin_Controller
       $listGudangKe   = $this->db->order_by('urut', 'ASC')->get_where('warehouse', array('desc' => 'costcenter'))->result_array();
       // $listDepartment = $this->db->order_by('nama', 'ASC')->get_where('ms_department', array('deleted_date' => NULL))->result_array();
 
-      $qry_department = '
-          SELECT
-            a.id as id,
-            a.name as nama,
-            b.name as nm_comp
-          FROM
-            departments a
-            LEFT JOIN companies b ON b.id = a.company_id
-        ';
-      $listDepartment = $this->hris->query($qry_department)->result_array();
+      $listDepartment = [];
+      $get_dept = $this->db->order_by('nm_dept', 'ASC')->get_where('department', ['deleted' => 'N'])->result_array();
+      foreach ($get_dept as $d) {
+        $listDepartment[] = [
+          'id' => $d['id'],
+          'nama' => strtoupper($d['nm_dept']),
+          'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+        ];
+      }
+      if (empty($listDepartment)) {
+        $get_dept_ms = $this->db->order_by('nama', 'ASC')->get_where('ms_department', ['deleted_by' => null])->result_array();
+        foreach ($get_dept_ms as $d) {
+          $listDepartment[] = [
+            'id' => $d['id'],
+            'nama' => strtoupper($d['nama']),
+            'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+          ];
+        }
+      }
 
       $data = [
         'listGudang' => $listGudang,
@@ -467,13 +476,18 @@ class Outgoing_stok_atk extends Admin_Controller
       }
       $getDataDetail  = $this->db->get_where('warehouse_adjustment_detail a', array('a.kode_trans' => $kode_trans))->result_array();
 
-      $this->hris->select('a.name as nm_dept, b.name as nm_comp');
-      $this->hris->from('departments a');
-      $this->hris->join('companies b', 'b.id = a.company_id', 'left');
-      $this->hris->where('a.id', $getData[0]['id_dept']);
-      $get_dept = $this->hris->get()->row_array();
-
-      $nm_dept = (!empty($get_dept)) ? strtoupper($get_dept['nm_dept']) . ' - ' . strtoupper($get_dept['nm_comp']) : '';
+      $nm_dept = '-';
+      if (!empty($getData[0]['id_dept'])) {
+        $get_dept = $this->db->get_where('department', ['id' => $getData[0]['id_dept']])->row_array();
+        if (!empty($get_dept)) {
+          $nm_dept = strtoupper($get_dept['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+        } else {
+          $get_dept_ms = $this->db->get_where('ms_department', ['id' => $getData[0]['id_dept']])->row_array();
+          if (!empty($get_dept_ms)) {
+            $nm_dept = strtoupper($get_dept_ms['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+          }
+        }
+      }
 
       $data = array(
         'tanda' => $tanda,
@@ -702,13 +716,13 @@ class Outgoing_stok_atk extends Admin_Controller
     $this->db->trans_start();
     $get_adjustment_detail = $this->db->get_where('warehouse_adjustment_detail', ['kode_trans' => $kode_trans])->result();
     foreach ($get_adjustment_detail as $item) {
-      $get_stock = $this->db->get_where('warehouse_stock', ['id_material' => $item->id_material, 'id_gudang' => 21])->row();
+      $get_stock = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $item->id_material, 'id_gudang' => 21])->row();
       $stock_awal = $get_stock->qty_stock;
       $stock_pengurang = $item->qty_oke;
 
       $nilai_hasil = ($stock_awal - $stock_pengurang);
 
-      $update_stock = $this->db->update('warehouse_stock', ['qty_stock' => $nilai_hasil], ['id' => $get_stock->id]);
+      $update_stock = $this->db->update('warehouse_stock_non_material', ['qty_stock' => $nilai_hasil], ['id' => $get_stock->id]);
       if (!$update_stock) {
         print_r($this->db->error($update_stock));
         exit;
@@ -717,7 +731,7 @@ class Outgoing_stok_atk extends Admin_Controller
         $get_gudang_dari = $this->db->get_where('warehouse', ['id' => $get_data->id_gudang_dari])->row();
         $get_gudang_ke = $this->db->get_where('warehouse', ['id' => $get_data->id_gudang_ke])->row();
 
-        $insert_history = $this->db->insert('warehouse_history', [
+        $insert_history = $this->db->insert('warehouse_history_non_material', [
           'id_material' => $item->id_material,
           'nm_material' => $get_accessories->stock_name,
           'id_gudang' => $get_data->id_gudang_dari,

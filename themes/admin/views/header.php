@@ -42,6 +42,8 @@
        CSS PLUGIN LAMA (sementara dipertahankan)
        ========================= -->
   <link rel="stylesheet" href="<?= base_url('assets/dist/sweetalert.css'); ?>">
+  <link rel="stylesheet" href="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.css'); ?>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/select2/select2.min.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/daterangepicker/daterangepicker.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/jquery-ui-1.12.1/jquery-ui-1.12.1/jquery-ui.min.css'); ?>">
@@ -66,6 +68,60 @@
 
   <!-- Sweet Alert -->
   <script src="<?= base_url('assets/dist/sweetalert.min.js'); ?>"></script>
+  <script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.all.min.js'); ?>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script type="text/javascript">
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 !== 'undefined') {
+      window.Swal = Sweetalert2;
+    }
+    (function() {
+      var _Swal = window.Swal || (typeof Sweetalert2 !== 'undefined' ? Sweetalert2 : null);
+      if (!_Swal) return;
+
+      window.Swal = _Swal;
+
+      // Compatibility wrapper so legacy swal(...) calls don't crash with "Class constructor without 'new'"
+      window.swal = function() {
+        var args = Array.prototype.slice.call(arguments);
+        if (args.length === 0) return _Swal;
+
+        // Pattern 1: swal("Title", "Message", "error")
+        if (typeof args[0] === 'string') {
+          var opts = { title: args[0] };
+          if (typeof args[1] === 'string') opts.text = args[1];
+          if (typeof args[2] === 'string') {
+            opts.icon = (args[2] === 'warning' || args[2] === 'error' || args[2] === 'success' || args[2] === 'info') ? args[2] : 'info';
+          }
+          return _Swal.fire(opts);
+        }
+
+        // Pattern 2: swal({ title: ..., text: ..., type: ... }, callback)
+        if (typeof args[0] === 'object' && args[0] !== null) {
+          var opt = Object.assign({}, args[0]);
+          if (opt.type && !opt.icon) {
+            opt.icon = opt.type;
+          }
+          if (opt.confirmButtonClass && !opt.customClass) {
+            opt.customClass = { confirmButton: opt.confirmButtonClass };
+          }
+          var callback = (typeof args[1] === 'function') ? args[1] : null;
+
+          return _Swal.fire(opt).then(function(result) {
+            if (callback) {
+              callback(result.isConfirmed);
+            }
+            return result;
+          });
+        }
+
+        return _Swal.fire.apply(_Swal, args);
+      };
+
+      if (_Swal.fire) window.swal.fire = _Swal.fire.bind(_Swal);
+      if (_Swal.close) window.swal.close = _Swal.close.bind(_Swal);
+      if (_Swal.mixin) window.swal.mixin = _Swal.mixin.bind(_Swal);
+    })();
+  </script>
 
   <!-- Form Jquery -->
   <script src="<?= base_url('assets/plugins/jqueryform/jquery.form.js'); ?>"></script>

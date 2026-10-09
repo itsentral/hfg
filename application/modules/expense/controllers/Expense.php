@@ -45,7 +45,7 @@ class Expense extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('all/All_model', 'Expense/Expense_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model', 'Coa_expense/Coa_expense_model'));
+		$this->load->model(array('all/All_model', 'Expense/Expense_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model', 'Coa_expense/Expense_model'));
 		$this->template->title('Expense Report');
 		$this->template->page_icon('fa fa-cubes');
 		date_default_timezone_set('Asia/Bangkok');
@@ -130,6 +130,7 @@ class Expense extends Admin_Controller
 
 		$this->template->set('list_pr_non_po', $list_pr_non_po);
 		$this->template->set('list_coa', $get_list_coa);
+		$this->template->set('list_files', []);
 		$this->template->set('mod', '');
 		$this->template->render('kasbon_form');
 	}
@@ -144,7 +145,7 @@ class Expense extends Admin_Controller
 		$nama				= $this->input->post("nama");
 		$keperluan			= $this->input->post("keperluan");
 		$keterangan			= $this->input->post("keterangan");
-		$jumlah_kasbon		= $this->input->post("jumlah_kasbon");
+		$jumlah_kasbon		= str_replace(',', '', $this->input->post("jumlah_kasbon"));
 		$filename			= $this->input->post("filename");
 		$bank_id			= $this->input->post("bank_id");
 		$accnumber			= $this->input->post("accnumber");
@@ -161,56 +162,93 @@ class Expense extends Admin_Controller
 		$metode_pembayaran	= 1;
 
 		$this->db->trans_begin();
-		$config['upload_path'] = 'assets/expense/';
-		$config['allowed_types'] = '*';
-		$config['remove_spaces'] = TRUE;
-		$config['encrypt_name'] = TRUE;
-		$filenames = '';
-		if ($id !== '') {
-			$get_filenames = $this->db->select('doc_file')->get_where('tr_kasbon', ['id' => $id])->row_array();
-			if (!empty($get_filenames)) {
-				$filenames = $get_filenames['doc_file'];
-			}
+		$upload_dir = './uploads/expense/';
+		if (!is_dir($upload_dir)) {
+			@mkdir($upload_dir, 0777, true);
 		}
+		if (!is_dir('./assets/expense/')) {
+			@mkdir('./assets/expense/', 0777, true);
+		}
+
+		$arr_uploaded_files = [];
+
+		// Tangani multiple file upload native move_uploaded_file (aman & tidak menimpa)
 		if (!empty($_FILES['doc_file']['name'])) {
-			$_FILES['file']['name'] = $_FILES['doc_file']['name'];
-			$_FILES['file']['type'] = $_FILES['doc_file']['type'];
-			$_FILES['file']['tmp_name'] = $_FILES['doc_file']['tmp_name'];
-			$_FILES['file']['error'] = $_FILES['doc_file']['error'];
-			$_FILES['file']['size'] = $_FILES['doc_file']['size'];
-			// $this->load->library('upload', $config);
-			$this->upload->initialize($config);
-			if ($this->upload->do_upload('file')) {
-				$uploadData = $this->upload->data();
-				$filenames = $uploadData['file_name'];
+			if (is_array($_FILES['doc_file']['name'])) {
+				$count_files = count($_FILES['doc_file']['name']);
+				for ($i = 0; $i < $count_files; $i++) {
+					if (!empty($_FILES['doc_file']['name'][$i]) && isset($_FILES['doc_file']['error'][$i]) && $_FILES['doc_file']['error'][$i] === 0) {
+						$orig_name = $_FILES['doc_file']['name'][$i];
+						$ext = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+						$new_filename = md5(uniqid(mt_rand(), true)) . ($ext ? '.' . $ext : '');
+						$target_file = $upload_dir . $new_filename;
+
+						if (move_uploaded_file($_FILES['doc_file']['tmp_name'][$i], $target_file)) {
+							$arr_uploaded_files[] = $new_filename;
+							if (is_dir('./assets/expense/') && !file_exists('./assets/expense/' . $new_filename)) {
+								@copy($target_file, './assets/expense/' . $new_filename);
+							}
+						}
+					}
+				}
+			} else if (!empty($_FILES['doc_file']['name']) && isset($_FILES['doc_file']['error']) && $_FILES['doc_file']['error'] === 0) {
+				$orig_name = $_FILES['doc_file']['name'];
+				$ext = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+				$new_filename = md5(uniqid(mt_rand(), true)) . ($ext ? '.' . $ext : '');
+				$target_file = $upload_dir . $new_filename;
+
+				if (move_uploaded_file($_FILES['doc_file']['tmp_name'], $target_file)) {
+					$arr_uploaded_files[] = $new_filename;
+					if (is_dir('./assets/expense/') && !file_exists('./assets/expense/' . $new_filename)) {
+						@copy($target_file, './assets/expense/' . $new_filename);
+					}
+				}
 			}
 		}
+
+		// Support legacy single doc_file_2 jika ada
+		if (!empty($_FILES['doc_file_2']['name']) && !is_array($_FILES['doc_file_2']['name']) && isset($_FILES['doc_file_2']['error']) && $_FILES['doc_file_2']['error'] === 0) {
+			$orig_name2 = $_FILES['doc_file_2']['name'];
+			$ext2 = strtolower(pathinfo($orig_name2, PATHINFO_EXTENSION));
+			$new_filename2 = md5(uniqid(mt_rand(), true)) . ($ext2 ? '.' . $ext2 : '');
+			$target_file2 = $upload_dir . $new_filename2;
+			if (move_uploaded_file($_FILES['doc_file_2']['tmp_name'], $target_file2)) {
+				$arr_uploaded_files[] = $new_filename2;
+				if (is_dir('./assets/expense/') && !file_exists('./assets/expense/' . $new_filename2)) {
+					@copy($target_file2, './assets/expense/' . $new_filename2);
+				}
+			}
+		}
+
+		// Document otomatis dari PR Non PO
+		if (!empty($file_name)) {
+			if (file_exists($doc_pr)) {
+				@copy('' . $doc_pr . '', $upload_dir . $file_name);
+				if (!file_exists('./assets/expense/' . $file_name)) {
+					@copy('' . $doc_pr . '', './assets/expense/' . $file_name);
+				}
+			}
+			$arr_uploaded_files[] = $file_name;
+		}
+
+		// Ambil file yang sudah ada sebelumnya (jangan timpa jika edit)
+		$filenames = '';
 		$filenames2 = '';
 		if ($id !== '') {
-			$get_filenames = $this->db->select('doc_file_2')->get_where('tr_kasbon', ['id' => $id])->row_array();
+			$get_filenames = $this->db->select('doc_file, doc_file_2')->get_where('tr_kasbon', ['id' => $id])->row_array();
 			if (!empty($get_filenames)) {
-				$filenames2 = $get_filenames['doc_file_2'];
+				$filenames  = (!empty($get_filenames['doc_file'])) ? $get_filenames['doc_file'] : '';
+				$filenames2 = (!empty($get_filenames['doc_file_2'])) ? $get_filenames['doc_file_2'] : '';
 			}
 		}
-		if (!empty($_FILES['doc_file_2']['name'])) {
-			$_FILES['file']['name'] = $_FILES['doc_file_2']['name'];
-			$_FILES['file']['type'] = $_FILES['doc_file_2']['type'];
-			$_FILES['file']['tmp_name'] = $_FILES['doc_file_2']['tmp_name'];
-			$_FILES['file']['error'] = $_FILES['doc_file_2']['error'];
-			$_FILES['file']['size'] = $_FILES['doc_file_2']['size'];
-			// $this->load->library('upload', $config);
-			$this->upload->initialize($config);
-			if ($this->upload->do_upload('file')) {
-				$uploadData2 = $this->upload->data();
-				$filenames2 = $uploadData2['file_name'];
-			}
-		}
-
-		if (!empty($file_name)) {
-			$filenames = $file_name;
-
-			if (file_exists($doc_pr)) {
-				copy('' . $doc_pr . '', '' . $to_doc_pr . '');
+		if (!empty($arr_uploaded_files)) {
+			if (empty($filenames)) {
+				$filenames = $arr_uploaded_files[0];
+				if (count($arr_uploaded_files) > 1 && empty($filenames2)) {
+					$filenames2 = $arr_uploaded_files[1];
+				}
+			} else if (empty($filenames2)) {
+				$filenames2 = $arr_uploaded_files[0];
 			}
 		}
 
@@ -391,6 +429,21 @@ class Expense extends Admin_Controller
 				print_r($this->db->last_query());
 				exit;
 			}
+
+			// Simpan file lampiran ke tr_kasbon_files
+			foreach ($arr_uploaded_files as $f_name) {
+				if (!empty($f_name)) {
+					$chk_f = $this->db->get_where('tr_kasbon_files', ['no_doc' => $no_doc, 'file_name' => $f_name])->row();
+					if (empty($chk_f)) {
+						$this->db->insert('tr_kasbon_files', [
+							'no_doc' => $no_doc,
+							'file_name' => $f_name,
+							'created_by' => $this->auth->user_name(),
+							'created_date' => date('Y-m-d H:i:s')
+						]);
+					}
+				}
+			}
 			// print_r($this->db->last_query());
 			// exit;
 			if ($this->db->trans_status() === FALSE) {
@@ -432,6 +485,21 @@ class Expense extends Admin_Controller
 				'created_on' => date("Y-m-d h:i:s"),
 			);
 			$id = $this->db->insert('tr_kasbon', $data);
+
+			// Simpan file lampiran ke tr_kasbon_files
+			foreach ($arr_uploaded_files as $f_name) {
+				if (!empty($f_name)) {
+					$chk_f = $this->db->get_where('tr_kasbon_files', ['no_doc' => $no_doc, 'file_name' => $f_name])->row();
+					if (empty($chk_f)) {
+						$this->db->insert('tr_kasbon_files', [
+							'no_doc' => $no_doc,
+							'file_name' => $f_name,
+							'created_by' => $this->auth->user_name(),
+							'created_date' => date('Y-m-d H:i:s')
+						]);
+					}
+				}
+			}
 
 			if ($tipe_pr !== '') {
 				if ($tipe_pr == 'pr departemen') {
@@ -557,144 +625,98 @@ class Expense extends Admin_Controller
 		echo json_encode($param);
 	}
 
-	public function get_kasbon($nama = '', $departement = '')
+	public function delete_kasbon_file()
 	{
-		$data = $this->db->query("SELECT * FROM tr_kasbon WHERE status = 3")->result();
-		$query1 = $this->db->query("
-			SELECT
-				a.id as id, 
-				a.no_doc as no_doc, 
-				a.tgl_doc as tgl_doc, 
-				a.departement as departement, 
-				a.nama as nama, 
-				a.jumlah_kasbon as jumlah_kasbon, 
-				a.keperluan as keperluan, 
-				a.doc_file as doc_file, 
-				a.status as status, 
-				a.coa as coa, 
-				a.doc_file_2 as doc_file_2, 
-				a.bank_id as bank_id, 
-				a.accnumber as accnumber, 
-				a.accname as accname,
-				a.project as project, 
-				a.keterangan as keterangan,
-				'' as id_expense_detail
-			FROM
-				tr_kasbon a
-			WHERE
-				(a.nama = '" . $nama . "' AND
-				a.departement = '" . $departement . "' AND
-				a.status = 3 AND
-				(SELECT COUNT(aa.id) FROM tr_expense_detail aa JOIN tr_expense ab ON ab.no_doc = aa.no_doc WHERE aa.id_kasbon = a.no_doc AND ab.pettycash IS NULL) <= 0) OR
-				(
-					(SELECT COUNT(aa.id) FROM tr_expense_detail aa JOIN tr_expense ab ON aa.no_doc = ab.no_doc WHERE aa.id_kasbon = a.no_doc AND ab.pettycash IS NOT NULL) <= 0
-				)
-			
-			UNION ALL
-
-			SELECT
-				a.id as id, 
-				a.no_doc as no_doc, 
-				a.tanggal as tgl_doc, 
-				b.departement as departement, 
-				'' as nama, 
-				a.nilai as jumlah_kasbon, 
-				a.nama as keperluan, 
-				a.doc_file as doc_file, 
-				a.status as status, 
-				'' as coa, 
-				'' as doc_file_2, 
-				a.bank_id as bank_id, 
-				a.accnumber as accnumber, 
-				a.accname as accname, 
-				'' as project, 
-				a.keterangan as keterangan,
-				a.id as id_expense_detail
-			FROM
-				tr_pengajuan_rutin_detail a
-				LEFT JOIN tr_pengajuan_rutin b ON b.no_doc = a.no_doc
-			WHERE
-				a.status = '3' AND
-				a.metode_pembelian = '2' AND 
-				(SELECT COUNT(aa.id) FROM tr_expense aa JOIN tr_expense_detail ab ON ab.no_doc = aa.no_doc WHERE ab.id_expense_detail = a.id AND aa.status IN ('0','1','2','3')) < 1
-		")->num_rows();
-		if (!$query1) {
-			print_r($this->db->error($query1));
-			exit;
-		}
-
-		if ($query1 > 0) {
-
-			$data = $this->db->query("
-			SELECT
-				a.id as id, 
-				a.no_doc as no_doc, 
-				a.tgl_doc as tgl_doc, 
-				a.departement as departement, 
-				a.nama as nama, 
-				a.jumlah_kasbon as jumlah_kasbon, 
-				a.keperluan as keperluan, 
-				a.doc_file as doc_file, 
-				a.status as status, 
-				a.coa as coa, 
-				a.doc_file_2 as doc_file_2, 
-				a.bank_id as bank_id, 
-				a.accnumber as accnumber, 
-				a.accname as accname, 
-				a.project as project, 
-				a.keterangan as keterangan,
-				'' as id_expense_detail
-			FROM
-				tr_kasbon a
-			WHERE
-				(
-					a.nama = '" . $nama . "' AND
-					a.departement = '" . $departement . "' AND
-					a.status = 3 AND
-					(SELECT COUNT(aa.id) FROM tr_expense_detail aa WHERE aa.id_kasbon = a.no_doc) <= 0
-				) OR
-				(
-					a.id_pr IS NOT NULL AND
-					a.status = 3 AND
-					(SELECT COUNT(aa.id) FROM tr_expense_detail aa JOIN tr_expense ab ON ab.no_doc = aa.no_doc WHERE aa.id_kasbon = a.no_doc AND ab.pettycash IS NULL) <= 0
-				)
-			
-			UNION ALL
-
-			SELECT
-				a.id as id, 
-				a.no_doc as no_doc, 
-				a.tanggal as tgl_doc, 
-				b.departement as departement, 
-				'' as nama, 
-				a.nilai as jumlah_kasbon, 
-				a.nama as keperluan, 
-				a.doc_file as doc_file, 
-				a.status as status, 
-				'' as coa, 
-				'' as doc_file_2, 
-				a.bank_id as bank_id, 
-				a.accnumber as accnumber, 
-				a.accname as accname, 
-				'' as project, 
-				a.keterangan as keterangan,
-				a.id as id_expense_detail
-			FROM
-				tr_pengajuan_rutin_detail a
-				LEFT JOIN tr_pengajuan_rutin b ON b.no_doc = a.no_doc
-			WHERE
-				a.status = '3' AND
-				a.metode_pembelian = '2' AND 
-				(SELECT COUNT(aa.id) FROM tr_expense aa JOIN tr_expense_detail ab ON ab.no_doc = aa.no_doc WHERE ab.id_expense_detail = a.id AND aa.status IN ('0','1','2','3')) < 1
-		")->result();
-			if (!$data) {
-				print_r($this->db->error($data));
-				exit;
+		$id = $this->input->post('id');
+		$file = $this->db->get_where('tr_kasbon_files', ['id' => $id])->row();
+		if (!empty($file)) {
+			if (file_exists('./uploads/expense/' . $file->file_name)) {
+				@unlink('./uploads/expense/' . $file->file_name);
 			}
+			if (file_exists('./assets/expense/' . $file->file_name)) {
+				@unlink('./assets/expense/' . $file->file_name);
+			}
+			$this->db->delete('tr_kasbon_files', ['id' => $id]);
+			echo json_encode(['status' => 1, 'pesan' => 'File lampiran berhasil dihapus']);
 		} else {
-			$data = false;
+			echo json_encode(['status' => 0, 'pesan' => 'File tidak ditemukan']);
 		}
+	}
+
+	public function get_kasbon($nama = '', $departement = '', $no_doc = '')
+	{
+		$is_admin = ($this->auth->user_id() === '7' || $this->auth->user_id() === '202');
+
+		$this->db->select("
+			a.id as id, 
+			a.no_doc as no_doc, 
+			a.tgl_doc as tgl_doc, 
+			a.departement as departement, 
+			a.nama as nama, 
+			a.jumlah_kasbon as jumlah_kasbon, 
+			a.keperluan as keperluan, 
+			a.doc_file as doc_file, 
+			a.status as status, 
+			a.coa as coa, 
+			a.no_coa as no_coa,
+			a.nm_coa as nm_coa,
+			a.bank_id as bank_id, 
+			a.accnumber as accnumber, 
+			a.accname as accname,
+			a.project as project, 
+			a.keterangan as keterangan,
+			a.id_pr as id_pr,
+			'' as id_expense_detail
+		");
+		$this->db->from('tr_kasbon a');
+		$this->db->where('a.status <>', 9);
+		$this->db->where("(SELECT COUNT(aa.id) FROM tr_expense_detail aa JOIN tr_expense ab ON ab.no_doc = aa.no_doc WHERE aa.id_kasbon = a.no_doc AND ab.status IN ('0','1','2','3')) < 1", NULL, FALSE);
+
+		if (!$is_admin) {
+			$cur_user = $this->auth->user_name();
+			$this->db->group_start();
+			$this->db->where('a.nama', $cur_user);
+			$this->db->or_where('a.created_by', $cur_user);
+			if (!empty($nama) && $nama !== 'undefined') {
+				$this->db->or_where('a.nama', $nama);
+			}
+			$this->db->group_end();
+		}
+
+		$this->db->order_by('a.id', 'DESC');
+		$data = $this->db->get()->result();
+
 		echo json_encode($data);
+	}
+
+	public function get_kasbon_detail($no_doc = '', $id = '')
+	{
+		$kasbon = null;
+		if (!empty($id)) {
+			$kasbon = $this->db->get_where('tr_kasbon', ['id' => $id])->row();
+		} elseif (!empty($no_doc)) {
+			if (is_numeric($no_doc)) {
+				$kasbon = $this->db->get_where('tr_kasbon', ['id' => $no_doc])->row();
+			}
+			if (empty($kasbon)) {
+				$kasbon = $this->db->order_by('id', 'DESC')->get_where('tr_kasbon', ['no_doc' => $no_doc])->row();
+			}
+		}
+
+		$pr_detail = [];
+		if (!empty($kasbon)) {
+			$this->db->select('a.*, IF(b.code IS NULL, "Pcs", b.code) AS satuan');
+			$this->db->from('tr_pr_detail_kasbon a');
+			$this->db->join('ms_satuan b', 'b.id = a.unit', 'left');
+			$this->db->where('a.id_kasbon', $kasbon->no_doc);
+			$pr_detail = $this->db->get()->result_array();
+		}
+
+		echo json_encode([
+			'status' => !empty($kasbon) ? 1 : 0,
+			'kasbon' => $kasbon,
+			'pr_detail' => $pr_detail
+		]);
 	}
 
 	// kasbon edit
@@ -709,13 +731,19 @@ class Expense extends Admin_Controller
 		$get_pr_detail_kasbon = $this->db->get()->result_array();
 
 		$get_list_coa = $this->Expense_model->GetListCoa('Kasbon');
+		$list_files = $this->db->get_where('tr_kasbon_files', ['no_doc' => $data->no_doc])->result_array();
 
 		$this->template->set('mod', $mod);
 		$this->template->set('status', $this->status);
 		$this->template->set('data', $data);
 		$this->template->set('list_coa', $get_list_coa);
-		$this->template->set('stsview', '');
+		if ($mod == '_fin' || $mod == '_mgt') {
+			$this->template->set('stsview', 'approval');
+		} else {
+			$this->template->set('stsview', '');
+		}
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
+		$this->template->set('list_files', $list_files);
 		$this->template->title('Kasbon Form');
 		$this->template->page_icon('fa fa-list');
 		$this->template->render('kasbon_form');
@@ -732,24 +760,30 @@ class Expense extends Admin_Controller
 		$get_pr_detail_kasbon = $this->db->get()->result_array();
 
 		$get_list_coa = $this->Expense_model->GetListCoa('Kasbon');
+		$list_files = $this->db->get_where('tr_kasbon_files', ['no_doc' => $data->no_doc])->result_array();
 
-		$this->template->set('mod', $mod);
+		$this->template->set('mod', '_mgt');
 		$this->template->set('status', $this->status);
 		$this->template->set('data', $data);
 		$this->template->set('list_coa', $get_list_coa);
-		$this->template->set('stsview', '');
+		$this->template->set('stsview', 'approval');
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
+		$this->template->set('list_files', $list_files);
 		$this->template->title('Approval Kasbon by Management');
 		$this->template->page_icon('fa fa-list');
-		$this->template->render('app_kasbon_manage');
+		$this->template->render('kasbon_form');
 	}
 	// kasbon print
 	public function kasbon_print($id)
 	{
 		$results = $this->Expense_model->GetDataKasbon($id);
+		if (!$results) {
+			show_404();
+			return;
+		}
 
-		$nmuser = $results->created_by;
-		if ($results->tipe_pr !== '') {
+		$nmuser = !empty($results->nama) ? $results->nama : $results->created_by;
+		if (!empty($results->tipe_pr)) {
 			if ($results->tipe_pr == 'pr departemen') {
 				$this->db->select('b.nm_lengkap');
 				$this->db->from('rutin_non_planning_header a');
@@ -757,7 +791,9 @@ class Expense extends Admin_Controller
 				$this->db->where('a.no_pr', $results->id_pr);
 				$get_single_detail = $this->db->get()->row();
 
-				$nmuser = $get_single_detail->nm_lengkap;
+				if (!empty($get_single_detail->nm_lengkap)) {
+					$nmuser = $get_single_detail->nm_lengkap;
+				}
 			}
 
 			if ($results->tipe_pr == 'pr stok') {
@@ -767,7 +803,9 @@ class Expense extends Admin_Controller
 				$this->db->where('a.no_pr', $results->id_pr);
 				$get_single_detail = $this->db->get()->row();
 
-				$nmuser = $get_single_detail->nm_lengkap;
+				if (!empty($get_single_detail->nm_lengkap)) {
+					$nmuser = $get_single_detail->nm_lengkap;
+				}
 			}
 
 			if ($results->tipe_pr == 'pr asset') {
@@ -777,15 +815,39 @@ class Expense extends Admin_Controller
 				$this->db->where('a.no_pr', $results->id_pr);
 				$get_single_detail = $this->db->get()->row();
 
-				$nmuser = $get_single_detail->nm_lengkap;
+				if (!empty($get_single_detail->nm_lengkap)) {
+					$nmuser = $get_single_detail->nm_lengkap;
+				}
+			}
+		}
+
+		// Detail item PR jika ada
+		$this->db->select('a.*, IF(b.code IS NULL, a.unit, b.code) as satuan');
+		$this->db->from('tr_pr_detail_kasbon a');
+		$this->db->join('ms_satuan b', 'b.id = a.unit', 'left');
+		$this->db->where('a.id_kasbon', $results->no_doc);
+		$get_pr_detail_kasbon = $this->db->get()->result_array();
+
+		// Lampiran berkas
+		$list_files = $this->db->get_where('tr_kasbon_files', ['no_doc' => $results->no_doc])->result_array();
+
+		// Nama Departemen
+		$nm_dept = '';
+		if (!empty($results->departement)) {
+			$dept_row = $this->db->get_where('ms_department', ['id' => $results->departement])->row();
+			if (!empty($dept_row)) {
+				$nm_dept = $dept_row->nama;
 			}
 		}
 
 		$data = array(
-			'title'			=> 'Print Kasbon',
-			'stsview'		=> 'print',
-			'data'			=> $results,
-			'nmuser'			=> $nmuser
+			'title'                 => 'Print Kasbon',
+			'stsview'               => 'print',
+			'data'                  => $results,
+			'nmuser'                => $nmuser,
+			'nm_dept'               => $nm_dept,
+			'list_detail_pr_kasbon' => $get_pr_detail_kasbon,
+			'list_files'            => $list_files
 		);
 		$this->load->view('kasbon_print', $data);
 	}
@@ -859,20 +921,37 @@ class Expense extends Admin_Controller
 	public function kasbon_view($id, $mod = '')
 	{
 		$data = $this->Expense_model->GetDataKasbon($id);
+		if (!$data) {
+			show_404();
+			return;
+		}
 
-		$this->db->select('a.*, b.code as satuan');
+		$this->db->select('a.*, IF(b.code IS NULL, a.unit, b.code) as satuan');
 		$this->db->from('tr_pr_detail_kasbon a');
 		$this->db->join('ms_satuan b', 'b.id = a.unit', 'left');
 		$this->db->where('a.id_kasbon', $data->no_doc);
 		$get_pr_detail_kasbon = $this->db->get()->result_array();
 
+		$list_files = $this->db->get_where('tr_kasbon_files', ['no_doc' => $data->no_doc])->result_array();
+
+		// Nama Departemen
+		$nm_dept = '';
+		if (!empty($data->departement)) {
+			$dept_row = $this->db->get_where('ms_department', ['id' => $data->departement])->row();
+			if (!empty($dept_row)) {
+				$nm_dept = $dept_row->nama;
+			}
+		}
+
 		$this->template->set('mod', $mod);
 		$this->template->set('status', $this->status);
 		$this->template->set('data', $data);
+		$this->template->set('nm_dept', $nm_dept);
 		$this->template->set('stsview', 'view');
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
-		$this->template->title('Kasbon Form');
-		$this->template->page_icon('fa fa-list');
+		$this->template->set('list_files', $list_files);
+		$this->template->title('Detail Kasbon');
+		$this->template->page_icon('fa fa-file-text-o');
 		$this->template->render('kasbon_form_detail');
 	}
 	// kasbon approval
@@ -906,9 +985,11 @@ class Expense extends Admin_Controller
 				'sts_finance' => '1',
 				'app_finance_date' => date('Y-m-d H:i:s'),
 				'reject_reason_finance' => null,
-				'no_coa' => $this->input->post('coa'),
-				'nm_coa' => $this->input->post('nm_coa')
 			];
+			if (!empty($this->input->post('coa'))) {
+				$data['no_coa'] = $this->input->post('coa');
+				$data['nm_coa'] = $this->input->post('nm_coa');
+			}
 
 			$result 		= $this->All_model->dataUpdate('tr_kasbon', $data, array('id' => $id));
 			$keterangan     = "SUKSES, Update data " . $id;
@@ -920,8 +1001,10 @@ class Expense extends Admin_Controller
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
 		}
 		$param = array(
-			'save' => $result,
-			'id' => $id
+			'save'   => $result ? 1 : 0,
+			'status' => $result ? 1 : 0,
+			'msg'    => $result ? 'Pengajuan kasbon berhasil disetujui.' : 'Gagal menyetujui pengajuan kasbon.',
+			'id'     => $id
 		);
 		echo json_encode($param);
 	}
@@ -955,8 +1038,10 @@ class Expense extends Admin_Controller
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
 		}
 		$param = array(
-			'save' => $result,
-			'id' => $id
+			'save'   => $result ? 1 : 0,
+			'status' => $result ? 1 : 0,
+			'msg'    => $result ? 'Pengajuan kasbon berhasil disetujui Management.' : 'Gagal menyetujui pengajuan kasbon.',
+			'id'     => $id
 		);
 		echo json_encode($param);
 	}
@@ -996,8 +1081,8 @@ class Expense extends Admin_Controller
 		// $this->template->set('results', $data);
 		// $this->template->set('data_detail', $data_detail);
 		$this->template->set('status', $this->status);
-		$this->template->page_icon('fa fa-list');
-		$this->template->title('Expense Report');
+		$this->template->page_icon('fa fa-cubes');
+		$this->template->title('Expense');
 		$this->template->render('index');
 	}
 
@@ -1006,17 +1091,134 @@ class Expense extends Admin_Controller
 	{
 		$data_budget 	= $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
 		$data_pc 		= $this->All_model->GetPettyCashCombo();
-		$data_coa 		= $this->Coa_expense_model->GetDataWithJenis('Expense');
-		$coa_field 		= $data_coa->coa;
-		$coa_array 		= explode(';', $coa_field);
+		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
+		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
+		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		$this->template->set('data_pc', $data_pc);
 		$this->template->set('data_budget', $data_budget);
 		$this->template->set('data_coa', $data_coa);
 		$this->template->set('option_coa', $option_coa);
+		$this->template->set('stsview', '');
 
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
+		if (!empty($data->pettycash)) {
+			$data_budget = $this->All_model->GetPettyCashComboCoa($data->pettycash);
+			$data_pc = $this->All_model->GetOneTable('ms_petty_cash', '', 'nama');
+			$this->template->set('data_pc', $data_pc);
+			$this->template->set('data_budget', $data_budget);
+			$this->template->render('form_pc');
+		} else {
+			$this->template->render('form');
+		}
+	}
+
+	// create_report (Pertanggungjawaban Kasbon)
+	public function create_report($no_doc_kasbon = '', $id_kasbon = '')
+	{
+		$data_budget 	= $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
+		$data_pc 		= $this->All_model->GetPettyCashCombo();
+		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
+		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
+		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
+		$option_coa 	= $this->All_model->GetListCoa($coa_array);
+
+		$kasbon = null;
+		if (!empty($id_kasbon)) {
+			$kasbon = $this->db->get_where('tr_kasbon', ['id' => $id_kasbon])->row();
+		} elseif (!empty($no_doc_kasbon)) {
+			if (is_numeric($no_doc_kasbon)) {
+				$kasbon = $this->db->get_where('tr_kasbon', ['id' => $no_doc_kasbon])->row();
+			}
+			if (empty($kasbon)) {
+				$kasbon = $this->db->order_by('id', 'DESC')->get_where('tr_kasbon', ['no_doc' => $no_doc_kasbon])->row();
+			}
+		}
+
+		$pr_detail = [];
+		if (!empty($kasbon)) {
+			$this->db->select('a.*, IF(b.code IS NULL, "Pcs", b.code) AS satuan');
+			$this->db->from('tr_pr_detail_kasbon a');
+			$this->db->join('ms_satuan b', 'b.id = a.unit', 'left');
+			$this->db->where('a.id_kasbon', $kasbon->no_doc);
+			$pr_detail = $this->db->get()->result_array();
+			$no_doc_kasbon = $kasbon->no_doc;
+		}
+
+		$this->template->set('pr_detail', $pr_detail);
+		$this->template->set('data_pc', $data_pc);
+		$this->template->set('data_budget', $data_budget);
+		$this->template->set('data_coa', $data_coa);
+		$this->template->set('option_coa', $option_coa);
+		$this->template->set('kasbon', $kasbon);
+		$this->template->set('no_doc_kasbon', $no_doc_kasbon);
+		$this->template->set('stsview', '');
+
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('form');
+	}
+
+	// set_jurnal_expense (AJAX preview alokasi COA)
+	public function set_jurnal_expense()
+	{
+		$post = $this->input->post();
+		$coa_list = isset($post['coa']) ? $post['coa'] : [];
+		$tanggal_list = isset($post['tanggal']) ? $post['tanggal'] : [];
+		$deskripsi_list = isset($post['deskripsi']) ? $post['deskripsi'] : [];
+		$expense_list = isset($post['expense']) ? $post['expense'] : [];
+		$harga_list = isset($post['harga']) ? $post['harga'] : [];
+		$qty_list = isset($post['qty']) ? $post['qty'] : [];
+
+		$html = '';
+		$total_debit = 0;
+		$all_coa = $this->All_model->GetListCoa();
+
+		if (!empty($coa_list)) {
+			foreach ($coa_list as $i => $coa_val) {
+				if (empty($coa_val)) continue;
+				$tgl = !empty($tanggal_list[$i]) ? $tanggal_list[$i] : date('Y-m-d');
+				$desk = !empty($deskripsi_list[$i]) ? $deskripsi_list[$i] : '-';
+
+				$nom = 0;
+				if (isset($expense_list[$i]) && $expense_list[$i] > 0) {
+					$nom = floatval(str_replace(',', '', $expense_list[$i]));
+				} elseif (isset($harga_list[$i]) && isset($qty_list[$i])) {
+					$q = floatval(str_replace(',', '', $qty_list[$i]));
+					$h = floatval(str_replace(',', '', $harga_list[$i]));
+					$nom = $q * $h;
+				}
+				$total_debit += $nom;
+
+				$acc_name = isset($all_coa[$coa_val]) ? $all_coa[$coa_val] : $coa_val;
+				$nm_parts = explode(' - ', $acc_name, 2);
+				$clean_acc_name = isset($nm_parts[1]) ? $nm_parts[1] : $acc_name;
+
+				$html .= '<tr>';
+				$html .= '<td class="text-center">' . htmlspecialchars($tgl) . '</td>';
+				$html .= '<td class="text-center fw-semibold text-primary">' . htmlspecialchars($coa_val) . '</td>';
+				$html .= '<td class="text-center text-muted">HFG</td>';
+				$html .= '<td>' . htmlspecialchars($clean_acc_name) . '</td>';
+				$html .= '<td>' . htmlspecialchars($desk) . '</td>';
+				$html .= '<td class="text-end font-monospace fw-bold text-success">' . number_format($nom, 0, ',', '.') . '</td>';
+				$html .= '</tr>';
+			}
+		}
+
+		if (empty($html)) {
+			$html = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada rincian alokasi biaya</td></tr>';
+		}
+
+		echo json_encode([
+			'status' => 1,
+			'hasil' => $html,
+			'ttl_debit' => number_format($total_debit, 0, ',', '.'),
+			'ttl_kredit' => number_format($total_debit, 0, ',', '.')
+		]);
 	}
 
 	// edit
@@ -1026,9 +1228,9 @@ class Expense extends Admin_Controller
 		$data_detail	= $this->Expense_model->GetDataDetail($data->no_doc);
 		$data_budget 	= $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
 		$data_pc 		= $this->All_model->GetPettyCashCombo();
-		$data_coa 		= $this->Coa_expense_model->GetDataWithJenis('Expense');
-		$coa_field 		= $data_coa->coa;
-		$coa_array 		= explode(';', $coa_field);
+		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
+		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
+		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		$this->template->set('option_coa', $option_coa);
@@ -1039,6 +1241,9 @@ class Expense extends Admin_Controller
 		$this->template->set('data', $data);
 		$this->template->set('stsview', '');
 		$this->template->page_icon('fa fa-list');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('form');
 	}
 
@@ -1046,37 +1251,77 @@ class Expense extends Admin_Controller
 	public function view($id)
 	{
 		$data = $this->Expense_model->GetDataHeader($id);
+		if (!$data) {
+			show_404();
+			return;
+		}
 		$data_detail	= $this->Expense_model->GetDataDetail($data->no_doc);
 		$data_budget = $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
 		$data_pc = $this->All_model->GetPettyCashCombo();
 
 		$get_exp_kasbon = $this->db->select('id_kasbon')->get_where('tr_expense_detail', ['no_doc' => $data->no_doc, 'id_kasbon <>' => ''])->result_array();
-		$data_coa 		= $this->Coa_expense_model->GetDataWithJenis('Expense');
-		$coa_field 		= $data_coa->coa;
+		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
+		$coa_field 		= !empty($data_coa) ? $data_coa->coa : '';
 		$coa_array 		= explode(';', $coa_field);
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
-		$this->template->set('option_coa', $option_coa);
+		// Nama Departemen
+		$nm_dept = '';
+		if (!empty($data->departement)) {
+			$dept_row = $this->db->get_where('ms_department', ['id' => $data->departement])->row();
+			if (!empty($dept_row)) {
+				$nm_dept = $dept_row->nama;
+			}
+		}
 
+		$this->template->set('option_coa', $option_coa);
 		$this->template->set('data_pc', $data_pc);
 		$this->template->set('data_budget', $data_budget);
 		$this->template->set('data_detail', $data_detail);
 		$this->template->set('status', $this->status);
 		$this->template->set('data', $data);
+		$this->template->set('nm_dept', $nm_dept);
 		$this->template->set('stsview', 'view');
 		$this->template->set('data_exp_kasbon', $get_exp_kasbon);
-		$this->template->page_icon('fa fa-list');
+		$this->template->page_icon('fa fa-file-text-o');
+		$this->template->title('Detail Expense Report');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('form');
 	}
 	// print
 	public function expense_print($id)
 	{
 		$response = $this->Expense_model->GetDataHeader($id);
+		if (!$response) {
+			show_404();
+			return;
+		}
 		$data_detail	= $this->Expense_model->GetDataDetail($response->no_doc);
+
+		// Ambil nama pemohon lengkap
+		$nmuser = !empty($response->nama) ? $response->nama : $response->created_by;
+		$user_row = $this->db->get_where('users', ['username' => $nmuser])->row();
+		if (!empty($user_row) && !empty($user_row->nm_lengkap)) {
+			$nmuser = $user_row->nm_lengkap;
+		}
+
+		// Ambil nama departemen jika ada
+		$nm_dept = '';
+		if (!empty($response->departement)) {
+			$dept_row = $this->db->get_where('ms_department', ['id' => $response->departement])->row();
+			if (!empty($dept_row)) {
+				$nm_dept = $dept_row->nama;
+			}
+		}
+
 		$data = array(
 			'status'		=> $this->status,
 			'data_detail'	=> $data_detail,
 			'data'			=> $response,
+			'nmuser'		=> $nmuser,
+			'nm_dept'		=> $nm_dept,
 		);
 		$this->load->view('expense_print', $data);
 	}
@@ -1140,9 +1385,9 @@ class Expense extends Admin_Controller
 		$data_detail 	= $this->Expense_model->GetDataDetail($data->no_doc);
 		$data_budget 	= $this->All_model->GetComboBudget('', 'EXPENSE', date('Y'));
 		$get_exp_kasbon = $this->db->select('id_kasbon')->get_where('tr_expense_detail', ['no_doc' => $data->no_doc, 'id_kasbon <>' => ''])->result_array();
-		$data_coa 		= $this->Coa_expense_model->GetDataWithJenis('Expense');
-		$coa_field 		= $data_coa->coa;
-		$coa_array 		= explode(';', $coa_field);
+		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
+		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
+		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 		$this->template->set('option_coa', $option_coa);
 		$this->template->set('data_budget', $data_budget);
@@ -1154,6 +1399,9 @@ class Expense extends Admin_Controller
 		}
 		$this->template->set('stsview', 'approval');
 		$this->template->page_icon('fa fa-list');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		if ($data->pettycash != "") {
 			$data_budget = $this->All_model->GetPettyCashComboCoa($data->pettycash);
 			$data_pc = $this->All_model->GetOneTable('ms_petty_cash', '', 'nama');
@@ -1328,7 +1576,7 @@ class Expense extends Admin_Controller
 				'accnumber' => $accnumber,
 				'status' => 0,
 				'accname' => $accname,
-				'pettycash' => $pettycash,
+				'pettycash' => (!empty($pettycash) && $pettycash != '0') ? $pettycash : null,
 				'tipe_pengembalian' => $pengembalian,
 				'tipe_penggantian' => $penggantian,
 				'st_reject' => null,
@@ -1625,7 +1873,7 @@ class Expense extends Admin_Controller
 				'bank_id' 				=> $bank_id,
 				'accnumber' 			=> $accnumber,
 				'accname' 				=> $accname,
-				'pettycash' 			=> $pettycash,
+				'pettycash' 			=> (!empty($pettycash) && $pettycash != '0') ? $pettycash : null,
 				'approval' 				=> $approval,
 				'status' 				=> 0,
 				'jumlah' 				=> $total_expense,
@@ -1995,7 +2243,11 @@ class Expense extends Admin_Controller
 		$this->template->set('status', $this->status);
 		$this->template->set('data', $data);
 		$this->template->set('mod', $mod);
-		$this->template->set('stsview', '');
+		if ($mod == '_fin' || $mod == '_mgt') {
+			$this->template->set('stsview', 'approval');
+		} else {
+			$this->template->set('stsview', '');
+		}
 		$this->template->page_icon('fa fa-list');
 		$this->template->title('Pengajuan Transport');
 		$this->template->render('transport_req_form');
@@ -2004,11 +2256,34 @@ class Expense extends Admin_Controller
 	{
 		$results = $this->Expense_model->GetDataTransportReq($id);
 		$data_detail = $this->Expense_model->GetDataTransportInReq($results->no_doc);
+
+		// Resolve department name from HRIS
+		$nm_dept = '';
+		if (!empty($results->departement)) {
+			$nm_dept = $this->Expense_model->GetDepartmentName($results->departement);
+		}
+
+		// Resolve request by name from users table
+		$request_by = '';
+		if (!empty($results->nama)) {
+			$user = $this->db->get_where('users', ['username' => $results->nama])->row();
+			$request_by = !empty($user) ? $user->nm_lengkap : $results->nama;
+		}
+
+		// Get COA from first detail record
+		$coa_display = '';
+		if (!empty($data_detail) && isset($data_detail[0])) {
+			$coa_display = $data_detail[0]->no_coa . ' - ' . $data_detail[0]->nm_coa;
+		}
+
 		$data = array(
 			'title'			=> 'Print Transportasi Request',
 			'stsview'		=> 'print',
 			'data_detail'	=> $data_detail,
-			'data'			=> $results
+			'data'			=> $results,
+			'nm_dept'		=> $nm_dept,
+			'request_by'	=> $request_by,
+			'coa_display'	=> $coa_display,
 		);
 		$this->load->view('transport_req_print', $data);
 	}
@@ -2187,13 +2462,23 @@ class Expense extends Admin_Controller
 		echo json_encode($param);
 	}
 
-	public function get_list_req_transport($nama, $departement, $date1, $date2)
+	public function get_list_req_transport()
 	{
-		$data	= $this->db->query("SELECT * FROM tr_transport WHERE nama='" . $nama . "' and tgl_doc between '" . $date1 . "' and '" . $date2 . "' and (no_req ='' or no_req is null) order by tgl_doc")->result();
+		$nama        = $this->input->post('nama');
+		$departement = $this->input->post('departement');
+		$date1       = $this->input->post('date1');
+		$date2       = $this->input->post('date2');
 
-		// print_r("SELECT * FROM tr_transport WHERE nama='" . $nama . "' and departement='" . $departement . "' and tgl_doc between '" . $date1 . "' and '" . $date2 . "' and (no_req ='' or no_req is null) order by tgl_doc");
+		$data = $this->db->query(
+			"SELECT * FROM tr_transport
+         WHERE nama = ?
+         AND tgl_doc BETWEEN ? AND ?
+         AND (no_req = '' OR no_req IS NULL)
+         ORDER BY tgl_doc",
+			[$nama, $date1, $date2]
+		)->result();
+
 		echo json_encode($data);
-		die();
 	}
 	public function get_transport($nama, $departement)
 	{
@@ -2464,7 +2749,10 @@ class Expense extends Admin_Controller
 				'status'                => 9,
 				'sts_finance'           => '0',
 				'app_finance_date'      => null,
-				'reject_reason_finance' => $reason
+				'reject_reason_finance' => $reason,
+				'sts_reject'            => '1',
+				'sts_reject_manage'     => '1',
+				'reject_reason'         => $reason
 			);
 
 			$this->db->where('id', $id);
@@ -3266,19 +3554,19 @@ class Expense extends Admin_Controller
 	{
 		$sts = '';
 		if ($item['status'] == '0') {
-			$sts = '<div class="badge bg-blue text-light">Waiting Approval Finance</div>';
+			$sts = '<span class="badge bg-primary text-light">Waiting Approval Finance</span>';
 			if ($item['sts_finance'] == '1') {
-				$sts = '<div class="badge bg-blue">Waiting Approval Management</div>';
+				$sts = '<span class="badge bg-primary text-light">Waiting Approval Management</span>';
 			}
 		} elseif (in_array($item['status'], ['1', '2'])) {
-			$sts = '<div class="badge bg-green text-light">Approved</div>';
+			$sts = '<span class="badge bg-success text-light">Approved</span>';
 		} elseif ($item['status'] == '3') {
 			$check = $this->db->get_where('tr_expense_detail', ['id_kasbon' => $item['no_doc'], 'status' => 2])->row();
-			$sts = (!empty($check)) ? '<div class="badge bg-dark text-light">Close</div>' : '<div class="badge bg-green text-light">Paid</div>';
+			$sts = (!empty($check)) ? '<span class="badge bg-dark text-light">Close</span>' : '<span class="badge bg-success text-light">Paid</span>';
 		} elseif ($item['status'] == '9') {
-			$sts = '<div class="badge bg-red text-light">Reject</div>';
+			$sts = '<span class="badge bg-danger text-light">Reject</span>';
 		} elseif ($item['status'] == '4') {
-			$sts = '<div class="badge bg-blue text-dark">Kurang</div>';
+			$sts = '<span class="badge bg-warning text-dark">Kurang</span>';
 		}
 		return $sts;
 	}
@@ -3428,39 +3716,29 @@ class Expense extends Admin_Controller
 			$no++;
 
 			if ($item['status'] == '0') {
-				$sts = '<div class="badge bg-yellow text-light">New</div>';
-			}
-			if ($item['status'] == '1' || $item['status'] == '2') {
-				$sts = '<div class="badge bg-dark-blue text-light">Approved</div>';
-			}
-			if ($item['status'] == '3') {
-				$check_expense_report = $this->db->get_where('tr_expense_detail', ['id_kasbon' => $item['no_doc'], 'status' => 2])->row();
-				if (!empty($check_expense_report)) {
-					$sts = '<div class="badge bg-dark text-light">Close</div>';
-				} else {
-					$sts = '<div class="badge bg-green text-light">Paid</div>';
-				}
-			}
-			if ($item['status'] == '9') {
-				$sts = '<div class="badge bg-red text-light">Reject</div>';
-			}
-			if ($item['status'] == '4') {
-				$sts = '<div class="badge bg-blue text-dark">Kurang</div>';
+				$sts = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Menunggu Approval Finance</span>';
+			} elseif ($item['status'] == '1' || $item['status'] == '2') {
+				$sts = '<span class="badge bg-success"><i class="fa fa-check me-1"></i> Approved</span>';
+			} elseif ($item['status'] == '3') {
+				$sts = '<span class="badge bg-secondary">Closed</span>';
+			} elseif ($item['status'] == '9') {
+				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+			} else {
+				$sts = '<span class="badge bg-info">' . $item['status'] . '</span>';
 			}
 
-			$action = '';
-
+			$action = '<div class="btn-group btn-group-sm" role="group">';
 			if (has_permission($this->viewPermissionKasbonApp)) {
-				$action .= ' <a class="btn btn-default btn-sm print" href="' . base_url("expense/kasbon_print" . $item['id']) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a>';
-
-				$action .= ' <a class="btn btn-warning btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_fin') . '" title="View"><i class="fa fa-eye"></i> </a>';
+				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url("expense/kasbon_print/" . $item['id']) . '" target="_blank" title="Cetak Kasbon"><i class="fa fa-print"></i></a>';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_fin') . '" data-id="' . $item['id'] . '" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($this->managePermissionKasbonApp)) {
 				if ($item['status'] == 0) {
-					$action .= ' <a class="btn btn-success btn-sm approve" href="' . base_url('expense/kasbon_edit/' . $item['id'] . '/_fin') . '" title="Approve"><i class="fa fa-check-square-o"></i></a>';
+					$action .= '<a class="btn btn-success btn-sm approve" href="' . base_url('expense/kasbon_edit/' . $item['id'] . '/_fin') . '" data-id="' . $item['id'] . '" title="Pengecekan / Approval Finance"><i class="fa fa-check"></i></a>';
 				}
 			}
+			$action .= '</div>';
 
 			$nmuser = $item['nmuser'];
 
@@ -3500,9 +3778,10 @@ class Expense extends Admin_Controller
 
 			$hasil[] = [
 				'no' => $no,
-				'no_kasbon' => $item['no_doc'],
-				'tanggal' => $item['tgl_doc'],
-				'nama' => $nmuser,
+				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item['no_doc']) . '</span>',
+				'tanggal' => date('d F Y', strtotime($item['tgl_doc'])),
+				'nama' => htmlspecialchars($nmuser),
+				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format($item['jumlah_kasbon'], 0, ',', '.') . '</span>',
 				'status' => $sts,
 				'action' => $action,
 			];
@@ -3578,39 +3857,29 @@ class Expense extends Admin_Controller
 			$no++;
 
 			if ($item['status'] == '0') {
-				$sts = '<div class="badge bg-yellow text-light">New</div>';
-			}
-			if ($item['status'] == '1' || $item['status'] == '2') {
-				$sts = '<div class="badge bg-dark-blue text-light">Approved</div>';
-			}
-			if ($item['status'] == '3') {
-				$check_expense_report = $this->db->get_where('tr_expense_detail', ['id_kasbon' => $item['no_doc'], 'status' => 2])->row();
-				if (!empty($check_expense_report)) {
-					$sts = '<div class="badge bg-dark text-light">Close</div>';
-				} else {
-					$sts = '<div class="badge bg-green text-light">Paid</div>';
-				}
-			}
-			if ($item['status'] == '9') {
-				$sts = '<div class="badge bg-red text-light">Reject</div>';
-			}
-			if ($item['status'] == '4') {
-				$sts = '<div class="badge bg-blue text-dark">Kurang</div>';
+				$sts = '<span class="badge bg-primary"><i class="fa fa-clock me-1"></i> Menunggu Approval Management</span>';
+			} elseif ($item['status'] == '1' || $item['status'] == '2') {
+				$sts = '<span class="badge bg-success"><i class="fa fa-check me-1"></i> Approved</span>';
+			} elseif ($item['status'] == '3') {
+				$sts = '<span class="badge bg-secondary">Closed</span>';
+			} elseif ($item['status'] == '9') {
+				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+			} else {
+				$sts = '<span class="badge bg-info">' . $item['status'] . '</span>';
 			}
 
-			$action = '';
-
+			$action = '<div class="btn-group btn-group-sm" role="group">';
 			if (has_permission($this->viewPermissionKasbonAppMan)) {
-				$action .= ' <a class="btn btn-default btn-sm print" href="' . base_url("expense/kasbon_print" . $item['id']) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a>';
-
-				$action .= ' <a class="btn btn-warning btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_fin') . '" title="View"><i class="fa fa-eye"></i> </a>';
+				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url("expense/kasbon_print/" . $item['id']) . '" target="_blank" title="Cetak Kasbon"><i class="fa fa-print"></i></a>';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_mgt') . '" data-id="' . $item['id'] . '" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($this->managePermissionKasbonAppMan)) {
 				if ($item['status'] == 0) {
-					$action .= ' <a class="btn btn-success btn-sm approve" href="' . base_url('expense/kasbon_edit_manage/' . $item['id'] . '/_fin') . '" title="Approve"><i class="fa fa-check-square-o"></i></a>';
+					$action .= '<a class="btn btn-success btn-sm approve" href="' . base_url('expense/kasbon_edit_manage/' . $item['id'] . '/_mgt') . '" data-id="' . $item['id'] . '" title="Persetujuan / Approval Management"><i class="fa fa-check"></i></a>';
 				}
 			}
+			$action .= '</div>';
 
 			$nmuser = $item['nmuser'];
 
@@ -3650,9 +3919,10 @@ class Expense extends Admin_Controller
 
 			$hasil[] = [
 				'no' => $no,
-				'no_kasbon' => $item['no_doc'],
-				'tanggal' => $item['tgl_doc'],
-				'nama' => $nmuser,
+				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item['no_doc']) . '</span>',
+				'tanggal' => date('d F Y', strtotime($item['tgl_doc'])),
+				'nama' => htmlspecialchars($nmuser),
+				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format($item['jumlah_kasbon'], 0, ',', '.') . '</span>',
 				'status' => $sts,
 				'action' => $action,
 			];
@@ -3686,8 +3956,17 @@ class Expense extends Admin_Controller
 		$this->db->join('users b', 'a.nama=b.username', 'left');
 		$this->db->join('users c', 'a.approval=c.username', 'left');
 		if (empty($all)) {
+			$this->db->group_start();
 			$this->db->where('a.pettycash', null);
+			$this->db->or_where('a.pettycash', '');
+			$this->db->or_where('a.pettycash', '0');
+			$this->db->group_end();
+
+			$this->db->group_start();
 			$this->db->where('a.exp_pib', null);
+			$this->db->or_where('a.exp_pib', '');
+			$this->db->or_where('a.exp_pib', '0');
+			$this->db->group_end();
 		}
 
 		if ($this->auth->user_id() !== '7') {
@@ -3739,41 +4018,34 @@ class Expense extends Admin_Controller
 		foreach ($get_data as $item) :
 			$no++;
 
-			$status = '<span class="badge bg-yellow">Baru</span>';
+			$status = '<span class="badge bg-warning text-dark">Baru</span>';
 			if ($item['status'] == '1') {
-				$status = '<span class="badge bg-green">Disetujui</span>';
-			}
-			if ($item['status'] == '2') {
-				$status = '<span class="badge bg-green">Disetujui Management</span>';
-			}
-			if ($item['status'] == '3') {
-				$status = '<span class="badge bg-green">Selesai</span>';
-			}
-			if ($item['status'] == '9') {
-				$status = '<span class="badge bg-red">Ditolak</span>';
+				$status = '<span class="badge bg-info text-dark">Disetujui Finance</span>';
+			} elseif ($item['status'] == '2') {
+				$status = '<span class="badge bg-primary text-light">Disetujui Management</span>';
+			} elseif ($item['status'] == '3') {
+				$status = '<span class="badge bg-success text-light">Selesai</span>';
+			} elseif ($item['status'] == '9') {
+				$status = '<span class="badge bg-danger text-light">Ditolak</span>';
 			}
 
 			$action = '';
 
 			if (has_permission($this->viewPermission)) {
-				$action .= ' <a class="btn btn-sm btn-default print" href="' . base_url('expense/expense_print/' . $item['id']) . '" 
-					target="expense_print" title="Print"><i class="fa fa-print"></i></a>';
+				$action .= ' <a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $item['id']) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a>';
 
-				$action .= ' <a class="btn btn-sm btn-warning view" href="javascript:void(0);" title="View" 
-					onclick="data_view(' . $item['id'] . ')"><i class="fa fa-eye"></i></a>';
+				$action .= ' <a class="btn btn-outline-info btn-sm view" href="javascript:void(0);" title="View" onclick="data_view(' . $item['id'] . ')"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($this->managePermission)) {
 				if ($item['status'] == '0' || $item['status'] == '9') {
-					$action .= ' <a href="javascript:void(0);" class="btn btn-sm btn-success edit" title="Edit" 
-						onclick="data_edit(' . $item['id'] . ')"><i class="fa fa-edit"></i></a>';
+					$action .= ' <a href="javascript:void(0);" class="btn btn-outline-success btn-sm edit" title="Edit" onclick="data_edit(' . $item['id'] . ')"><i class="fa fa-edit"></i></a>';
 				}
 			}
 
 			if (has_permission($this->deletePermission)) {
 				if ($item['status'] == '0' || $item['status'] == '9') {
-					$action .= ' <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" title="Hapus" 
-						onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
+					$action .= ' <a href="javascript:void(0);" class="btn btn-outline-danger btn-sm delete" title="Hapus" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
 				}
 			}
 
@@ -3781,7 +4053,8 @@ class Expense extends Admin_Controller
 				'no' => $no,
 				'no_doc' => $item['no_doc'],
 				'tgl_doc' => $item['tgl_doc'],
-				'nama' => $item['nmuser'],
+				'nama' => !empty($item['nmuser']) ? $item['nmuser'] : $item['nama'],
+				'total_realisasi' => number_format((float)$item['jumlah'], 0, ',', '.'),
 				'approval' => $item['nmapproval'],
 				'approval_date' => $item['approved_on'],
 				'keterangan' => $item['informasi'],
@@ -3906,7 +4179,7 @@ class Expense extends Admin_Controller
 				'no' => $no,
 				'no_doc' => $item['no_doc'],
 				'tgl_doc' => $item['tgl_doc'],
-				'nama' => $item['nmuser'],
+				'nama' => !empty($item['nmuser']) ? $item['nmuser'] : $item['nama'],
 				'approval' => $item['nmapproval'],
 				'keterangan' => $item['informasi'],
 				'nominal' => number_format($item['jumlah']),
@@ -4014,6 +4287,9 @@ class Expense extends Admin_Controller
 	public function get_dat_approval_expense_manage()
 	{
 		$post   = $this->input->post();
+		if (empty($post)) {
+			$post = $this->input->get();
+		}
 		$draw   = isset($post['draw'])   ? (int) $post['draw']   : 1;
 		$length = isset($post['length']) ? (int) $post['length'] : 10;
 		$start  = isset($post['start'])  ? (int) $post['start']  : 0;
@@ -4028,35 +4304,34 @@ class Expense extends Admin_Controller
 		);
 
 		$column_order = array(
+			0 => '',
 			1 => 'a.no_doc',
 			2 => 'a.tgl_doc',
 			3 => 'c.username',
 			4 => 'a.informasi',
 			5 => 'nominal',
+			6 => 'a.status'
 		);
 
-		// Total semua record
-		$this->db->select('COUNT(DISTINCT a.no_doc) as cnt');
+		// Total semua record (tanpa filter)
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
 		$this->db->from('tr_expense a');
-		$this->db->join('tr_expense_detail b', 'b.no_doc = a.no_doc AND b.id_kasbon IS NULL', 'left');
-		$this->db->join('users c', 'a.nama = c.username', 'left');
 		$this->db->where('a.status', 0);
 		$this->db->where('a.sts_finance', '1');
 		$count_all = (int) $this->db->get()->row()->cnt;
 
-		// Total setelah filter
-		$this->db->select('COUNT(DISTINCT a.no_doc) as cnt');
+		// Total setelah filter search
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
 		$this->db->from('tr_expense a');
-		$this->db->join('tr_expense_detail b', 'b.no_doc = a.no_doc AND b.id_kasbon IS NULL', 'left');
 		$this->db->join('users c', 'a.nama = c.username', 'left');
 		$this->db->where('a.status', 0);
 		$this->db->where('a.sts_finance', '1');
 		if ($search !== '') {
 			$this->db->group_start();
-			$this->db->like('a.no_doc', $search, 'both');
-			$this->db->or_like('a.tgl_doc', $search, 'both');
-			$this->db->or_like('c.username', $search, 'both');
-			$this->db->or_like('a.informasi', $search, 'both');
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tgl_doc', $search);
+			$this->db->or_like('c.username', $search);
+			$this->db->or_like('a.informasi', $search);
 			$this->db->group_end();
 		}
 		$count_filter = (int) $this->db->get()->row()->cnt;
@@ -4072,20 +4347,18 @@ class Expense extends Admin_Controller
 		$this->db->where('a.sts_finance', '1');
 		if ($search !== '') {
 			$this->db->group_start();
-			$this->db->like('a.no_doc', $search, 'both');
-			$this->db->or_like('a.tgl_doc', $search, 'both');
-			$this->db->or_like('c.username', $search, 'both');
-			$this->db->or_like('a.informasi', $search, 'both');
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tgl_doc', $search);
+			$this->db->or_like('c.username', $search);
+			$this->db->or_like('a.informasi', $search);
 			$this->db->group_end();
 		}
-		$this->db->group_by('a.no_doc');
+		$this->db->group_by('a.id');
 
-		if (isset($post['order'][0])) {
+		if (isset($post['order'][0]['column']) && isset($column_order[$post['order'][0]['column']]) && !empty($column_order[$post['order'][0]['column']])) {
 			$col_idx = (int) $post['order'][0]['column'];
-			$col_dir = $post['order'][0]['dir'] === 'asc' ? 'ASC' : 'DESC';
-			if (isset($column_order[$col_idx])) {
-				$this->db->order_by($column_order[$col_idx], $col_dir);
-			}
+			$col_dir = strtolower($post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$this->db->order_by($column_order[$col_idx], $col_dir);
 		} else {
 			$this->db->order_by('a.id', 'DESC');
 		}
@@ -4096,21 +4369,31 @@ class Expense extends Admin_Controller
 		$data = array();
 		$no   = $start + 1;
 		foreach ($rows as $row) {
-			$action = '';
+			$action = '<div class="btn-group btn-group-sm" role="group">';
+			// Cetak / Print
+			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a> ';
+
+			// View Detail
 			if (has_permission('Approval Expense Management.View')) {
-				$action .= '<a class="btn btn-warning btn-sm" href="javascript:void(0)" title="View" onclick="data_approve(\'' . $row->id . '\')"><i class="fa fa-eye"></i></a> ';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a> ';
 			}
+
+			// Persetujuan / Approval Management
 			if (has_permission('Approval Expense Management.Manage') && $row->status == 0) {
-				$action .= '<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Approve" onclick="data_approve(\'' . $row->id . '\')"><i class="fa fa-check-square-o"></i></a>';
+				$action .= '<a class="btn btn-success btn-sm approve" href="javascript:void(0)" data-id="' . $row->id . '" title="Persetujuan / Approval Management"><i class="fa fa-check"></i></a>';
 			}
+			$action .= '</div>';
+
+			$badge_status = '<span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval Management</span>';
+
 			$data[] = array(
 				'no'        => $no++,
-				'no_doc'    => $row->no_doc,
-				'tgl_doc'   => $row->tgl_doc,
-				'nmuser'    => $row->nmuser,
-				'informasi' => $row->informasi,
-				'nominal'   => number_format($row->nominal),
-				'status'    => isset($status_label[$row->status]) ? $status_label[$row->status] : $row->status,
+				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars($row->no_doc) . '</span>',
+				'tgl_doc'   => date('d F Y', strtotime($row->tgl_doc)),
+				'nmuser'    => '<span class="fw-medium text-dark">' . htmlspecialchars($row->nmuser ?? '-') . '</span>',
+				'informasi' => htmlspecialchars($row->informasi ?? '-'),
+				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format($row->nominal, 0, ',', '.') . '</span>',
+				'status'    => $badge_status,
 				'action'    => $action,
 			);
 		}
@@ -4125,11 +4408,14 @@ class Expense extends Admin_Controller
 
 	public function get_expense_app_finance()
 	{
-		$draw    = (int) $this->input->get('draw', true);
-		$length  = (int) $this->input->get('length', true);
-		$start   = (int) $this->input->get('start', true);
-		$search  = $this->input->get('search', true);
-		$keyword = (!empty($search['value'])) ? trim($search['value']) : '';
+		$request = $this->input->post();
+		if (empty($request)) {
+			$request = $this->input->get();
+		}
+		$draw    = isset($request['draw'])   ? (int) $request['draw']   : 1;
+		$length  = isset($request['length']) ? (int) $request['length'] : 10;
+		$start   = isset($request['start'])  ? (int) $request['start']  : 0;
+		$search  = isset($request['search']['value']) ? trim($request['search']['value']) : '';
 
 		$status_label = array(
 			"0" => "Baru",
@@ -4139,28 +4425,35 @@ class Expense extends Admin_Controller
 			"9" => "Ditolak"
 		);
 
+		$column_order = array(
+			0 => '',
+			1 => 'a.no_doc',
+			2 => 'a.tgl_doc',
+			3 => 'c.username',
+			4 => 'a.informasi',
+			5 => 'nominal',
+			6 => 'a.status'
+		);
+
 		// Total semua record (tanpa filter)
-		$this->db->select('COUNT(DISTINCT a.no_doc) as cnt');
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
 		$this->db->from('tr_expense a');
-		$this->db->join('tr_expense_detail b', 'b.no_doc = a.no_doc AND b.id_kasbon IS NULL', 'left');
-		$this->db->join('users c', 'a.nama = c.username', 'left');
 		$this->db->where('a.status', 0);
 		$this->db->where('a.sts_finance', '0');
 		$count_all = (int) $this->db->get()->row()->cnt;
 
 		// Total setelah filter search
-		$this->db->select('COUNT(DISTINCT a.no_doc) as cnt');
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
 		$this->db->from('tr_expense a');
-		$this->db->join('tr_expense_detail b', 'b.no_doc = a.no_doc AND b.id_kasbon IS NULL', 'left');
 		$this->db->join('users c', 'a.nama = c.username', 'left');
 		$this->db->where('a.status', 0);
 		$this->db->where('a.sts_finance', '0');
-		if ($keyword !== '') {
+		if ($search !== '') {
 			$this->db->group_start();
-			$this->db->like('a.no_doc', $keyword);
-			$this->db->or_like('a.tgl_doc', $keyword);
-			$this->db->or_like('c.username', $keyword);
-			$this->db->or_like('a.informasi', $keyword);
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tgl_doc', $search);
+			$this->db->or_like('c.username', $search);
+			$this->db->or_like('a.informasi', $search);
 			$this->db->group_end();
 		}
 		$count_filtered = (int) $this->db->get()->row()->cnt;
@@ -4174,37 +4467,53 @@ class Expense extends Admin_Controller
 		$this->db->join('users c', 'a.nama = c.username', 'left');
 		$this->db->where('a.status', 0);
 		$this->db->where('a.sts_finance', '0');
-		if ($keyword !== '') {
+		if ($search !== '') {
 			$this->db->group_start();
-			$this->db->like('a.no_doc', $keyword);
-			$this->db->or_like('a.tgl_doc', $keyword);
-			$this->db->or_like('c.username', $keyword);
-			$this->db->or_like('a.informasi', $keyword);
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tgl_doc', $search);
+			$this->db->or_like('c.username', $search);
+			$this->db->or_like('a.informasi', $search);
 			$this->db->group_end();
 		}
-		$this->db->group_by('a.no_doc');
-		$this->db->order_by('a.id', 'DESC');
+		$this->db->group_by('a.id');
+		if (isset($request['order'][0]['column']) && isset($column_order[$request['order'][0]['column']]) && !empty($column_order[$request['order'][0]['column']])) {
+			$col_idx = (int) $request['order'][0]['column'];
+			$col_dir = strtolower($request['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$this->db->order_by($column_order[$col_idx], $col_dir);
+		} else {
+			$this->db->order_by('a.id', 'DESC');
+		}
 		$this->db->limit($length > 0 ? $length : 10, $start);
 		$rows = $this->db->get()->result();
 
 		$data = array();
 		$no   = $start + 1;
 		foreach ($rows as $row) {
-			$action = '';
+			$action = '<div class="btn-group btn-group-sm" role="group">';
+			// Cetak / Print
+			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a> ';
+
+			// View Detail
 			if (has_permission('Expense_Approval.View')) {
-				$action .= '<a class="btn btn-warning btn-sm" href="javascript:void(0)" title="View" onclick="data_approve(\'' . $row->id . '\')"><i class="fa fa-eye"></i></a> ';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a> ';
 			}
+
+			// Pengecekan / Approval Finance
 			if (has_permission('Expense_Approval.Manage') && $row->status == 0) {
-				$action .= '<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Approve" onclick="data_approve(\'' . $row->id . '\')"><i class="fa fa-check-square-o"></i></a>';
+				$action .= '<a class="btn btn-success btn-sm approve" href="javascript:void(0)" data-id="' . $row->id . '" title="Pengecekan / Approval Finance"><i class="fa fa-check"></i></a>';
 			}
+			$action .= '</div>';
+
+			$badge_status = '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval Finance</span>';
+
 			$data[] = array(
 				'no'        => $no++,
-				'no_doc'    => $row->no_doc,
-				'tgl_doc'   => $row->tgl_doc,
-				'nmuser'    => $row->nmuser,
-				'informasi' => $row->informasi,
-				'nominal'   => number_format($row->nominal),
-				'status'    => isset($status_label[$row->status]) ? $status_label[$row->status] : $row->status,
+				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars($row->no_doc) . '</span>',
+				'tgl_doc'   => date('d F Y', strtotime($row->tgl_doc)),
+				'nmuser'    => '<span class="fw-medium text-dark">' . htmlspecialchars($row->nmuser ?? '-') . '</span>',
+				'informasi' => htmlspecialchars($row->informasi ?? '-'),
+				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format($row->nominal, 0, ',', '.') . '</span>',
+				'status'    => $badge_status,
 				'action'    => $action,
 			);
 		}

@@ -168,13 +168,13 @@ $terbilang = function_exists('rupiah_to_words')
 
     <!-- Header -->
     <div style="display: flex;">
-        <div class="text-left" style="width: 140px;">
-            <img src="<?= base_url('assets/images/logo_sbf.png') ?>" alt="" width="100" height="60">
+        <div class="text-left" style="width: 80px;">
+            <img src="<?= base_url('assets/images/iconhfg.png') ?>" alt="" width="60" height="60">
         </div>
         <div style="width: 60%;">
-            <strong>PT Surya Bangun Fajar</strong><br>
-            Jl. Kalijaga No.35 Kel. Pegambiran Kec. Lemahwungkuk<br>
-            Kota Cirebon Jawa Barat 45113<br>
+            <strong>PT HARAPAN FAJAR GEMILANG</strong><br>
+            Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
+            Cengkareng, Jakarta Barat 11710<br>
             Indonesia
         </div>
         <div class="text-right" style="width: 40%;">

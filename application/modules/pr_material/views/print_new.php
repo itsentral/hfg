@@ -105,13 +105,13 @@
 
     <!-- Header -->
     <div style="display: flex;">
-        <div class="text-left" style="width: 140px;">
-            <img src="<?= base_url('assets/images/logo_sbf.png') ?>" alt="" width="100" height="60">
+        <div class="text-left" style="width: 80px;">
+            <img src="<?= base_url('assets/images/iconhfg.png') ?>" alt="" width="60" height="60">
         </div>
         <div style="width: 60%;">
-            <strong>PT Surya Bangun Fajar</strong><br>
-            Jl. Kalijaga No.35 Kel. Pegambiran Kec. Lemahwungkuk<br>
-            Kota Cirebon Jawa Barat 45113<br>
+            <strong>PT HARAPAN FAJAR GEMILANG</strong><br>
+            Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
+            Cengkareng, Jakarta Barat 11710<br>
             Indonesia
         </div>
         <div style="width: 40%;">
@@ -142,15 +142,19 @@
         <tbody>
             <?php $no = 1;
             foreach ($detail as $det):
-                $berat = ($det->berat != null) ? $det->berat . ' Kg,' : '';
-                $harga = ($det->harga != null) ? '(Price Rp. ' . number_format($det->harga) . ')' : '';
+                $product_name = !empty($det->product) ? $det->product : (!empty($det->material) ? $det->material : (!empty($det->nama) ? $det->nama : ''));
+                $berat = (!empty($det->berat)) ? $det->berat . ' Kg,' : '';
+                $harga = (!empty($det->harga)) ? '(Price Rp. ' . number_format($det->harga) . ')' : '';
+                $item_code = !empty($det->item) ? $det->item : (!empty($det->code_material) ? $det->code_material : (!empty($det->id_material) ? $det->id_material : '-'));
+                $satuan_text = !empty($det->satuan) ? strtoupper($det->satuan) : '-';
+                $tgl_app = (!empty($det->app_date) && $det->app_date != '0000-00-00 00:00:00') ? date('d M Y', strtotime($det->app_date)) : '-';
             ?>
                 <tr>
-                    <td class="text-center"><?= $det->item ?></td>
-                    <td><?= $det->product . ' ' . $berat . ' ' . $harga ?></td>
+                    <td class="text-center"><?= $item_code ?></td>
+                    <td><?= trim($product_name . ' ' . $berat . ' ' . $harga) ?></td>
                     <td class="text-center"><?= $det->propose_purchase ?></td>
-                    <td class="text-center"><?= strtoupper($det->satuan) ?></td>
-                    <td class="text-center"><?= date('d M Y', strtotime($det->app_date)) ?></td>
+                    <td class="text-center"><?= $satuan_text ?></td>
+                    <td class="text-center"><?= $tgl_app ?></td>
                 </tr>
             <?php endforeach; ?>
             <?php if (empty($detail)): ?>

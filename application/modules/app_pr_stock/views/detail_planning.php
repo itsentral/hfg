@@ -3,161 +3,134 @@ $pembeda = substr($header[0]['so_number'], 0, 1);
 $due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime($header[0]['due_date'])) : '-';
 $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-';
 ?>
-<div class="box box-primary">
-	<div class="box-body">
-		<form id="data-form" method="post" autocomplete="off"><br>
-			<input type="hidden" name='so_number' id='so_number' value='<?= $header[0]['so_number']; ?>'>
-			<div class="form-group row">
-				<div class="col-md-12">
-					<table class='table' width='70%'>
-						<tr>
-							<td width='20%'>No. Request/SO</td>
-							<td width='1%'>:</td>
-							<td width='29%'><?= $header[0]['so_number']; ?></td>
-							<td width='20%'>Due Date SO</td>
-							<td width='1%'>:</td>
-							<td width='29%'><?= $due_date; ?></td>
-						</tr>
-						<tr>
-							<td>No. PR</td>
-							<td>:</td>
-							<td><?= $header[0]['no_pr']; ?></td>
-							<td>Tgl Dibutuhkan</td>
-							<td>:</td>
-							<td><?= $tgl_dibutuhkan; ?></td>
-						</tr>
-						<tr>
-							<td>Customer</td>
-							<td>:</td>
-							<td><?= $header[0]['nm_customer']; ?></td>
-							<td>Tingkat PR</td>
-							<td>:</td>
-							<td><?= ($header[0]['tingkat_pr'] == 2) ? 'Urgent' : 'Normal' ?></td>
-						</tr>
-					</table>
-				</div>
-				<div class="col-md-6">
-					<label for="">Nilai Budget</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($header[0]['nilai_budget']) ?>" readonly>
-				</div>
-				<div class="col-md-6">
-					<label for="">Nilai Pengajuan</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($ttl_pengajuan_pr) ?>" readonly>
-				</div>
-				<div class="col-md-12">
-					<br><br>
-					<table class='table table-striped table-bordered table-hover table-condensed' width='100%'>
-						<thead class='thead'>
-							<tr class='bg-blue'>
-								<th class='text-center th'>#</th>
-								<th class='text-center th'>Barang</th>
-								<th class='text-center th'>Kebutuhan 1 Bulan</th>
-								<th class='text-center th'>Max</th>
-								<th class='text-center th'>Stock</th>
-								<th class='text-center th'>Propose</th>
-								<th class='text-center th'>Price Reference</th>
-								<th class='text-center th'>Total Price</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							$grand_total_price = 0;
-							$key = 0;
-							foreach ($detail as $key => $value) {
-								$no_coa = $value['no_coa'] ?? '';
-								$nm_coa = $value['nm_coa'] ?? '';
 
-								$key++;
-								$nm_material 	= $value['nm_material'] . ' - <b>(' . $no_coa . ' - ' . strtoupper($nm_coa) . ')</b>';
-								$stock_free 	= $value['stock_free'];
-								$use_stock 		= $value['use_stock'];
-								$sisa_free 		= $stock_free - $use_stock;
-								$propose 		= $value['propose_purchase'];
-								$price_ref = $value['price_ref'] ?? 0;
+<div class="card shadow-sm border-0 mb-4 box">
+    <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+            <h5 class="card-title mb-0 fw-bold text-primary">
+                <i class="fa fa-info-circle me-2"></i>Detail PR Stock
+            </h5>
+            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars($header[0]['so_number']) ?></span></small>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3 shadow-sm" id="back">
+                <i class="fa fa-arrow-left me-1"></i> Kembali
+            </button>
+        </div>
+    </div>
 
-								$get_material = $this->db->get_where('accessories', ['id' => $value['id_material']])->row();
-								$get_kebutuhan = $this->db->get_where('budget_rutin_detail', ['id_barang' => $value['id_material']])->row();
-								$get_stock = $this->db->get_where('warehouse_stock', ['id_material' => $value['id_material']])->row();
+    <div class="card-body p-4">
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="text-muted small fw-semibold text-uppercase">No. Request / SO</span>
+                    <h6 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($header[0]['so_number']) ?></h6>
+                    <small class="text-muted">Due Date: <?= $due_date ?></small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="text-muted small fw-semibold text-uppercase">No. PR</span>
+                    <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars($header[0]['no_pr']) ?></h6>
+                    <small class="text-muted">Dibutuhkan: <?= $tgl_dibutuhkan ?></small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="text-muted small fw-semibold text-uppercase">Customer</span>
+                    <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars($header[0]['nm_customer'] ?: '-') ?></h6>
+                    <small class="text-muted">Tingkat: <span class="badge <?= ($header[0]['tingkat_pr'] == 2) ? 'bg-danger' : 'bg-info' ?>"><?= ($header[0]['tingkat_pr'] == 2) ? 'Urgent' : 'Normal' ?></span></small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="text-muted small fw-semibold text-uppercase">Perbandingan Nilai</span>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <small class="text-muted">Budget:</small>
+                        <span class="fw-bold text-dark">Rp <?= number_format($header[0]['nilai_budget']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Pengajuan:</small>
+                        <span class="fw-bold text-primary">Rp <?= number_format($ttl_pengajuan_pr) ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-								$kebutuhan = (!empty($get_kebutuhan)) ? $get_kebutuhan->kebutuhan_month : 0;
-								$stock = (!empty($get_stock)) ? $get_stock->qty_stock : 0;
+        <!-- Detail Barang Table -->
+        <h6 class="fw-bold text-primary mb-2"><i class="fa fa-list me-1"></i>Rincian Barang</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-striped table-bordered table-hover align-middle w-100">
+                <thead class="table-light text-center small">
+                    <tr>
+                        <th width="4%" class="text-center">#</th>
+                        <th>Barang</th>
+                        <th width="11%" class="text-end">Kebutuhan / Bln</th>
+                        <th width="10%" class="text-end">Max</th>
+                        <th width="10%" class="text-end">Stock</th>
+                        <th width="10%" class="text-end">Propose</th>
+                        <th width="12%" class="text-end">Price Reference</th>
+                        <th width="14%" class="text-end">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $grand_total_price = 0;
+                    if (!empty($detail)) :
+                        $numb = 1;
+                        foreach ($detail as $key => $value) :
+                            $nm_material = htmlspecialchars($value['nm_material']) . ' <br><small class="text-muted fw-semibold">(' . htmlspecialchars($value['no_coa'] . ' - ' . $value['nm_coa']) . ')</small>';
+                            $propose = $value['propose_purchase'];
 
-								$konversi = (!empty($get_material) && $get_material->konversi > 0) ? $get_material->konversi : 1;
+                            $get_kebutuhan = $this->db->get_where('budget_rutin_detail', ['id_barang' => $value['id_material']])->row();
+                            $get_stock = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $value['id_material']])->row();
 
-								echo "<tr>";
-								if ($value['status_app'] == 'N') {
-									echo "<td class='text-center'>" . $key . "</td>";
-								}
-								echo "<td class='text-left'>" . $nm_material . "
-										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
-										</td>";
-								echo "<td class='text-right min_stok'>" . number_format($kebutuhan) . "</td>";
-								echo "<td class='text-right max_stok'>" . number_format($kebutuhan * 1.5) . "</td>";
-								echo "<td class='text-right min_order'>" . number_format($stock) . "</td>";
-								echo "<td class='text-right'>" . number_format($propose) . "</td>";
-								echo "<td class='text-right'>Rp. " . number_format($price_ref) . "</td>";
-								echo "<td class='text-right'>Rp. " . number_format(($propose) * $price_ref) . "</td>";
+                            $kebutuhan = (!empty($get_kebutuhan)) ? $get_kebutuhan->kebutuhan_month : 0;
+                            $stock = (!empty($get_stock)) ? $get_stock->qty_stock : 0;
+                            $price_ref = $value['price_ref'];
+                            $total_row = ($propose) * $price_ref;
+                            $grand_total_price += $total_row;
+                    ?>
+                        <tr>
+                            <td class="text-center text-muted fw-semibold"><?= $numb++ ?></td>
+                            <td><?= $nm_material ?></td>
+                            <td class="text-end"><?= number_format($kebutuhan) ?></td>
+                            <td class="text-end"><?= number_format($kebutuhan * 1.5) ?></td>
+                            <td class="text-end fw-semibold"><?= number_format($stock, 2) ?></td>
+                            <td class="text-end fw-bold text-primary"><?= number_format($propose, 2) ?></td>
+                            <td class="text-end">Rp <?= number_format($price_ref) ?></td>
+                            <td class="text-end fw-bold">Rp <?= number_format($total_row) ?></td>
+                        </tr>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th colspan="7" class="text-end fw-bold">Total Price Pengajuan:</th>
+                        <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format($grand_total_price) ?></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-								echo "</tr>";
-
-								$grand_total_price += (($propose) * $price_ref);
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr class="bg-blue">
-								<th colspan="7" class="text-center">Total Price Pengajuan</th>
-								<th class="text-right">Rp. <?= number_format($grand_total_price) ?></th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-
-			<div class="form-group row">
-				<div class="col-md-12">
-					<!-- <button type="button" class="btn btn-primary" name="save" id="save">Process</button> -->
-					<button type="button" class="btn btn-danger" style='margin-left:5px;' name="back" id="back">Back</button>
-				</div>
-			</div>
-		</form>
-	</div>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary px-4 shadow-sm" id="back_bottom">
+                <i class="fa fa-arrow-left me-1"></i> Kembali
+            </button>
+        </div>
+    </div>
 </div>
 
-<div class="modal modal-default fade" id="dialog-popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" style='width:70%;'>
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel"><span class="fa fa-users"></span>&nbsp;Detail Data</h4>
-			</div>
-			<div class="modal-body" id="ModalView">
-				...
-			</div>
-		</div>
-	</div>
+<script type="text/javascript">
+    var base_url = '<?= base_url(); ?>';
+    var active_controller = '<?= ($this->uri->segment(1)); ?>';
 
-
-	<script src="<?= base_url('assets/js/jquery.maskMoney.js') ?>"></script>
-	<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
-
-	<script type="text/javascript">
-		var base_url = '<?php echo base_url(); ?>';
-		var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
-
-		$(document).ready(function() {
-			$('.datepicker').datepicker({
-				dateFormat: 'dd-M-yy'
-			});
-			$('.autoNumeric5').autoNumeric('init', {
-				mDec: '5',
-				aPad: false
-			})
-			$('.chosen-select').select2()
-
-			//back
-			$(document).on('click', '#back', function() {
-				window.location.href = base_url + active_controller + '/approval_management'
-			});
-		});
-	</script>
+    $(document).ready(function() {
+        $(document).on('click', '#back, #back_bottom', function() {
+            window.location.href = base_url + active_controller + '/approval_management';
+        });
+    });
+</script>

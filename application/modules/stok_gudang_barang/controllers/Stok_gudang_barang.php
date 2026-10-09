@@ -50,7 +50,7 @@ class Stok_gudang_barang extends Admin_Controller
     $gudang   = $data['gudang'];
     $material = $data['material'];
 
-    $sql = "SELECT a.* FROM warehouse_history a WHERE a.id_gudang='" . $gudang . "' AND a.id_material='" . $material . "' ORDER BY a.id ASC ";
+    $sql = "SELECT a.* FROM warehouse_history_non_material a WHERE a.id_gudang='" . $gudang . "' AND a.id_material='" . $material . "' ORDER BY a.id ASC ";
     $data = $this->db->query($sql)->result_array();
 
     $dataArr = array(
@@ -440,7 +440,7 @@ class Stok_gudang_barang extends Admin_Controller
     // $tgl_awal = date('Y-m-d',strtotime($tgl_awal));
     // $tgl_akhir = date('Y-m-d',strtotime($tgl_akhir));
 
-    $SQL = "SELECT a.* FROM warehouse_history a WHERE a.id_gudang='" . $id_warehouse . "' AND a.id_material='" . $id_barang . "' ORDER BY a.id ASC ";
+    $SQL = "SELECT a.* FROM warehouse_history_non_material a WHERE a.id_gudang='" . $id_warehouse . "' AND a.id_material='" . $id_barang . "' ORDER BY a.id ASC ";
     $dataResult   = $this->db->query($SQL)->result_array();
     $nm_barang   = get_name('accessories', 'stock_name', 'id', $id_barang);
     if ($dataResult) {

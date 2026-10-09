@@ -8,7 +8,7 @@ class Outgoing_stok_atk_model extends BF_Model
   protected $ENABLE_VIEW;
   protected $ENABLE_DELETE;
 
-  protected $dbhris;
+  // protected $dbhris;
 
   public function __construct()
   {
@@ -19,7 +19,7 @@ class Outgoing_stok_atk_model extends BF_Model
     $this->ENABLE_VIEW    = has_permission('Outgoing_Stok_ATK.View');
     $this->ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
 
-    $this->dbhris = $this->load->database('hris', true);
+    // $this->dbhris = $this->load->database('hris', true);
   }
 
   //request material add
@@ -36,6 +36,16 @@ class Outgoing_stok_atk_model extends BF_Model
     $totalData    = $fetch['totalData'];
     $totalFiltered  = $fetch['totalFiltered'];
     $query      = $fetch['query'];
+
+        $dept_map = [];
+    $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
+    foreach ($get_dept_old as $item) {
+      $dept_map[$item['id']] = strtoupper($item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+    }
+    $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
+    foreach ($get_departments as $item) {
+      $dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+    }
 
     $data  = array();
     $urut1  = 1;
@@ -71,7 +81,7 @@ class Outgoing_stok_atk_model extends BF_Model
       $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
       $nestedData[]  = "<div align='center'>" . number_format($stock) . "</div>";
       $nestedData[]  = "<div align='center'>" . strtoupper($row['unit_satuan']) . "</div>";
-      $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][sudah_request]' data-no='" . $nomor . "'class='form-control input-sm text-center autoNumeric4 sudah_request'><script type='text/javascript'>$('.autoNumeric4').autoNumeric('init', {mDec: '4', aPad: false});;</script></div>";
+      $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][sudah_request]' data-no='" . $nomor . "' class='form-control form-control-sm text-center autoNumeric4 sudah_request'></div>";
       $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][ket_request]' data-no='" . $nomor . "' class='form-control input-sm text-left ket_request'></div>";
       // if($row['konversi'] > 0){
       $nestedData[]  = "<div align='center'><button type='button' class='btn btn-primary btn-sm pindahkan' title='Pindahkan'><i class='fa fa-location-arrow'></i></button></div>";
@@ -150,6 +160,16 @@ class Outgoing_stok_atk_model extends BF_Model
     $totalFiltered  = $fetch['totalFiltered'];
     $query          = $fetch['query'];
 
+        $dept_map = [];
+    $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
+    foreach ($get_dept_old as $item) {
+      $dept_map[$item['id']] = strtoupper($item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
+    }
+    $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
+    foreach ($get_departments as $item) {
+      $dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+    }
+
     $data  = array();
     $urut1  = 1;
     $urut2  = 0;
@@ -166,13 +186,7 @@ class Outgoing_stok_atk_model extends BF_Model
         $nomor = $urut1 + $start_dari;
       }
 
-      $this->dbhris->select('a.name as nm_dept, b.name as nm_comp');
-      $this->dbhris->from('departments a');
-      $this->dbhris->join('companies b', 'b.id = a.company_id', 'left');
-      $this->dbhris->where('a.id', $row['id_dept']);
-      $get_dept = $this->dbhris->get()->row_array();
-
-      $nm_department = (!empty($get_dept)) ? strtoupper($get_dept['nm_dept']) . ' - ' . strtoupper($get_dept['nm_comp']) : '';
+      $nm_department = isset($dept_map[$row['id_dept']]) ? $dept_map[$row['id_dept']] : '-';
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
@@ -202,7 +216,7 @@ class Outgoing_stok_atk_model extends BF_Model
       //   $edit	= "&nbsp;<button type='button' data-kode_trans='".$row['kode_trans']."' data-tanda='edit' class='btn btn-sm btn-primary detail' title='Edit' data-role='qtip'><i class='fa fa-edit'></i></button>";
       // }
       if ($row['sts_confirm'] == 'N') {
-        $print  = "&nbsp;<a href='" . base_url('outgoing_stok_hrga/print_spk_request/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-primary' title='Print SPK Permintaan Material' data-role='qtip'><i class='fa fa-print'></i></a>";
+        $print  = "&nbsp;<a href='" . base_url('outgoing_stok_atk/print_spk_request/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-primary' title='Print SPK Permintaan Material' data-role='qtip'><i class='fa fa-print'></i></a>";
       }
       if ($this->auth->user_name() == 'RamaSS') {
         // $release = '&nbsp;<button type="button" class="btn btn-sm btn-danger kurang_stock" data-kode_trans="'.$row['kode_trans'].'"><i class="fa fa-close"></i></button>';

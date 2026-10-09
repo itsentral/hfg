@@ -4,76 +4,164 @@ $ENABLE_MANAGE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Manage');
 $ENABLE_VIEW    = has_permission('Approval_Pengajuan_Pembayaran_Rutin.View');
 $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
 ?>
-<div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
-<div class="box">
-	<div class="box-header">
-	</div>
-	<!-- /.box-header -->
-	<div class="box-body">
-		<div class="table-responsive col-md-12">
-			<table id="mytabledata" class="table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th width="5">#</th>
-						<th>Departement</th>
-						<th>Nomor</th>
-						<th>Tanggal</th>
-						<th width="150">
-							Action
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					if (!empty($results)) {
-						$numb = 0;
-						foreach ($results as $record) {
-							$numb++;
 
-							$nm_department = (isset($arr_dept[$record->departement])) ? $arr_dept[$record->departement] : '';
+<div id="alert_edit" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;"></div>
 
-					?>
-							<tr>
-								<td><?= $numb; ?></td>
-								<td><?= strtoupper($nm_department) ?></td>
-								<td><?= $record->no_doc ?></td>
-								<td><?= $record->tanggal_doc ?></td>
-								<td>
-									<?php if ($ENABLE_VIEW) : ?>
-										<a class="btn btn-warning btn-sm view" href="javascript:void(0)" title="View" onclick="data_view('<?= $record->id ?>')"><i class="fa fa-eye"></i></a>
-										<?php endif;
-									if ($record->status == 0) {
-										if ($ENABLE_MANAGE) : ?>
-											<a class="btn btn-success btn-sm app" href="javascript:void(0)" title="Approve" onclick="data_approve('<?= $record->id ?>')"><i class="fa fa-check"></i></a>
-									<?php endif;
-									} ?>
-								</td>
-							</tr>
-					<?php
-						}
-					}  ?>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<!-- /.box-body -->
+<div class="card shadow-sm border-0 mb-4" id="card-list">
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center">
+            <div class="avatar avatar-sm bg-light-primary text-primary me-2 rounded-2 d-flex align-items-center justify-content-center p-2">
+                <i class="fa fa-calendar-check fs-5"></i>
+            </div>
+            <div>
+                <h5 class="card-title mb-0 fw-bold text-dark">Approval Pengajuan Pembayaran Periodik (Rutin)</h5>
+                <small class="text-muted">Daftar pengajuan pembayaran periodik / rutin yang menunggu persetujuan</small>
+            </div>
+        </div>
+        <div>
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">
+                <i class="fa fa-clock me-1"></i>Menunggu Approval
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table id="mytabledata" class="table table-hover table-striped align-middle border w-100">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th width="4%" class="text-center">#</th>
+                        <th class="text-center">No Dokumen</th>
+                        <th>Departemen</th>
+                        <th class="text-center">Tanggal</th>
+                        <th class="text-end">Total Nominal</th>
+                        <th class="text-center" width="16%">Status</th>
+                        <th class="text-center no-sort" width="120">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<div id="form-data"></div>
-<!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<!-- page script -->
-<script type="text/javascript">
-	var url_add = "";
-	var url_view = siteurl + 'pengajuan_rutin/view/';
 
-	function data_approve(id) {
-		if (id != "") {
-			$(".box").hide();
-			$("#form-data").show();
-			$("#form-data").load(url_view + id + '/app');
-		}
-	}
+<!-- Dynamic Form Container for View & Approval -->
+<div id="form-data" style="display: none;"></div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script type="text/javascript">
+    var url_view = siteurl + 'pengajuan_rutin/view/';
+    var datatables;
+
+    $(document).ready(function() {
+        initDataTable();
+
+        // SPA Form View Click
+        $(document).on('click', '#mytabledata .view', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            if (id) {
+                data_view(id);
+            }
+        });
+
+        // SPA Form Approve Click
+        $(document).on('click', '#mytabledata .approve', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            if (id) {
+                data_approve(id);
+            }
+        });
+    });
+
+    function initDataTable() {
+        if ($.fn.DataTable.isDataTable('#mytabledata')) {
+            $('#mytabledata').DataTable().destroy();
+        }
+
+        datatables = $('#mytabledata').DataTable({
+            serverSide: true,
+            processing: true,
+            stateSave: true,
+            paging: true,
+            order: [[1, 'desc']],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Cari no dokumen, tanggal...",
+                lengthMenu: "_MENU_ data per halaman",
+                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 data",
+                emptyTable: "Tidak ada data pengajuan pembayaran periodik yang menunggu approval",
+                zeroRecords: "Tidak ada data yang cocok",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+            },
+            ajax: {
+                type: 'POST',
+                url: siteurl + active_controller + 'get_data_app_list',
+                cache: false,
+                dataType: 'json',
+                error: function(xhr, status, error) {
+                    console.error("DataTable AJAX error: " + status + ": " + error);
+                }
+            },
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }],
+            columns: [
+                { data: 'no', className: 'text-center' },
+                { data: 'no_doc', className: 'text-center' },
+                { data: 'departemen', className: '' },
+                { data: 'tanggal_doc', className: 'text-center' },
+                { data: 'total_nilai', className: 'text-end' },
+                { data: 'status', className: 'text-center' },
+                { data: 'action', className: 'text-center', orderable: false, searchable: false }
+            ]
+        });
+    }
+
+    function list_view() {
+        $('#form-data').hide().empty();
+        $('#card-list, .box').fadeIn(200);
+        if (datatables) {
+            datatables.ajax.reload(null, false);
+        }
+    }
+
+    function data_view(id) {
+        if (id != "") {
+            $('#card-list, .box').hide();
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian pengajuan periodik...</div></div>');
+            $('#form-data').load(url_view + id, function(response, status, xhr) {
+                if (status == "error") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                    });
+                    list_view();
+                }
+            });
+        }
+    }
+
+    function data_approve(id) {
+        if (id != "") {
+            $('#card-list, .box').hide();
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Memuat form verifikasi approval...</div></div>');
+            $('#form-data').load(url_view + id + '/app', function(response, status, xhr) {
+                if (status == "error") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal memuat form approval: " + xhr.status + " " + xhr.statusText
+                    });
+                    list_view();
+                }
+            });
+        }
+    }
 </script>
-<script src="<?= base_url('assets/js/basic.js') ?>"></script>

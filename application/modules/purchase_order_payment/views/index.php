@@ -313,6 +313,55 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
         });
     });
 
+    $(document).on('change', '#select_supplier, #select_supplier_import, #select_supplier_local', function() {
+        var resetBtn = $(this).closest('.row').find('.reset_dp, .btn-reset-il');
+        if ($(this).val()) {
+            resetBtn.show();
+        } else {
+            resetBtn.hide();
+        }
+    });
+
+    $(document).on('click', '.btn-reset-il', function() {
+        var target = $(this).data('target');
+        var select = $(this).data('select');
+        var url = $(this).data('url');
+
+        $('#' + select).val('').trigger('chosen:updated').trigger('change');
+        $(this).hide();
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + url,
+            data: {
+                kode_supplier: ''
+            },
+            cache: false,
+            success: function(result) {
+                $('.' + target).html(result);
+            },
+            error: showAjaxError
+        });
+    });
+
+    $(document).on('click', '.reset_dp', function() {
+        $('#select_supplier').val('').trigger('chosen:updated').trigger('change');
+        $(this).hide();
+
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + 'search_dp',
+            data: {
+                kode_supplier: ''
+            },
+            cache: false,
+            success: function(result) {
+                $('.col_table').html(result);
+            },
+            error: showAjaxError
+        });
+    });
+
     $(document).on('submit', '#frm-data', function(e) {
         e.preventDefault();
         var tipe_req = $('#frm-data input[name="tipe_req"]').val();

@@ -61,10 +61,15 @@ class Pr_asset_model extends BF_Model
 
             $nestedData[] = "<div align='center'><span class='badge bg-" . $color . "'>" . $status . "</span></div>";
 
-            $view  = "<button type='button' class='btn btn-sm btn-warning look_hide me-1' title='View Detail' data-id='" . $nomor . "'><i class='fa fa-eye'></i> View</button>";
-            $print = "<a href='" . site_url('pr_asset/print_pr_asset/' . $row['no_pr']) . "' target='_blank' class='btn btn-sm btn-info' title='Print PR'><i class='fa fa-print'></i> Print</a>";
+            if ($tanda == 'approval_management' && ($app_status == 'N' || empty($app_status))) {
+                $toggle_btn = "<button type='button' class='btn btn-sm btn-primary look_hide me-1' title='Process Approval' data-id='" . $nomor . "'><i class='fa fa-check-square me-1'></i> Process</button>";
+            } else {
+                $toggle_btn = "<button type='button' class='btn btn-sm btn-warning look_hide me-1' title='View Detail' data-id='" . $nomor . "'><i class='fa fa-eye me-1'></i> View</button>";
+            }
+            $modal_btn = "<button type='button' class='btn btn-sm btn-outline-primary view_modal_pr me-1' title='Detail PR' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-info-circle'></i></button>";
+            $print_btn = "<a href='" . site_url('pr_asset/print_pr_asset/' . $row['no_pr']) . "' target='_blank' class='btn btn-sm btn-info text-white' title='Print PR'><i class='fa fa-print'></i> Print</a>";
 
-            $nestedData[] = "<div align='center' class='btn-group'>" . $view . $print . "</div>";
+            $nestedData[] = "<div align='center' class='btn-group'>" . $toggle_btn . $modal_btn . $print_btn . "</div>";
             $data[]       = $nestedData;
 
             // Detail Row (Expandable underneath)
@@ -75,15 +80,39 @@ class Pr_asset_model extends BF_Model
                 $reason_html = "<div align='center'><b>REASON</b><br><span class='text-danger'>" . strtoupper($row['app_reason']) . "</span></div>";
             }
 
-            $nestedData2   = array();
-            $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
-            $nestedData2[] = "<div align='left'></div>";
-            $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
-            $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
-            $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
-            $nestedData2[] = $reason_html;
-            $nestedData2[] = "<div align='center'></div>";
-            $nestedData2[] = "<div align='center'></div>";
+            if ($tanda == 'approval_management' && ($app_status == 'N' || empty($app_status))) {
+                $act_html = "<div align='right'><b>ACTION</b><br>
+                                <select id='action_" . $nomor . "' class='form-select form-select-sm'>
+                                    <option value='Y'>APPROVE</option>
+                                    <option value='D'>REJECT</option>
+                                </select>
+                             </div>";
+                $reason_input = "<div align='right'><b>REASON REJECT</b><br>
+                                    <input type='text' id='reason_" . $nomor . "' class='form-control form-control-sm' placeholder='Alasan jika reject'>
+                                    <input type='hidden' id='no_pr_" . $nomor . "' value='" . $row['no_pr'] . "'>
+                                 </div>";
+                $approve_btn = "<button type='button' class='btn btn-sm btn-success approve' title='Submit Approval' data-id='" . $nomor . "' data-tipe_approve='" . $tanda . "'><i class='fa fa-save me-1'></i> Submit</button>";
+
+                $nestedData2   = array();
+                $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
+                $nestedData2[] = "<div align='left'></div>";
+                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
+                $nestedData2[] = $act_html;
+                $nestedData2[] = $reason_input;
+                $nestedData2[] = "<div align='center' style='vertical-align:bottom;'><br>" . $approve_btn . "</div>";
+            } else {
+                $nestedData2   = array();
+                $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
+                $nestedData2[] = "<div align='left'></div>";
+                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
+                $nestedData2[] = $reason_html;
+                $nestedData2[] = "<div align='center'></div>";
+                $nestedData2[] = "<div align='center'></div>";
+            }
 
             $data[] = $nestedData2;
 
@@ -328,6 +357,61 @@ class Pr_asset_model extends BF_Model
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Create PR asset success. Thanks...', 'status' => 1);
             write_log('PR Asset', 'Create PR Asset', 'Create PR asset success: ' . $no_pr . ' / ' . $code_plan, $data, null, 1);
+        }
+
+        echo json_encode($Arr_Data);
+    }
+
+    public function approval_management()
+    {
+        $data = array(
+            'title'            => 'Approval PR Asset by Management',
+            'action'        => 'asset',
+            'tanda'            => 'approval_management'
+        );
+        history('Approval PR Asset by Management');
+        $this->template->set($data);
+        $this->template->render('approval_pr_management');
+    }
+
+    public function approve_pr()
+    {
+        $data   = $this->input->post();
+        $no_pr  = $data['no_pr'];
+        $action = $data['action'];
+        $reason = isset($data['reason']) ? strtolower($data['reason']) : '';
+
+        $username = isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin'));
+        $dateTime = date('Y-m-d H:i:s');
+
+        $ArrUpdate = array(
+            'app_status' => $action,
+            'app_reason' => $reason,
+            'app_by'     => $username,
+            'app_date'   => $dateTime
+        );
+
+        $old_pr_header = $this->db->get_where('tran_pr_header', array('no_pr' => $no_pr))->row_array();
+
+        $this->db->trans_start();
+        $this->db->where('no_pr', $no_pr);
+        $this->db->update('tran_pr_header', $ArrUpdate);
+
+        $this->db->where('no_pr', $no_pr);
+        $this->db->update('tran_pr_detail', $ArrUpdate);
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
+            $Arr_Data = array('pesan' => 'Proses approval gagal...', 'status' => 0);
+            write_log('Approval PR Asset', 'Approval PR Asset', 'Proses ' . $status_lbl . ' PR asset failed: ' . $no_pr, $data, null, 0);
+        } else {
+            $this->db->trans_commit();
+            $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
+            $Arr_Data   = array('pesan' => 'Berhasil ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
+            $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header, $ArrUpdate)) : $data;
+            write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }
 
         echo json_encode($Arr_Data);

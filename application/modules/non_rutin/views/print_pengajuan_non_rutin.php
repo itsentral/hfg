@@ -5,15 +5,8 @@ $today = date('l, d F Y [H:i:s]');
 $sts_app = '';
 if ($header[0]->sts_app == 'Y') $sts_app = 'Y';
 
-$this->hris = $this->load->database('hris', true);
-
-$this->hris->select('a.id, a.name, b.name as nm_company');
-$this->hris->from('departments a');
-$this->hris->join('companies b', 'b.id = a.company_id', 'left');
-$this->hris->where('a.id', $header[0]->id_dept);
-$get_department = $this->hris->get()->row();
-
-$nm_department = $get_department->name . ' - ' . $get_department->nm_company;
+$get_department = $this->db->get_where('department', ['id' => $header[0]->id_dept])->row();
+$nm_department  = (!empty($get_department)) ? $get_department->nm_dept : '-';
 ?>
 <!DOCTYPE html>
 <html lang="en">

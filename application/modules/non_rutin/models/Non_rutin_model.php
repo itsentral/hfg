@@ -2,14 +2,10 @@
 
 class Non_rutin_model extends BF_Model
 {
-
-    protected $hris;
     public function __construct()
     {
         parent::__construct();
         // Your own constructor code
-
-        $this->hris = $this->load->database('hris', true);
     }
 
     public function get_data_json_non_rutin()
@@ -480,11 +476,8 @@ class Non_rutin_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $this->hris->select('a.id, a.name, b.name as nm_company');
-            $this->hris->from('departments a');
-            $this->hris->join('companies b', 'b.id = a.company_id', 'left');
-            $this->hris->where('a.id', $row['id_dept']);
-            $get_department = $this->hris->get()->row();
+            $get_department = $this->db->get_where('department', ['id' => $row['id_dept']])->row();
+            $dept_name      = (!empty($get_department)) ? $get_department->nm_dept : '-';
 
             $tanda = $requestData['tanda'];
 
@@ -492,7 +485,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($get_department->name . ' - ' . $get_department->nm_company) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper($dept_name) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -564,14 +557,12 @@ class Non_rutin_model extends BF_Model
             $nestedData[] = $tingkat_pr;
 
             $nestedData[]    = "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . $sts . "</span></div>";
-            $view        = "<a href='" . base_url('non_rutin/add/' . $row['no_pengajuan'] . '/view') . "' class='btn btn-sm btn-warning' title='View' data-role='qtip'><i class='fa fa-eye'></i></a>";
+            $view        = ($ENABLE_VIEW) ? "<a href='" . base_url('non_rutin/add/' . $row['no_pengajuan'] . '/view') . "' class='btn btn-sm btn-warning' title='View' data-role='qtip'><i class='fa fa-eye'></i></a>" : "";
             $edit        = "";
             $approve    = "";
             $cancel        = "";
             $print    = "&nbsp;<a href='" . base_url('non_rutin/print_pengajuan_non_rutin/' . $row['no_pengajuan']) . "' target='_blank' class='btn btn-sm btn-success' title='Print'><i class='fa fa-print'></i></a>";
 
-            $view = "";
-            $approve = '';
             if ($ENABLE_MANAGE) {
                 $approve    = "&nbsp;<a href='" . base_url('non_rutin/add/' . $row['no_pengajuan'] . '/approve/3') . "' class='btn btn-sm btn-info' title='Approve' data-role='qtip'><i class='fa fa-check'></i></a>";
             }
@@ -639,7 +630,7 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nama'
+            2 => 'b.nm_dept'
         );
 
         $sql .= " ORDER BY a.tingkat_pr DESC, id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
@@ -691,7 +682,7 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nama'
+            2 => 'b.nm_dept'
         );
 
         $sql .= " ORDER BY a.tingkat_pr DESC, id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
@@ -718,11 +709,11 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nama
+				b.nm_dept as nama, b.nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN ms_department b ON a.id_dept=b.id,
+				LEFT JOIN department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 " . $where . " AND 
             a.status_id = 1 AND 
@@ -733,7 +724,7 @@ class Non_rutin_model extends BF_Model
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -744,7 +735,7 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nama'
+            2 => 'b.nm_dept'
         );
 
         $sql .= " ORDER BY id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
@@ -770,11 +761,11 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nama
+				b.nm_dept as nama, b.nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN ms_department b ON a.id_dept=b.id,
+				LEFT JOIN department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 AND 
             a.status_id = 1 AND 
@@ -787,7 +778,7 @@ class Non_rutin_model extends BF_Model
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -798,7 +789,7 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nama'
+            2 => 'b.nm_dept'
         );
 
         $sql .= " ORDER BY id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
@@ -826,17 +817,17 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nama
+				b.nm_dept as nama, b.nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN ms_department b ON a.id_dept=b.id,
+				LEFT JOIN department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 " . $where . " AND a.id_dept = '" . $user_dept_id . "' AND a.status_id = 1 AND (
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -847,7 +838,7 @@ class Non_rutin_model extends BF_Model
         $columns_order_by = array(
             0 => 'nomor',
             1 => 'no_pr',
-            2 => 'b.nama'
+            2 => 'b.nm_dept'
         );
 
         $sql .= " ORDER BY id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
@@ -891,11 +882,8 @@ class Non_rutin_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $this->hris->select('a.id, a.name, b.name as nm_company');
-            $this->hris->from('departments a');
-            $this->hris->join('companies b', 'b.id = a.company_id', 'left');
-            $this->hris->where('a.id', $row['id_dept']);
-            $get_department = $this->hris->get()->row();
+            $get_department = $this->db->get_where('department', ['id' => $row['id_dept']])->row();
+            $dept_name      = (!empty($get_department)) ? $get_department->nm_dept : '-';
 
             $tanda = $requestData['tanda'];
 
@@ -903,7 +891,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($get_department->name . ' - ' . $get_department->nm_company) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper($dept_name) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -978,19 +966,15 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . $sts . "</span></div>";
 
 
-            $view        = "<a href='" . base_url('non_rutin/add/' . $row['no_pengajuan'] . '/view') . "' class='btn btn-sm btn-warning' title='View' data-role='qtip'><i class='fa fa-eye'></i></a>";
+            $view        = ($ENABLE_VIEW) ? "<a href='" . base_url('non_rutin/add_finance/' . $row['no_pengajuan'] . '/view') . "' class='btn btn-sm btn-warning' title='View' data-role='qtip'><i class='fa fa-eye'></i></a>" : "";
             $edit        = "";
             $approve    = "";
             $cancel        = "";
             $print    = "&nbsp;<a href='" . base_url('non_rutin/print_pengajuan_non_rutin/' . $row['no_pengajuan']) . "' target='_blank' class='btn btn-sm btn-success' title='Print'><i class='fa fa-print'></i></a>";
 
-            $view = "";
-            // $approve = '';
-            // if ($ENABLE_MANAGE) {
-            $approve    = "&nbsp;<a href='" . base_url('non_rutin/add_finance/' . $row['no_pengajuan'] . '/approve/3') . "' class='btn btn-sm btn-info' title='Approve' data-role='qtip'><i class='fa fa-check'></i></a>";
-
-
-            // }
+            if ($ENABLE_MANAGE) {
+                $approve    = "&nbsp;<a href='" . base_url('non_rutin/add_finance/' . $row['no_pengajuan'] . '/approve/3') . "' class='btn btn-sm btn-info' title='Approve' data-role='qtip'><i class='fa fa-check'></i></a>";
+            }
             $nestedData[]    = "<div align='left'>
 									" . $view . "
                                     " . $edit . "
@@ -1017,12 +1001,11 @@ class Non_rutin_model extends BF_Model
 
     private function _main_query($limit = null, $offset = 0, $where = null)
     {
-        $this->db->select('a.*, c.nm_lengkap, d.name as nm_dept, e.name as nm_company');
+        $this->db->select('a.*, c.nm_lengkap, d.nm_dept, d.nm_dept as name');
         $this->db->from('rutin_non_planning_detail z');
         $this->db->join('rutin_non_planning_header a', 'z.no_pengajuan = a.no_pengajuan', 'left');
         $this->db->join('users c', 'c.id_user = a.created_by', 'left');
-        $this->db->join('departments d', 'd.id = a.id_dept', 'left');
-        $this->db->join('hris_companies e', 'e.id = d.company_id', 'left');
+        $this->db->join('department d', 'd.id = a.id_dept', 'left');
         $this->db->where('a.status_id', 1);
         if ($this->auth->user_id() !== '7') {
             $this->db->where('a.created_by', $this->auth->user_id()); // penyesuaian berdasarkan department_id user
@@ -1090,7 +1073,7 @@ class Non_rutin_model extends BF_Model
             $hasil[] = [
                 'no' => $no,
                 'no_pr' => (!empty($item->no_pr)) ? $item->no_pr : '<span class="text-red">' . $item->no_pengajuan . '</span>',
-                'departemen' => strtoupper($item->nm_dept . ' - ' . $item->nm_company),
+                'departemen' => strtoupper($item->nm_dept ?? '-'),
                 'keterangan' => $item->project_name,
                 'tingkat_pr' => $tingkat_pr,
                 'pic' => $item->nm_lengkap,
@@ -1156,35 +1139,36 @@ class Non_rutin_model extends BF_Model
 
     public function get_option($data)
     {
-        $ENABLE_ADD     = has_permission('PR_Departemen.Add');
-        $ENABLE_MANAGE  = has_permission('PR_Departemen.Manage');
-        $ENABLE_VIEW    = has_permission('PR_Departemen.View');
-        $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
+        $is_admin       = $this->auth->is_admin() || $this->auth->user_id() == '7';
+        $ENABLE_ADD     = has_permission('PR_Departemen.Add') || $is_admin;
+        $ENABLE_MANAGE  = has_permission('PR_Departemen.Manage') || $is_admin;
+        $ENABLE_VIEW    = has_permission('PR_Departemen.View') || $is_admin;
+        $ENABLE_DELETE  = has_permission('PR_Departemen.Delete') || $is_admin;
 
         $view        = "<a href='" . base_url('non_rutin/add/' . $data->no_pengajuan . '/view') . "' class='btn btn-sm btn-warning' title='View' data-role='qtip'><i class='fa fa-eye'></i></a>";
         $edit        = "";
         $approve    = "";
         $cancel        = "";
-        $print    = "&nbsp;<a href='" . base_url('non_rutin/print_pengajuan_non_rutin/' . $data->no_pengajuan) . "' target='_blank' class='btn btn-sm btn-success' title='Print'><i class='fa fa-print'></i></a>";
+        $print    = "<a href='" . base_url('non_rutin/print_pengajuan_non_rutin/' . $data->no_pengajuan) . "' target='_blank' class='btn btn-sm btn-success' title='Print'><i class='fa fa-print'></i></a>";
 
         if ($data->sts_app == 'N' || $data->sts_app == '') {
-            $edit    = "&nbsp;<a href='" . base_url('non_rutin/add/' . $data->no_pengajuan) . "' class='btn btn-sm btn-primary' title='Edit' data-role='qtip'><i class='fa fa-edit'></i></a>";
+            $edit    = "<a href='" . base_url('non_rutin/add/' . $data->no_pengajuan) . "' class='btn btn-sm btn-primary' title='Edit' data-role='qtip'><i class='fa fa-edit'></i></a>";
         }
 
         $close = '';
-        if ($ENABLE_DELETE) {
-            $close = '<button type="button" class="btn btn-sm btn-danger close_pr_modal" data-no_pengajuan="' . $data->no_pengajuan . '" title="Close PR"><i class="fa fa-close"></i></button>';
+        if ($ENABLE_DELETE && empty($data->close_pr)) {
+            $close = '<button type="button" class="btn btn-sm btn-success close_pr_modal" data-no_pengajuan="' . $data->no_pengajuan . '" title="Close PR"><i class="fa fa-check"></i></button>';
         }
 
-        $hasil = $view . ' ' . $edit . ' ' . $approve . ' ' . $cancel . ' ' . $print . ' ' . $close;
-        return $hasil;
+        $buttons = array_filter([$view, $edit, $approve, $cancel, $print, $close]);
+        return '<div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $buttons) . '</div>';
     }
 
     public function get_tingkat_pr($data)
     {
-        $tingkat_pr = '<span class="badge bg-blue">Normal</span>';
+        $tingkat_pr = '<span class="badge bg-white text-dark border">Normal</span>';
         if ($data->tingkat_pr == '2') {
-            $tingkat_pr = '<span class="badge bg-red">Urgent</span>';
+            $tingkat_pr = '<span class="badge bg-white text-danger border border-danger fw-bold">Urgent</span>';
         }
 
         return $tingkat_pr;
@@ -1192,9 +1176,9 @@ class Non_rutin_model extends BF_Model
 
     public function get_tingkat_pr2($data)
     {
-        $tingkat_pr = '<span class="badge bg-blue">Normal</span>';
+        $tingkat_pr = '<span class="badge bg-white text-dark border">Normal</span>';
         if ($data['tingkat_pr'] == '2') {
-            $tingkat_pr = '<span class="badge bg-red">Urgent</span>';
+            $tingkat_pr = '<span class="badge bg-white text-danger border border-danger fw-bold">Urgent</span>';
         }
 
         return $tingkat_pr;
