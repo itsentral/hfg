@@ -58,8 +58,8 @@ class Incoming_asset extends Admin_Controller
 		$list_po		= $this->db->group_by('no_ipp')->get_where('warehouse_adjustment', array('category' => 'incoming asset'))->result_array();
 		$data_gudang 	= $this->db->group_by('id_gudang_ke')->get_where('warehouse_adjustment', array('category' => 'incoming asset'))->result_array();
 
-		// Tarik data department langsung dari tabel department
-		$list_dept 		= $this->db->order_by('nm_dept', 'ASC')->get_where('department', array('deleted' => 'N'))->result_array();
+		// Tarik data department langsung dari tabel ms_department
+		$list_dept 		= $this->db->select('id, nama, nama AS nm_dept')->order_by('nama', 'ASC')->get_where('ms_department', array('deleted_by' => null))->result_array();
 		// Tarik data costcenter dari tabel costcenter
 		$list_costcenter = $this->db->order_by('nm_costcenter', 'ASC')->get_where('costcenter', array('deleted' => 'N'))->result_array();
 
@@ -122,7 +122,7 @@ class Incoming_asset extends Admin_Controller
 			$nestedData[]	= "<div class='text-center'>" . date('d-M-Y', strtotime($TANGGAL)) . "</div>";
 			$nestedData[]	= "<div class='text-center'>" . $row['no_ipp'] . "</div>";
 			
-			$nm_dept = get_name('department', 'nm_dept', 'id', $row['id_gudang_ke']);
+			$nm_dept = get_name('ms_department', 'nama', 'id', $row['id_gudang_ke']);
 			if ($nm_dept == '0' || empty($nm_dept)) {
 				$nm_dept = '-';
 			}

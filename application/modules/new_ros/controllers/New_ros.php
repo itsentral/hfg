@@ -260,11 +260,15 @@ class New_ros extends Admin_Controller
 
         $list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result_array();
 
-        $this->db->where('is_delete', '0');
-        $master_forwarding = $this->db->get('master_forwarding_cost')->row();
-        $forwarding_rate = ($master_forwarding) ? $master_forwarding->value_cost : 0;
+        $fwd_rates = [];
+        $master_fwd_all = $this->db->get_where('master_forwarding_cost', ['is_delete' => '0'])->result_array();
+        foreach ($master_fwd_all as $mf) {
+            $fwd_rates[strtolower($mf['tipe'])] = (float) $mf['value_cost'];
+        }
+        $forwarding_rate = isset($fwd_rates['import']) ? $fwd_rates['import'] : 0;
 
         $this->template->set('list_supplier', $list_supplier);
+        $this->template->set('forwarding_rates', $fwd_rates);
         $this->template->set('forwarding_rate', $forwarding_rate);
         $this->template->set('mode', 'add');
         $this->template->title('Add New ROS');
@@ -357,15 +361,22 @@ class New_ros extends Admin_Controller
         $list_po = $this->db->get()->result_array();
         // ========================================================================
 
-        $this->db->where('is_delete', '0');
-        $master_forwarding = $this->db->get('master_forwarding_cost')->row();
-        $forwarding_rate = ($master_forwarding) ? $master_forwarding->value_cost : 0;
+        $po_data = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
+        $loi_type = ($po_data && strtolower($po_data->loi) === 'lokal') ? 'lokal' : 'import';
+
+        $fwd_rates = [];
+        $master_fwd_all = $this->db->get_where('master_forwarding_cost', ['is_delete' => '0'])->result_array();
+        foreach ($master_fwd_all as $mf) {
+            $fwd_rates[strtolower($mf['tipe'])] = (float) $mf['value_cost'];
+        }
+        $forwarding_rate = isset($fwd_rates[$loi_type]) ? $fwd_rates[$loi_type] : (isset($fwd_rates['import']) ? $fwd_rates['import'] : 0);
 
         $this->template->set('header', $header);
         $this->template->set('materials', $materials);
         $this->template->set('others', $others);
         $this->template->set('list_po', $list_po);
         $this->template->set('list_supplier', $list_supplier);
+        $this->template->set('forwarding_rates', $fwd_rates);
         $this->template->set('forwarding_rate', $forwarding_rate);
         $this->template->set('mode', 'edit');
         $this->template->title('Edit New ROS');
@@ -408,11 +419,15 @@ class New_ros extends Admin_Controller
         // Ambil loi (Lokal/Import) dari PO
         $po_data = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
         $loi = $po_data ? $po_data->loi : 'Import';
+        $loi_type = (strtolower($loi) === 'lokal') ? 'lokal' : 'import';
+        $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
+        $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
 
         $this->template->set('header', $header);
         $this->template->set('materials', $materials);
         $this->template->set('others', $others);
         $this->template->set('loi', $loi);
+        $this->template->set('forwarding_rate', $forwarding_rate);
         $this->template->set('mode', 'view');
         $this->template->title('View New ROS');
         $this->template->render('view');
@@ -452,15 +467,19 @@ class New_ros extends Admin_Controller
             ];
         }
 
-        // Sertakan info loi (Lokal/Import) dan total PO value
+        // Sertakan info loi (Lokal/Import), forwarding_rate, dan total PO value
         $loi = $po ? $po->loi : 'Import';
+        $loi_type = ($po && strtolower($po->loi) === 'lokal') ? 'lokal' : 'import';
+        $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
+        $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
         $total_po_value = array_sum(array_column($result, 'total_value_usd'));
 
         echo json_encode([
-            'status' => 1,
-            'data'   => $result,
-            'loi'    => $loi,
-            'total_po_value' => $total_po_value
+            'status'          => 1,
+            'data'            => $result,
+            'loi'             => $loi,
+            'forwarding_rate' => $forwarding_rate,
+            'total_po_value'  => $total_po_value
         ]);
     }
 
@@ -675,6 +694,13 @@ class New_ros extends Admin_Controller
             }
         }
 
+        // ── Forwarding cost rate berdasarkan tipe PO (lokal / import) ──
+        $master_fwd = $this->db->get_where('master_forwarding_cost', [
+            'tipe'      => $jenis_po,
+            'is_delete' => '0'
+        ])->row();
+        $fwd_rate = ($master_fwd) ? (float) $master_fwd->value_cost : 0;
+
         // ── Materials ──
         $all_pack_coils = []; // Collect pack_no → coil data untuk generate tr_ros_pack nanti
         if (isset($post['mat']) && is_array($post['mat'])) {
@@ -686,11 +712,13 @@ class New_ros extends Admin_Controller
                 $bm_persen       = (float) $mat['bm_persen'];
                 $ls_flag         = isset($mat['ls_flag']) ? $mat['ls_flag'] : 'TIDAK';
 
+                // Forwarding cost = Rate dari master_forwarding_cost (sesuai tipe lokal/import) * kg_unit
+                $forwarding_cost = $fwd_rate * $kg_unit;
+
                 if ($is_lokal_save) {
-                    // PO Lokal: tidak ada komponen biaya tambahan
+                    // PO Lokal: tidak ada komponen biaya impor tambahan
                     $bm_rp             = 0;
                     $prorate_ls        = 0;
-                    $forwarding_cost   = 0;
                     $prorate_insurance = 0;
                     $prorate_others    = 0;
                 } else {
@@ -701,12 +729,6 @@ class New_ros extends Admin_Controller
                     if ($ls_flag == 'YA' && $total_kg_ls > 0) {
                         $prorate_ls = $biaya_ls * ($kg_unit / $total_kg_ls);
                     }
-
-                    // Forwarding cost = Rate dari master_forwarding_cost * kg_unit
-                    $this->db->where('is_delete', '0');
-                    $master_fwd = $this->db->get('master_forwarding_cost')->row();
-                    $fwd_rate = ($master_fwd) ? (float) $master_fwd->value_cost : 0;
-                    $forwarding_cost = $fwd_rate * $kg_unit;
 
                     // Prorate Insurance
                     $prorate_insurance = 0;
@@ -2216,26 +2238,28 @@ class New_ros extends Admin_Controller
         $kurs_pib     = (float) $header['kurs_pib'];
         $biaya_ls     = (float) $header['biaya_ls'];
         $insurance    = (float) $header['insurance'];
+
+        $loi_type = $is_lokal ? 'lokal' : 'import';
         $forwarding_master = $this->db->get_where('master_forwarding_cost', [
+            'tipe'      => $loi_type,
             'is_delete' => 0
         ])->row();
 
-        $tarif_forwarding = (float) $forwarding_master->value_cost;
+        $tarif_forwarding = ($forwarding_master) ? (float) $forwarding_master->value_cost : 0;
 
         foreach ($materials as $mat) {
             // total_nilai_inventory on-the-fly
             $total_value_rp_raw = (float)$mat['unit_price_usd'] * (float)$mat['kg_unit'] * $kurs_pib;
+            $forwarding_raw     = (float)$mat['kg_unit'] * $tarif_forwarding;
 
             if ($is_lokal) {
-                // PO Lokal: tidak ada komponen biaya tambahan
+                // PO Lokal: tidak ada komponen biaya tambahan impor
                 $bm_rp_raw      = 0;
                 $prorate_ls_raw = 0;
-                $forwarding_raw = 0;
                 $insurance_raw  = 0;
             } else {
                 $bm_rp_raw      = $total_value_rp_raw * (float)$mat['bm_persen'] / 100;
                 $prorate_ls_raw = $biaya_ls * (float)$mat['kg_unit'] / $total_kg_pib;
-                $forwarding_raw = (float)$mat['kg_unit'] * $tarif_forwarding;
                 $insurance_raw  = $insurance * (float)$mat['kg_unit'] / $total_kg_pib;
             }
 

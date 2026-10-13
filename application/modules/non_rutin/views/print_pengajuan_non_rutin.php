@@ -5,8 +5,8 @@ $today = date('l, d F Y [H:i:s]');
 $sts_app = '';
 if ($header[0]->sts_app == 'Y') $sts_app = 'Y';
 
-$get_department = $this->db->get_where('department', ['id' => $header[0]->id_dept])->row();
-$nm_department  = (!empty($get_department)) ? $get_department->nm_dept : '-';
+$get_department = $this->db->get_where('ms_department', ['id' => $header[0]->id_dept])->row();
+$nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $get_department->nama : $get_department->nm_dept) : '-';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -117,7 +117,7 @@ $nm_department  = (!empty($get_department)) ? $get_department->nm_dept : '-';
 
 	<table class="gridtable2" border='1' width='100%' cellpadding='2'>
 		<tr>
-			<td align='center'><b>PT SENTRAL SISTEM</b></td>
+			<td align='center'><b>PT HARAPAN FAJAR GEMILANG</b></td>
 		</tr>
 		<tr>
 			<td align='center'><b>

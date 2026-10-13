@@ -71,7 +71,7 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                             echo "<td>" . strtoupper($row['nm_barang']) . "</td>";
                             echo "<td class='text-center'>" . number_format($row['qty']) . "</td>";
                             echo "<td class='text-end'>" . number_format($row['nilai_pr']) . "</td>";
-                            echo "<td class='text-center'>" . (!empty($row['tgl_butuh']) ? date('d M Y', strtotime($row['tgl_butuh'])) : '-') . "</td>";
+                            echo "<td class='text-center'>" . (!empty($row['tgl_dibutuhkan']) ? date('d M Y', strtotime($row['tgl_dibutuhkan'])) : (!empty($row['tgl_butuh']) ? date('d M Y', strtotime($row['tgl_butuh'])) : '-')) . "</td>";
                             echo "<td class='text-center'><span class='badge bg-" . $color . "'>" . $status . "</span></td>";
                             echo "</tr>";
 

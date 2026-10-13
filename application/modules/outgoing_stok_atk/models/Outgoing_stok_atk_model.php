@@ -38,14 +38,10 @@ class Outgoing_stok_atk_model extends BF_Model
     $query      = $fetch['query'];
 
         $dept_map = [];
-    $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
-    foreach ($get_dept_old as $item) {
-      $dept_map[$item['id']] = strtoupper($item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
-    }
-    $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
-    foreach ($get_departments as $item) {
-      $dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
-    }
+		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
+		foreach ($get_departments as $item) {
+			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+		}
 
     $data  = array();
     $urut1  = 1;
@@ -161,14 +157,10 @@ class Outgoing_stok_atk_model extends BF_Model
     $query          = $fetch['query'];
 
         $dept_map = [];
-    $get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
-    foreach ($get_dept_old as $item) {
-      $dept_map[$item['id']] = strtoupper($item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
-    }
-    $get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
-    foreach ($get_departments as $item) {
-      $dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
-    }
+		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
+		foreach ($get_departments as $item) {
+			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+		}
 
     $data  = array();
     $urut1  = 1;

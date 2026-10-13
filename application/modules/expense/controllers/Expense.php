@@ -2828,7 +2828,7 @@ class Expense extends Admin_Controller
 		// $data_departement = $this->All_model->GetDeptCombo();
 		$data_budget = $this->All_model->GetCoaCombo('5');
 		$data_user = $this->All_model->GetUserCombo();
-		$combodept	= $this->Expense_model->getArray('department', array(), 'id', 'nm_dept');
+		$combodept	= $this->Expense_model->getArray('ms_department', array('deleted_by' => null), 'id', 'nama');
 		// $data_coa = $this->All_model->GetCoaCombo('5', "a.no_perkiraan like '1101%'");
 
 		$this->db->select('a.no_perkiraan, a.nama');

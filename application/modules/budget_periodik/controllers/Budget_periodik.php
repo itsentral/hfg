@@ -46,15 +46,6 @@ class Budget_periodik extends Admin_Controller
 				$all_dept[$d['id']] = strtoupper($d['nama']);
 			}
 		}
-		// Also check legacy department table as fallback
-		$q_leg = $this->db->select('id, nm_dept')->from('department')->get()->result_array();
-		if ($q_leg) {
-			foreach ($q_leg as $d) {
-				if (!isset($all_dept[$d['id']])) {
-					$all_dept[$d['id']] = strtoupper($d['nm_dept']);
-				}
-			}
-		}
 
 		$this->template->set('all_dept', $all_dept);
 		$this->template->set('datdept', $datdept);

@@ -259,16 +259,16 @@ class Pr_asset_model extends BF_Model
         $sql = "
             SELECT
                 a.*,
-                b.nm_dept,
+                b.nama AS nm_dept,
                 c.nm_costcenter
             FROM
                 asset_planning a
-                LEFT JOIN department b ON a.id_dept = b.id
+                LEFT JOIN ms_department b ON a.id_dept = b.id
                 LEFT JOIN costcenter c ON a.id_costcenter = c.id_costcenter
             WHERE a.deleted='N' AND a.status='Y' AND (a.no_pr IS NULL OR a.no_pr = '') AND (
                 a.id LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 OR a.nama_asset LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-                OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+                OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 OR c.nm_costcenter LIKE '%" . $this->db->escape_like_str($like_value) . "%'
             )
         ";
@@ -326,16 +326,17 @@ class Pr_asset_model extends BF_Model
         );
 
         $ArrDetail = array(
-            'no_pr'         => $no_pr,
-            'code_plan'     => $code_plan,
-            'category'      => 'asset',
-            'nm_barang'     => $nama_asset,
-            'qty'           => $qty_rev,
-            'nilai_pr'      => $nil_pr,
-            'tgl_butuh'     => $tgl_butuh,
-            'app_status'    => 'N',
-            'created_by'    => $username,
-            'created_date'  => $dateTime
+            'no_pr'          => $no_pr,
+            'tgl_pr'         => date('Y-m-d'),
+            'category'       => 'asset',
+            'id_barang'      => $code_plan,
+            'nm_barang'      => $nama_asset,
+            'qty'            => $qty_rev,
+            'nilai_pr'       => $nil_pr,
+            'tgl_dibutuhkan' => $tgl_butuh,
+            'app_status'     => 'N',
+            'created_by'     => $username,
+            'created_date'   => $dateTime
         );
 
         $ArrUpdatePlan = array(

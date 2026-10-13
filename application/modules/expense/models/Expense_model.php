@@ -341,9 +341,9 @@ class Expense_model extends BF_Model
 		$start = $this->input->post('start');
 		$search = $this->input->post('search');
 
-		$this->db->select('a.id, a.no_doc, a.tgl_doc, a.nama, a.departement, a.keperluan, a.nopol, a.status, (a.bensin + a.tol + a.parkir + a.lainnya) as ttl_transport, a.created_by as nmuser, d.nm_dept');
+		$this->db->select('a.id, a.no_doc, a.tgl_doc, a.nama, a.departement, a.keperluan, a.nopol, a.status, (a.bensin + a.tol + a.parkir + a.lainnya) as ttl_transport, a.created_by as nmuser, d.nama as nm_dept');
 		$this->db->from('tr_transport a');
-		$this->db->join('department d', 'd.id = a.departement', 'left');
+		$this->db->join('ms_department d', 'd.id = a.departement', 'left');
 		$this->db->where('a.created_by', $this->auth->user_name());
 		if (!empty($search['value'])) {
 			$this->db->group_start();
@@ -352,7 +352,7 @@ class Expense_model extends BF_Model
 			$this->db->or_like('a.nama', $search['value'], 'both');
 			$this->db->or_like('a.nopol', $search['value'], 'both');
 			$this->db->or_like('a.keperluan', $search['value'], 'both');
-			$this->db->or_like('d.nm_dept', $search['value'], 'both');
+			$this->db->or_like('d.nama', $search['value'], 'both');
 			$this->db->group_end();
 		}
 		$this->db->group_by('a.id');
@@ -516,9 +516,9 @@ class Expense_model extends BF_Model
 		$start      = isset($post['start']) ? $post['start'] : 0;
 		$search_val = isset($post['search']['value']) ? $post['search']['value'] : (isset($post['search']) && is_string($post['search']) ? $post['search'] : '');
 
-		$this->db->select('a.*, a.created_by as nmuser, d.nm_dept');
+		$this->db->select('a.*, a.created_by as nmuser, d.nama as nm_dept');
 		$this->db->from('tr_transport_req a');
-		$this->db->join('department d', 'd.id = a.departement', 'left');
+		$this->db->join('ms_department d', 'd.id = a.departement', 'left');
 		if (!$is_admin) {
 			$this->db->where('a.created_by', $user_name);
 		}
@@ -527,7 +527,7 @@ class Expense_model extends BF_Model
 			$this->db->like('a.no_doc', $search_val, 'both');
 			$this->db->or_like('a.tgl_doc', $search_val, 'both');
 			$this->db->or_like('a.nama', $search_val, 'both');
-			$this->db->or_like('d.nm_dept', $search_val, 'both');
+			$this->db->or_like('d.nama', $search_val, 'both');
 			$this->db->or_like('a.created_by', $search_val, 'both');
 			$this->db->group_end();
 		}
@@ -608,15 +608,15 @@ class Expense_model extends BF_Model
 		$search_val = isset($post['search']['value']) ? $post['search']['value'] : (isset($post['search']) && is_string($post['search']) ? $post['search'] : '');
 		$order      = isset($post['order']) ? $post['order'] : [];
 
-		$this->db->select('a.id, a.no_doc, a.tgl_doc, a.date1, a.date2, a.jumlah_expense, a.status, a.nama, a.approved_on, d.nm_dept, a.created_by');
+		$this->db->select('a.id, a.no_doc, a.tgl_doc, a.date1, a.date2, a.jumlah_expense, a.status, a.nama, a.approved_on, d.nama as nm_dept, a.created_by');
 		$this->db->from('tr_transport_req a');
-		$this->db->join('department d', 'd.id = a.departement', 'left');
+		$this->db->join('ms_department d', 'd.id = a.departement', 'left');
 		if (!empty($search_val)) {
 			$this->db->group_start();
 			$this->db->like('a.no_doc', $search_val, 'both');
 			$this->db->or_like('a.tgl_doc', $search_val, 'both');
 			$this->db->or_like('a.nama', $search_val, 'both');
-			$this->db->or_like('d.nm_dept', $search_val, 'both');
+			$this->db->or_like('d.nama', $search_val, 'both');
 			$this->db->or_like('a.approved_on', $search_val, 'both');
 			$this->db->or_like('a.jumlah_expense', $search_val, 'both');
 			$this->db->group_end();
@@ -808,9 +808,10 @@ class Expense_model extends BF_Model
 	public function GetDepartmentName($id_dept)
 	{
 		if (empty($id_dept)) return '';
-		$query = $this->db->get_where('department', ['id' => $id_dept]);
+		$query = $this->db->get_where('ms_department', ['id' => $id_dept]);
 		if ($query->num_rows() > 0) {
-			return $query->row()->nm_dept;
+			$row = $query->row();
+			return !empty($row->nama) ? $row->nama : $row->nm_dept;
 		}
 		return '';
 	}

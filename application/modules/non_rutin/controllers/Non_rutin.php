@@ -63,9 +63,9 @@ class Non_rutin extends Admin_Controller
 			->row_array();
 		$user_dept_id = $get_user_dept_id['department_id'] ?? '';
 
-		$this->db->select('a.id, a.nm_dept, a.nm_dept as name');
-		$this->db->from('department a');
-		$this->db->where('a.deleted', 'N');
+		$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+		$this->db->from('ms_department a');
+		$this->db->where('a.deleted_by', null);
 		if ($this->auth->user_id() !== '7' && !empty($user_dept_id)) {
 			$this->db->where('a.id', $user_dept_id);
 		}
@@ -572,9 +572,9 @@ class Non_rutin extends Admin_Controller
 
 			// $get_departement = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 
-			$this->db->select('a.id, a.nm_dept, a.nm_dept as name');
-			$this->db->from('department a');
-			$this->db->where('a.deleted', 'N');
+			$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+			$this->db->from('ms_department a');
+			$this->db->where('a.deleted_by', null);
 			$get_department = $this->db->get()->result();
 			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
@@ -802,10 +802,10 @@ class Non_rutin extends Admin_Controller
 						'sts_reject2' 		=> null,
 						'app_1_by'	=> $this->auth->user_id(),
 						'app_1_date'	=> $dateTime,
-						'keterangan_1' => $data['keterangan_3'],
+						'keterangan_1' => isset($data['keterangan_1']) ? $data['keterangan_1'] : (isset($data['keterangan_3']) ? $data['keterangan_3'] : null),
 						'app_2_by'	=> $this->auth->user_id(),
 						'app_2_date'	=> $dateTime,
-						'keterangan_2' => $data['keterangan_3'],
+						'keterangan_2' => isset($data['keterangan_2']) ? $data['keterangan_2'] : (isset($data['keterangan_3']) ? $data['keterangan_3'] : null),
 						'app_post' => 2
 					);
 				else :
@@ -1002,9 +1002,9 @@ class Non_rutin extends Admin_Controller
 
 			// $get_departement = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 
-			$this->db->select('a.id, a.nm_dept, a.nm_dept as name');
-			$this->db->from('department a');
-			$this->db->where('a.deleted', 'N');
+			$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+			$this->db->from('ms_department a');
+			$this->db->where('a.deleted_by', null);
 			$get_department = $this->db->get()->result();
 			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
@@ -1037,23 +1037,23 @@ class Non_rutin extends Admin_Controller
 		$d_Header = "";
 		$d_Header .= "<tr class='header_" . $id . "'>";
 		$d_Header .= "<td align='center'>" . $id . "</td>";
-		$d_Header .= "<td align='left'><textarea name='detail[" . $id . "][nm_barang]' class='form-control input-md'></textarea></td>";
+		$d_Header .= "<td align='left'><textarea name='detail[" . $id . "][nm_barang]' class='form-control input-md' rows='2'></textarea></td>";
 		$d_Header .= "<td align='left'>";
-		$d_Header .= "<textarea class='form-control input-nm' name='detail[" . $id . "][spec]'></textarea>";
+		$d_Header .= "<textarea class='form-control input-md' name='detail[" . $id . "][spec]' rows='2'></textarea>";
 		$d_Header .= "</td>";
 		$d_Header .= "<td align='left'><input type='text' id='qty_" . $id . "' name='detail[" . $id . "][qty]' class='form-control input-md text-center autoNumeric2 sum_tot'></td>";
-		$d_Header .= "<td align='left'><select name='detail[" . $id . "][satuan]' class='form-control chosen_select wajib' required>";
-		$d_Header .= "<option value='0'>Pilih</option>";
+		$d_Header .= "<td align='left'><select name='detail[" . $id . "][satuan]' class='form-control form-select wajib satuan_" . $id . "' required>";
+		$d_Header .= "<option value=''>Pilih</option>";
 		foreach ($satuan as $key => $value) {
 			$d_Header .= "<option value='" . $value['id'] . "'>" . $value['code'] . "</option>";
 		}
 		$d_Header .= "	</select></td>";
 		$d_Header .= "<td align='left'><input type='text' id='harga_" . $id . "' name='detail[" . $id . "][harga]' class='form-control input-md text-right maskM sum_tot' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
-		$d_Header .= "<td align='left'><input type='text' id='total_harga_" . $id . "' name='detail[" . $id . "][total_harga]' class='form-control input-md text-right maskM jumlah_all' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
-		$d_Header .= "<td align='left'><input type='text' name='detail[" . $id . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly></td>";
-		$d_Header .= "<td align='left'><textarea class='form-control input-md' name='detail[" . $id . "][keterangan]'></textarea></td>";
+		$d_Header .= "<td align='left'><input type='text' id='total_harga_" . $id . "' name='detail[" . $id . "][total_harga]' class='form-control input-md text-right jumlah_all' readonly></td>";
+		$d_Header .= "<td align='left'><input type='text' name='detail[" . $id . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly style='padding: 6px 4px; font-size: 13px;'></td>";
+		$d_Header .= "<td align='left'><textarea class='form-control input-md' name='detail[" . $id . "][keterangan]' rows='2'></textarea></td>";
 		$d_Header .= "<td align='center'>";
-		$d_Header .= "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash ti ti-trash'></i></button>";
+		$d_Header .= "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash'></i></button>";
 		$d_Header .= "</td>";
 		$d_Header .= "</tr>";
 

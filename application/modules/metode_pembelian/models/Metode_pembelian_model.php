@@ -629,7 +629,7 @@ class Metode_pembelian_model extends BF_Model
 
 		foreach ($query->result_array() as $row) {
 			$total_data = $totalData;
-			$start_dari = $requestData['start'];
+			$start_dari = ($totalFiltered > 0 && $requestData['start'] >= $totalFiltered) ? 0 : $requestData['start'];
 			$asc_desc   = $requestData['order'][0]['dir'];
 			if ($asc_desc == 'asc') {
 				$nomor = $urut1 + $start_dari;
@@ -966,6 +966,7 @@ class Metode_pembelian_model extends BF_Model
 							LEFT JOIN users b ON b.id_user = a.created_by
 						WHERE
 							a.category IN ("pr stok") AND
+							a.app_3 = "1" AND
 							a.metode_pembelian IS NULL AND
 							a.close_pr IS NULL
 							AND (
@@ -989,6 +990,7 @@ class Metode_pembelian_model extends BF_Model
 							LEFT JOIN users b ON b.id_user = a.created_by
 						WHERE
 							a.category IN ("pr material") AND
+							a.app_3 = "1" AND
 							a.metode_pembelian IS NULL AND
 							a.close_pr IS NULL
 							AND (
@@ -1014,6 +1016,7 @@ class Metode_pembelian_model extends BF_Model
 					LEFT JOIN users b ON b.id_user = a.created_by
 				WHERE
 					a.category IN ("pr material", "pr stok") AND
+					a.app_3 = "1" AND
 					a.close_pr IS NULL AND
 					a.metode_pembelian IS NULL AND (
 						a.no_pr LIKE "%' . $this->db->escape_like_str($like_value) . '%" OR
@@ -1080,6 +1083,10 @@ class Metode_pembelian_model extends BF_Model
 			0 => 'no_pr'
 		);
 
+		if ($data['totalFiltered'] > 0 && $limit_start >= $data['totalFiltered']) {
+			$limit_start = 0;
+		}
+
 		$sql .= " ORDER BY no_pr DESC";
 		$sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
 
@@ -1090,76 +1097,84 @@ class Metode_pembelian_model extends BF_Model
 
 	public function save_rfq()
 	{
-		$Arr_Kembali	= array();
-		$data			= $this->input->post();
+		$data           = $this->input->post();
+		$userName       = $this->auth->user_name();
+		$userId         = $this->auth->user_id();
+		$dateTime       = date('Y-m-d H:i:s');
 
-		$data_session	= $this->session->userdata;
-		$dateTime		= date('Y-m-d H:i:s');
-		$UserName		= $this->auth->user_name();
-		$Ym				= date('ym');
-		$jenis_pembelian = $data['jenis_pembelian'];
-		$category		= $data['category'];
+		$jenis_pembelian = isset($data['jenis_pembelian']) ? $data['jenis_pembelian'] : '';
+		// Mapping kode jenis pembelian: po = 1, non po = 2, cash/direct payment = 3
+		$map_jenis = ['po' => '1', 'non po' => '2', 'cash' => '3'];
+		$kode_jenis_pembelian = isset($map_jenis[$jenis_pembelian]) ? $map_jenis[$jenis_pembelian] : '3';
 
-		if ($jenis_pembelian == 'po') {
-			$kode_jenis_pembelian = '1';
-		} else {
-			$kode_jenis_pembelian = '2';
-		}
-
-		$check			= $this->db->select('id')->get_where('tran_pr_detail', array('checklist' => '1', 'checklist_by' => $UserName, 'no_rfq' => NULL))->result_array();
-		$ArrList 		= array();
-		foreach ($check as $val => $vaxl) {
-			$ArrList[] = $vaxl['id'];
-		}
-		$dtImplode		= "('" . implode("','", $ArrList) . "')";
-
-		foreach ($data['check'] as $valx) :
-			$category_pr = $data['category_' . $valx];
-			if ($category_pr == 'departemen') {
-				$this->db->update('rutin_non_planning_header', [
-					'metode_pembelian' => $kode_jenis_pembelian
-				], [
-					'no_pr' => $valx
-				]);
-			} elseif ($category_pr == 'asset') {
-				$this->db->update('tran_pr_header', [
-					'metode_pembelian' => $kode_jenis_pembelian
-				], [
-					'no_pr' => $valx
-				]);
-			} else {
-				$this->db->update('material_planning_base_on_produksi', [
-					'metode_pembelian' => $kode_jenis_pembelian
-				], [
-					'no_pr' => $valx
-				]);
+		if (!empty($data['check'])) {
+			// Validasi: Khusus PR Material hanya boleh memilih metode PO (kode 1)
+			foreach ($data['check'] as $no_pr) {
+				$category_pr = isset($data['category_' . $no_pr]) ? strtolower(trim($data['category_' . $no_pr])) : '';
+				if (($category_pr == 'material' || $category_pr == 'pr material') && $kode_jenis_pembelian != '1') {
+					$Arr_Kembali = [
+						'pesan'  => 'Khusus untuk PR Material, metode pembelian hanya boleh PO!',
+						'status' => 2
+					];
+					$this->output
+						->set_content_type('application/json')
+						->set_output(json_encode($Arr_Kembali));
+					return;
+				}
 			}
-		endforeach;
+		}
 
+		// Mulai Transaksi
+		$this->db->trans_start();
+
+		if (!empty($data['check'])) {
+			$no = 0;
+			foreach ($data['check'] as $no_pr) {
+				$no++;
+				$category_pr = isset($data['category_' . $no_pr]) ? $data['category_' . $no_pr] : '';
+
+				// Konfigurasi per kategori (Table mapping)
+				$config = $this->_get_category_config($category_pr, $no_pr);
+
+				if (!$config) continue;
+
+				// Jika metode pembelian adalah '3' (cash/direct payment)
+				if ($kode_jenis_pembelian == '3') {
+					$this->_process_non_po_insert($config, $no_pr, $userId, $no);
+				}
+
+				// Update metode pembelian ke tabel sumber
+				$this->db->where('no_pr', $no_pr);
+				$this->db->update($config['table_header'], ['metode_pembelian' => $kode_jenis_pembelian]);
+			}
+		}
+
+		$this->db->trans_complete();
+
+		// Response handling
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
+			$status = 2;
 			if ($kode_jenis_pembelian == '1') {
-				$pesan = 'PO PR Grouping failed, please try again later !';
+				$pesan = 'PO PR Grouping failed!';
+			} elseif ($kode_jenis_pembelian == '2') {
+				$pesan = 'Non PO PR Grouping failed!';
 			} else {
-				$pesan = 'Non PO PR Grouping failed, please try again later !';
+				$pesan = 'Cash / Direct Payment Grouping failed!';
 			}
-			$Arr_Kembali	= array(
-				'pesan'		=> $pesan,
-				'status'	=> 2
-			);
 		} else {
 			$this->db->trans_commit();
+			$status = 1;
 			if ($kode_jenis_pembelian == '1') {
-				$pesan = 'PO PR Grouping Success !';
+				$pesan = 'PO PR Grouping Success!';
+			} elseif ($kode_jenis_pembelian == '2') {
+				$pesan = 'Non PO PR Grouping Success!';
 			} else {
-				$pesan = 'Non PO PR Grouping Success !';
+				$pesan = 'Cash / Direct Payment Grouping Success!';
 			}
-			$Arr_Kembali	= array(
-				'pesan'		=> $pesan,
-				'status'	=> 1
-			);
 		}
 
+		$Arr_Kembali = ['pesan' => $pesan, 'status' => $status];
 		$this->output
 			->set_content_type('application/json')
 			->set_output(json_encode($Arr_Kembali));
@@ -3428,8 +3443,8 @@ class Metode_pembelian_model extends BF_Model
 					'approve'	=> $approve
 				);
 				write_log('Metode Pembelian', 'Metode Pembelian Action', $tanda . ' pengajuan budget non rutin ' . $code_plan, isset($data) ? $data : (isset($post) ? $post : null), null, 1);
-		}
-	} else {
+			}
+		} else {
 			$controller			= ucfirst(strtolower($this->uri->segment(1))) . '/approval_non_po';
 			$Arr_Akses			= getAcccesmenu($controller);
 			if ($Arr_Akses['read'] != '1') {
@@ -3623,8 +3638,8 @@ class Metode_pembelian_model extends BF_Model
 					'status'	=> 1
 				);
 				write_log('Metode Pembelian', 'Metode Pembelian Action', 'Create PO ' . $no_po . '/' . $valx22['hub_rfq'] . '/' . $valx22['id'], isset($data) ? $data : (isset($post) ? $post : null), null, 1);
-		}
-	} else {
+			}
+		} else {
 			$query 		= "	SELECT 
 								a.id_supplier, 
 								b.nm_supplier 
@@ -3993,6 +4008,138 @@ class Metode_pembelian_model extends BF_Model
 				'status'	=> 1
 			);
 			write_log('Metode Pembelian', 'Metode Pembelian Action', 'Edit PO custom TOP : ' . $data['no_po'], isset($data) ? $data : (isset($post) ? $post : null), null, 1);
+		}
 	}
-}
+
+
+
+	/**
+	 * Helper untuk mapping tabel dan jenis PR
+	 */
+	private function _get_category_config($category, $no_pr)
+	{
+		$cat = strtolower(trim($category));
+		if ($cat == 'departemen' || $cat == 'pr departemen') {
+			return [
+				'table_header' => 'rutin_non_planning_header',
+				'label'        => 'pr departemen'
+			];
+		} elseif ($cat == 'asset' || $cat == 'pr asset') {
+			return [
+				'table_header' => 'tran_pr_header',
+				'label'        => 'pr asset'
+			];
+		} elseif ($cat == 'stok' || $cat == 'pr stok') {
+			return [
+				'table_header' => 'material_planning_base_on_produksi',
+				'label'        => 'pr stok'
+			];
+		} elseif ($cat == 'material' || $cat == 'pr material') {
+			return [
+				'table_header' => 'material_planning_base_on_produksi',
+				'label'        => 'pr material'
+			];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Logika perhitungan total dan insert ke tr_pr_non_po
+	 */
+	private function _process_non_po_insert($config, $no_pr, $userId, $increment)
+	{
+		$header = $this->db->get_where($config['table_header'], ['no_pr' => $no_pr])->row();
+		if (!$header) return;
+
+		$user = $this->db->get_where('users', ['id_user' => $header->created_by])->row();
+		$total_pr = 0;
+
+		// Kalkulasi total berdasarkan kategori
+		if ($config['label'] == 'pr departemen') {
+			$res = $this->db->select('SUM(qty * harga) as ttl')->get_where('rutin_non_planning_detail', ['no_pengajuan' => $header->no_pengajuan])->row();
+			$total_pr = (!empty($res) && !empty($res->ttl)) ? $res->ttl : 0;
+		} elseif ($config['label'] == 'pr asset') {
+			$res = $this->db->select('SUM(qty * nilai_pr) as ttl')->get_where('tran_pr_detail', ['no_pr' => $no_pr])->row();
+			$total_pr = (!empty($res) && !empty($res->ttl)) ? $res->ttl : 0;
+		} else {
+			// pr stok & pr material
+			$details = $this->db->get_where('material_planning_base_on_produksi_detail', ['so_number' => $header->so_number])->result();
+			if (!empty($details)) {
+				foreach ($details as $d) {
+					$price = isset($d->price_ref) ? $d->price_ref : (isset($d->harga) ? $d->harga : 0);
+					$qty = isset($d->propose_purchase) ? $d->propose_purchase : (isset($d->qty) ? $d->qty : 0);
+					$total_pr += ($qty * $price);
+				}
+			}
+		}
+
+		$this->db->insert('tr_pr_non_po', [
+			'no_non_po'    => $this->generate_no_pr_non_po($increment),
+			'id_pr'        => $header->id,
+			'no_pr'        => $header->no_pr,
+			'jenis_pr'     => $config['label'],
+			'id_pic'       => !empty($user) ? $user->id_user : null,
+			'nm_pic'       => !empty($user) ? $user->nm_lengkap : 'Unknown',
+			'total_pr'     => $total_pr,
+			'sts' 		   => '1',
+			'created_by'   => $userId,
+			'created_date' => date('Y-m-d H:i:s')
+		]);
+	}
+
+	public function generate_no_pr_non_po($no = null, $tipe_data = 'format_direct_payment')
+	{
+		$no_doc = '';
+		$newcode = '';
+		$query_data = 'SELECT * FROM ms_generate WHERE tipe = "' . $tipe_data . '";';
+		$data = $this->db->query($query_data)->row();
+		if (!empty($data)) {
+			if (stripos($data->info, 'YEAR', 0) !== false) {
+				if ($data->info3 != date("Y")) {
+					$years = date("Y");
+					$number = 1;
+					$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
+				} else {
+					$years = $data->info3;
+					$number = ($data->info2 + 1);
+					$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
+				}
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
+				$newcode = str_ireplace('YEAR', $years, $newcode);
+				$newdata = array('info2' => $number, 'info3' => $years);
+			} else {
+				$number = ($data->info2 + 1);
+				$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
+				$newdata = array('info2' => $number);
+			}
+
+			$this->db->update('ms_generate', $newdata, array('tipe' => $tipe_data));
+
+			$no_doc = $newcode;
+		} else {
+			// Fallback jika belum ada record di ms_generate
+			$year = date("Y");
+			$qMax = $this->db->query("SELECT MAX(no_non_po) as max_no FROM tr_pr_non_po WHERE no_non_po LIKE 'DPM-$year-%'")->row();
+			$lastNum = 0;
+			if (!empty($qMax) && !empty($qMax->max_no)) {
+				$parts = explode('-', $qMax->max_no);
+				$lastNum = intval(end($parts));
+			}
+			$number = $lastNum + 1;
+			$newnumber = sprintf('%05d', $number);
+			$no_doc = "DPM-" . $year . "-" . $newnumber;
+
+			$this->db->insert('ms_generate', array(
+				'tipe'  => $tipe_data,
+				'info'  => 'DPM-YEAR-XXXX',
+				'info2' => $number,
+				'info3' => $year,
+				'info4' => 5
+			));
+		}
+
+		return $no_doc;
+	}
 }

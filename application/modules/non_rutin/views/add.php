@@ -261,19 +261,19 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			</div>
 			<div class="table-responsive mb-4">
 				<table class='table table-striped table-bordered table-hover align-middle' width='100%' id="table-detail-pr">
-					<thead class="table text-center">
+					<thead class="table text-center align-middle">
 						<tr>
 							<th class='text-center' style='width: 3%;'>#</th>
-							<th class='text-center'>Nama Barang/Jasa</th>
-							<th class='text-center' style='width: 13%;'>Spec/ Requirement</th>
-							<th class='text-center' style='width: 7%;'>Qty</th>
+							<th class='text-center' style='width: 17%;'>Nama Barang/Jasa</th>
+							<th class='text-center' style='width: 17%;'>Spec/ Requirement</th>
+							<th class='text-center' style='width: 8%;'>Qty</th>
 							<th class='text-center' style='width: 8%;'>Satuan</th>
-							<th class='text-center' style='width: 9%;'>Est Harga</th>
-							<th class='text-center' style='width: 9%;'>Est Total Harga</th>
-							<th class='text-center' style='width: 9%;'>Tanggal Dibutuhkan</th>
-							<th class='text-center' style='width: 15%;'>Keterangan</th>
+							<th class='text-center' style='width: 12%;'>Est Harga</th>
+							<th class='text-center' style='width: 12%;'>Est Total Harga</th>
+							<th class='text-center' style='width: 11%;'>Tanggal<br>Dibutuhkan</th>
+							<th class='text-center' style='width: 12%;'>Keterangan</th>
 							<?php if (empty($approve)) : ?>
-								<th class='text-center' style='width: 8%;'>#</th>
+								<th class='text-center' style='width: 5%;'>#</th>
 							<?php endif; ?>
 						</tr>
 					</thead>
@@ -294,9 +294,9 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 								echo "<td align='left'><input type='text' " . $readonly . " id='qty_" . $nomor . "' name='detail[" . $nomor . "][qty]' class='form-control input-md text-right autoNumeric2 sum_tot qty_" . $nomor . "' value='" . $valx['qty'] . "'></td>";
 								echo "<td align='left'>";
 								if ($is_locked) {
-									echo "<select name='detail[" . $nomor . "][satuan]' class='form-control satuan_" . $nomor . "' style='pointer-events: none; background-color: #e9ecef;' tabindex='-1'>";
+									echo "<select name='detail[" . $nomor . "][satuan]' class='form-control form-select satuan_" . $nomor . "' style='pointer-events: none; background-color: #e9ecef;' tabindex='-1'>";
 								} else {
-									echo "<select name='detail[" . $nomor . "][satuan]' class='form-control wajib satuan_" . $nomor . "' required>";
+									echo "<select name='detail[" . $nomor . "][satuan]' class='form-control form-select wajib satuan_" . $nomor . "' required>";
 								}
 								echo "<option value=''>Pilih</option>";
 								foreach ($satuan as $key => $value) {
@@ -309,15 +309,14 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 								}
 								echo "</td>";
 								echo "<td align='left'><input type='text' " . $readonly . " id='harga_" . $nomor . "' name='detail[" . $nomor . "][harga]' class='form-control input-md text-right maskM sum_tot harga_" . $nomor . "' value='" . $valx['harga'] . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
-								echo "<td align='left'><input type='text' id='total_harga_" . $nomor . "' name='detail[" . $nomor . "][total_harga]' class='form-control input-md text-right maskM jumlah_all total_harga_" . $nomor . "' value='" . ($valx['qty'] * $valx['harga']) . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
+								echo "<td align='left'><input type='text' id='total_harga_" . $nomor . "' name='detail[" . $nomor . "][total_harga]' class='form-control input-md text-right jumlah_all total_harga_" . $nomor . "' value='" . number_format($valx['qty'] * $valx['harga']) . "' readonly></td>";
 								$datepicker_cls = ($is_locked) ? '' : 'datepicker';
-								echo "<td align='left'><input type='text' name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center " . $datepicker_cls . " tgl_dibutuhkan tanggal_" . $nomor . "' readonly value='" . strtoupper($valx['tanggal']) . "'></td>";
+								echo "<td align='left'><input type='text' name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center " . $datepicker_cls . " tgl_dibutuhkan tanggal_" . $nomor . "' readonly value='" . strtoupper($valx['tanggal']) . "' style='padding: 6px 4px; font-size: 13px;'></td>";
 								echo "<td align='left'>
 									<textarea class='form-control input-md keterangan_" . $nomor . "' name='detail[" . $nomor . "][keterangan]' " . $readonly . ">" . strtoupper($valx['keterangan']) . "</textarea>
 								</td>";
 								if (empty($approve)) {
-									echo "<td align='center'><button type='button' class='btn btn-sm btn-warning edit_detail edit_detail_" . $nomor . "' data-id='" . $valx['id'] . "' data-nomor='" . $nomor . "' style='margin-right: 0.5em;' title='Edit Detail'><i class='fa fa-pencil ti ti-pencil'></i>
-									</button><button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash ti ti-trash'></i></button></td>";
+									echo "<td align='center'><button type='button' class='btn btn-sm btn-warning edit_detail edit_detail_" . $nomor . "' data-id='" . $valx['id'] . "' data-nomor='" . $nomor . "' style='margin-right: 0.3em;' title='Edit Detail'><i class='fa fa-edit'></i></button><button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash'></i></button></td>";
 								}
 								echo "</tr>";
 							}
@@ -368,6 +367,44 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 
 	.datepicker {
 		cursor: pointer;
+	}
+
+	.table-responsive {
+		overflow-x: auto;
+		overflow-y: visible !important;
+	}
+
+	#table-detail-pr {
+		table-layout: fixed !important;
+		width: 100% !important;
+		margin-bottom: 0;
+	}
+
+	#table-detail-pr th {
+		white-space: normal !important;
+		word-wrap: break-word !important;
+		vertical-align: middle !important;
+	}
+
+	#table-detail-pr td {
+		vertical-align: middle !important;
+	}
+
+	#table-detail-pr textarea.form-control {
+		width: 100% !important;
+		min-height: 40px;
+		resize: vertical;
+	}
+
+	#table-detail-pr input.form-control {
+		width: 100% !important;
+	}
+
+	#table-detail-pr select.form-select {
+		width: 100% !important;
+		cursor: pointer;
+		padding-left: 6px;
+		padding-right: 20px;
 	}
 </style>
 
@@ -464,8 +501,8 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 	// Delete part
 	$(document).on('click', '.delPart', function() {
 		$(this).closest('tr').remove();
-		sum_total(0);
 		renumber_detail_rows();
+		recalculate_all_total();
 	});
 
 	function renumber_detail_rows() {
@@ -481,11 +518,9 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 		});
 	}
 
-	$(document).on('keyup', '.sum_tot', function() {
-		var id = $(this).attr('id');
-		var det_id = id.split('_');
-		var a = det_id[1];
-		sum_total(a);
+	$(document).on('keyup change input', '.sum_tot', function() {
+		var row = $(this).closest('tr');
+		calculate_row_total(row);
 	});
 
 	// SAVE
@@ -655,20 +690,47 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 		});
 	});
 
-	function sum_total(a) {
-		var qty = getNum($('#qty_' + a).val().split(",").join(""));
-		var harga = getNum($('#harga_' + a).val().split(",").join(""));
+	function calculate_row_total(row) {
+		if (!row || !row.length) return;
+		var qtyVal = row.find('input[name*="[qty]"]').val() || '0';
+		var hargaVal = row.find('input[name*="[harga]"]').val() || '0';
 
-		var total = Number(qty) * Number(harga);
-		$('#total_harga_' + a).val(number_format(total));
+		var qty = parseFloat(qtyVal.toString().replace(/,/g, '')) || 0;
+		var harga = parseFloat(hargaVal.toString().replace(/,/g, '')) || 0;
+		var total = qty * harga;
 
+		var totalInput = row.find('input[name*="[total_harga]"]');
+		if (totalInput.length) {
+			totalInput.val(number_format(total));
+		}
+
+		recalculate_all_total();
+	}
+
+	function recalculate_all_total() {
 		var total_all = 0;
-		$('.jumlah_all').each(function() {
-			var val = getNum($(this).val().split(",").join(""));
-			total_all += Number(val);
+		$('#detail_body tr').each(function() {
+			var qVal = $(this).find('input[name*="[qty]"]').val() || '0';
+			var hVal = $(this).find('input[name*="[harga]"]').val() || '0';
+			var q = parseFloat(qVal.toString().replace(/,/g, '')) || 0;
+			var h = parseFloat(hVal.toString().replace(/,/g, '')) || 0;
+			total_all += (q * h);
 		});
 
-		$('#budget').val(number_format(total_all));
+		if ($('#budget').length) {
+			$('#budget').val(number_format(total_all));
+		}
+	}
+
+	function sum_total(a) {
+		if (a) {
+			var row = $('#qty_' + a).closest('tr');
+			if (row.length) {
+				calculate_row_total(row);
+				return;
+			}
+		}
+		recalculate_all_total();
 	}
 
 	function number_format(number, decimals, dec_point, thousands_sep) {

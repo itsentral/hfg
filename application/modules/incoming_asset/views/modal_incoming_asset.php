@@ -48,7 +48,7 @@
                         if ($cek_type == 'NPO') {
                             $qty = isset($valx['qty_rev']) ? (float)$valx['qty_rev'] : 0;
                             $satuan = 'UNIT';
-                            $dept = function_exists('get_name') ? get_name('department', 'nm_dept', 'id', $valx['id_dept']) : '';
+                            $dept = function_exists('get_name') ? get_name('ms_department', 'nama', 'id', $valx['id_dept']) : '';
                             $no_pox = isset($valx['no_non_po']) ? $valx['no_non_po'] : $no_po;
                         } else {
                             $qty = isset($valx['qty_po']) ? (float)$valx['qty_po'] : 0;

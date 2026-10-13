@@ -250,9 +250,9 @@ class Request_pr_stok extends Admin_Controller
       'created_date'    => $this->datetime,
       'booking_by'      => $this->id_user,
       'booking_date'    => $this->datetime,
-      'tingkat_pr' => $data['tingkat_pr'],
-      'nilai_budget' => $data['nilai_budget'],
-      'nilai_pengajuan' => $data['nilai_pengajuan']
+      'tingkat_pr' => $data['tingkat_pr'] ?? null,
+      'nilai_budget' => isset($data['nilai_budget']) ? (float)str_replace(',', '', $data['nilai_budget']) : 0,
+      'nilai_pengajuan' => isset($data['nilai_pengajuan']) ? (float)str_replace(',', '', $data['nilai_pengajuan']) : 0
     );
 
     // print_r($ArrSaveHeader);

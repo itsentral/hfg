@@ -9,6 +9,13 @@ class Asset_model extends BF_Model
 
     public function getList($table)
     {
+        if ($table == 'ms_department' || $table == 'department') {
+            $this->db->select('id, nama, nama AS nm_dept');
+            $this->db->where('deleted_by', null);
+            $this->db->order_by('nama', 'ASC');
+            return $this->db->get('ms_department')->result_array();
+        }
+
         if ($this->db->field_exists('status', $table)) {
             $this->db->where('status', 'Y');
         }
@@ -110,11 +117,11 @@ class Asset_model extends BF_Model
             SELECT
                 a.*,
                 COALESCE(b.nm_category, '') as nm_category,
-                COALESCE(c.nm_dept, '') as nm_dept
+                COALESCE(c.nama, '') as nm_dept
             FROM
                 asset a
                 LEFT JOIN asset_category b ON a.category = b.id
-                LEFT JOIN department c ON a.id_dept = c.id
+                LEFT JOIN ms_department c ON a.id_dept = c.id
             WHERE 1=1
                 AND a.deleted_date IS NULL
                 " . $where_kategori . "
@@ -122,7 +129,7 @@ class Asset_model extends BF_Model
                     a.kd_asset LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                     OR a.nm_asset LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                     OR b.nm_category LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-                    OR c.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+                    OR c.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
                 )
         ";
 

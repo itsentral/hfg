@@ -359,23 +359,13 @@ class Outgoing_stok_atk extends Admin_Controller
       // $listDepartment = $this->db->order_by('nama', 'ASC')->get_where('ms_department', array('deleted_date' => NULL))->result_array();
 
       $listDepartment = [];
-      $get_dept = $this->db->order_by('nm_dept', 'ASC')->get_where('department', ['deleted' => 'N'])->result_array();
-      foreach ($get_dept as $d) {
+      $get_dept_ms = $this->db->order_by('nama', 'ASC')->get_where('ms_department', ['deleted_by' => null])->result_array();
+      foreach ($get_dept_ms as $d) {
         $listDepartment[] = [
           'id' => $d['id'],
-          'nama' => strtoupper($d['nm_dept']),
+          'nama' => strtoupper($d['nama']),
           'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
         ];
-      }
-      if (empty($listDepartment)) {
-        $get_dept_ms = $this->db->order_by('nama', 'ASC')->get_where('ms_department', ['deleted_by' => null])->result_array();
-        foreach ($get_dept_ms as $d) {
-          $listDepartment[] = [
-            'id' => $d['id'],
-            'nama' => strtoupper($d['nama']),
-            'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
-          ];
-        }
       }
 
       $data = [
@@ -478,14 +468,9 @@ class Outgoing_stok_atk extends Admin_Controller
 
       $nm_dept = '-';
       if (!empty($getData[0]['id_dept'])) {
-        $get_dept = $this->db->get_where('department', ['id' => $getData[0]['id_dept']])->row_array();
-        if (!empty($get_dept)) {
-          $nm_dept = strtoupper($get_dept['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG';
-        } else {
-          $get_dept_ms = $this->db->get_where('ms_department', ['id' => $getData[0]['id_dept']])->row_array();
-          if (!empty($get_dept_ms)) {
-            $nm_dept = strtoupper($get_dept_ms['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
-          }
+        $get_dept_ms = $this->db->get_where('ms_department', ['id' => $getData[0]['id_dept']])->row_array();
+        if (!empty($get_dept_ms)) {
+          $nm_dept = strtoupper($get_dept_ms['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
         }
       }
 

@@ -27,6 +27,7 @@
 						<option value="0">Select Type</option>
 						<option value="po">PO</option>
 						<option value="non po">NON PO</option>
+						<option value="cash">Cash / Direct Payment</option>
 					</select>
 				</div>
 
@@ -119,18 +120,61 @@
 		$(document).on('change', '#category', function(e) {
 			e.preventDefault();
 			var category = $('#category').val();
+			if ($.fn.DataTable.isDataTable('#my-grid3')) {
+				$('#my-grid3').DataTable().state.clear();
+			}
 			DataTables3(category);
 		});
 
 		$(document).on('change', '#jenis_pembelian', function(e) {
 			e.preventDefault();
 			var jenis_pembelian = $('#jenis_pembelian').val();
+
+			// Cek apakah ada PR Material yang sedang di-checklist
+			var hasMaterial = false;
+			$('input[name="check[]"]:checked').each(function() {
+				var no_pr = $(this).val();
+				var cat = $('input[name="category_' + no_pr + '"]').val();
+				if (cat === 'pr material' || cat === 'material') {
+					hasMaterial = true;
+				}
+			});
+
+			if (hasMaterial && jenis_pembelian !== 'po' && jenis_pembelian !== '0') {
+				swal({
+					title: "Warning!",
+					text: "Khusus untuk PR Material, metode pembelian hanya boleh PO!",
+					type: "warning"
+				});
+				$('#jenis_pembelian').val('po');
+				$('.group-po').show();
+				$('.group-nonpo').hide();
+				return false;
+			}
+
 			if (jenis_pembelian == 'po') {
 				$('.group-po').show();
 				$('.group-nonpo').hide();
 			} else {
 				$('.group-po').hide();
 				$('.group-nonpo').show();
+			}
+		});
+
+		$(document).on('change', 'input[name="check[]"]', function() {
+			if ($(this).is(':checked')) {
+				var no_pr = $(this).val();
+				var cat = $('input[name="category_' + no_pr + '"]').val();
+				var jenis_pembelian = $('#jenis_pembelian').val();
+
+				if ((cat === 'pr material' || cat === 'material') && jenis_pembelian !== 'po' && jenis_pembelian !== '0') {
+					swal({
+						title: "Warning!",
+						text: "PR Material (" + no_pr + ") hanya boleh menggunakan metode pembelian PO!",
+						type: "warning"
+					});
+					$(this).prop('checked', false);
+				}
 			}
 		});
 	});
@@ -167,6 +211,25 @@
 			swal({
 				title: "Error Message!",
 				text: 'Checklist Minimal One Component',
+				type: "warning"
+			});
+			return false;
+		}
+
+		// Validasi khusus: jika ada PR Material yang di-checklist, jenis pembelian wajib PO
+		var hasMaterial = false;
+		$('input[name="check[]"]:checked').each(function() {
+			var no_pr = $(this).val();
+			var cat = $('input[name="category_' + no_pr + '"]').val();
+			if (cat === 'pr material' || cat === 'material') {
+				hasMaterial = true;
+			}
+		});
+
+		if (hasMaterial && jenis_pembelian !== 'po') {
+			swal({
+				title: "Warning!",
+				text: "Khusus untuk PR Material, metode pembelian hanya boleh PO!",
 				type: "warning"
 			});
 			return false;
@@ -257,10 +320,15 @@
 	});
 
 	function DataTables3(category = null) {
+		if ($.fn.DataTable.isDataTable('#my-grid3')) {
+			var oldDt = $('#my-grid3').DataTable();
+			oldDt.state.clear();
+		}
+
 		var dataTable = $('#my-grid3').DataTable({
 			"processing": true,
 			"serverSide": true,
-			"stateSave": true,
+			"stateSave": false,
 			"bAutoWidth": false,
 			"destroy": true,
 			"responsive": false,

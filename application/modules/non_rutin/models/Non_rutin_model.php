@@ -476,8 +476,8 @@ class Non_rutin_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $get_department = $this->db->get_where('department', ['id' => $row['id_dept']])->row();
-            $dept_name      = (!empty($get_department)) ? $get_department->nm_dept : '-';
+            $get_department = $this->db->get_where('ms_department', ['id' => $row['id_dept']])->row();
+            $dept_name      = (!empty($get_department)) ? (!empty($get_department->nama) ? $get_department->nama : $get_department->nm_dept) : '-';
 
             $tanda = $requestData['tanda'];
 
@@ -709,11 +709,11 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nm_dept as nama, b.nm_dept
+				b.nama as nama, b.nama as nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN department b ON a.id_dept=b.id,
+				LEFT JOIN ms_department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 " . $where . " AND 
             a.status_id = 1 AND 
@@ -724,7 +724,7 @@ class Non_rutin_model extends BF_Model
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -761,11 +761,11 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nm_dept as nama, b.nm_dept
+				b.nama as nama, b.nama as nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN department b ON a.id_dept=b.id,
+				LEFT JOIN ms_department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 AND 
             a.status_id = 1 AND 
@@ -778,7 +778,7 @@ class Non_rutin_model extends BF_Model
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -817,17 +817,17 @@ class Non_rutin_model extends BF_Model
 			SELECT
 				(@row:=@row+1) AS nomor,
 				a.*,
-				b.nm_dept as nama, b.nm_dept
+				b.nama as nama, b.nama as nm_dept
 			FROM
 				rutin_non_planning_detail z
 				LEFT JOIN rutin_non_planning_header a ON z.no_pengajuan=a.no_pengajuan
-				LEFT JOIN department b ON a.id_dept=b.id,
+				LEFT JOIN ms_department b ON a.id_dept=b.id,
 				(SELECT @row:=0) r
 		    WHERE 1=1 " . $where . " AND a.id_dept = '" . $user_dept_id . "' AND a.status_id = 1 AND (
 				a.no_pengajuan LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.tanggal LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 				OR a.no_pr LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				OR b.nm_dept LIKE '%" . $this->db->escape_like_str($like_value) . "%'
+				OR b.nama LIKE '%" . $this->db->escape_like_str($like_value) . "%'
 	        )
 			GROUP BY z.no_pengajuan
 		";
@@ -882,8 +882,8 @@ class Non_rutin_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $get_department = $this->db->get_where('department', ['id' => $row['id_dept']])->row();
-            $dept_name      = (!empty($get_department)) ? $get_department->nm_dept : '-';
+            $get_department = $this->db->get_where('ms_department', ['id' => $row['id_dept']])->row();
+            $dept_name      = (!empty($get_department)) ? (!empty($get_department->nama) ? $get_department->nama : $get_department->nm_dept) : '-';
 
             $tanda = $requestData['tanda'];
 
@@ -1001,11 +1001,11 @@ class Non_rutin_model extends BF_Model
 
     private function _main_query($limit = null, $offset = 0, $where = null)
     {
-        $this->db->select('a.*, c.nm_lengkap, d.nm_dept, d.nm_dept as name');
+        $this->db->select('a.*, c.nm_lengkap, d.nama as nm_dept, d.nama as name');
         $this->db->from('rutin_non_planning_detail z');
         $this->db->join('rutin_non_planning_header a', 'z.no_pengajuan = a.no_pengajuan', 'left');
         $this->db->join('users c', 'c.id_user = a.created_by', 'left');
-        $this->db->join('department d', 'd.id = a.id_dept', 'left');
+        $this->db->join('ms_department d', 'd.id = a.id_dept', 'left');
         $this->db->where('a.status_id', 1);
         if ($this->auth->user_id() !== '7') {
             $this->db->where('a.created_by', $this->auth->user_id()); // penyesuaian berdasarkan department_id user
