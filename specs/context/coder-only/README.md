@@ -34,6 +34,9 @@ Two carry more weight than the rest:
   deliberate violation gets "fixed" by the next person and re-violated by the
   one after that.
 
+What `testing.md` will need to say, and what to record if the project adds CI, is in
+`context/guide/building-the-layers.md` (not loaded for ordinary coding tasks).
+
 ## Load Order
 
 Read in this order and stop when the task is covered:
@@ -41,7 +44,8 @@ Read in this order and stop when the task is covered:
 1. `stack.md` — confirms what you are working in
 2. The task-relevant convention file here
 3. The specification that governs the behaviour being changed — statuses,
-   permissions, the requirement it came from
+   permissions, the requirement it came from — and `context/shape/{area}.md`
+   for what the area means and which way to lean, when one exists
 4. `context/index/map.md` for ownership, `context/index/inventory.md` (grep it)
    for the complete picture, `context/index/vocabulary.md` for business language
 5. The confirmed plan under `pm/issues/{slug}/`, when the work has one

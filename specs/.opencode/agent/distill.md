@@ -18,6 +18,8 @@ Non-negotiable, even if you skip that read:
 - **Never delete `context/gotchas.md`.** Empty it, header intact.
 - **Never promote an entry you have not verified** against the current
   repository. A wrong claim in `context/` is worse than a lost one.
+  `type: shape` entries are verified against the user's quoted word instead
+  (`context/distill.md` step 2).
 - **Never edit `pm/`, and never touch application code.**
 - **Output a PR** carrying the promotions and the emptied buffer together, with
   three tables: promoted, dropped, left. If nothing was promoted, open no PR and

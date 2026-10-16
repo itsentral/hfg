@@ -204,7 +204,158 @@ uc: UC-N04
   code: ~
   note: an open Hold Coil on the session blocks Submit Laporan Produksi
         (UC-10) per FR-17/NFR-06 until Hold & Claim resolves it.
+
+uc: UC-N05
+  name: Kelola Master Produk
+  user: Engineering
+  entities: [product_lvl_4]
+  code: ui-mockup/pc-produk.html (mockup only, localStorage; no backend)
+  note: Product Costing UCs UC-N05..UC-N14 added 2026-10-07 from FR-37..FR-45 plus
+        FR-46/FR-47 (`docs/fr-nfr.md`); actors given by the user the same day. All 11
+        Product Costing open questions were answered 2026-10-07 and are recorded in
+        `input/2026-10-07-product-costing-jawaban/`. Master Produk keeps Tebal and
+        Panjang; berat per pcs is not stored on the product, it is Berat/Meter of the
+        chosen BOM variant x Panjang (so `berat_standard` is derived, not a product column).
+
+uc: UC-N06
+  name: Kelola Master Material
+  user: Engineering
+  entities: [material]
+  code: ui-mockup/pc-material.html (mockup only, localStorage; no backend)
+  note: adds Berat/Meter (kg/m) to the material master. `material` moved from module
+        Unpack to the new Master Material module on 2026-10-07 because this UC
+        creates the record (single-owner rule).
+
+uc: UC-N07
+  name: Kelola Kurs
+  user: Accounting
+  entities: [master_kurs]
+  code: ui-mockup/pc-kurs.html (mockup only, localStorage; no backend)
+
+uc: UC-N08
+  name: Kelola Price Reference
+  user: Purchasing
+  entities: [history_purchase, price_reference_header, price_reference_detail, material, master_kurs]
+  code: ui-mockup/pc-price-reference.html (mockup only, localStorage; no backend)
+  note: the user assigned the whole UC to Purchasing, including the per-material choice
+        between Harga Terakhir and Rata-rata.
+
+uc: UC-N09
+  name: Kelola BOM Produk
+  user: Engineering
+  entities: [bom_header, bom_detail, product_lvl_4, material]
+  code: ui-mockup/pc-bom.html (mockup only, localStorage; no backend)
+  note: one BOM variant per material thickness, each with its own No. Uniq ID.
+
+uc: UC-N10
+  name: Kelola Flow Process & Cycletime
+  user: Engineering
+  entities: [flow_process_header, flow_process_detail]
+  code: ui-mockup/pc-flow.html (mockup only, localStorage; no backend)
+  note: keyed by Product Category (Level 2) — user decided 2026-10-07, resolving the
+        conflict between the Excel and the client ERD (which used product level 4).
+
+uc: UC-N11
+  name: Kelola Man Power Rate
+  user: Accounting
+  entities: [man_power_rate]
+  code: ui-mockup/pc-man-power-rate.html (mockup only, localStorage; no backend)
+
+uc: UC-N12
+  name: Kelola Rate Bahan Pendukung Khusus & FOH
+  user: Accounting
+  entities: [rate_bahan_pendukung_foh]
+  code: ui-mockup/pc-bpk-foh.html (mockup only, localStorage; no backend)
+  note: keyed by Product Category (Level 2), same decision as UC-N10.
+
+uc: UC-N13
+  name: Kelola General Rate
+  user: Accounting
+  entities: [rate_generals]
+  code: ui-mockup/pc-general-rate.html (mockup only, localStorage; no backend)
+
+uc: UC-N14
+  name: Lihat Simulasi Costing & Pricelist
+  user: Accounting, Sales, Engineering
+  entities: [product_costing_header, product_costing_detail, material_cost, man_power_cost]
+  code: ui-mockup/pc-simulasi.html (mockup only, localStorage; no backend)
+  note: three actors use the screen independently (no handoff), so it is one UC.
+        FR-48/FR-49 (rates entering production-report HPP, frozen at report creation)
+        are NOT a UC of their own — no actor; they fold into UC-10 / UC-11. Reads
+        every master above; full list is in the workbook row.
 ```
+
+**Note — Product Costing mockup revised to Excel concept (user, 2026-10-08, FEAT-01):** the
+Product Costing mockup (`ui-mockup/pc-data.js`, `pc-pages.js`, `pc.css`) was revised to match
+`input/Mockup Lengkap dari Master Product sampai Product Costing.xlsx` (concept carried as
+embedded images per sheet; the Flow sheet is cell-text only). Changes are mockup-only (localStorage,
+no backend, no schema change): (1) Master Produk gained a list (Kode, Code Master, Status) + a
+"Detil Input" card with the concept's attribute fields (Product Retail, Product Code, Trade Name,
+Packing Unit/Conversion, Unit Measurement, Max/Min Stock, MOQ, Upload MSDS, Dimensi P/L/T,
+Berat/unit, CBM) — these are mockup form fields, NOT confirmed `product_lvl_4` columns; the ERD is
+unchanged. Lebar/Tebal/Panjang kept (Panjang drives Berat per Pcs). (2) Master Material gained the
+concept detail fields (HS Code, Alias, Coating, Color, Hardness, Tensile, No. Accurate, Packing
+Unit/Conversion, Unit Measurement, Max/Min Stock, Upload MSDS, Alternative Supplier, Status);
+**Berat/Meter was kept** though the concept form omits it, because Material Cost = Price Reference
+Rp/Kg × Berat/Meter and Berat per Pcs = Berat/Meter × Panjang both depend on it (confirmed with
+user as Q1). (3) BOM now shows a front list per product (Kode Produk, Nama Produk, Jumlah Material,
+Dibuat) and a "Daftar Material" detail with a Qty-per-material column; the one-variant-per-material
+Uniq-ID model was kept because the Simulasi screen renders one column per thickness variant (Q2 —
+Qty added as a field, Material Cost still driven by the variant's material). (4) Flow Process & CT
+gained a front list and the detail columns were reordered to the concept (Cost Centre/Area, Process
+Name, Cycletime, Man Power, Total Man Hour, Machine). (5)/(6) Price Reference and Rate BP/FOH
+already matched the concept — verified, unchanged. (7) General Rate: the Other Cost group element
+names are now editable (e.g. "Transport" → "Logistik") and the edited label flows into Simulasi
+(the calc engine reads the live label via `genLabel`, replacing the old hardcoded `OTHER` constant
+with `OTHER_KEYS`). (8) Simulasi gained a front "Daftar Product Costing" list (Product Category,
+Product Name, Varian Material, Uniq ID, Harga/Meter, Harga/Kg, Last Updated, View/Ajukan Pricelist)
+and the per-variant breakdown is now shown below as "Detil Isi dari Costing (Costing Category
+Product)" information. Verified: HPP (19.733,47 / 20.831,85), Price List (21.756,15 / 22.967,12)
+and Berat per Pcs (8,04 / 8,64) still match the concept images exactly; all 10 pages render without
+JS errors (two Node harnesses + headless-Chrome screenshots). The underlying UC rows (UC-N05,
+UC-N06, UC-N09, UC-N10, UC-N13, UC-N14) and the ERD are unchanged by this revision.
+
+**Correction (user, 2026-10-08, same FEAT-01):** the first cut put the "Detil Input" as a second
+card on the same page (above/below the list). The user clarified that "Tampilan Depan" means the
+header/list only, and the detail (Add/View/Edit, and Simulasi's "Detil Isi dari Costing") must be a
+separate window. A modal mechanism was added to `pc-shell.js` (`openModal`/`closeModal`/
+`renderModal`, host `#pcModal`, close via overlay/×/Escape, `view` mode disables inputs). Master
+Produk, Master Material, BOM, Flow Process & CT, and Simulasi are now list-only pages whose rows
+carry View/Edit (plus Add / Buat BOM Baru / Add CT), each opening the detail in a modal. Kurs,
+Price Reference, Man Power Rate, Rate BP/FOH, and General Rate stay single-screen (they are not
+list→detail master screens). Costing numbers and the ERD remain unchanged.
+
+**Correction 2 (user, 2026-10-08, same FEAT-01):** Price Reference and Rate BP/FOH were wrongly
+left single-screen above — their sheets ("Price Reference Mat", "Rate BP dan FOH") also split
+Tampilan Depan vs Detil. The Price Reference front is the image13 list ("Price Reference » Raw
+Materials": Material Code, Material Master, Price Ref IDR/USD, Expired, Status, download) — image14/15
+turned out to be our own old mockup screenshots, not the target. Both are now list→modal: Price
+Reference list opens a View/Edit modal (History Pembelian + keputusan pemakaian); Rate BP/FOH list
+(`No | Product Category | Rate BPK | Rate FOH | Action`) opens an Add/View/Edit modal. Added
+`priceMeta` (expired+status) + `priceMetaOf()` to `pc-data.js`, and a `kode` (Material Code) field on
+`material`. The genuinely single-screen set is now only Kurs, Man Power Rate, and General Rate.
+Costing numbers and ERD still unchanged.
+
+**Enhancement (user, 2026-10-08, same FEAT-01):** Product Master and Material Name are now
+auto-generated composites that remain editable. `pc-data.js` gained `productName()` (Type +
+Category + Jenis + Tebal + Lebar + Panjang), `materialName()` (Metal + Slit + Boron +
+Tebal-Lebar-Coating-Tensile-, matching the Excel example `GALVALUM MOTHER BORON 0.14-1219-AZ70-
+G550-`), `applyProductName`/`applyMaterialName`, and a per-record `nameManual` flag. In the detail
+modal the source fields carry `struct` so editing one regenerates the name; typing in the name
+field sets `nameManual=true` (regeneration stops); a "Generate ulang" link clears the flag and
+recomposes. Seed names are preserved on load (regeneration only fires on a field change).
+
+**Note — Product Costing in scope (user, 2026-10-07):** reverses the 2026-09-21 decision that
+Product Costing is a separate module that Modul Produksi only reads. Master data is built and
+filled through this system's UI. Two new modules, `Master Material` and `Product Costing`,
+carry the UCs above. NFR-09 supersedes NFR-07(a): production reports keep the rates in force
+when they were created. `docs/diagrams/erd.drawio` page "Product Costing ERD" (added 2026-10-07, derived from
+`input/ERD Product Costing-Production Report.jpg`) now draws these entities; Flow Process Header
+and the Bahan Pendukung/FOH rate are keyed by Product Category, not product level 4. Page 1 still
+shows the reduced Produksi view of `material`/`product_lvl_4` (it also still groups `material`
+under Unpack) — drift to fix when the Unpack layout is reworked. `man_power_rate_component` is our
+inference from FR-43, not in the client ERD. Per-pcs cost in the production report follows the
+earlier mock-up, not this work.
 
 **Note — Modul restructuring (client hand-edit, 2026-09-21):** the client returned an edited
 copy of the workbook that regroups `Modul` from the earlier ERP-module grouping

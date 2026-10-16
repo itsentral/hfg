@@ -1,9 +1,9 @@
 ---
-id: {ID}
+id: {ID} # the external tracker's identifier — create that issue first; else the next project-wide number
 type: feature # feature | fix | task | doc | system | integration
 epic: # optional long-running track
 status: planning # planning | planned | in_progress | in_review | blocked
-external: # id + URL in the project's tracker, if one is used
+url: # the external issue's URL, if one is used — the id is already `id:`
 source: # intake folder, workbook Kode, review, or user request + date
 uc: [] # workbook Kode(s) this implements, if any
 depends_on: []

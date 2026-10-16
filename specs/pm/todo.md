@@ -4,8 +4,10 @@ Raw ideas, observations, and requests that are **not yet confirmed work**.
 Nothing here is acted on directly. An item leaves this file in one of two
 directions:
 
-- **Confirmed** → a `pm/tracker.yaml` row, then a `pm/issues/{slug}/` capsule,
-  then an external issue if the project uses one — in that order.
+- **Confirmed** → an external issue if the project uses one, then a
+  `pm/tracker.yaml` row, then a `pm/issues/{slug}/` capsule — in that order.
+  The external issue comes first because the id it returns is the issue's
+  name everywhere else. Items here have no id until then.
 - **Dropped** → deleted, with a line in `pm/log.md` tagged `[TODO]` saying why,
   if the reason is worth keeping.
 

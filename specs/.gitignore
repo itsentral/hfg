@@ -26,8 +26,12 @@ context/files/*
 *.drawio.png
 **/examples/**/*.png
 docs/diagrams/*.png
-
+./Projectinator
 # OS / editor noise
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Python bytecode
+__pycache__/
+*.pyc

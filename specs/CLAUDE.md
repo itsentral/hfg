@@ -13,14 +13,22 @@ are not restated here:
 
 | Rule | Owner |
 |---|---|
-| Classifying work, and the external mirror | `general-rules.md` → **Work Classification** |
+| Classifying work, and the external tracker | `general-rules.md` → **Work Classification** |
 | How much planning a task needs | `general-rules.md` → **Planning Gate** |
 | Evidence, scope, and how to work | `general-rules.md` → **Working Discipline** |
 | Closing an issue | `general-rules.md` → **Definition Of Done** |
 | Where durable knowledge goes | `general-rules.md` → **Sources Of Truth** |
+| Committing and pushing | `general-rules.md` → **Version Control** |
 | Naming, and the Level/Tier rule | `general-rules.md` → **Domain Language**, **Terminology Rule** |
+| Capturing what the user explains about an area | `context/shape/README.md`, via a `type: shape` entry in `context/gotchas.md` |
 
 Change a rule in its owner, not here.
+
+**`AGENTS.md` is generated from this file** by `context/sync-manuals.py`, which
+appends an explicit operating procedure (`context/manual-opencode.md`) for
+runtimes that follow pointers less reliably. Edit `CLAUDE.md` or
+`context/manual-opencode.md`, then run `python3 context/sync-manuals.py` —
+never edit `AGENTS.md` by hand.
 
 ## Diagrams are optional. The ERD is not.
 
@@ -34,9 +42,11 @@ as part of the work that changes the schema, not as a later chore.
 
 ## Never — these destroy work, and a pointer is not enough
 
-- **Never edit or delete anything under `input/`.** It is append-only client
-  material and the only record of what was actually said. A correction is a new
-  intake event that supersedes the old one (`input/README.md`).
+- **Never edit anything under `input/`, and delete only what its pruning rule
+  allows.** It is append-only client material and the only record of what was
+  actually said. A correction is a new intake event that supersedes the old
+  one; pruning is limited to uncited sources, on the user's say-so
+  (`input/README.md`).
 - **Never cite a source document that is not in `input/` or `context/files/`.**
   If the file cannot be committed, commit a stub naming it and where it lives. A
   citation nobody can open is a claim, and the rule behind it ends up re-argued
@@ -50,6 +60,11 @@ as part of the work that changes the schema, not as a later chore.
 - **Inspect every affected table, constraint and relationship before changing
   persistence behaviour**, and prefer a scoped, reversible change over a
   destructive one. Real client data is not a place to find out.
+- **Never run tests against anything but the isolated test database.** Once the
+  project has code, write its **exact** test commands here in full — including
+  any flag that is load-bearing, and what happens without it. A command that
+  truncates live data when typed the obvious way cannot rely on a reader
+  following a pointer to `context/coder-only/testing.md`.
 
 ## When you do touch a `.drawio` file
 
@@ -98,7 +113,13 @@ reload and print the sheet after writing.
   and delegate `.drawio` work to the agent that already knows its conventions:
   `bpmn-drawio-author` for BPMN, `diagram-drawio-author` for ERD, class, state
   and component, `workbook-xlsx-author` for the workbook.
+- **Understanding an area rather than locating its code** — what it means, why
+  its rules exist, which way to lean → `context/shape/{area}.md` (index:
+  `context/shape/README.md`). It biases a reading and never overrides code;
+  raise a conflict with the user instead of resolving it yourself.
 - **A second opinion or independent audit** → `context/guide/cross-model-review.md`
+- **Delegating to a subagent, or the guard hook** → `context/guide/multi-agent.md`
+- **Starting or reshaping a `context/` layer** → `context/guide/building-the-layers.md`
 - **Documenting how modules communicate** → `context/guide/component-conventions.md`
 - **Client handed over raw material** (photos, scans, exports, emails,
   transcripts) → file it under `input/<YYYY-MM-DD-slug>/` with a `notes.md`;
@@ -107,6 +128,9 @@ reload and print the sheet after writing.
 - **You learned something durable** → append it to `context/gotchas.md` with its
   **Why** line. Do not stop mid-task to file it properly; the distill pass
   (`context/distill.md`) compiles the buffer into the files that own it.
+- **The user explained how the business works**, corrected you, or gave the
+  reason behind a rule → the `harvest` skill drafts `type: shape` entries from
+  their own words, for them to approve. Never write `context/shape/` directly.
 
 ## Demo versus real work
 

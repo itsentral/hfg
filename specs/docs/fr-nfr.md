@@ -18,7 +18,24 @@ mock-up sheet with explicit input/database/formula concepts per column.
   Total, dan dua dimensi baru per laporan produksi: mesin/asset (`asset`, `id_asset`) dan
   employee/department (`employee`, `id_employee`).
 
+- `input/ERD Product Costing-Production Report.jpg` — ERD klien untuk Product Costing (Material
+  Cost, Man Power Cost, Rate Bahan Pendukung Khusus & FOH, Rate Generals) dan relasinya ke
+  `production_report_items` (2026-10-07)
+- `input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx` — sheet **Ide**, **Simulasi Program**
+  (contoh input master produk/material/rate), **Simulasi Costing** (output kalkulasi), serta
+  sheet **Simulasi ide (copy)per kg** (versi lama, per Kg; hanya sebagai pembanding)
+  (2026-10-07)
+- Keputusan user 2026-10-07 (percakapan, belum ada dokumen): lihat "Keputusan 2026-10-07" di
+  bagian Product Costing di bawah.
+
 ## Re-Confirm
+
+- **Kepemilikan Product Costing — REVERSAL 2026-10-07.** Entri 2026-09-21 di bawah menyatakan
+  Product Costing modul terpisah yang hanya dibaca. User kini memutuskan **master data Product
+  Costing dibangun dan diisi lewat UI di sistem ini** (Master Produk, Master Material, Price
+  Reference, BOM, Flow Process, Man Power Rate, Rate Bahan Pendukung Khusus & FOH, Rate
+  Generals). Konsekuensi: FR-37–FR-49 di bawah ada di scope; teks NFR-07(a) tidak lagi berlaku
+  seperti tertulis (lihat NFR-09). Entri 2026-09-21 tidak dihapus supaya jejaknya terlihat.
 
 - **Ambang toleransi selisih berat — RESOLVED 2026-09-21.** Kedua sumber sempat berbeda: BPMN
   (swimlane Admin Produksi, gateway "Output Berat Produksi") menyebut ± 0,5%, sheet "Konsep yang
@@ -163,6 +180,9 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
   hitung Berat/Pcs = Total Berat ÷ Qty). Kedua pilihan menghasilkan %Selisih =
   (Berat/pcs − Berat Standard/pcs) ÷ Berat Standard/pcs, dan sistem menampilkan popup
   notifikasi cek ulang bila selisih melebihi **± 0,7%**. _(sheet, baris 39–49)_
+  _Diubah 2026-10-07: **Berat Standard/pcs** tidak lagi kolom di database produk, melainkan hasil
+  perhitungan = Berat/Meter varian BOM yang dipilih × Panjang produk (FR-37, FR-46); nilainya
+  tersimpan ke `berat_standard` pada item laporan. FR-10 mengikuti._
 - **FR-10** — Admin Produksi dapat mencatat Stok Bebas untuk sisa coil yang dijadikan produk di
   luar SPK (bukan hasil SPK yang sedang berjalan), dengan alur input yang identik dengan FR-09
   (pilihan Master Product, baby coil sumber, dua pilihan input berat, %Selisih, popup toleransi).
@@ -346,6 +366,179 @@ bagian yang tergantikan ditandai di bawah. Ditambahkan sebagai item baru.
   (Man Power, Consumable, Coordination) — dianggap penamaan ulang komponen yang sama, belum
   dikonfirmasi.
 
+### Product Costing — master data, kalkulasi, dan pemakaian rate di HPP — 2026-10-07
+
+Sumber: `input/ERD Product Costing-Production Report.jpg` (struktur tabel) dan
+`input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx` (contoh input & rumus). Angka dan rumus di
+bawah adalah yang tertulis di sheet **Simulasi Program** / **Simulasi Costing**; nilai (mis. 5%,
+2%, Rp200/Kg, faktor 1,5) adalah **contoh isian master**, bukan konstanta — lihat NFR-12.
+Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat di UC-N05–UC-N14.
+
+**Keputusan user 2026-10-07:**
+
+- Master data Product Costing **dibangun dan diisi lewat UI** (membalik keputusan 2026-09-21).
+- Rate Consumables dan Rate Scrap adalah **persentase dari Material Cost**; hasilnya dinyatakan
+  dalam Rp/meter dan Rp/Kg.
+- Man Power Cost = **Total Man Hour × Rate Man Power**, tidak ada faktor lain.
+- Kolom "Row 3" pada ERD `Rate Bahan Pendukung Khusus & FOH` adalah **Rate FOH**.
+- Laporan produksi yang sudah dibuat **tetap memakai rate saat laporan dibuat**; perubahan rate
+  tidak mengubah laporan lama.
+- (Jawaban open question 2, 3, 5–9, 11 — 2026-10-07, lihat `input/2026-10-07-product-costing-jawaban/`.)
+- Contoh bentuk input dan output ada pada `input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx`.
+
+**Master data**
+
+- **FR-37** — Master Produk menyimpan hierarki 4 level (Level 1 Product Type, Level 2 Product
+  Category, Level 3 Product Jenis, Level 4 Product Master/nama produk) dan **Lebar** (tetap per
+  produk, karena satu lebar bisa memakai ketebalan material berbeda). **Tebal** dan **Panjang (meter)**
+  tetap disimpan di Master Produk (keputusan user 2026-10-07, open question 3; menggantikan
+  catatan sheet Ide E9–E11). **Berat per Pcs tidak disimpan di produk**: = Berat/Meter varian
+  BOM × Panjang produk (FR-46). Contoh user: Produk 1 panjang 6 m; material A 1 kg/m → 6 kg,
+  material B 1,3 kg/m → 7,8 kg.
+- **FR-38** — Master Material menyimpan Metal Type, Slitted/Non Slit, Boron/Non Boron, Material
+  Name, Width, Thickness, dan **Berat/Meter (kg/m)**. Berat/Meter ditambahkan ke master karena
+  dibutuhkan untuk konversi biaya dari Rp/Kg ke Rp/meter (catatan sheet Simulasi Program, I10),
+  dan dipakai per varian BOM untuk menghitung Berat per Pcs. Contoh baris di sheet menulis Width
+  914 untuk material "…-1219-…"; itu salah ketik, nilai yang benar **1219**
+  (`input/2026-10-07-product-costing-jawaban/`).
+- **FR-39** — Master Kurs menyimpan Currency, Kurs, Last Updated, dan Updated By. Kurs dipakai
+  mengubah Price Reference dari USD ke Rupiah.
+- **FR-40** — Price Reference per material: (a) **History Pembelian** — harga/unit (USD/kg) per
+  bulan; (b) sistem menurunkan **Harga Pembelian Terakhir** (harga bulan terisi paling baru) dan
+  **Harga Pembelian Rata-rata** (rata-rata bulan yang terisi); (c) per material, user memilih
+  **Keputusan Pemakaian Price Reference** — "Harga Terakhir" atau rata-rata — dan pilihan itu
+  dapat diubah; (d) **Final Price Reference (USD)** = harga sesuai pilihan; **Final Price
+  Reference (IDR/kg)** = Final USD × Kurs.
+- **FR-41** — BOM Produk: satu produk punya satu atau lebih **varian BOM**, dibedakan oleh
+  ketebalan material (Varian Thickness diambil dari Master Material). Setiap varian punya **No.
+  Uniq ID** sendiri (mis. `Type 001.1`, `Type 001.2`), Latest Update, dan Update By; aksi View,
+  Edit, Delete. Satu produk boleh memakai beberapa varian material sekaligus.
+- **FR-42** — Flow Process & Cycletime: per proses menyimpan Costcentre/Area, Process Name,
+  Machine, **Cycletime (menit per meter)**, Man Power (jumlah orang), dan **Man Hour = Cycletime
+  × Man Power ÷ 60** (jam per meter). **Total Man Hour** = jumlah Man Hour seluruh proses pada
+  flow. Contoh sheet: Cutting Spandek, mesin 24 m/menit → cycletime 1 ÷ 24 = 0,0417 menit/meter,
+  1 man power → 0,000694 jam/meter. **Flow dikunci per Product Category (Level 2)**, bukan per
+  produk Level 4 (keputusan user 2026-10-07; open question 1).
+- **FR-43** — Man Power Rate dihitung dari tiga kelompok komponen per bulan: **Salary Direct Man
+  Power** (Gaji Pokok, Tunjangan Keluarga, Tunjangan Jabatan, THR, Cuti, Uang Makan, Transport),
+  **BPJS** (Jaminan Kecelakaan Kerja 0,89%, Kematian 0,3%, Hari Tua 3,7%, Pensiun 2%, Kesehatan
+  4%) — **nilai rupiah tiap komponen BPJS diinput manual** (persentase hanya keterangan) —
+  dan **Biaya Lain-Lain** (Seragam, Sepatu, Helm, Sarung Tangan, Masker — dihitung prorate
+  per bulan). Lalu: **Total Biaya Direct Labor/Bulan** = jumlah tiga kelompok; **Rate Direct
+  Labor** = pembulatan ke atas (Total ÷ **jam kerja per bulan**, parameter yang di contoh bernilai
+  173 jam; layar menampilkan keterangan konstanta yang dipakai); **Rate Man Power (Rp/jam)** = Rate Direct Labor
+  × **Faktor Indirect Labor**. Contoh sheet: 6.551.982,55 → 37.873 → × 1,5 = 56.809,5 per jam.
+  Komponen dapat ditambah/dihapus per kelompok (tombol Add/Delete di sheet).
+- **FR-44** — Rate Bahan Pendukung Khusus dan **Rate FOH** disimpan per Product Category dalam
+  **Rp/meter** (contoh sheet: BONDECK 150 dan 400 — "contoh saja"). **Kunci rate adalah
+  Product Category (Level 2)**, bukan Level 4 (keputusan user 2026-10-07; open question 1).
+- **FR-45** — General Rate (berlaku semua produk): **Consumables** (% × Material Cost),
+  **Scrap** (% × Material Cost), **Biaya Koordinasi** (Rp/Kg × Berat/Meter), **Other Cost** — Sales
+  & Marketing, Transport, Finance & Admin, Management Fee, Interest, Profit (masing-masing % ×
+  HPP) — dan **Negotiation Allowance** (% × Bottom Price). Setiap baris punya **jenis/satuan** sendiri di master: Biaya Koordinasi
+  = **Rp/Kg**, baris lainnya **persentase**. Contoh nilai di sheet: Consumables 5%,
+  Scrap 2%, Koordinasi Rp200/Kg, Profit 5%, Negotiation Allowance 5%, lima Other Cost lain kosong
+  (= 0). ERD menyediakan 6 slot `Other Cost` dan satu `Negotiation Allowance`.
+
+**Kalkulasi Product Costing (per meter, per varian BOM)**
+
+- **FR-46** — Sistem menghitung, untuk setiap kombinasi Produk × varian BOM, dalam Rp/meter:
+  - Price Reference (Rp/Kg) = Final Price Reference IDR material varian tersebut (FR-40)
+  - **Material Cost** = Price Reference (Rp/Kg) × Berat/Meter material (FR-38)
+  - **Man Power Cost** = Total Man Hour (FR-42) × Rate Man Power (FR-43)
+  - **Bahan Pendukung Khusus**, **FOH** = rate FR-44
+  - **Consumables** = % × Material Cost; **Scrap** = % × Material Cost;
+    **Biaya Koordinasi** = Rp/Kg × Berat/Meter (FR-45)
+  - **HPP** = Material + Man Power + Bahan Pendukung + FOH + Consumables + Scrap + Koordinasi
+  - **Other Cost** (6 komponen) = % × HPP; **Bottom Price** = HPP + seluruh Other Cost
+  - **Negotiation Allowance** = % × Bottom Price; **Price List/Meter** = Bottom Price +
+    Negotiation Allowance
+  - Setiap nilai juga ditampilkan dalam **Rp/Kg** = nilai Rp/meter ÷ Berat/Meter.
+  - **Berat per Pcs** varian BOM = Berat/Meter material varian × Panjang produk (FR-37).
+  - Material Cost memakai Berat/Meter material utuh tanpa faktor lebar produk (dikonfirmasi user
+    2026-10-07, open question 2).
+- **FR-47** — Output Simulasi Costing menampilkan satu baris per Produk × varian BOM (No. Uniq
+  ID, Price Reference USD/Kg, Kurs, Rp/Kg, Berat/Meter, seluruh komponen FR-46 dalam Rp/meter dan
+  Rp/Kg), ditambah **Ukuran Produk (meter)** yang diambil otomatis dari Panjang Master Produk (FR-37; keputusan user 2026-10-07), **Pricelist Produk/Meter**
+  (= Ukuran × Price List/Meter) dan **Pricelist Produk/Kg**, sebagai pembanding terhadap "Pricelist
+  HFG saat ini" (contoh 27.400 **Rp/Meter**; hanya contoh pembanding hasil hitung pricelist klien
+  dengan konsep mock up, user 2026-10-07). Struktur yang sama dikonfirmasi ERD: `Product Costing Header/Detail`.
+
+**Pemakaian rate di HPP Laporan Produksi**
+
+- **FR-48** — HPP per item pada `production_report_items` memakai enam rate dari Product
+  Costing: **Man Power** (Total Man Hour × Rate Man Power), **Bahan Pendukung Khusus**, **FOH**,
+  **Consumables** (% × Material Cost), **Biaya Koordinasi** (Rp/Kg × Berat/Meter) dan **Scrap**
+  (% × Material Cost). Untuk HPP Produk **KW 1 dan KW 2**, Rate Scrap diambil dari Master Rate
+  Generals "Scrap"; pembagian 40%/60% pada FR-21 tetap berlaku. Man Power memakai standar rate
+  Product Costing; `start_time`/`finished_time` laporan tidak ikut dihitung.
+  Rate dicari lewat **Product Category (Level 2)** dari produk (`product_lvl_4_id`) item
+  tersebut. Ini mengisi kolom
+  `main_power_cost_*`, `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`,
+  `coordinator_cost_*`, `scrap_cost_*`. _Cara menghitung biaya per pcs mengikuti mock up Laporan Produksi
+  sebelumnya (FR-19/FR-20), bukan didefinisikan ulang di sini (keputusan user 2026-10-07;
+  open question 4). Fokus saat ini hanya Product Costing; FR-48 hanya menetapkan **dari mana
+  rate-nya datang**, bukan rumus per pcs._
+- **FR-49** — Rate yang dipakai FR-48 **dibekukan saat laporan produksi dibuat**: perubahan Rate
+  Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
+  pada laporan yang sudah ada (keputusan user 2026-10-07). Mekanisme penyimpanan (salinan nilai
+  ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
+
+### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
+
+1. **RESOLVED 2026-10-07 — per Product Category (Level 2).** Pertanyaan semula: kunci rate
+   Product Category atau Level 4? Sheet Simulasi Program menulis Flow Process
+   "(Cycletime per Kategori Produk)" dan Rate Bahan Pendukung/FOH per `Product Category`; ERD
+   (`Flow Process Header`, `Rate Bahan Pendukung Khusus & FOH`) memakai `id product level 4`.
+   Jawaban user: per kategori produk; ERD
+   `Flow Process Header` dan `Rate Bahan Pendukung Khusus & FOH` harus memakai Product
+   Category, bukan `id product level 4`, saat digambar.
+2. **RESOLVED 2026-10-07 — benar.** Jawaban user: Material Cost memang memakai Berat/Meter material utuh, tanpa faktor lebar. Pertanyaan semula: Material Cost per meter memakai berat per meter material utuh, bukan lebar produk.**
+   Rumus sheet: Berat/Meter material (mis. 1,34 kg/m untuk coil lebar 1219 mm) × Rp/Kg, tanpa
+   memakai Lebar produk (750 mm). Dua produk berbeda lebar dari coil yang sama akan mendapat
+   Material Cost identik. Apakah itu benar (coil dipakai utuh/slit penuh) atau perlu faktor
+   lebar? Sheet Ide sendiri sempat memakai "Berat per m² × Lebar Efektif".
+3. **RESOLVED 2026-10-07 — Tebal dan Panjang tetap ada.** Jawaban user: Berat per Pcs = Berat/Meter varian BOM × Panjang produk; produksi mengambil produk dengan varian BOM yang dipilih (FR-37, FR-46). Pertanyaan semula: Master Produk: Tebal/Panjang/Berat standard.** Sheet Ide: tebal dan berat/unit dihapus dari
+   Master Produk; sheet Simulasi Program: Panjang dan Tebal masih ada. Dan bila Berat/unit
+   dihapus, dari mana `berat_standard` per pcs (FR-09 dan kolom `berat_standard` di
+   `production_report_items`) diambil?
+4. **RESOLVED 2026-10-07 — di luar scope Product Costing.** Jawaban user: biaya per pcs sudah
+   mengikuti mock up Laporan Produksi sebelumnya; fokus sekarang hanya Product Costing.
+   Pertanyaan semula: Rate Product Costing per meter; `production_report_items`
+   per pcs. Apakah per pcs = per meter × panjang pcs (panjang dari mana?) dan memakai Berat/Meter
+   varian BOM yang sesuai coil yang benar-benar dipakai (`source_material_coil`)?
+5. **RESOLVED 2026-10-07 — Rate Scrap dari Master Rate Generals.** Jawaban user: HPP KW 1 dan KW 2 memakai Rate Scrap dari Master Rate Generals; pembagian 40/60 tetap ada. Pertanyaan semula: Scrap: rate standar atau aktual?** Rate Scrap = 2% × Material Cost adalah penyisihan standar;
+   `production_report_scraps` mencatat scrap aktual (qty, berat). `scrap_cost_*` pada item
+   memakai yang mana? Terkait FR-21/FR-35 dan pembagian 40/60 yang masih terbuka.
+6. **RESOLVED 2026-10-07 — jam tidak dihitung.** Jawaban user: `start_time`/`finished_time` tidak dihitung; Man Power memakai standar rate Product Costing. Pertanyaan semula: Man Power standar vs aktual.** Rumus yang diputuskan memakai Total Man Hour dari flow
+   (standar). `start_time`/`finished_time` laporan tidak dipakai di perhitungan — dikonfirmasi?
+7. **RESOLVED 2026-10-07 — BPJS manual, 173 jam parameter.** Jawaban user: BPJS diinput manual; 173 jam menjadi parameter dan keterangan konstanta ditampilkan (FR-43). Pertanyaan semula: Dasar BPJS.** Nilai BPJS di sheet setara 0,89%/0,3%/3,7%/2%/4% dari ≈ Rp4.570.000, bukan
+   dari Gaji Pokok Rp4.828.884. Apakah nilai BPJS diinput manual (seperti sheet) atau dihitung
+   sistem dari persentase × dasar tertentu? Konstanta **173 jam** juga perlu jadi parameter.
+8. **RESOLVED 2026-10-07 — salah ketik, 1219.** Jawaban user: Width yang benar 1219; sumber tidak diedit, koreksi dicatat di `input/2026-10-07-product-costing-jawaban/`. Pertanyaan semula: Master Material: Width 914 vs nama "…-1219-…"** pada baris contoh yang sama; dan baris
+   contoh Berat/Meter 1,34 berasal dari kontrak supplier untuk lebar 1219.
+9. **RESOLVED 2026-10-07 — Rp/Meter, hanya contoh.** Jawaban user: 27.400 dalam Rp/Meter, contoh pembanding saja. Pertanyaan semula: Satuan "Pricelist HFG saat ini: 27.400"** (Simulasi Costing, Y9) tidak disebut — per meter,
+   per kg, atau per produk? Hasil simulasi 21.756 Rp/meter dan 16.236 Rp/Kg.
+10. **RESOLVED 2026-10-07 — aktor tiap master.** Engineering: Master Produk, Master Material,
+    BOM, Flow Process & Cycletime. Accounting: Kurs, Man Power Rate, Rate Bahan Pendukung/FOH,
+    General Rate. Purchasing: Price Reference. Simulasi Costing & Pricelist: Accounting, Sales,
+    dan Engineering. Dicatat di UC-N05–UC-N14.
+11. **RESOLVED 2026-10-07 — disetujui.** Jawaban user: tiap baris punya satuan/jenis sendiri; Koordinasi Rp/Kg, lainnya persentase (FR-45). Pertanyaan semula: Header kolom `Rate/Meter` pada General Rate** salah label: isinya persentase dan Rp/Kg.
+    Satuan tiap baris perlu menjadi bagian master (kolom satuan/jenis rate).
+
+**Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
+
+- Baris varian 2 (`Type 001.2`, 0,15 mm): kolom G (`Price Reference Rp/Kg`) menunjuk absolut ke
+  `'Simulasi Program'!$J$28` (harga 0,14 mm: Rp13.165,03) padahal kolom E di baris yang sama
+  benar memakai `I29` (USD 0,725 → Rp12.950,68). Akibatnya Material Cost varian 0,15 ter-lebih
+  Rp308,67/meter (≈1,7%). Implementasi harus mengambil price reference **per material varian**.
+- Konsumables 5%, Scrap 2%, Koordinasi Rp200, dan Negotiation 5% **ditulis literal** dalam rumus
+  (kolom N, O, P, AN) walau nilai itu ada di sel General Rate. Sistem harus membacanya dari
+  master (NFR-12).
+- Sheet **Simulasi ide (copy)per kg** memakai 56.809,5 (rate per jam) langsung sebagai biaya
+  Man Power per meter; sheet Simulasi Program sudah memperbaikinya (× Man Hour = Rp39,45/meter).
+  Jangan dipakai sebagai acuan.
+
 ## NFR — Non-Functional Requirements
 
 Setiap NFR dicatat dengan fit criterion terukur (Volere). Yang belum bisa diberi angka pasti
@@ -388,6 +581,41 @@ yang sudah resolved di atas (± 0,7%).
   costbook) tampil tanpa reload halaman — `{TBC}`: ambang waktu respons perlu disepakati dengan
   klien.
 
+### NFR Product Costing — 2026-10-07
+
+- **NFR-09 (Imutabilitas rate pada laporan — mengubah NFR-07a).** Rate Product Costing yang
+  dipakai FR-48 dibekukan pada saat laporan produksi dibuat (FR-49). **NFR-07(a) tidak lagi
+  berlaku** untuk laporan yang sudah ada; "real-time" hanya berlaku untuk laporan **baru**. Fit
+  criterion: setelah Rate Man Power / Rate Bahan Pendukung / Rate FOH / General Rate diubah,
+  `total_hpp_item` dan seluruh kolom `*_cost_*` laporan yang dibuat sebelum perubahan **tidak
+  berubah satu rupiah pun**, dan setiap baris item dapat menunjukkan rate (nilai atau versi) apa
+  yang dipakai. NFR-07(b) (Costbook Material) tidak berubah.
+- **NFR-10 (Auditability master costing).** Setiap perubahan pada master Product Costing (Kurs,
+  Price Reference & keputusan pemakaiannya, BOM, Flow Process, Man Power Rate, Rate Bahan
+  Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
+  nilai lama tetap dapat ditelusuri. Fit criterion: untuk rate mana pun dapat ditampilkan siapa
+  mengubahnya, kapan, dan nilai sebelumnya.
+- **NFR-11 (Akurasi kalkulasi).** Dengan input yang sama dengan sheet **Simulasi Program**,
+  sistem menghasilkan angka sheet **Simulasi Costing** (setelah temuan review baris `Type
+  001.2` dikoreksi) dengan selisih ≤ Rp0,01 per komponen: Rate Man Power Rp56.809,5/jam,
+  Man Power Cost Rp39,45/meter, Material Cost `Type 001.1` Rp17.641,14/meter, Price List/Meter
+  `Type 001.1` Rp21.756,15. Rate Direct Labor dibulatkan ke atas ke Rupiah penuh (FR-43);
+  aturan pembulatan komponen lain `{TBC}`.
+- **NFR-12 (Tanpa angka tertanam).** Seluruh persentase, Rp/Kg, faktor, dan konstanta (Faktor
+  Indirect Labor, 173 jam, Consumables, Scrap, Koordinasi, Other Cost, Negotiation Allowance)
+  dibaca dari master, tidak ditulis di kode. Fit criterion: mengubah nilai di master mengubah
+  hasil kalkulasi berikutnya tanpa deploy; pencarian di kode tidak menemukan literal 0,05 /
+  0,02 / 200 / 173 / 1,5 sebagai rate bisnis.
+- **NFR-13 (Hak akses master costing).** Hanya role yang ditetapkan klien yang dapat mengubah
+  master Product Costing; role lain hanya melihat. Aktor per master sudah ditetapkan (open
+  question 10: Engineering, Accounting, Purchasing); verifikasi: user di luar role pemilik master
+  tidak dapat menyimpan perubahan. Detail role dicatat di `docs/rbac-entities.csv` saat
+  di-breakdown.
+- **NFR-14 (Traceability costing → laporan).** Setiap baris `production_report_items` dapat
+  menunjuk varian BOM (No. Uniq ID) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
+  dari satu baris item dapat dibuka kembali seluruh rumus FR-46/FR-48 beserta input yang sama
+  dan hasilnya sama dengan yang tersimpan.
+
 ## Status
 
 Draft, diturunkan langsung dari `input/`. Titik ambigu dari pasangan sumber awal (BPMN + sheet
@@ -405,3 +633,12 @@ FR-01–FR-24 dan NFR-01–NFR-08 yang tidak disebut di atas tetap seperti draft
 diubah). Decompose ke `docs/workbook.xlsx`
 sebaiknya menunggu klarifikasi tiga open question di atas untuk bagian yang mereka pengaruhi (HPP
 Scrap Sisa Coil, dimensi asset); bagian lain sudah siap di-decompose.
+
+**Pembaruan 2026-10-07 (Product Costing).** FR-37–FR-49 dan NFR-09–NFR-14 ditambahkan dari
+`input/ERD Product Costing-Production Report.jpg` dan `input/Rev.1 Ide Costing Kg konversi ke
+Meter.xlsx`; Product Costing kini **in scope** (membalik entri Re-Confirm 2026-09-21) dan NFR-07(a)
+diubah oleh NFR-09. Seluruh 11 open question Product Costing sudah dijawab user 2026-10-07 (kunci rate: Product
+Category; Tebal/Panjang tetap di Master Produk; Berat per Pcs = Berat/Meter varian BOM × Panjang;
+Rate Scrap dari Rate Generals; BPJS manual dan 173 jam parameter; Width 1219; Pricelist HFG
+27.400 Rp/Meter; satuan per baris General Rate). FR-37–FR-47 sudah di-decompose ke
+UC-N05–UC-N14. Rumus per pcs di Laporan Produksi mengikuti mock up sebelumnya (di luar FR-37–FR-49).

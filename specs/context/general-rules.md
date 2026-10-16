@@ -1,219 +1,181 @@
 # General Rules
 
-These rules apply across implementation, documentation, and operations work.
-
-**This file is the single owner of the shared working rules** — sources of
-truth, work classification, the planning gate, working discipline, and the
-definition of done. The runtime manual (`CLAUDE.md`) points here in one line
-instead of restating any of it; the only rules it keeps in full are the ones
-whose violation destroys work, which must be impossible to miss even for a
-session that never follows a pointer.
-
-**Change a rule here, not there.**
+Single owner of the shared working rules (work classification, planning gate,
+working discipline, definition of done, version control). The manuals
+(`CLAUDE.md`, `AGENTS.md`) keep only what must be impossible to miss: rules whose
+violation destroys work. Change a rule here, not there.
 
 ## Current Scope
 
-This is an implementation project with a documentation layer attached. Code is
-the deliverable; `docs/` and the diagrams exist to keep it traceable to
-something a stakeholder actually said, and to settle questions faster than
-prose can.
+Implementation project with a documentation layer. Code is the deliverable;
+`docs/` and diagrams keep it traceable to something a stakeholder said.
 
-**Only the ERD is an expected, maintained artifact.** BPMN, class, state and
-component diagrams are optional — drawn when they are the fastest way to resolve
-or communicate something, skipped when they are not. No code waits on a diagram.
-
-Code, tests and the current schema describe **implemented** behaviour. Confirmed
-requirements and specifications describe **intended** behaviour. Surface
-conflicts between them rather than silently rewriting one to match the other.
+- **Only the ERD is a maintained artifact.** BPMN, class, state, component are
+  optional — draw to settle or communicate something, skip otherwise. No code
+  waits on a diagram.
+- Code/tests/schema describe **implemented** behaviour; requirements describe
+  **intended**. Surface conflicts; never silently rewrite one to match the other.
 
 ## Sources Of Truth
 
-- **`context/`** records durable facts and working rules — what is *true*.
-- **`pm/`** records work state and history — what *happened*. `tracker.yaml` for
-  open work, `archive.yaml` for closed, `issues/{slug}/` for the capsule of
-  anything open, `log.md` for narrative, `todo.md` for unconfirmed ideas.
-- **`docs/`** records requirements, specifications, and client deliverables.
-- **`input/`** records raw client source material and is append-only.
-- Historical plans explain past decisions but do not override current code,
-  schema, or confirmed specifications.
+| What | Lives in |
+|---|---|
+| Durable facts and rules (what is *true*) | `context/` |
+| Work state and history (what *happened*) | `pm/` — `tracker.yaml` open, `archive.yaml` closed, `issues/{slug}/` capsule, `log.md` narrative, `todo.md` unconfirmed |
+| Requirements, specs, client deliverables | `docs/` |
+| Raw client source material (append-only) | `input/` |
+| Business intent per area (user's quoted word) | `context/shape/` |
 
-**Every durable rule has exactly one owner in `context/`.** Do not restate one
-in an issue file or a second conventions file — update its owner instead. When
-work establishes a durable fact, update whichever file owns it:
-`context/coder-only/*.md`, `context/document-writer-only/*.md`,
-`context/index/map.md`, or `context/index/decisions/`.
-
-An observation that does not yet have an owner is a different thing. It belongs
-in `context/gotchas.md`, the buffer the distill pass promotes into `context/`
-and then empties (`context/distill.md`). That file is intake, not truth: it is
-not read at session start, and it is never deleted.
+- Historical plans explain past decisions, never override current code/schema/specs.
+- **Every durable rule has exactly one owner in `context/`.** Update its owner,
+  never restate it in an issue or a second conventions file.
+- An observation with no owner yet goes in `context/gotchas.md` (the buffer the
+  distill pass promotes and empties). It is intake, not truth: not read at
+  session start, never deleted.
 
 ## Domain Language
 
-Domain and business terms — entity names, field names, UI labels — follow the
-language the client and the source documents actually use. Pick one language per
-project at the start and record it here. **Do not silently translate or
-normalise a load-bearing term**: a field named after the client's own word in
-the elicitation notes carries that exact word into the schema.
+Business terms follow the client's and source documents' language. **Do not
+silently translate or normalise a load-bearing term.** Pick one language per
+project at the start and record it here.
 
-Structural and technical naming follows the chosen stack's own conventions —
-`context/coder-only/` territory, not this file.
+_This project:_ Indonesian business terms kept as the client says them (Gudang, Costbook, Laporan Produksi, KW1/KW2); table and column names are English `snake_case` (`warehouse_stock`, `employee_helper`) unless a load-bearing client word is carried verbatim. Pairs that diverge are in `context/index/vocabulary.md`..
+Structural and technical naming follows the stack's own conventions
+(`context/coder-only/` territory).
 
-When a business term and its technical name diverge, that pair goes in
-`context/index/vocabulary.md`. The first time somebody has to ask what a word
-maps to is the signal it belongs there.
+A term whose business name and technical name diverge goes in
+`context/index/vocabulary.md` — the first time someone asks what it maps to.
 
 ## Work Classification
 
-- **Implementation.** Features, bugs, regressions, refactors, security fixes,
-  upgrades, performance work, data repairs. Enters `pm/tracker.yaml` directly.
-- **Business change.** A new capability or a changed business rule is confirmed
-  with the user first, then enters the tracker the same way. Raw entries in
-  `docs/requests.md`, `input/`, and `pm/todo.md` are unconfirmed source
-  material, not specifications.
-- **Artifact work.** A diagram, a workbook change, a requirements document —
-  requested in its own right, or drawn because it is the cheapest way to settle
-  a question. Load `context/document-writer-only/` only then.
-- **Questions, investigations and reviews create nothing.** Answer the question.
+| Kind | Entry |
+|---|---|
+| Implementation (features, bugs, refactors, security, upgrades, perf, data repairs) | `pm/tracker.yaml` directly |
+| Business change (new capability or changed rule) | Confirm with user, then the tracker |
+| Artifact work (diagram, workbook, requirements doc) | Load `context/document-writer-only/` only then |
+| Questions / investigations / reviews | Create nothing; answer the question |
 
-**No artifact is a prerequisite for code.** A use case does not need a workbook
-row, and a change does not need a diagram, before it can be built. Where a
-workbook row or an ERD entity already exists for the behaviour, keep it current
-as part of the work — that is upkeep, not a gate.
+**No artifact is a prerequisite for code.** A change needs no workbook row or
+diagram before it is built; keep an existing one current as upkeep, not a gate.
 
-### The external mirror, if the project uses one
+### The external tracker
 
-`pm/` is the source of truth; an external tracker is its shared mirror, and the
-two must not drift. If one is in use, name it once — here — then create the
-external issue when a capsule is created, record its id in the row's `external:`
-field, update it in the same pass as the row, and close it when the row moves to
-`pm/archive.yaml`.
+`pm/` owns issue **state**; the external tracker (if used) owns issue
+**identity**.
+
+- **The issue id is the external tracker's id, and nothing else.** Create the
+  external issue first; its id is used in the tracker row, capsule dir
+  (`pm/issues/{id}-short-name/`), commit message (`Refs {id}`) and prose. Search
+  before creating.
+- This replaced per-type codes (`FEAT-12`…): codes got reused across issues and
+  apps and duplicated when matched on code instead of id. An external tracker
+  cannot reissue a number. Accepted cost: no offline issue creation; a
+  `status: open` row cannot exist before its external issue.
+- Labels and project are **derived, not chosen** — from the row's `type`, `epic`
+  and app. Create a new label/project only when the user asks.
+- Record the issue URL at the top of `plan.md` (`url:`); don't write the id twice.
+- The external description stands alone (problem, change, verification, what's
+  left). Point at `plan.md` rather than duplicating it.
+- Update the external issue in the same pass as the row; close it when the row
+  archives.
+- **History keeps its own names.** If the id scheme changes, archived rows,
+  `log.md`, `context/` notes and closed external issues stay as written.
+
+Without an external tracker, `pm/` mints the id: one project-wide sequence,
+never per-type, never reused.
 
 ## Planning Gate
 
-**Scale the plan to the work.** The gate exists so that substantial work is
-agreed before it is built, not so that every change acquires paperwork.
+**Scale the plan to the work.** Substantial work is agreed before it is built;
+not every change acquires paperwork.
 
-- **A contained fix changes nothing a user or caller can observe** — a crash, a
-  bad log line, a build break, a broken developer script. One clear cause,
-  verifiable by a test or a reproduction: it needs a tracker row, and then it
-  can be done. Say what you are about to do, and do it.
-- **If output, status, or stored data changes, it needs a confirmed plan** under
-  `pm/issues/{slug}/` before implementation — as does anything spanning several
-  components or costing more than an hour or so. If you are unsure which side of
-  the line a task is on, it is this one.
-
-  The line is deliberately drawn at *observable change*, not at size or
-  confidence. "One clear cause, small blast radius, I can test it" describes
-  almost every bug fix ever attempted, including the ones that change a status
-  code, a rounding rule, or a default — so a gate built on that phrasing has an
-  escape hatch that is always open.
-- **Confirm declared dependencies are `done`** — open ones in
-  `pm/tracker.yaml`, closed ones in `pm/archive.yaml`. A `dropped` dependency is
-  **not** satisfied.
+- **Contained fix** (no observable change: crash, bad log line, build break,
+  broken script; one clear cause, testable): tracker row, then do it.
+- **Observable change** (output, status, stored data; spans components; > ~1h):
+  confirmed plan under `pm/issues/{slug}/` first. Unsure which side? This one.
+  The line is *observable change*, not size or confidence.
+- **Confirm dependencies are `done`** (open in `tracker.yaml`, closed in
+  `archive.yaml`; `dropped` is not satisfied). A row's status can lag the code —
+  grep for what the dependency was meant to produce before calling it unmet.
 - **Inspect every affected table, constraint, relationship and nearby code path
-  before changing persistence behaviour.** This one does not scale down.
-- The plan defines scope by observable behaviour, affected components, and
-  verification. **A sequence diagram is required only when interactions,
-  integrations, or process ordering are changing** — not for every fix.
-- **The plan's scope is the whole scope.** Nothing outside it gets built and
-  nothing inside it gets silently skipped. If the work has to depart from it,
-  update the plan and re-confirm before continuing.
+  before changing persistence.** Does not scale down.
+- The plan defines scope by observable behaviour, affected components,
+  verification. A sequence diagram is required only when interactions,
+  integrations or ordering change.
+- **The plan's scope is the whole scope.** Nothing outside it gets built, nothing
+  inside it silently skipped. A departure updates the plan and re-confirms.
 
 ## Working Discipline
 
-Each of these is here because it actually went wrong.
+Each rule is here because it went wrong.
 
-**Measure a causal claim before writing it into `context/`, and re-measure one
-you are about to act on.** A mechanism that *would* explain a symptom is not
-evidence that it does. A plausible explanation for a slow test suite once read
-exactly right, had been repeated twice, and was false — and it had already aimed
-the work at the wrong fix while the real lever sat untried. Prefer a number to a
-narrative: a timing, a count, a query, the tool's own source.
+- **Measure a causal claim before writing it into `context/`, and re-measure one
+  you are about to act on.** A plausible mechanism is not evidence. Prefer a
+  number to a narrative.
+- **A delegated diagnosis is a claim until checked.** Reproduce the failures and
+  re-check premises (hostnames, shared causes) against logs and code before
+  accepting or closing on a delegated report. A shared cause masks the outlier.
+- **A rule read off one reference document is a rule about that document.**
+  Check the degenerate case (one group, groups of one) before generalising;
+  express the rule as a property of the data.
+- **A new rule must reproduce the existing worked example** in
+  `context/document-writer-only/examples/` before it may replace or generalise
+  an older one.
+- **An explicit written rule outranks in-the-moment reasoning.** State the
+  tension, propose the change, let the user decide.
+- **A surprising result means check the rule first, the input second.** Reaching
+  for the input explanation first becomes defending a broken rule.
+- **Walk every branch to a terminal state before calling a process model done.**
+  Failure branches included; a branch that stops with no continuation is a
+  modelling bug.
+- **Read current sources before recommending an architecture or API.** A
+  recommendation assembled from memory has already anchored; inspect the
+  installed version.
+- **Preserve behaviour outside the confirmed scope.** No cleanup, renaming or
+  architecture changes bundled into a contained fix.
+- **In a design conversation, recommend in prose.** Reserve structured
+  multiple-choice for a genuine fork. When the user restates their framing a
+  second time, build on it.
+- **Continue through to verification** unless asked only for analysis, planning,
+  review or documentation.
 
-**A rule read off one reference document is a rule about that document.** A
-layout rule confirmed against a reference document held for every example anyone
-had seen, then broke on the first case where its grouping key was degenerate —
-one group, or every group of size one. Before generalising from an example, look
-for that case, and express the rule as a property of the data rather than as a
-list of the instances seen so far.
+## Version Control
 
-**A new rule must reproduce the existing worked example before it may claim to
-replace or generalise an older one.** The examples in
-`context/document-writer-only/examples/` are the regression suite for the
-conventions. Asserting that an existing rule is "a specialisation" of a new
-abstraction is a claim with a cheap test: run the new rule against the worked
-example and check it yields the same output. Skipped once, and the worked
-example would have falsified the claim immediately.
-
-**An explicit written rule outranks in-the-moment reasoning.** When analysis
-points somewhere other than what a `context/` file already says, the written
-rule wins by default: state the tension, propose the change, let the user
-decide. A framework whose rules bend to whoever is holding it produces different
-answers on different days.
-
-**A surprising derivation result means "check the rule" first, "check the input"
-second.** When something yields far less or far more than expected, the first
-hypothesis is that the rule being applied is wrong; the scope of the input is
-the second. Reaching for the input explanation first turns into defending a
-broken rule.
-
-**Walk every branch to a terminal state before calling a process model done.**
-For each path, including every failure branch, ask what the actor does next. A
-branch that stops with no continuation, a decision whose input is never
-produced, or a step that proceeds regardless of a result it depends on are all
-modelling bugs, and all invisible if only the happy path is read.
-
-**Read current sources before recommending an architecture or an API, not
-after.** A recommendation assembled from memory and then checked has already
-anchored. Do not guess a framework's behaviour: inspect the installed version or
-its current documentation.
-
-**Preserve behaviour outside the confirmed scope.** Do not bundle cleanup,
-renaming, or architecture changes into a contained fix.
-
-**In a design conversation, recommend in prose.** Give the recommendation and
-the reasoning as text and let the user react. Reserve structured multiple-choice
-prompts for a genuine fork where work cannot continue. When the user restates
-their framing a second time, build on their version instead of re-deriving it.
-
-**Continue through to verification** unless the user asked only for analysis,
-planning, review, or documentation.
+- **Stage by path, never `git add -A` / `git add .`.** Several issues can sit
+  uncommitted at once; name the files the task touched.
+- **Commit message carries `Refs {id}`** — or says the work has no issue. Enforced by
+  `.githooks/commit-msg`; once per clone: `git config core.hooksPath .githooks`.
+- **Commit and push only when the user asks**; push only when "push" was said.
+- **Record the branching model here, once**: trunk-only (commit straight to `main`, no
+  pull requests) or branch-per-issue. An agent left to guess will branch "to be safe",
+  which on a trunk-only project strands work on the remote. _This project:_
+  trunk-only (every commit so far is straight to `main`; no other branch exists).. The distill pass follows it (`context/distill.md`).
 
 ## Terminology Rule
 
-When a concept has competing informal definitions across sources, **do not
-invent our own.** Adopt the version used by the practitioner standard closest to
-our context — SAP/Signavio for process architecture, since ERP clients are more
-likely to have met that vocabulary — and cite it in the file that owns the
-subject. Terminology defensible to a client beats terminology that is internally
-tidy and unrecognised outside this repo. This project says **"Level"**, not
-"Tier".
+Competing informal definitions: **don't invent our own.** Adopt the practitioner
+standard closest to the context (SAP/Signavio for process architecture), cite it
+in the owning file. This project says **"Level"**, not "Tier".
 
 ## Definition Of Done
 
-1. **Verify.** The narrowest test or reproduction first, then the affected
-   suite, then the formatter. For an artifact: rendered or reloaded and actually
-   inspected, checked against its owning convention file.
-2. **Reconcile** what was built against the plan, where there was one.
-3. **Update durable ownership** — `context/index/map.md` when ownership moved,
-   `context/index/decisions/` plus its index row when something architectural
-   was settled, and the ERD whenever the schema changed — columns, types,
-   constraints, keys, or relationships. Then answer:
-   **what did this teach us, and where does it go?** — an entry appended to
-   `context/gotchas.md`, an update to an existing owner in `context/`, or
-   "nothing". "Nothing" is a valid answer; skipping the question is not.
-4. **Move the row** from `pm/tracker.yaml` to `pm/archive.yaml` as `done` (or
-   `dropped`, with a reason), with a concise summary of what was built and how
-   it was verified.
+1. **Verify** — narrowest test/reproduction, then the affected suite, then the
+   formatter. Artifacts: rendered or reloaded and inspected against its
+   convention file.
+2. **Reconcile** what was built against the plan, where one exists.
+3. **Update durable ownership** — `map.md` when ownership moved,
+   `decisions/` + row when architectural, the ERD when the schema changed;
+   `python3 context/lint.py` when `context/` changed. Then
+   answer: **what did this teach us, and where does it go?** (`gotchas.md` entry,
+   an update to an owner, or "nothing" — valid, but the question is not skippable).
+4. **Move the row** `tracker.yaml` → `archive.yaml` as `done` (or `dropped`, with
+   reason), with a concise build/verify summary.
 5. **Append to `pm/log.md`**, newest first, tagged.
-6. **Delete the capsule** from `pm/issues/`. Git history keeps the plan, found
-   by slug (`git log --all --diff-filter=D -- '*{slug}*'`).
-7. **Point `pm/active.json`** at the next issue, or clear it. Close the external
-   issue, if one exists.
+6. **Delete the capsule** from `pm/issues/` (git keeps the plan; find by slug).
+7. **Point `pm/active.json`** at the next issue or clear it; close the external
+   issue with the same summary.
 
-Steps 1–3 are what "done" means. The rest is bookkeeping, and it takes a minute
-— but skipping straight to step 7 is what makes old work unreconstructable.
-
-Pre-existing failures are reported separately. Never weaken a check, or alter
-real client data, to satisfy verification.
+Steps 1–3 are what "done" means; the rest is bookkeeping, but skipping to 7 is
+what makes old work unreconstructable. Pre-existing failures are reported
+separately. Never weaken a check, or alter real client data, to satisfy
+verification.

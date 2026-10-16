@@ -21,23 +21,47 @@ their keep.
 | Path | What it is |
 |---|---|
 | `CLAUDE.md` | The procedure manual — what to do, and the few rules that must not be missed. |
-| `AGENTS.md` | A pointer to `CLAUDE.md`, for runtimes that look for that filename. Deliberately not a second manual. |
-| `opencode.json` / `.opencode/` | Cross-model setup: loads `CLAUDE.md` as the manual and mirrors the subagents, so a reviewer model starts with project context instead of blind. See `context/guide/cross-model-review.md`. |
+| `QUICKSTART.md` | What to do: start a project from this repo, a first session, a five-minute check, what to report if you are testing it. |
+| `context/shape/` | How each business area *thinks* — intent, reasons, leanings — in the user's own quoted words. Never overrides code. |
+| `context/lint.py` | Consistency checks for the context layer: stale `AGENTS.md`, dangling paths, the decisions index, the learning buffer, uncredited skills. |
+| `THIRD_PARTY.md` | Credits and licences for vendored files, what is deliberately not vendored, and recommended skills |
+| `.claude/settings.json`, `.agents/plugins/repo-guard/`, `.opencode/plugin/` | The guard: one script that denies tool calls breaking the "Never" rules, wired into Claude Code and OpenCode. |
+| `.githooks/` | The commit-message check (`Refs <id>` or "no issue"); turn on with `git config core.hooksPath .githooks`. |
+| `AGENTS.md` | **Generated** from `CLAUDE.md` by `context/sync-manuals.py`, plus an explicit step-by-step operating procedure (`context/manual-opencode.md`) for runtimes that follow pointers less reliably. Never edited by hand. |
+| `opencode.json` / `.opencode/` | Cross-model setup: loads `AGENTS.md` as the manual and mirrors the subagents, so a reviewer model starts with project context instead of blind, plus a `coder` agent that implements one confirmed issue per call. See `context/guide/cross-model-review.md`. |
 | `context/RULES.md` | Session entry point: what to read first, in what order, what deliberately stays out. |
-| `context/general-rules.md` | **Owner of the shared working rules** — sources of truth, work classification, planning gate, working discipline, definition of done. |
+| `context/general-rules.md` | **Owner of the shared working rules** — sources of truth, work classification and the external tracker, planning gate, working discipline, version control, definition of done. |
 | `context/gotchas.md` | The learning buffer. Raw, unverified observations, appended during work. Never read as guidance, never deleted. |
 | `context/distill.md` | The pass that compiles the buffer into the files that own each fact, then empties it. |
 | `context/index/` | `README.md` (the three-file contract), `inventory.md` (generated, grep it), `vocabulary.md` (business term → our names), `map.md` (ownership, prose), `decisions.md` + `decisions/`. |
 | `context/coder-only/` | Implementation conventions. Its README says what to create once a stack is chosen. |
 | `context/document-writer-only/` | Per-artifact conventions: ERD first, then BPMN, class, state, workbook, plus the cross-cutting draw.io guide. |
 | `context/document-writer-only/examples/` | Verified worked examples, and `elements.drawio` — the living shape palette. |
-| `context/guide/` | Component-diagram conventions; the cross-model review workflow. |
+| `context/guide/` | The multi-agent baseline and the guard; component-diagram conventions; the cross-model review workflow; `building-the-layers.md` (how to start a layer). |
 | `context/files/` | Published third-party specs the conventions are distilled from (OMG BPMN, UML). |
 | `input/` | Raw client source material, one folder per intake event. Append-only. |
 | `docs/` | Client deliverables: `workbook.xlsx`, `requests.md`, `fr-nfr.md`, `statuses.md`, `rbac-entities.csv`. |
 | `pm/` | Work state: `tracker.yaml` (open only), `archive.yaml` (closed), `issues/{slug}/` (the capsule of anything open), `log.md`, `todo.md`, `active.json`. |
-| `.claude/agents/` | Specialist subagents for the error-prone artifacts, plus the distill agent. |
-| `.claude/skills/` | Tooling skills (`drawio`, `xlsx`, `doc-coauthoring`). |
+| `.claude/agents/` | Specialist subagents for the error-prone artifacts, plus the distill agent and `coder`. |
+| `.claude/skills/` | Tooling skills (`drawio`; credits and licences in `THIRD_PARTY.md`), and `harvest`, which drafts shape entries from the user's own messages in the transcripts. |
+
+### Shape: the knowledge the code cannot verify
+
+The loop above compiles facts about the system and verifies each against the
+repository. That shuts out what the user says the business **means**, why a
+rule exists, and which way to lean — so it used to live only in chat, and every
+new session had to be told again.
+
+```
+user's own messages  →  harvest skill  →  gotchas.md (type: shape)  →  distill  →  context/shape/{area}.md
+```
+
+Shape travels through the same buffer, but its evidence is the user's quoted,
+dated word rather than the code, and the user approves each draft before it is
+appended. A shape note biases a reading and never overrides code; a conflict is
+raised with the user. Retrieval over raw transcripts was rejected for this:
+fragments cannot tell a settled position from a reversed one. Harvest early —
+transcripts are pruned after 30 days by default.
 
 ## How work actually flows
 

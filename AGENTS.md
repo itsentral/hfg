@@ -6,10 +6,18 @@ Repository ini mengintegrasikan rancangan konsep **Business Analyst (BA)** dan i
 - **Folder `specs/` (Domain BA - Single Source of Truth):**
   Folder ini adalah sumber acuan utama seluruh konsep bisnis, requirement, dan rancangan sebelum dieksekusi ke kode:
   - `specs/docs/fr-nfr.md`: Kebutuhan fungsional (FR) dan non-fungsional (NFR), batasan formula, toleransi, dan logic bisnis.
-  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD).
-  - `specs/ui-mockup/`: Desain antarmuka, tata letak input/tabel, dan prototipe UI yang disepakati dengan stakeholder/klien.
+  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD terintegrasi `erd.drawio`).
+  - `specs/ui-mockup/`: Desain antarmuka dan prototipe UI yang disepakati dengan klien.
   - `specs/pm/`: Pelacakan status per fitur (`tracker.yaml`, `active.json`, capsule issue di `specs/pm/issues/`).
-  - `specs/input/`: Dokumen mentah, notulensi, dan feedback dari klien (append-only / read-only).
+  - `specs/input/`: Dokumen mentah, notulensi, dan workbook dari klien (append-only / read-only).
+
+- **Cakupan Modul di `specs/` Saat Ini:**
+  1. **Modul Laporan Produksi:**
+     - FR-01 s.d. FR-36 di `specs/docs/fr-nfr.md`
+     - Mockup UI: `specs/ui-mockup/beranda.html`, `material.html`, `hpp.html`, `costbook.html`, `rate.html`
+  2. **Modul Product Costing (Update Terkini 2026-10-07):**
+     - FR-37 s.d. FR-49 di `specs/docs/fr-nfr.md` (Master Produk 4 Level, Master Material, Price Reference & Kurs USD, BOM Varian, Flow Process, Man Power Rate, Bahan Pendukung & FOH Rate, General Rate, Simulasi Costing HPP)
+     - Mockup UI lengkap: `specs/ui-mockup/pc-produk.html`, `pc-material.html`, `pc-price-reference.html`, `pc-kurs.html`, `pc-bom.html`, `pc-flow.html`, `pc-man-power-rate.html`, `pc-bpk-foh.html`, `pc-general-rate.html`, `pc-simulasi.html`
 
 ### Prinsip Vibe Coding Bersama AI:
 1. **Spec-Driven Development:** Programmer dan AI **TIDAK BOLEH** mengarang alur bisnis, status transaksi, rumus perhitungan, atau nama field sendiri jika fitur bersangkutan sudah/sedang didefinisikan di dalam `specs/`. Selalu rujuk ke dokumen terkait di `specs/docs/` atau `specs/pm/`.

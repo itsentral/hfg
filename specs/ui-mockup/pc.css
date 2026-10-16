@@ -1,0 +1,94 @@
+/* ============================================================
+   pc.css — tambahan untuk menu Product Costing (memakai styles.css).
+   ============================================================ */
+.pc-layout { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 60px); }
+.pc-side {
+  background: #fff; border-right: 1px solid var(--border); padding: 18px 12px 120px;
+  position: sticky; top: 60px; align-self: start; height: calc(100vh - 60px); overflow-y: auto;
+}
+.pc-side h3 { font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin: 14px 10px 6px; font-weight: 700; }
+.pc-side h3:first-child { margin-top: 0; }
+.pc-side a {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm);
+  color: #334155; text-decoration: none; font-size: 13.5px;
+}
+.pc-side a:hover { background: #f1f5f9; }
+.pc-side a.is-active { background: var(--primary-soft); color: var(--primary); font-weight: 650; }
+.pc-side .pc-no {
+  width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  background: #e2e8f0; color: #475569; font-size: 11.5px; font-weight: 700;
+}
+.pc-side a.is-active .pc-no { background: var(--primary); color: #fff; }
+.pc-main { max-width: 1240px; width: 100%; margin: 0; }
+
+.pc-in { width: 100%; min-width: 70px; }
+.pc-in--num { text-align: right; }
+.pc-in--w { min-width: 300px; }
+.pc-in--m { min-width: 230px; }
+.pc-toolbar select { width: auto; min-width: 200px; }
+.pc-calc { font-variant-numeric: tabular-nums; }
+.pc-calc--strong { font-weight: 700; }
+.pc-sub td { background: #f8fafc; font-weight: 700; }
+.pc-total td { background: #eef6ee; font-weight: 700; color: var(--ok); border-top: 2px solid var(--border-strong); }
+.pc-bottom td { background: #e8f0ff; font-weight: 700; color: var(--primary); }
+.pc-formula { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: #f1f5f9; padding: 8px 12px; border-radius: var(--radius-sm); color: #334155; margin: 8px 0 0; }
+.pc-seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.pc-seg button { border: 0; background: #fff; padding: 7px 14px; cursor: pointer; font: inherit; font-weight: 600; color: #475569; }
+.pc-seg button.on { background: var(--primary); color: #fff; }
+.pc-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.pc-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.pc-kv .meta { background: #f8fafc; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.pc-up { color: var(--ok); font-weight: 650; }
+.pc-down { color: var(--danger); font-weight: 650; }
+.pc-sel-inline { min-width: 180px; }
+
+/* --- Revisi mengikuti konsep Excel (FEAT-01) --- */
+.pc-form { display: grid; gap: 4px; }
+.pc-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-bottom: 8px; }
+.pc-form__row .field__label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+.pc-form__sep { grid-column: 1 / -1; margin: 10px 0 4px; font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); font-weight: 700; border-top: 1px solid var(--border); padding-top: 10px; }
+.pc-in--ro { background: #f1f5f9; color: #64748b; cursor: default; }
+.pc-genhint { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+.pc-genhint--manual { color: #b45309; font-weight: 650; }
+.pc-link { color: var(--primary); text-decoration: none; font-size: 12.5px; font-weight: 600; }
+.pc-link:hover { text-decoration: underline; }
+.tbl tr.is-sel td { background: var(--primary-soft); }
+.pc-bom-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; background: #fff; }
+.pc-bom-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+
+/* Status pill di list */
+.pc-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 650; }
+.pc-pill--on { background: #e6f4ea; color: #137333; }
+.pc-pill--off { background: #f1f5f9; color: #64748b; }
+
+/* Tombol aksi per baris list */
+.pc-actions { white-space: nowrap; }
+.pc-actions .btn-icon { margin-right: 4px; }
+.btn-icon--view { color: var(--primary); }
+.btn-icon--edit { color: #b45309; }
+
+/* Modal Detil Input / View / Edit — terpisah dari list */
+.pc-modal { position: fixed; inset: 0; z-index: 60; }
+.modal__overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, .5); }
+.modal__box {
+  position: relative; margin: 4vh auto; max-width: 720px; width: calc(100% - 32px);
+  background: #fff; border-radius: var(--radius); box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  display: flex; flex-direction: column; max-height: 92vh;
+}
+.modal__box--lg { max-width: 900px; }
+.modal__box--xl { max-width: 1200px; }
+.modal__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.modal__head h2 { margin: 0; font-size: 17px; }
+.modal__x { border: 0; background: transparent; font-size: 18px; cursor: pointer; color: #64748b; line-height: 1; }
+.modal__x:hover { color: #0f172a; }
+.modal__body { padding: 20px 22px; overflow: auto; }
+.modal__body.is-view .pc-in { background: #f8fafc; }
+.modal__foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--border); }
+td.pc-colhot, th.pc-colhot { background: #fff7e6 !important; }
+
+@media (max-width: 720px) { .pc-form__row { grid-template-columns: 1fr; } }
+
+@media (max-width: 900px) {
+  .pc-layout { grid-template-columns: 1fr; }
+  .pc-side { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+}

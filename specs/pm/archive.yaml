@@ -26,4 +26,32 @@
 #
 #   git log --all --diff-filter=D -- '*{slug}*'
 
-issues: []
+issues:
+  - id: FEAT-01
+    title: Revise Product Costing UI mockup (8 menus) to match the Excel concept
+    type: feature
+    slug: pc-mockup-revise-to-concept
+    status: done
+    closed: 2026-10-08
+    source: input/Mockup Lengkap dari Master Product sampai Product Costing.xlsx (user request 2026-10-08)
+    depends_on: []
+    summary: >-
+      Revised the Product Costing mockup (ui-mockup/pc-data.js, pc-pages.js,
+      pc.css) to match the client's Excel concept across all 8 requested menus.
+      Mockup-only (localStorage, no backend, no schema change). (1) Master
+      Produk list + Detil Input with concept attribute fields; (2) Master
+      Material concept detail fields, Berat/Meter kept (Q1, load-bearing for
+      costing); (3) BOM front list per product + Daftar Material detail with Qty
+      per material, variant/Uniq-ID model kept (Q2); (4) Flow Process & CT front
+      list + detail columns reordered to concept; (5)/(6) Price Reference & Rate
+      BP/FOH already matched, verified; (7) General Rate Other Cost element
+      labels made editable and propagated into Simulasi via genLabel (replaced
+      hardcoded OTHER constant with OTHER_KEYS); (8) Simulasi front "Daftar
+      Product Costing" list + per-variant "Detil Isi dari Costing" breakdown
+      shown as information. Verified: HPP (19.733,47 / 20.831,85), Price List
+      (21.756,15 / 22.967,12), Berat per Pcs (8,04 / 8,64) still match the
+      concept images; all 10 pages render with no JS errors via two Node
+      harnesses (string render + full shell init) and headless-Chrome
+      screenshots of produk/material/bom/flow/general/simulasi. map.md updated
+      with the full change note under the Product Costing section; ERD and UC
+      rows unchanged (mockup fields are not confirmed schema columns).

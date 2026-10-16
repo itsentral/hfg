@@ -8,8 +8,9 @@ the buffer, and opens a pull request with the result.
 context/gotchas.md  →  distill pass  →  context/ (compiled truth)
 ```
 
-The runtime definition is `.claude/agents/distill.md`, and it is deliberately
-thin — **this file is the procedure**. Where the two disagree, this one wins.
+The runtime definitions are `.claude/agents/distill.md` and
+`.opencode/agent/distill.md`, and both are deliberately thin — **this file is
+the procedure**. Where they disagree, this one wins.
 
 ## When it runs
 
@@ -17,10 +18,19 @@ thin — **this file is the procedure**. Where the two disagree, this one wins.
 scheduled job — an unattended agent with write access to the repository is a
 thing to adopt deliberately, not by default.
 
+**Nothing surfaces staleness either, and a CI check is not the fix.** The
+project this came from had one, and removed it as misleading: CI skipped
+`**.md`-only pushes to save minutes, and appending to the buffer is a `.md`-only
+change, so the check never ran on the commits that made the buffer stale. It let
+the buffer pass its threshold without ever showing a warning — worse than no
+check, because silence reads as "fine".
+
 So noticing is a reader's job: past roughly a dozen entries, or a month since
 the oldest `date:`, it is worth a pass.
 
 ## It opens a PR, and it does not open an issue
+
+**Delivery follows the branching model** (`context/general-rules.md` → Version Control): where this says PR, a trunk-only project makes one commit instead, only when the user asks.
 
 This pass is **exempt** from the `tracker row ⟺ capsule ⟺ external issue` rule.
 It creates no `pm/` row and no external issue. Promotion is editorial work on
@@ -71,6 +81,16 @@ promote it with the citation corrected and note the correction. Drop only when
 the underlying claim itself fails. Also check whether the wrong citation was
 copied anywhere else, `pm/` included, and say so: a bad reference propagates.
 
+**A `type: shape` entry is verified against the user, not the repository.** An
+intent claim passes if it quotes the user or records their confirmation, with a
+date; a skeleton claim (flow, role, state) passes if its code or doc pointer
+still resolves. Drop it if a later user statement or a decision contradicts it
+— and when promoting a reversal, *replace* the old claim in the shape file
+rather than adding beside it. Check against code only that its pointers still
+resolve; if the code plainly contradicts it, **leave** it and say so in the
+report — that conflict is the user's to settle. An entry with neither a quote
+nor a pointer is an agent's inference, not shape: drop it.
+
 **3. Route each surviving entry to the file that owns the subject.** The `type`
 field is a hint, not the decision:
 
@@ -84,7 +104,8 @@ field is a hint, not the decision:
 | Business term ↔ our name | `context/index/vocabulary.md` |
 | An architectural choice **and its consequence** | a new file under `context/index/decisions/`, plus its row in `decisions.md` |
 | Implementation conventions, once the project has code | `context/coder-only/{the relevant file}.md` |
-| Repository tooling — `.gitignore`, exports, build | `context/coder-only/stack.md`, or `README.md` while there is no code |
+| Repository tooling — `.gitignore`, exports, build, CI | `context/coder-only/stack.md`, or `README.md` while there is no code |
+| Business intent, the reason behind a rule, which way to lean (`type: shape`) | `context/shape/{area}.md`, in the section its format names (`context/shape/README.md`) |
 
 **Choose the section, not just the file.** Section choice follows the
 destination's own headings. Adding a new section inside an existing file is fine
