@@ -33,8 +33,6 @@ class Non_rutin extends Admin_Controller
 	protected $managePermission4 = 'Approval_PR_Department_Finance.Manage';
 	protected $deletePermission4 = 'Approval_PR_Department_Finance.Delete';
 
-	protected $hris;
-
 	public function __construct()
 	{
 		parent::__construct();
@@ -42,8 +40,6 @@ class Non_rutin extends Admin_Controller
 		$this->load->model('non_rutin_model');
 
 		// $this->load->library(array('Mpdf'));
-
-		$this->hris = $this->load->database('hris', true);
 	}
 
 	//===============================================================================================================================
@@ -67,13 +63,14 @@ class Non_rutin extends Admin_Controller
 			->row_array();
 		$user_dept_id = $get_user_dept_id['department_id'] ?? '';
 
-		$this->hris->select('a.id, a.name, b.name as nm_company');
-		$this->hris->from('departments a');
-		$this->hris->join('companies b', 'b.id = a.company_id', 'left');
-		if ($this->auth->user_id() !== '7') {
-			$this->hris->where('a.id', $user_dept_id);
+		$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+		$this->db->from('ms_department a');
+		$this->db->where('a.deleted_by', null);
+		if ($this->auth->user_id() !== '7' && !empty($user_dept_id)) {
+			$this->db->where('a.id', $user_dept_id);
 		}
-		$get_department = $this->hris->get()->result();
+		$get_department = $this->db->get()->result();
+		$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
 
 		$this->db->select('a.*, c.nm_lengkap');
@@ -96,6 +93,7 @@ class Non_rutin extends Admin_Controller
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda,
 			'list_department' => $get_department,
+			'list_employee' => $get_employee,
 			'result' => $get_list_data
 		);
 		history('View data pengajuan pr non-rutin (departemen)');
@@ -203,7 +201,12 @@ class Non_rutin extends Admin_Controller
 			$file_name = NULL;
 			if (!empty($_FILES["upload_spk"]["name"])) {
 
-				$config['upload_path'] = './assets/pr/';
+				$upload_path = './uploads/pr/';
+				if (!is_dir($upload_path)) {
+					mkdir($upload_path, 0777, true);
+					chmod($upload_path, 0777);
+				}
+				$config['upload_path'] = $upload_path;
 				$config['allowed_types'] = '*';
 				$config['remove_spaces'] = TRUE;
 				$config['encrypt_name'] = TRUE;
@@ -344,7 +347,7 @@ class Non_rutin extends Admin_Controller
 									'reason' 		=> $reason,
 									'app_2_by'	=> $this->auth->user_id(),
 									'app_2_date'	=> $dateTime,
-									'keterangan_3' => $data['keterangan_3'],
+									'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 									'app_post' => '3'
 								);
 							else :
@@ -356,7 +359,7 @@ class Non_rutin extends Admin_Controller
 									'reason' 		=> $reason,
 									'app_1_by'	=> $this->auth->user_id(),
 									'app_1_date'	=> $dateTime,
-									'keterangan_3' => $data['keterangan_3'],
+									'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 									'app_post' => '2'
 								);
 							endif;
@@ -370,7 +373,7 @@ class Non_rutin extends Admin_Controller
 								'sts_reject' . $tingkat_approval . '_date' => date('Y-m-d H:i:s'),
 								'no_pr' => null,
 								'sts_app' => 0,
-								'keterangan_3' => $data['keterangan_3'],
+								'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 								'app_post' => null,
 								'rejected' => 1
 							);
@@ -387,7 +390,7 @@ class Non_rutin extends Admin_Controller
 								'sts_reject3' 		=> null,
 								'app_3_by'	=> $this->auth->user_id(),
 								'app_3_date'	=> $dateTime,
-								'keterangan_3' => $data['keterangan_3'],
+								'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 								'app_post' => 4
 							);
 						else :
@@ -400,7 +403,7 @@ class Non_rutin extends Admin_Controller
 								'sts_reject3_date' => date('Y-m-d H:i:s'),
 								'no_pr' => null,
 								'sts_app' => 0,
-								'keterangan_3' => $data['keterangan_3'],
+								'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 								'reject_reason' . $tingkat_approval => $reason,
 								'app_post' => null,
 								'rejected' => 1
@@ -422,6 +425,7 @@ class Non_rutin extends Admin_Controller
 						'harga' 		=> $SUM_HARGA,
 						'document' 		=> $file_name,
 						'coa' 		=> $coa,
+						'status_id' => 1,
 						'tingkat_pr' => $data['tingkat_pr'],
 						'created_by'	=> $this->auth->user_id(),
 						'created_date'	=> $dateTime
@@ -454,7 +458,7 @@ class Non_rutin extends Admin_Controller
 						'sts_reject3_date' => null,
 						'rejected' => null,
 						'app_post' => null,
-						'keterangan_3' 		=> $data['keterangan_3'],
+						'keterangan_3' 		=> isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 						'updated_by'	=> $this->auth->user_id(),
 						'updated_date'	=> $dateTime,
 						'tingkat_pr' => $data['tingkat_pr']
@@ -545,7 +549,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$get_coa_pr_dept = $this->db->get_where('coa_expense', ['jenis_pengeluaran' => 'PR Department'])->row();
-			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? explode(';', $get_coa_pr_dept->coa) : '';
+			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', $get_coa_pr_dept->coa)) : [];
 
 			$title_tingkat = '';
 			if ($tingkat_approval == '1') :
@@ -556,19 +560,23 @@ class Non_rutin extends Admin_Controller
 				$title_tingkat = 'Management';
 			endif;
 
-			// $get_list_coa = $this->db->get(DBACC . '.coa_master')->result_array();
-
-			$this->db->select('*');
+			$this->db->select('no_perkiraan, nama');
 			$this->db->from(DBACC . '.coa_master');
-			$this->db->where_in('no_perkiraan', $coa_pr_dept);
+			if (!empty($coa_pr_dept)) {
+				$this->db->where_in('no_perkiraan', $coa_pr_dept);
+			} else {
+				$this->db->where('level', '5');
+			}
+			$this->db->order_by('no_perkiraan', 'asc');
 			$get_list_coa = $this->db->get()->result_array();
 
 			// $get_departement = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 
-			$this->hris->select('a.id, a.name, b.name as nm_company');
-			$this->hris->from(HRIS . '.departments a');
-			$this->hris->join(HRIS . '.companies b', 'b.id = a.company_id', 'left');
-			$get_department = $this->hris->get()->result();
+			$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+			$this->db->from('ms_department a');
+			$this->db->where('a.deleted_by', null);
+			$get_department = $this->db->get()->result();
+			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
 			$data = array(
 				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
@@ -580,6 +588,7 @@ class Non_rutin extends Admin_Controller
 				'approve'		=> $approve,
 				'id'			=> $id,
 				'list_departement' => $get_department,
+				'list_employee' => $get_employee,
 				'tingkat_approval'			=> $tingkat_approval,
 				'list_coa' => $get_list_coa
 			);
@@ -667,7 +676,12 @@ class Non_rutin extends Admin_Controller
 			$file_name = NULL;
 			if (!empty($_FILES["upload_spk"]["name"])) {
 
-				$config['upload_path'] = './assets/pr/';
+				$upload_path = './uploads/pr/';
+				if (!is_dir($upload_path)) {
+					mkdir($upload_path, 0777, true);
+					chmod($upload_path, 0777);
+				}
+				$config['upload_path'] = $upload_path;
 				$config['allowed_types'] = '*';
 				$config['remove_spaces'] = TRUE;
 				$config['encrypt_name'] = TRUE;
@@ -788,10 +802,10 @@ class Non_rutin extends Admin_Controller
 						'sts_reject2' 		=> null,
 						'app_1_by'	=> $this->auth->user_id(),
 						'app_1_date'	=> $dateTime,
-						'keterangan_1' => $data['keterangan_3'],
+						'keterangan_1' => isset($data['keterangan_1']) ? $data['keterangan_1'] : (isset($data['keterangan_3']) ? $data['keterangan_3'] : null),
 						'app_2_by'	=> $this->auth->user_id(),
 						'app_2_date'	=> $dateTime,
-						'keterangan_2' => $data['keterangan_3'],
+						'keterangan_2' => isset($data['keterangan_2']) ? $data['keterangan_2'] : (isset($data['keterangan_3']) ? $data['keterangan_3'] : null),
 						'app_post' => 2
 					);
 				else :
@@ -804,7 +818,7 @@ class Non_rutin extends Admin_Controller
 					// 	'sts_reject3_date' => date('Y-m-d H:i:s'),
 					// 	'no_pr' => null,
 					// 	'sts_app' => 0,
-					// 	'keterangan_3' => $data['keterangan_3'],
+					// 	'keterangan_3' => isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 					// 	'reject_reason' . $tingkat_approval => $reason,
 					// 	'app_post' => null,
 					// 	'rejected' => 1
@@ -874,7 +888,7 @@ class Non_rutin extends Admin_Controller
 						'sts_reject3_date' => null,
 						'rejected' => null,
 						'app_post' => null,
-						'keterangan_3' 		=> $data['keterangan_3'],
+						'keterangan_3' 		=> isset($data['keterangan_3']) ? $data['keterangan_3'] : null,
 						'updated_by'	=> $this->auth->user_id(),
 						'updated_date'	=> $dateTime,
 						'tingkat_pr' => $data['tingkat_pr']
@@ -965,7 +979,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$get_coa_pr_dept = $this->db->get_where('coa_expense', ['jenis_pengeluaran' => 'PR Department'])->row();
-			$coa_pr_dept = explode(';', $get_coa_pr_dept->coa);
+			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', $get_coa_pr_dept->coa)) : [];
 
 			$title_tingkat = 'Finance';
 			// if ($tingkat_approval == '1') :
@@ -976,19 +990,23 @@ class Non_rutin extends Admin_Controller
 			// 	$title_tingkat = 'Management';
 			// endif;
 
-			// $get_list_coa = $this->db->get(DBACC . '.coa_master')->result_array();
-
-			$this->db->select('*');
+			$this->db->select('no_perkiraan, nama');
 			$this->db->from(DBACC . '.coa_master');
-			$this->db->where_in('no_perkiraan', $coa_pr_dept);
+			if (!empty($coa_pr_dept)) {
+				$this->db->where_in('no_perkiraan', $coa_pr_dept);
+			} else {
+				$this->db->where('level', '5');
+			}
+			$this->db->order_by('no_perkiraan', 'asc');
 			$get_list_coa = $this->db->get()->result_array();
 
 			// $get_departement = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 
-			$this->hris->select('a.id, a.name, b.name as nm_company');
-			$this->hris->from(HRIS . '.departments a');
-			$this->hris->join(HRIS . '.companies b', 'b.id = a.company_id', 'left');
-			$get_department = $this->hris->get()->result();
+			$this->db->select('a.id, a.nama as nm_dept, a.nama as name');
+			$this->db->from('ms_department a');
+			$this->db->where('a.deleted_by', null);
+			$get_department = $this->db->get()->result();
+			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
 			$data = array(
 				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
@@ -1000,6 +1018,7 @@ class Non_rutin extends Admin_Controller
 				'approve'		=> $approve,
 				'id'			=> $id,
 				'list_departement' => $get_department,
+				'list_employee' => $get_employee,
 				'tingkat_approval'			=> $tingkat_approval,
 				'list_coa' => $get_list_coa
 			);
@@ -1018,33 +1037,25 @@ class Non_rutin extends Admin_Controller
 		$d_Header = "";
 		$d_Header .= "<tr class='header_" . $id . "'>";
 		$d_Header .= "<td align='center'>" . $id . "</td>";
-		$d_Header .= "<td align='left'><textarea name='detail[" . $id . "][nm_barang]' class='form-control input-md'></textarea></td>";
+		$d_Header .= "<td align='left'><textarea name='detail[" . $id . "][nm_barang]' class='form-control input-md' rows='2'></textarea></td>";
 		$d_Header .= "<td align='left'>";
-		$d_Header .= "<textarea class='form-control input-nm' name='detail[" . $id . "][spec]'></textarea>";
+		$d_Header .= "<textarea class='form-control input-md' name='detail[" . $id . "][spec]' rows='2'></textarea>";
 		$d_Header .= "</td>";
 		$d_Header .= "<td align='left'><input type='text' id='qty_" . $id . "' name='detail[" . $id . "][qty]' class='form-control input-md text-center autoNumeric2 sum_tot'></td>";
-		$d_Header .= "<td align='left'><select name='detail[" . $id . "][satuan]' class='form-control chosen_select wajib' required>";
-		$d_Header .= "<option value='0'>Pilih</option>";
+		$d_Header .= "<td align='left'><select name='detail[" . $id . "][satuan]' class='form-control form-select wajib satuan_" . $id . "' required>";
+		$d_Header .= "<option value=''>Pilih</option>";
 		foreach ($satuan as $key => $value) {
 			$d_Header .= "<option value='" . $value['id'] . "'>" . $value['code'] . "</option>";
 		}
 		$d_Header .= "	</select></td>";
 		$d_Header .= "<td align='left'><input type='text' id='harga_" . $id . "' name='detail[" . $id . "][harga]' class='form-control input-md text-right maskM sum_tot' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
-		$d_Header .= "<td align='left'><input type='text' id='total_harga_" . $id . "' name='detail[" . $id . "][total_harga]' class='form-control input-md text-right maskM jumlah_all' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
-		$d_Header .= "<td align='left'><input type='text' name='detail[" . $id . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly></td>";
-		$d_Header .= "<td align='left'><textarea class='form-control input-md' name='detail[" . $id . "][keterangan]'></textarea></td>";
+		$d_Header .= "<td align='left'><input type='text' id='total_harga_" . $id . "' name='detail[" . $id . "][total_harga]' class='form-control input-md text-right jumlah_all' readonly></td>";
+		$d_Header .= "<td align='left'><input type='text' name='detail[" . $id . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly style='padding: 6px 4px; font-size: 13px;'></td>";
+		$d_Header .= "<td align='left'><textarea class='form-control input-md' name='detail[" . $id . "][keterangan]' rows='2'></textarea></td>";
 		$d_Header .= "<td align='center'>";
-		$d_Header .= "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-close'></i></button>";
+		$d_Header .= "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash'></i></button>";
 		$d_Header .= "</td>";
 		$d_Header .= "</tr>";
-
-
-		//add part
-		$d_Header .= "<tr id='add_" . $id . "'>";
-		$d_Header .= "<td align='center'></td>";
-		$d_Header .= "<td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Barang'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Barang</button></td>";
-		$d_Header .= "<td align='center' colspan='7'></td>";
-		$d_Header .= "</tr><script>$('.autoNumeric2').autoNumeric('init', {mDec: '2', aPad: false});</script>";
 
 		echo json_encode(array(
 			'header'			=> $d_Header,
@@ -1352,11 +1363,12 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$close = '';
-			if ($ENABLE_DELETE) {
-				$close = '<button type="button" class="btn btn-sm btn-danger close_pr_modal" data-no_pengajuan="' . $item->no_pengajuan . '" title="Close PR"><i class="fa fa-close"></i></button>';
+			if ($ENABLE_DELETE && empty($item->close_pr)) {
+				$close = '<button type="button" class="btn btn-sm btn-success close_pr_modal" data-no_pengajuan="' . $item->no_pengajuan . '" title="Close PR"><i class="fa fa-check"></i></button>';
 			}
 
-			$hasil .= '<td>' . $view . ' ' . $edit . ' ' . $approve . ' ' . $cancel . ' ' . $print . ' ' . $close . '</td>';
+			$btns = array_filter([$view, $edit, $approve, $cancel, $print, $close]);
+			$hasil .= '<td class="text-center"><div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $btns) . '</div></td>';
 
 			$hasil .= '</tr>';
 
@@ -1383,7 +1395,7 @@ class Non_rutin extends Admin_Controller
 	public function close_pr()
 	{
 		$no_pengajuan = $this->input->post('no_pengajuan');
-		$close_pr_reason = $this->input->post('close_pr_reason');
+		$close_pr_reason = $this->input->post('close_pr_reason') ?: $this->input->post('reject_reason');
 
 		$this->db->trans_start();
 
@@ -1400,7 +1412,8 @@ class Non_rutin extends Admin_Controller
 		}
 
 		echo json_encode([
-			'status' => $valid
+			'status' => $valid,
+			'msg' => ($valid == 1) ? 'PR successfully closed !' : 'Failed to close PR !'
 		]);
 	}
 
@@ -1421,13 +1434,18 @@ class Non_rutin extends Admin_Controller
 
 	public function get_data_non_rutin()
 	{
-		$draw = $this->input->get('draw', true);
-		$length = $this->input->get('length', true);
-		$start = $this->input->get('start', true);
-		$search = $this->input->get('search', true);
-		$order = $this->input->get('order', true);
-		$columns = $this->input->get('columns', true);
+		$draw = $this->input->get_post('draw', true);
+		$length = $this->input->get_post('length', true);
+		$start = $this->input->get_post('start', true);
+		$search = $this->input->get_post('search', true);
+		$order = $this->input->get_post('order', true);
+		$columns = $this->input->get_post('columns', true);
 
 		$this->non_rutin_model->get_data_non_rutin($draw, $length, $start, $search, $order, $columns);
+	}
+
+	public function data_side_pengajuan_pr()
+	{
+		$this->get_data_non_rutin();
 	}
 }

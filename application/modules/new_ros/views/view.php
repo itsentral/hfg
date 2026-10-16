@@ -1,6 +1,6 @@
 <?php
 $h = $header;
-$FORWARDING_RATE = 200;
+$FORWARDING_RATE = isset($forwarding_rate) ? $forwarding_rate : 200;
 $is_lokal = (isset($loi) && strtolower($loi) === 'lokal');
 
 // Hitung total others
@@ -54,10 +54,9 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         background-color: #f0f8ff;
     }
     <?php if ($is_lokal) : ?>
-    /* PO Lokal: sembunyikan kolom biaya (BM, LS, Forwarding, Insurance, Others) di tabel PO Data */
+    /* PO Lokal: sembunyikan kolom biaya impor (BM, LS, Insurance, Others) di tabel PO Data */
     .col-bm,
     .col-ls,
-    .col-forwarding,
     .col-insurance,
     .col-others {
         display: none;

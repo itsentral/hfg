@@ -4,312 +4,150 @@ $ENABLE_MANAGE  = has_permission('Incoming_Stok.Manage');
 $ENABLE_VIEW    = has_permission('Incoming_Stok.View');
 $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
 ?>
-<style type="text/css">
-	thead input {
-		width: 100%;
-	}
-</style>
-<div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
 
-<form action="#" method="POST" id="form_proses" enctype="multipart/form-data">
-	<div class="box">
-		<div class="box-header">
-			<?php if ($ENABLE_ADD) { ?>
-				<a class="btn btn-primary btn-sm" style='float:right;' href="<?= base_url('incoming_stok/request_stok') ?>" title="Request">Add Incoming</a>
-			<?php } ?>
-			<!-- <br> -->
-			<div class="form-group row" hidden>
-				<div class="col-md-9"></div>
-				<div class="col-md-3">
-					<select name='sales_order' id='sales_order' class='form-control input-sm chosen-select'>
-						<option value='0'>All Sales Order</option>
-					</select>
-				</div>
-			</div>
-		</div>
-		<!-- /.box-header -->
-		<div class="box-body">
-			<table id="example2" class="table table-bordered table-striped" width='100%'>
-				<thead>
-					<tr>
-						<th class='text-center'>#</th>
-						<th class='text-center'>No Trans</th>
-						<th class='text-center'>Tanggal</th>
-						<th class='text-left'>Nomor PO</th>
-						<th class="text-left">Nomor PR</th>
-						<th class='text-left'>Warehouse</th>
-						<th class='text-center'>Qty</th>
-						<th class='text-left'>PIC</th>
-						<th class='text-center'>By</th>
-						<th class='text-center'>Dated</th>
-						<th class='text-center no-sort'>Option</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-		</div>
-		<!-- /.box-body -->
-	</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-7 col-12">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+                                <i class="fa fa-dolly fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title fw-bold text-dark mb-0">Incoming Stok Gudang</h5>
+                                <small class="text-muted">Kelola riwayat penerimaan barang stok dari PO atau kasbon ke gudang</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-12 text-md-end">
+                        <?php if ($ENABLE_ADD) : ?>
+                            <a class="btn btn-primary shadow-sm" href="<?= base_url('incoming_stok/request_stok') ?>">
+                                <i class="fa fa-plus me-1"></i> Tambah Incoming
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
 
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table id="example2" class="table table-hover table-striped align-middle border rounded" style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" width="4%">#</th>
+                                <th class="text-center" width="12%">No Trans</th>
+                                <th class="text-center" width="10%">Tanggal</th>
+                                <th class="text-start" width="13%">Nomor PO</th>
+                                <th class="text-start" width="12%">Nomor PR</th>
+                                <th class="text-start">Warehouse</th>
+                                <th class="text-center" width="8%">Qty</th>
+                                <th class="text-start" width="10%">PIC</th>
+                                <th class="text-start" width="9%">User</th>
+                                <th class="text-center" width="11%">Waktu Input</th>
+                                <th class="text-center no-sort" width="9%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-	<!-- modal -->
-	<div class="modal fade" id="ModalView2" style='overflow-y: auto;'>
-		<div class="modal-dialog" style='width:90%; '>
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="head_title2"></h4>
-				</div>
-				<div class="modal-body" id="view2">
-				</div>
-				<div class="modal-footer">
-					<!--<button type="button" class="btn btn-primary">Save</button>-->
-					<button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- modal -->
-</form>
+<!-- Modal View Detail -->
+<div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow border-0">
+            <div class="modal-header bg-light border-bottom py-3">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="head_title2">
+                    <i class="fa fa-file-invoice text-primary"></i> Detail Transaksi Incoming
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="view2">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2 mb-0">Memuat rincian transaksi...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-light py-2">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
-
-<!-- page script -->
 <script type="text/javascript">
-	$(document).ready(function() {
-		var sales_order = $("#sales_order").val();
-		DataTables(sales_order);
-		DataTables2();
+    $(document).ready(function() {
+        DataTables2();
 
-		$(document).on('change', '#sales_order', function() {
-			var sales_order = $("#sales_order").val();
-			DataTables(sales_order);
-		});
-	});
+        // Handler tombol Detail Modal
+        $(document).on('click', '.detail', function(e) {
+            e.preventDefault();
+            var kode_trans = $(this).data('kode_trans');
+            var title = 'DETAIL INCOMING BARANG STOK';
 
-	$(document).on('keyup', '.changeQty', function(e) {
-		e.preventDefault();
+            $("#head_title2").html('<i class="fa fa-dolly text-primary me-2"></i><b>' + title + '</b>: <span class="text-primary">' + kode_trans + '</span>');
+            $("#view2").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Memuat rincian transaksi...</p></div>');
 
-		let id = $(this).data('id')
-		let qty_sisa = getNum($('#sisa_' + id).text().split(",").join(""))
-		let qty = getNum($(this).val().split(",").join(""))
+            var modalEl = document.getElementById('ModalView2');
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                var modalObj = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modalObj.show();
+            } else {
+                $('#ModalView2').modal('show');
+            }
 
-		if (qty > qty_sisa) {
-			$(this).val(qty_sisa)
-		}
+            $.ajax({
+                type: 'POST',
+                url: siteurl + active_controller + 'detail/' + encodeURIComponent(kode_trans),
+                success: function(data) {
+                    $("#view2").html(data);
+                },
+                error: function() {
+                    $("#view2").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Gagal mengambil data detail incoming dari server.</div>');
+                }
+            });
+        });
+    });
 
-	});
+    function DataTables2() {
+        if ($.fn.DataTable.isDataTable('#example2')) {
+            $('#example2').DataTable().destroy();
+        }
 
-	$(document).on('click', '.request', function(e) {
-		e.preventDefault();
-
-		let id = $(this).data('id')
-
-		swal({
-				title: "Are you sure?",
-				text: "Request to Subgudang!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-danger",
-				confirmButtonText: "Yes, Process it!",
-				cancelButtonText: "No, cancel process!",
-				closeOnConfirm: false,
-				closeOnCancel: false
-			},
-			function(isConfirm) {
-				if (isConfirm) {
-					// loading_spinner();
-					var baseurl = base_url + active_controller + '/request_to_subgudang';
-					$.ajax({
-						url: baseurl,
-						type: "POST",
-						data: {
-							id: id
-						},
-						cache: false,
-						dataType: 'json',
-						success: function(data) {
-							window.open(base_url + active_controller + '/print_spk/' + data.kode_det, '_blank');
-							window.location.href = base_url + active_controller
-						},
-						error: function() {
-							swal({
-								title: "Error Message !",
-								text: 'An Error Occured During Process. Please try again..',
-								type: "warning",
-								timer: 3000
-							});
-						}
-					});
-				} else {
-					swal("Cancelled", "Data can be process again :)", "error");
-					return false;
-				}
-			});
-	});
-
-	$(document).on('click', '.detail', function(e) {
-		e.preventDefault();
-
-		var kode_trans = $(this).data('kode_trans');
-		var title = 'DETAIL INCOMING';
-
-		$("#head_title2").html("<b>" + title + "</b>");
-		$.ajax({
-			type: 'POST',
-			url: base_url + active_controller + '/detail/' + kode_trans,
-			success: function(data) {
-				$("#ModalView2").modal();
-				$("#view2").html(data);
-			},
-			error: function() {
-				swal({
-					title: "Error Message !",
-					text: 'Connection Timed Out ...',
-					type: "warning",
-					timer: 5000
-				});
-			}
-		});
-	});
-
-	$(document).on('click', '#edit_material', function() {
-
-		swal({
-				title: "Are you sure?",
-				text: "You will not be able to process again this data!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-danger",
-				confirmButtonText: "Yes, Process it!",
-				cancelButtonText: "No, cancel process!",
-				closeOnConfirm: false,
-				closeOnCancel: false
-			},
-			function(isConfirm) {
-				if (isConfirm) {
-					var formData = new FormData($('#form_proses')[0]);
-					$.ajax({
-						url: base_url + active_controller + '/modal_request_edit',
-						type: "POST",
-						data: formData,
-						cache: false,
-						dataType: 'json',
-						processData: false,
-						contentType: false,
-						success: function(data) {
-							if (data.status == 1) {
-								swal({
-									title: "Save Success!",
-									text: data.pesan,
-									type: "success",
-									timer: 7000
-								});
-
-								window.location.href = base_url + active_controller
-							} else {
-								swal({
-									title: "Save Failed!",
-									text: data.pesan,
-									type: "warning",
-									timer: 7000
-								});
-							}
-						},
-						error: function() {
-							swal({
-								title: "Error Message !",
-								text: 'An Error Occured During Process. Please try again..',
-								type: "warning",
-								timer: 7000
-							});
-						}
-					});
-				} else {
-					swal("Cancelled", "Data can be process again :)", "error");
-					return false;
-				}
-			});
-	});
-
-	function DataTables(sales_order = null) {
-		var dataTable = $('#example1').DataTable({
-			"processing": true,
-			"serverSide": true,
-			"stateSave": true,
-			"autoWidth": false,
-			"destroy": true,
-			"searching": true,
-			"responsive": true,
-			"aaSorting": [
-				[1, "desc"]
-			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
-			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
-				[10, 20, 50, 100, 150],
-				[10, 20, 50, 100, 150]
-			],
-			"ajax": {
-				url: siteurl + active_controller + 'data_side_spk_material',
-				type: "post",
-				data: function(d) {
-					d.sales_order = sales_order
-				},
-				cache: false,
-				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-					$("#my-grid_processing").css("display", "none");
-				}
-			}
-		});
-	}
-
-	function DataTables2() {
-		var dataTable = $('#example2').DataTable({
-			"processing": true,
-			"serverSide": true,
-			"stateSave": true,
-			"autoWidth": false,
-			"destroy": true,
-			"searching": true,
-			"responsive": true,
-			"aaSorting": [
-				[1, "desc"]
-			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
-			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
-				[10, 20, 50, 100, 150],
-				[10, 20, 50, 100, 150]
-			],
-			"ajax": {
-				url: siteurl + active_controller + 'data_side_request_material',
-				type: "post",
-				// data: function(d){
-				// 	d.sales_order = sales_order
-				// },
-				cache: false,
-				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-					$("#my-grid_processing").css("display", "none");
-				}
-			}
-		});
-	}
+        $('#example2').DataTable({
+            processing: true,
+            serverSide: true,
+            stateSave: true,
+            autoWidth: false,
+            responsive: true,
+            order: [[1, "desc"]],
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }],
+            ajax: {
+                url: siteurl + active_controller + 'data_side_request_material',
+                type: "POST",
+                cache: false,
+                error: function() {
+                    $("#example2 tbody").html('<tr><td colspan="11" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Tidak ada data incoming ditemukan</td></tr>');
+                }
+            },
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Cari no transaksi / no PO / PR...",
+                lengthMenu: "_MENU_ data per halaman",
+                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 data",
+                emptyTable: "Belum ada riwayat transaksi incoming",
+                zeroRecords: "Tidak ada data yang cocok",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data...'
+            }
+        });
+    }
 </script>

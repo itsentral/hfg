@@ -1,178 +1,205 @@
-<div class="box box-primary">
-	<div class="box-body">
-		<form id="data-form" method="post" autocomplete="off"><br>
-			<input type="hidden" name='so_number' id='so_number' value='<?= $header[0]['so_number']; ?>'>
-			<div class="form-group row">
-				<div class="col-md-12">
-					<table class='table' width='70%'>
-						<tr>
-							<td width='20%'>No Request / SO</td>
-							<td width='1%'>:</td>
-							<td width='29%'><?= $header[0]['so_number']; ?></td>
-							<td width='20%'></td>
-							<td width='1%'></td>
-							<td width='29%'></td>
-						</tr>
-						<tr>
-							<td>No. PR</td>
-							<td>:</td>
-							<td><?= $header[0]['no_pr']; ?></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td>Customer</td>
-							<td>:</td>
-							<td><?= $header[0]['nm_customer']; ?></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-						<?php
-						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
-						?>
-						<tr>
-							<td>Tgl Dibutuhkan</td>
-							<td>:</td>
-							<td><?= $tgl_dibutuhkan; ?></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td>Tingkat PR</td>
-							<td>:</td>
-							<td><?= ($header[0]['tingkat_pr'] == 2) ? 'Urgent' : 'Normal' ?></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-				</div>
-				<div class="col-md-6">
-					<label for="">Nilai Budget</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($header[0]['nilai_budget']) ?>" readonly>
-				</div>
-				<div class="col-md-6">
-					<label for="">Nilai Pengajuan</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($header[0]['nilai_pengajuan']) ?>" readonly>
-				</div>
-				<br><br>
-				<div class="col-md-12">
-					<br><br>
-					<table class='table table-striped table-bordered table-hover table-condensed' width='100%'>
-						<thead class='thead'>
-							<tr class='bg-blue'>
-								<th class='text-center th'>#</th>
-								<th class='text-center th'>Material Name</th>
-								<th class='text-center th'>Min Stock</th>
-								<th class='text-center th'>Max Stock</th>
-								<th class='text-center th'>Min Order</th>
-								<th class='text-center th'>Qty PR (Pack)</th>
-								<th class="text-center th">Unit Pack</th>
-								<th class='text-center th'>Qty</th>
-								<th class="text-center th">Unit Measurement</th>
-								<th class="text-center th">Price Ref</th>
-								<th class="text-center th">Total Price</th>
-								<th class='text-center th'>#</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach ($detail as $key => $value) {
-								$key++;
-								$nm_material 	= (!empty($GET_LEVEL4[$value['id_material']]['nama'])) ? $GET_LEVEL4[$value['id_material']]['nama'] : '';
-								$stock_free 	= $value['stock_free'];
-								$use_stock 		= $value['use_stock'];
-								$sisa_free 		= $stock_free - $use_stock;
-								$propose 		= $value['propose_purchase'];
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-7 col-12">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+                                <i class="fa fa-file-text-o fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title fw-bold text-dark mb-0">Detail Purchase Request (PR) Stok</h5>
+                                <small class="text-muted">No. PR: <span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars($header[0]['no_pr'] ?? '-') ?></span> &bull; No. SO: <?= htmlspecialchars($header[0]['so_number'] ?? '-') ?></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-12 text-md-end d-flex gap-2 justify-content-md-end">
+                        <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
+                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                        </a>
+                        <a href="<?= base_url('request_pr_stok/PrintH2/' . ($header[0]['so_number'] ?? '')) ?>" class="btn btn-success shadow-sm" target="_blank">
+                            <i class="fa fa-print me-1"></i> Cetak PR
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-								$this->db->select('a.*, b.code as satuan, c.code as satuan_pack');
-								$this->db->from('accessories a');
-								$this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
-								$this->db->join('ms_satuan c', 'c.id = a.id_unit_gudang', 'left');
-								$this->db->where('a.id', $value['id_material']);
-								$get_stock = $this->db->get()->row();
+            <div class="card-body">
+                <?php if (!empty($header[0]) && (($header[0]['sts_reject1'] == '1' || $header[0]['sts_reject2'] == '1' || $header[0]['sts_reject3'] == '1') && $header[0]['rejected'] == 1)) : ?>
+                    <div class="alert alert-danger border-0 shadow-sm d-flex align-items-start gap-3 mb-4" role="alert">
+                        <i class="fa fa-ban fs-3 text-danger mt-1"></i>
+                        <div>
+                            <h6 class="alert-heading fw-bold mb-1">Pengajuan PR Ditolak!</h6>
+                            <p class="mb-0 text-dark">
+                                <?= !empty($header[0]['reject_reason3']) ? htmlspecialchars($header[0]['reject_reason3']) : (!empty($header[0]['reject_reason2']) ? htmlspecialchars($header[0]['reject_reason2']) : (!empty($header[0]['reject_reason1']) ? htmlspecialchars($header[0]['reject_reason1']) : 'Pengajuan PR ditolak oleh pihak Management / Approval.')); ?>
+                            </p>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
-								$konversi = ($get_stock->konversi > 0) ? $get_stock->konversi : 1;
+                <!-- PR Information Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-7 col-12">
+                        <div class="table-responsive rounded-3 border">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <th class="bg-light text-muted py-2 px-3" style="width: 35%;">No. Request / SO</th>
+                                        <td class="py-2 px-3 fw-bold text-dark"><?= htmlspecialchars($header[0]['so_number'] ?? '-') ?></td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <th class="bg-light text-muted py-2 px-3">No. Dokumen PR</th>
+                                        <td class="py-2 px-3 fw-bold text-danger"><?= htmlspecialchars($header[0]['no_pr'] ?? '-') ?></td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <th class="bg-light text-muted py-2 px-3">Customer / Keperluan</th>
+                                        <td class="py-2 px-3"><?= htmlspecialchars($header[0]['nm_customer'] ?? 'Pengisian Stok Internal') ?></td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <th class="bg-light text-muted py-2 px-3">Tgl Dibutuhkan</th>
+                                        <td class="py-2 px-3"><?= !empty($header[0]['tgl_dibutuhkan']) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-' ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light text-muted py-2 px-3">Tingkat Urgensi</th>
+                                        <td class="py-2 px-3">
+                                            <?php if (($header[0]['tingkat_pr'] ?? 1) == 2) : ?>
+                                                <span class="badge bg-danger">Urgent</span>
+                                            <?php else : ?>
+                                                <span class="badge bg-info text-dark">Normal</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
+                    <div class="col-md-5 col-12">
+                        <div class="d-flex flex-column gap-3">
+                            <div class="card border-0 bg-info bg-opacity-10 rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small fw-bold text-uppercase">Nilai Budget</div>
+                                        <div class="fs-4 fw-bold text-info mt-1">
+                                            Rp <?= number_format($header[0]['nilai_budget'] ?? 0) ?>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-white bg-opacity-75 rounded-circle text-info">
+                                        <i class="fa fa-money fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
 
-								echo "<tr>";
-								echo "<td class='text-center'>" . $key . "</td>";
-								echo "	<td class='text-left'>" . $value['stock_name'] . " - <b>(" . $value['no_coa'] . " - " . strtoupper($value['nm_coa']) . ")</b>
-										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
-										</td>";
-								echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-								echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
-								echo "<td class='text-right min_order'>" . number_format($get_stock->min_order, 2) . "</td>";
-								echo "<td class='text-right'>" . number_format($propose / $konversi, 2) . "</td>";
-								echo "<td class='text-center'>" . strtoupper($get_stock->satuan_pack) . "</td>";
-								echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
-								echo "<td class='text-center'>" . strtoupper($get_stock->satuan) . "</td>";
-								echo '<td class="text-right">' . number_format($value['price_ref'], 2) . '</td>';
-								echo '<td class="text-right">' . number_format(($value['price_ref'] * $propose), 2) . '</td>';
-								if ($value['status_app'] == 'N') {
-									echo "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";
-								}
-								if ($value['status_app'] == 'Y') {
-									echo "<td class='text-center'><span class='badge bg-green text-bold'>Approved</span></td>";
-								}
-								if ($value['status_app'] == 'D') {
-									echo "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
-								}
-								echo "</tr>";
-							}
-							?>
-						</tbody>
-					</table>
-				</div>
-			</div>
+                            <div class="card border-0 bg-success bg-opacity-10 rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted small fw-bold text-uppercase">Nilai Total Pengajuan</div>
+                                        <div class="fs-4 fw-bold text-success mt-1">
+                                            Rp <?= number_format($header[0]['nilai_pengajuan'] ?? 0) ?>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-white bg-opacity-75 rounded-circle text-success">
+                                        <i class="fa fa-calculator fs-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-			<div class="form-group row">
-				<div class="col-md-12">
-					<!-- <button type="button" class="btn btn-primary" name="save" id="save">Process</button> -->
-					<button type="button" class="btn btn-danger" style='margin-left:5px;' name="back" id="back">Back</button>
-				</div>
-			</div>
-		</form>
-	</div>
+                <!-- Detail Table -->
+                <h6 class="fw-bold text-dark mb-3"><i class="fa fa-list text-primary me-1"></i> Rincian Barang Permintaan (PR)</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-striped border-top mb-0" width="100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 40px;">#</th>
+                                <th class="text-start">Nama Barang & No. Akun COA</th>
+                                <th class="text-end" style="width: 90px;">Min Stock</th>
+                                <th class="text-end" style="width: 90px;">Max Stock</th>
+                                <th class="text-end" style="width: 90px;">Min Order</th>
+                                <th class="text-end" style="width: 110px;">Qty PR (Pack)</th>
+                                <th class="text-center" style="width: 80px;">Satuan</th>
+                                <th class="text-end" style="width: 100px;">Qty Total</th>
+                                <th class="text-center" style="width: 80px;">Unit</th>
+                                <th class="text-end" style="width: 110px;">Harga Acuan</th>
+                                <th class="text-end" style="width: 120px;">Total Estimasi</th>
+                                <th class="text-center" style="width: 120px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $total_all_item = 0;
+                            if (!empty($detail)) {
+                                foreach ($detail as $key => $value) {
+                                    $key++;
+                                    $propose = $value['propose_purchase'] ?? 0;
+
+                                    $this->db->select('a.*, b.code as satuan, c.code as satuan_pack');
+                                    $this->db->from('accessories a');
+                                    $this->db->join('ms_satuan b', 'b.id = a.id_unit', 'left');
+                                    $this->db->join('ms_satuan c', 'c.id = a.id_unit_gudang', 'left');
+                                    $this->db->where('a.id', $value['id_material']);
+                                    $get_stock = $this->db->get()->row();
+
+                                    $konversi = (!empty($get_stock) && $get_stock->konversi > 0) ? $get_stock->konversi : 1;
+                                    $min_order = (!empty($get_stock) && !empty($get_stock->min_order)) ? $get_stock->min_order : 0;
+                                    $satuan_pack = !empty($get_stock->satuan_pack) ? strtoupper($get_stock->satuan_pack) : '-';
+                                    $satuan_unit = !empty($get_stock->satuan) ? strtoupper($get_stock->satuan) : '-';
+
+                                    $subtotal = ($value['price_ref'] ?? 0) * $propose;
+                                    $total_all_item += $subtotal;
+
+                                    echo "<tr>";
+                                    echo "<td class='text-center'>" . $key . "</td>";
+                                    echo "<td class='text-start fw-semibold'>" . htmlspecialchars($value['stock_name'] ?? '') . " <span class='text-muted small fw-normal'>(" . htmlspecialchars($value['no_coa'] ?? '-') . " - " . htmlspecialchars(strtoupper($value['nm_coa'] ?? '-')) . ")</span></td>";
+                                    echo "<td class='text-end'>" . number_format($value['min_stok'] ?? 0, 2) . "</td>";
+                                    echo "<td class='text-end'>" . number_format($value['max_stok'] ?? 0, 2) . "</td>";
+                                    echo "<td class='text-end'>" . number_format($min_order, 2) . "</td>";
+                                    echo "<td class='text-end fw-bold text-primary'>" . number_format($propose / $konversi, 2) . "</td>";
+                                    echo "<td class='text-center'><span class='badge bg-light text-dark border'>" . $satuan_pack . "</span></td>";
+                                    echo "<td class='text-end fw-bold'>" . number_format($propose, 2) . "</td>";
+                                    echo "<td class='text-center'><span class='badge bg-light text-dark border'>" . $satuan_unit . "</span></td>";
+                                    echo "<td class='text-end'>Rp " . number_format($value['price_ref'] ?? 0, 2) . "</td>";
+                                    echo "<td class='text-end fw-bold text-dark'>Rp " . number_format($subtotal, 2) . "</td>";
+
+                                    $status_badge = "<span class='badge bg-secondary'>Draft</span>";
+                                    if (($value['status_app'] ?? '') == 'N') {
+                                        $status_badge = "<span class='badge bg-warning text-dark'>Menunggu Review</span>";
+                                    } elseif (($value['status_app'] ?? '') == 'Y') {
+                                        $status_badge = "<span class='badge bg-success'>Disetujui</span>";
+                                    } elseif (($value['status_app'] ?? '') == 'D') {
+                                        $status_badge = "<span class='badge bg-danger'>Ditolak</span>";
+                                    }
+
+                                    echo "<td class='text-center'>" . $status_badge . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='12' class='text-center py-4 text-muted'>Tidak ada rincian item dalam PR ini</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="10" class="text-end fw-bold py-3 fs-6">Total Nilai Item:</th>
+                                <th class="text-end fw-bold py-3 fs-6 text-success">Rp <?= number_format($total_all_item, 2) ?></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
+                        <i class="fa fa-arrow-left me-1"></i> Kembali
+                    </a>
+                    <a href="<?= base_url('request_pr_stok/PrintH2/' . ($header[0]['so_number'] ?? '')) ?>" class="btn btn-success shadow-sm" target="_blank">
+                        <i class="fa fa-print me-1"></i> Cetak Dokumen PR
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="modal modal-default fade" id="dialog-popup" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" style='width:70%;'>
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel"><span class="fa fa-users"></span>&nbsp;Detail Data</h4>
-			</div>
-			<div class="modal-body" id="ModalView">
-				...
-			</div>
-		</div>
-	</div>
-
-
-	<script src="<?= base_url('assets/js/jquery.maskMoney.js') ?>"></script>
-	<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
-
-	<script type="text/javascript">
-		var base_url = '<?php echo base_url(); ?>';
-		var active_controller = '<?php echo ($this->uri->segment(1)); ?>';
-
-		$(document).ready(function() {
-			$('.datepicker').datepicker({
-				dateFormat: 'dd-M-yy'
-			});
-			$('.autoNumeric5').autoNumeric('init', {
-				mDec: '5',
-				aPad: false
-			})
-			$('.chosen-select').select2()
-
-			//back
-			$(document).on('click', '#back', function() {
-				window.location.href = base_url + active_controller
-			});
-		});
-	</script>

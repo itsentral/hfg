@@ -98,7 +98,7 @@ if (!empty($results['headerso'])) {
 								<label for="customer">Delivery Date</label>
 							</div>
 							<div class="col-md-8">
-								<input type="text" name="delivery_date" id="delivery_date" required class="form-control">
+								<input type="text" name="delivery_date" id="delivery_date" required class="form-control" readonly style="background-color: #fff; cursor: pointer;" placeholder="Pilih Tanggal">
 							</div>
 						</div>
 					</div>
@@ -110,7 +110,7 @@ if (!empty($results['headerso'])) {
 								<label for="customer">PO Date</label>
 							</div>
 							<div class="col-md-8">
-								<input type="text" class="form-control" id="tanggal" value="" onkeyup required name="tanggal">
+								<input type="text" class="form-control" id="tanggal" value="" required name="tanggal" readonly style="background-color: #fff; cursor: pointer;" placeholder="Pilih Tanggal">
 							</div>
 						</div>
 					</div>
@@ -1331,7 +1331,7 @@ if (!empty($results['headerso'])) {
 					Rows += '</td>';
 
 					Rows += '<td class="">';
-					Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '">';
+					Rows += '<input type="date" class="form-control form-control-sm" name="jatuh_tempo_' + num_top + '" onkeydown="return false;" onpaste="return false;" style="background-color: #fff; cursor: pointer;">';
 					Rows += '</td>';
 
 					Rows += '<td class="text-center">';
@@ -1580,15 +1580,10 @@ if (!empty($results['headerso'])) {
 	}
 
 	function get_kurs() {
-		// var loi = $("#loi").val();
-		// $.ajax({
-		// 	type: "GET",
-		// 	url: siteurl + 'purchase_order/FormInputKurs',
-		// 	data: "loi=" + loi,
-		// 	success: function(html) {
-		// 		$("#input_kurs").html(html);
-		// 	}
-		// });
+		var loi = $("#loi").val();
+		if (loi && (loi.toLowerCase() === 'lokal' || loi.toLowerCase() === 'local')) {
+			$('#select_curr').val('IDR').trigger('change');
+		}
 	}
 
 
@@ -2136,6 +2131,28 @@ if (!empty($results['headerso'])) {
 			changeMonth: true,
 			changeYear: true,
 		});
+
+		// Mencegah pengetikan manual pada semua input tanggal (hanya bisa dipilih via kalender/picker)
+		$(document).on('keydown paste', '#tanggal, #delivery_date, #expect_tanggal, input[type="date"]', function(e) {
+			e.preventDefault();
+			return false;
+		});
+
+		// Event change LOI: Jika Lokal/Local terpilih, otomatis set currency ke IDR
+		$(document).on('change', '#loi', function() {
+			var loi = $(this).val();
+			if (loi && (loi.toLowerCase() === 'lokal' || loi.toLowerCase() === 'local')) {
+				$('#select_curr').val('IDR').trigger('change');
+			}
+		});
+
+		// Auto set IDR saat load jika LOI sudah terpilih Lokal
+		var initialLoi = $('#loi').val();
+		if (initialLoi && (initialLoi.toLowerCase() === 'lokal' || initialLoi.toLowerCase() === 'local')) {
+			if (!$('#select_curr').val()) {
+				$('#select_curr').val('IDR').trigger('change');
+			}
+		}
 	});
 </script>
 

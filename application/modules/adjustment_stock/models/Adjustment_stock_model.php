@@ -62,22 +62,27 @@ class Adjustment_stock_model extends BF_Model
         $nomor = ($total_data - $start_dari) - $urut2;
       }
 
+      $type_badge = strtoupper($row['adjustment_type']);
+      if ($row['adjustment_type'] == 'plus') {
+        $type_badge = "<span class='badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1'><i class='fa fa-plus me-1'></i>PLUS</span>";
+      } elseif ($row['adjustment_type'] == 'minus') {
+        $type_badge = "<span class='badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1'><i class='fa fa-minus me-1'></i>MINUS</span>";
+      } else {
+        $type_badge = "<span class='badge bg-secondary px-2 py-1'>" . strtoupper($row['adjustment_type']) . "</span>";
+      }
+
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='center'>" . $row['kode_trans'] . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['adjustment_type']) . "</div>";
-      // $gudang_dari 	= (!empty($row['id_gudang_dari']))?get_name('warehouse', 'nm_gudang', 'id', $row['id_gudang_dari']):$row['kd_gudang_dari'];
-      // $gudang_ke 		= (!empty($row['id_gudang_ke']))?get_name('warehouse', 'nm_gudang', 'id', $row['id_gudang_ke']):$row['kd_gudang_ke']." ".strtoupper($row['adjustment_type']);
-      // $nestedData[]	= "<div align='left'>".$gudang_dari."</div>";
-      // $nestedData[]	= "<div align='left'>".$gudang_ke."</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_material']) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($row['jumlah_mat'], 2) . "</div>";
+      $nestedData[]  = "<div align='center' class='fw-semibold text-primary font-monospace'>" . $row['kode_trans'] . "</div>";
+      $nestedData[]  = "<div align='center'>" . $type_badge . "</div>";
+      $nestedData[]  = "<div align='left' class='fw-bold text-dark'>" . strtoupper($row['nm_material']) . "</div>";
+      $nestedData[]  = "<div align='right' class='fw-bold fs-6 text-dark'>" . number_format($row['jumlah_mat'], 2) . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper($row['pic']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['no_ba']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['note']) . "</div>";
-      $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '';
+      $nestedData[]  = "<div align='left' class='font-monospace'>" . strtoupper($row['no_ba']) . "</div>";
+      $nestedData[]  = "<div align='left' class='text-muted'>" . strtoupper($row['note']) . "</div>";
+      $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+      $nestedData[]  = "<div align='center' class='text-muted font-monospace' style='font-size:0.85rem;'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
       // $detail	= "<button type='button' class='btn btn-sm btn-primary detailAjust' title='View Incoming' data-kode_trans='".$row['kode_trans']."' ><i class='fa fa-eye'></i></button>";
       // $print	= "&nbsp;<a href='".base_url('warehouse/print_incoming/'.$row['kode_trans'])."' target='_blank' class='btn btn-sm btn-warning' title='Print Incoming'><i class='fa fa-print'></i></a>";
 

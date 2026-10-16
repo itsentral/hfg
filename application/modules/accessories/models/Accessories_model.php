@@ -46,132 +46,139 @@ class Accessories_model extends BF_Model
 
 	public function get_json_accessories()
 	{
-		$controller			= ucfirst(strtolower($this->uri->segment(1)));
-		// $Arr_Akses			= getAcccesmenu($controller);
-		$requestData		= $_REQUEST;
-		$fetch					= $this->get_query_json_accessories(
-			$requestData['id_category'],
-			$requestData['search']['value'],
-			$requestData['order'][0]['column'],
-			$requestData['order'][0]['dir'],
-			$requestData['start'],
-			$requestData['length']
+		$requestData   = $_REQUEST;
+		$id_category   = isset($requestData['id_category']) ? $requestData['id_category'] : 0;
+		$search_val    = isset($requestData['search']['value']) ? $requestData['search']['value'] : '';
+		$col_order     = isset($requestData['order'][0]['column']) ? intval($requestData['order'][0]['column']) : 1;
+		$col_dir       = isset($requestData['order'][0]['dir']) ? $requestData['order'][0]['dir'] : 'asc';
+		$limit_start   = isset($requestData['start']) ? intval($requestData['start']) : 0;
+		$limit_length  = isset($requestData['length']) ? intval($requestData['length']) : 10;
+		$draw          = isset($requestData['draw']) ? intval($requestData['draw']) : 1;
+
+		$fetch = $this->get_query_json_accessories(
+			$id_category,
+			$search_val,
+			$col_order,
+			$col_dir,
+			$limit_start,
+			$limit_length
 		);
-		$totalData			= $fetch['totalData'];
-		$totalFiltered	= $fetch['totalFiltered'];
-		$query					= $fetch['query'];
 
-		$data	= array();
-		$urut1  = 1;
-		$urut2  = 0;
+		$totalData     = $fetch['totalData'];
+		$totalFiltered = $fetch['totalFiltered'];
+		$query         = $fetch['query'];
+
+		$data  = array();
+		$urut1 = 1;
 		foreach ($query->result_array() as $row) {
-			$total_data     = $totalData;
-			$start_dari     = $requestData['start'];
-			$asc_desc       = $requestData['order'][0]['dir'];
-			if ($asc_desc == 'asc') {
-				$nomor = $urut1 + $start_dari;
-			}
-			if ($asc_desc == 'desc') {
-				$nomor = ($total_data - $start_dari) - $urut2;
-			}
+			$nomor = $urut1 + $limit_start;
 
-			$nestedData 	= array();
-			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
-			$nestedData[]	= "<div align='left'>" . $row['id_stock'] . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['stock_name'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['nm_category'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['trade_name'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['brand'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['spec'])) . "</div>";
+			$nestedData = array();
+			$nestedData[] = "<div class='text-center'>" . $nomor . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars((string)$row['id_stock']) . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['stock_name'])) . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['nm_category'])) . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['trade_name'])) . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['brand'])) . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['spec'])) . "</div>";
 
 			$status = ($row['status'] == '1') ? 'Active' : 'Non-Active';
-			$warna = ($row['status'] == '1') ? 'green' : 'red';
-
-			$nestedData[]	= "<div align='left'><span class='badge bg-" . $warna . "'>" . $status . "</span></div>";
+			$warna  = ($row['status'] == '1') ? 'success' : 'danger';
+			$nestedData[] = "<div class='text-center'><span class='badge bg-" . $warna . "'>" . $status . "</span></div>";
 
 			$last_create = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
-			$nestedData[]	= "<div align='left'>" . strtolower(get_name('users', 'username', 'id_user', $last_create)) . "</div>";
+			$nm_user = !empty($last_create) ? get_name('users', 'username', 'id_user', $last_create) : '-';
+			$nestedData[] = "<div>" . htmlspecialchars(strtolower((string)$nm_user)) . "</div>";
 
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i', strtotime($last_date)) . "</div>";
+			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime($last_date)) : '-';
+			$nestedData[] = "<div class='text-center'>" . $formatted_date . "</div>";
 
-			$view	= "";
-			$edit	= "";
-			$delete	= "";
-
-			$view	= "&nbsp;<a href='" . site_url($this->uri->segment(1)) . '/add/' . $row['id'] . "/view' class='btn btn-sm btn-warning' title='Detail Data' data-role='qtip'><i class='fa fa-eye'></i></a>";
+			$view = "<a href='" . site_url('accessories/add/' . $row['id'] . '/view') . "' class='btn btn-sm btn-info text-white' title='Detail Data'><i class='fa fa-eye'></i></a>";
+			$edit = "";
+			$delete = "";
 			if ($this->ENABLE_MANAGE) {
-				$edit	= "&nbsp;<a href='" . site_url($this->uri->segment(1)) . '/add/' . $row['id'] . "' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'><i class='fa fa-edit'></i></a>";
+				$edit = "<a href='" . site_url('accessories/add/' . $row['id']) . "' class='btn btn-sm btn-primary' title='Edit Data'><i class='fa fa-edit'></i></a>";
 			}
 			if ($this->ENABLE_DELETE) {
-				$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger delete' title='Delete data' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i></button>";
+				$delete = "<button type='button' class='btn btn-sm btn-danger delete' title='Delete data' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i></button>";
 			}
-			$nestedData[]	= "<div align='left'>
-								" . $view . "
-								" . $edit . "
-								" . $delete . "
-								</div>";
+			$nestedData[] = "<div class='d-flex justify-content-center gap-1'>" . $view . $edit . $delete . "</div>";
+
 			$data[] = $nestedData;
 			$urut1++;
-			$urut2++;
 		}
 
 		$json_data = array(
-			"draw"            	=> intval($requestData['draw']),
-			"recordsTotal"    	=> intval($totalData),
-			"recordsFiltered" 	=> intval($totalFiltered),
-			"data"            	=> $data
+			"draw"            => $draw,
+			"recordsTotal"    => intval($totalData),
+			"recordsFiltered" => intval($totalFiltered),
+			"data"            => $data
 		);
 
-		echo json_encode($json_data);
+		$json_str = json_encode($json_data);
+		header('Content-Type: application/json; charset=utf-8');
+		echo $json_str;
 	}
 
 	public function get_query_json_accessories($id_category, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
 	{
 		$WHERE = '';
 		if ($id_category > 0) {
-			$WHERE = "AND a.id_category='" . $id_category . "'";
+			$WHERE = "AND a.id_category='" . $this->db->escape_str($id_category) . "'";
 		}
+
+		$sql_search = "";
+		if (!empty($like_value)) {
+			$escaped_like = $this->db->escape_like_str($like_value);
+			$sql_search = " AND (
+				a.stock_name LIKE '%" . $escaped_like . "%'
+				OR a.id_stock LIKE '%" . $escaped_like . "%'
+				OR a.trade_name LIKE '%" . $escaped_like . "%'
+				OR a.brand LIKE '%" . $escaped_like . "%'
+				OR a.spec LIKE '%" . $escaped_like . "%'
+				OR b.code LIKE '%" . $escaped_like . "%'
+				OR c.code LIKE '%" . $escaped_like . "%'
+				OR d.nm_category LIKE '%" . $escaped_like . "%'
+			)";
+		}
+
+		$sql_base = "FROM
+					accessories a
+					LEFT JOIN ms_satuan b ON a.id_unit_gudang=b.id
+					LEFT JOIN ms_satuan c ON a.id_unit=c.id
+					LEFT JOIN accessories_category d ON a.id_category = d.id
+				WHERE a.deleted_date IS NULL " . $WHERE . $sql_search;
+
+		// Hitung total data
+		$data['totalData'] = $this->db->query("SELECT count(a.id) as total " . $sql_base)->row()->total;
+		$data['totalFiltered'] = $data['totalData'];
+
+		$columns_order_by = array(
+			0 => 'a.id',
+			1 => 'a.id_stock',
+			2 => 'a.stock_name',
+			3 => 'd.nm_category',
+			4 => 'a.trade_name',
+			5 => 'a.brand',
+			6 => 'a.spec',
+			7 => 'a.status',
+			8 => 'a.updated_by',
+			9 => 'a.updated_date',
+			10 => 'a.id'
+		);
+
+		$order_col = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
+		$order_dir = (strtolower($column_dir) === 'desc') ? 'DESC' : 'ASC';
+
 		$sql = "SELECT
-					(@row:=@row+1) AS nomor,
 					a.*,
 					b.code AS sat_packing,
 					c.code AS sat_unit,
 					d.nm_category AS nm_category
-				FROM
-					accessories a
-					LEFT JOIN ms_satuan b ON a.id_unit_gudang=b.id
-					LEFT JOIN ms_satuan c ON a.id_unit=c.id
-					LEFT JOIN accessories_category d ON a.id_category = d.id,
-					(SELECT @row:=0) r
-				WHERE 1=1 AND a.deleted_date IS NULL " . $WHERE . " AND (
-					a.stock_name LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR a.id_stock LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR a.trade_name LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR a.brand LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR a.spec LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR b.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR c.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-					OR d.nm_category LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-				)
-			";
-		// echo $sql; exit;
-
-		$data['totalData'] = $this->db->query($sql)->num_rows();
-		$data['totalFiltered'] = $this->db->query($sql)->num_rows();
-		$columns_order_by = array(
-			0 => 'nomor',
-			1 => 'id_stock',
-			2 => 'd.nm_category',
-			3 => 'stock_name',
-			4 => 'trade_name',
-			5 => 'brand',
-			6 => 'spec',
-			7 => 'status'
-		);
-
-		$sql .= " ORDER BY a.id DESC, " . $columns_order_by[$column_order] . " " . $column_dir . " ";
-		$sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
+				" . $sql_base . "
+				ORDER BY " . $order_col . " " . $order_dir . "
+				LIMIT " . intval($limit_start) . ", " . intval($limit_length);
 
 		$data['query'] = $this->db->query($sql);
 		return $data;
@@ -179,109 +186,90 @@ class Accessories_model extends BF_Model
 
 	public function get_json_unit()
 	{
-		$controller			= ucfirst(strtolower($this->uri->segment(1)));
-		// $Arr_Akses			= getAcccesmenu($controller);
-		$requestData		= $_REQUEST;
-		$fetch					= $this->get_query_json_unit(
-			$requestData['search']['value'],
-			$requestData['order'][0]['column'],
-			$requestData['order'][0]['dir'],
-			$requestData['start'],
-			$requestData['length']
+		$requestData   = $_REQUEST;
+		$search_val    = isset($requestData['search']['value']) ? $requestData['search']['value'] : '';
+		$col_order     = isset($requestData['order'][0]['column']) ? intval($requestData['order'][0]['column']) : 1;
+		$col_dir       = isset($requestData['order'][0]['dir']) ? $requestData['order'][0]['dir'] : 'asc';
+		$limit_start   = isset($requestData['start']) ? intval($requestData['start']) : 0;
+		$limit_length  = isset($requestData['length']) ? intval($requestData['length']) : 10;
+		$draw          = isset($requestData['draw']) ? intval($requestData['draw']) : 1;
+
+		$fetch = $this->get_query_json_unit(
+			$search_val,
+			$col_order,
+			$col_dir,
+			$limit_start,
+			$limit_length
 		);
-		$totalData			= $fetch['totalData'];
-		$totalFiltered	= $fetch['totalFiltered'];
-		$query					= $fetch['query'];
 
-		$data	= array();
-		$urut1  = 1;
-		$urut2  = 0;
+		$totalData     = $fetch['totalData'];
+		$totalFiltered = $fetch['totalFiltered'];
+		$query         = $fetch['query'];
+
+		$data  = array();
+		$urut1 = 1;
 		foreach ($query->result_array() as $row) {
-			$total_data     = $totalData;
-			$start_dari     = $requestData['start'];
-			$asc_desc       = $requestData['order'][0]['dir'];
-			if ($asc_desc == 'asc') {
-				$nomor = $urut1 + $start_dari;
-			}
-			if ($asc_desc == 'desc') {
-				$nomor = ($total_data - $start_dari) - $urut2;
-			}
+			$nomor = $urut1 + $limit_start;
 
-			$nestedData 	= array();
-			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(strtolower($row['code'])) . "</div>";
+			$nestedData = array();
+			$nestedData[] = "<div class='text-center'>" . $nomor . "</div>";
+			$nestedData[] = "<div>" . htmlspecialchars(strtoupper((string)$row['code'])) . "</div>";
+
 			$last_create = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
-			$nestedData[]	= "<div align='left'>" . strtolower(get_name('users', 'username', 'id_user', $last_create)) . "</div>";
+			$nm_user = !empty($last_create) ? get_name('users', 'username', 'id_user', $last_create) : '-';
+			$nestedData[] = "<div>" . htmlspecialchars(strtolower((string)$nm_user)) . "</div>";
 
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
-			$nestedData[]	= "<div align='center'>" . date('d-m-Y H:i:s', strtotime($last_date)) . "</div>";
-			$edit	= "";
-			$delete	= "";
-			$print	= "";
-			$approve = "";
-			$download = "";
-			// if(getStatus($row['project_code']) == 'WAITING ESTIMATION PROJECT'){
-			// 	if($Arr_Akses['update']=='1'){
-			$edit	= "&nbsp;<button data-id='" . $row['id'] . "' class='btn btn-sm btn-primary edit' title='Edit Data' data-role='qtip'><i class='fa fa-edit'></i></button>";
-			// 	}
-			// 	if($Arr_Akses['approve']=='1'){
-			// 		$approve	= "&nbsp;<button type='button' class='btn btn-sm btn-success approve' title='Request Approval' data-project_code='".$row['project_code']."'><i class='fa fa-check'></i></button>";
-			// 	}
-			// 	if($Arr_Akses['delete']=='1'){
-			$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger delete' title='Delete data' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i></button>";
-			// 	}
-			// }
-			// if($Arr_Akses['download']=='1'){
-			// 	// $print	= "<a href='".site_url($this->uri->segment(1).'/print_bq/'.$row['project_code'])."' class='btn btn-sm btn-success' target='_blank' title='Print Project' data-role='qtip'><i class='fa fa-print'></i></a>";
-			// 	$download	= "&nbsp;<a href='".site_url($this->uri->segment(1).'/download_excel/'.$row['project_code'])."' class='btn btn-sm btn-warning' target='_blank' title='Print Project' data-role='qtip'><i class='fa fa-file-excel-o'></i></a>";
-			// }
-			$nestedData[]	= "<div align='center'>
-												" . $edit . "
-												" . $print . "
-												" . $approve . "
-												" . $download . "
-												" . $delete . "
-												</div>";
+			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime($last_date)) : '-';
+			$nestedData[] = "<div class='text-center'>" . $formatted_date . "</div>";
+
+			$edit   = "<button type='button' data-id='" . $row['id'] . "' class='btn btn-sm btn-primary edit' title='Edit Data'><i class='fa fa-edit'></i></button>";
+			$delete = "<button type='button' class='btn btn-sm btn-danger delete' title='Delete data' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i></button>";
+
+			$nestedData[] = "<div class='d-flex justify-content-center gap-1'>" . $edit . $delete . "</div>";
 			$data[] = $nestedData;
 			$urut1++;
-			$urut2++;
 		}
 
 		$json_data = array(
-			"draw"            	=> intval($requestData['draw']),
-			"recordsTotal"    	=> intval($totalData),
-			"recordsFiltered" 	=> intval($totalFiltered),
-			"data"            	=> $data
+			"draw"            => $draw,
+			"recordsTotal"    => intval($totalData),
+			"recordsFiltered" => intval($totalFiltered),
+			"data"            => $data
 		);
 
-		echo json_encode($json_data);
+		$json_str = json_encode($json_data);
+		header('Content-Type: application/json; charset=utf-8');
+		echo $json_str;
 	}
 
 	public function get_query_json_unit($like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
 	{
+		$sql_search = "";
+		if (!empty($like_value)) {
+			$escaped_like = $this->db->escape_like_str($like_value);
+			$sql_search = " AND a.code LIKE '%" . $escaped_like . "%' ";
+		}
 
-		$sql = "
-			SELECT
-      (@row:=@row+1) AS nomor,
-				a.*
-			FROM
-				ms_satuan a,
-        (SELECT @row:=0) r
-		   WHERE 1=1 AND a.deleted='N' AND (
-				a.code LIKE '%" . $this->db->escape_like_str($like_value) . "%'
-	        )
-		";
-		// echo $sql; exit;
+		$sql_base = "FROM ms_satuan a WHERE a.deleted='N' " . $sql_search;
 
-		$data['totalData'] = $this->db->query($sql)->num_rows();
-		$data['totalFiltered'] = $this->db->query($sql)->num_rows();
+		$data['totalData'] = $this->db->query("SELECT count(a.id) as total " . $sql_base)->row()->total;
+		$data['totalFiltered'] = $data['totalData'];
+
 		$columns_order_by = array(
-			0 => 'nomor',
-			1 => 'code'
+			0 => 'a.id',
+			1 => 'a.code',
+			2 => 'a.updated_by',
+			3 => 'a.updated_date',
+			4 => 'a.id'
 		);
 
-		$sql .= " ORDER BY  " . $columns_order_by[$column_order] . " " . $column_dir . " ";
-		$sql .= " LIMIT " . $limit_start . " ," . $limit_length . " ";
+		$order_col = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
+		$order_dir = (strtolower($column_dir) === 'desc') ? 'DESC' : 'ASC';
+
+		$sql = "SELECT a.* " . $sql_base . "
+				ORDER BY " . $order_col . " " . $order_dir . "
+				LIMIT " . intval($limit_start) . ", " . intval($limit_length);
 
 		$data['query'] = $this->db->query($sql);
 		return $data;

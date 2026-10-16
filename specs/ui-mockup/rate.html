@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Rate Product Costing — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Master Rate Product Costing</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <a class="step" href="beranda.html">Daftar SPK</a>
+      <a class="step" href="index.html">Input Produksi</a>
+      <a class="step" href="material.html">Material</a>
+      <a class="step" href="costbook.html">Costbook</a>
+      <span class="step step--active">Rate</span>
+      <a class="step" href="hpp.html">HPP</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Accounting</span>
+      <span class="topbar__user-name">Andri P.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Master Rate Product Costing</h1>
+        <p class="muted">Rate biaya yang dipakai perhitungan HPP per komponen (FR-19). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
+      </div>
+      <div class="page__header-status">
+        <span class="badge badge--draft" id="saveStatus">Siap diedit</span>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">1</span> Rate Saat Ini</h2>
+        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini langsung dipakai pada perhitungan HPP.</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl" id="rateTable">
+            <thead>
+              <tr>
+                <th>Komponen Biaya</th>
+                <th class="num" style="width:200px">Rate</th>
+                <th style="width:220px">Satuan</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="note" id="rateNote">Contoh dari konsep: Man Power Rp400/kg, FOH Rp300/kg, Bahan Pendukung Rp500/kg, Consumables Rp200/kg, Koordinasi Rp200/kg, Scrap 2% dari value material.</p>
+      </div>
+    </section>
+
+    <div class="actionbar">
+      <div class="actionbar__note">
+        <span class="muted">Perubahan disimpan ke penyimpanan lokal browser (mockup).</span>
+      </div>
+      <div class="actionbar__btns">
+        <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Default</button>
+        <a class="btn btn--ghost" href="hpp.html">Lihat HPP →</a>
+        <button type="button" class="btn btn--primary" id="btnSave">Simpan Rate</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="rate.js"></script>
+</body>
+</html>

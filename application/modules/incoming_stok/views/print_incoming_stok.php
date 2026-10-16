@@ -1,6 +1,6 @@
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
     <tr>
-        <td align='center'><b>PT. SENTRAL TEHNOLOGI MANAGEMENT</b></td>
+        <td align='center'><b>PT HARAPAN FAJAR GEMILANG</b></td>
     </tr>
     <tr>
         <td align='center'><b>

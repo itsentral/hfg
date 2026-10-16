@@ -74,10 +74,14 @@ class Pembayaran_material_model extends BF_Model
 		$search = $post['search']['value'];
 
 		$this->db->select("a.id, a.no_doc, a.no_surat, a.created_on, a.currency, a.jumlah, a.keperluan, a.status, a.tipe, 
+            COALESCE(NULLIF(a.nm_supplier, ''), sup.nama, sup_po.nama, '-') AS supplier,
             COALESCE(b.created_by, c.nama, d.nama, a.created_by) AS requestor, 
             (CASE WHEN a.tipe IN ('invoice_dp', 'invoice_import', 'invoice_local') THEN 1 WHEN b.exp_inv_po = 1 THEN 1 ELSE 0 END) AS is_po_payment");
 		$this->db->from('request_payment a');
+		$this->db->join('new_supplier sup', 'sup.kode_supplier = a.id_supplier', 'left');
 		$this->db->join('tr_expense b', 'b.no_doc = a.no_doc', 'left');
+		$this->db->join('tr_purchase_order po', 'po.no_po = b.id_po', 'left');
+		$this->db->join('new_supplier sup_po', 'sup_po.kode_supplier = po.id_suplier', 'left');
 		$this->db->join('tr_kasbon c', 'c.no_doc = a.no_doc', 'left');
 		$this->db->join('tr_transport_req d', 'd.no_doc = a.no_doc', 'left');
 		$this->db->where('a.status', 'approve management');
@@ -109,11 +113,15 @@ class Pembayaran_material_model extends BF_Model
 				->group_end();
 		}
 
-		// Global Search (Termasuk Kolom Tipe)
+		// Global Search (Termasuk Kolom Tipe & Supplier)
 		if (!empty($search)) {
 			$this->db->group_start()
 				->like('a.no_doc', $search)
+				->or_like('a.no_surat', $search)
 				->or_like('a.tipe', $search) // Ditambahkan agar tipe bisa dicari
+				->or_like('a.nm_supplier', $search)
+				->or_like('sup.nama', $search)
+				->or_like('sup_po.nama', $search)
 				->or_like('b.created_by', $search)
 				->or_like('c.nama', $search)
 				->or_like('d.nama', $search)
@@ -151,6 +159,7 @@ class Pembayaran_material_model extends BF_Model
 				'keperluan' => $item->keperluan,
 				'total_invoice' => number_format($item->jumlah),
 				'requestor' => $item->requestor,
+				'supplier' => $item->supplier,
 				'currency' => $item->currency,
 				'option' => '<input type="checkbox" class="check_payment" value="' . $item->id . '" data-tipe="' . $item->tipe . '" ' . ($is_checked ? 'checked' : '') . '>'
 			];

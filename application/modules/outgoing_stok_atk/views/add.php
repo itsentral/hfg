@@ -131,7 +131,7 @@
 
 	$(document).ready(function(){
 		$('.chosen-select').select2();
-    	$('.autoNumeric4').autoNumeric('init', {mDec: '4', aPad: false})
+    	if (typeof $.fn.autoNumeric === 'function') { $('.autoNumeric4').autoNumeric('init', {mDec: '4', aPad: false}); }
 		$('#listInput').hide()
 		$('#alertLabel').hide()
 		$('#alertLabelClose').hide()

@@ -45,6 +45,11 @@
       <span class="badge <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'bg-warning text-dark' : 'bg-success'; ?> px-3 py-2 fs-6">
         <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'Draft' : 'Submitted (Done)'; ?>
       </span>
+      <?php if (($report['header']['status_draft'] ?? 1) == 0): ?>
+        <a href="<?= site_url('production_report/hpp/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+          <i class="fa fa-calculator me-1"></i> Laporan HPP &amp; Jurnal
+        </a>
+      <?php endif; ?>
       <a href="<?= site_url('production_report'); ?>" class="btn btn-outline-secondary btn-sm">
         <i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar
       </a>

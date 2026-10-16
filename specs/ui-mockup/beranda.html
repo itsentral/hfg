@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beranda — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">PT</span>
+      <div>
+        <div class="topbar__title">Modul Produksi</div>
+        <div class="topbar__subtitle">Beranda</div>
+      </div>
+    </div>
+    <nav class="topbar__steps" aria-label="Alur proses">
+      <span class="step step--active">Daftar SPK</span>
+      <span class="step">Input Produksi</span>
+      <a class="step" href="material.html">Material</a>
+      <a class="step" href="costbook.html">Costbook</a>
+      <a class="step" href="rate.html">Rate</a>
+      <span class="step">HPP</span>
+    </nav>
+    <div class="topbar__user">
+      <span class="badge badge--role">Admin Produksi</span>
+      <span class="topbar__user-name">Budi S.</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>SPK Menunggu Produksi</h1>
+        <p class="muted">Pilih SPK untuk meninjau data tarikan lalu menginput laporan produksi.</p>
+      </div>
+      <div class="page__header-status">
+        <button type="button" class="btn btn--primary" id="btnAddSpk">+ Add SPK</button>
+      </div>
+    </div>
+
+    <div class="stat-row" id="statRow"></div>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>Daftar Surat Perintah Kerja</h2>
+        <p class="card__hint">Setiap SPK memuat daftar produk Finish Good KW 1 yang akan diproduksi.</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl" id="spkTable">
+            <thead>
+              <tr>
+                <th>No. SPK</th>
+                <th>Tanggal</th>
+                <th>Customer</th>
+                <th>Material</th>
+                <th>Produk FG (KW 1)</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ MODAL: ADD SPK ============ -->
+  <div class="modal" id="spkModal" hidden>
+    <div class="modal__box modal__box--wide">
+      <h3 class="modal__title">Buat SPK Baru</h3>
+      <p class="modal__body">Lengkapi data SPK dan pilih produk Finish Good (KW 1) beserta target qty.</p>
+
+      <div class="grid grid--header">
+        <label class="field">
+          <span class="field__label">No. SPK <em>*</em></span>
+          <input type="text" id="spkNo" placeholder="cth: SPK-2026-0915" />
+        </label>
+        <label class="field">
+          <span class="field__label">Tgl SPK <em>*</em></span>
+          <input type="date" id="spkTgl" />
+        </label>
+        <label class="field">
+          <span class="field__label">Customer <em>*</em></span>
+          <input type="text" id="spkCustomer" placeholder="Nama customer" />
+        </label>
+        <label class="field">
+          <span class="field__label">Material</span>
+          <input type="text" id="spkMaterial" placeholder="cth: Coil Galvanis 1.0mm" />
+        </label>
+      </div>
+
+      <div class="subhead">
+        <h3>Produk FG (KW 1)</h3>
+        <button type="button" class="btn btn--tiny" id="spkAddProduct">+ Tambah Produk</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl" id="spkProductTable">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th class="num" style="width:160px">Target Qty (pcs)</th>
+              <th style="width:44px"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot><tr><td colspan="3" class="empty">Belum ada produk. Tambahkan minimal satu.</td></tr></tfoot>
+        </table>
+      </div>
+      <p class="note" id="spkError" hidden></p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="spkCancel">Batal</button>
+        <button type="button" class="btn btn--primary" id="spkSave">Simpan SPK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="beranda.js"></script>
+</body>
+</html>

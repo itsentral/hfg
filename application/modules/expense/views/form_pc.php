@@ -387,14 +387,14 @@ $budgets = 0;
 								if ($data->status == 0) {
 									if ($stsview == 'approval') {
 										$urlback = 'list_expense_approval';
-										echo '<a class="btn btn-warning btn-sm" onclick="data_approve()"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>';
-										echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban">&nbsp;</i> Reject</a>';
+										echo '<a class="btn btn-success btn-sm" onclick="data_approve()"><i class="fa fa-check me-1">&nbsp;</i>Setujui (Approve)</a>';
+										echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban me-1">&nbsp;</i>Tolak (Reject)</a>';
 									}
 								}
 							}
 							?>
 							<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-							<a class="btn btn-default btn-sm" onclick="window.location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+							<a class="btn btn-default btn-sm" onclick="if (typeof list_view === 'function') { list_view(); } else { $('#form-data').hide().empty(); $('#card-list, .box').show(); } return false;"><i class="fa fa-reply">&nbsp;</i>Kembali / Batal</a>
 						</div>
 					</div>
 					<div class="row">
@@ -758,51 +758,49 @@ foreach($data_budget as $keys=>$val){
 
 		function data_approve() {
 			Swal.fire({
-				title: "Anda Yakin?",
-				text: "Data Akan Disetujui!",
-				icon: "info",
+				title: "Setujui Expense Petty Cash?",
+				text: "Dokumen akan disetujui dan diteruskan ke tahap berikutnya!",
+				icon: "question",
 				showCancelButton: true,
-				confirmButtonText: "Ya, setuju!",
-				cancelButtonText: "Tidak!",
-				closeOnConfirm: false,
-				closeOnCancel: true
+				confirmButtonText: "Ya, Setujui!",
+				cancelButtonText: "Batal",
+				confirmButtonColor: "#28a745"
 			}).then((next) => {
 				if (next.isConfirmed) {
-					id = $("#id").val();
+					var id = $("#id").val();
 					$.ajax({
-						url: url_approve + id,
+						url: siteurl + 'expense/approve/' + id,
 						dataType: "json",
 						type: 'POST',
 						success: function(msg) {
-							if (msg['save'] == '1') {
+							if (msg['save'] == '1' || msg['save'] == 1 || msg['save'] === true) {
 								Swal.fire({
 									title: "Sukses!",
-									text: "Data Berhasil Di Setujui",
+									text: "Data Berhasil Disetujui",
 									icon: "success",
 									timer: 1500,
 									showConfirmButton: false
+								}).then(() => {
+									if (typeof list_view === 'function') {
+										list_view();
+									} else {
+										location.reload();
+									}
 								});
-								location.reload();
 							} else {
 								Swal.fire({
 									title: "Gagal!",
-									text: "Data Gagal Di Setujui",
-									icon: "error",
-									timer: 1500,
-									showConfirmButton: false
+									text: "Data Gagal Disetujui",
+									icon: "error"
 								});
-							};
-							console.log(msg);
+							}
 						},
 						error: function(msg) {
 							Swal.fire({
 								title: "Gagal!",
-								text: "Ajax Data Gagal Di Proses",
-								icon: "error",
-								timer: 1500,
-								showConfirmButton: false
+								text: "Ajax Data Gagal Diproses",
+								icon: "error"
 							});
-							console.log(msg);
 						}
 					});
 				}
@@ -811,74 +809,63 @@ foreach($data_budget as $keys=>$val){
 
 		function data_reject() {
 			Swal.fire({
-				title: "Perhatian",
-				text: "Berikan alasan penolakan",
-				icon: "input",
+				title: "Tolak Dokumen Expense Petty Cash",
+				input: "textarea",
+				inputLabel: "Alasan Penolakan (Reject Reason)",
+				inputPlaceholder: "Tuliskan alasan penolakan di sini...",
 				showCancelButton: true,
-				closeOnConfirm: false,
-				closeOnCancel: true
-			}).then((inputValue) => {
-				if (inputValue === false) return false;
-				if (inputValue === "") {
-					Swal.fire.showInputError("Tuliskan alasan anda");
-					return false
+				confirmButtonText: "Tolak Dokumen",
+				cancelButtonText: "Batal",
+				confirmButtonColor: "#dc3545",
+				inputValidator: (value) => {
+					if (!value || !value.trim()) {
+						return "Alasan penolakan wajib diisi!";
+					}
 				}
-
-				Swal.fire({
-					title: "Anda Yakin?",
-					text: "Data Akan Tolak!",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonText: "Ya, tolak!",
-					cancelButtonText: "Tidak!",
-					closeOnConfirm: false,
-					closeOnCancel: true
-				}).then((next) => {
-					if (next.isConfirmed) {
-						id = $("#id").val();
-						$.ajax({
-							url: base_url + 'expense/reject/',
-							data: {
-								'id': id,
-								'reason': inputValue,
-								'table': 'tr_expense'
-							},
-							dataType: "json",
-							type: 'POST',
-							success: function(msg) {
-								if (msg['save'] == '1') {
-									Swal.fire({
-										title: "Sukses!",
-										text: "Data Berhasil Di Tolak",
-										icon: "success",
-										timer: 1500,
-										showConfirmButton: false
-									});
-									window.location.reload();
-								} else {
-									Swal.fire({
-										title: "Gagal!",
-										text: "Data Gagal Di Tolak",
-										icon: "error",
-										timer: 1500,
-										showConfirmButton: false
-									});
-								};
-								console.log(msg);
-							},
-							error: function(msg) {
+			}).then((res) => {
+				if (res.isConfirmed) {
+					var id = $("#id").val();
+					$.ajax({
+						url: siteurl + 'expense/reject/',
+						data: {
+							'id': id,
+							'reason': res.value,
+							'table': 'tr_expense'
+						},
+						type: 'POST',
+						dataType: "json",
+						success: function(msg) {
+							if (msg['save'] == '1' || msg['save'] == 1 || msg['save'] === true) {
 								Swal.fire({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Di Proses",
-									icon: "error",
+									title: "Ditolak!",
+									text: "Dokumen telah ditolak",
+									icon: "info",
 									timer: 1500,
 									showConfirmButton: false
+								}).then(() => {
+									if (typeof list_view === 'function') {
+										list_view();
+									} else {
+										location.reload();
+									}
 								});
-								console.log(msg);
+							} else {
+								Swal.fire({
+									title: "Gagal!",
+									text: "Data Gagal Ditolak",
+									icon: "error"
+								});
 							}
-						});
-					}
-				});
+						},
+						error: function(msg) {
+							Swal.fire({
+								title: "Gagal!",
+								text: "Ajax Data Gagal Diproses",
+								icon: "error"
+							});
+						}
+					});
+				}
 			});
 		}
 

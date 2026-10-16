@@ -4,48 +4,50 @@ $ENABLE_MANAGE  = has_permission('Kasbon.Manage');
 $ENABLE_VIEW    = has_permission('Kasbon.View');
 $ENABLE_DELETE  = has_permission('Kasbon.Delete');
 ?>
-<div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<div class="box">
-	<div class="box-header">
+<div id="alert_edit" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;"></div>
+
+<div class="card shadow-sm border-0 mb-4 box">
+	<div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+		<h5 class="card-title mb-0 fw-bold text-primary">
+			<i class="fa fa-money-bill-wave me-2"></i>Daftar Kasbon
+		</h5>
 		<?php if ($ENABLE_ADD) : ?>
-			<div class="dropdown">
-				<button class="btn btn-success btn-sm" type="button" onclick="data_add()">
-					<i class="fa fa-plus">&nbsp;</i> Tambah
+			<div>
+				<button class="btn btn-success btn-sm shadow-sm" type="button" onclick="data_add()">
+					<i class="fa fa-plus me-1"></i> Tambah Kasbon
 				</button>
 			</div>
 		<?php endif; ?>
 	</div>
-	<!-- /.box-header -->
-	<div class="box-body">
+	<!-- /.card-header -->
+	<div class="card-body">
 		<div class="table-responsive">
-			<table id="mytabledata" class="table table-bordered table-striped">
-				<thead>
+			<table id="mytabledata" class="table table-bordered table-striped table-hover align-middle w-100">
+				<thead class="table-light text-center">
 					<tr>
-						<th width="5">#</th>
-						<th>No Kasbon</th>
-						<th>Tanggal</th>
-						<th>Nama</th>
-						<th>Keperluan</th>
-						<th>Status</th>
-						<th width="120">Action</th>
+						<th width="4%" class="text-center">#</th>
+						<th class="text-center">No Kasbon</th>
+						<th class="text-center">Tanggal</th>
+						<th class="text-center">Nama</th>
+						<th class="text-center">Keperluan</th>
+						<th class="text-center" width="16%">Status</th>
+						<th class="text-center text-nowrap" width="12%">Action</th>
 					</tr>
 				</thead>
 				<tbody>
-
 				</tbody>
 			</table>
 		</div>
 	</div>
-	<!-- /.box-body -->
+	<!-- /.card-body -->
 </div>
+
 <div id="form-data"></div>
-<!-- DataTables -->
+
+<!-- DataTables & Scripts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<!-- page script -->
+
 <script type="text/javascript">
 	var url_add = siteurl + 'expense/kasbon_create/';
 	var url_edit = siteurl + 'expense/kasbon_edit/';
@@ -55,13 +57,15 @@ $ENABLE_DELETE  = has_permission('Kasbon.Delete');
 	$(document).ready(function() {
 		datatables();
 
-		$('.chosen_select').chosen({
-			width: '100%'
-		});
-	})
+		if ($.fn.chosen) {
+			$('.chosen_select').chosen({
+				width: '100%'
+			});
+		}
+	});
 
 	function datatables() {
-		$('#mytabledata').dataTable({
+		$('#mytabledata').DataTable({
 			serverSide: true,
 			processing: true,
 			destroy: true,
@@ -76,14 +80,18 @@ $ENABLE_DELETE  = has_permission('Kasbon.Delete');
 					console.error("DataTable AJAX error: " + status + ": " + error);
 				}
 			},
-			columns: [{
-					data: 'no'
+			columns: [
+				{
+					data: 'no',
+					className: 'text-center'
 				},
 				{
-					data: 'no_kasbon'
+					data: 'no_kasbon',
+					className: 'text-center fw-bold'
 				},
 				{
-					data: 'tanggal'
+					data: 'tanggal',
+					className: 'text-center'
 				},
 				{
 					data: 'nama'
@@ -92,10 +100,13 @@ $ENABLE_DELETE  = has_permission('Kasbon.Delete');
 					data: 'keperluan'
 				},
 				{
-					data: 'status'
+					data: 'status',
+					className: 'text-center'
 				},
 				{
-					data: 'action'
+					data: 'action',
+					className: 'text-center text-nowrap',
+					orderable: false
 				}
 			]
 		});

@@ -19,6 +19,7 @@
                     <th class="text-center">Currency</th>
                     <th class="text-center">Total Invoice</th>
                     <th class="text-center">Requestor</th>
+                    <th class="text-center">Supplier</th>
                     <th class="text-center">Option</th>
                 </tr>
             </thead>
@@ -172,6 +173,9 @@
                 },
                 {
                     data: 'requestor'
+                },
+                {
+                    data: 'supplier'
                 },
                 {
                     data: 'option',

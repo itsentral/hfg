@@ -560,7 +560,7 @@ function getStokBarang($id_gudang)
 											b.konversi
 										')
 		->join('accessories b', 'a.id_material=b.id')
-		->get_where('warehouse_stock a', array('a.id_gudang' => $id_gudang))->result_array();
+		->get_where('warehouse_stock_non_material a', array('a.id_gudang' => $id_gudang))->result_array();
 	$ArrGetCategory 	= [];
 	foreach ($listGetCategory as $key => $value) {
 		$stok_packing = 0;
@@ -587,7 +587,7 @@ function getStokBarang2($id_gudang)
 											b.konversi
 										')
 		->join('accessories b', 'a.id_material=b.id')
-		->get_where('warehouse_stock a', array('a.id_gudang' => $id_gudang))->result_array();
+		->get_where('warehouse_stock_non_material a', array('a.id_gudang' => $id_gudang))->result_array();
 	$ArrGetCategory 	= [];
 	foreach ($listGetCategory as $key => $value) {
 		$stok_packing = 0;
@@ -613,9 +613,8 @@ function getStokBarangAll()
 											b.konversi
 										')
 		->group_by('a.id_material')
-		->where_in('a.id_gudang', [1])
 		->join('accessories b', 'a.id_material=b.id')
-		->get('warehouse_stock a')
+		->get('warehouse_stock_non_material a')
 		->result_array();
 	$ArrGetCategory 	= [];
 	foreach ($listGetCategory as $key => $value) {
@@ -1606,7 +1605,7 @@ function move_warehouse_stok_adjustment($ArrUpdateStock = null, $id_gudang_dari 
 	foreach ($temp as $key => $value) {
 		//PENGURANGAN GUDANG
 		if ($id_gudang_dari != null) {
-			$rest_pusat = $CI->db->get_where('warehouse_stock', array('id_gudang' => $id_gudang_dari, 'id_material' => $key))->result();
+			$rest_pusat = $CI->db->get_where('warehouse_stock_non_material', array('id_gudang' => $id_gudang_dari, 'id_material' => $key))->result();
 
 			if (!empty($rest_pusat)) {
 				$ArrStock[$key]['id'] 			= $rest_pusat[0]->id;
@@ -1668,7 +1667,7 @@ function move_warehouse_stok_adjustment($ArrUpdateStock = null, $id_gudang_dari 
 
 		//PENAMBAHAN GUDANG
 		if ($id_gudang_ke != null) {
-			$rest_pusat = $CI->db->get_where('warehouse_stock', array('id_gudang' => $id_gudang_ke, 'id_material' => $key))->result();
+			$rest_pusat = $CI->db->get_where('warehouse_stock_non_material', array('id_gudang' => $id_gudang_ke, 'id_material' => $key))->result();
 
 			if (!empty($rest_pusat)) {
 				$ArrStock2[$key]['id'] 			= $rest_pusat[0]->id;
@@ -1769,32 +1768,38 @@ function move_warehouse_stok_adjustment($ArrUpdateStock = null, $id_gudang_dari 
 	// exit;
 
 	if (!empty($ArrStock)) {
-		$CI->db->update_batch('warehouse_stock', $ArrStock, 'id');
+		$CI->db->update_batch('warehouse_stock_non_material', $ArrStock, 'id');
 	}
 	if (!empty($ArrHist)) {
-		$CI->db->insert_batch('warehouse_history', $ArrHist);
+		$CI->db->insert_batch('warehouse_history_non_material', $ArrHist);
 	}
 
 	if (!empty($ArrStockInsert)) {
-		$CI->db->insert_batch('warehouse_stock', $ArrStockInsert);
+		$CI->db->insert_batch('warehouse_stock_non_material', $ArrStockInsert);
 	}
 	if (!empty($ArrHistInsert)) {
-		$CI->db->insert_batch('warehouse_history', $ArrHistInsert);
+		$CI->db->insert_batch('warehouse_history_non_material', $ArrHistInsert);
 	}
 
 	if (!empty($ArrStock2)) {
-		$CI->db->update_batch('warehouse_stock', $ArrStock2, 'id');
+		$CI->db->update_batch('warehouse_stock_non_material', $ArrStock2, 'id');
 	}
 	if (!empty($ArrHist2)) {
-		$CI->db->insert_batch('warehouse_history', $ArrHist2);
+		$CI->db->insert_batch('warehouse_history_non_material', $ArrHist2);
 	}
 
 	if (!empty($ArrStockInsert2)) {
-		$CI->db->insert_batch('warehouse_stock', $ArrStockInsert2);
+		$CI->db->insert_batch('warehouse_stock_non_material', $ArrStockInsert2);
 	}
 	if (!empty($ArrHistInsert2)) {
-		$CI->db->insert_batch('warehouse_history', $ArrHistInsert2);
+		$CI->db->insert_batch('warehouse_history_non_material', $ArrHistInsert2);
 	}
+}
+
+
+function move_warehouse_stok_non_material($ArrUpdateStock = null, $id_gudang_dari = null, $id_gudang_ke = null, $kode_trans = null, $keterangan = null)
+{
+	return move_warehouse_stok_adjustment($ArrUpdateStock, $id_gudang_dari, $id_gudang_ke, $kode_trans, $keterangan);
 }
 
 function generateNoTransaksi()

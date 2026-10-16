@@ -10,9 +10,12 @@
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-md-2 mt-3">
+        <div class="col-md-3 mt-3 d-flex align-items-center gap-2">
             <button type="button" class="btn btn-sm btn-primary search_dp">
                 <i class="fa fa-search"></i> Cari
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary reset_dp" id="btn_reset_dp" style="display: none;">
+                <i class="fa fa-undo"></i> Reset
             </button>
         </div>
     </div>
@@ -207,6 +210,31 @@
             cache: false,
             success: function(result) {
                 // Ganti seluruh col_table dengan hasil partial
+                $('.col_table').html(result);
+            },
+            error: showAjaxError
+        });
+    });
+
+    $(document).on('change', '#select_supplier', function() {
+        if ($(this).val()) {
+            $('#btn_reset_dp').show();
+        } else {
+            $('#btn_reset_dp').hide();
+        }
+    });
+
+    $(document).on('click', '.reset_dp', function() {
+        $('#select_supplier').val('').trigger('chosen:updated').trigger('change');
+        $('#btn_reset_dp').hide();
+        $.ajax({
+            type: 'POST',
+            url: siteurl + active_controller + 'search_dp',
+            data: {
+                kode_supplier: ''
+            },
+            cache: false,
+            success: function(result) {
                 $('.col_table').html(result);
             },
             error: showAjaxError
