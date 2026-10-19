@@ -15,21 +15,31 @@ if (!empty($coa_list)) {
 }
 
 // Status Badges
-function get_status_badge($status) {
+function get_status_badge($status)
+{
     switch ($status) {
-        case 'draft': return '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="fa fa-pencil me-1"></i>Draft</span>';
-        case 'waiting approval': return '<span class="badge bg-info text-dark px-3 py-2 rounded-pill"><i class="fa fa-clock-o me-1"></i>Waiting Approval</span>';
-        case 'approved': return '<span class="badge bg-success px-3 py-2 rounded-pill"><i class="fa fa-check-circle me-1"></i>Approved</span>';
-        case 'reject': return '<span class="badge bg-danger px-3 py-2 rounded-pill"><i class="fa fa-times-circle me-1"></i>Reject</span>';
-        default: return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars($status) . '</span>';
+        case 'draft':
+            return '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="fa fa-pencil me-1"></i>Draft</span>';
+        case 'waiting approval':
+            return '<span class="badge bg-info text-dark px-3 py-2 rounded-pill"><i class="fa fa-clock-o me-1"></i>Waiting Approval</span>';
+        case 'approved':
+            return '<span class="badge bg-success px-3 py-2 rounded-pill"><i class="fa fa-check-circle me-1"></i>Approved</span>';
+        case 'reject':
+            return '<span class="badge bg-danger px-3 py-2 rounded-pill"><i class="fa fa-times-circle me-1"></i>Reject</span>';
+        default:
+            return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars($status) . '</span>';
     }
 }
 
-function get_journal_badge($status) {
+function get_journal_badge($status)
+{
     switch ($status) {
-        case 'success': return '<span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill"><i class="fa fa-check me-1"></i>Success</span>';
-        case 'failed': return '<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill"><i class="fa fa-exclamation-circle me-1"></i>Failed</span>';
-        default: return '<span class="badge bg-light text-muted border px-3 py-1 rounded-pill"><i class="fa fa-clock-o me-1"></i>Pending</span>';
+        case 'success':
+            return '<span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill"><i class="fa fa-check me-1"></i>Success</span>';
+        case 'failed':
+            return '<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill"><i class="fa fa-exclamation-circle me-1"></i>Failed</span>';
+        default:
+            return '<span class="badge bg-light text-muted border px-3 py-1 rounded-pill"><i class="fa fa-clock-o me-1"></i>Pending</span>';
     }
 }
 ?>
@@ -45,7 +55,7 @@ function get_journal_badge($status) {
                     <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
-                    <i class="fa fa-money"></i>
+                    <i class="fas fa-money-bill-alt"></i>
                 </div>
             </div>
         </div>
@@ -162,7 +172,8 @@ function get_journal_badge($status) {
                 </thead>
                 <tbody>
                     <?php if (!empty($details)) : ?>
-                        <?php $no = 1; foreach ($details as $detail) : ?>
+                        <?php $no = 1;
+                        foreach ($details as $detail) : ?>
                             <tr>
                                 <td class="text-center fw-semibold text-muted"><?= $no++ ?></td>
                                 <td><?= isset($coa_map[$detail->coa_code]) ? htmlspecialchars($coa_map[$detail->coa_code]) : htmlspecialchars($detail->coa_code) ?></td>
@@ -189,7 +200,9 @@ function get_journal_badge($status) {
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
-                        <tr><td colspan="8" class="text-center text-muted py-3">Tidak ada data rincian pengeluaran</td></tr>
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-3">Tidak ada data rincian pengeluaran</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
                 <tfoot class="table-light">
