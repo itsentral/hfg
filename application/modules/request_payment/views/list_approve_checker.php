@@ -34,7 +34,7 @@ foreach ($data as $item) :
     if (in_array($item->tipe, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
         $count_pembayaran_po += 1;
     }
-    if ($item->tipe == 'direct_payment') {
+    if ($item->tipe == 'direct_payment' || $item->tipe == 'Cash') {
         $count_direct_payment += 1;
     }
     if (in_array($item->tipe, $ros_payment_types)) {
@@ -202,7 +202,7 @@ endforeach;
                                 echo '<td class="text-end fw-semibold">' . number_format($item_transportasi->jumlah) . '</td>';
                                 echo '<td class="text-center">' . $item_transportasi->tanggal . '</td>';
                                 echo '<td class="text-center">';
-                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_transportasi->no_doc, 'ids' => $item_transportasi->ids])->row_array();
+                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_transportasi->no_doc])->row_array();
 
                                 if ($item_transportasi->status == '0' || empty($get_sts_payment)) {
                                     echo ($item_transportasi->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
@@ -264,7 +264,7 @@ endforeach;
                                 echo '<td class="text-end fw-semibold">' . number_format($item_kasbon->jumlah) . '</td>';
                                 echo '<td class="text-center">' . $item_kasbon->tanggal . '</td>';
                                 echo '<td class="text-center">';
-                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_kasbon->no_doc, 'ids' => $item_kasbon->ids])->row_array();
+                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_kasbon->no_doc])->row_array();
 
                                 if ($item_kasbon->status == '0' || empty($get_sts_payment)) {
                                     echo ($item_kasbon->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
@@ -351,7 +351,7 @@ endforeach;
                                     echo '<td class="text-end fw-semibold">' . number_format($item_expense->jumlah) . '</td>';
                                     echo '<td class="text-center">' . $item_expense->tanggal . '</td>';
                                     echo '<td class="text-center">';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
+                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc])->row_array();
 
                                     if ($item_expense->status == '0' || empty($get_sts_payment)) {
                                         echo ($item_expense->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
@@ -412,7 +412,7 @@ endforeach;
                                 echo '<td class="text-end fw-semibold">' . number_format($item_periodik->jumlah) . '</td>';
                                 echo '<td class="text-center">' . $item_periodik->tanggal . '</td>';
                                 echo '<td class="text-center">';
-                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_periodik->no_doc, 'ids' => $item_periodik->ids])->row_array();
+                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_periodik->no_doc])->row_array();
 
                                 if ($item_periodik->status == '0' || empty($get_sts_payment)) {
                                     echo ($item_periodik->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
@@ -489,7 +489,7 @@ endforeach;
                                     echo '<td class="text-center">' . $item_expense->tanggal . '</td>';
                                     echo '<td>' . $po_note . '</td>';
                                     echo '<td class="text-center">';
-                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
+                                    $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc])->row_array();
 
                                     if ($item_expense->status == '0' || empty($get_sts_payment)) {
                                         echo ($item_expense->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
@@ -638,7 +638,7 @@ endforeach;
                     <tbody>
                         <?php
                         foreach ($data as $item_dp) :
-                            if ($item_dp->tipe == 'direct_payment') {
+                            if ($item_dp->tipe == 'direct_payment' || $item_dp->tipe == 'Cash') {
                                 echo '<tr>';
                                 echo '<td class="text-center fw-semibold">' . $item_dp->no_doc . '</td>';
                                 echo '<td>' . $item_dp->nama . '</td>';
@@ -648,7 +648,7 @@ endforeach;
                                 echo '<td class="text-end fw-semibold">' . number_format($item_dp->jumlah) . '</td>';
                                 echo '<td class="text-center">' . $item_dp->tanggal . '</td>';
                                 echo '<td class="text-center">';
-                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_dp->no_doc, 'ids' => $item_dp->ids])->row_array();
+                                $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_dp->no_doc])->row_array();
 
                                 if ($item_dp->status == '0' || empty($get_sts_payment)) {
                                     echo ($item_dp->status == '9') ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-info text-dark">Open</span>';
