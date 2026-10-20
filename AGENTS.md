@@ -21,7 +21,7 @@ Repository ini mengintegrasikan rancangan konsep **Business Analyst (BA)** dan i
 
 ### Prinsip Vibe Coding Bersama AI:
 1. **Spec-Driven Development:** Programmer dan AI **TIDAK BOLEH** mengarang alur bisnis, status transaksi, rumus perhitungan, atau nama field sendiri jika fitur bersangkutan sudah/sedang didefinisikan di dalam `specs/`. Selalu rujuk ke dokumen terkait di `specs/docs/` atau `specs/pm/`.
-2. **Skema Database:** Sebelum membuat query create/alter tabel database, **WAJIB** mencocokkan dengan ERD di `specs/docs/diagrams/` atau spesifikasi field di `specs/docs/fr-nfr.md`.
+2. **Skema Database:** Sebelum membuat query create/alter tabel database, **WAJIB** mencocokkan dengan ERD di `specs/docs/diagrams/` atau spesifikasi field di `specs/docs/fr-nfr.md`. **Nama tabel dan kolom di kode, migrasi, dan query HARUS persis sama dengan ERD** untuk data yang berasal dari database; bila berbeda, perbaiki ERD (jika ringkas/keliru) atau tabelnya, jangan membuat alias diam-diam (label tampilan di UI boleh berbeda).
 3. **Mockup UI:** Gunakan `specs/ui-mockup/` sebagai acuan komponen form, tabel, filter, dan penamaan tombol sebelum membuat view CodeIgniter di `application/modules/`.
 4. **Siklus Kerja Kolaborasi:**
    - **Tahap BA:** BA mematangkan konsep di `specs/` (FR/NFR, BPMN, ERD, UI Mockup).

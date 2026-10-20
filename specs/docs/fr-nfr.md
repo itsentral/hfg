@@ -374,6 +374,9 @@ bawah adalah yang tertulis di sheet **Simulasi Program** / **Simulasi Costing**;
 2%, Rp200/Kg, faktor 1,5) adalah **contoh isian master**, bukan konstanta — lihat NFR-12.
 Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat di UC-N05–UC-N14.
 
+> **Direvisi 2026-10-19:** beberapa rumus dan aktor di bawah digantikan oleh BPMN/Use Case/ERD
+> Rev.1 — baca bagian "Revisi Rev.1" (sebelum "Open questions Product Costing") terlebih dahulu.
+
 **Keputusan user 2026-10-07:**
 
 - Master data Product Costing **dibangun dan diisi lewat UI** (membalik keputusan 2026-09-21).
@@ -484,6 +487,168 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   pada laporan yang sudah ada (keputusan user 2026-10-07). Mekanisme penyimpanan (salinan nilai
   ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
 
+### Revisi Rev.1 — Use Case, BPMN To Be, dan ERD Product Costing — 2026-10-19
+
+Sumber: `input/2026-10-19-product-costing-rev1/notes.md`, yang mencatat tiga file referensi utama
+(`input/Costing To Be D05-PTHFG.png`, `input/Rev.1 Use Case Product Costing.xlsx` UC-01–UC-19,
+`input/ERD Product Costing-Production Report.jpg`) dan jawaban user 2026-10-19. **Ketiganya
+dipakai sebagai referensi utama; jika berbeda dari FR-37–FR-49 di atas, bagian ini yang berlaku**,
+kecuali butir yang ditandai "menunggu open question" (belum boleh diimplementasi sebagai final).
+Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tetap terbaca.
+
+**Keputusan user 2026-10-19:**
+
+- Bottom Price = HPP + seluruh Other Cost (Σ Rate Other Cost × HPP); bukan perkalian.
+- Daftar Other Cost mengikuti **UC-09 (enam elemen)**: Sales & Marketing, Transport, Finance &
+  Admin, Management Fee, Interest, Profit. Daftar empat elemen di sheet *Istilah* dan BPMN usang.
+- Negotiation Allowance (Extra Margin) berupa **persentase**.
+- UC-13 langkah 4 berjudul "Biaya Proses": salah ketik, maksudnya Biaya Manufacturing Support.
+- ERD Rev.1 adalah referensi awal; entitas yang kurang dilengkapi tim pengembang (FR-50, FR-58).
+- `Varian type` pada BOM Header = **Varian Tebal**.
+- Price Reference hanya memakai nilai **Max** dari History Pembelian.
+
+**Peta perubahan terhadap FR-37–FR-49**
+
+| Topik | Versi 2026-10-07 | Rev.1 (berlaku) | Status |
+|---|---|---|---|
+| Berat/Meter | Atribut Master Material (FR-38) | Dihitung di BOM per varian tebal (FR-51) | Berlaku; Master Standard global (OQ 15) |
+| Price Reference | Pilih Harga Terakhir / Rata-rata, per material (FR-40) | Hanya Max History Pembelian × Kurs (FR-52) | Berlaku (user) |
+| Aktor Kurs & Price Reference | Accounting / Purchasing | Finance (UC-06) | Berlaku; role detail saat RBAC |
+| Aktor rate | Accounting | Costing (UC-07, 08, 09), Sales (UC-10) | Berlaku; role detail saat RBAC |
+| Consumables | % × Material Cost (FR-45) | Rate Rp/Kg × Berat/Meter (FR-54) | Berlaku (UC-08 menyebut Rp/Kg eksplisit) |
+| Rate FOH & Bahan Pendukung Khusus | Rp/meter langsung (FR-44) | **Rp/Kg**; Rp/Meter = Rate × Berat/Meter (UC-12) | Berlaku (user, OQ 14) |
+| Man Power Cost | Total Man Hour × Rate Man Power (FR-46) | Total Man Hour × Rate (UC-12 1.1 salah salin); bagian Borongan Rp/Meter → FR-56 | Berlaku (user, OQ 19) |
+| Man Power Rate | Komponen gaji/BPJS/lain-lain ÷ 173 jam × Faktor Indirect (FR-43) | (Rate 1/3 Operator + Rate Borongan Helper per kategori) × Faktor Indirect; rincian FR-43 hanya untuk Operator (FR-53) | Berlaku (user, OQ 13, 18); Borongan hanya Rp/Meter (user 2026-10-20) |
+| Satuan hasil | Rp/meter, lalu Rp/Kg (FR-46) | Setiap komponen dalam **dua satuan**: Rp/Kg dan Rp/Meter (FR-56) | Berlaku |
+| Other Cost | Enam elemen, % × HPP (FR-45) | Sama (UC-09, UC-15) | Konsisten |
+| Lebar produk | Tetap per produk (FR-37) | Memakai kolom `wide` yang sudah ada, mm (FR-64) | Berlaku (user, D1, 2026-10-20) |
+| Faktor Indirect Labor | Parameter pada Man Power Rate (FR-43) | Master tersendiri, global, dikelola Costing (FR-53) | Berlaku (user 2026-10-20) |
+| Negotiation Allowance | % global × Bottom Price (FR-45) | % **per Product Category** (FR-55) | Berlaku (user, OQ 16) |
+| Alur Pricelist | Tidak ada | Draft → Approval Management → Product Catalog (FR-58), per Produk × varian BOM, Product Catalog disimpan sebagai data | Berlaku (user, OQ 17) |
+| Kunci Flow & Rate FOH/BPK | Product Category (L2) | BPMN/UC: per Kategori Produk (ERD masih L4) | Konsisten dengan keputusan 2026-10-07; ERD digambar L2 |
+
+**Master data tambahan**
+
+- **FR-50** (UC-03) — **Master Standard Material** menyimpan Standar Toleransi, Standar Berat Jenis
+  Material Baja, dan Coating; dikelola Engineering dan dipakai FR-51. Master baru (belum ada di
+  ERD referensi). Nilainya **berlaku global** (satu set untuk semua material; user 2026-10-19).
+  **Satuan tidak ditampilkan** di UI karena klien tidak menginformasikannya; angka dipakai apa
+  adanya dan konversi satuan pada formula FR-51 dikalibrasi dengan contoh 0,14 mm × lebar 1219 ×
+  7,85 ≈ 1,34 kg/m (cek hasil dengan klien saat uji).
+- **FR-51** (UC-04) — **BOM per Varian Tebal**: Engineering memilih material dari Master Material
+  untuk setiap varian ketebalan. **Berat/Meter dihitung otomatis** =
+  `((Tebal Material − Standar Toleransi) × Lebar Coil × Standar Berat Jenis) + Coating`
+  (FR-50). Satu produk boleh punya beberapa BOM dengan material berbeda, tetapi **tidak boleh
+  membuat BOM dengan material yang sama dua kali** untuk produk yang sama (unik per
+  produk + material). Prasyarat: Master Produk (UC-01), Master Material (UC-02), Master Standard
+  (UC-03). Menggantikan atribut Berat/Meter pada Master Material (FR-38); kolom Tebal dan Lebar Coil
+  tetap di Master Material. Sebagai cek silang, contoh lama 0,14 mm × 1,219 m × 7,85 ≈ 1,34 kg/m.
+- **FR-52** (UC-06) — **Price Reference**: Finance memperbarui Kurs, lalu Price Reference USD/Kg
+  per material, **diacu dari History Pembelian dengan mengambil nilai tertinggi (Max)**. Sistem
+  menghitung Price Reference Rp/Kg = USD/Kg × Kurs. Nilai rata-rata dan terakhir pada ERD
+  tidak dipakai costing dan tidak ada pilihan pemakaian. Menggantikan FR-40 butir (b)–(d).
+
+**Master rate**
+
+- **FR-53** (UC-07) — Costing menetapkan rate biaya proses:
+  - **Man Power Rate (per Product Category)** terdiri dari dua bagian, lalu dikali **Faktor
+    Indirect Labor** (UC-07):
+    - **Rate 1/3 Operator (Rp/jam)** = Rate Direct Labor **Operator** (FR-43: rincian gaji/BPJS/
+      biaya lain ÷ jam kerja per bulan, contoh 173 jam) × **porsi operator 1/3**. Alasan user
+      2026-10-19: Operator dianggap hanya 1/3 bekerja langsung pada produk. Porsi disimpan sebagai
+      parameter (NFR-12). **Pembulatan:** Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh
+      **setelah** dikali 1/3 (user 2026-10-19), menggantikan pembulatan Rate Direct Labor di FR-43.
+    - **Rate Borongan Helper** diambil dari **master Borongan per Product Category** (master baru),
+      **hanya dalam Rp/Meter** (user 2026-10-20: standar selalu berawal dari Rp/Meter; tidak ada
+      Rp/Pcs dan tidak ada konversi dengan Panjang Produk).
+    - **Faktor Indirect Labor** adalah **master tersendiri** (global, satu nilai) yang dikelola Costing
+      karena nilainya dapat berubah (user 2026-10-20); **bukan per Product Category** dan hanya dipakai sebagai pengali pada Man Power Cost; bukan lagi parameter pada Man Power Rate. Nilai
+      mengalikan jumlah (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) (FR-56).
+      Perubahan nilai tidak mengubah Pricelist yang sudah diajukan dan laporan produksi yang sudah dibuat
+      (FR-49, NFR-09).
+    - Rincian gaji/BPJS/jam kerja FR-43 hanya berlaku untuk bagian Operator; "Rate Man Power
+      (Rp/jam)" tunggal pada FR-43 tidak lagi dipakai langsung (lihat FR-56).
+  - **Rate FOH** dan **Rate Bahan Pendukung Khusus** per Product Category dalam **Rp/Kg**
+    (menggantikan Rp/meter di FR-44); Rp/Meter dihitung `Rate Rp/Kg × Berat/Meter` (FR-56).
+- **FR-54** (UC-08) — Costing menetapkan **Rate Consumable (Rp/Kg)**, **Rate Scrap (% dari Material
+  Cost)**, dan **Rate Biaya Koordinasi (Rp/Kg)**; berlaku semua produk.
+- **FR-55** (UC-09, UC-10) — Rate Other Cost (% × HPP) untuk enam elemen UC-09 ditetapkan Costing;
+  **Rate Negotiation Allowance (Extra Margin, %)** ditetapkan Sales **per Product Category**
+  (user 2026-10-19; bukan lagi bagian Rate Generals). Rate Other Cost berlaku semua produk.
+
+**Kalkulasi (UC-11 s.d. UC-16)** — `BM` = Berat/Meter varian BOM yang dipilih (FR-51). Setiap
+komponen dihitung dalam **Rp/Meter dan Rp/Kg**; sistem mengambil rate Product Category dari produk.
+
+- **FR-56** —
+  - **Material Cost** (UC-11): Rp/Kg = Price Reference Rp/Kg material BOM (FR-52); Rp/Meter =
+    Price Reference × BM.
+  - **Biaya Proses** (UC-12): Man Power, Bahan Pendukung Khusus, FOH. Bahan Pendukung dan FOH:
+    Rp/Meter = Rate (Rp/Kg) × BM; Rp/Kg = Rp/Meter ÷ BM. **Man Power** (disetujui user
+    2026-10-19, OQ 19): Rp/Meter = `(Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) ×
+    Faktor Indirect Labor` (Rate Borongan Helper sudah Rp/Meter, FR-53); Rp/Kg = Rp/Meter
+    ÷ BM. Butir 1.1 UC-12 (Rate × Berat/Meter) salah salin (user 2026-10-19). Biaya Proses = jumlah
+    ketiganya, per satuan.
+  - **Manufacturing Support** (UC-13): Consumables Rp/Meter = Rate × BM, Rp/Kg = Rate (Rp/Kg);
+    **Scrap** = Rate Scrap × Material Cost (Rp/Meter dan Rp/Kg masing-masing); **Biaya
+    Koordinasi** Rp/Meter = Rate × BM, Rp/Kg = Rate. Manufacturing Support = jumlah ketiganya.
+  - **HPP** (UC-14) = Material Cost + Biaya Proses + Manufacturing Support, per satuan.
+- **FR-57** — **Bottom Price** (UC-15): untuk tiap elemen Other Cost, Other Cost = Rate × HPP
+  (per satuan); `Bottom Price = HPP + Σ Other Cost`. **Price List** (UC-16) = Bottom Price +
+  (Rate Negotiation Allowance % × Bottom Price), per satuan. Sales menerima Bottom Price, lalu
+  menjalankan perhitungan; hasilnya dicetak sebagai **Report Costing Detail/Produk**.
+
+**Alur Pricelist (UC-16 s.d. UC-19)**
+
+- **FR-58** — Sales menyusun **Draft Pricelist** dari hasil FR-57 dan mengirimkannya ke Management
+  (UC-17). Management memeriksa dan memutuskan **Approve** atau **Reject** (UC-19). **Reject**
+  mengembalikan pricelist ke perhitungan ulang (UC-16) lalu diajukan lagi; **Approve** memungkinkan
+  Sales **merilis Product Catalog** berisi harga yang disetujui (UC-18), yang diteruskan ke proses
+  Sales di luar alur ini. Hanya pricelist yang sudah Approve yang boleh dirilis; satu pricelist Approved boleh dirilis **berkali-kali** (user 2026-10-20) dan setiap rilis membuat Product Catalog (snapshot) baru (relasi pricelist → katalog 1 ke 0..N). Status yang
+  tersirat pada BPMN: Draft, Menunggu Approval, Approved, Rejected; tidak ada status lain
+  yang ditambahkan. Keputusan user 2026-10-19: pricelist **per Produk × varian BOM** (Rp/Meter dan
+  Rp/Kg); Management **wajib mengisi alasan Reject** yang disimpan; **Product Catalog disimpan
+  sebagai data** (snapshot harga yang disetujui, dengan pelepas dan waktu rilis). Versi dan periode
+  berlaku tidak diminta klien.
+
+**Aktor Rev.1 (menurut lane BPMN)**: Engineering (UC-01–05), Finance (UC-06), Costing (UC-07–09),
+Sales (UC-10, 16–18), Management (UC-19); perhitungan UC-11–15 dijalankan sistem dengan pemilik
+proses Accounting (asumsi di sheet Use Case: ikon roda gigi = otomatis).
+
+### Fungsi tambahan hasil review mockup — 2026-10-20
+
+Sumber: review mockup `ui-mockup/pc-*` oleh user dan klien (simulasi disetujui klien 2026-10-20). Melengkapi FR-50–FR-58; tidak
+menimpa teks sebelumnya. Fitur yang hanya ada di mockup (Simpan ke File / Muat dari File, kerangka tema) bukan requirement.
+**FR-53 sudah memuat Faktor Indirect Labor sebagai master global** dan **Rate Borongan Helper hanya Rp/Meter**; tidak diulang di sini.
+
+- **FR-59** (UC-N14, UC-13) — **Peringatan kelengkapan data costing.** Sistem menandai setiap varian BOM yang datanya belum
+  lengkap, menyebut apa yang kurang, dan menunjuk menu tempat mengisinya. Kekurangan yang dideteksi: Flow Process kategori
+  belum ada atau Total Man Hour 0; Rate BPK/FOH kategori belum ada; Rate Borongan Helper kategori belum ada atau kosong;
+  Negotiation Allowance kategori belum ada atau kosong; Price Reference kosong (History Pembelian tanpa nilai); Berat/Meter ≤ 0
+  (periksa Master Standard, tebal, lebar coil); Kurs USD belum ada; General Rate (Consumables, Scrap, Biaya Koordinasi) belum
+  diisi; Faktor Indirect Labor belum diisi atau ≤ 0; jam kerja per bulan atau porsi Operator tidak valid. Rate yang belum ada
+  tidak boleh dihitung diam-diam sebagai 0. Elemen Other Cost yang kosong tetap dianggap 0 (FR-45). **Draft Pricelist boleh
+  disimpan, tetapi tidak boleh diajukan ke Management (UC-13) selama ada baris yang tidak lengkap.**
+- **FR-60** (semua perhitungan) — **Pembulatan.** Semua nilai rupiah dihitung dan ditampilkan 2 desimal tanpa pembulatan,
+  **kecuali Rate 1/3 Operator** yang dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3 (FR-53). Menggantikan `{TBC}`
+  aturan pembulatan komponen lain pada NFR-11.
+- **FR-61** (UC-N05, UC-N06) — **Produk atau material yang sudah dipakai BOM tidak boleh dihapus** (periksa `ms_bom_header.id_produk`
+  / `ms_bom_detail.id_material`); sistem menolak dengan pesan. Pemakaian oleh transaksi lain (PR/PO/gudang) belum diperiksa
+  (keputusan D5, 2026-10-20).
+- **FR-62** (UC-N05, UC-N06) — **Nama otomatis dengan override manual.** Nama Level 4 produk disusun dari Product Type + Category +
+  Jenis + Tebal × Lebar × Panjang; Material Name dari Metal Type + Slitted/Mother + Boron + Tebal-Lebar Coil-Coating-Tensile.
+  Pengguna boleh menimpanya secara manual; nama yang sudah diedit manual tidak ditimpa lagi oleh penyusunan otomatis, dan
+  tersedia aksi "generate ulang" (keputusan D4).
+- **FR-63** (UC-N15) — **Master Standard Material** (melengkapi FR-50): satu baris global (upsert, id tetap), tanpa label satuan
+  di UI, tiga nilai desimal berpresisi `DECIMAL(14,6)`; setiap perubahan nilai dicatat before/after karena memengaruhi
+  Berat/Meter semua BOM (keputusan D6).
+- **FR-64** (UC-N05; **direvisi FR-37**) — **Lebar produk memakai kolom `wide` yang sudah ada** (satuan mm), bukan kolom `lebar`
+  baru (keputusan D1, 2026-10-20). Kolom itu juga dipakai menghitung CBM (panjang × lebar × tinggi kemasan) dan dibaca
+  modul lain, jadi bentuk dan satuannya tidak boleh diubah. Isi `wide` diperiksa setelah `SHOW CREATE TABLE` (D0) diterima.
+- **FR-65** (UC-N08, UC-N14) — **Tanggal dipilih lewat pemilih tanggal**, bukan teks bebas: Expired Price Reference dan filter
+  Range Date Simulasi Costing (format `YYYY-MM-DD`).
+- **FR-66** (UC-N05; data master, bukan aturan) — Contoh pilihan master level produk yang ditambahkan user: Product Type
+  **Baja Ringan** → Product Category **CANAL C** → Product Jenis **C75.70 B**.
+
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
 1. **RESOLVED 2026-10-07 — per Product Category (Level 2).** Pertanyaan semula: kunci rate
@@ -525,6 +690,38 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
     dan Engineering. Dicatat di UC-N05–UC-N14.
 11. **RESOLVED 2026-10-07 — disetujui.** Jawaban user: tiap baris punya satuan/jenis sendiri; Koordinasi Rp/Kg, lainnya persentase (FR-45). Pertanyaan semula: Header kolom `Rate/Meter` pada General Rate** salah label: isinya persentase dan Rp/Kg.
     Satuan tiap baris perlu menjadi bagian master (kolom satuan/jenis rate).
+
+**Open questions Rev.1 (2026-10-19)** — butir 1–7 pertanyaan sesi ini sudah dijawab user dan
+tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
+
+12. **RESOLVED 2026-10-19 — Total Man Hour × Rate Man Power; butir 1.1 UC-12 salah salin (FR-56).** Pertanyaan semula: **Rumus Man Power Cost (UC-12 butir 1.1).** Use Case menulis `Rp/Meter = Rate Man Power ×
+    Berat/Meter`, sedangkan BPMN (Total Man Hour/Kategori → Perhitungan Man Power Cost), ERD
+    (`Man Power Cost`: Total Man Hour, Rate Man Power) dan FR-46 memakai `Total Man Hour × Rate
+    Man Power (Rp/jam)`. UC-12 sendiri mensyaratkan UC-05 (Total Man Hour). Dugaan kami: salah
+    salin pola Rate × Berat/Meter. Konfirmasi: tetap Total Man Hour × Rate Man Power?
+13. **RESOLVED 2026-10-19 — rincian gaji/BPJS/173 jam tetap dipakai hanya untuk Operator; Helper dari master Borongan per Product Category (FR-53).** Pertanyaan semula: **Rumus Man Power Rate (UC-07).** Use Case: `(Rate 1/3 Operator + Rate Borongan Helper per
+    kategori produk) × Faktor Indirect Labor`. FR-43/ERD: Salary Direct + BPJS + Biaya Lain ÷ 173
+    jam × Faktor Indirect. Apa arti "1/3 Operator" dan "Borongan Helper", dan apakah rumus UC-07
+    **menggantikan** rincian gaji/BPJS (FR-43), atau Rate 1/3 Operator berasal dari rincian itu?
+14. **RESOLVED 2026-10-19 — Rp/Kg; Rp/Meter = Rate × Berat/Meter (FR-53, FR-56).** Pertanyaan semula: **Satuan Rate FOH dan Rate Bahan Pendukung Khusus.** FR-44 (jawaban 2026-10-07): Rp/meter
+    langsung. UC-12: `Rate × Berat/Meter` (berarti rate Rp/Kg). Mana yang berlaku? Jika Rp/Kg,
+    nilai contoh lama (150 dan 400 per meter) tidak lagi bisa dipakai.
+15. **RESOLVED 2026-10-19 — berlaku global; satuan tidak ditampilkan karena klien tidak menginformasikan (FR-50).** Pertanyaan semula: **Master Standard Material (UC-03).** Apakah Standar Toleransi, Berat Jenis, dan Coating
+    berlaku global, per Metal Type, atau per material? Satuan tiap nilai (Tebal dan Lebar dalam
+    mm atau m; Berat Jenis g/cm³; Coating dalam kg/m atau lainnya)? Tanpa ini relasi entitas dan
+    formula FR-51 belum bisa dipastikan.
+16. **RESOLVED 2026-10-19 — per Product Category (FR-55).** Pertanyaan semula: **Cakupan Negotiation Allowance.** ERD menaruhnya di Rate Generals (semua produk), sedangkan
+    UC-16 langkah 2 menulis "per Category Product". Global atau per Product Category? Apakah
+    Sales boleh mengubahnya per perhitungan pricelist atau hanya memakai nilai master (UC-10)?
+17. **RESOLVED 2026-10-19 — per Produk × varian BOM; alasan Reject disimpan; Product Catalog disimpan sebagai data (FR-58).** Pertanyaan semula: **Struktur Pricelist dan Product Catalog.** Apakah pricelist per Produk × varian BOM (per
+    Rp/Meter dan Rp/Kg), dan apakah Draft Pricelist perlu menyimpan alasan Reject, versi, dan
+    periode berlaku? Apakah Product Catalog disimpan sebagai data (snapshot harga yang disetujui)
+    atau cukup status "Released" pada pricelist?
+18. **RESOLVED 2026-10-19 — Rate 1/3 Operator = (Rate Direct Labor Operator ÷ 173 jam) × 1/3; Rate Borongan Helper Rp/Meter atau Rp/Pcs, dan Rp/Pcs ÷ Panjang Produk = Rp/Meter (FR-53). **Diubah 2026-10-20: Borongan hanya Rp/Meter, tanpa Rp/Pcs dan tanpa konversi.** Pertanyaan semula: **Arti "1/3 Operator" (UC-07, FR-53).** Kami menyimpannya sebagai
+    parameter porsi operator (nilai 1/3) yang mengalikan Rate Direct Labor Operator. Apakah itu
+    maksudnya (satu operator dibagi tiga mesin/lini), atau sudah nama baku dari rate lain? Satuan
+    Rate Borongan Helper kami asumsikan Rp/jam supaya bisa dijumlahkan dengan rate operator.
+19. **RESOLVED 2026-10-19 — rumus disetujui user; pembulatan sesudah dikali 1/3 (FR-53, FR-56).** `Man Power Cost (Rp/Meter) = (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) × Faktor Indirect Labor`; Total Man Hour hanya mengalikan bagian Operator. Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh **setelah** dikali 1/3 (tidak ada pembulatan lebih dulu pada Rate Direct Labor). Pertanyaan semula: **Rumus akhir Man Power Cost dengan Borongan Rp/Meter.** Angka acuan uji Man Power baru ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -595,12 +792,34 @@ yang sudah resolved di atas (± 0,7%).
   Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
   nilai lama tetap dapat ditelusuri. Fit criterion: untuk rate mana pun dapat ditampilkan siapa
   mengubahnya, kapan, dan nilai sebelumnya.
-- **NFR-11 (Akurasi kalkulasi).** Dengan input yang sama dengan sheet **Simulasi Program**,
-  sistem menghasilkan angka sheet **Simulasi Costing** (setelah temuan review baris `Type
-  001.2` dikoreksi) dengan selisih ≤ Rp0,01 per komponen: Rate Man Power Rp56.809,5/jam,
-  Man Power Cost Rp39,45/meter, Material Cost `Type 001.1` Rp17.641,14/meter, Price List/Meter
-  `Type 001.1` Rp21.756,15. Rate Direct Labor dibulatkan ke atas ke Rupiah penuh (FR-43);
-  aturan pembulatan komponen lain `{TBC}`.
+- **NFR-11 (Akurasi kalkulasi).** Angka acuan uji adalah **simulasi yang disetujui klien pada 2026-10-20** (data contoh mockup
+  `ui-mockup/pc-data.js`, menggantikan angka lama sheet Simulasi Costing dan angka sementara `{TBC}`). Dengan input yang sama,
+  sistem menghasilkan angka berikut dengan selisih ≤ Rp0,01 per komponen. **Input kunci:** Kurs USD Rp17.863; Berat Jenis 7,85,
+  Toleransi 0, Coating 0, Lebar Coil 1219; Price Reference = USD/Kg Max History Pembelian (Type 001.1: 0,81; Type 001.2: 0,80);
+  Rate 1/3 Operator Rp12.625/jam (Total Direct Labor Operator Rp6.551.982,55/bulan ÷ 173 × 1/3, dibulatkan ke atas);
+  Total Man Hour 0,000694 jam/meter (cycletime 1/24 menit/meter × 1 orang ÷ 60); Rate Borongan Helper Rp25/Meter; Faktor
+  Indirect Labor 1,5; BPK Rp110/Kg; FOH Rp300/Kg; Consumables Rp300/Kg; Koordinasi Rp200/Kg; Scrap 2%; Other Cost hanya Profit 5%;
+  Negotiation Allowance 5%. **Hasil (Rp/Meter):**
+
+  | Komponen | Type 001.1 (0,14 mm) | Type 001.2 (0,15 mm) |
+  |---|---:|---:|
+  | Berat/Meter (kg/m) | 1,3397 | 1,4354 |
+  | Material Cost | 19.383,88 | 20.512,05 |
+  | Man Power Cost | 50,65 | 50,65 |
+  | Bahan Pendukung Khusus / FOH | 147,36 / 401,90 | 157,89 / 430,61 |
+  | Biaya Proses | 599,92 | 639,15 |
+  | Consumables / Scrap / Koordinasi | 401,90 / 387,68 / 267,94 | 430,61 / 410,24 / 287,07 |
+  | Manufacturing Support | 1.057,52 | 1.127,93 |
+  | HPP | 21.041,32 | 22.279,13 |
+  | Other Cost (Profit 5%) | 1.052,07 | 1.113,96 |
+  | Bottom Price | 22.093,39 | 23.393,08 |
+  | Negotiation Allowance (5%) | 1.104,67 | 1.169,65 |
+  | **Price List/Meter** | **23.198,06** | **24.562,74** |
+  | Price List/Kg | 17.316,11 | 17.112,45 |
+
+  Angka ini data contoh yang disetujui klien sebagai acuan uji; bukan rate produksi. Rate 1/3 Operator dibulatkan ke atas ke
+  Rupiah penuh sesudah dikali 1/3 dan komponen lain 2 desimal tanpa pembulatan (FR-53, FR-60). Rumus lama (Rate Man Power
+  Rp56.809,5/jam; Price List `Type 001.1` Rp21.756,15; Material Cost Rp17.641,14) tidak berlaku lagi.
 - **NFR-12 (Tanpa angka tertanam).** Seluruh persentase, Rp/Kg, faktor, dan konstanta (Faktor
   Indirect Labor, 173 jam, Consumables, Scrap, Koordinasi, Other Cost, Negotiation Allowance)
   dibaca dari master, tidak ditulis di kode. Fit criterion: mengubah nilai di master mengubah
@@ -615,6 +834,13 @@ yang sudah resolved di atas (± 0,7%).
   menunjuk varian BOM (No. Uniq ID) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
   dari satu baris item dapat dibuka kembali seluruh rumus FR-46/FR-48 beserta input yang sama
   dan hasilnya sama dengan yang tersimpan.
+
+- **NFR-15 (Konsistensi nama ERD dan kode).** Untuk data yang berasal dari database, nama tabel dan kolom di kode, migrasi,
+  dan query harus persis sama dengan ERD (`docs/diagrams/erd.drawio`) (user 2026-10-20). Bila berbeda, ERD diperbaiki (jika
+  ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda; keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
+  walkthrough tiap fitur, setiap kolom yang dipakai dicocokkan dengan ERD dan selisihnya nol. Tabel yang sudah ada di aplikasi
+  (`product_lvl_4`, `new_inventory_4`) digambar ringkas sampai `SHOW CREATE TABLE` dikonfirmasi; pemetaannya di
+  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md`.
 
 ## Status
 
@@ -642,3 +868,14 @@ Category; Tebal/Panjang tetap di Master Produk; Berat per Pcs = Berat/Meter vari
 Rate Scrap dari Rate Generals; BPJS manual dan 173 jam parameter; Width 1219; Pricelist HFG
 27.400 Rp/Meter; satuan per baris General Rate). FR-37–FR-47 sudah di-decompose ke
 UC-N05–UC-N14. Rumus per pcs di Laporan Produksi mengikuti mock up sebelumnya (di luar FR-37–FR-49).
+
+**Pembaruan 2026-10-19 (Product Costing Rev.1).** BPMN To Be, Use Case UC-01–UC-19, dan ERD baru
+(`input/2026-10-19-product-costing-rev1/`) menjadi referensi utama. FR-50–FR-58 ditambahkan
+("Revisi Rev.1"); FR-38, FR-40, FR-43, FR-44, FR-45, FR-46 sebagian digantikan menurut peta perubahan di
+sana. Open question 12–17 dijawab user 2026-10-19 (ronde kedua) dan sudah masuk FR-50–FR-58; yang
+**tidak ada open question Product Costing yang masih terbuka** (OQ 18 dan 19 dijawab 2026-10-19);
+angka acuan uji ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Pembaruan 2026-10-20.** FR-59–FR-66 (fungsi hasil review mockup) dan NFR-15 (nama kolom = ERD) ditambahkan; NFR-11 memakai angka
+simulasi yang disetujui klien; Lebar produk memakai kolom `wide` (FR-64). Perubahan lain hari itu: Rate Borongan Helper hanya
+Rp/Meter dan Faktor Indirect Labor master global (FR-53).

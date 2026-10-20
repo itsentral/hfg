@@ -43,6 +43,154 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-20** `[STATUS][FEAT-03]` **Kode FEAT-03 ditulis, menunggu uji database.** Modul baru `master_standard_material`
+  (tabel kolom persis ERD, migrasi + rollback, permission/menu tanpa penetapan role, `restrict` di index dan save, log
+  before/after); `product_master` dan `material_master` diperluas (validasi server, blokir hapus bila dipakai BOM aktif,
+  log `array_merge`, nama otomatis dengan override). `php -l` bersih; SQL tidak dijalankan (tidak ada akses database).
+  Aturan baru user dicatat (NFR-15, `general-rules.md`, `AGENTS.md`): nama kolom di program harus sama dengan ERD; tabel lama
+  memakai nama nyata sehingga ERD yang menyesuaikan (`wide`; `code_lv*`; `new_inventory_4`) setelah D0. FR-59–FR-66 dan
+  angka acuan NFR-11 (simulasi disetujui klien) dicatat. `[TODO]` jalankan migrasi di database uji lalu ikuti walkthrough;
+  kirim hasil `SHOW CREATE TABLE`; putuskan penunjuk ke produk di tabel baru (`id_product_lvl_4` vs `code_lv4`).
+
+- **2026-10-20** `[STATUS]` **Master level produk (mockup) ditambah Product Type "Baja Ringan" → Category "CANAL C" → Jenis
+  "C75.70 B"** (`pc-pages.js` `LV_EXTRA`) atas permintaan user; hanya pilihan master, belum ada produk contoh.
+  Diuji: tampil di filter daftar dan form tambah (cascade Type→Category→Jenis), nama otomatis terbentuk.
+
+- **2026-10-20** `[STATUS]` **Sinkronisasi dokumen poin A.** Aturan baru: nama tabel/kolom di kode = ERD (NFR-15; `AGENTS.md`,
+  `context/general-rules.md`). `docs/fr-nfr.md`: FR-59–FR-66 (peringatan kelengkapan + blokir ajukan Pricelist, pembulatan, blokir
+  hapus bila dipakai BOM, nama otomatis, Master Standard presisi, Lebar = `wide` [D1, direvisi FR-37], pemilih tanggal, contoh master
+  Baja Ringan) dan NFR-11 diganti angka acuan simulasi yang disetujui klien (Type 001.1 Price List 23.198,06; 001.2 24.562,74
+  Rp/Meter). ERD: `lebar` → `wide`. Workbook: UC-13/N05/N06/N08/N14/N15 dan PG-06 diperbarui. Mockup pc-produk: satu field Lebar,
+  CBM memakai `lebar ÷ 1000`, `dimL` dihapus (tanpa ganti kunci penyimpanan). Pemetaan nama kolom ERD↔kode:
+  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md`. Konsistensi ERD (26 entitas) = Entities = UC =
+  Pages = mockup = menu: nol selisih. `[TODO]` keputusan: penunjuk ke produk di tabel baru (`id_product_lvl_N` vs `code_lvN`),
+  nama entitas `material`/`bom_header` vs `new_inventory_4`/`ms_bom_header`; D0.
+
+- **2026-10-20** `[STATUS]` **Penyimpanan data mockup dibuat tahan refresh dan tahan pembaruan.** Kunci penyimpanan kini tetap
+  (`mockPC.data`, versi skema di dalam data + fungsi `migrate()`), tidak lagi dinaikkan tiap perubahan bentuk data (v3→v5
+  sebelumnya mereset isian user); data lama di `mockPC.v5` otomatis diadopsi. Tambahan: tombol "Simpan ke File" / "Muat
+  dari File" (cadangan JSON), dan peringatan bila penyimpanan browser tidak tersedia. Diuji: adopsi kunci lama, bertahan
+  setelah refresh, ekspor→impor, penolakan file salah, peringatan saat `setItem` diblokir; 23 halaman × 2 lebar tanpa masalah.
+  `[TODO]` perubahan bentuk data berikutnya wajib lewat `SCHEMA` + `migrate()`, bukan ganti kunci.
+
+- **2026-10-20** `[DECISION][FEAT-05]` **Faktor Indirect Labor dijadikan master tersendiri** (user; nilainya bisa berubah),
+  global satu nilai, tidak per Product Category, hanya pengali di Man Power Cost (dikonfirmasi user). Diubah: FR-53, peta
+  perubahan, vocabulary, workbook (UC-N17 / PG-22, entitas `faktor_indirect_labor`; UC-N11/PG-13 tanpa faktor), ERD
+  (entitas baru; `man_power_cost` kolom `rate_1_3_operator` + FK faktor), mockup (`pc-faktor-indirect.html`, menu Rate,
+  kunci penyimpanan `mockPC.v5`, peringatan "Faktor belum diisi"). Diverifikasi: 23 halaman × 2 lebar tanpa masalah;
+  faktor 1,5 → Man Power 50,651 / Price List 23.198,06; faktor 2 → 67,535 / 23.216,67; snapshot PL-001 tetap.
+
+- **2026-10-20** `[STATUS]` **Faktor Indirect Labor dibuat terlihat di mockup Man Power Rate (Operator):** bagian 4 kini memuat baris
+  parameter Jam kerja per bulan, Porsi Operator, dan Faktor Indirect Labor (sebelumnya hanya di kalimat kecil dan modal
+  Edit Parameter); bagian 5 memuat kolom "Jumlah sebelum Faktor" dan "× Faktor Indirect Labor" sebelum Man Power Cost.
+  Angka tidak berubah (Type 001.1 Man Power 50,651).
+
+- **2026-10-20** `[DECISION][FEAT-05]` **Rate Borongan Helper hanya Rp/Meter, tanpa Rp/Pcs dan tanpa konversi** (user; standar
+  tetap berawal dari Rp/Meter). Menggantikan entri 2026-10-19 (Rp/Meter atau Rp/Pcs ÷ Panjang Produk). Diubah di
+  `docs/fr-nfr.md` (FR-53, FR-56, peta perubahan, catatan OQ 18), vocabulary, tracker, intake notes, workbook
+  (UC-N16, PG-21), ERD (kolom `satuan_borongan` dihapus). Mockup dikerjakan terpisah (seed Spandek 150 Rp/Pcs
+  ÷ 6 m → 25 Rp/Meter agar angka costing tidak berubah; mockup selesai dan diverifikasi: 22 halaman tanpa error JS,
+  angka Type 001.1 tidak bergeser, sisa "Rp/Pcs" di file pc* nol). `[TODO]` label `rate_man_power (Rp/jam, terhitung)` di
+  `man_power_cost` pada ERD tidak lagi menggambarkan rumus (tidak ada satu Rate Man Power Rp/jam); ganti
+  nama kolom saat poin "samakan ERD".
+
+- **2026-10-20** `[STATUS]` **Kerangka tema Berry (sidebar, top bar, breadcrumb) dipasang di 22 mockup** (16 `pc-*` + 6
+  Produksi) atas permintaan user; isi dan rumus tidak berubah. File baru `ui-mockup/berry-shell.js`,
+  `berry-shell.css`, `berry-shell-shadow.css`, `berry-vars.css`; kerangka dirender di Shadow DOM agar CSS Berry
+  (Bootstrap 5) tidak bentrok dengan `styles.css`/`pc.css`. Memuat aset lewat jalur relatif `../../assets/berry/`.
+  Diverifikasi: 22 halaman × 2 lebar tanpa error JS atau aset gagal, tanpa halaman meluap, isi Produksi identik
+  dengan baseline, angka Type 001.1 tidak bergeser. `[TODO]` `berry-vars.css` salinan (buat ulang bila Berry
+  diperbarui); layar < 820px belum diuji; mockup bergantung pada `specs/` tetap di dalam repo.
+
+- **2026-10-20** `[STATUS]` **Semua layar `pc-*` ditata mengikuti layout modul aplikasi + peringatan kelengkapan.**
+  13 layar sisa dirapikan (acuan: mata_uang, price_ref_raw_material, master_rate_labor, purchase_request,
+  approval_po, dst.); mesin hitung menandai varian BOM yang rate/datanya belum lengkap (Flow, BPK/FOH, Borongan,
+  Negotiation, Price Reference, Panjang, Berat/Meter, Kurs, General Rate); Pricelist tidak bisa diajukan bila
+  ada baris tidak lengkap; semua rupiah 2 desimal, hanya Rate 1/3 Operator dibulatkan. Diverifikasi: 16 halaman
+  tanpa error JS, angka Type 001.1 tidak bergeser, peringatan muncul saat rate dihapus. `[TODO]` kolom Action
+  Simulasi terpotong di lebar 1500px; belum diuji di layar sempit. Selesai 2026-10-20: akar masalah = kolom grid
+  `1fr` melebar mengikuti tabel (halaman lebih lebar dari layar di 1280px); diperbaiki `minmax(0,1fr)` + judul kolom
+  boleh membungkus; tabel Simulasi dipadatkan. Dipindai 16 halaman di 1500/1440/1280px: tidak ada halaman atau tabel
+  yang meluap. Belum diuji di bawah 1280px / layar sempit.
+
+- **2026-10-20** `[DECISION][FEAT-03]` **Fokus digeser ke tampilan dan fungsi (rumus) di mockup `specs/`.** Kode
+  aplikasi (`application/`) dan migrasi FEAT-03 ditunda; D0 tidak lagi mendesak. `[DISCOVERY]` mesin hitung
+  mockup (`pc-data.js`) dibaca penuh dan dihitung ulang independen untuk Type 001.1: sesuai FR-51–57
+  (Berat/Meter 1,3397; Rate 1/3 Operator 12.625; Man Power 50,65; HPP 21.041,32; Bottom 22.093,39;
+  Price List 23.198,06 Rp/Meter).
+
+- **2026-10-20** `[DECISION][FEAT-03]` **Keputusan D1–D7 dijawab user; FEAT-03 planned.** Lebar produk memakai
+  ulang kolom `wide` (alternatif ditolak: kolom `lebar` baru, sehingga tidak ada ALTER pada `product_lvl_4`;
+  konsekuensi: `wide` juga dipakai menghitung CBM dan dibaca production_report). Level 1–3 tetap terpisah;
+  `weight` dibiarkan; nama otomatis; blokir hapus cek BOM dulu; Master Standard satu baris `DECIMAL(14,6)`;
+  permission ditetapkan ke group oleh user di program. D0 (SHOW CREATE TABLE) menunggu dari user.
+  `[TODO]` mulai dari Master Standard Material; periksa isi `wide` saat D0 diterima.
+
+- **2026-10-20** `[STATUS][FEAT-02]` **FEAT-02 ditutup (done).** User menyetujui peta UC→halaman di workbook dan
+  menetapkan rilis Product Catalog boleh berkali-kali (FR-58, UC-15, mockup `pc-catalog`: satu pricelist
+  Approved dirilis dua kali → dua katalog, diuji di Chrome headless). Mockup PG-01/02/03 dibatalkan karena
+  sudah ada di program (tiga file `unpack*` yang sempat dibuat dihapus); layar pc lain dibiarkan. Workbook
+  PG-01..03 dicatat "sudah ada di program". `[DISCOVERY]` riset kode FEAT-03: skema `product_lvl_4` /
+  `new_inventory_4` tidak ada di repo, Master Material tidak punya Berat/Meter, `lebar` produk belum ada
+  sebagai kolom, `ms_coating` ≠ Master Standard; `ms_bom_header` UNIQUE(id_produk) menghalangi banyak
+  varian BOM (FEAT-04). Plan FEAT-03 menyusul di `.artifacts/`.
+
+- **2026-10-20** `[DECISION][FEAT-02]` **Keputusan mockup user.** Layar pc lain (Flow, Kurs, Price Reference,
+  Man Power, BPK/FOH, General Rate, Negotiation, Simulasi, Pricelist, Approval, Catalog) dibiarkan dulu;
+  butir "Master Produk" kedua = Master Material. Riset kode FEAT-03 (modul CI3 yang ada vs ERD) dimulai.
+
+- **2026-10-20** `[DECISION][FEAT-02]` **UC-N11 dipecah; mockup tiga layar mengikuti layout modul aplikasi.**
+  Rate Borongan Helper menjadi UC-N16 / PG-21 / menu sendiri (`pc-borongan.html`); UC-N11 hanya Operator
+  (PG-13). `pc-produk`, `pc-material`, `pc-bom` ditata seperti modul `product_master`, `material_master`,
+  `bom` (isi tetap Rev.1; aplikasi tidak diubah, 16 halaman termuat tanpa error JS). Modul Produksi,
+  `rate.html`, dan `pc-standard` sengaja tidak diubah. `[TODO]` user memutuskan layar pc lain (Flow, Kurs,
+  Price Reference, BPK/FOH, General Rate, Negotiation, Simulasi, Pricelist, Approval, Catalog): pakai ulang /
+  perluas / baru; pesan butir 5 terpotong.
+
+- **2026-10-20** `[DECISION][FEAT-02]` **Standar `Halaman` + sheet `Pages` diadopsi dari `input/workbook.xlsx` (referensi OFC).**
+  Konvensi (`context/document-writer-only/workbook-conventions.md`) dan agent workbook diperbarui; workbook
+  kini punya kolom `Halaman` di kedua sheet UC dan sheet `Pages` (PG-01..PG-20, 30 UC; dicek dua arah, tanpa
+  Kode ganda). `[DISCOVERY]` aplikasi sudah punya modul CI3 yang tumpang tindih dengan Product Costing
+  (bom, product_master, material_master, price_ref_raw_material, master_rate_labor, mata_uang, master_coating);
+  `[TODO]` user menentukan tiap mockup .html dipakai ulang / diperluas / dibuat baru, dan memutuskan usulan
+  pecah/gabung UC (Report Costing Detail, UC-02/03 tanpa mockup, mockup tanpa UC: material, costbook, rate).
+
+- **2026-10-19** `[STATUS][FEAT-02]` **Workbook dan mockup Product Costing disinkronkan ke Rev.1.**
+  Workbook: UC-N05–N14 direvisi di tempat, UC-N15 dan UC-12–15 baru, 43 entitas (dimuat ulang dan
+  dicek). Mockup: 15 halaman `pc-*.html` (5 baru: standard, negotiation, pricelist, approval, catalog);
+  semua termuat tanpa error JS, alur Pricelist dijalankan end-to-end, angka Type 001.1 cocok dengan hitungan
+  tangan. `[TODO]` ERD menggambar pricelist→catalog 1–0..N sedangkan mockup 1–1 (satu rilis per
+  pricelist): samakan setelah user memutuskan; angka acuan NFR-11 Man Power baru dari klien.
+
+- **2026-10-19** `[DECISION][FEAT-02]` **Open question 19 disetujui user.** Rumus Man Power Cost usulan
+  diterima; Rate 1/3 Operator dibulatkan ke atas sesudah dikali 1/3. Angka acuan NFR-11 Man Power perlu
+  dihitung ulang (`[TODO]`).
+
+- **2026-10-19** `[DECISION][FEAT-02]` **Open question 18 dijawab; muncul open question 19.** Rate 1/3
+  Operator = (Rate Direct Labor Operator ÷ 173 jam) × 1/3; Rate Borongan Helper Rp/Meter atau Rp/Pcs
+  (Rp/Pcs ÷ Panjang Produk = Rp/Meter). Karena Borongan bukan Rp/jam, rumus Man Power Cost diusulkan
+  `(Total Man Hour × Rate 1/3 Operator + Borongan Rp/Meter) × Faktor Indirect` dan menunggu
+  konfirmasi (OQ 19); angka acuan NFR-11 Man Power ikut usang. ERD: `rate_borongan_helper` mendapat
+  `satuan_borongan`.
+
+- **2026-10-19** `[DECISION][FEAT-02]` **Open question 12–17 dijawab user (ronde 2).** Man Power Cost =
+  Total Man Hour × Rate (UC-12 1.1 salah salin); Man Power Rate = (Rate 1/3 Operator dari rincian
+  gaji/BPJS + Borongan Helper per Product Category) × Faktor Indirect; Rate FOH/Bahan Pendukung Rp/Kg;
+  Master Standard global tanpa satuan; Negotiation Allowance per Product Category; Pricelist per Produk ×
+  varian BOM dengan alasan Reject, Product Catalog disimpan sebagai data. ERD halaman Product Costing
+  diperbarui (render dicek); `[TODO]` OQ 18 (arti "1/3"), workbook, dan mockup `pc-*.html`.
+
+- **2026-10-19** `[STATUS][FEAT-02]` **Tahap 0 Product Costing Rev.1: spesifikasi diselaraskan.**
+  BPMN To Be, Use Case UC-01–UC-19, dan ERD baru dijadikan referensi utama (intake
+  `input/2026-10-19-product-costing-rev1/`). `docs/fr-nfr.md` mendapat bagian "Revisi Rev.1"
+  (FR-50–FR-58, peta perubahan) dan open question 12–17; 20 istilah masuk `vocabulary.md`;
+  FEAT-03–FEAT-08 dibuka sebagai backlog per tahap. `[DISCOVERY]` Use Case bertabrakan dengan
+  FR-37–FR-49 (2026-10-07) pada rumus Man Power Cost/Rate, satuan FOH/Bahan Pendukung, Berat/Meter,
+  dan Price Reference; yang jelas dari jawaban user diadopsi, sisanya dibiarkan terbuka.
+  `[DECISION]` Daftar Other Cost = enam elemen UC-09 (bukan empat di sheet *Istilah*/BPMN);
+  Price List = Bottom Price + % Negotiation Allowance × Bottom Price. `[TODO]` Workbook
+  UC-N05–UC-N14 dan mockup `pc-*.html` diselaraskan setelah open question 12–17 dijawab.
+
 - **2026-10-08** `[STATUS][FEAT-01]` **BOM: Berat/Meter di Daftar Material + material anti-double.**
   Dua permintaan user pada modal BOM: (1) tabel Daftar Material menampilkan kolom Berat/Meter
   (kg/m) read-only di sebelah Qty, terisi dari material terpilih dan ikut berubah saat material
