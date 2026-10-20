@@ -1,6 +1,6 @@
 /* ============================================================
-   pc-shell.js — Kerangka bersama menu Product Costing: top bar, menu samping,
-   binding input (data-path), aksi (data-act), simpan/reset, toast.
+   pc-shell.js — Kerangka bersama halaman Product Costing: isi halaman (sidebar + top bar dari
+   berry-shell.js), binding input (data-path), aksi (data-act), simpan/reset, toast.
    Tiap halaman: <body data-page="..."> dan pc-pages.js mendaftarkan isinya.
    ============================================================ */
 (() => {
@@ -9,27 +9,35 @@
 
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-  // Urutan menu = nomor di sheet "Simulasi Program" + Simulasi Costing. Kode UC = docs/workbook.xlsx.
+  // Urutan menu mengikuti alur BPMN To Be (Engineering → Finance → Costing → Accounting → Sales → Management).
+  // Kode UC = "Rev.1 Use Case Product Costing" (UC-01..UC-19).
   const MENU = [
     { group: "Master Data", items: [
-      { id: "produk", file: "pc-produk.html", label: "Master Produk", role: "Engineering", uc: "UC-N05" },
-      { id: "material", file: "pc-material.html", label: "Master Material", role: "Engineering", uc: "UC-N06" },
-      { id: "kurs", file: "pc-kurs.html", label: "Kurs", role: "Accounting", uc: "UC-N07" },
-      { id: "price", file: "pc-price-reference.html", label: "Price Reference", role: "Purchasing", uc: "UC-N08" },
-      { id: "bom", file: "pc-bom.html", label: "BOM Produk", role: "Engineering", uc: "UC-N09" },
+      { id: "produk", file: "pc-produk.html", label: "Master Produk", role: "Engineering", uc: "UC-01" },
+      { id: "material", file: "pc-material.html", label: "Master Material", role: "Engineering", uc: "UC-02" },
+      { id: "standard", file: "pc-standard.html", label: "Master Standard Material", role: "Engineering", uc: "UC-03" },
+      { id: "bom", file: "pc-bom.html", label: "BOM Produk", role: "Engineering", uc: "UC-04" },
+      { id: "flow", file: "pc-flow.html", label: "Flow Process & Cycletime", role: "Engineering", uc: "UC-05" },
+      { id: "kurs", file: "pc-kurs.html", label: "Kurs", role: "Finance", uc: "UC-06" },
+      { id: "price", file: "pc-price-reference.html", label: "Price Reference", role: "Finance", uc: "UC-06" },
     ] },
-    { group: "Proses & Rate", items: [
-      { id: "flow", file: "pc-flow.html", label: "Flow Process & Cycletime", role: "Engineering", uc: "UC-N10" },
-      { id: "mpr", file: "pc-man-power-rate.html", label: "Man Power Rate", role: "Accounting", uc: "UC-N11" },
-      { id: "bpkfoh", file: "pc-bpk-foh.html", label: "Rate Bahan Pendukung & FOH", role: "Accounting", uc: "UC-N12" },
-      { id: "general", file: "pc-general-rate.html", label: "General Rate", role: "Accounting", uc: "UC-N13" },
+    { group: "Rate", items: [
+      { id: "mpr", file: "pc-man-power-rate.html", label: "Man Power Rate (Operator)", role: "Costing", uc: "UC-07" },
+      { id: "borongan", file: "pc-borongan.html", label: "Rate Borongan Helper", role: "Costing", uc: "UC-07" },
+      { id: "faktor", file: "pc-faktor-indirect.html", label: "Faktor Indirect Labor", role: "Costing", uc: "UC-07" },
+      { id: "bpkfoh", file: "pc-bpk-foh.html", label: "Rate Bahan Pendukung & FOH", role: "Costing", uc: "UC-07" },
+      { id: "general", file: "pc-general-rate.html", label: "General Rate", role: "Costing", uc: "UC-08, UC-09" },
+      { id: "nego", file: "pc-negotiation.html", label: "Negotiation Allowance", role: "Sales", uc: "UC-10" },
     ] },
-    { group: "Hasil", items: [
-      { id: "simulasi", file: "pc-simulasi.html", label: "Simulasi Costing & Pricelist", role: "Accounting / Sales / Engineering", uc: "UC-N14" },
+    { group: "Hasil & Pricelist", items: [
+      { id: "simulasi", file: "pc-simulasi.html", label: "Simulasi Costing", role: "Accounting / Sales / Engineering", uc: "UC-11 s.d. UC-16" },
+      { id: "pricelist", file: "pc-pricelist.html", label: "Pricelist", role: "Sales", uc: "UC-16, UC-17" },
+      { id: "approval", file: "pc-approval.html", label: "Approval Pricelist", role: "Management", uc: "UC-19" },
+      { id: "catalog", file: "pc-catalog.html", label: "Product Catalog", role: "Sales", uc: "UC-18" },
     ] },
   ];
   const flat = MENU.reduce((a, g) => a.concat(g.items), []);
-  const USERS = { Engineering: "Eka R.", Accounting: "Andri P.", Purchasing: "Pandu S." };
+  const USERS = { Engineering: "Eka R.", Accounting: "Andri P.", Finance: "Andri P.", Costing: "Citra D.", Sales: "Sari W.", Management: "Bima H." };
 
   const getPath = (o, p) => p.split(".").reduce((x, k) => (x == null ? x : x[k]), o);
   const setPath = (o, p, v) => {
@@ -37,11 +45,27 @@
     const t = ks.reduce((x, k) => x[k], o); t[last] = v;
   };
 
+  // Ikon garis kecil (pengganti Font Awesome / Tabler yang dipakai aplikasi); tanpa dependensi.
+  const ICO = {
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/>',
+    trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+    eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    excel: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 10l5 7M14 10l-5 7"/>',
+    save: '<path d="M5 4h12l3 3v13H5z"/><path d="M8 4v6h8V4M8 20v-6h8v6"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    sitemap: '<rect x="9" y="3" width="6" height="5"/><rect x="3" y="16" width="6" height="5"/><rect x="15" y="16" width="6" height="5"/><path d="M12 8v4M6 16v-4h12v4"/>',
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  };
+  const ico = (n) => `<svg class="ap-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n] || ""}</svg>`;
+
   /* ---- helper pembangun HTML yang dipakai pc-pages.js ---- */
   const H = {
     esc,
+    ico,
     in(path, val, o = {}) {
-      return `<input class="pc-in ${o.num ? "pc-in--num" : ""} ${o.cls || ""}" type="${o.num ? "number" : "text"}"${o.step ? ` step="${o.step}"` : ""}${o.min != null ? ` min="${o.min}"` : ""} data-path="${path}" data-t="${o.t || (o.num ? "num" : "text")}"${o.struct ? " data-struct" : ""} value="${esc(val)}">`;
+      return `<input class="pc-in ${o.num ? "pc-in--num" : ""} ${o.cls || ""}" type="${o.date ? "date" : o.num ? "number" : "text"}"${o.step ? ` step="${o.step}"` : ""}${o.min != null ? ` min="${o.min}"` : ""} data-path="${path}" data-t="${o.t || (o.num ? "num" : "text")}"${o.struct ? " data-struct" : ""} value="${esc(val)}">`;
     },
     sel(path, val, opts, o = {}) {
       return `<select class="pc-in ${o.cls || ""}" data-path="${path}" data-t="text"${o.struct ? " data-struct" : ""}>${opts.map((x) => {
@@ -88,6 +112,45 @@
     });
   }
 
+  /* ---- Dialog gaya SweetAlert (konfirmasi / peringatan / sukses) ---- */
+  let dlgDone = null;
+  function dialog(cfg) {
+    return new Promise((resolve) => {
+      const host = $("#pcDialog");
+      if (!host) { resolve(true); return; }
+      const sym = { warning: "!", success: "&#10003;", error: "&#10005;" }[cfg.icon || "warning"];
+      const done = (v) => { host.hidden = true; host.innerHTML = ""; dlgDone = null; resolve(v); };
+      dlgDone = done;
+      host.hidden = false;
+      host.innerHTML = `<div class="ap-dlg__overlay"></div>
+        <div class="ap-dlg" role="alertdialog" aria-modal="true">
+          <div class="ap-dlg__icon ap-dlg__icon--${cfg.icon || "warning"}">${sym}</div>
+          <h3>${esc(cfg.title || "")}</h3>
+          ${cfg.text ? `<p>${esc(cfg.text)}</p>` : ""}
+          <div class="ap-dlg__btns">
+            ${cfg.cancelText ? `<button type="button" class="ap-btn ap-btn--secondary" data-dlg="0">${esc(cfg.cancelText)}</button>` : ""}
+            ${cfg.timer ? "" : `<button type="button" class="ap-btn ${cfg.danger ? "ap-btn--danger" : "ap-btn--primary"}" data-dlg="1">${esc(cfg.confirmText || "OK")}</button>`}
+          </div>
+        </div>`;
+      host.querySelectorAll("[data-dlg]").forEach((b) => b.addEventListener("click", () => done(b.dataset.dlg === "1")));
+      if (cfg.timer) setTimeout(() => { if (dlgDone === done) done(true); }, cfg.timer);
+    });
+  }
+
+  // Simpan modal gaya aplikasi: validasi → "Are you sure?" → simpan → "Success".
+  function appSave() {
+    const m = modal;
+    const err = m.validate ? m.validate() : null;
+    if (err) { dialog({ icon: "warning", title: "Error Message!", text: err }); return; }
+    dialog({ icon: "warning", title: m.confirmTitle || "Are you sure?", text: m.confirmText || "Process this data", confirmText: m.confirmBtn || "Ya, Simpan!", cancelText: "Batal" }).then((ok) => {
+      if (!ok || modal !== m) return;
+      if (m.onSave && m.onSave() === false) return;
+      if (page.noSave) PC.save(); else markDirty(true);
+      modal = null; render();
+      dialog({ icon: "success", title: "Success", text: m.doneMsg || "Data berhasil disimpan." });
+    });
+  }
+
   /* ---- Modal: Detil Input / View / Edit terpisah dari list ---- */
   // modal = null | { mode: "add"|"edit"|"view", title, bodyFn, size, onSave, onClose }
   let modal = null;
@@ -97,6 +160,21 @@
     const host = $("#pcModal");
     if (!host) return;
     if (!modal) { host.hidden = true; host.innerHTML = ""; return; }
+    if (modal.app) {
+      host.hidden = false;
+      host.innerHTML = `<div class="modal__overlay" data-act="mclose"></div>
+        <div class="ap-modal ap-modal--${modal.size || "lg"} ${modal.cls || ""}" role="dialog" aria-modal="true">
+          <div class="ap-modal__head"><h4>${esc(modal.title || "")}</h4><button type="button" class="ap-modal__x" data-act="mclose" aria-label="Close">&#10005;</button></div>
+          <div class="ap-modal__body">${modal.bodyFn ? modal.bodyFn() : ""}</div>
+          <div class="ap-modal__foot">
+            ${modal.hideSave ? "" : `<button type="button" class="ap-btn ap-btn--primary" data-act="msave">${ico("save")} ${esc(modal.saveLabel || "Save")}</button>`}
+            <button type="button" class="ap-btn ap-btn--dark" data-act="mclose">${ico("x")} ${esc(modal.cancelLabel || "Cancel")}</button>
+          </div>
+        </div>`;
+      refreshCalc();
+      if (modal.after) modal.after();
+      return;
+    }
     const ro = modal.mode === "view";
     const body = `<div class="modal__overlay" data-act="mclose"></div>
       <div class="modal__box ${modal.size ? "modal__box--" + modal.size : ""}" role="dialog" aria-modal="true">
@@ -104,7 +182,7 @@
         <div class="modal__body ${ro ? "is-view" : ""}">${modal.bodyFn ? modal.bodyFn() : ""}</div>
         <div class="modal__foot">
           <button type="button" class="btn btn--ghost" data-act="mclose">${ro ? "Tutup" : "Batal"}</button>
-          ${ro ? "" : `<button type="button" class="btn btn--primary" data-act="msave">Simpan</button>`}
+          ${ro ? "" : `<button type="button" class="btn btn--primary" data-act="msave">${esc(modal.saveLabel || "Simpan")}</button>`}
         </div>
       </div>`;
     host.hidden = false;
@@ -130,6 +208,7 @@
     if (t.dataset.t === "num") v = v === "" ? 0 : parseFloat(v);
     else if (t.dataset.t === "numnull") v = v === "" ? null : parseFloat(v);
     else if (t.dataset.t === "pct") v = (v === "" ? 0 : parseFloat(v)) / 100;
+    else if (t.dataset.t === "pctnull") v = v === "" ? null : parseFloat(v) / 100;
     setPath(PC.state, t.dataset.path, v);
     if (page.onChange) page.onChange(t.dataset.path, v);
     if (page.noSave) PC.save(); else markDirty(true);
@@ -144,10 +223,13 @@
     const act = b.dataset.act;
     // aksi modal bawaan shell
     if (act === "mclose") { closeModal(); return; }
+    if (act === "msave" && modal && modal.app) { appSave(); return; }
     if (act === "msave") {
-      if (modal && modal.onSave) modal.onSave();
+      // onSave boleh mengembalikan false (validasi gagal) → modal tetap terbuka.
+      if (modal && modal.onSave && modal.onSave() === false) return;
+      const doneMsg = (modal && modal.doneMsg) || "Tersimpan.";
       if (!page.noSave) markDirty(true); else PC.save();
-      modal = null; render(); toast("Tersimpan.", "ok"); return;
+      modal = null; render(); toast(doneMsg, "ok"); return;
     }
     if (act === "del") {
       const arr = getPath(PC.state, b.dataset.list);
@@ -168,56 +250,74 @@
     const role = cur.role.split(" / ")[0];
     document.title = cur.label + " — Product Costing";
     document.body.innerHTML = `
-      <header class="topbar">
-        <div class="topbar__brand">
-          <span class="topbar__logo">PT</span>
-          <div><div class="topbar__title">Modul Produksi</div><div class="topbar__subtitle">Product Costing</div></div>
-        </div>
-        <nav class="topbar__steps" aria-label="Alur proses">
-          <a class="step" href="beranda.html">Daftar SPK</a>
-          <a class="step" href="index.html">Input Produksi</a>
-          <a class="step" href="material.html">Material</a>
-          <a class="step" href="costbook.html">Costbook</a>
-          <a class="step" href="rate.html">Rate</a>
-          <a class="step" href="hpp.html">HPP</a>
-          <span class="step step--active">Product Costing</span>
-        </nav>
-        <div class="topbar__user"><span class="badge badge--role">${esc(cur.role)}</span><span class="topbar__user-name">${esc(USERS[role] || "")}</span></div>
-      </header>
-      <div class="pc-layout">
-        <aside class="pc-side" aria-label="Menu Product Costing">
-          ${MENU.map((g) => `<h3>${g.group}</h3>` + g.items.map((x) => `<a href="${x.file}" class="${x.id === id ? "is-active" : ""}"><span class="pc-no">${flat.indexOf(x) + 1}</span>${x.label}</a>`).join("")).join("")}
-        </aside>
-        <main class="page pc-main">
+      <main class="page pc-main">
           <div class="page__header">
             <div><h1>${page.title || esc(cur.label)}</h1><p class="muted">${page.hint || ""}</p><p class="muted"><span class="badge badge--note">${cur.uc}</span> Diisi oleh: <strong>${esc(cur.role)}</strong></p></div>
             <div class="page__header-status"><span class="badge badge--done" id="saveStatus">Tersimpan</span></div>
           </div>
           <div id="pcBody"></div>
-        </main>
-      </div>
+      </main>
       <div class="actionbar">
-        <div class="actionbar__note"><span class="muted">Data contoh dari Excel "Rev.1 Ide Costing Kg konversi ke Meter". Perubahan disimpan ke penyimpanan lokal browser (mockup).</span></div>
+        <div class="actionbar__note"><span class="muted">Angka contoh mockup, bukan angka acuan klien. Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan. Perubahan disimpan ke penyimpanan lokal browser (mockup).</span></div>
         <div class="actionbar__btns">
-          <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Contoh Excel</button>
+          <button type="button" class="btn btn--ghost" id="btnExport" title="Unduh seluruh data Product Costing sebagai file cadangan">Simpan ke File</button>
+          <button type="button" class="btn btn--ghost" id="btnImport" title="Muat data dari file cadangan">Muat dari File</button>
+          <input type="file" id="fileImport" accept=".json,application/json" hidden>
+          <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Data Contoh</button>
           ${page.noSave ? "" : `<button type="button" class="btn btn--primary" id="btnSave">Simpan</button>`}
         </div>
       </div>
       <div class="toast" id="toast" hidden></div>
-      <div class="pc-modal" id="pcModal" hidden></div>`;
+      <div class="pc-modal" id="pcModal" hidden></div>
+      <div class="pc-modal pc-modal--dlg" id="pcDialog" hidden></div>`;
+    // Kerangka Berry (sidebar + top bar + kartu judul/breadcrumb) — lihat berry-shell.js
+    const gaps = PC.gapReport().length;
+    window.BERRY.mount({ user: { name: USERS[role] || "", role: cur.role }, badges: gaps ? { "pc-simulasi.html": gaps, "pc-pricelist.html": gaps } : {} });
     render();
     document.addEventListener("input", (e) => { if (e.target.tagName !== "SELECT") onInput(e); });
     document.addEventListener("change", onInput);
     document.addEventListener("click", onClick);
     const sv = $("#btnSave");
     if (sv) sv.addEventListener("click", () => { PC.save(); markDirty(false); toast("Tersimpan di penyimpanan lokal.", "ok"); });
+    // Simpan/muat data ke file; peringatan bila penyimpanan browser tidak bisa dipakai.
+    $("#btnExport").addEventListener("click", () => {
+      PC.save();
+      const blob = new Blob([PC.exportData()], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "pc-data-tersimpan-" + PC.today() + ".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      toast("Data diunduh sebagai file cadangan.", "ok");
+    });
+    $("#btnImport").addEventListener("click", () => $("#fileImport").click());
+    $("#fileImport").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      const rd = new FileReader();
+      rd.onload = () => {
+        const r = PC.importData(String(rd.result));
+        if (r.ok) { markDirty(false); render(); }
+        toast(r.msg, r.ok ? "ok" : "warn");
+        e.target.value = "";
+      };
+      rd.readAsText(f);
+    });
+    if (!PC.storageOk()) {
+      const b = $("#saveStatus");
+      if (b) { b.textContent = "Penyimpanan browser tidak tersedia"; b.className = "badge badge--draft"; }
+      toast("Penyimpanan browser tidak tersedia (jendela privat atau diblokir): data akan hilang saat halaman di-refresh. Gunakan \"Simpan ke File\".", "warn");
+    }
     $("#btnReset").addEventListener("click", () => {
-      PC.reset(); markDirty(false); render(); toast("Seluruh data Product Costing dikembalikan ke contoh Excel.", "warn");
+      PC.reset(); markDirty(false); render(); toast("Seluruh data Product Costing dikembalikan ke data contoh.", "warn");
     });
     window.addEventListener("beforeunload", () => { /* mockup: tanpa dialog */ });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal) closeModal(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (dlgDone) { dlgDone(false); return; }
+      if (modal) closeModal();
+    });
   }
 
-  window.PC_SHELL = { H, MENU, render, refreshCalc, toast, markDirty, getPath, openModal, closeModal };
+  window.PC_SHELL = { H, MENU, render, refreshCalc, toast, markDirty, getPath, openModal, closeModal, dialog };
   document.addEventListener("DOMContentLoaded", () => setTimeout(init, 0));
 })();

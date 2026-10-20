@@ -1,0 +1,293 @@
+/* berry-vars.css — DIHASILKAN dari assets/berry/css/{custom-theme,style,custom,style-preset}.css.
+   Blok `:root` Berry tidak berlaku di dalam Shadow DOM, jadi variabelnya disalin ke `.berry-root`
+   (kerangka mockup). Bila Berry diperbarui, hasilkan ulang berkas ini. */
+
+/* dari custom-theme.css: 1 blok */
+.berry-root {
+  /* SKY BLUE palette */
+  --accent: #38bdf8; /* Sky Blue */
+  --accent-2: #0ea5e9; /* Cyan Blue */
+  --accent-3: #2563eb; /* Royal Blue */
+  --soft-bg: #ffffff;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+}
+
+/* dari style.css: 4 blok */
+.berry-root {
+  --bs-body-bg: #fff;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --pc-heading-color: #343a40;
+  --pc-active-background: #e9ecef;
+  --pc-sidebar-background: #fff;
+  --pc-sidebar-color: #616161;
+  --pc-sidebar-color-rgb: 57, 70, 95;
+  --pc-sidebar-submenu-border-color: var(--bs-gray-300);
+  --pc-sidebar-active-color: #6c757d;
+  --pc-sidebar-active-color-rgb: 108, 117, 125;
+  --pc-sidebar-shadow: none;
+  --pc-sidebar-caption-color: #212121;
+  --pc-sidebar-border: none;
+  --pc-header-background: #fff;
+  --pc-header-color: #616161;
+  --pc-header-shadow: none;
+  --pc-card-box-shadow: none;
+  --pc-header-submenu-background: #ffffff;
+  --pc-header-submenu-color: #111936;
+}
+.berry-root,
+[data-bs-theme=light] {
+  --bs-blue: #2689e2;
+  --bs-indigo: #6610f2;
+  --bs-purple: #673ab7;
+  --bs-pink: #e83e8c;
+  --bs-red: #f44336;
+  --bs-orange: #fd7e14;
+  --bs-yellow: #ffc107;
+  --bs-green: #00c853;
+  --bs-teal: #20c997;
+  --bs-cyan: #3ec9d6;
+  --bs-black: #000000;
+  --bs-white: #ffffff;
+  --bs-gray: #6c757d;
+  --bs-gray-dark: #343a40;
+  --bs-gray-100: #f8f9fa;
+  --bs-gray-200: #e9ecef;
+  --bs-gray-300: #dee2e6;
+  --bs-gray-400: #ced4da;
+  --bs-gray-500: #adb5bd;
+  --bs-gray-600: #6c757d;
+  --bs-gray-700: #495057;
+  --bs-gray-800: #343a40;
+  --bs-gray-900: #212529;
+  --bs-primary: #2689e2;
+  --bs-secondary: #6610f2;
+  --bs-success: #00c853;
+  --bs-info: #3ec9d6;
+  --bs-warning: #ffc107;
+  --bs-danger: #f44336;
+  --bs-light: #f8f9fa;
+  --bs-dark: #111936;
+  --bs-primary-rgb: 38, 137, 226;
+  --bs-secondary-rgb: 102, 16, 242;
+  --bs-success-rgb: 0, 200, 83;
+  --bs-info-rgb: 62, 201, 214;
+  --bs-warning-rgb: 255, 193, 7;
+  --bs-danger-rgb: 244, 67, 54;
+  --bs-light-rgb: 248, 249, 250;
+  --bs-dark-rgb: 17, 25, 54;
+  --bs-primary-text-emphasis: #052c65;
+  --bs-secondary-text-emphasis: #2b2f32;
+  --bs-success-text-emphasis: #0a3622;
+  --bs-info-text-emphasis: #055160;
+  --bs-warning-text-emphasis: #664d03;
+  --bs-danger-text-emphasis: #58151c;
+  --bs-light-text-emphasis: #495057;
+  --bs-dark-text-emphasis: #495057;
+  --bs-primary-bg-subtle: #bedcf6;
+  --bs-secondary-bg-subtle: #f8f9fa;
+  --bs-success-bg-subtle: #b3efcb;
+  --bs-info-bg-subtle: #c5eff3;
+  --bs-warning-bg-subtle: #ffecb5;
+  --bs-danger-bg-subtle: #fcc7c3;
+  --bs-light-bg-subtle: #fcfcfd;
+  --bs-dark-bg-subtle: #ced4da;
+  --bs-primary-border-subtle: #93c4f1;
+  --bs-secondary-border-subtle: #e9ecef;
+  --bs-success-border-subtle: #80e4a9;
+  --bs-info-border-subtle: #9fe4eb;
+  --bs-warning-border-subtle: #ffe083;
+  --bs-danger-border-subtle: #faa19b;
+  --bs-light-border-subtle: #e9ecef;
+  --bs-dark-border-subtle: #adb5bd;
+  --bs-white-rgb: 255, 255, 255;
+  --bs-black-rgb: 0, 0, 0;
+  --bs-font-sans-serif: "Roboto", sans-serif;
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-font-size: 0.875rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.5;
+  --bs-body-color: #212529;
+  --bs-body-color-rgb: 33, 37, 41;
+  --bs-body-bg: #eceff1;
+  --bs-body-bg-rgb: 236, 239, 241;
+  --bs-emphasis-color: #000;
+  --bs-emphasis-color-rgb: 0, 0, 0;
+  --bs-secondary-color: rgba(33, 37, 41, 0.75);
+  --bs-secondary-color-rgb: 33, 37, 41;
+  --bs-secondary-bg: #e9ecef;
+  --bs-secondary-bg-rgb: 233, 236, 239;
+  --bs-tertiary-color: rgba(33, 37, 41, 0.5);
+  --bs-tertiary-color-rgb: 33, 37, 41;
+  --bs-tertiary-bg: #f8f9fa;
+  --bs-tertiary-bg-rgb: 248, 249, 250;
+  --bs-heading-color: #212529;
+  --bs-link-color: #2689e2;
+  --bs-link-color-rgb: 38, 137, 226;
+  --bs-link-decoration: none;
+  --bs-link-hover-color: #1e6eb5;
+  --bs-link-hover-color-rgb: 30, 110, 181;
+  --bs-link-hover-decoration: underline;
+  --bs-code-color: #e83e8c;
+  --bs-highlight-color: #212529;
+  --bs-highlight-bg: #fcf8e3;
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+  --bs-border-color: #eeeeee;
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --bs-border-radius: 8px;
+  --bs-border-radius-sm: 4px;
+  --bs-border-radius-lg: 10px;
+  --bs-border-radius-xl: 1rem;
+  --bs-border-radius-xxl: 2rem;
+  --bs-border-radius-2xl: var(--bs-border-radius-xxl);
+  --bs-border-radius-pill: 50rem;
+  --bs-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --bs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --bs-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+  --bs-focus-ring-width: 0.25rem;
+  --bs-focus-ring-opacity: 0.25;
+  --bs-focus-ring-color: rgba(13, 110, 253, 0.25);
+  --bs-form-valid-color: #198754;
+  --bs-form-valid-border-color: #198754;
+  --bs-form-invalid-color: #dc3545;
+  --bs-form-invalid-border-color: #dc3545;
+}
+.berry-root {
+  --bs-breakpoint-xs: 0;
+  --bs-breakpoint-sm: 576px;
+  --bs-breakpoint-md: 768px;
+  --bs-breakpoint-lg: 992px;
+  --bs-breakpoint-xl: 1200px;
+  --bs-breakpoint-xxl: 1400px;
+}
+.berry-root {
+  --bs-blue-100: #bedcf6;
+  --bs-blue-200: #93c4f1;
+  --bs-blue-300: #67aceb;
+  --bs-blue-400: #479be6;
+  --bs-blue-500: #2689e2;
+  --bs-blue-600: #2281df;
+  --bs-blue-700: #1c76da;
+  --bs-blue-800: #176cd6;
+  --bs-blue-900: #0d59cf;
+  --bs-indigo-100: #d1b7fb;
+  --bs-indigo-200: #b388f9;
+  --bs-indigo-300: #9458f6;
+  --bs-indigo-400: #7d34f4;
+  --bs-indigo-500: #6610f2;
+  --bs-indigo-600: #5e0ef0;
+  --bs-indigo-700: #530cee;
+  --bs-indigo-800: #4909ec;
+  --bs-indigo-900: #3805e8;
+  --bs-purple-100: #d1c4e9;
+  --bs-purple-200: #b39ddb;
+  --bs-purple-300: #9575cd;
+  --bs-purple-400: #7e58c2;
+  --bs-purple-500: #673ab7;
+  --bs-purple-600: #5f34b0;
+  --bs-purple-700: #542ca7;
+  --bs-purple-800: #4a259f;
+  --bs-purple-900: #391890;
+  --bs-pink-100: #f8c5dd;
+  --bs-pink-200: #f49fc6;
+  --bs-pink-300: #ef78af;
+  --bs-pink-400: #eb5b9d;
+  --bs-pink-500: #e83e8c;
+  --bs-pink-600: #e53884;
+  --bs-pink-700: #e23079;
+  --bs-pink-800: #de286f;
+  --bs-pink-900: #d81b5c;
+  --bs-red-100: #fcc7c3;
+  --bs-red-200: #faa19b;
+  --bs-red-300: #f77b72;
+  --bs-red-400: #f65f54;
+  --bs-red-500: #f44336;
+  --bs-red-600: #f33d30;
+  --bs-red-700: #f13429;
+  --bs-red-800: #ef2c22;
+  --bs-red-900: #ec1e16;
+  --bs-orange-100: #fed8b9;
+  --bs-orange-200: #febf8a;
+  --bs-orange-300: #fea55b;
+  --bs-orange-400: #fd9137;
+  --bs-orange-500: #fd7e14;
+  --bs-orange-600: #fd7612;
+  --bs-orange-700: #fc6b0e;
+  --bs-orange-800: #fc610b;
+  --bs-orange-900: #fc4e06;
+  --bs-yellow-100: #ffecb5;
+  --bs-yellow-200: #ffe083;
+  --bs-yellow-300: #ffd451;
+  --bs-yellow-400: #ffca2c;
+  --bs-yellow-500: #ffc107;
+  --bs-yellow-600: #ffbb06;
+  --bs-yellow-700: #ffb305;
+  --bs-yellow-800: #ffab04;
+  --bs-yellow-900: #ff9e02;
+  --bs-green-100: #b3efcb;
+  --bs-green-200: #80e4a9;
+  --bs-green-300: #4dd987;
+  --bs-green-400: #26d06d;
+  --bs-green-500: #00c853;
+  --bs-green-600: #00c24c;
+  --bs-green-700: #00bb42;
+  --bs-green-800: #00b439;
+  --bs-green-900: #00a729;
+  --bs-teal-100: #bcefe0;
+  --bs-teal-200: #90e4cb;
+  --bs-teal-300: #63d9b6;
+  --bs-teal-400: #41d1a7;
+  --bs-teal-500: #20c997;
+  --bs-teal-600: #1cc38f;
+  --bs-teal-700: #18bc84;
+  --bs-teal-800: #13b57a;
+  --bs-teal-900: #0ba969;
+  --bs-cyan-100: #c5eff3;
+  --bs-cyan-200: #9fe4eb;
+  --bs-cyan-300: #78d9e2;
+  --bs-cyan-400: #5bd1dc;
+  --bs-cyan-500: #3ec9d6;
+  --bs-cyan-600: #38c3d1;
+  --bs-cyan-700: #30bccc;
+  --bs-cyan-800: #28b5c6;
+  --bs-cyan-900: #1ba9bc;
+  --bs-gray-100: #f8f9fa;
+  --bs-gray-200: #e9ecef;
+  --bs-gray-300: #dee2e6;
+  --bs-gray-400: #ced4da;
+  --bs-gray-500: #adb5bd;
+  --bs-gray-600: #6c757d;
+  --bs-gray-700: #495057;
+  --bs-gray-800: #343a40;
+  --bs-gray-900: #212529;
+}
+
+/* dari custom.css: 0 blok */
+
+/* dari style-preset.css: 1 blok */
+.berry-root {
+  --bs-body-bg: #eceff1;
+  --bs-body-bg-rgb: 236, 239, 241;
+  --pc-heading-color: #343a40;
+  --pc-active-background: #e9ecef;
+  --pc-sidebar-background: #fff;
+  --pc-sidebar-color: #616161;
+  --pc-sidebar-color-rgb: 57, 70, 95;
+  --pc-sidebar-submenu-border-color: var(--bs-gray-300);
+  --pc-sidebar-active-color: #6610f2;
+  --pc-sidebar-active-color-rgb: 102, 16, 242;
+  --pc-sidebar-shadow: none;
+  --pc-sidebar-caption-color: #212121;
+  --pc-sidebar-border: none;
+  --pc-header-background: #fff;
+  --pc-header-color: #616161;
+  --pc-header-shadow: none;
+  --pc-card-box-shadow: none;
+  --pc-header-submenu-background: #ffffff;
+  --pc-header-submenu-color: #111936;
+}

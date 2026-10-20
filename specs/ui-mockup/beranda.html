@@ -5,31 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beranda — Modul Produksi</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="berry-shell.css" />
 </head>
-<body>
-  <header class="topbar">
-    <div class="topbar__brand">
-      <span class="topbar__logo">PT</span>
-      <div>
-        <div class="topbar__title">Modul Produksi</div>
-        <div class="topbar__subtitle">Beranda</div>
-      </div>
-    </div>
-    <nav class="topbar__steps" aria-label="Alur proses">
-      <span class="step step--active">Daftar SPK</span>
-      <span class="step">Input Produksi</span>
-      <a class="step" href="material.html">Material</a>
-      <a class="step" href="costbook.html">Costbook</a>
-      <a class="step" href="rate.html">Rate</a>
-      <span class="step">HPP</span>
-      <a class="step" href="pc-produk.html">Product Costing</a>
-    </nav>
-    <div class="topbar__user">
-      <span class="badge badge--role">Admin Produksi</span>
-      <span class="topbar__user-name">Budi S.</span>
-    </div>
-  </header>
-
+<body data-user="Budi S." data-role="Admin Produksi">
+  <!-- Sidebar + top bar: kerangka Berry (berry-shell.js) -->
   <main class="page">
     <div class="page__header">
       <div>
@@ -121,6 +100,7 @@
   </div>
 
   <div class="toast" id="toast" hidden></div>
+  <script src="berry-shell.js"></script>
 
   <script src="data.js"></script>
   <script src="beranda.js"></script>
