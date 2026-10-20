@@ -4074,8 +4074,10 @@ class Metode_pembelian_model extends BF_Model
 			}
 		}
 
-		$this->db->insert('tr_pr_non_po', [
-			'no_non_po'    => $this->generate_no_pr_non_po($increment),
+		$no_non_po = $this->generate_no_pr_non_po($increment);
+
+		$data_insert_non_po = [
+			'no_non_po'    => $no_non_po,
 			'id_pr'        => $header->id,
 			'no_pr'        => $header->no_pr,
 			'jenis_pr'     => $config['label'],
@@ -4085,6 +4087,34 @@ class Metode_pembelian_model extends BF_Model
 			'sts' 		   => '1',
 			'created_by'   => $userId,
 			'created_date' => date('Y-m-d H:i:s')
+		];
+		$this->db->insert('tr_pr_non_po', $data_insert_non_po);
+		$id_non_po = $this->db->insert_id();
+
+		// Auto insert ke request_payment agar muncul di halaman request_payment/index
+		$userName = $this->auth->user_name();
+		$nm_pic = !empty($user) ? $user->nm_lengkap : (!empty($userName) ? $userName : 'Unknown');
+
+		$this->db->insert('request_payment', [
+			'no_doc'      => $no_non_po,
+			'no_surat'    => $header->no_pr,
+			'nama'        => $nm_pic,
+			'tgl_doc'     => date('Y-m-d'),
+			'keperluan'   => 'PR Cash - ' . $header->no_pr . ' (' . ucfirst($config['label']) . ')',
+			'tipe'        => 'Cash',
+			'jumlah'      => $total_pr,
+			'status'      => 'open',
+			'tanggal'     => null,
+			'currency'    => 'IDR',
+			'bank_id'     => '',
+			'accnumber'   => '',
+			'accname'     => '',
+			'bank_name'   => '',
+			'ids'         => (string)$id_non_po,
+			'admin_bank'  => 0,
+			'total_pph'   => 0,
+			'created_by'  => $userName ?: 'System',
+			'created_on'  => date('Y-m-d H:i:s'),
 		]);
 	}
 

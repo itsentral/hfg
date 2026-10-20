@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                     <div class="p-3 bg-white bg-opacity-75 rounded-circle text-info">
-                                        <i class="fa fa-money fs-3"></i>
+                                        <i class="fas fa-money-bill-alt"></i>
                                     </div>
                                 </div>
                             </div>
