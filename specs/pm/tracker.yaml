@@ -88,13 +88,16 @@ issues:
     type: feature
     epic: product-costing-rev1
     slug: pc-bom-flow-price-reference
-    status: open
+    status: in_progress
     source: UC-04, UC-05, UC-06
     depends_on: [FEAT-03]
     blocks: [FEAT-06]
     summary: >-
-      Backlog Tahap 2. Berat/Meter dihitung otomatis di BOM; Price Reference hanya
-      Max History Pembelian × Kurs.
+      Dipecah 04a Kurs, 04b Flow Process, 04c Price Reference, 04d BOM varian (plan di
+      .artifacts/bom_flow_kurs_price_reference/). 04b: kode modul flow_process ditulis 2026-10-20
+      (php -l bersih), belum diuji di database; migrasi dijalankan user di database uji. 04a/04c/04d
+      menunggu D0 diperluas dan keputusan nama tabel BOM baru (bom_header/bom_detail lama sudah dipakai
+      kode) serta sumber History Pembelian.
   - id: FEAT-05
     title: Master rate (Man Power, FOH, Bahan Pendukung, Manufacturing Support, Other Cost, Negotiation Allowance)
     type: feature

@@ -840,7 +840,8 @@ yang sudah resolved di atas (± 0,7%).
   ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda; keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
   walkthrough tiap fitur, setiap kolom yang dipakai dicocokkan dengan ERD dan selisihnya nol. Tabel yang sudah ada di aplikasi
   (`product_lvl_4`, `new_inventory_4`) digambar ringkas sampai `SHOW CREATE TABLE` dikonfirmasi; pemetaannya di
-  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md`.
+  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md` (v2: `…_v2.md`). Penunjuk ke produk di tabel baru memakai
+  `code_lv4` dan penunjuk ke Product Category memakai `code_lv2` (user 2026-10-20), mengikuti praktik tabel yang ada (`ms_bom_header.id_produk` = `code_lv4`).
 
 ## Status
 

@@ -43,6 +43,30 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-20** `[STATUS][FEAT-04]` **FEAT-04 dipecah; 04b Flow Process ditulis.** Riset kode: tabel lama `bom_header`/`bom_detail` dipakai
+  json_helper dan modul supplier (bentrok dengan nama ERD), `ms_bom_*` punya UNIQUE(id_produk) dan dipakai SPK/Request List/
+  Production Planning (tidak diubah), `master_kurs` dibaca modul PO/harga supplier tanpa filter mata uang, `price_ref_high` bukan Max
+  riwayat, `history_purchase` belum ada. ERD: arah FK Flow dan Price Reference diperbaiki. Modul baru `flow_process` (tabel
+  `flow_process_header/detail`, migrasi + rollback, log, validasi; `php -l` bersih; belum diuji di database).
+  `[TODO]` D0 diperluas, keputusan K2 (nama tabel BOM baru) dan K4 (sumber History Pembelian); user menjalankan migrasi 04b di database uji.
+
+- **2026-10-20** `[DECISION][FEAT-04]` **Perbaikan ERD K6 + koreksi pemilik UC-N08.** `flow_process_detail.id_flow_process_header` (FK baru) menggantikan
+  `flow_process_header.id_flow_process_detail` (arah header 1 — N detail; header UNIQUE per `code_lv2`);
+  `price_reference_detail.id_price_reference_header` menggantikan `price_reference_header.id_price_reference_detail`
+  dan `id_history_purchase` dihapus dari detail (history_purchase dicari per `id_material`, relasi putus-putus tanpa FK);
+  catatan bentrok nama `bom_header`/`bom_detail` (tabel lama di `json_helper`/`supplier`) ditambahkan menunggu D0 (K1/K2).
+  `context/index/map.md`: UC-N08 dimiliki Finance, hanya Max (menggantikan Purchasing + Harga Terakhir/Rata-rata).
+  Pemetaan v3 di `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026_v3.md`. `[TODO]` UC-N07 di
+  `map.md` masih tertulis Accounting (workbook: Finance); keputusan pertanyaan 5-8 di pemetaan v3.
+
+- **2026-10-20** `[DECISION][FEAT-04]` **Penunjuk ke produk di tabel baru = `code_lv4`; ke Product Category = `code_lv2`** (user:
+  "pakai code_lvl4"; nama kolom nyata `code_lv4`). `code_lv2` unik global (generator `P2`+yy+6 digit). ERD halaman Product
+  Costing diselaraskan: `bom_header`, `product_costing_header/detail` → `code_lv4`; `flow_process_header`,
+  `rate_bahan_pendukung_foh`, `rate_borongan_helper`, `rate_negotiation_allowance` → `code_lv2`; entitas `product_lvl_4` →
+  `code_lv1..3`; `material` = `new_inventory_4` (`id`, `nama`, `code_lv1..3`). Alternatif ditolak: `id_product_lvl_*` (tidak
+  sama dengan praktik tabel yang ada). Pemetaan v2: `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026_v2.md`.
+  `[TODO]` putuskan BOM varian: tabel baru bernama sesuai ERD vs ubah `ms_bom_*` (UNIQUE(id_produk)); D0 menunggu.
+
 - **2026-10-20** `[STATUS][FEAT-03]` **Kode FEAT-03 ditulis, menunggu uji database.** Modul baru `master_standard_material`
   (tabel kolom persis ERD, migrasi + rollback, permission/menu tanpa penetapan role, `restrict` di index dan save, log
   before/after); `product_master` dan `material_master` diperluas (validasi server, blokir hapus bila dipakai BOM aktif,
