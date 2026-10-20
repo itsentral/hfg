@@ -233,6 +233,34 @@ class Product_master extends Admin_Controller
       $weight = $post['weight'];
       $cub    = str_replace(',', '', $post['cub']);
 
+      // Validasi server (FR-37): level 1-3 dan nama wajib; Panjang, Tebal, dan Lebar produk (kolom `wide`)
+      // harus angka >= 0 bila diisi.
+      $errors = [];
+      if (empty($code_lv1) || $code_lv1 == '0') {
+        $errors[] = 'Product type wajib dipilih.';
+      }
+      if (empty($code_lv2) || $code_lv2 == '0') {
+        $errors[] = 'Product category wajib dipilih.';
+      }
+      if (empty($code_lv3) || $code_lv3 == '0') {
+        $errors[] = 'Product jenis wajib dipilih.';
+      }
+      if (trim((string) $nama) === '') {
+        $errors[] = 'Nama product master wajib diisi.';
+      }
+      foreach (['Panjang' => $panjang, 'Tebal' => $tebal, 'Lebar' => $wide] as $nama_field => $nilai_field) {
+        if ($nilai_field !== '' && $nilai_field !== null && (!is_numeric($nilai_field) || $nilai_field < 0)) {
+          $errors[] = $nama_field . ' harus berupa angka lebih dari atau sama dengan 0.';
+        }
+      }
+      if (!empty($errors)) {
+        echo json_encode([
+          'pesan'  => implode(' ', $errors),
+          'status' => 0,
+        ]);
+        return;
+      }
+
       $last_by   = (!empty($id)) ? 'updated_by'   : 'created_by';
       $last_date = (!empty($id)) ? 'updated_date'  : 'created_date';
       $label     = (!empty($id)) ? 'Edit'          : 'Add';
@@ -310,7 +338,7 @@ class Product_master extends Admin_Controller
 
       $this->db->trans_complete();
 
-      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)] : $dataProcess;
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
@@ -356,6 +384,23 @@ class Product_master extends Admin_Controller
     $this->auth->restrict($this->deletePermission);
 
     $id = $this->input->post('id');
+
+    // Produk yang masih dipakai BOM aktif tidak boleh dihapus (ms_bom_header.id_produk = code_lv4)
+    $produk = $this->db->get_where('product_lvl_4', ['id' => $id])->row();
+    if (!empty($produk)) {
+      $dipakai_bom = $this->db->where('id_produk', $produk->code_lv4)
+        ->where('is_delete', 0)
+        ->count_all_results('ms_bom_header');
+      if ($dipakai_bom > 0) {
+        write_log('Product Master', 'Delete', 'Hapus product master ditolak karena dipakai BOM: ' . $produk->code_lv4, ['id' => $id, 'code_lv4' => $produk->code_lv4], null, 0);
+        echo json_encode([
+          'pesan'  => 'Produk ' . $produk->code_lv4 . ' tidak dapat dihapus karena masih dipakai di BOM.',
+          'status' => 0
+        ]);
+        return;
+      }
+    }
+
     $data = [
       'deleted_by'     => $this->id_user,
       'deleted_date'   => $this->datetime
