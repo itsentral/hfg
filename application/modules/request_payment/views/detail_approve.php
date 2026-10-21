@@ -39,13 +39,13 @@ if ($type == 'expense') {
 	$bank_id = $header->bank_id;
 	$accnumber = $header->accnumber;
 	$accname = $header->accname;
-} elseif ($type == 'direct_payment') {
-	$keterangan = $header->deskripsi;
-	$no_doc = $header->no_doc;
-	$tgl_doc = $header->tgl_doc;
-	$bank_id = $header->bank;
-	$accnumber = $header->bank_number;
-	$accname = $header->bank_account;
+} elseif ($type == 'direct_payment' || $type == 'Cash') {
+	$keterangan = !empty($header->deskripsi) ? $header->deskripsi : ($data_req_payment['keperluan'] ?? '');
+	$no_doc = !empty($header->no_doc) ? $header->no_doc : ($header->no_non_po ?? ($data_req_payment['no_doc'] ?? ''));
+	$tgl_doc = !empty($header->tgl_doc) ? $header->tgl_doc : ($header->created_date ?? ($data_req_payment['tgl_doc'] ?? ''));
+	$bank_id = $header->bank ?? ($data_req_payment['bank_id'] ?? '');
+	$accnumber = $header->bank_number ?? ($data_req_payment['accnumber'] ?? '');
+	$accname = $header->bank_account ?? ($data_req_payment['accname'] ?? '');
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
 	$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
 	$keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
