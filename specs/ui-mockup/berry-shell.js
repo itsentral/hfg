@@ -53,6 +53,7 @@
       ["pc-simulasi.html", "Simulasi Costing", "ti-calculator"],
       ["pc-pricelist.html", "Pricelist", "ti-file-invoice"],
       ["pc-approval.html", "Approval Pricelist", "ti-checkbox"],
+      ["pc-approval-extra-margin.html", "Approval Extra Margin", "ti-circle-check"],
       ["pc-catalog.html", "Product Catalog", "ti-book"],
     ] },
   ];

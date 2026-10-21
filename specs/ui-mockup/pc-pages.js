@@ -1006,34 +1006,161 @@
     }, DT_ACT),
   };
 
-  /* ---------- 11. Negotiation Allowance per Product Category (UC-10, FR-55) — pola master sederhana (master_coating) ---------- */
-  pages.nego = masterPage({
-    key: "nego", title: "Negotiation Allowance (Extra Margin)", unit: "Rate", modalTitle: "Negotiation Allowance", size: "lg", addLabel: "Add", stamp: "Sales",
-    hint: "Sales menetapkan persentase per Product Category. Negotiation Allowance = % × Bottom Price; Price List = Bottom Price + Negotiation Allowance.",
-    headTitle: "Negotiation Allowance (Extra Margin)", headSub: "Persentase per Product Category (× Bottom Price)",
-    banner: () => { const miss = productCats().filter((c) => !S().nego.some((n) => n.category === c));
-      const empty = S().nego.filter((n) => !hasV(n.v));
-      const items = miss.map((c) => `<li>Product Category ${H.esc(up(c))} belum punya Negotiation Allowance. Klik Add.</li>`).concat(empty.map((n) => `<li>Negotiation Allowance kategori ${H.esc(up(n.category))} belum diisi nilainya. Klik Edit.</li>`));
-      return items.length ? warnBox("Negotiation Allowance belum lengkap — Pricelist tidak bisa diajukan", items.join("")) : ""; },
-    cols: [
-      { h: "Product Category", fn: (r) => H.esc(up(r.category) || "—") },
-      { h: "Negotiation Allowance (% × Bottom Price)", c: "ap-r", fn: (r) => pctShow(r.v) },
-      { h: "Last Update", fn: (r) => H.esc(r.updated || "—") },
-      { h: "Updated By", fn: (r) => H.esc(r.by || "—") },
-    ],
-    search: (r) => [r.category, r.v].join(" "),
-    blank: () => ({ id: PC.uid("N"), category: "", v: null }),
-    form: (i) => { const r = S().nego[i]; return `
-      ${apRow(lb("Product Category", 1), fld("c10", apSel(`nego.${i}.category`, r.category, catOpts(r.category))))}
-      ${apRow(lb("Negotiation Allowance (%)", 1), fld("c10", pctIn(`nego.${i}.v`, r.v) + `<div class="ap-hint">Negotiation Allowance = % × Bottom Price.</div>`))}`; },
-    validate: (r, i) => {
-      if (!r.category) return "Product category not selected...";
-      if (S().nego.some((x, j) => j !== i && x.category === r.category)) return "Product Category " + up(r.category) + " sudah punya Negotiation Allowance.";
-      if (!hasV(r.v)) return "Negotiation Allowance wajib diisi.";
-      if (Number(r.v) < 0) return "Nilai tidak boleh negatif.";
-      return null;
+  /* ---------- 11. Negotiation Allowance (UC-10, FR-55) — Sales Manager mengajukan perubahan, GM menyetujui (BPMN To Be Sales D01) ---------- */
+  // Rate AKTIF ada di S().nego dan hanya berubah saat GM Approve; pengajuan disimpan di S().negoReq.
+  // Asumsi: rate pertama untuk Product Category baru juga melalui pengajuan dan persetujuan GM.
+  const NEGO_WAIT = PC.NEGO_PENDING;
+  const rateTxt = (v) => (hasV(v) ? f(pctVal(v)) + " %" : "belum ada");
+  const negoRows = () => {
+    const cats = [];
+    S().nego.forEach((n) => { if (n.category && !cats.includes(n.category)) cats.push(n.category); });
+    S().negoReq.forEach((r) => { if (r.category && !cats.includes(r.category)) cats.push(r.category); });
+    return cats.map((c) => ({ category: c, active: S().nego.find((n) => n.category === c) || null, req: PC.negoLatest(c) }));
+  };
+  const openNegoReq = (cat, isNew) => {
+    const row0 = negoRows().find((x) => x.category === cat);
+    const rejected = !!(row0 && row0.req && row0.req.status === "Rejected");
+    U().egCat = cat || ""; U().egRate = rejected ? row0.req.requested : null;
+    const cur = () => (isNew ? U().egCat : cat);
+    openModal({
+      app: true, mode: "add", size: "lg",
+      title: isNew ? "Tambah Product Category — Rate Pertama" : (rejected ? "Ajukan Ulang Rate — " : "Ajukan Perubahan Rate — ") + up(cat),
+      saveLabel: "Ajukan ke GM", confirmTitle: "Ajukan ke GM?", confirmText: "Rate aktif tidak berubah sampai GM menyetujui.", confirmBtn: "Ya, Ajukan!",
+      doneMsg: "Pengajuan dikirim ke GM. Rate aktif tidak berubah sampai disetujui.",
+      bodyFn: () => {
+        const c = cur(), act = S().nego.find((n) => n.category === c), last = c ? PC.negoLatest(c) : null;
+        const addable = productCats().filter((x) => !negoRows().some((r) => r.category === x));
+        return `${apRow(lb("Product Category", 1), fld("c10", isNew ? apSel("ui.egCat", U().egCat, selOpts("Select Product Category", addable, U().egCat), { struct: 1 }) : ro(up(c))))}
+          ${apRow(lb("Rate Aktif"), fld("c10", ro(act && hasV(act.v) ? rateTxt(act.v) : "belum ada (rate pertama)")))}
+          ${apRow(lb("Rate Baru (%)", 1), fld("c10", pctIn("ui.egRate", U().egRate) + `<div class="ap-hint">Negotiation Allowance = % × Bottom Price. Berlaku setelah disetujui GM.</div>`))}
+          ${last && last.status === "Rejected" ? apRow(lb("Alasan Reject GM"), fld("c10", ro(last.rejectReason))) : ""}`;
+      },
+      validate() {
+        const c = cur(), rate = U().egRate, last = c ? PC.negoLatest(c) : null;
+        if (!c) return "Product category not selected...";
+        if (last && last.status === NEGO_WAIT) return "Product Category " + up(c) + " masih menunggu keputusan GM.";
+        if (!hasV(rate)) return "Rate Negotiation Allowance baru wajib diisi.";
+        if (Number(rate) < 0) return "Nilai tidak boleh negatif.";
+        const act = S().nego.find((n) => n.category === c);
+        if (act && hasV(act.v) && Math.abs(Number(act.v) - Number(rate)) < 1e-9) return "Rate baru sama dengan rate aktif; tidak perlu diajukan.";
+        return null;
+      },
+      onSave() {
+        const c = cur(), act = S().nego.find((n) => n.category === c);
+        S().negoReq.push({ id: PC.uid("NR"), category: c, current: act && hasV(act.v) ? Number(act.v) : null, requested: Number(U().egRate), status: NEGO_WAIT,
+          submittedBy: "Sales Manager", submittedAt: PC.today(), decidedBy: "", decidedAt: "", rejectReason: "" });
+        return true;
+      },
+    });
+  };
+  pages.nego = {
+    title: "Negotiation Allowance (Extra Margin)", noSave: true,
+    hint: "Sales Manager mengajukan rate Extra Margin per Product Category; rate baru berlaku setelah disetujui GM (menu Approval Extra Margin). Negotiation Allowance = % × Bottom Price; Price List = Bottom Price + Negotiation Allowance.",
+    render() {
+      const all = negoRows();
+      const v = dtView("nego", all.map((x) => ({ x })), ({ x }) => [x.category, x.req && x.req.status].join(" "));
+      const miss = productCats().filter((c) => !S().nego.some((n) => n.category === c && hasV(n.v)));
+      const items = miss.map((c) => { const l = PC.negoLatest(c);
+        return l && l.status === NEGO_WAIT ? `<li>Product Category ${H.esc(up(c))}: rate pertama menunggu persetujuan GM — belum dihitung di Simulasi.</li>`
+          : `<li>Product Category ${H.esc(up(c))} belum punya Negotiation Allowance aktif. Klik Tambah Product Category (diajukan ke GM).</li>`; });
+      const rows = v.rows.map(({ x }, k) => {
+        const wait = x.req && x.req.status === NEGO_WAIT, rej = x.req && x.req.status === "Rejected";
+        return `<tr><td class="ap-c">${v.from + k + 1}</td><td>${H.esc(up(x.category))}</td>
+          <td class="ap-r">${x.active && hasV(x.active.v) ? pctShow(x.active.v) : '<span class="ap-label ap-label--warning">belum ada</span>'}</td>
+          <td>${x.req ? pill(x.req.status) : "—"}${rej ? `<div class="ap-hint">Alasan GM: ${H.esc(x.req.rejectReason)}</div>` : ""}</td>
+          <td class="ap-r">${x.req ? f(pctVal(x.req.requested)) + " %" : "—"}</td>
+          <td>${H.esc((x.active && x.active.updated) || "—")}</td><td>${H.esc((x.active && x.active.by) || "—")}</td>
+          <td class="ap-c">${wait ? `<button type="button" class="ap-btn ap-btn--secondary ap-btn--sm" disabled title="Menunggu keputusan GM">Menunggu GM</button>`
+            : `<button type="button" class="ap-btn ap-btn--primary ap-btn--sm" data-act="egreq" data-c="${H.esc(x.category)}">${rej ? "Ajukan Ulang" : "Ajukan Perubahan"}</button>`}</td></tr>`;
+      }).join("") || `<tr><td class="ap-empty" colspan="9">No data available in table</td></tr>`;
+      return (items.length ? warnBox("Negotiation Allowance belum lengkap — Pricelist tidak bisa diajukan", items.join("")) : "")
+        + `<div class="ap-card ap-card--shadow">${apHead("Negotiation Allowance (Extra Margin)", "Perubahan Extra Margin berlaku setelah disetujui GM. Rate aktif tidak berubah selama pengajuan menunggu.", `Total: ${all.length} Product Category`, btnAdd("Tambah Product Category"))}
+          <div class="ap-card__body">${dtTop("nego", v.st)}
+            ${apTable("ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Product Category", { t: "Rate Aktif (%)", c: "ap-r" }, "Status Pengajuan", { t: "Rate Diajukan (%)", c: "ap-r" }, "Last Update", "Updated By", { t: "Action", c: "ap-c", w: "150px" }], rows)}
+            ${dtBottom("nego", v)}</div></div>`;
     },
-  });
+    act: Object.assign({
+      add() { openNegoReq("", true); },
+      egreq(d) { openNegoReq(d.c, false); },
+    }, DT_ACT),
+  };
+
+  /* ---------- 11a. Approval Extra Margin (UC-10, FR-55) — GM memutuskan pengajuan Sales Manager (BPMN To Be Sales D01) ---------- */
+  // Asumsi (menunggu konfirmasi): alasan Reject wajib, mengikuti Approval Pricelist.
+  const egDiff = (r) => (hasV(r.current) ? (r.requested - r.current >= 0 ? "+" : "") + f(pctVal(r.requested - r.current)) + " poin %" : "— (rate pertama)");
+  const egInfo = (r) => `${apRow(lb("Product Category"), fld("c4", ro(up(r.category))), lb("Diajukan"), fld("c4", ro(r.submittedBy + " · " + r.submittedAt)))}
+    ${apRow(lb("Rate Aktif"), fld("c4", ro(rateTxt(r.current))), lb("Rate Diajukan"), fld("c4", ro(f(pctVal(r.requested)) + " %")))}
+    ${apRow(lb("Selisih"), fld("c4", ro(egDiff(r))), '<div class="c6"></div>')}`;
+  const openEgDecision = (i) => {
+    U().egDecision = "Approve"; U().egReason = "";
+    openModal({
+      app: true, mode: "edit", size: "lg", title: "Periksa Pengajuan Extra Margin — " + up((S().negoReq[i] || {}).category),
+      saveLabel: "Simpan Keputusan", confirmTitle: "Simpan keputusan?", confirmText: "Keputusan GM tidak dapat diubah setelah disimpan.", confirmBtn: "Ya, Simpan!",
+      doneMsg: "Keputusan GM tersimpan.",
+      bodyFn: () => {
+        const r = S().negoReq[i]; if (!r) return "";
+        const rej = U().egDecision === "Reject";
+        return `${egInfo(r)}<hr class="ap-hr"><h6>Keputusan</h6>
+          ${apRow(lb("Keputusan", 1), fld("c10", `<div class="ap-radios">${["Approve", "Reject"].map((x) => `<label><input type="radio" name="ui.egDecision" data-path="ui.egDecision" data-t="text" data-struct value="${x}"${U().egDecision === x ? " checked" : ""}> ${x}</label>`).join("")}</div>`))}
+          ${apRow(lb("Alasan Reject", rej), fld("c10", `<textarea class="pc-in ap-in" rows="3" data-path="ui.egReason" data-t="text"${rej ? "" : ' placeholder="Hanya diisi bila Reject"'}>${H.esc(U().egReason)}</textarea>${rej ? '<div class="ap-hint">Alasan Reject wajib diisi dan disimpan; pengajuan kembali ke Sales Manager.</div>' : '<div class="ap-hint">Approve: rate aktif kategori ini menjadi rate diajukan.</div>'}`))}`;
+      },
+      validate() {
+        const r = S().negoReq[i];
+        if (!r || r.status !== NEGO_WAIT) return "Pengajuan ini sudah diputuskan.";
+        if (U().egDecision === "Reject" && !String(U().egReason || "").trim()) return "Alasan Reject wajib diisi.";
+        return null;
+      },
+      onSave() {
+        const r = S().negoReq[i];
+        if (!r || r.status !== NEGO_WAIT) return false;
+        r.decidedBy = "GM"; r.decidedAt = PC.today();
+        if (U().egDecision === "Approve") {
+          r.status = "Approved"; r.rejectReason = "";
+          const n = S().nego.find((x) => x.category === r.category);
+          if (n) { n.v = r.requested; n.updated = PC.today(); n.by = "Sales Manager · disetujui GM"; }
+          else S().nego.push({ id: PC.uid("N"), category: r.category, v: r.requested, updated: PC.today(), by: "Sales Manager · disetujui GM" });
+        } else { r.status = "Rejected"; r.rejectReason = String(U().egReason).trim(); }
+        return true;
+      },
+    });
+  };
+  const openEgView = (i) => {
+    const r = S().negoReq[i]; if (!r) return;
+    openModal({
+      app: true, mode: "view", size: "lg", title: "View Pengajuan Extra Margin — " + up(r.category), hideSave: true, cancelLabel: "Close",
+      bodyFn: () => `${egInfo(r)}<hr class="ap-hr">
+        ${apRow(lb("Status"), fld("c4", pill(r.status)), lb("Keputusan"), fld("c4", ro(r.decidedAt ? r.decidedBy + " · " + r.decidedAt : "—")))}
+        ${apRow(lb("Alasan Reject"), fld("c10", ro(r.rejectReason)))}`,
+    });
+  };
+  pages.egapproval = {
+    title: "Approval Extra Margin", noSave: true, // alur lintas peran: setiap aksi langsung tersimpan
+    hint: "GM memeriksa pengajuan perubahan Extra Margin (Negotiation Allowance) dari Sales Manager, lalu memutuskan Approve atau Reject. Approve: rate aktif berubah; Reject: wajib disertai alasan dan pengajuan kembali ke Sales Manager.",
+    render() {
+      U().egf = U().egf || { s: "" };
+      const order = { [NEGO_WAIT]: 0, "Approved": 1, "Rejected": 1 };
+      const items = S().negoReq.map((r, i) => ({ r, i })).filter((x) => !U().egf.s || x.r.status === U().egf.s).sort((a, b) => order[a.r.status] - order[b.r.status]);
+      const v = dtView("egapproval", items, ({ r }) => [r.category, r.status, r.rejectReason].join(" "));
+      const rows = v.rows.map(({ r, i }, k) => `<tr><td class="ap-c">${v.from + k + 1}</td><td>${H.esc(up(r.category))}</td>
+        <td class="ap-r">${hasV(r.current) ? f(pctVal(r.current)) + " %" : "—"}</td><td class="ap-r"><strong>${f(pctVal(r.requested))} %</strong></td><td class="ap-r">${H.esc(egDiff(r))}</td>
+        <td>${H.esc(r.submittedBy)}<div class="ap-hint">${H.esc(r.submittedAt)}</div></td><td>${pill(r.status)}</td>
+        <td>${r.decidedAt ? H.esc(r.decidedBy + " · " + r.decidedAt) : "—"}</td><td>${r.rejectReason ? H.esc(r.rejectReason) : "—"}</td>
+        <td class="ap-c">${r.status === NEGO_WAIT
+          ? `<button type="button" class="ap-btn ap-btn--primary ap-btn--sm" data-act="egdecide" data-i="${i}">Approve / Reject</button>`
+          : iconBtn("egview", "View", "eye", "info", `data-i="${i}"`)}</td></tr>`).join("") || `<tr><td class="ap-empty" colspan="10">No data available in table</td></tr>`;
+      const pending = PC.negoPending().length;
+      const stOpts = [{ v: "", l: "ALL STATUS" }].concat([NEGO_WAIT, "Approved", "Rejected"].map((x) => ({ v: x, l: x })));
+      return `<div class="ap-card ap-card--shadow">${apHead("Pengajuan Perubahan Extra Margin", pending ? `${pending} pengajuan menunggu keputusan.` : "Tidak ada pengajuan yang menunggu keputusan.", `Total: ${S().negoReq.length} Pengajuan`, "")}
+        <div class="ap-card__body"><div class="ap-filters" style="margin-top:0">${apSel("ui.egf.s", U().egf.s, stOpts, { struct: 1 })}</div>
+          ${dtTop("egapproval", v.st)}
+          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Product Category", { t: "Rate Aktif", c: "ap-r" }, { t: "Rate Diajukan", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, "Diajukan Oleh / Pada", "Status", "Keputusan", "Alasan Reject", { t: "Action", c: "ap-c", w: "150px" }], rows)}
+          ${dtBottom("egapproval", v)}</div></div>`;
+    },
+    act: Object.assign({
+      egdecide(d) { openEgDecision(Number(d.i)); },
+      egview(d) { openEgView(Number(d.i)); },
+    }, DT_ACT),
+  };
 
   /* ---------- 11b. Faktor Indirect Labor (UC-07, FR-53) — master global satu nilai (bisa berubah) ---------- */
   pages.faktor = masterPage({
@@ -1189,7 +1316,7 @@
   };
 
   /* ---------- 13. Pricelist (UC-16, UC-17, FR-58) — daftar + filter status seperti purchase_request, dokumen seperti View PR ---------- */
-  const STATUS_LBL = { "Draft": "secondary", "Menunggu Approval": "warning", "Approved": "success", "Rejected": "danger" };
+  const STATUS_LBL = { "Draft": "secondary", "Menunggu Approval": "warning", "Menunggu Approval GM": "warning", "Approved": "success", "Rejected": "danger" };
   const pill = (st) => `<label class="ap-label ap-label--${STATUS_LBL[st] || "secondary"}">${H.esc(st)}</label>`;
   const plTable = (rows, del) => apTable("ap-table--bordered ap-table--striped ap-table--sm",
     ["Produk", "Varian BOM", "Product Category", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Bottom Price/Kg", c: "ap-r" }, { t: "Neg. Allowance", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data"].concat(del ? [{ t: "", w: "44px" }] : []),

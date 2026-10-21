@@ -27,17 +27,18 @@
       { id: "faktor", file: "pc-faktor-indirect.html", label: "Faktor Indirect Labor", role: "Costing", uc: "UC-07" },
       { id: "bpkfoh", file: "pc-bpk-foh.html", label: "Rate Bahan Pendukung & FOH", role: "Costing", uc: "UC-07" },
       { id: "general", file: "pc-general-rate.html", label: "General Rate", role: "Costing", uc: "UC-08, UC-09" },
-      { id: "nego", file: "pc-negotiation.html", label: "Negotiation Allowance", role: "Sales", uc: "UC-10" },
+      { id: "nego", file: "pc-negotiation.html", label: "Negotiation Allowance", role: "Sales Manager", uc: "UC-10" },
     ] },
     { group: "Hasil & Pricelist", items: [
       { id: "simulasi", file: "pc-simulasi.html", label: "Simulasi Costing", role: "Accounting / Sales / Engineering", uc: "UC-11 s.d. UC-16" },
       { id: "pricelist", file: "pc-pricelist.html", label: "Pricelist", role: "Sales", uc: "UC-16, UC-17" },
       { id: "approval", file: "pc-approval.html", label: "Approval Pricelist", role: "Management", uc: "UC-19" },
+      { id: "egapproval", file: "pc-approval-extra-margin.html", label: "Approval Extra Margin", role: "GM", uc: "UC-10" },
       { id: "catalog", file: "pc-catalog.html", label: "Product Catalog", role: "Sales", uc: "UC-18" },
     ] },
   ];
   const flat = MENU.reduce((a, g) => a.concat(g.items), []);
-  const USERS = { Engineering: "Eka R.", Accounting: "Andri P.", Finance: "Andri P.", Costing: "Citra D.", Sales: "Sari W.", Management: "Bima H." };
+  const USERS = { Engineering: "Eka R.", Accounting: "Andri P.", Finance: "Andri P.", Costing: "Citra D.", Sales: "Sari W.", "Sales Manager": "Sari W.", GM: "Gilang M.", Management: "Bima H." };
 
   const getPath = (o, p) => p.split(".").reduce((x, k) => (x == null ? x : x[k]), o);
   const setPath = (o, p, v) => {
@@ -272,7 +273,7 @@
       <div class="pc-modal pc-modal--dlg" id="pcDialog" hidden></div>`;
     // Kerangka Berry (sidebar + top bar + kartu judul/breadcrumb) — lihat berry-shell.js
     const gaps = PC.gapReport().length;
-    window.BERRY.mount({ user: { name: USERS[role] || "", role: cur.role }, badges: gaps ? { "pc-simulasi.html": gaps, "pc-pricelist.html": gaps } : {} });
+    window.BERRY.mount({ user: { name: USERS[role] || "", role: cur.role }, badges: Object.assign(gaps ? { "pc-simulasi.html": gaps, "pc-pricelist.html": gaps } : {}, PC.negoPending().length ? { "pc-approval-extra-margin.html": PC.negoPending().length } : {}) });
     render();
     document.addEventListener("input", (e) => { if (e.target.tagName !== "SELECT") onInput(e); });
     document.addEventListener("change", onInput);

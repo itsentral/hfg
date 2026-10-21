@@ -12,7 +12,7 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 5;
+  const SCHEMA = 6;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
   const seed = () => ({
@@ -139,6 +139,12 @@
       { id: "N1", category: "Spandek", v: 0.05 },
       { id: "N2", category: "BONDECK", v: 0.05 },
     ],
+    // 11b. Pengajuan perubahan Negotiation Allowance (BPMN To Be Sales D01): Sales Manager mengajukan, GM memutuskan.
+    //      Rate AKTIF tetap di `nego`; hanya berubah saat GM Approve. Status: Menunggu Approval GM | Approved | Rejected.
+    negoReq: [
+      { id: "NR1", category: "BONDECK", current: 0.05, requested: 0.03, status: "Rejected", submittedBy: "Sales Manager", submittedAt: "2026-10-15",
+        decidedBy: "GM", decidedAt: "2026-10-16", rejectReason: "Contoh alasan: extra margin 3% terlalu rendah untuk kategori BONDECK; mohon ajukan ulang." },
+    ],
     hfg: 27400, // pembanding "Pricelist HFG saat ini", Rp/Meter — hanya contoh
     costRange: "",
     // 12. Pricelist (UC-16..UC-19, FR-58): per Produk x varian BOM. Status hanya:
@@ -156,17 +162,23 @@
 
   let state = load();
   // Langkah migrasi data lama ke SCHEMA terbaru: tambahkan blok `if (v < n) { ...; }` saat bentuk data berubah.
-  function migrate(s, v) { return s; }
+  // Dijalankan pada data tersimpan SEBELUM digabung dengan seed (Object.assign(seed(), migrate(...))).
+  //  v6: pengajuan perubahan Negotiation Allowance (negoReq); rate aktif tetap di `nego` (isian lama utuh).
+  function migrate(s, v) {
+    s = s || {};
+    if (v < 6 && !Array.isArray(s.negoReq)) s.negoReq = [];
+    return s;
+  }
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const o = JSON.parse(raw);
-        if (o && o.state && typeof o.state === "object") return migrate(Object.assign(seed(), o.state), o.v || SCHEMA);
+        if (o && o.state && typeof o.state === "object") return Object.assign(seed(), migrate(o.state, o.v || SCHEMA));
       }
       for (const k of LEGACY_KEYS) {
         const old = JSON.parse(localStorage.getItem(k));
-        if (old && typeof old === "object") return Object.assign(seed(), old);
+        if (old && typeof old === "object") return Object.assign(seed(), migrate(old, 5));
       }
     } catch (e) { /* abaikan */ }
     return seed();
@@ -191,7 +203,7 @@
     if (!o || o.app !== "pc-mockup" || !o.state || !Array.isArray(o.state.products) || !Array.isArray(o.state.materials)) {
       return { ok: false, msg: "File ini bukan cadangan data Product Costing." };
     }
-    state = migrate(Object.assign(seed(), o.state), o.v || SCHEMA);
+    state = Object.assign(seed(), migrate(o.state, o.v || SCHEMA));
     normalize(); save();
     return { ok: true, msg: "Data dimuat dari file." };
   }
@@ -284,6 +296,10 @@
 
   const rateOf = (cat) => state.bpkfoh.find((r) => r.category === cat) || { bpk: 0, foh: 0 };
   const negoOf = (cat) => { const n = state.nego.find((x) => x.category === cat); return n ? Number(n.v) || 0 : 0; };
+  // Pengajuan perubahan Negotiation Allowance: costing hanya memakai rate AKTIF (negoOf); pengajuan menunggu TIDAK dihitung.
+  const NEGO_PENDING = "Menunggu Approval GM";
+  const negoLatest = (cat) => { const l = state.negoReq.filter((r) => r.category === cat); return l.length ? l[l.length - 1] : null; };
+  const negoPending = () => state.negoReq.filter((r) => r.status === NEGO_PENDING);
   const gen = (key) => { const g = state.general.find((x) => x.key === key); return g ? Number(g.v) || 0 : 0; };
 
   /* ---- Kalkulasi costing per varian BOM (FR-56, FR-57); Rp/meter, Rp/Kg = ÷ Berat/Meter ---- */
@@ -387,11 +403,13 @@
   }
   function normalize() {
     if (!Array.isArray(state.faktor) || !state.faktor.length) state.faktor = seed().faktor;
+    if (!Array.isArray(state.negoReq)) state.negoReq = [];
     if (!state.ui) state.ui = { decision: "Approve", reason: "" };
     const u = state.ui;                                  // keadaan layar daftar (filter, DataTables, BOM)
     u.pf = u.pf || { t: "", c: "", j: "" };
     u.mf = u.mf || { m: "", s: "", b: "" };
     u.dt = u.dt || {};
+    u.egf = u.egf || { s: "" };
     u.bomv = u.bomv || { mode: "list", productId: "" };
     if (!("flash" in u)) u.flash = null;
     if (!("bomDraft" in u)) u.bomDraft = null;
@@ -418,7 +436,7 @@
     productById, materialById, kursOf, categories,
     productName, materialName, applyProductName, applyMaterialName,
     bpmOf, history, priceRef, priceMetaOf, manPowerRate, faktorOf, boronganRow, boronganPerMeter,
-    manHour, totalManHour, rateOf, negoOf, gen, costing,
+    manHour, totalManHour, rateOf, negoOf, NEGO_PENDING, negoLatest, negoPending, gen, costing,
     plRow, plRows, snapPricelist, nextNo, normalize,
     fmt, rp, hasVal, hasHistory, gapReport, LINK,
   };
