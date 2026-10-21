@@ -29,6 +29,7 @@
 mark.pc-search-highlight { background-color: #ffe082; color: #1a1a1a; padding: 0 3px; border-radius: 3px; font-weight: 700; }
 
 /* badge peringatan kelengkapan (Product Costing) */
+.pc-sidebar .berry-badge--info { background: #cfe2ff; color: #084298; }
 .pc-sidebar .berry-badge { margin-left: auto; background: #ffe0b2; color: #b45309; border-radius: 10px; padding: 0 7px; font-size: 11px; font-weight: 700; line-height: 18px; }
 
 /* overlay menu untuk layar kecil */
@@ -47,3 +48,7 @@ mark.pc-search-highlight { background-color: #ffe082; color: #1a1a1a; padding: 0
 .pc-header .dropdown-notification, .pc-header .dropdown-user-profile { min-width: 300px; }
 .pc-header .dropdown-notification .list-group-item { border-left: 0; border-right: 0; }
 .pc-header .berry-role { font-size: 12px; }
+
+/* lonceng notifikasi: hitungan belum ditinjau */
+.pc-header .berry-bell { position: relative; }
+.pc-header .berry-bell-count { position: absolute; top: 2px; right: 0; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #dc3545; color: #fff; font-size: 10.5px; font-weight: 700; line-height: 17px; text-align: center; }

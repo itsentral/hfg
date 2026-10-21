@@ -50,6 +50,7 @@
       ["pc-negotiation.html", "Negotiation Allowance", "ti-discount-2"],
     ] },
     { group: "Hasil & Pricelist", icon: "ti-report-money", items: [
+      ["pc-notifikasi-bottom-price.html", "Notifikasi Bottom Price", "ti-bell-ringing"],
       ["pc-simulasi.html", "Simulasi Costing", "ti-calculator"],
       ["pc-pricelist.html", "Pricelist", "ti-file-invoice"],
       ["pc-approval.html", "Approval Pricelist", "ti-checkbox"],
@@ -61,14 +62,42 @@
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const chevron = '<svg class="feather feather-chevron-right" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
   const here = () => (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const rp2 = (n) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Notifikasi perubahan Bottom Price (Belum Ditinjau): dari window.PC bila dimuat, jika tidak dari penyimpanan lokal mockup.
+  function bpNotifs() {
+    try {
+      const st = (window.PC && window.PC.state) || (JSON.parse(localStorage.getItem("mockPC.data")) || {}).state || {};
+      return (st.bpNotif || []).filter((n) => n.status === "Belum Ditinjau")
+        .sort((a, b) => String(b.detectedAt).localeCompare(String(a.detectedAt)));
+    } catch (e) { return []; }
+  }
+  const BP_PAGE = "pc-notifikasi-bottom-price.html";
 
   let mounted = false;
 
   function build(opts) {
     const cur = here();
-    const badges = opts.badges || {};
+    const bps = bpNotifs();
+    const badges = Object.assign({}, opts.badges || {});
+    if (bps.length && !badges[BP_PAGE]) badges[BP_PAGE] = { n: bps.length, title: bps.length + " notifikasi perubahan Bottom Price belum ditinjau", tone: "info", bell: true };
+    const badgeHtml = (b) => {
+      if (!b) return "";
+      const o = typeof b === "object" ? b : { n: b, title: b + " varian BOM belum lengkap datanya" };
+      return `<span class="berry-badge${o.tone ? " berry-badge--" + o.tone : ""}" title="${esc(o.title)}">${o.bell ? "" : "&#9888; "}${o.n}</span>`;
+    };
     const leaf = (it, extra = "") => `<li class="pc-item${it[0] === cur ? " active" : ""}"${extra}>
-        <a class="pc-link" href="${it[0]}"><span class="pc-micon"><i class="ti ${it[2]}"></i></span><span class="pc-mtext">${esc(it[1])}</span>${badges[it[0]] ? `<span class="berry-badge" title="${badges[it[0]]} varian BOM belum lengkap datanya">&#9888; ${badges[it[0]]}</span>` : ""}</a></li>`;
+        <a class="pc-link" href="${it[0]}"><span class="pc-micon"><i class="ti ${it[2]}"></i></span><span class="pc-mtext">${esc(it[1])}</span>${badgeHtml(badges[it[0]])}</a></li>`;
+    const bellItems = bps.slice(0, 5).map((n) => {
+      const d = n.newM - n.oldM, pc = n.oldM ? (d / n.oldM) * 100 : 0;
+      return `<a class="list-group-item list-group-item-action" href="${BP_PAGE}"><div class="d-flex">
+          <div class="flex-shrink-0"><div class="user-avtar ${d > 0 ? "bg-light-danger" : "bg-light-success"}"><i class="ti ${d > 0 ? "ti-trending-up" : "ti-trending-down"}"></i></div></div>
+          <div class="flex-grow-1 ms-2"><span class="float-end text-muted small">${esc(String(n.detectedAt).slice(0, 10))}</span><h6 class="mb-1">Bottom Price ${d > 0 ? "naik" : "turun"} — ${esc(n.bomUniq)}</h6>
+            <p class="text-body fs-6 mb-1">${esc(n.productName)}<br>Rp ${rp2(n.oldM)} → Rp ${rp2(n.newM)} /Meter (${d > 0 ? "+" : "−"}${rp2(Math.abs(pc))} %)<br>Extra Margin aktif ${rp2((n.negoPct || 0) * 100)} %</p><span class="badge rounded-pill bg-light-danger">Belum ditinjau</span></div>
+        </div></a>`;
+    }).join("");
+    const bellBody = bps.length ? bellItems : `<div class="list-group-item"><div class="d-flex"><div class="flex-shrink-0"><div class="user-avtar bg-light-success"><i class="ti ti-building-store"></i></div></div>
+        <div class="flex-grow-1 ms-2"><h6 class="mb-1">Tidak ada notifikasi baru</h6><p class="text-body fs-6 mb-1">Perubahan Bottom Price akan muncul di sini. Mockup UI/UX — data contoh, bukan data klien.</p></div></div></div>`;
     const parent = (icon, title, inner, open, nested = false) => `<li class="pc-item pc-hasmenu${open ? " active pc-trigger" : ""}">
         <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ${icon}"></i></span><span class="pc-mtext">${esc(title)}</span><span class="pc-arrow">${chevron}</span></a>
         <ul class="pc-submenu">${inner}</ul></li>`;
@@ -109,16 +138,11 @@
             </ul></div>
             <div class="ms-auto"><ul class="list-unstyled">
               <li class="dropdown pc-h-item">
-                <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0" data-berry-dd href="#" role="button" aria-expanded="false"><i class="ti ti-bell"></i></a>
+                <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0 berry-bell" data-berry-dd href="#" role="button" aria-expanded="false" title="${bps.length ? bps.length + " notifikasi perubahan Bottom Price belum ditinjau" : "Notifikasi"}"><i class="ti ti-bell"></i>${bps.length ? `<span class="berry-bell-count">${bps.length}</span>` : ""}</a>
                 <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
-                  <div class="dropdown-header"><a href="#!" class="link-primary float-end text-decoration-underline">Mark as all read</a><h5 class="mb-0">All Notification <span class="badge bg-warning rounded-pill ms-1">01</span></h5></div>
-                  <div class="dropdown-header px-0 text-wrap"><div class="list-group list-group-flush w-100">
-                    <div class="list-group-item list-group-item-action"><div class="d-flex">
-                      <div class="flex-shrink-0"><div class="user-avtar bg-light-success"><i class="ti ti-building-store"></i></div></div>
-                      <div class="flex-grow-1 ms-2"><span class="float-end text-muted small">3 min ago</span><h6 class="mb-1">System Info</h6><p class="text-body fs-6 mb-1">Mockup UI/UX — data contoh, bukan data klien.</p><span class="badge rounded-pill bg-light-danger">Unread</span></div>
-                    </div></div>
-                  </div></div>
-                  <div class="dropdown-divider"></div><div class="text-center py-2"><a href="#!" class="link-primary">View all</a></div>
+                  <div class="dropdown-header"><h5 class="mb-0">Notifikasi Bottom Price <span class="badge ${bps.length ? "bg-warning" : "bg-secondary"} rounded-pill ms-1">${String(bps.length).padStart(2, "0")}</span></h5></div>
+                  <div class="dropdown-header px-0 text-wrap"><div class="list-group list-group-flush w-100">${bellBody}</div></div>
+                  <div class="dropdown-divider"></div><div class="text-center py-2"><a href="${BP_PAGE}" class="link-primary">Lihat semua</a></div>
                 </div>
               </li>
               <li class="dropdown pc-h-item header-user-profile">

@@ -30,6 +30,7 @@
       { id: "nego", file: "pc-negotiation.html", label: "Negotiation Allowance", role: "Sales Manager", uc: "UC-10" },
     ] },
     { group: "Hasil & Pricelist", items: [
+      { id: "bpnotif", file: "pc-notifikasi-bottom-price.html", label: "Notifikasi Bottom Price", role: "Sales", uc: "UC-N18 (usulan)" },
       { id: "simulasi", file: "pc-simulasi.html", label: "Simulasi Costing", role: "Accounting / Sales / Engineering", uc: "UC-11 s.d. UC-16" },
       { id: "pricelist", file: "pc-pricelist.html", label: "Pricelist", role: "Sales", uc: "UC-16, UC-17" },
       { id: "approval", file: "pc-approval.html", label: "Approval Pricelist", role: "Management", uc: "UC-19" },
@@ -273,7 +274,7 @@
       <div class="pc-modal pc-modal--dlg" id="pcDialog" hidden></div>`;
     // Kerangka Berry (sidebar + top bar + kartu judul/breadcrumb) — lihat berry-shell.js
     const gaps = PC.gapReport().length;
-    window.BERRY.mount({ user: { name: USERS[role] || "", role: cur.role }, badges: Object.assign(gaps ? { "pc-simulasi.html": gaps, "pc-pricelist.html": gaps } : {}, PC.negoPending().length ? { "pc-approval-extra-margin.html": PC.negoPending().length } : {}) });
+    window.BERRY.mount({ user: { name: USERS[role] || "", role: cur.role }, badges: Object.assign(gaps ? { "pc-simulasi.html": gaps, "pc-pricelist.html": gaps } : {}, PC.negoPending().length ? { "pc-approval-extra-margin.html": { n: PC.negoPending().length, title: PC.negoPending().length + " pengajuan Extra Margin menunggu keputusan GM", tone: "info" } } : {}) });
     render();
     document.addEventListener("input", (e) => { if (e.target.tagName !== "SELECT") onInput(e); });
     document.addEventListener("change", onInput);

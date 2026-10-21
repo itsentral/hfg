@@ -12,7 +12,7 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 6;
+  const SCHEMA = 7;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
   const seed = () => ({
@@ -145,6 +145,11 @@
       { id: "NR1", category: "BONDECK", current: 0.05, requested: 0.03, status: "Rejected", submittedBy: "Sales Manager", submittedAt: "2026-10-15",
         decidedBy: "GM", decidedAt: "2026-10-16", rejectReason: "Contoh alasan: extra margin 3% terlalu rendah untuk kategori BONDECK; mohon ajukan ulang." },
     ],
+    // 11c. Notifikasi perubahan Bottom Price (dashboard Sales). bpBase = baseline Bottom Price per varian BOM yang terakhir
+    //      ditinjau Sales (null = diisi dari hitungan saat ini oleh normalize(), sehingga tanpa notifikasi palsu);
+    //      bpNotif = notifikasi + riwayat keputusan.
+    bpBase: null,
+    bpNotif: [],
     hfg: 27400, // pembanding "Pricelist HFG saat ini", Rp/Meter — hanya contoh
     costRange: "",
     // 12. Pricelist (UC-16..UC-19, FR-58): per Produk x varian BOM. Status hanya:
@@ -164,9 +169,14 @@
   // Langkah migrasi data lama ke SCHEMA terbaru: tambahkan blok `if (v < n) { ...; }` saat bentuk data berubah.
   // Dijalankan pada data tersimpan SEBELUM digabung dengan seed (Object.assign(seed(), migrate(...))).
   //  v6: pengajuan perubahan Negotiation Allowance (negoReq); rate aktif tetap di `nego` (isian lama utuh).
+  //  v7: notifikasi perubahan Bottom Price (bpNotif) dan baseline (bpBase = null → diisi normalize() dari hitungan saat ini).
   function migrate(s, v) {
     s = s || {};
     if (v < 6 && !Array.isArray(s.negoReq)) s.negoReq = [];
+    if (v < 7) {
+      if (!Array.isArray(s.bpNotif)) s.bpNotif = [];
+      if (!("bpBase" in s)) s.bpBase = null;
+    }
     return s;
   }
   function load() {
@@ -185,6 +195,7 @@
   }
   let storageFailed = false;
   const save = () => {
+    try { bpDetect(); } catch (e) { /* deteksi tidak boleh mengganggu penyimpanan */ }
     try { localStorage.setItem(KEY, JSON.stringify({ v: SCHEMA, savedAt: new Date().toISOString(), state })); storageFailed = false; }
     catch (e) { storageFailed = true; }
   };
@@ -401,6 +412,75 @@
     const n = list.reduce((mx, x) => Math.max(mx, parseInt(String(x.no || "").replace(/\D/g, ""), 10) || 0), 0) + 1;
     return prefix + "-" + String(n).padStart(3, "0");
   }
+  /* ---- Notifikasi perubahan Bottom Price (dashboard Sales; asumsi menunggu konfirmasi) ----
+     Baseline per varian BOM (state.bpBase) = Bottom Price yang terakhir ditinjau Sales. Tiap simpan/muat dihitung ulang:
+     bila Bottom Price (Rp/Meter) berbeda dari baseline pada presisi 2 desimal (selisih >= Rp0,01; tanpa persentase minimum;
+     keputusan user 2026-10-21) dan data costing lengkap → notifikasi "Belum Ditinjau". Peninjau: semua Sales; kanal: dashboard
+     saja; tanpa batas waktu tinjau (tidak ada SLA/eskalasi/penanda terlambat).
+     Sistem TIDAK mengubah Rate Extra Margin maupun Pricelist; Sales memutuskan: ajukan rate baru (→ Approval GM) atau tidak
+     perlu diubah (keduanya menggeser baseline ke Bottom Price baru). Satu notifikasi Belum Ditinjau per varian BOM. */
+  const BP_NEW = "Belum Ditinjau", BP_NEGO = "Diajukan Extra Margin Baru", BP_KEEP = "Tidak Perlu Diubah";
+  const BP_COMP = [["material", "Material Cost"], ["proses", "Biaya Proses"], ["support", "Manufacturing Support"], ["other", "Other Cost"]];
+  const nowStamp = () => today() + " " + new Date().toTimeString().slice(0, 5);
+  function bpSnap(c) {
+    const L = c.lines;
+    return {
+      bomId: c.bom.id, uniq: c.bom.uniq, productName: c.product.name, category: c.product.category,
+      bottomM: c.bottomMeter, bottomKg: c.bottomKg, material: L.material, proses: L.proses, support: L.support,
+      other: sum(L.others, (o) => o.v), negoPct: c.negoPct, plM: c.hargaMeter, plKg: c.hargaKg, at: today(),
+    };
+  }
+  // Harga jual saat ini = Price List pada Product Catalog terakhir dirilis untuk varian BOM itu; bila belum ada, Price List baseline.
+  function bpHargaJual(bomId, base) {
+    for (let i = state.catalogs.length - 1; i >= 0; i--) {
+      const ct = state.catalogs[i], r = (ct.rows || []).find((x) => x.bomId === bomId);
+      if (r) return { m: r.plM, kg: r.plKg, src: "Katalog " + ct.no };
+    }
+    return { m: base.plM, kg: base.plKg, src: "Price List baseline" };
+  }
+  function bpFields(base, c) {
+    const now = bpSnap(c), hj = bpHargaJual(base.bomId, base);
+    return {
+      bomId: base.bomId, bomUniq: c.bom.uniq, productId: c.product.id, productName: c.product.name, category: c.product.category,
+      oldM: base.bottomM, newM: now.bottomM, oldKg: base.bottomKg, newKg: now.bottomKg,
+      comps: BP_COMP.map(([k, l]) => ({ k, l, old: base[k], now: now[k], diff: now[k] - base[k] })).filter((x) => Math.abs(x.diff) >= 0.005),
+      negoPct: now.negoPct, hargaJualM: hj.m, hargaJualKg: hj.kg, hargaJualSrc: hj.src,
+      plNewM: now.bottomM * (1 + now.negoPct), plNewKg: now.bottomKg * (1 + now.negoPct),
+    };
+  }
+  // true bila ada perubahan state (baseline/notifikasi) — pemanggil boleh menyimpan.
+  function bpDetect() {
+    let changed = false;
+    if (!state.bpBase || typeof state.bpBase !== "object") { state.bpBase = {}; changed = true; }
+    if (!Array.isArray(state.bpNotif)) { state.bpNotif = []; changed = true; }
+    state.boms.forEach((b) => {
+      const c = costing(b);
+      if (!c || !c.lengkap) return;                                   // data belum lengkap: Bottom Price belum bisa diandalkan
+      const base = state.bpBase[b.id];
+      if (!base) { state.bpBase[b.id] = bpSnap(c); changed = true; return; }
+      const idx = state.bpNotif.findIndex((n) => n.bomId === b.id && n.status === BP_NEW);
+      if (Math.round(c.bottomMeter * 100) === Math.round(base.bottomM * 100)) { // sama pada 2 desimal: notifikasi menunggu tidak diperlukan lagi
+        if (idx >= 0) { state.bpNotif.splice(idx, 1); changed = true; }
+        return;
+      }
+      const fresh = bpFields(base, c);
+      if (idx >= 0) {                                                 // satu notifikasi Belum Ditinjau per varian: diperbarui, tidak dobel
+        const cur = state.bpNotif[idx];
+        if (JSON.stringify(Object.assign({}, cur, fresh)) !== JSON.stringify(cur)) { Object.assign(cur, fresh); changed = true; }
+      } else {
+        state.bpNotif.push(Object.assign({ id: uid("BP"), status: BP_NEW, detectedAt: nowStamp(), reviewedBy: "", reviewedAt: "", note: "", negoReqId: "" }, fresh));
+        changed = true;
+      }
+    });
+    return changed;
+  }
+  // Keputusan Sales: geser baseline varian BOM itu ke Bottom Price saat ini.
+  function bpShift(bomId) {
+    const b = state.boms.find((x) => x.id === bomId), c = b && costing(b);
+    if (c && c.lengkap) { if (!state.bpBase) state.bpBase = {}; state.bpBase[bomId] = bpSnap(c); }
+  }
+  const bpUnreviewed = () => state.bpNotif.filter((n) => n.status === BP_NEW);
+
   function normalize() {
     if (!Array.isArray(state.faktor) || !state.faktor.length) state.faktor = seed().faktor;
     if (!Array.isArray(state.negoReq)) state.negoReq = [];
@@ -410,6 +490,7 @@
     u.mf = u.mf || { m: "", s: "", b: "" };
     u.dt = u.dt || {};
     u.egf = u.egf || { s: "" };
+    u.bpf = u.bpf || { s: "", c: "" };
     u.bomv = u.bomv || { mode: "list", productId: "" };
     if (!("flash" in u)) u.flash = null;
     if (!("bomDraft" in u)) u.bomDraft = null;
@@ -418,6 +499,8 @@
       const pl = state.pricelists.find((x) => x.id === ct.pricelistId);
       if (!ct.rows && pl) ct.rows = (pl.snap || []).map((r) => Object.assign({}, r));
     });
+    // Deteksi perubahan Bottom Price saat memuat; baseline awal dibuat dari hitungan saat ini (tanpa notifikasi palsu).
+    if (typeof bpDetect === "function" && bpDetect() && ready) { try { save(); } catch (e) { /* abaikan */ } }
   }
 
   // Ringkasan: varian BOM yang datanya belum lengkap (untuk Simulasi, Pricelist, dll.).
@@ -428,7 +511,10 @@
   const fmt = (n, d = 2) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: d, maximumFractionDigits: d });
   const rp = (n, d = 2) => "Rp " + fmt(n, d);
 
+  let ready = false;
   normalize();
+  ready = true;
+  try { save(); } catch (e) { /* abaikan */ }   // simpan baseline awal / notifikasi hasil deteksi saat memuat
 
   window.PC = {
     get state() { return state; },
@@ -439,5 +525,6 @@
     manHour, totalManHour, rateOf, negoOf, NEGO_PENDING, negoLatest, negoPending, gen, costing,
     plRow, plRows, snapPricelist, nextNo, normalize,
     fmt, rp, hasVal, hasHistory, gapReport, LINK,
+    BP: { NEW: BP_NEW, NEGO: BP_NEGO, KEEP: BP_KEEP, detect: bpDetect, unreviewed: bpUnreviewed, shift: bpShift, hargaJual: bpHargaJual, nowStamp },
   };
 })();

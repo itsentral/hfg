@@ -1017,7 +1017,7 @@
     S().negoReq.forEach((r) => { if (r.category && !cats.includes(r.category)) cats.push(r.category); });
     return cats.map((c) => ({ category: c, active: S().nego.find((n) => n.category === c) || null, req: PC.negoLatest(c) }));
   };
-  const openNegoReq = (cat, isNew) => {
+  const openNegoReq = (cat, isNew, after, by) => {
     const row0 = negoRows().find((x) => x.category === cat);
     const rejected = !!(row0 && row0.req && row0.req.status === "Rejected");
     U().egCat = cat || ""; U().egRate = rejected ? row0.req.requested : null;
@@ -1047,8 +1047,10 @@
       },
       onSave() {
         const c = cur(), act = S().nego.find((n) => n.category === c);
-        S().negoReq.push({ id: PC.uid("NR"), category: c, current: act && hasV(act.v) ? Number(act.v) : null, requested: Number(U().egRate), status: NEGO_WAIT,
-          submittedBy: "Sales Manager", submittedAt: PC.today(), decidedBy: "", decidedAt: "", rejectReason: "" });
+        const nr = { id: PC.uid("NR"), category: c, current: act && hasV(act.v) ? Number(act.v) : null, requested: Number(U().egRate), status: NEGO_WAIT,
+          submittedBy: by || "Sales Manager", submittedAt: PC.today(), decidedBy: "", decidedAt: "", rejectReason: "" };
+        S().negoReq.push(nr);
+        if (after) after(nr);                                   // dipakai Notifikasi Bottom Price (menautkan notifikasi ke pengajuan)
         return true;
       },
     });
@@ -1159,6 +1161,108 @@
     act: Object.assign({
       egdecide(d) { openEgDecision(Number(d.i)); },
       egview(d) { openEgView(Number(d.i)); },
+    }, DT_ACT),
+  };
+
+  /* ---------- 11c. Notifikasi Perubahan Bottom Price (dashboard Sales) — usulan (FR-68–FR-70, UC-N18) ---------- */
+  // Bottom Price berubah (mis. Kurs, Price Reference, Faktor, rate) → notifikasi ke Sales (semua pengguna Sales). Sales menilai apakah Price List
+  // dengan Rate Extra Margin aktif masih sesuai harga pasar, lalu memutuskan: ajukan rate baru (→ Approval Extra Margin, GM) atau
+  // tidak perlu diubah. Deteksi dan baseline: pc-data.js (PC.BP). Sistem tidak mengubah rate/Pricelist otomatis.
+  const BP = PC.BP;
+  const BP_TONE = { [BP.NEW]: "warning", [BP.NEGO]: "info", [BP.KEEP]: "secondary" };
+  const bpPill = (st) => `<label class="ap-label ap-label--${BP_TONE[st] || "secondary"}">${H.esc(st)}</label>`;
+  const bpTone = (v) => (v > 0.004 ? "bp-up" : v < -0.004 ? "bp-down" : "");              // naik = merah, turun = hijau
+  const bpSign = (v, d = 2) => (v > 0.004 ? "+" : v < -0.004 ? "−" : "") + f(Math.abs(v), d);
+  const bpPct = (a, b) => (b ? ((a - b) / b) * 100 : 0);
+  const bpFind = (id) => S().bpNotif.find((n) => n.id === id);
+  const bpReq = (n) => (n.negoReqId ? S().negoReq.find((r) => r.id === n.negoReqId) : null);
+  const bpCatWait = (cat) => { const l = PC.negoLatest(cat); return !!(l && l.status === PC.NEGO_PENDING); };
+  // Peninjau = semua Sales (Staf Sales dan Sales Manager); dicatat sesuai pengguna yang sedang membuka halaman.
+  const bpUser = () => { const h = document.querySelector(".topbar__user-name"), nm = h && h.textContent.trim(); return nm ? "Sales · " + nm : "Sales"; };
+  const bpClose = (n, status, note, reqId) => {
+    n.status = status; n.reviewedBy = bpUser(); n.reviewedAt = BP.nowStamp(); n.note = note || ""; n.negoReqId = reqId || "";
+    BP.shift(n.bomId);                                                                   // baseline bergeser ke Bottom Price saat ini
+  };
+  const bpComps = (n) => (n.comps.length ? n.comps.map((c) => `<div>${H.esc(c.l)} <span class="${bpTone(c.diff)}">${bpSign(c.diff)}</span></div>`).join("") : "—");
+  const bpInfo = (n) => {
+    const d = n.newM - n.oldM, pl = bpPct(n.plNewM, n.hargaJualM);
+    return `${apRow(lb("Product / Varian"), fld("c4", ro(up(n.productName) + " · " + n.bomUniq)), lb("Product Category"), fld("c4", ro(up(n.category))))}
+      ${apRow(lb("Bottom Price/Meter"), fld("c4", ro(f(n.oldM) + " → " + f(n.newM) + " (" + bpSign(d) + "; " + bpSign(bpPct(n.newM, n.oldM)) + " %)")), lb("Bottom Price/Kg"), fld("c4", ro(f(n.oldKg) + " → " + f(n.newKg))))}
+      ${apRow(lb("Rate Extra Margin Aktif"), fld("c4", ro(f(pctVal(n.negoPct)) + " %")), lb("Harga Jual Saat Ini"), fld("c4", ro(f(n.hargaJualM) + " /Meter (" + n.hargaJualSrc + ")")))}
+      ${apRow(lb("Price List Baru"), fld("c4", ro(f(n.plNewM) + " /Meter (" + bpSign(pl) + " % terhadap harga jual saat ini)")), lb("Terdeteksi"), fld("c4", ro(n.detectedAt)))}
+      ${apRow(lb("Komponen Berubah"), fld("c10", `<div class="ap-in ap-in--ro">${bpComps(n)}</div>`))}`;
+  };
+  const openBpKeep = (id) => {
+    const n0 = bpFind(id); if (!n0) return;
+    U().bpNote = "";
+    openModal({
+      app: true, mode: "edit", size: "lg", title: "Tidak Perlu Diubah — " + up(n0.productName) + " · " + n0.bomUniq,
+      saveLabel: "Simpan Keputusan", confirmTitle: "Rate Extra Margin tidak perlu diubah?",
+      confirmText: "Rate Extra Margin aktif tetap dipakai dan baseline Bottom Price bergeser ke nilai baru.", confirmBtn: "Ya, Simpan!",
+      doneMsg: "Keputusan Sales tersimpan.",
+      bodyFn: () => { const n = bpFind(id); if (!n) return "";
+        return `${bpInfo(n)}<hr class="ap-hr"><h6>Keputusan</h6>
+          ${apRow(lb("Catatan"), fld("c10", `<textarea class="pc-in ap-in" rows="3" data-path="ui.bpNote" data-t="text" placeholder="Opsional, mis. harga pasar masih sebanding">${H.esc(U().bpNote)}</textarea><div class="ap-hint">Sistem tidak mengubah rate atau Pricelist; keputusan dicatat sebagai riwayat.</div>`))}`; },
+      validate() { const n = bpFind(id); return n && n.status === BP.NEW ? null : "Notifikasi ini sudah ditinjau."; },
+      onSave() { const n = bpFind(id); if (!n || n.status !== BP.NEW) return false; bpClose(n, BP.KEEP, String(U().bpNote || "").trim(), ""); return true; },
+    });
+  };
+  const openBpView = (id) => {
+    const n0 = bpFind(id); if (!n0) return;
+    openModal({
+      app: true, mode: "view", size: "lg", title: "View Notifikasi Bottom Price — " + up(n0.productName) + " · " + n0.bomUniq, hideSave: true, cancelLabel: "Close",
+      bodyFn: () => { const n = bpFind(id); if (!n) return ""; const rq = bpReq(n);
+        return `${bpInfo(n)}<hr class="ap-hr">
+          ${apRow(lb("Status"), fld("c4", bpPill(n.status)), lb("Diputuskan"), fld("c4", ro(n.reviewedAt ? n.reviewedBy + " · " + n.reviewedAt : "—")))}
+          ${apRow(lb("Catatan"), fld("c10", ro(n.note)))}
+          ${rq ? apRow(lb("Pengajuan Extra Margin"), fld("c10", ro(f(pctVal(rq.requested)) + " % · " + rq.status + (rq.rejectReason ? " · " + rq.rejectReason : "")))) : ""}`; },
+    });
+  };
+  pages.bpnotif = {
+    title: "Notifikasi Perubahan Bottom Price", noSave: true,
+    hint: "Muncul bila Bottom Price (Rp/Meter) suatu varian BOM berubah karena perubahan master (Kurs, Price Reference, Faktor, rate, dan lain-lain); perubahan sekecil apa pun (≥ Rp0,01) memicu notifikasi. Sales (Staf Sales dan Sales Manager) menilai apakah Price List dengan Rate Extra Margin aktif masih sesuai harga pasar, lalu memutuskan: Ajukan Rate Extra Margin Baru (→ Approval Extra Margin, GM) atau Tidak Perlu Diubah. Sistem tidak mengubah rate maupun Pricelist secara otomatis; alert hanya lewat dashboard ini (lencana menu dan lonceng) dan tidak ada batas waktu tinjau. Usulan: FR-68–FR-70 dan UC-N18; sebagian asumsi masih menunggu konfirmasi.",
+    render() {
+      U().bpf = U().bpf || { s: "", c: "" };
+      const all = S().bpNotif, cnt = (st) => all.filter((n) => n.status === st).length;
+      const dampak = uniqList(all.filter((n) => n.status === BP.NEW).map((n) => n.category)).length;
+      const list = all.filter((n) => (!U().bpf.s || n.status === U().bpf.s) && (!U().bpf.c || n.category === U().bpf.c));
+      const cats = uniqList(list.map((n) => n.category));
+      const row = (n) => {
+        const d = n.newM - n.oldM, dk = n.newKg - n.oldKg, pl = bpPct(n.plNewM, n.hargaJualM), rq = bpReq(n);
+        const act = n.status === BP.NEW
+          ? `<div class="bp-act"><button type="button" class="ap-btn ap-btn--primary ap-btn--sm" data-act="bpnego" data-id="${n.id}"${bpCatWait(n.category) ? ' disabled title="Pengajuan Extra Margin kategori ini masih menunggu keputusan GM"' : ""}>Ajukan Rate Extra Margin Baru</button>
+              <button type="button" class="ap-btn ap-btn--secondary ap-btn--sm" data-act="bpkeep" data-id="${n.id}">Tidak Perlu Diubah</button></div>`
+          : iconBtn("bpview", "View", "eye", "info", `data-id="${n.id}"`);
+        const dec = n.status === BP.NEW ? "" : `<div class="ap-hint">${H.esc(n.reviewedBy)} · ${H.esc(n.reviewedAt)}${n.note ? "<br>" + H.esc(n.note) : ""}</div>${rq ? `<div class="ap-hint">Pengajuan: ${pill(rq.status)}</div>` : ""}`;
+        return `<tr><td><strong>${H.esc(up(n.productName))}</strong><div class="ap-hint">${H.esc(n.bomUniq)}</div></td>
+          <td class="ap-r">${f(n.oldM)} → <strong>${f(n.newM)}</strong><div class="ap-hint">Rp/Kg: ${f(n.oldKg)} → ${f(n.newKg)}</div></td>
+          <td class="ap-r"><span class="${bpTone(d)}"><strong>${bpSign(d)}</strong><br>${bpSign(bpPct(n.newM, n.oldM))} %</span><div class="ap-hint ${bpTone(dk)}">Rp/Kg ${bpSign(dk)}</div></td>
+          <td>${bpComps(n)}</td>
+          <td class="ap-r">Extra Margin aktif <strong>${f(pctVal(n.negoPct))} %</strong><div class="ap-hint">Jual saat ini: ${f(n.hargaJualM)}<br>Price List baru: <strong>${f(n.plNewM)}</strong> <span class="${bpTone(pl)}">(${bpSign(pl)} %)</span></div></td>
+          <td>${bpPill(n.status)}<div class="ap-hint">${H.esc(n.detectedAt)}</div>${dec}</td>
+          <td class="ap-c">${act}</td></tr>`;
+      };
+      const body = cats.map((c) => {
+        const items = list.filter((n) => n.category === c).sort((a, b) => String(b.detectedAt).localeCompare(String(a.detectedAt)));
+        const rate = S().nego.find((x) => x.category === c);
+        return `<tr class="ap-grp"><td colspan="7"><strong>${H.esc(up(c))}</strong> — ${items.length} notifikasi · Extra Margin aktif ${rate && hasV(rate.v) ? f(pctVal(rate.v)) + " %" : "belum ada"}${bpCatWait(c) ? ' · <span class="ap-label ap-label--warning">pengajuan menunggu GM</span>' : ""}</td></tr>${items.map(row).join("")}`;
+      }).join("") || `<tr><td class="ap-empty" colspan="7">Tidak ada notifikasi. Bottom Price semua varian BOM sama dengan baseline.</td></tr>`;
+      const stOpts = [{ v: "", l: "ALL STATUS" }].concat([BP.NEW, BP.NEGO, BP.KEEP].map((x) => ({ v: x, l: x })));
+      const sum = (n, label, tone) => `<div class="bp-sum bp-sum--${tone}"><div class="bp-sum__n">${n}</div><div class="bp-sum__l">${label}</div></div>`;
+      return `<div class="bp-sums">${sum(cnt(BP.NEW), "Belum Ditinjau", "warn")}${sum(cnt(BP.NEGO), "Diajukan Extra Margin Baru", "info")}${sum(cnt(BP.KEEP), "Tidak Perlu Diubah", "mute")}${sum(dampak, "Product Category terdampak (belum ditinjau)", "dark")}</div>
+        <div class="ap-card ap-card--shadow">${apHead("Perubahan Bottom Price per Varian BOM", cnt(BP.NEW) ? `${cnt(BP.NEW)} notifikasi menunggu keputusan Sales.` : "Tidak ada notifikasi yang menunggu keputusan.", `Total: ${all.length} notifikasi`, "")}
+          <div class="ap-card__body"><div class="ap-hint" style="margin-bottom:10px">Coba: ubah <a class="ap-link" href="pc-kurs.html">Kurs</a> (mis. 17.863 → 18.500), simpan, lalu kembali ke halaman ini. Alert hanya lewat dashboard (lencana menu dan lonceng).</div>
+            <div class="ap-filters" style="margin-top:0">${apSel("ui.bpf.s", U().bpf.s, stOpts, { struct: 1 })}${apSel("ui.bpf.c", U().bpf.c, selOpts("ALL PRODUCT CATEGORY", uniqList(all.map((n) => n.category)), U().bpf.c), { struct: 1 })}</div>
+            ${apTable("ap-table--bordered ap-table--sm ap-table--fit", ["Produk / Varian", { t: "Bottom Price/Meter (Lama → Baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, "Komponen Berubah (Rp/Meter)", { t: "Extra Margin & Harga Jual", c: "ap-r" }, "Status", { t: "Action", c: "ap-c", w: "190px" }], body)}
+            <div class="ap-hint" style="margin-top:10px">Keputusan user (2026-10-21): ambang = perubahan sekecil apa pun (≥ Rp0,01); pembanding harga pasar = Price List pada Product Catalog terakhir dirilis (bila belum ada: Price List baseline); peninjau = semua Sales; kanal = dashboard saja; tanpa batas waktu tinjau. Masih asumsi (menunggu konfirmasi): baseline = Bottom Price yang terakhir ditinjau; notifikasi hanya dibuat bila data costing lengkap; satu notifikasi Belum Ditinjau per varian BOM; "Ajukan Rate Extra Margin Baru" berlaku untuk Product Category (semua varian Belum Ditinjau pada kategori itu ikut ditandai).</div></div></div>`;
+    },
+    act: Object.assign({
+      bpnego(d) {
+        const n = bpFind(d.id); if (!n || n.status !== BP.NEW) return;
+        openNegoReq(n.category, false, (nr) => { S().bpNotif.filter((x) => x.category === n.category && x.status === BP.NEW).forEach((x) => bpClose(x, BP.NEGO, "", nr.id)); }, bpUser());
+      },
+      bpkeep(d) { openBpKeep(d.id); },
+      bpview(d) { openBpView(d.id); },
     }, DT_ACT),
   };
 

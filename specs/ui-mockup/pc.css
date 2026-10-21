@@ -262,3 +262,18 @@ textarea.ap-in { resize: vertical; }
 /* tombol footer (Simpan ke File / Muat dari File / Reset) satu baris */
 .actionbar__btns { display: flex; gap: 8px; flex-wrap: nowrap; flex-shrink: 0; }
 .actionbar__btns .btn { white-space: nowrap; }
+
+/* Notifikasi perubahan Bottom Price (dashboard Sales) */
+.bp-sums { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.bp-sum { background: #fff; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 2px rgba(15,23,42,.08); border-left: 4px solid #6c757d; }
+.bp-sum__n { font-size: 26px; font-weight: 700; line-height: 1.1; }
+.bp-sum__l { font-size: 12.5px; color: #6c757d; margin-top: 2px; }
+.bp-sum--warn { border-left-color: #ffc107; }
+.bp-sum--info { border-left-color: #0dcaf0; }
+.bp-sum--mute { border-left-color: #6c757d; }
+.bp-sum--dark { border-left-color: #343a40; }
+.ap-table tr.ap-grp td { background: #eef2f7; font-size: 13.5px; padding: 6px 10px; }
+.bp-up { color: #b02a37; }
+.bp-down { color: #198754; }
+.bp-act { display: flex; flex-direction: column; gap: 6px; }
+.bp-act .ap-btn { white-space: normal; text-align: center; }
