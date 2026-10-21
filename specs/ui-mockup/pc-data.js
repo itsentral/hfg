@@ -12,7 +12,7 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 10;
+  const SCHEMA = 11;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
   const seed = () => ({
@@ -176,6 +176,8 @@
   //  v7: notifikasi perubahan Bottom Price (bpNotif) dan baseline (bpBase = null → diisi normalize() dari hitungan saat ini).
   //  v8: History Costing (hcLog, hcBase) dan History Price List (hpLog, hpSeen, hpInit, hpSeq).
   //  v10: pemicu History Costing = tombol Update Costing (hcLast); pencatatan otomatis per perubahan master dihapus.
+  //  v11: pemicu Notifikasi Bottom Price = tombol Update Costing (user 2026-10-21); deteksi otomatis saat simpan/muat dihapus.
+  //       Bentuk data TIDAK berubah: bpBase dan bpNotif lama tetap (tanpa notifikasi palsu).
   //  v9: aturan pencatatan riwayat (jawaban user 2026-10-21): History Costing HANYA saat Bottom Price berubah (perubahan Extra
   //      Margin saja tidak dicatat); History Price List HANYA kejadian Disetujui. Entri lama yang dibuat oleh aturan sebelumnya
   //      dibuang; entri lain milik pengguna tidak disentuh.
@@ -229,7 +231,7 @@
   }
   let storageFailed = false;
   const save = () => {
-    try { bpDetect(); } catch (e) { /* deteksi tidak boleh mengganggu penyimpanan */ }
+    try { bpInit(); } catch (e) { /* inisialisasi baseline tidak boleh mengganggu penyimpanan */ }
     try { hcInit(); hpDetect(); } catch (e) { /* pencatatan riwayat tidak boleh mengganggu penyimpanan */ }
     try { localStorage.setItem(KEY, JSON.stringify({ v: SCHEMA, savedAt: new Date().toISOString(), state })); storageFailed = false; }
     catch (e) { storageFailed = true; }
@@ -448,7 +450,8 @@
     return prefix + "-" + String(n).padStart(3, "0");
   }
   /* ---- Notifikasi perubahan Bottom Price (dashboard Sales; asumsi menunggu konfirmasi) ----
-     Baseline per varian BOM (state.bpBase) = Bottom Price yang terakhir ditinjau Sales. Tiap simpan/muat dihitung ulang:
+     Baseline per varian BOM (state.bpBase) = Bottom Price yang terakhir ditinjau Sales. Dihitung ulang HANYA saat tombol
+     Update Costing ditekan (bpDetect; keputusan user 2026-10-21) — mengubah master saja tidak membuat notifikasi:
      bila Bottom Price (Rp/Meter) berbeda dari baseline pada presisi 2 desimal (selisih >= Rp0,01; tanpa persentase minimum;
      keputusan user 2026-10-21) dan data costing lengkap → notifikasi "Belum Ditinjau". Peninjau: semua Sales; kanal: dashboard
      saja; tanpa batas waktu tinjau (tidak ada SLA/eskalasi/penanda terlambat).
@@ -483,7 +486,20 @@
       plNewM: now.bottomM * (1 + now.negoPct), plNewKg: now.bottomKg * (1 + now.negoPct),
     };
   }
-  // true bila ada perubahan state (baseline/notifikasi) — pemanggil boleh menyimpan.
+  // Inisialisasi baseline saja (varian BOM yang belum punya baseline, mis. data baru/lama); TIDAK membuat atau menghapus
+  // notifikasi. Dipanggil saat simpan/muat. true bila ada perubahan state.
+  function bpInit() {
+    let changed = false;
+    if (!state.bpBase || typeof state.bpBase !== "object") { state.bpBase = {}; changed = true; }
+    if (!Array.isArray(state.bpNotif)) { state.bpNotif = []; changed = true; }
+    state.boms.forEach((b) => {
+      if (state.bpBase[b.id]) return;
+      const c = costing(b);
+      if (c && c.lengkap) { state.bpBase[b.id] = bpSnap(c); changed = true; }
+    });
+    return changed;
+  }
+  // Deteksi perubahan Bottom Price terhadap baseline — dijalankan oleh Update Costing. true bila ada perubahan state.
   function bpDetect() {
     let changed = false;
     if (!state.bpBase || typeof state.bpBase !== "object") { state.bpBase = {}; changed = true; }
@@ -698,7 +714,7 @@
     // Riwayat: snapshot awal dari hitungan saat ini (tanpa entri palsu); riwayat Pricelist direkonstruksi sekali dari data yang ada.
     try { hcInit(); hpDetect(); } catch (e) { /* abaikan */ }
     // Deteksi perubahan Bottom Price saat memuat; baseline awal dibuat dari hitungan saat ini (tanpa notifikasi palsu).
-    if (typeof bpDetect === "function" && bpDetect() && ready) { try { save(); } catch (e) { /* abaikan */ } }
+    if (typeof bpInit === "function" && bpInit() && ready) { try { save(); } catch (e) { /* abaikan */ } }
   }
 
   // Ringkasan: varian BOM yang datanya belum lengkap (untuk Simulasi, Pricelist, dll.).
@@ -726,6 +742,6 @@
     setActor, actor: () => actorName,
     HC: { fmt: hcFmt, init: hcInit, update: hcUpdate, pending: hcPending, retained: histRetained, cutoff: histCutoff },
     HP: { EV: HP_EV, detect: hpDetect, retained: histRetained, cutoff: histCutoff },
-    BP: { NEW: BP_NEW, NEGO: BP_NEGO, KEEP: BP_KEEP, detect: bpDetect, unreviewed: bpUnreviewed, shift: bpShift, hargaJual: bpHargaJual, nowStamp },
+    BP: { NEW: BP_NEW, NEGO: BP_NEGO, KEEP: BP_KEEP, init: bpInit, detect: bpDetect, unreviewed: bpUnreviewed, shift: bpShift, hargaJual: bpHargaJual, nowStamp },
   };
 })();

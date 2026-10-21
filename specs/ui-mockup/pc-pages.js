@@ -1220,7 +1220,7 @@
   };
   pages.bpnotif = {
     title: "Notifikasi Perubahan Bottom Price", noSave: true,
-    hint: "Muncul bila Bottom Price (Rp/Meter) suatu varian BOM berubah karena perubahan master (Kurs, Price Reference, Faktor, rate, dan lain-lain); perubahan sekecil apa pun (≥ Rp0,01) memicu notifikasi. Sales (Staf Sales dan Sales Manager) menilai apakah Price List dengan Rate Extra Margin aktif masih sesuai harga pasar, lalu memutuskan: Ajukan Rate Extra Margin Baru (→ Approval Extra Margin, GM) atau Tidak Perlu Diubah. Sistem tidak mengubah rate maupun Pricelist secara otomatis; alert hanya lewat dashboard ini (lencana menu dan lonceng) dan tidak ada batas waktu tinjau. Usulan: FR-68–FR-70 dan UC-N18; sebagian asumsi masih menunggu konfirmasi.",
+    hint: "Muncul saat Update Costing dijalankan dan Bottom Price (Rp/Meter) suatu varian BOM berubah karena perubahan master (Kurs, Price Reference, Faktor, rate, dan lain-lain); perubahan sekecil apa pun (≥ Rp0,01) memicu notifikasi. Sales (Staf Sales dan Sales Manager) menilai apakah Price List dengan Rate Extra Margin aktif masih sesuai harga pasar, lalu memutuskan: Ajukan Rate Extra Margin Baru (→ Approval Extra Margin, GM) atau Tidak Perlu Diubah. Sistem tidak mengubah rate maupun Pricelist secara otomatis; alert hanya lewat dashboard ini (lencana menu dan lonceng) dan tidak ada batas waktu tinjau. Usulan: FR-68–FR-70 dan UC-N18; sebagian asumsi masih menunggu konfirmasi.",
     render() {
       U().bpf = U().bpf || { s: "", c: "" };
       const all = S().bpNotif, cnt = (st) => all.filter((n) => n.status === st).length;
@@ -1251,10 +1251,10 @@
       const sum = (n, label, tone) => `<div class="bp-sum bp-sum--${tone}"><div class="bp-sum__n">${n}</div><div class="bp-sum__l">${label}</div></div>`;
       return `<div class="bp-sums">${sum(cnt(BP.NEW), "Belum Ditinjau", "warn")}${sum(cnt(BP.NEGO), "Diajukan Extra Margin Baru", "info")}${sum(cnt(BP.KEEP), "Tidak Perlu Diubah", "mute")}${sum(dampak, "Product Category terdampak (belum ditinjau)", "dark")}</div>
         <div class="ap-card ap-card--shadow">${apHead("Perubahan Bottom Price per Varian BOM", cnt(BP.NEW) ? `${cnt(BP.NEW)} notifikasi menunggu keputusan Sales.` : "Tidak ada notifikasi yang menunggu keputusan.", `Total: ${all.length} notifikasi`, "")}
-          <div class="ap-card__body"><div class="ap-hint" style="margin-bottom:10px">Coba: ubah <a class="ap-link" href="pc-kurs.html">Kurs</a> (mis. 17.863 → 18.500), simpan, lalu kembali ke halaman ini. Alert hanya lewat dashboard (lencana menu dan lonceng).</div>
+          <div class="ap-card__body"><div class="ap-hint" style="margin-bottom:10px">Coba: ubah <a class="ap-link" href="pc-kurs.html">Kurs</a> (mis. 17.863 → 18.500) di menu Kurs, lalu tekan Update Costing di <a class="ap-link" href="pc-simulasi.html">Simulasi Costing</a>; notifikasi muncul di halaman ini. Alert hanya lewat dashboard (lencana menu dan lonceng).</div>
             <div class="ap-filters" style="margin-top:0">${apSel("ui.bpf.s", U().bpf.s, stOpts, { struct: 1 })}${apSel("ui.bpf.c", U().bpf.c, selOpts("ALL PRODUCT CATEGORY", uniqList(all.map((n) => n.category)), U().bpf.c), { struct: 1 })}</div>
             ${apTable("ap-table--bordered ap-table--sm ap-table--fit", ["Produk / Varian", { t: "Bottom Price/Meter (Lama → Baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, "Komponen Berubah (Rp/Meter)", { t: "Extra Margin & Harga Jual", c: "ap-r" }, "Status", { t: "Action", c: "ap-c", w: "190px" }], body)}
-            <div class="ap-hint" style="margin-top:10px">Keputusan user (2026-10-21): ambang = perubahan sekecil apa pun (≥ Rp0,01); pembanding harga pasar = Price List pada Product Catalog terakhir dirilis (bila belum ada: Price List baseline); peninjau = semua Sales; kanal = dashboard saja; tanpa batas waktu tinjau. Dikonfirmasi user (2026-10-21): baseline = Bottom Price yang terakhir ditinjau; deteksi setiap costing dihitung ulang; notifikasi hanya dibuat bila data costing lengkap; satu notifikasi Belum Ditinjau per varian BOM; produk/BOM baru tidak memicu notifikasi; "Ajukan Rate Extra Margin Baru" berlaku untuk Product Category (semua varian Belum Ditinjau pada kategori itu ikut ditandai) dan hanya untuk Sales Manager (hak akses diatur per pengguna di program); "Tidak Perlu Diubah" cukup dengan catatan opsional.</div></div></div>`;
+            <div class="ap-hint" style="margin-top:10px">Keputusan user (2026-10-21): ambang = perubahan sekecil apa pun (≥ Rp0,01); pembanding harga pasar = Price List pada Product Catalog terakhir dirilis (bila belum ada: Price List baseline); peninjau = semua Sales; kanal = dashboard saja; tanpa batas waktu tinjau. Dikonfirmasi user (2026-10-21): baseline = Bottom Price yang terakhir ditinjau; deteksi saat tombol Update Costing ditekan (Simulasi Costing), bukan otomatis; notifikasi hanya dibuat bila data costing lengkap; satu notifikasi Belum Ditinjau per varian BOM; produk/BOM baru tidak memicu notifikasi; "Ajukan Rate Extra Margin Baru" berlaku untuk Product Category (semua varian Belum Ditinjau pada kategori itu ikut ditandai) dan hanya untuk Sales Manager (hak akses diatur per pengguna di program); "Tidak Perlu Diubah" cukup dengan catatan opsional.</div></div></div>`;
     },
     act: Object.assign({
       bpnego(d) {
@@ -1386,7 +1386,7 @@
       const gr = PC.gapReport();
       const warn = gr.length ? warnBox(`${gr.length} dari ${all.length} varian BOM datanya belum lengkap — harga belum bisa diandalkan`, uniqGaps([].concat(...gr.map((x) => x.gaps))).map(gapItem).join("")) : "";
       const pendN = PC.HC.pending();
-      const pend = pendN ? `<div class="ap-warn" role="alert"><strong>&#9888; Ada perubahan master yang belum di-Update Costing (${pendN} varian BOM)</strong><ul><li>Hasil di bawah sudah memakai nilai terbaru, tetapi perubahannya baru dicatat ke History Costing saat tombol Update Costing ditekan.</li></ul></div>` : "";
+      const pend = pendN ? `<div class="ap-warn" role="alert"><strong>&#9888; Ada perubahan master yang belum di-Update Costing (${pendN} varian BOM)</strong><ul><li>Hasil di bawah sudah memakai nilai terbaru, tetapi perubahannya baru dicatat ke History Costing dan notifikasi Bottom Price untuk Sales baru dibuat saat tombol Update Costing ditekan.</li></ul></div>` : "";
       return warn + pend + `<div class="ap-card ap-card--shadow">
         <div class="ap-card__head">
           <div class="ap-gap" style="margin-bottom:12px; justify-content:space-between">
@@ -1400,7 +1400,7 @@
           ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Uniq ID", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
           ${dtBottom("simulasi", v)}
           <div class="ap-hint">Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan.</div>
-          <div class="ap-hint">Perubahan master baru dicatat ke History Costing saat Update Costing dijalankan.</div></div></div>`;
+          <div class="ap-hint">Perubahan master baru dicatat ke History Costing dan memicu notifikasi Bottom Price untuk Sales saat Update Costing dijalankan.</div></div></div>`;
     },
     act: Object.assign({
       view(d) { openCostingDetail(d.u); },
@@ -1421,8 +1421,15 @@
         // Update Costing = trigger History Costing (jawaban user 2026-10-21): perubahan master sejak Update Costing sebelumnya dicatat.
         const r = PC.HC.update();
         S().boms.forEach((b) => { if (r.bomIds.includes(b.id)) b.updated = PC.today(); });
+        // Update Costing juga memicu deteksi Notifikasi Bottom Price untuk Sales (user 2026-10-21).
+        const idsBefore = new Set((S().bpNotif || []).map((n) => n.id));
+        PC.BP.detect();
+        const newNotif = (S().bpNotif || []).filter((n) => n.status === PC.BP.NEW && !idsBefore.has(n.id)).length;
         PC.save();
-        window.PC_SHELL.toast(r.entries ? `Costing diperbarui; ${r.entries} perubahan dicatat di History Costing.` : "Tidak ada perubahan costing.", r.entries ? "ok" : "warn");
+        const parts = [];
+        if (r.entries) parts.push(`${r.entries} perubahan dicatat di History Costing`);
+        if (newNotif) parts.push(`${newNotif} notifikasi Bottom Price baru untuk Sales`);
+        window.PC_SHELL.toast(parts.length ? `Costing diperbarui; ${parts.join("; ")}.` : "Tidak ada perubahan costing.", parts.length ? "ok" : "warn");
       },
       excel() { window.PC_SHELL.toast("Download Excel — contoh mockup (tidak menghasilkan file).", "ok"); },
     }, DT_ACT),
@@ -1691,9 +1698,9 @@
   };
   const exportBtn = (act) => `<button type="button" class="ap-btn ap-btn--info" data-act="${act}" title="Perlu hak akses Manage (diatur di program). Ekspor hanya memuat 12 bulan terakhir sesuai filter; data backup tidak ikut diekspor.">${ico("excel")} Ekspor Excel</button>`;
   const HIST_NOTE = "Riwayat disimpan 1 tahun; lebih lama dipindahkan ke backup data (bukan dihapus). Pencatatan riwayat melalui Activity Log aplikasi; halaman ini adalah tampilan terstruktur atas catatan tersebut. Hanya baca. Hak akses terpisah per halaman: View = melihat; Manage = ekspor Excel dan menampilkan data backup (diatur per pengguna di program; di mockup tersedia untuk semua). Ekspor Excel tidak memuat data backup.";
-  const histBackupNote = (n, showBk) => `<div class="ap-hint" style="margin-bottom:8px">${H.esc(HIST_NOTE)}${n ? ` <strong>${n} entri lebih lama dari 12 bulan ada di backup data${showBk ? " (sedang ditampilkan, ditandai Backup)" : " (tidak ditampilkan; pilih \"Tampilkan juga data backup\" bila punya hak akses)"}.</strong>` : ""}</div>`;
+  const histBackupNote = (n, showBk) => `<div class="ap-hint" style="margin-bottom:8px">${H.esc(HIST_NOTE)}${n ? ` <strong>${n} entri lebih lama dari 12 bulan ada di backup data${showBk ? " (sedang ditampilkan, ditandai Backup)" : " (tidak ditampilkan; pilih \"Tampilkan juga data backup\" bila punya hak akses Manage)"}.</strong>` : ""}</div>`;
   // Entri yang masih dalam masa simpan 12 bulan + filter aktif (dipakai tampilan DAN ekspor).
-  const bkOpts = [{ v: "", l: "Tampilan: 12 bulan terakhir" }, { v: "1", l: "Tampilkan juga data backup (> 12 bulan)" }];
+  const bkOpts = [{ v: "", l: "Tampilan: 12 bulan terakhir" }, { v: "1", l: "Tampilkan juga data backup (> 12 bulan; perlu hak akses Manage)" }];
   const bkTag = (at) => (PC.HC.retained(at) ? "" : ' <span class="ap-label ap-label--warning">Backup</span>');
   const hcItems = (withBackup) => { const F = U().hcf; return histSorted(S().hcLog).filter(({ e }) => (withBackup || PC.HC.retained(e.at)) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && (!F.g || e.sources.some((s) => s.g === F.g)) && inRange(e.at, F.from, F.to)); };
   const hpItems = (withBackup) => { const F = U().hpf; return histSorted(S().hpLog).filter(({ e }) => (withBackup || PC.HP.retained(e.at)) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && inRange(e.at, F.from, F.to)); };
