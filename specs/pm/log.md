@@ -43,6 +43,19 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-09]` **Jawaban user untuk notifikasi Bottom Price:** ambang = perubahan sekecil apa pun (≥ Rp0,01);
+  pembanding harga = Price List Product Catalog terakhir; peninjau = semua Sales; kanal hanya dashboard (tanpa email/WhatsApp);
+  tanpa batas waktu tinjau. OQ 25, 27, 28 terjawab di fr-nfr; UC-N18 dan PG-24 diubah ke aktor Sales. OQ 33 baru: konsistensi
+  pengaju Extra Margin (BPMN: Sales Manager) dengan keputusan "semua Sales".
+
+- **2026-10-21** `[DECISION][FEAT-09]` **Fitur dashboard notifikasi perubahan Bottom Price diusulkan dan dicatat di referensi.** Permintaan user:
+  alert ke Sales bila Bottom Price berubah, supaya Sales menilai harga jual dengan Rate Extra Margin lama dan memutuskan mengajukan rate
+  baru (FR-67) atau tidak. Dicatat: intake `input/2026-10-21-bottom-price-change-notification/`, FR-68–FR-70, NFR-16, open question
+  25–32 (ambang, baseline, "harga jual saat ini", penerima/kanal, saat deteksi, granularitas, produk baru, "Tidak Perlu Diubah"),
+  UC-N18 (Sales Manager) dan PG-24 di workbook, entitas ERD `bottom_price_notification`, istilah vocabulary, baris tracker FEAT-09
+  (open, tanpa capsule). Semua rincian **diasumsikan, menunggu konfirmasi**. `[TODO]` mockup `pc-notifikasi-bottom-price.html`;
+  jawaban OQ 25–32 sebelum plan.
+
 - **2026-10-21** `[DECISION][FEAT-05]` **Perubahan rate Negotiation Allowance (Extra Margin) perlu approval GM** (BPMN To Be Sales D01 +
   keputusan user). Pengaju Sales Manager, penyetuju GM; rate aktif hanya berubah setelah Approved; Reject kembali ke Sales Manager;
   Pricelist yang sudah diajukan tidak berubah (snapshot). Diubah: `docs/fr-nfr.md` (FR-67, revisi FR-55, peta perubahan, OQ 20–24),

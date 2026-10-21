@@ -149,3 +149,16 @@ issues:
     summary: >-
       Backlog Tahap 6. Rate dibekukan saat laporan dibuat (FR-49, NFR-09); rumus
       per pcs mengikuti mock up Laporan Produksi.
+  - id: FEAT-09
+    title: Dashboard notifikasi perubahan Bottom Price untuk Sales
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-bottom-price-notification
+    status: open
+    source: permintaan user 2026-10-21 (input/2026-10-21-bottom-price-change-notification/)
+    depends_on: [FEAT-05, FEAT-06, FEAT-07]
+    blocks: []
+    summary: >-
+      Backlog. Notifikasi ke Sales Manager bila Bottom Price Produk × varian BOM berubah; Sales Manager memutuskan Ajukan Rate
+      Extra Margin Baru (alur FR-67) atau Tidak Perlu Diubah. FR-68–FR-70, NFR-16, UC-N18, PG-24, entitas
+      bottom_price_notification masih usulan; open question 25–32 belum diputuskan.
