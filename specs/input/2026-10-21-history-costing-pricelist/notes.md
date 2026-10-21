@@ -58,3 +58,17 @@ Tidak dijawab: granularitas History Costing (OQ 41) dan format nama produk (OQ 4
 Supersedes: asumsi sebelumnya bahwa perubahan Extra Margin yang disetujui GM dicatat di History Costing (OQ 38),
 riwayat dicatat untuk semua kejadian Pricelist (Diajukan/Ditolak/Dihitung Ulang/Dirilis), masa simpan tanpa batas,
 pembaca tetap (Costing/Accounting/Sales/Management), dan catatan bisnis terpisah dari Activity Log.
+
+## Jawaban user 2026-10-21 (pertanyaan terbuka 43–47)
+
+- **OQ 43 (tombol "Update Costing" di Simulasi):** "Betul, itu trigger utama untuk update costing terbaru." Aksi Update Costing menjadi pemicu
+  utama pencatatan History Costing (riwayat dibuat saat Update Costing dijalankan dan hasilnya berbeda dari hasil costing terakhir yang tersimpan).
+- **OQ 44 (rilis katalog):** "tidak, cukup dengan approval price list saja untuk menetapkan pricelist terbaru." Rilis Product Catalog tidak dicatat.
+- **OQ 45 (backup):** "Export Excel tidak mencakup backup. Itu nanti bisa diakses oleh yang memiliki akses."
+- **OQ 46 (sumber data riwayat):** "boleh" (menyetujui rekomendasi: tulis lewat write_log(); tabel khusus hanya bila filter/ekspor terstruktur tidak
+  dapat dipenuhi dari logs).
+- **OQ 47 (hak akses):** "terpisah. Ya, perlu hak akses manage. Nanti diatur di hak akses saja." Hak akses History Costing dan History Price List
+  terpisah; ekspor Excel memerlukan hak akses Manage.
+
+Masih terbuka: OQ 41 (granularitas) dan OQ 42 (format nama produk) dengan asumsi yang dipakai; OQ 48 dan OQ 49 baru (lihat fr-nfr.md).
+

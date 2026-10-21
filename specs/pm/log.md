@@ -43,6 +43,12 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-10]` **Jawaban user OQ 43–47 History.** Tombol Update Costing di Simulasi = pemicu utama History Costing;
+  rilis Product Catalog tidak dicatat (Approval Pricelist yang menetapkan Pricelist terbaru); ekspor Excel tidak mencakup backup (backup
+  diakses pemilik hak akses); pencatatan lewat write_log() disetujui (tabel khusus hanya bila perlu); hak akses History Costing dan
+  History Price List terpisah, View dan Manage, ekspor perlu Manage. OQ 41, 42 tetap terbuka (asumsi); OQ 48 (Notifikasi Bottom Price
+  mengikuti Update Costing?) dan OQ 49 (hak akses backup) baru. fr-nfr, ERD (catatan), workbook UC-N19/N20 dan PG-25/26 disesuaikan.
+
 - **2026-10-21** `[DECISION][FEAT-10]` **Jawaban user untuk History Costing dan History Price List (OQ 34–40).** History Costing dicatat saat costing diperbarui dan hasilnya berubah; History Price List hanya saat Pricelist Disetujui. Draft dan persetujuan Extra Margin tidak dicatat (menggantikan asumsi OQ 38). Masa simpan 1 tahun lalu dipindahkan ke backup data; hanya pengguna dengan hak akses yang melihat; ekspor Excel; tidak terpisah dari Activity Log (`write_log`). OQ 41, 42 tidak dijawab; OQ 43–47 baru (aksi Update Costing, rilis katalog, akses backup, sumber data `logs` vs tabel khusus, hak akses lihat/ekspor). Mockup harus mengikuti: History Costing tanpa entri Negotiation Allowance; History Price List hanya saat Disetujui; ekspor Excel; 12 bulan terakhir.
 
 - **2026-10-21** `[DECISION][FEAT-10]` **History Costing, History Price List, dan nama produk di depan (usulan).** Permintaan user:
