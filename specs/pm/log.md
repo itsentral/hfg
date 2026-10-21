@@ -43,6 +43,15 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-05]` **Perubahan rate Negotiation Allowance (Extra Margin) perlu approval GM** (BPMN To Be Sales D01 +
+  keputusan user). Pengaju Sales Manager, penyetuju GM; rate aktif hanya berubah setelah Approved; Reject kembali ke Sales Manager;
+  Pricelist yang sudah diajukan tidak berubah (snapshot). Diubah: `docs/fr-nfr.md` (FR-67, revisi FR-55, peta perubahan, OQ 20–24),
+  ERD (entitas `rate_negotiation_allowance_request` di grup Rates), workbook (UC-12 diubah ke Sales Manager, UC-16 baru untuk GM,
+  PG-16 diubah, PG-23 baru, entitas baru), vocabulary (Extra Margin), intake `input/2026-10-21-sales-extra-margin-approval/`.
+  `[DECISION]` persetujuan diskon Quotation (<5% / 5–10% / >10%), SO, SPM, Production Plan dicatat di luar scope Product Costing.
+  `[TODO]` mockup `pc-approval-extra-margin.html` dan pengajuan di `pc-negotiation.html` (dikerjakan terpisah); OQ 20 (alasan Reject
+  wajib: diasumsikan) dan OQ 21–24 menunggu keputusan user.
+
 - **2026-10-20** `[STATUS][FEAT-04]` **FEAT-04 dipecah; 04b Flow Process ditulis.** Riset kode: tabel lama `bom_header`/`bom_detail` dipakai
   json_helper dan modul supplier (bentrok dengan nama ERD), `ms_bom_*` punya UNIQUE(id_produk) dan dipakai SPK/Request List/
   Production Planning (tidak diubah), `master_kurs` dibaca modul PO/harga supplier tanpa filter mata uang, `price_ref_high` bukan Max

@@ -110,7 +110,8 @@ issues:
     summary: >-
       Backlog Tahap 3. Man Power Rate = (Rate 1/3 Operator + Borongan Helper per
       kategori) × Faktor Indirect; Borongan hanya Rp/Meter; Faktor Indirect Labor = master tersendiri; FOH/Bahan
-      Pendukung Rp/Kg; Negotiation Allowance per Product Category. Rumus akhir
+      Pendukung Rp/Kg; Negotiation Allowance per Product Category, perubahan rate diajukan Sales
+      Manager dan perlu approval GM (FR-67, UC-12/UC-16, 2026-10-21). Rumus akhir
       Man Power Cost disetujui (OQ 19).
   - id: FEAT-06
     title: Mesin perhitungan Material Cost, Biaya Proses, Manufacturing Support, HPP, Bottom Price

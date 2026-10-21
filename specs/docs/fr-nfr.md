@@ -524,6 +524,7 @@ Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tet
 | Lebar produk | Tetap per produk (FR-37) | Memakai kolom `wide` yang sudah ada, mm (FR-64) | Berlaku (user, D1, 2026-10-20) |
 | Faktor Indirect Labor | Parameter pada Man Power Rate (FR-43) | Master tersendiri, global, dikelola Costing (FR-53) | Berlaku (user 2026-10-20) |
 | Negotiation Allowance | % global × Bottom Price (FR-45) | % **per Product Category** (FR-55) | Berlaku (user, OQ 16) |
+| Perubahan rate Negotiation Allowance | Ditetapkan langsung oleh Sales (FR-55) | Diajukan Sales Manager, **berlaku setelah Approved GM**; Reject kembali ke Sales Manager (FR-67; BPMN To Be Sales D01) | Berlaku (user 2026-10-21); alasan Reject diasumsikan wajib (OQ 20) |
 | Alur Pricelist | Tidak ada | Draft → Approval Management → Product Catalog (FR-58), per Produk × varian BOM, Product Catalog disimpan sebagai data | Berlaku (user, OQ 17) |
 | Kunci Flow & Rate FOH/BPK | Product Category (L2) | BPMN/UC: per Kategori Produk (ERD masih L4) | Konsisten dengan keputusan 2026-10-07; ERD digambar L2 |
 
@@ -575,6 +576,8 @@ Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tet
 - **FR-55** (UC-09, UC-10) — Rate Other Cost (% × HPP) untuk enam elemen UC-09 ditetapkan Costing;
   **Rate Negotiation Allowance (Extra Margin, %)** ditetapkan Sales **per Product Category**
   (user 2026-10-19; bukan lagi bagian Rate Generals). Rate Other Cost berlaku semua produk.
+  **Direvisi 2026-10-21 (FR-67):** rate Negotiation Allowance tidak lagi ditetapkan langsung oleh Sales; perubahannya
+  diajukan **Sales Manager** dan baru berlaku setelah **disetujui GM**.
 
 **Kalkulasi (UC-11 s.d. UC-16)** — `BM` = Berat/Meter varian BOM yang dipilih (FR-51). Setiap
 komponen dihitung dalam **Rp/Meter dan Rp/Kg**; sistem mengambil rate Product Category dari produk.
@@ -648,6 +651,23 @@ menimpa teks sebelumnya. Fitur yang hanya ada di mockup (Simpan ke File / Muat d
   Range Date Simulasi Costing (format `YYYY-MM-DD`).
 - **FR-66** (UC-N05; data master, bukan aturan) — Contoh pilihan master level produk yang ditambahkan user: Product Type
   **Baja Ringan** → Product Category **CANAL C** → Product Jenis **C75.70 B**.
+- **FR-67** (UC-12, UC-16; **merevisi FR-55**; sumber BPMN To Be Sales D01, keputusan user 2026-10-21) — **Perubahan rate
+  Negotiation Allowance (Extra Margin) perlu persetujuan GM.** Menurut BPMN: setelah produk ada di Product Catalog,
+  **Sales Manager** menilai "Perlu perubahan margin?"; bila tidak, Quotation dibuat dengan rate yang berlaku; bila perlu,
+  Sales Manager **mengajukan rate Extra Margin baru** (UC-12), lalu **GM** memutuskan **Approved** atau **Reject**
+  (UC-16). Approved → rate dipakai; Reject → kembali ke Sales Manager untuk memperbaiki dan mengajukan ulang.
+  - Rate Negotiation Allowance **aktif** (% per Product Category, FR-55) **hanya berubah setelah Approved GM**. Sebelum itu
+    Simulasi, Pricelist, dan Katalog memakai rate aktif lama; Pricelist yang sudah diajukan tidak berubah (snapshot, FR-58).
+  - Pengajuan menyimpan Product Category (`code_lv2`), rate yang diajukan, pengaju dan waktu, pemutus dan waktu, serta alasan
+    Reject (ERD: `rate_negotiation_allowance_request`). Status hanya **Menunggu Approval GM**, **Approved**, **Rejected**.
+    Approved memperbarui rate aktif beserta Last Update dan Updated By; Reject tidak mengubah rate aktif.
+  - **Diasumsikan, mohon konfirmasi (OQ 20): alasan Reject wajib diisi GM** (BPMN tidak menyebut alasan; mengikuti pola
+    Pricelist FR-58). Pengajuan diasumsikan satu per Product Category (OQ 22).
+  - Poin penilaian customer baru pada BPMN (toko sewa/sendiri, lama berdiri, armada, asset, jumlah cabang) hanya acuan
+    keputusan margin dan **tidak diotomasi**.
+  - **Di luar scope Product Costing:** persetujuan **diskon pada Quotation** (<5% disetujui Sales langsung, 5–10% Sales
+    Manager, >10% GM) beserta pembuatan Sales Order, SPM, dan pengiriman SO ke Production Plan. Itu modul Sales/Quotation
+    dan tidak dimodelkan di sini.
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
@@ -722,6 +742,19 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     maksudnya (satu operator dibagi tiga mesin/lini), atau sudah nama baku dari rate lain? Satuan
     Rate Borongan Helper kami asumsikan Rp/jam supaya bisa dijumlahkan dengan rate operator.
 19. **RESOLVED 2026-10-19 — rumus disetujui user; pembulatan sesudah dikali 1/3 (FR-53, FR-56).** `Man Power Cost (Rp/Meter) = (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) × Faktor Indirect Labor`; Total Man Hour hanya mengalikan bagian Operator. Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh **setelah** dikali 1/3 (tidak ada pembulatan lebih dulu pada Rate Direct Labor). Pertanyaan semula: **Rumus akhir Man Power Cost dengan Borongan Rp/Meter.** Angka acuan uji Man Power baru ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Open questions Extra Margin (2026-10-21, dari BPMN To Be Sales D01)** — belum diputuskan:
+
+20. **Alasan Reject GM wajib?** BPMN hanya menggambar Reject → kembali ke Sales Manager. Diasumsikan wajib dan disimpan
+    (`reject_reason`), seperti Pricelist (FR-58). Benar begitu, atau boleh kosong?
+21. **Bolehkah Sales Manager menarik (membatalkan) pengajuan yang masih Menunggu Approval GM?** BPMN tidak menyebut. Bila
+    boleh, perlu status tambahan (mis. Dibatalkan); sekarang hanya tiga status.
+22. **Satu pengajuan per Product Category atau beberapa kategori sekaligus?** Diasumsikan satu per kategori. Bila banyak
+    kategori sekaligus, perlu tabel detail pengajuan.
+23. **Apakah rate pertama untuk kategori yang belum punya rate juga lewat approval GM?** BPMN: "Perlu Perubahan Margin?"
+    → "Update dan Ajukan Rate Extra Margin baru". Diasumsikan semua pengisian dan perubahan rate lewat approval.
+24. **Apakah GM boleh mengubah nilai yang diajukan saat menyetujui, atau hanya Approve/Reject apa adanya?** Diasumsikan
+    hanya Approve/Reject apa adanya.
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -880,3 +913,8 @@ angka acuan uji ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
 **Pembaruan 2026-10-20.** FR-59–FR-66 (fungsi hasil review mockup) dan NFR-15 (nama kolom = ERD) ditambahkan; NFR-11 memakai angka
 simulasi yang disetujui klien; Lebar produk memakai kolom `wide` (FR-64). Perubahan lain hari itu: Rate Borongan Helper hanya
 Rp/Meter dan Faktor Indirect Labor master global (FR-53).
+
+**Pembaruan 2026-10-21 (BPMN To Be Sales D01).** FR-67 menambah persetujuan GM atas perubahan rate Negotiation Allowance
+(pengaju Sales Manager) dan merevisi FR-55. Persetujuan **diskon Quotation** (Sales/Sales Manager/GM) serta SO, SPM, dan
+Production Plan di BPMN yang sama **di luar scope Product Costing**. Open question baru 20–24 (alasan Reject, tarik pengajuan,
+banyak kategori, rate pertama, GM mengubah nilai) belum diputuskan; asumsi sementara tercantum di FR-67.

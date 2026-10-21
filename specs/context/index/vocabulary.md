@@ -82,7 +82,8 @@ Sumber: sheet *Istilah* di `input/Rev.1 Use Case Product Costing.xlsx` (2026-10-
 | HPP (Harga Pokok Produksi) | Total biaya membuat produk: Material Cost + Biaya Proses + Manufacturing Support. | Jangan tertukar dengan `total_hpp_*` di Laporan Produksi (HPP aktual dengan Costbook Material). |
 | Other Cost | Biaya di luar produksi yang ikut dihitung. | **Enam elemen terbaru (UC-09):** Sales & Marketing, Transport, Finance & Admin, Management Fee, Interest, Profit. Daftar empat elemen di sheet *Istilah* usang. Masing-masing % × HPP. |
 | Bottom Price | Harga batas bawah, yaitu HPP ditambah Other Cost. | `HPP + Σ (Rate Other Cost × HPP)` (user 2026-10-19). |
-| Negotiation Allowance (Extra Margin) | Tambahan margin sebagai ruang untuk negosiasi harga dengan pelanggan. | **Persentase per Product Category** × Bottom Price; Price List = Bottom Price + allowance. |
+| Negotiation Allowance (Extra Margin) | Tambahan margin sebagai ruang untuk negosiasi harga dengan pelanggan. | **Persentase per Product Category** × Bottom Price; Price List = Bottom Price + allowance. Rate aktif hanya berubah setelah pengajuan Sales Manager **disetujui GM** (FR-67, BPMN Sales D01, user 2026-10-21). |
+| Extra Margin | Nama lain **Negotiation Allowance** di BPMN Sales D01 ("Update dan Ajukan Rate Extra Margin baru", gateway "Approval Extra Margin"). | Perubahan rate diajukan **Sales Manager**, diputuskan **GM** (Approved / Reject); Reject kembali ke Sales Manager. Berbeda dari **diskon Quotation** (<5% Sales, 5–10% Sales Manager, >10% GM) yang di luar scope Product Costing. |
 | Price List / Pricelist | Daftar harga jual produk. Di alur ini dihitung dari Bottom Price dan Negotiation Allowance. | Harus disetujui Management sebelum menjadi Product Catalog. |
 | Product Catalog | Katalog produk berisi harga resmi yang sudah disetujui Management. | Dirilis Sales setelah Approve (UC-18); **disimpan sebagai data** (snapshot harga yang disetujui, user 2026-10-19). |
 
