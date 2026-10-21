@@ -174,4 +174,4 @@ issues:
     summary: >-
       Backlog. Perubahan rate/master yang mengubah Bottom Price disimpan di History Costing; kejadian Pricelist di History
       Price List (hanya baca, audit). Daftar Pricelist dan Product Catalog menampilkan nama produk di depan. FR-71–FR-73, NFR-17,
-      UC-N19, UC-N20, PG-25, PG-26, entitas history_costing/history_pricelist masih usulan; open question 34–42 belum diputuskan.
+      UC-N19, UC-N20, PG-25, PG-26, entitas history_costing/history_pricelist masih usulan; open question 34–40 dijawab user 2026-10-21 (pemicu: costing diperbarui / Pricelist disetujui; retensi 1 tahun lalu backup data; akses per hak akses pengguna; ekspor Excel; lewat Activity Log; Draft dan Extra Margin tidak dicatat); OQ 41–47 masih terbuka.

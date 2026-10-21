@@ -702,25 +702,31 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
   Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
   (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
-- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **diusulkan, diasumsikan — mohon konfirmasi OQ 34–42**) — **History Costing.**
-  Setiap kali perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference, Master Standard Material,
-  BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor, BPK/FOH, General Rate, Other
-  Cost, Negotiation Allowance) membuat **Bottom Price** suatu Produk × varian BOM berubah, sistem menyimpan **satu catatan
+- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40; tafsiran terbuka OQ 43–47**) — **History Costing.**
+  Setiap kali **costing diperbarui** karena perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference,
+  Master Standard Material, BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor,
+  BPK/FOH, General Rate, Other Cost) dan hasilnya berubah — **Bottom Price** suatu Produk × varian BOM berubah, sistem menyimpan **satu catatan
   riwayat per Produk × varian BOM**: waktu, pengguna yang mengubah, **sumber perubahan** (master atau rate yang diubah,
   nilai lama → baru), Bottom Price lama → baru (Rp/Meter dan Rp/Kg), snapshot komponen costing lama dan baru (Material
   Cost, Biaya Proses, Manufacturing Support, HPP, Other Cost, Bottom Price, Price List), dan Rate Extra Margin aktif. Bila satu
   perubahan memengaruhi banyak produk, dicatat satu baris per Produk × varian BOM (OQ 41). Riwayat dicatat apa pun status
   tinjau Sales, terpisah dari notifikasi Bottom Price (FR-68..FR-70): notifikasi untuk Sales meninjau, riwayat untuk audit.
   Riwayat **hanya baca**: tidak dapat diubah atau dihapus (NFR-17). Halaman **History Costing** menyediakan filter produk,
-  Product Category, periode, dan sumber perubahan, daftar, dan detail snapshot. Pembaca: Costing, Accounting, Sales,
-  Management (diasumsikan lihat saja, OQ 36).
-- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **diusulkan, diasumsikan — OQ 34–42**; terhubung ke FR-58 dan FR-67) —
-  **History Price List.** Setiap kejadian pada Pricelist disimpan per Produk × varian BOM: **Diajukan**, **Disetujui**
-  (Approved), **Ditolak** (Rejected, beserta alasan), **Dihitung Ulang** (kembali ke Draft), dan **Dirilis** ke Product
-  Catalog. Catatan memuat nomor Pricelist, status, waktu, pengguna, Price List lama → baru (Rp/Meter dan Rp/Kg), Bottom
-  Price dan Rate Extra Margin saat itu, serta catatan atau alasan. Hanya baca (NFR-17). Halaman **History Price List**
-  menyediakan filter produk, Product Category, periode, dan kejadian. Pencatatan Draft dan perubahan Extra Margin yang
-  disetujui GM: OQ 37, 38.
+  Product Category, periode, dan sumber perubahan, daftar, dan detail snapshot. **Persetujuan perubahan Rate Extra Margin (Negotiation
+  Allowance) oleh GM tidak dicatat** di History Costing, dan Draft Pricelist tidak dicatat (OQ 37, 38). Dapat dilihat oleh
+  **pengguna yang diberi hak akses** (hak akses lihat per pengguna di program, tidak dikunci ke jabatan; OQ 36), dan dapat
+  **diekspor ke Excel** sesuai filter (OQ 39). Masa simpan **1 tahun**; lewat 1 tahun riwayat **dipindahkan ke backup data**
+  (bukan dihapus), dan halaman menampilkan 12 bulan terakhir (OQ 35, 45). Pencatatan **tidak terpisah dari Activity Log**:
+  ditulis lewat `write_log()` (modul "History Costing") sehingga juga tampil di Activity Log (OQ 40, 46).
+- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40; tafsiran terbuka OQ 44–47**; terhubung ke FR-58 dan FR-67) —
+  **History Price List.** Hanya saat sebuah Pricelist **Disetujui** (Approved) oleh Management dan menjadi harga terbaru, sistem menyimpan satu
+  catatan riwayat per Produk × varian BOM: nomor Pricelist, waktu, pengguna (penyetuju), **Price List lama** (= Price List
+  terakhir yang disetujui untuk Produk × varian BOM itu) → **baru** (Rp/Meter dan Rp/Kg), Bottom Price dan Rate Extra Margin
+  saat itu, serta catatan. **Draft, Diajukan, Ditolak, Dihitung Ulang, dan persetujuan Rate Extra Margin tidak dicatat**
+  (OQ 37, 38); apakah rilis ke Product Catalog dicatat: OQ 44. Hanya baca (NFR-17). Halaman **History Price List**
+  menyediakan filter produk, Product Category, periode, dan kejadian; dapat dilihat oleh **pengguna yang diberi hak akses**
+  (OQ 36), **diekspor ke Excel** (OQ 39), masa simpan **1 tahun** lalu **dipindahkan ke backup data** (OQ 35, 45), dan
+  **tidak terpisah dari Activity Log**: ditulis lewat `write_log()` (modul "History Price List"; OQ 40, 46).
 - **FR-73** (UC-13, UC-15, UC-N14; sumber permintaan user 2026-10-21; **merevisi tampilan FR-58 dan FR-47**) — **Nama produk
   di depan.** Pada daftar menu **Pricelist** dan **Product Catalog** (juga judul modal dan dokumen), **nama produk
   (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
@@ -836,23 +842,38 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     (termasuk memilih "Ajukan Rate Extra Margin Baru"). Apakah Staf Sales juga boleh mengajukan rate (FR-67 dan UC-12 diubah
     dari Sales Manager menjadi Sales), atau Staf Sales hanya dapat memilih "Tidak Perlu Diubah" dan meneruskan ke Sales
     Manager untuk pengajuan? Saat ini keduanya dapat mengajukan dari dashboard dan FR-67/UC-12 belum diubah.
-34. **Pemicu pencatatan History Costing.** Apakah yang dicatat hanya perubahan yang mengubah Bottom Price (diasumsikan), atau
+34. **RESOLVED 2026-10-21 — dicatat bila costing diperbarui dan hasilnya berubah (Bottom Price/komponen); perubahan Price List karena Extra Margin tidak dicatat (FR-71; tafsiran: OQ 43).** Pertanyaan semula: **Pemicu pencatatan History Costing.** Apakah yang dicatat hanya perubahan yang mengubah Bottom Price (diasumsikan), atau
     juga perubahan master yang tidak mengubah angka (mis. nama atau status)? Apakah perubahan Price List (bukan Bottom Price)
     karena Rate Extra Margin juga dicatat di History Costing?
-35. **Masa simpan.** Berapa lama riwayat disimpan (diasumsikan tanpa batas), dan apakah boleh diarsipkan?
-36. **Siapa boleh melihat.** Diasumsikan Costing, Accounting, Sales, dan Management lihat saja; apakah hak akses dibatasi per
+35. **RESOLVED 2026-10-21 — masa simpan 1 tahun; lewat itu dipindahkan ke backup data (NFR-17; akses backup: OQ 45).** Pertanyaan semula: **Masa simpan.** Berapa lama riwayat disimpan (diasumsikan tanpa batas), dan apakah boleh diarsipkan?
+36. **RESOLVED 2026-10-21 — pengguna yang diberi hak akses (FR-71, FR-72).** Pertanyaan semula: **Siapa boleh melihat.** Diasumsikan Costing, Accounting, Sales, dan Management lihat saja; apakah hak akses dibatasi per
     peran (mis. Sales hanya melihat Price List, bukan komponen costing)?
-37. **Pricelist Draft.** Apakah Draft Pricelist (belum diajukan) dicatat di History Price List, atau hanya sejak Diajukan
+37. **RESOLVED 2026-10-21 — Draft tidak dicatat; History Price List hanya saat Disetujui (FR-72).** Pertanyaan semula: **Pricelist Draft.** Apakah Draft Pricelist (belum diajukan) dicatat di History Price List, atau hanya sejak Diajukan
     (diasumsikan sejak Diajukan)?
-38. **Perubahan Extra Margin yang disetujui GM.** Apakah dicatat di History Costing (karena memengaruhi Price List) dan/atau
+38. **RESOLVED 2026-10-21 — persetujuan Extra Margin tidak dicatat di History Costing maupun History Price List (FR-71, FR-72); menggantikan asumsi sebelumnya.** Pertanyaan semula: **Perubahan Extra Margin yang disetujui GM.** Apakah dicatat di History Costing (karena memengaruhi Price List) dan/atau
     di History Price List? Diasumsikan di History Costing sebagai sumber perubahan "Negotiation Allowance".
-39. **Ekspor.** Apakah riwayat perlu diekspor ke Excel? Diasumsikan ya (tombol Excel seperti halaman lain, hanya contoh di mockup).
-40. **Hubungan dengan Activity Log (`write_log`).** Diasumsikan History Costing dan History Price List adalah catatan bisnis
+39. **RESOLVED 2026-10-21 — dapat diekspor ke Excel (FR-71, FR-72).** Pertanyaan semula: **Ekspor.** Apakah riwayat perlu diekspor ke Excel? Diasumsikan ya (tombol Excel seperti halaman lain, hanya contoh di mockup).
+40. **RESOLVED 2026-10-21 — tidak terpisah dari Activity Log; dicatat lewat write_log (NFR-17; implikasi struktur data: OQ 46).** Pertanyaan semula: **Hubungan dengan Activity Log (`write_log`).** Diasumsikan History Costing dan History Price List adalah catatan bisnis
     tersendiri (tabel khusus) di samping Activity Log, bukan pengganti. Benar?
 41. **Granularitas History Costing.** Satu baris per Produk × varian BOM per perubahan (diasumsikan), atau satu baris per
     perubahan master dengan daftar produk terdampak?
 42. **Format nama produk.** Diasumsikan "nama produk + varian/Uniq ID" (mis. HARAPAN SPANDEK POLOS ECO 0.25 X 6 M — Type 001.1)
     di kolom pertama; nomor Pricelist/katalog menjadi kolom sekunder. Benar?
+43. **"Update costing terbaru" (History Costing).** Ditafsirkan: setiap kali hasil costing diperbarui karena perubahan master/rate
+    (FR-71). Apakah juga ada **aksi eksplisit** "Update Costing" di Simulasi Costing (tombol yang sudah ada di mockup) yang
+    membuat snapshot riwayat, atau hanya perubahan master/rate yang mengubah angka?
+44. **Rilis ke Product Catalog.** History Price List dicatat hanya saat Pricelist Disetujui. Apakah rilis ke Product Catalog
+    (rilis berulang, FR-58) juga dicatat? Diasumsikan tidak.
+45. **Backup data setelah 1 tahun.** Riwayat > 1 tahun dipindahkan ke backup data. Siapa yang boleh mengakses backup dan
+    bagaimana (laporan terpisah, pemulihan ke tabel, atau hanya oleh administrator)? Kapan proses pemindahan terjadwal berjalan
+    (mis. bulanan)? Apakah ekspor Excel juga mencakup backup?
+46. **Sumber data riwayat dan Activity Log.** Pencatatan lewat `write_log()` (tabel `logs`) sudah memenuhi "tidak terpisah dari
+    Activity Log". Apakah halaman History cukup dibangun sebagai tampilan terfilter atas `logs` (modul "History Costing" dan
+    "History Price List"), atau perlu tabel khusus `history_costing` dan `history_pricelist` (kolom terstruktur untuk
+    filter dan ekspor Excel) yang diisi dari event yang sama? Rekomendasi: tetap tulis lewat `write_log()` dan, bila filter/ekspor
+    terstruktur tidak dapat dipenuhi dari `logs`, tambah tabel khusus diisi dari event yang sama. Belum diputuskan.
+47. **Hak akses lihat dan ekspor.** Satu hak akses untuk kedua halaman, atau terpisah per halaman, dan apakah ekspor Excel
+    memerlukan hak akses tersendiri? (Hak akses diatur per pengguna di program, tidak dikunci ke jabatan.)
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -984,7 +1005,13 @@ yang sudah resolved di atas (± 0,7%).
   **siapa, kapan, dan apa** yang berubah, **tidak dapat diubah atau dihapus** oleh pengguna mana pun, dan tidak boleh
   dibuat ulang dari data terkini (snapshot nilai saat kejadian). Fit criterion: setelah rate diubah sehingga Bottom Price
   berubah, tepat satu catatan per Produk × varian BOM yang terdampak muncul di History Costing dengan nilai lama dan baru;
-  setiap perubahan status Pricelist muncul di History Price List; tidak ada fungsi ubah atau hapus riwayat di program.
+  setiap Pricelist yang disetujui muncul di History Price List; tidak ada fungsi ubah atau hapus riwayat di program.
+  **Retensi, akses, dan Activity Log (dikonfirmasi 2026-10-21):** riwayat disimpan **1 tahun** di tabel/halaman riwayat;
+  lewat 1 tahun **dipindahkan ke backup data** melalui proses terjadwal (tidak dihapus); halaman standar hanya menampilkan
+  12 bulan terakhir. Hanya **pengguna yang diberi hak akses** yang dapat melihat dan mengekspor ke Excel. Pencatatan lewat
+  `write_log()` sehingga tampil juga di Activity Log (modul "History Costing" dan "History Price List"). Fit criterion:
+  riwayat berumur > 1 tahun tidak tampil di halaman riwayat tetapi dapat dipulihkan dari backup; pengguna tanpa hak akses
+  tidak dapat membuka halaman maupun ekspor; setiap catatan riwayat juga terlihat di Activity Log.
 
 ## Status
 
@@ -1038,6 +1065,6 @@ saat deteksi, granularitas keputusan, pengaju) **dikonfirmasi user 2026-10-21** 
 **Pembaruan 2026-10-21 (History Costing dan History Price List).** Permintaan user: perubahan rate yang memengaruhi Bottom Price
 disimpan di History Costing, dan perubahan Pricelist di History Price List; daftar Pricelist dan Product Catalog menampilkan nama
 produk di depan, bukan nomor Pricelist. FR-71–FR-73 dan NFR-17 ditambahkan sebagai **usulan**; rinciannya (pemicu, masa simpan,
-hak lihat, pencatatan Draft dan Extra Margin, ekspor, hubungan dengan Activity Log, granularitas, format nama) **diasumsikan** dan
-tercatat sebagai open question 34–42. Entitas ERD `history_costing` dan `history_pricelist`, UC-N19, UC-N20, PG-25, PG-26, dan
+hak lihat, pencatatan Draft dan Extra Margin, ekspor, hubungan dengan Activity Log) **dikonfirmasi user 2026-10-21** (open question
+34–40); granularitas dan format nama (OQ 41, 42) belum dijawab; tafsiran baru tercatat sebagai OQ 43–47. Entitas ERD `history_costing` dan `history_pricelist`, UC-N19, UC-N20, PG-25, PG-26, dan
 FEAT-10 mengikuti.

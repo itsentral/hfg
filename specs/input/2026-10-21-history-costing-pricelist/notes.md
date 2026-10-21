@@ -32,3 +32,29 @@
 - Istilah "History Costing", "History Price List" -> `context/index/vocabulary.md`
 - UC-N19, UC-N20, PG-25, PG-26 -> `docs/workbook.xlsx`; entitas `history_costing`, `history_pricelist` -> `docs/diagrams/erd.drawio`
 - FEAT-10 -> `pm/tracker.yaml`
+
+## Jawaban user 2026-10-21 (pertanyaan terbuka 34–42)
+
+**History Costing**
+- Pemicu: "Apabila ada update costing terbaru".
+- Masa simpan riwayat 1 tahun; bila sudah 1 tahun, dimasukkan ke backup data.
+- User yang diberikan akses nanti untuk melihat.
+- Pricelist draft tidak ikut tercatat.
+- Persetujuan Extra Margin tidak masuk riwayat History Costing.
+- Bisa diekspor ke Excel.
+- Tidak terpisah dari Activity Log aplikasi.
+
+**History Price List**
+- Pemicu: "Apabila ada update Pricelist terbaru yang sudah disetujui".
+- Masa simpan riwayat 1 tahun; bila sudah 1 tahun, dimasukkan ke backup data.
+- User yang diberikan akses saja yang bisa melihat.
+- Pricelist draft tidak ikut tercatat.
+- Persetujuan Extra Margin tidak masuk riwayat History Pricelist.
+- Bisa ekspor ke Excel.
+- Tidak terpisah dari Activity Log aplikasi.
+
+Tidak dijawab: granularitas History Costing (OQ 41) dan format nama produk (OQ 42).
+
+Supersedes: asumsi sebelumnya bahwa perubahan Extra Margin yang disetujui GM dicatat di History Costing (OQ 38),
+riwayat dicatat untuk semua kejadian Pricelist (Diajukan/Ditolak/Dihitung Ulang/Dirilis), masa simpan tanpa batas,
+pembaca tetap (Costing/Accounting/Sales/Management), dan catatan bisnis terpisah dari Activity Log.

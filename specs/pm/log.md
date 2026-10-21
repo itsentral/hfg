@@ -43,6 +43,8 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-10]` **Jawaban user untuk History Costing dan History Price List (OQ 34–40).** History Costing dicatat saat costing diperbarui dan hasilnya berubah; History Price List hanya saat Pricelist Disetujui. Draft dan persetujuan Extra Margin tidak dicatat (menggantikan asumsi OQ 38). Masa simpan 1 tahun lalu dipindahkan ke backup data; hanya pengguna dengan hak akses yang melihat; ekspor Excel; tidak terpisah dari Activity Log (`write_log`). OQ 41, 42 tidak dijawab; OQ 43–47 baru (aksi Update Costing, rilis katalog, akses backup, sumber data `logs` vs tabel khusus, hak akses lihat/ekspor). Mockup harus mengikuti: History Costing tanpa entri Negotiation Allowance; History Price List hanya saat Disetujui; ekspor Excel; 12 bulan terakhir.
+
 - **2026-10-21** `[DECISION][FEAT-10]` **History Costing, History Price List, dan nama produk di depan (usulan).** Permintaan user:
   perubahan rate yang memengaruhi Bottom Price disimpan di History Costing; perubahan Pricelist di History Price List; daftar
   Pricelist dan Product Catalog menampilkan nama produk, bukan nomor Pricelist, di depan. FR-71–FR-73, NFR-17, open question 34–42
