@@ -12,7 +12,7 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 7;
+  const SCHEMA = 8;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
   const seed = () => ({
@@ -150,6 +150,10 @@
     //      bpNotif = notifikasi + riwayat keputusan.
     bpBase: null,
     bpNotif: [],
+    // 11d. History Costing (hcLog = riwayat perubahan Bottom Price/Price List per varian BOM; hcBase = snapshot terakhir yang dicatat)
+    //      dan History Price List (hpLog = kejadian Pricelist/Katalog per Produk × varian BOM; hpSeen = status terakhir yang sudah dicatat).
+    hcLog: [], hcBase: null,
+    hpLog: [], hpSeen: null, hpInit: false, hpSeq: 0,
     hfg: 27400, // pembanding "Pricelist HFG saat ini", Rp/Meter — hanya contoh
     costRange: "",
     // 12. Pricelist (UC-16..UC-19, FR-58): per Produk x varian BOM. Status hanya:
@@ -170,12 +174,23 @@
   // Dijalankan pada data tersimpan SEBELUM digabung dengan seed (Object.assign(seed(), migrate(...))).
   //  v6: pengajuan perubahan Negotiation Allowance (negoReq); rate aktif tetap di `nego` (isian lama utuh).
   //  v7: notifikasi perubahan Bottom Price (bpNotif) dan baseline (bpBase = null → diisi normalize() dari hitungan saat ini).
+  //  v8: History Costing (hcLog, hcBase) dan History Price List (hpLog, hpSeen, hpInit, hpSeq).
   function migrate(s, v) {
     s = s || {};
     if (v < 6 && !Array.isArray(s.negoReq)) s.negoReq = [];
     if (v < 7) {
       if (!Array.isArray(s.bpNotif)) s.bpNotif = [];
       if (!("bpBase" in s)) s.bpBase = null;
+    }
+    if (v < 8) {
+      // v8: History Costing dan History Price List. hcBase = null → diisi normalize() dari hitungan saat ini (TANPA entri palsu);
+      //     hpInit = false → riwayat Pricelist direkonstruksi sekali dari data pricelist/katalog yang sudah ada.
+      if (!Array.isArray(s.hcLog)) s.hcLog = [];
+      if (!("hcBase" in s)) s.hcBase = null;
+      if (!Array.isArray(s.hpLog)) s.hpLog = [];
+      if (!("hpSeen" in s)) s.hpSeen = null;
+      if (!("hpInit" in s)) s.hpInit = false;
+      if (!("hpSeq" in s)) s.hpSeq = 0;
     }
     return s;
   }
@@ -196,6 +211,7 @@
   let storageFailed = false;
   const save = () => {
     try { bpDetect(); } catch (e) { /* deteksi tidak boleh mengganggu penyimpanan */ }
+    try { hcDetect(); hpDetect(); } catch (e) { /* pencatatan riwayat tidak boleh mengganggu penyimpanan */ }
     try { localStorage.setItem(KEY, JSON.stringify({ v: SCHEMA, savedAt: new Date().toISOString(), state })); storageFailed = false; }
     catch (e) { storageFailed = true; }
   };
@@ -481,6 +497,148 @@
   }
   const bpUnreviewed = () => state.bpNotif.filter((n) => n.status === BP_NEW);
 
+  /* ---- History Costing & History Price List (usulan 2026-10-21; rincian menunggu konfirmasi) ----
+     History Costing: tiap kali Bottom Price (Rp/Meter) ATAU Price List (Rp/Meter) suatu Produk × varian BOM berubah pada presisi
+     2 desimal akibat perubahan master/rate/input apa pun, dicatat satu entri per varian BOM (waktu, pengguna, sumber perubahan
+     lama → baru, snapshot komponen lama dan baru). Riwayat TERPISAH dari notifikasi Bottom Price: memakai snapshot sendiri
+     (state.hcBase) sehingga tidak bergantung pada status tinjau notifikasi. Hanya baca.
+     History Price List: tiap kejadian Pricelist/Katalog (Diajukan, Disetujui, Ditolak, Dihitung Ulang, Dirilis) per Produk ×
+     varian BOM; terdeteksi dari perubahan status saat disimpan, sehingga seluruh alur yang ada ikut tercatat. Hanya baca. */
+  let actorName = "Sistem";
+  const setActor = (n) => { actorName = n || "Sistem"; };
+  const HC_KIND_FMT = {
+    idr: (v) => rp(v), usd: (v) => "USD " + fmt(v, 4), num: (v) => fmt(v, 6), pct: (v) => fmt(Number(v) * 100, 2) + " %",
+    frac: (v) => "1/" + fmt(v, 0), text: (v) => String(v),
+  };
+  const hcFmt = (kind, v) => (v == null || v === "" ? "—" : (HC_KIND_FMT[kind] || HC_KIND_FMT.text)(v));
+  function hcDrivers(c) {
+    const p = c.product, m = c.material, mp = manPowerRate(), cat = p.category, rt = rateOf(cat), d = {};
+    const add = (k, g, l, v, kind) => { d[k] = { g, l, v, kind }; };
+    add("kurs", "Kurs", "Kurs USD", kursOf("USD"), "idr");
+    add("pr:" + m.id, "Price Reference", "Price Reference Max " + m.name + " (USD/Kg)", c.pr.max, "usd");
+    add("bom:" + c.bom.id + ":material", "BOM / Material", "Material varian " + c.bom.uniq, m.name, "text");
+    add("mat:" + m.id + ":t", "BOM / Material", "Tebal material " + m.name, Number(m.thickness) || 0, "num");
+    add("mat:" + m.id + ":w", "BOM / Material", "Lebar coil material " + m.name, Number(m.width) || 0, "num");
+    add("std:tol", "Master Standard", "Master Standard: Standar Toleransi", Number(state.standard.toleransi) || 0, "num");
+    add("std:bj", "Master Standard", "Master Standard: Standar Berat Jenis", Number(state.standard.bj) || 0, "num");
+    add("std:coat", "Master Standard", "Master Standard: Coating", Number(state.standard.coating) || 0, "num");
+    add("mpr:total", "Man Power Rate", "Total Biaya Direct Labor Operator / Bulan", mp.total, "idr");
+    add("mpr:jam", "Man Power Rate", "Jam kerja per bulan", mp.jam, "num");
+    add("mpr:den", "Man Power Rate", "Porsi Operator", mp.den, "frac");
+    add("faktor", "Faktor Indirect Labor", "Faktor Indirect Labor", mp.faktor, "num");
+    add("flow:" + cat, "Flow Process", "Total Man Hour " + cat + " (jam/meter)", totalManHour(cat), "num");
+    add("bor:" + cat, "Rate Borongan Helper", "Rate Borongan Helper " + cat + " (Rp/Meter)", boronganPerMeter(cat), "idr");
+    add("bpk:" + cat, "Rate BPK & FOH", "Rate Bahan Pendukung Khusus " + cat + " (Rp/Kg)", Number(rt.bpk) || 0, "idr");
+    add("foh:" + cat, "Rate BPK & FOH", "Rate FOH " + cat + " (Rp/Kg)", Number(rt.foh) || 0, "idr");
+    state.general.forEach((g) => add("gen:" + g.key, "General Rate", g.label + (g.u === "rpkg" ? " (Rp/Kg)" : ""), Number(g.v) || 0, g.u === "pct" ? "pct" : "idr"));
+    add("nego:" + cat, "Negotiation Allowance", "Negotiation Allowance " + cat, negoOf(cat), "pct");
+    return d;
+  }
+  function hcSnap(c) {
+    const L = c.lines;
+    return {
+      uniq: c.bom.uniq, productName: c.product.name, category: c.product.category,
+      comps: { material: L.material, proses: L.proses, support: L.support, other: sum(L.others, (o) => o.v), hpp: L.hpp, bottom: L.bottom, priceList: L.priceList },
+      bottomM: c.bottomMeter, bottomKg: c.bottomKg, plM: c.hargaMeter, plKg: c.hargaKg, negoPct: c.negoPct, drivers: hcDrivers(c),
+    };
+  }
+  const r2 = (n) => Math.round((Number(n) || 0) * 100);
+  const sameVal = (a, b) => (typeof a === "number" && typeof b === "number" ? Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b)) : a === b);
+  function hcSources(oldD, newD) {
+    const out = [];
+    Object.keys(newD).forEach((k) => {
+      if (!oldD[k] || sameVal(oldD[k].v, newD[k].v)) return;
+      out.push({ k, g: newD[k].g, l: newD[k].l, kind: newD[k].kind, old: oldD[k].v, now: newD[k].v });
+    });
+    return out;
+  }
+  // true bila ada perubahan state (snapshot/entri). Tanpa snapshot sebelumnya → hanya membuat snapshot (tanpa entri).
+  function hcDetect() {
+    let changed = false;
+    if (!state.hcBase || typeof state.hcBase !== "object") { state.hcBase = {}; changed = true; }
+    if (!Array.isArray(state.hcLog)) { state.hcLog = []; changed = true; }
+    const batch = uid("HB"), at = nowStamp();
+    state.boms.forEach((b) => {
+      const c = costing(b);
+      if (!c || !c.lengkap) return;                                   // data belum lengkap: angka belum bisa diandalkan
+      const base = state.hcBase[b.id], now = hcSnap(c);
+      if (!base) { state.hcBase[b.id] = now; changed = true; return; }
+      if (r2(now.bottomM) === r2(base.bottomM) && r2(now.plM) === r2(base.plM)) return; // tidak ada perubahan pada 2 desimal
+      let sources = hcSources(base.drivers || {}, now.drivers);
+      if (!sources.length) sources = [{ k: "lain", g: "Lainnya", l: "Perubahan lain (sumber tidak teridentifikasi)", kind: "text", old: null, now: null }];
+      state.hcLog.push({
+        id: uid("HC"), batch, at, by: actorName, bomId: b.id, uniq: b.uniq, productName: now.productName, category: now.category,
+        sources, oldM: base.bottomM, newM: now.bottomM, oldKg: base.bottomKg, newKg: now.bottomKg,
+        plOldM: base.plM, plNewM: now.plM, plOldKg: base.plKg, plNewKg: now.plKg, negoPct: now.negoPct,
+        old: base.comps, now: now.comps,
+      });
+      state.hcBase[b.id] = now;
+      changed = true;
+    });
+    return changed;
+  }
+
+  const HP_EV = { SUBMIT: "Diajukan", APPROVE: "Disetujui", REJECT: "Ditolak", RECALC: "Dihitung Ulang", RELEASE: "Dirilis ke Product Catalog" };
+  function hpLastFor(bomId) {
+    for (let i = state.hpLog.length - 1; i >= 0; i--) if (state.hpLog[i].bomId === bomId) return state.hpLog[i];
+    return null;
+  }
+  function hpAdd(event, pl, rows, o) {
+    o = o || {};
+    (rows || []).forEach((r) => {
+      const prev = hpLastFor(r.bomId);
+      state.hpLog.push({
+        id: uid("HP"), seq: ++state.hpSeq, at: o.at || nowStamp(), by: o.by || actorName, event, plId: pl.id, plNo: pl.no, catNo: o.catNo || "",
+        bomId: r.bomId, uniq: r.uniq, product: r.product, category: r.category,
+        plOldM: prev ? prev.plNewM : null, plNewM: r.plM, plOldKg: prev ? prev.plNewKg : null, plNewKg: r.plKg,
+        bottomM: r.bottomM, bottomKg: r.bottomKg, negoPct: r.negoPct, note: o.note || "", backfill: !!o.backfill,
+      });
+    });
+  }
+  // Rekonstruksi SEKALI dari data pricelist/katalog yang sudah ada (tanpa mengarang kejadian di luar data tersimpan).
+  function hpBackfill() {
+    const ev = [];
+    state.pricelists.forEach((pl) => {
+      const rows = pl.snap || [];
+      if (!rows.length) return;
+      if (pl.submittedAt && pl.status !== "Draft") ev.push({ at: pl.submittedAt, event: HP_EV.SUBMIT, pl, rows, by: "Sales" });
+      if (pl.status === "Approved" && pl.decidedAt) ev.push({ at: pl.decidedAt, event: HP_EV.APPROVE, pl, rows, by: pl.decidedBy || "Management" });
+      if (pl.status === "Rejected" && pl.decidedAt) ev.push({ at: pl.decidedAt, event: HP_EV.REJECT, pl, rows, by: pl.decidedBy || "Management", note: pl.rejectReason || "" });
+    });
+    state.catalogs.forEach((ct) => {
+      const pl = state.pricelists.find((x) => x.id === ct.pricelistId); if (!pl) return;
+      ev.push({ at: ct.releasedAt, event: HP_EV.RELEASE, pl, rows: ct.rows || pl.snap || [], by: ct.releasedBy || "Sales", catNo: ct.no });
+    });
+    ev.sort((a, b) => String(a.at).localeCompare(String(b.at)));
+    ev.forEach((e) => hpAdd(e.event, e.pl, e.rows, { at: e.at, by: e.by, note: e.note, catNo: e.catNo, backfill: true }));
+    state.hpSeen = {};
+    state.pricelists.forEach((pl) => { state.hpSeen[pl.id] = pl.status; });
+    state.catalogs.forEach((ct) => { state.hpSeen["ct:" + ct.id] = true; });
+    state.hpInit = true;
+  }
+  // true bila ada perubahan state. Kejadian terdeteksi dari perubahan status Pricelist dan katalog baru sejak penyimpanan terakhir.
+  function hpDetect() {
+    if (!state.hpInit) { hpBackfill(); return true; }
+    let changed = false;
+    if (!state.hpSeen || typeof state.hpSeen !== "object") { state.hpSeen = {}; changed = true; }
+    state.pricelists.forEach((pl) => {
+      const seen = state.hpSeen[pl.id] === undefined ? "Draft" : state.hpSeen[pl.id];
+      if (seen === pl.status) { if (state.hpSeen[pl.id] === undefined) { state.hpSeen[pl.id] = pl.status; changed = true; } return; }
+      state.hpSeen[pl.id] = pl.status; changed = true;
+      if (pl.status === "Menunggu Approval") hpAdd(HP_EV.SUBMIT, pl, pl.snap || []);
+      else if (pl.status === "Approved") hpAdd(HP_EV.APPROVE, pl, pl.snap || [], {});
+      else if (pl.status === "Rejected") hpAdd(HP_EV.REJECT, pl, pl.snap || [], { note: pl.rejectReason || "" });
+      else if (pl.status === "Draft" && seen === "Rejected") hpAdd(HP_EV.RECALC, pl, plRows(pl), { note: "Dikembalikan ke Draft untuk dihitung ulang" + (pl.rejectReason ? " (alasan Reject sebelumnya: " + pl.rejectReason + ")" : "") });
+    });
+    state.catalogs.forEach((ct) => {
+      if (state.hpSeen["ct:" + ct.id]) return;
+      state.hpSeen["ct:" + ct.id] = true; changed = true;
+      const pl = state.pricelists.find((x) => x.id === ct.pricelistId); if (!pl) return;
+      hpAdd(HP_EV.RELEASE, pl, ct.rows || pl.snap || [], { catNo: ct.no, by: actorName, note: "Katalog " + ct.no });
+    });
+    return changed;
+  }
+
   function normalize() {
     if (!Array.isArray(state.faktor) || !state.faktor.length) state.faktor = seed().faktor;
     if (!Array.isArray(state.negoReq)) state.negoReq = [];
@@ -491,6 +649,8 @@
     u.dt = u.dt || {};
     u.egf = u.egf || { s: "" };
     u.bpf = u.bpf || { s: "", c: "" };
+    u.hcf = u.hcf || { c: "", u: "", g: "", from: "", to: "" };
+    u.hpf = u.hpf || { c: "", u: "", e: "", from: "", to: "" };
     u.bomv = u.bomv || { mode: "list", productId: "" };
     if (!("flash" in u)) u.flash = null;
     if (!("bomDraft" in u)) u.bomDraft = null;
@@ -499,6 +659,10 @@
       const pl = state.pricelists.find((x) => x.id === ct.pricelistId);
       if (!ct.rows && pl) ct.rows = (pl.snap || []).map((r) => Object.assign({}, r));
     });
+    if (!Array.isArray(state.hcLog)) state.hcLog = [];
+    if (!Array.isArray(state.hpLog)) state.hpLog = [];
+    // Riwayat: snapshot awal dari hitungan saat ini (tanpa entri palsu); riwayat Pricelist direkonstruksi sekali dari data yang ada.
+    try { hcDetect(); hpDetect(); } catch (e) { /* abaikan */ }
     // Deteksi perubahan Bottom Price saat memuat; baseline awal dibuat dari hitungan saat ini (tanpa notifikasi palsu).
     if (typeof bpDetect === "function" && bpDetect() && ready) { try { save(); } catch (e) { /* abaikan */ } }
   }
@@ -525,6 +689,9 @@
     manHour, totalManHour, rateOf, negoOf, NEGO_PENDING, negoLatest, negoPending, gen, costing,
     plRow, plRows, snapPricelist, nextNo, normalize,
     fmt, rp, hasVal, hasHistory, gapReport, LINK,
+    setActor, actor: () => actorName,
+    HC: { fmt: hcFmt, detect: hcDetect },
+    HP: { EV: HP_EV, detect: hpDetect },
     BP: { NEW: BP_NEW, NEGO: BP_NEGO, KEEP: BP_KEEP, detect: bpDetect, unreviewed: bpUnreviewed, shift: bpShift, hargaJual: bpHargaJual, nowStamp },
   };
 })();

@@ -36,6 +36,8 @@
       { id: "approval", file: "pc-approval.html", label: "Approval Pricelist", role: "Management", uc: "UC-19" },
       { id: "egapproval", file: "pc-approval-extra-margin.html", label: "Approval Extra Margin", role: "GM", uc: "UC-10" },
       { id: "catalog", file: "pc-catalog.html", label: "Product Catalog", role: "Sales", uc: "UC-18" },
+      { id: "hcosting", file: "pc-history-costing.html", label: "History Costing", role: "Costing / Accounting / Sales / Management (lihat saja)", uc: "UC-N19 (usulan)" },
+      { id: "hpricelist", file: "pc-history-pricelist.html", label: "History Price List", role: "Costing / Accounting / Sales / Management (lihat saja)", uc: "UC-N20 (usulan)" },
     ] },
   ];
   const flat = MENU.reduce((a, g) => a.concat(g.items), []);
@@ -250,6 +252,7 @@
     const cur = flat.find((x) => x.id === id);
     if (!page || !cur) { document.body.textContent = "Halaman tidak dikenal: " + id; return; }
     const role = cur.role.split(" / ")[0];
+    PC.setActor(role + " · " + (USERS[role] || ""));   // dipakai pencatat History Costing / History Price List
     document.title = cur.label + " — Product Costing";
     document.body.innerHTML = `
       <main class="page pc-main">

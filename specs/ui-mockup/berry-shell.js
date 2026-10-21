@@ -56,6 +56,8 @@
       ["pc-approval.html", "Approval Pricelist", "ti-checkbox"],
       ["pc-approval-extra-margin.html", "Approval Extra Margin", "ti-circle-check"],
       ["pc-catalog.html", "Product Catalog", "ti-book"],
+      ["pc-history-costing.html", "History Costing", "ti-history"],
+      ["pc-history-pricelist.html", "History Price List", "ti-file-analytics"],
     ] },
   ];
 

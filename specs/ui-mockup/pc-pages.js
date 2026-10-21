@@ -1429,6 +1429,19 @@
       <td class="ap-r"><strong>${f(r.plM)}</strong></td><td class="ap-r"><strong>${f(r.plKg)}</strong></td>
       <td>${r.gaps && r.gaps.length ? `<span class="ap-label ap-label--warning" title="${H.esc(r.gaps.join(" "))}">&#9888; ${r.gaps.length} kekurangan</span>` : '<span class="ap-label ap-label--success">Lengkap</span>'}</td>${del ? `<td class="ap-c">${del(k)}</td>` : ""}</tr>`).join("")
     || `<tr><td class="ap-empty" colspan="${del ? 10 : 9}">Belum ada baris.</td></tr>`);
+  // Nama produk di depan; nomor Pricelist/Katalog menjadi keterangan sekunder (permintaan user 2026-10-21).
+  // Satu dokumen berisi banyak Produk × varian BOM: tampil nama produk pertama + "+N produk" (rincian lengkap di tooltip).
+  const plNames = (rows) => uniqList((rows || []).map((r) => r.product));
+  const plTip = (rows) => H.esc(plNames(rows).map((n) => n + " — " + rows.filter((r) => r.product === n).map((r) => r.uniq).join(", ")).join("\n")).replace(/\n/g, "&#10;");
+  const plProdCell = (rows, no) => {
+    const names = plNames(rows);
+    if (!names.length) return `<div class="pc-prod"><span class="ap-hint">(belum ada produk)</span>${no ? `<div class="ap-hint">${H.esc(no)}</div>` : ""}</div>`;
+    const first = names[0], extra = names.length - 1;
+    return `<div class="pc-prod" title="${plTip(rows)}"><strong>${H.esc(up(first))}</strong>${extra ? ` <span class="ap-label ap-label--secondary">+${extra} produk</span>` : ""}
+      <div class="ap-hint">${H.esc(rows.filter((r) => r.product === first).map((r) => r.uniq).join(", "))}${no ? " · " + H.esc(no) : ""}</div></div>`;
+  };
+  const plTitle = (rows, no) => { const n = plNames(rows); return (n.length ? up(n[0]) + (n.length > 1 ? ` (+${n.length - 1} produk)` : "") : "(belum ada produk)") + (no ? " · " + no : ""); };
+  const plSearch = (rows) => plNames(rows).concat((rows || []).map((r) => r.uniq)).join(" ");
   const reasonText = (pl) => (!pl.rejectReason ? "—" : (pl.status === "Rejected" ? "" : "Sebelumnya: ") + H.esc(pl.rejectReason));
   // Pricelist tidak boleh diajukan bila ada baris dengan kekurangan data (keputusan desain mockup, 2026-10-20).
   const submitBlock = (pl) => {
@@ -1464,7 +1477,7 @@
     const pl = S().pricelists[i];
     const canSubmit = mode === "edit" && pl && pl.status === "Draft";
     openModal({
-      app: true, mode, title: (mode === "view" ? "View" : "Edit") + " Pricelist — " + ((pl || {}).no || ""), size: "xl",
+      app: true, mode, title: (mode === "view" ? "View" : "Edit") + " Pricelist — " + (pl ? plTitle(PC.plRows(pl), pl.no) : ""), size: "xl",
       hideSave: !canSubmit, saveLabel: "Ajukan ke Management", cancelLabel: "Close",
       confirmTitle: "Ajukan ke Management?", confirmText: "Harga dibekukan dan tidak bisa diubah sampai diputuskan.", confirmBtn: "Ya, Ajukan!",
       bodyFn: () => plDoc(i, mode === "view"),
@@ -1480,11 +1493,11 @@
     render() {
       U().plf = U().plf || "";
       const all = S().pricelists.map((pl, i) => ({ pl, i })).filter((x) => !U().plf || x.pl.status === U().plf);
-      const v = dtView("pricelist", all, ({ pl }) => [pl.no, pl.status, pl.rejectReason].join(" "));
+      const v = dtView("pricelist", all, ({ pl }) => [plSearch(PC.plRows(pl)), pl.no, pl.status, pl.rejectReason].join(" "));
       const rows = v.rows.map(({ pl, i }, n) => {
         const draft = pl.status === "Draft", rej = pl.status === "Rejected";
         const bad = PC.plRows(pl).filter((r) => r.gaps && r.gaps.length).length;
-        return `<tr><td class="ap-c">${v.from + n + 1}</td><td>${H.esc(pl.no)}</td><td>${H.esc(pl.createdAt)}</td><td class="ap-r">${PC.plRows(pl).length}</td><td>${pill(pl.status)}</td>
+        return `<tr><td class="ap-c">${v.from + n + 1}</td><td>${plProdCell(PC.plRows(pl), pl.no)}</td><td>${H.esc(pl.createdAt)}</td><td class="ap-r">${PC.plRows(pl).length}</td><td>${pill(pl.status)}</td>
           <td>${H.esc(pl.submittedAt || "—")}</td><td>${pl.decidedAt ? H.esc(pl.decidedBy + " · " + pl.decidedAt) : "—"}</td><td>${reasonText(pl)}</td>
           <td>${bad ? `<span class="ap-label ap-label--warning">&#9888; ${bad} baris belum lengkap</span>` : '<span class="ap-label ap-label--success">Lengkap</span>'}</td>
           <td class="ap-c">${iconBtn(draft ? "edit" : "view", draft ? "Buka Draft" : "View", draft ? "edit" : "eye", draft ? "primary" : "info", `data-i="${i}"`)}
@@ -1498,7 +1511,7 @@
           <button type="button" class="ap-btn ap-btn--primary" data-act="newDraft">${ico("plus")} Buat Draft Pricelist</button>
         </div>
         <div class="ap-card__body">${dtTop("pricelist", v.st)}
-          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "No. Pricelist", "Dibuat", { t: "Jumlah Item", c: "ap-r" }, "Status", "Diajukan", "Keputusan Management", "Alasan Reject", "Data", { t: "Option", c: "ap-c", w: "230px" }], rows)}
+          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", "Dibuat", { t: "Jumlah Item", c: "ap-r" }, "Status", "Diajukan", "Keputusan Management", "Alasan Reject", "Data", { t: "Option", c: "ap-c", w: "230px" }], rows)}
           ${dtBottom("pricelist", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1555,7 +1568,7 @@
   const openApproval = (i) => {
     S().ui.decision = "Approve"; S().ui.reason = "";
     openModal({
-      app: true, mode: "edit", title: "Periksa Draft Pricelist — " + ((S().pricelists[i] || {}).no || ""), size: "xl",
+      app: true, mode: "edit", title: "Periksa Draft Pricelist — " + (S().pricelists[i] ? plTitle(PC.plRows(S().pricelists[i]), S().pricelists[i].no) : ""), size: "xl",
       saveLabel: "Simpan Keputusan", confirmTitle: "Simpan keputusan?", confirmText: "Keputusan Management tidak dapat diubah setelah disimpan.", confirmBtn: "Ya, Simpan!",
       doneMsg: "Keputusan Management tersimpan.",
       bodyFn: () => approvalForm(i),
@@ -1580,8 +1593,8 @@
     render() {
       const order = { "Menunggu Approval": 0, "Approved": 1, "Rejected": 1 };
       const items = S().pricelists.map((pl, i) => ({ pl, i })).filter((x) => x.pl.status !== "Draft").sort((a, b) => order[a.pl.status] - order[b.pl.status]);
-      const v = dtView("approval", items, ({ pl }) => [pl.no, pl.status, pl.rejectReason].join(" "));
-      const rows = v.rows.map(({ pl, i }, k) => `<tr><td class="ap-c">${v.from + k + 1}</td><td>${H.esc(pl.no)}</td><td>${H.esc(pl.submittedAt || "—")}</td>
+      const v = dtView("approval", items, ({ pl }) => [plSearch(PC.plRows(pl)), pl.no, pl.status, pl.rejectReason].join(" "));
+      const rows = v.rows.map(({ pl, i }, k) => `<tr><td class="ap-c">${v.from + k + 1}</td><td>${plProdCell(PC.plRows(pl), pl.no)}</td><td>${H.esc(pl.submittedAt || "—")}</td>
         <td class="ap-r">${PC.plRows(pl).length}</td><td>${pill(pl.status)}</td><td>${pl.decidedAt ? H.esc(pl.decidedBy + " · " + pl.decidedAt) : "—"}</td><td>${reasonText(pl)}</td>
         <td class="ap-c">${pl.status === "Menunggu Approval"
           ? `<button type="button" class="ap-btn ap-btn--primary ap-btn--sm" data-act="periksa" data-i="${i}">Approve / Reject</button>`
@@ -1589,7 +1602,7 @@
       const pending = items.filter((x) => x.pl.status === "Menunggu Approval").length;
       return `<div class="ap-card ap-card--shadow">${apHead("Daftar Pricelist yang Diajukan", pending ? `${pending} pricelist menunggu keputusan.` : "Tidak ada pricelist yang menunggu keputusan.", `Total: ${items.length} Pricelist`, "")}
         <div class="ap-card__body">${dtTop("approval", v.st)}
-          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "No. Pricelist", "Diajukan", { t: "Jumlah Item", c: "ap-r" }, "Status", "Keputusan", "Alasan Reject", { t: "Action", c: "ap-c", w: "160px" }], rows)}
+          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", "Diajukan", { t: "Jumlah Item", c: "ap-r" }, "Status", "Keputusan", "Alasan Reject", { t: "Action", c: "ap-c", w: "160px" }], rows)}
           ${dtBottom("approval", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1603,7 +1616,7 @@
     const ct = S().catalogs[i]; if (!ct) return;
     const pl = S().pricelists.find((x) => x.id === ct.pricelistId) || {};
     openModal({
-      app: true, mode: "view", title: "View Product Catalog — " + ct.no, size: "xl", hideSave: true, cancelLabel: "Close",
+      app: true, mode: "view", title: "View Product Catalog — " + plTitle(ct.rows || [], ct.no), size: "xl", hideSave: true, cancelLabel: "Close",
       bodyFn: () => `${apRow(lb("No. Katalog"), fld("c4", ro(ct.no)), lb("Asal Pricelist"), fld("c4", ro(pl.no || "—")))}
         ${apRow(lb("Dirilis Oleh"), fld("c4", ro(ct.releasedBy)), lb("Dirilis Pada"), fld("c4", ro(ct.releasedAt)))}
         <hr class="ap-hr"><h6>Harga yang disetujui (snapshot)</h6>${plTable(ct.rows || [], null)}`,
@@ -1615,20 +1628,20 @@
     hint: "Setelah Pricelist disetujui Management, Sales merilis Product Catalog berisi harga yang disetujui. Katalog disimpan sebagai data (snapshot harga) dan diteruskan ke proses Sales. Satu pricelist Approved boleh dirilis berkali-kali; setiap rilis membuat katalog baru.",
     render() {
       const ready = S().pricelists.map((pl, i) => ({ pl, i })).filter((x) => x.pl.status === "Approved");
-      const rrows = ready.map(({ pl, i }, k) => `<tr><td class="ap-c">${k + 1}</td><td>${H.esc(pl.no)}</td><td class="ap-r">${PC.plRows(pl).length}</td><td>${H.esc(pl.decidedAt || "—")}</td><td class="ap-r">${S().catalogs.filter((c) => c.pricelistId === pl.id).length}</td>
+      const rrows = ready.map(({ pl, i }, k) => `<tr><td class="ap-c">${k + 1}</td><td>${plProdCell(PC.plRows(pl), pl.no)}</td><td class="ap-r">${PC.plRows(pl).length}</td><td>${H.esc(pl.decidedAt || "—")}</td><td class="ap-r">${S().catalogs.filter((c) => c.pricelistId === pl.id).length}</td>
         <td class="ap-c"><button type="button" class="ap-btn ap-btn--success ap-btn--sm" data-act="rilis" data-i="${i}">${ico("plus")} Rilis Product Catalog</button></td></tr>`).join("")
         || `<tr><td class="ap-empty" colspan="6">Belum ada pricelist Approved.</td></tr>`;
-      const v = dtView("catalog", S().catalogs.map((ct, i) => ({ ct, i })), ({ ct }) => [ct.no, ct.releasedBy, ct.releasedAt].join(" "));
+      const v = dtView("catalog", S().catalogs.map((ct, i) => ({ ct, i })), ({ ct }) => [plSearch(ct.rows), ct.no, ct.releasedBy, ct.releasedAt].join(" "));
       const crows = v.rows.map(({ ct, i }, n) => {
         const pl = S().pricelists.find((x) => x.id === ct.pricelistId) || {};
-        return `<tr><td class="ap-c">${v.from + n + 1}</td><td>${H.esc(ct.no)}</td><td>${H.esc(pl.no || "—")}</td><td class="ap-r">${(ct.rows || []).length}</td>
+        return `<tr><td class="ap-c">${v.from + n + 1}</td><td>${plProdCell(ct.rows || [], ct.no)}</td><td>${H.esc(pl.no || "—")}</td><td class="ap-r">${(ct.rows || []).length}</td>
           <td>${H.esc(ct.releasedBy)}</td><td>${H.esc(ct.releasedAt)}</td><td class="ap-c">${iconBtn("view", "View", "eye", "info", `data-i="${i}"`)}</td></tr>`;
       }).join("") || `<tr><td class="ap-empty" colspan="7">No data available in table</td></tr>`;
       return `<div class="ap-card ap-card--shadow">${apHead("Pricelist Approved — siap dirilis", "Hanya pricelist berstatus Approved yang dapat dirilis; satu pricelist boleh dirilis berkali-kali dan setiap rilis membuat katalog baru.", "", "")}
-          <div class="ap-card__body">${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "No. Pricelist", { t: "Jumlah Item", c: "ap-r" }, "Disetujui", { t: "Sudah Dirilis (kali)", c: "ap-r" }, { t: "Option", c: "ap-c", w: "210px" }], rrows)}</div></div>
+          <div class="ap-card__body">${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", { t: "Jumlah Item", c: "ap-r" }, "Disetujui", { t: "Sudah Dirilis (kali)", c: "ap-r" }, { t: "Option", c: "ap-c", w: "210px" }], rrows)}</div></div>
         <div class="ap-card ap-card--shadow">${apHead("Daftar Product Catalog", "Snapshot harga yang disetujui, disimpan sebagai data", `Total: ${S().catalogs.length} Katalog`, "")}
           <div class="ap-card__body">${dtTop("catalog", v.st)}
-            ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "No. Katalog", "Asal Pricelist", { t: "Jumlah Produk", c: "ap-r" }, "Dirilis Oleh", "Dirilis Pada", { t: "Action", c: "ap-c", w: "90px" }], crows)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Katalog)", "Asal Pricelist", { t: "Jumlah Produk", c: "ap-r" }, "Dirilis Oleh", "Dirilis Pada", { t: "Action", c: "ap-c", w: "90px" }], crows)}
             ${dtBottom("catalog", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1641,5 +1654,103 @@
       },
       view(d) { openCatalog(Number(d.i)); },
     }, DT_ACT),
+  };
+  /* ---------- 16. History Costing & History Price List — usulan (permintaan user 2026-10-21; rincian menunggu konfirmasi) ---------- */
+  // Hanya baca. Pencatatan otomatis oleh pc-data.js (PC.HC / PC.HP); tidak ada tombol ubah/hapus pada riwayat.
+  const HC_GROUPS = ["Kurs", "Price Reference", "Master Standard", "BOM / Material", "Man Power Rate", "Faktor Indirect Labor", "Flow Process", "Rate Borongan Helper", "Rate BPK & FOH", "General Rate", "Negotiation Allowance", "Lainnya"];
+  const inRange = (at, from, to) => { const d = String(at || "").slice(0, 10); return (!from || d >= from) && (!to || d <= to); };
+  const hcProductName = (e) => up(e.productName) + " · " + e.uniq;
+  const hcVariantOpts = () => [{ v: "", l: "- Semua Produk / Varian -" }].concat(S().boms.map((b) => { const p = PC.productById(b.productId); return { v: b.id, l: (p ? up(p.name) : "") + " · " + b.uniq }; }));
+  const catOptsAll = (first) => [{ v: "", l: first }].concat(uniqList(PC.categories()).map((c) => ({ v: c, l: up(c) })));
+  const dateFld = (label, path, val) => `<div><label class="ap-lbl" style="display:block;margin-bottom:4px">${label}</label>${apIn(path, val || "", { struct: 1, date: 1 })}</div>`;
+  const histSorted = (log) => log.map((e, i) => ({ e, i })).sort((a, b) => String(b.e.at).localeCompare(String(a.e.at)) || (b.e.seq || 0) - (a.e.seq || 0) || b.i - a.i);
+  const delta = (a, b, d = 2) => `<span class="${bpTone(b - a)}">${bpSign(b - a, d)}</span>`;
+
+  const hcSrcLine = (s) => `<div>${H.esc(s.l)}: <span class="muted">${H.esc(PC.HC.fmt(s.kind, s.old))}</span> → <strong>${H.esc(PC.HC.fmt(s.kind, s.now))}</strong></div>`;
+  const hcSrcCell = (e) => { const top = e.sources.slice(0, 3).map(hcSrcLine).join(""); const more = e.sources.length - 3; return top + (more > 0 ? `<div class="ap-hint">+${more} sumber lain (lihat detail)</div>` : ""); };
+  const openHcView = (id) => {
+    const e = S().hcLog.find((x) => x.id === id); if (!e) return;
+    const comps = [["material", "Material Cost"], ["proses", "Biaya Proses"], ["support", "Manufacturing Support"], ["other", "Other Cost"], ["hpp", "HPP"], ["bottom", "Bottom Price"], ["priceList", "Price List"]];
+    const same = S().hcLog.filter((x) => x.batch === e.batch).length;
+    openModal({
+      app: true, mode: "view", size: "xl", title: "View History Costing — " + hcProductName(e), hideSave: true, cancelLabel: "Close",
+      bodyFn: () => `${apRow(lb("Produk / Varian"), fld("c4", ro(hcProductName(e))), lb("Product Category"), fld("c4", ro(up(e.category))))}
+        ${apRow(lb("Waktu"), fld("c4", ro(e.at + (same > 1 ? " · satu perubahan memengaruhi " + same + " varian" : ""))), lb("Dicatat Oleh"), fld("c4", ro(e.by)))}
+        ${apRow(lb("Rate Extra Margin"), fld("c4", ro(f(pctVal(e.negoPct)) + " % (aktif saat perubahan)")), lb("Price List/Meter"), fld("c4", ro(f(e.plOldM) + " → " + f(e.plNewM))))}
+        <hr class="ap-hr"><h6>Sumber Perubahan</h6>
+        ${apTable("ap-table--bordered ap-table--sm", ["Kelompok", "Master / Rate / Input", { t: "Nilai Lama", c: "ap-r" }, { t: "Nilai Baru", c: "ap-r" }],
+          e.sources.map((s) => `<tr><td>${H.esc(s.g)}</td><td>${H.esc(s.l)}</td><td class="ap-r">${H.esc(PC.HC.fmt(s.kind, s.old))}</td><td class="ap-r"><strong>${H.esc(PC.HC.fmt(s.kind, s.now))}</strong></td></tr>`).join(""))}
+        <hr class="ap-hr"><h6>Snapshot Komponen (Rp/Meter): Lama vs Baru</h6>
+        ${apTable("ap-table--bordered ap-table--sm", ["Komponen", { t: "Lama", c: "ap-r" }, { t: "Baru", c: "ap-r" }, { t: "Selisih", c: "ap-r" }],
+          comps.map(([k, l]) => `<tr><td>${l}</td><td class="ap-r">${f(e.old[k])}</td><td class="ap-r"><strong>${f(e.now[k])}</strong></td><td class="ap-r">${delta(e.old[k], e.now[k])}</td></tr>`).join("")
+          + `<tr><td>Bottom Price (Rp/Kg)</td><td class="ap-r">${f(e.oldKg)}</td><td class="ap-r"><strong>${f(e.newKg)}</strong></td><td class="ap-r">${delta(e.oldKg, e.newKg)}</td></tr>`
+          + `<tr><td>Price List (Rp/Kg)</td><td class="ap-r">${f(e.plOldKg)}</td><td class="ap-r"><strong>${f(e.plNewKg)}</strong></td><td class="ap-r">${delta(e.plOldKg, e.plNewKg)}</td></tr>`)}
+        <div class="ap-hint">Riwayat hanya baca; tidak dapat diubah atau dihapus.</div>`,
+    });
+  };
+  pages.hcosting = {
+    title: "History Costing", noSave: true,
+    hint: "Riwayat perubahan Bottom Price dan Price List per Produk × varian BOM. Setiap perubahan Kurs, Price Reference, rate, Faktor, BOM, Flow, atau input lain yang mengubah Bottom Price (≥ Rp0,01) atau Price List dicatat otomatis: waktu, pengguna, sumber perubahan (nilai lama → baru), dan snapshot komponen. Hanya baca. Usulan: rincian menunggu konfirmasi.",
+    render() {
+      const F = U().hcf;
+      const items = histSorted(S().hcLog).filter(({ e }) => (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && (!F.g || e.sources.some((s) => s.g === F.g)) && inRange(e.at, F.from, F.to));
+      const v = dtView("hcosting", items, ({ e }) => [e.productName, e.uniq, e.category, e.by, e.sources.map((s) => s.l).join(" ")].join(" "));
+      const batchN = {}; S().hcLog.forEach((e) => { batchN[e.batch] = (batchN[e.batch] || 0) + 1; });
+      const last = histSorted(S().hcLog)[0];
+      const rows = v.rows.map(({ e }, n) => `<tr><td class="ap-c">${v.from + n + 1}</td>
+        <td>${H.esc(e.at)}${batchN[e.batch] > 1 ? `<div class="ap-hint">satu perubahan · ${batchN[e.batch]} varian</div>` : ""}</td>
+        <td><strong>${H.esc(up(e.productName))}</strong><div class="ap-hint">${H.esc(e.uniq)} · ${H.esc(up(e.category))}</div></td>
+        <td>${hcSrcCell(e)}</td>
+        <td class="ap-r">${f(e.oldM)} → <strong>${f(e.newM)}</strong><div class="ap-hint">Rp/Kg ${f(e.oldKg)} → ${f(e.newKg)}</div></td>
+        <td class="ap-r">${delta(e.oldM, e.newM)}<div class="ap-hint">${bpSign(bpPct(e.newM, e.oldM))} %</div></td>
+        <td class="ap-r">${f(e.plOldM)} → <strong>${f(e.plNewM)}</strong></td>
+        <td>${H.esc(e.by)}</td><td class="ap-c">${iconBtn("view", "View detail", "eye", "info", `data-id="${e.id}"`)}</td></tr>`).join("")
+        || `<tr><td class="ap-empty" colspan="9">${S().hcLog.length ? "Tidak ada riwayat yang cocok dengan filter." : "Belum ada riwayat perubahan. Coba: ubah Kurs di menu Kurs (mis. 17.863 → 18.500), lalu buka halaman ini."}</td></tr>`;
+      return `<div class="bp-sums">
+          <div class="bp-sum"><div class="bp-sum__n">${S().hcLog.length}</div><div class="bp-sum__l">Entri riwayat</div></div>
+          <div class="bp-sum bp-sum--info"><div class="bp-sum__n">${uniqList(S().hcLog.map((e) => e.bomId)).length}</div><div class="bp-sum__l">Produk × varian BOM terdampak</div></div>
+          <div class="bp-sum bp-sum--mute"><div class="bp-sum__n" style="font-size:16px">${last ? H.esc(last.e.at) : "—"}</div><div class="bp-sum__l">${last ? "Perubahan terakhir: " + H.esc(last.e.sources[0].l) : "Belum ada perubahan"}</div></div></div>
+        <div class="ap-card ap-card--shadow">${apHead("Riwayat Perubahan Bottom Price dan Price List", "Terbaru di atas. Satu perubahan master yang memengaruhi beberapa varian dicatat satu entri per varian pada waktu yang sama.", `Total: ${S().hcLog.length} entri`, "")}
+          <div class="ap-card__body">
+            <div class="ap-filters">${apSel("ui.hcf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hcf.u", F.u, hcVariantOpts(), { struct: 1 })}${apSel("ui.hcf.g", F.g, [{ v: "", l: "- Semua Sumber Perubahan -" }].concat(HC_GROUPS.map((g) => ({ v: g, l: g }))), { struct: 1 })}</div>
+            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hcf.from", F.from)}${dateFld("Sampai tanggal", "ui.hcf.to", F.to)}</div>
+            ${dtTop("hcosting", v.st)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian", "Sumber Perubahan (lama → baru)", { t: "Bottom Price/Meter (lama → baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, { t: "Price List/Meter (lama → baru)", c: "ap-r" }, "Oleh", { t: "Action", c: "ap-c", w: "70px" }], rows)}
+            ${dtBottom("hcosting", v)}</div></div>`;
+    },
+    act: Object.assign({ view(d) { openHcView(d.id); } }, DT_ACT),
+  };
+
+  const HP_TONE = { "Diajukan": "warning", "Disetujui": "success", "Ditolak": "danger", "Dihitung Ulang": "secondary", "Dirilis ke Product Catalog": "info" };
+  const hpPill = (ev) => `<label class="ap-label ap-label--${HP_TONE[ev] || "secondary"}">${H.esc(ev)}</label>`;
+  const hpChange = (a, b, d = 2) => (a == null ? `<span class="muted">—</span> → <strong>${f(b, d)}</strong>` : Math.round(a * 100) === Math.round(b * 100) ? `<strong>${f(b, d)}</strong> <span class="ap-hint">(tidak berubah)</span>` : `${f(a, d)} → <strong>${f(b, d)}</strong> <span class="${bpTone(b - a)}">(${bpSign(b - a, d)})</span>`);
+  pages.hpricelist = {
+    title: "History Price List", noSave: true,
+    hint: "Riwayat kejadian Pricelist dan Product Catalog per Produk × varian BOM: Diajukan, Disetujui, Ditolak (dengan alasan), Dihitung Ulang, dan Dirilis ke Product Catalog, beserta Price List lama → baru. Dicatat otomatis oleh alur Pricelist, Approval, dan Katalog. Hanya baca. Usulan: rincian menunggu konfirmasi.",
+    render() {
+      const F = U().hpf;
+      const items = histSorted(S().hpLog).filter(({ e }) => (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && (!F.e || e.event === F.e) && inRange(e.at, F.from, F.to));
+      const v = dtView("hpricelist", items, ({ e }) => [e.product, e.uniq, e.category, e.plNo, e.catNo, e.event, e.note, e.by].join(" "));
+      const last = histSorted(S().hpLog)[0];
+      const rows = v.rows.map(({ e }, n) => `<tr><td class="ap-c">${v.from + n + 1}</td><td>${H.esc(e.at)}</td>
+        <td><strong>${H.esc(up(e.product))}</strong><div class="ap-hint">${H.esc(e.uniq)} · ${H.esc(up(e.category))} · ${H.esc(e.plNo)}${e.catNo ? " · " + H.esc(e.catNo) : ""}</div></td>
+        <td>${hpPill(e.event)}</td>
+        <td class="ap-r">${hpChange(e.plOldM, e.plNewM)}</td><td class="ap-r">${hpChange(e.plOldKg, e.plNewKg)}</td>
+        <td class="ap-r">${f(e.bottomM)}<div class="ap-hint">Extra Margin ${f(pctVal(e.negoPct))} %</div></td>
+        <td>${e.note ? H.esc(e.note) : "—"}${e.backfill ? '<div class="ap-hint">Direkonstruksi dari data pricelist yang ada</div>' : ""}</td><td>${H.esc(e.by)}</td></tr>`).join("")
+        || `<tr><td class="ap-empty" colspan="9">${S().hpLog.length ? "Tidak ada riwayat yang cocok dengan filter." : "Belum ada kejadian Pricelist."}</td></tr>`;
+      return `<div class="bp-sums">
+          <div class="bp-sum"><div class="bp-sum__n">${S().hpLog.length}</div><div class="bp-sum__l">Entri riwayat</div></div>
+          <div class="bp-sum bp-sum--info"><div class="bp-sum__n">${uniqList(S().hpLog.map((e) => e.plId)).length}</div><div class="bp-sum__l">Pricelist tercatat</div></div>
+          <div class="bp-sum bp-sum--mute"><div class="bp-sum__n" style="font-size:16px">${last ? H.esc(last.e.at) : "—"}</div><div class="bp-sum__l">${last ? "Kejadian terakhir: " + H.esc(last.e.event) : "Belum ada kejadian"}</div></div></div>
+        <div class="ap-card ap-card--shadow">${apHead("Riwayat Price List", "Terbaru di atas. Price List lama = Price List pada kejadian sebelumnya untuk Produk × varian BOM yang sama.", `Total: ${S().hpLog.length} entri`, "")}
+          <div class="ap-card__body">
+            <div class="ap-filters">${apSel("ui.hpf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hpf.u", F.u, hcVariantOpts(), { struct: 1 })}${apSel("ui.hpf.e", F.e, [{ v: "", l: "- Semua Kejadian -" }].concat(Object.keys(HP_TONE).map((x) => ({ v: x, l: x }))), { struct: 1 })}</div>
+            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hpf.from", F.from)}${dateFld("Sampai tanggal", "ui.hpf.to", F.to)}</div>
+            ${dtTop("hpricelist", v.st)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian (No. Pricelist · Katalog)", "Kejadian", { t: "Price List/Meter (lama → baru)", c: "ap-r" }, { t: "Price List/Kg (lama → baru)", c: "ap-r" }, { t: "Bottom Price/Meter & Extra Margin", c: "ap-r" }, "Catatan / Alasan", "Oleh"], rows)}
+            ${dtBottom("hpricelist", v)}</div></div>`;
+    },
+    act: Object.assign({}, DT_ACT),
   };
 })();
