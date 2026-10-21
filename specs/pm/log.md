@@ -43,6 +43,11 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-09/FEAT-10]` **OQ 48 dan 49 terjawab.** Notifikasi Bottom Price (FR-68) dipicu saat Update Costing ditekan (satu pemicu
+  dengan History Costing; menggantikan "setiap kali costing dihitung ulang", OQ 29 direvisi); hak akses melihat data backup History =
+  Manage (sama dengan ekspor). FR-68, FR-71/72, NFR-17, UC-N18/N19/N20, PG-24/25/26, vocabulary (Update Costing) disesuaikan.
+  `[TODO]` mockup: notifikasi Bottom Price saat ini masih otomatis; harus mengikuti tombol Update Costing.
+
 - **2026-10-21** `[DECISION][FEAT-10]` **Jawaban user OQ 43–47 History.** Tombol Update Costing di Simulasi = pemicu utama History Costing;
   rilis Product Catalog tidak dicatat (Approval Pricelist yang menetapkan Pricelist terbaru); ekspor Excel tidak mencakup backup (backup
   diakses pemilik hak akses); pencatatan lewat write_log() disetujui (tabel khusus hanya bila perlu); hak akses History Costing dan

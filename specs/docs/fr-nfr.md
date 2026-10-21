@@ -684,8 +684,9 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   (Price Reference, Kurs, BOM atau Berat/Meter, Flow, Man Power, Borongan, Faktor Indirect Labor, BPK/FOH, General Rate,
   Other Cost) — sistem membuat **notifikasi** berstatus Belum Ditinjau. Penyebab hanya **ditampilkan**; sistem tidak mengubah
   rate, Pricelist, atau Katalog secara otomatis (NFR-16). Ambang: **perubahan sekecil apa pun** (selisih ≥ Rp0,01 pada presisi 2 desimal; keputusan user 2026-10-21, OQ 25). Baseline =
-  Bottom Price saat terakhir ditinjau Sales, deteksi setiap kali costing dihitung ulang, dan produk/BOM baru tidak memicu
-  notifikasi: **dikonfirmasi user 2026-10-21 (OQ 26, 29, 31)**.
+  Bottom Price saat terakhir ditinjau Sales, deteksi dipicu **setiap kali Update Costing dijalankan** (tombol di Simulasi Costing; hasil costing terbaru dibandingkan dengan
+  baseline pada saat itu, bukan otomatis setiap master berubah; pemicu yang sama dengan History Costing, FR-71), dan produk/BOM baru
+  tidak memicu notifikasi: **dikonfirmasi user 2026-10-21 (OQ 26, 29, 31, 48)**.
 - **FR-69** (UC-N18) — **Dashboard dan isi notifikasi.** Halaman dashboard menampilkan notifikasi yang belum ditinjau
   (lencana jumlah di menu), dikelompokkan per **Product Category** karena Rate Extra Margin berlaku per kategori (FR-55,
   FR-67). Tiap baris (Produk × varian BOM) memuat: Bottom Price lama → baru (Rp/Meter dan Rp/Kg), selisih (Rp dan %),
@@ -702,7 +703,7 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
   Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
   (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
-- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 43–47; terbuka OQ 41, 42, 48, 49**) — **History Costing.**
+- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 43–49; terbuka OQ 41, 42**) — **History Costing.**
   Pemicu utama adalah aksi **Update Costing** (tombol di Simulasi Costing; user 2026-10-21, OQ 43): setiap kali Update Costing dijalankan dan
   hasilnya berbeda dari hasil costing terakhir yang tersimpan — karena perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference,
   Master Standard Material, BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor,
@@ -718,10 +719,10 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   **pengguna yang diberi hak akses** (hak akses lihat per pengguna di program, tidak dikunci ke jabatan; OQ 36), dengan hak akses **terpisah** dari History Price List (hak **View** dan **Manage**, diatur di
   program; OQ 47). **Ekspor ke Excel** sesuai filter memerlukan hak **Manage** (OQ 39, 47) dan **tidak mencakup backup** (OQ 45). Masa simpan **1 tahun**; lewat 1 tahun riwayat **dipindahkan ke backup data**
   (bukan dihapus), dan halaman menampilkan 12 bulan terakhir (OQ 35, 45). Backup dapat diakses oleh pengguna yang memiliki hak akses
-  (hak yang tepat: OQ 49). Pencatatan **tidak terpisah dari Activity Log**:
+  (hak **Manage**, sama dengan ekspor Excel; user 2026-10-21, OQ 49). Pencatatan **tidak terpisah dari Activity Log**:
   ditulis lewat `write_log()` (modul "History Costing") sehingga juga tampil di Activity Log (OQ 40); tabel khusus `history_costing` hanya dibuat bila filter/ekspor terstruktur tidak dapat
   dipenuhi dari `logs` (disetujui user, OQ 46).
-- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 44–47; terbuka OQ 41, 42, 48, 49**; terhubung ke FR-58 dan FR-67) —
+- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 44–49; terbuka OQ 41, 42**; terhubung ke FR-58 dan FR-67) —
   **History Price List.** Hanya saat sebuah Pricelist **Disetujui** (Approved) oleh Management dan menjadi harga terbaru, sistem menyimpan satu
   catatan riwayat per Produk × varian BOM: nomor Pricelist, waktu, pengguna (penyetuju), **Price List lama** (= Price List
   terakhir yang disetujui untuk Produk × varian BOM itu) → **baru** (Rp/Meter dan Rp/Kg), Bottom Price dan Rate Extra Margin
@@ -833,7 +834,7 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     Price List baseline. Benar, atau harga pasar/jual disimpan terpisah?
 28. **RESOLVED 2026-10-21 — semua Sales meninjau; kanal hanya dashboard (tanpa email/WhatsApp); tidak ada batas waktu tinjau (FR-70).** Pertanyaan semula: **Siapa menerima dan melalui kanal apa.** Diasumsikan dashboard dengan lencana jumlah; keputusan oleh Sales Manager, Staf Sales
     hanya melihat. Perlu email atau WhatsApp juga? Apakah GM ikut melihat?
-29. **RESOLVED 2026-10-21 — setiap kali costing dihitung ulang; satu notifikasi per varian BOM (FR-68).** Pertanyaan semula: **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
+29. **RESOLVED 2026-10-21 — setiap kali costing dihitung ulang; satu notifikasi per varian BOM (FR-68). Direvisi 2026-10-21: pemicu deteksi = aksi Update Costing (OQ 48).** Pertanyaan semula: **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
     perubahan terjadi sebelum ditinjau: satu notifikasi per varian BOM yang diperbarui (diasumsikan) atau satu per kejadian?
 30. **RESOLVED 2026-10-21 — satu keputusan per notifikasi; pengajuan Extra Margin tetap satu per kategori (FR-70).** Pertanyaan semula: **Granularitas keputusan.** Extra Margin berlaku per Product Category (FR-55), notifikasi per Produk × varian BOM. Diasumsikan
     satu keputusan per notifikasi, dan pengajuan Extra Margin tetap satu per kategori (OQ 22). Perlu keputusan per kategori sekaligus?
@@ -878,11 +879,11 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     terstruktur tidak dapat dipenuhi dari `logs`, tambah tabel khusus diisi dari event yang sama. Belum diputuskan.
 47. **RESOLVED 2026-10-21 — hak akses terpisah per halaman (View dan Manage); ekspor Excel memerlukan hak Manage; diatur di hak akses program (NFR-17).** Pertanyaan semula: **Hak akses lihat dan ekspor.** Satu hak akses untuk kedua halaman, atau terpisah per halaman, dan apakah ekspor Excel
     memerlukan hak akses tersendiri? (Hak akses diatur per pengguna di program, tidak dikunci ke jabatan.)
-48. **Notifikasi Bottom Price dan Update Costing.** Karena Update Costing kini pemicu utama History Costing (OQ 43): apakah Notifikasi
+48. **RESOLVED 2026-10-21 — notifikasi Bottom Price juga dipicu saat Update Costing ditekan (FR-68); satu pemicu dengan History Costing.** Pertanyaan semula: **Notifikasi Bottom Price dan Update Costing.** Karena Update Costing kini pemicu utama History Costing (OQ 43): apakah Notifikasi
     Perubahan Bottom Price (FR-68, saat ini otomatis setiap costing dihitung ulang, OQ 29) juga mengikuti aksi Update Costing, atau
     tetap otomatis? Diasumsikan tetap otomatis seperti sekarang; mohon konfirmasi. Bila Update Costing belum dijalankan setelah
     master/rate berubah, History Costing belum mencatat perubahan itu.
-49. **Hak akses melihat backup.** Backup data (riwayat > 1 tahun) dapat diakses "oleh yang memiliki akses" (OQ 45): apakah cukup hak View
+49. **RESOLVED 2026-10-21 — hak akses melihat data backup = Manage, sama dengan ekspor Excel (FR-71, NFR-17).** Pertanyaan semula: **Hak akses melihat backup.** Backup data (riwayat > 1 tahun) dapat diakses "oleh yang memiliki akses" (OQ 45): apakah cukup hak View
     halaman terkait, hak Manage, atau hak khusus "Backup"? Diasumsikan hak Manage (sama dengan ekspor); mohon konfirmasi. Termasuk
     jadwal dan cara pemindahan ke backup (proses terjadwal), dan cara membuka backup (halaman, laporan, atau pemulihan).
 
@@ -1020,10 +1021,10 @@ yang sudah resolved di atas (± 0,7%).
   **Retensi, akses, dan Activity Log (dikonfirmasi 2026-10-21):** riwayat disimpan **1 tahun** di tabel/halaman riwayat;
   lewat 1 tahun **dipindahkan ke backup data** melalui proses terjadwal (tidak dihapus); halaman standar hanya menampilkan
   12 bulan terakhir. Hak akses **terpisah** untuk History Costing dan History Price List, masing-masing **View** (lihat) dan **Manage**; **ekspor Excel memerlukan hak Manage**
-  dan tidak mencakup backup; backup dapat diakses oleh pengguna yang memiliki hak akses (OQ 45, 47, 49). Pencatatan lewat
+  dan tidak mencakup backup; backup dapat diakses oleh pengguna dengan hak **Manage** (OQ 45, 47, 49; dikonfirmasi 2026-10-21). Pencatatan lewat
   `write_log()` sehingga tampil juga di Activity Log (modul "History Costing" dan "History Price List"). Fit criterion:
   riwayat berumur > 1 tahun tidak tampil di halaman riwayat tetapi dapat dipulihkan dari backup; pengguna tanpa hak akses
-  tanpa hak View tidak dapat membuka halaman dan tanpa hak Manage tidak dapat mengekspor; setiap catatan riwayat juga terlihat di Activity Log.
+  tanpa hak View tidak dapat membuka halaman dan tanpa hak Manage tidak dapat mengekspor atau membuka backup; setiap catatan riwayat juga terlihat di Activity Log.
 
 ## Status
 
@@ -1087,4 +1088,9 @@ Catalog tidak dicatat. Ekspor Excel tidak mencakup backup. Pencatatan lewat `wri
 terstruktur tidak terpenuhi dari `logs`). Hak akses History Costing dan History Price List terpisah (View dan Manage); ekspor Excel
 memerlukan hak Manage. OQ 41 dan 42 tetap terbuka dengan asumsi; OQ 48 (Notifikasi Bottom Price mengikuti Update Costing atau tidak)
 dan OQ 49 (hak akses backup) baru.
+
+**Pembaruan 2026-10-21 (jawaban OQ 48–49).** Notifikasi Bottom Price (FR-68) kini dipicu oleh aksi **Update Costing** yang sama dengan
+History Costing, bukan otomatis pada setiap perubahan master; saat Update Costing dijalankan, hasil costing terbaru dibandingkan dengan
+baseline (Bottom Price saat terakhir ditinjau Sales) dan notifikasi Belum Ditinjau dibuat per varian BOM bila berbeda ≥ Rp0,01. Hak akses
+melihat data backup History = **Manage** (sama dengan ekspor Excel). OQ 48 dan 49 terjawab; yang terbuka tinggal OQ 41 dan 42 (dengan asumsi).
 

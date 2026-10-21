@@ -72,3 +72,8 @@ pembaca tetap (Costing/Accounting/Sales/Management), dan catatan bisnis terpisah
 
 Masih terbuka: OQ 41 (granularitas) dan OQ 42 (format nama produk) dengan asumsi yang dipakai; OQ 48 dan OQ 49 baru (lihat fr-nfr.md).
 
+## Jawaban user 2026-10-21 (OQ 48 dan 49)
+
+- **OQ 48:** "Iya, betul. Ketika tekan Update Costing." → notifikasi Bottom Price juga mengikuti aksi Update Costing (lihat
+  `input/2026-10-21-bottom-price-change-notification/notes.md`).
+- **OQ 49:** "Betul" → hak akses melihat data backup = **Manage** (sama dengan ekspor Excel).

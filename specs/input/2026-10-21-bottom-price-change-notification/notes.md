@@ -27,3 +27,9 @@
 - Istilah "Notifikasi Perubahan Bottom Price", "Harga jual saat ini" -> `context/index/vocabulary.md`
 - UC-N18 dan PG-24 -> `docs/workbook.xlsx`; entitas `bottom_price_notification` -> `docs/diagrams/erd.drawio`
 - FEAT-09 -> `pm/tracker.yaml`
+
+## Jawaban user 2026-10-21 (OQ 48)
+
+- **OQ 48:** "Iya, betul. Ketika tekan Update Costing." → notifikasi Bottom Price juga dipicu saat tombol **Update Costing** ditekan
+  (satu pemicu dengan History Costing): hasil costing terbaru dibandingkan dengan baseline (Bottom Price saat terakhir ditinjau Sales);
+  bila berbeda ≥ Rp0,01 dibuat notifikasi Belum Ditinjau per varian BOM. Menggantikan asumsi "setiap kali costing dihitung ulang" (OQ 29).
