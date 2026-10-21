@@ -1385,10 +1385,12 @@
         || `<tr><td class="ap-empty" colspan="11">No data available in table</td></tr>`;
       const gr = PC.gapReport();
       const warn = gr.length ? warnBox(`${gr.length} dari ${all.length} varian BOM datanya belum lengkap — harga belum bisa diandalkan`, uniqGaps([].concat(...gr.map((x) => x.gaps))).map(gapItem).join("")) : "";
-      return warn + `<div class="ap-card ap-card--shadow">
+      const pendN = PC.HC.pending();
+      const pend = pendN ? `<div class="ap-warn" role="alert"><strong>&#9888; Ada perubahan master yang belum di-Update Costing (${pendN} varian BOM)</strong><ul><li>Hasil di bawah sudah memakai nilai terbaru, tetapi perubahannya baru dicatat ke History Costing saat tombol Update Costing ditekan.</li></ul></div>` : "";
+      return warn + pend + `<div class="ap-card ap-card--shadow">
         <div class="ap-card__head">
           <div class="ap-gap" style="margin-bottom:12px; justify-content:space-between">
-            <div class="ap-gap"><button type="button" class="ap-btn ap-btn--primary" data-act="update">${ico("save")} Update Costing</button>
+            <div class="ap-gap"><button type="button" class="ap-btn ap-btn--primary" data-act="update" title="Catat perubahan costing ke History Costing">${ico("save")} Update Costing</button>
               <button type="button" class="ap-btn ap-btn--info" data-act="excel">${ico("excel")} Excel</button></div>
             <div class="ap-gap"><label class="ap-lbl">Range Date</label> ${apIn("costRange", S().costRange || PC.today(), { cls: "ap-in--sm", date: 1 })}</div>
           </div>
@@ -1397,7 +1399,8 @@
         <div class="ap-card__body">${dtTop("simulasi", v.st)}
           ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Uniq ID", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
           ${dtBottom("simulasi", v)}
-          <div class="ap-hint">Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan.</div></div></div>`;
+          <div class="ap-hint">Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan.</div>
+          <div class="ap-hint">Perubahan master baru dicatat ke History Costing saat Update Costing dijalankan.</div></div></div>`;
     },
     act: Object.assign({
       view(d) { openCostingDetail(d.u); },
@@ -1414,7 +1417,13 @@
         PC.save();
         window.PC_SHELL.toast(`${d.u} dimasukkan ke Draft Pricelist ${pl.no}.`, "ok");
       },
-      update() { S().boms.forEach((b) => { b.updated = PC.today(); }); PC.save(); window.PC_SHELL.toast("Costing diperbarui (Last Updated = hari ini).", "ok"); },
+      update() {
+        // Update Costing = trigger History Costing (jawaban user 2026-10-21): perubahan master sejak Update Costing sebelumnya dicatat.
+        const r = PC.HC.update();
+        S().boms.forEach((b) => { if (r.bomIds.includes(b.id)) b.updated = PC.today(); });
+        PC.save();
+        window.PC_SHELL.toast(r.entries ? `Costing diperbarui; ${r.entries} perubahan dicatat di History Costing.` : "Tidak ada perubahan costing.", r.entries ? "ok" : "warn");
+      },
       excel() { window.PC_SHELL.toast("Download Excel — contoh mockup (tidak menghasilkan file).", "ok"); },
     }, DT_ACT),
   };
@@ -1656,7 +1665,7 @@
     }, DT_ACT),
   };
   /* ---------- 16. History Costing & History Price List (permintaan user 2026-10-21; pemicu, masa simpan, akses, ekspor: dijawab user) ---------- */
-  // Hanya baca. Pencatatan otomatis oleh pc-data.js (PC.HC / PC.HP); tidak ada tombol ubah/hapus pada riwayat.
+  // Hanya baca. History Costing dicatat saat Update Costing dijalankan; History Price List saat Pricelist disetujui (pc-data.js, PC.HC / PC.HP); tidak ada tombol ubah/hapus pada riwayat.
   const HC_GROUPS = ["Kurs", "Price Reference", "Master Standard", "BOM / Material", "Man Power Rate", "Faktor Indirect Labor", "Flow Process", "Rate Borongan Helper", "Rate BPK & FOH", "General Rate", "Negotiation Allowance", "Lainnya"];
   const inRange = (at, from, to) => { const d = String(at || "").slice(0, 10); return (!from || d >= from) && (!to || d <= to); };
   const hcProductName = (e) => up(e.productName) + " · " + e.uniq;
@@ -1680,12 +1689,14 @@
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
-  const exportBtn = (act) => `<button type="button" class="ap-btn ap-btn--info" data-act="${act}">${ico("excel")} Ekspor Excel</button>`;
-  const HIST_NOTE = "Riwayat disimpan 1 tahun; lebih lama dipindahkan ke backup data (bukan dihapus). Pencatatan riwayat melalui Activity Log aplikasi; halaman ini adalah tampilan terstruktur atas catatan tersebut. Hanya baca; dilihat oleh pengguna yang diberi hak akses (diatur per pengguna di program).";
-  const histBackupNote = (n) => `<div class="ap-hint" style="margin-bottom:8px">${H.esc(HIST_NOTE)}${n ? ` <strong>${n} entri lebih lama dari 12 bulan ada di backup data (tidak ditampilkan).</strong>` : ""}</div>`;
+  const exportBtn = (act) => `<button type="button" class="ap-btn ap-btn--info" data-act="${act}" title="Perlu hak akses Manage (diatur di program). Ekspor hanya memuat 12 bulan terakhir sesuai filter; data backup tidak ikut diekspor.">${ico("excel")} Ekspor Excel</button>`;
+  const HIST_NOTE = "Riwayat disimpan 1 tahun; lebih lama dipindahkan ke backup data (bukan dihapus). Pencatatan riwayat melalui Activity Log aplikasi; halaman ini adalah tampilan terstruktur atas catatan tersebut. Hanya baca. Hak akses terpisah per halaman: View = melihat; Manage = ekspor Excel dan menampilkan data backup (diatur per pengguna di program; di mockup tersedia untuk semua). Ekspor Excel tidak memuat data backup.";
+  const histBackupNote = (n, showBk) => `<div class="ap-hint" style="margin-bottom:8px">${H.esc(HIST_NOTE)}${n ? ` <strong>${n} entri lebih lama dari 12 bulan ada di backup data${showBk ? " (sedang ditampilkan, ditandai Backup)" : " (tidak ditampilkan; pilih \"Tampilkan juga data backup\" bila punya hak akses)"}.</strong>` : ""}</div>`;
   // Entri yang masih dalam masa simpan 12 bulan + filter aktif (dipakai tampilan DAN ekspor).
-  const hcItems = () => { const F = U().hcf; return histSorted(S().hcLog).filter(({ e }) => PC.HC.retained(e.at) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && (!F.g || e.sources.some((s) => s.g === F.g)) && inRange(e.at, F.from, F.to)); };
-  const hpItems = () => { const F = U().hpf; return histSorted(S().hpLog).filter(({ e }) => PC.HP.retained(e.at) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && inRange(e.at, F.from, F.to)); };
+  const bkOpts = [{ v: "", l: "Tampilan: 12 bulan terakhir" }, { v: "1", l: "Tampilkan juga data backup (> 12 bulan)" }];
+  const bkTag = (at) => (PC.HC.retained(at) ? "" : ' <span class="ap-label ap-label--warning">Backup</span>');
+  const hcItems = (withBackup) => { const F = U().hcf; return histSorted(S().hcLog).filter(({ e }) => (withBackup || PC.HC.retained(e.at)) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && (!F.g || e.sources.some((s) => s.g === F.g)) && inRange(e.at, F.from, F.to)); };
+  const hpItems = (withBackup) => { const F = U().hpf; return histSorted(S().hpLog).filter(({ e }) => (withBackup || PC.HP.retained(e.at)) && (!F.c || e.category === F.c) && (!F.u || e.bomId === F.u) && inRange(e.at, F.from, F.to)); };
 
   const hcSrcLine = (s) => `<div>${H.esc(s.l)}: <span class="muted">${H.esc(PC.HC.fmt(s.kind, s.old))}</span> → <strong>${H.esc(PC.HC.fmt(s.kind, s.now))}</strong></div>`;
   const hcSrcCell = (e) => { const top = e.sources.slice(0, 3).map(hcSrcLine).join(""); const more = e.sources.length - 3; return top + (more > 0 ? `<div class="ap-hint">+${more} sumber lain (lihat detail)</div>` : ""); };
@@ -1711,31 +1722,32 @@
   };
   pages.hcosting = {
     title: "History Costing", noSave: true,
-    hint: "Riwayat perubahan Bottom Price per Produk × varian BOM. Dicatat otomatis setiap ada update costing terbaru: perubahan Kurs, Price Reference, rate, Faktor, BOM, Flow, atau input lain yang mengubah Bottom Price (≥ Rp0,01), lengkap dengan waktu, pengguna, sumber perubahan (nilai lama → baru), dan snapshot komponen. Perubahan atau persetujuan Extra Margin dan Draft Pricelist tidak dicatat di sini.",
+    hint: "Riwayat perubahan Bottom Price per Produk × varian BOM. Dicatat setiap kali tombol Update Costing (menu Simulasi Costing) dijalankan dan hasil costing berubah: perubahan Kurs, Price Reference, rate, Faktor, BOM, Flow, atau input lain yang mengubah Bottom Price (≥ Rp0,01), lengkap dengan waktu, pengguna, semua sumber perubahan sejak Update Costing sebelumnya (nilai lama → baru), dan snapshot komponen. Perubahan atau persetujuan Extra Margin dan Draft Pricelist tidak dicatat di sini.",
     render() {
       const F = U().hcf;
       const ret = S().hcLog.filter((e) => PC.HC.retained(e.at)), hidden = S().hcLog.length - ret.length;
-      const items = hcItems();
+      const showBk = F.bk === "1";
+      const items = hcItems(showBk);
       const v = dtView("hcosting", items, ({ e }) => [e.productName, e.uniq, e.category, e.by, e.sources.map((s) => s.l).join(" ")].join(" "));
       const batchN = {}; S().hcLog.forEach((e) => { batchN[e.batch] = (batchN[e.batch] || 0) + 1; });
       const last = histSorted(ret)[0];
       const rows = v.rows.map(({ e }, n) => `<tr><td class="ap-c">${v.from + n + 1}</td>
-        <td>${H.esc(e.at)}${batchN[e.batch] > 1 ? `<div class="ap-hint">satu perubahan · ${batchN[e.batch]} varian</div>` : ""}</td>
+        <td>${H.esc(e.at)}${bkTag(e.at)}${batchN[e.batch] > 1 ? `<div class="ap-hint">satu perubahan · ${batchN[e.batch]} varian</div>` : ""}</td>
         <td><strong>${H.esc(up(e.productName))}</strong><div class="ap-hint">${H.esc(e.uniq)} · ${H.esc(up(e.category))}</div></td>
         <td>${hcSrcCell(e)}</td>
         <td class="ap-r">${f(e.oldM)} → <strong>${f(e.newM)}</strong><div class="ap-hint">Rp/Kg ${f(e.oldKg)} → ${f(e.newKg)}</div></td>
         <td class="ap-r">${delta(e.oldM, e.newM)}<div class="ap-hint">${bpSign(bpPct(e.newM, e.oldM))} %</div></td>
         <td class="ap-r">${f(e.plOldM)} → <strong>${f(e.plNewM)}</strong></td>
         <td>${H.esc(e.by)}</td><td class="ap-c">${iconBtn("view", "View detail", "eye", "info", `data-id="${e.id}"`)}</td></tr>`).join("")
-        || `<tr><td class="ap-empty" colspan="9">${S().hcLog.length ? "Tidak ada riwayat yang cocok dengan filter." : "Belum ada riwayat perubahan. Coba: ubah Kurs di menu Kurs (mis. 17.863 → 18.500), lalu buka halaman ini."}</td></tr>`;
+        || `<tr><td class="ap-empty" colspan="9">${S().hcLog.length ? "Tidak ada riwayat yang cocok dengan filter." : "Belum ada riwayat perubahan. Coba: ubah Kurs di menu Kurs (mis. 17.863 → 18.500), lalu tekan Update Costing di menu Simulasi Costing."}</td></tr>`;
       return `<div class="bp-sums">
           <div class="bp-sum"><div class="bp-sum__n">${ret.length}</div><div class="bp-sum__l">Entri riwayat (12 bulan terakhir)</div></div>
           <div class="bp-sum bp-sum--info"><div class="bp-sum__n">${uniqList(ret.map((e) => e.bomId)).length}</div><div class="bp-sum__l">Produk × varian BOM terdampak</div></div>
           <div class="bp-sum bp-sum--mute"><div class="bp-sum__n" style="font-size:16px">${last ? H.esc(last.e.at) : "—"}</div><div class="bp-sum__l">${last ? "Perubahan terakhir: " + H.esc(last.e.sources[0].l) : "Belum ada perubahan"}</div></div></div>
         <div class="ap-card ap-card--shadow">${apHead("Riwayat Perubahan Bottom Price (Costing)", "Terbaru di atas. Satu perubahan master yang memengaruhi beberapa varian dicatat satu entri per varian pada waktu yang sama.", `Total: ${ret.length} entri`, exportBtn("hcexport"))}
-          <div class="ap-card__body">${histBackupNote(hidden)}
+          <div class="ap-card__body">${histBackupNote(hidden, showBk)}
             <div class="ap-filters">${apSel("ui.hcf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hcf.u", F.u, hcVariantOpts(), { struct: 1 })}${apSel("ui.hcf.g", F.g, [{ v: "", l: "- Semua Sumber Perubahan -" }].concat(HC_GROUPS.map((g) => ({ v: g, l: g }))), { struct: 1 })}</div>
-            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hcf.from", F.from)}${dateFld("Sampai tanggal", "ui.hcf.to", F.to)}</div>
+            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hcf.from", F.from)}${dateFld("Sampai tanggal", "ui.hcf.to", F.to)}<div><label class="ap-lbl" style="display:block;margin-bottom:4px">Data backup</label>${apSel("ui.hcf.bk", F.bk || "", bkOpts, { struct: 1 })}</div></div>
             ${dtTop("hcosting", v.st)}
             ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian", "Sumber Perubahan (lama → baru)", { t: "Bottom Price/Meter (lama → baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, { t: "Price List/Meter (lama → baru)", c: "ap-r" }, "Oleh", { t: "Action", c: "ap-c", w: "70px" }], rows)}
             ${dtBottom("hcosting", v)}</div></div>`;
@@ -1743,7 +1755,7 @@
     act: Object.assign({
       view(d) { openHcView(d.id); },
       hcexport() {
-        const rows = hcItems().map(({ e }) => [e.at, up(e.category), up(e.productName), e.uniq,
+        const rows = hcItems(false).map(({ e }) => [e.at, up(e.category), up(e.productName), e.uniq,
           e.sources.map((s) => s.l + ": " + PC.HC.fmt(s.kind, s.old) + " → " + PC.HC.fmt(s.kind, s.now)).join(" | "),
           e.oldM, e.newM, e.newM - e.oldM, e.oldKg, e.newKg, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, Math.round(e.negoPct * 10000) / 100, e.by]);
         downloadCsv("history-costing-" + PC.today() + ".csv",
@@ -1760,10 +1772,11 @@
     render() {
       const F = U().hpf;
       const ret = S().hpLog.filter((e) => PC.HP.retained(e.at)), hidden = S().hpLog.length - ret.length;
-      const items = hpItems();
+      const showBk = F.bk === "1";
+      const items = hpItems(showBk);
       const v = dtView("hpricelist", items, ({ e }) => [e.product, e.uniq, e.category, e.plNo, e.catNo, e.event, e.note, e.by].join(" "));
       const last = histSorted(ret)[0];
-      const rows = v.rows.map(({ e }, n) => `<tr><td class="ap-c">${v.from + n + 1}</td><td>${H.esc(e.at)}</td>
+      const rows = v.rows.map(({ e }, n) => `<tr><td class="ap-c">${v.from + n + 1}</td><td>${H.esc(e.at)}${bkTag(e.at)}</td>
         <td><strong>${H.esc(up(e.product))}</strong><div class="ap-hint">${H.esc(e.uniq)} · ${H.esc(up(e.category))} · ${H.esc(e.plNo)}${e.catNo ? " · " + H.esc(e.catNo) : ""}</div></td>
         <td class="ap-r">${hpChange(e.plOldM, e.plNewM)}</td><td class="ap-r">${hpChange(e.plOldKg, e.plNewKg)}</td>
         <td class="ap-r">${f(e.bottomM)}<div class="ap-hint">Extra Margin ${f(pctVal(e.negoPct))} %</div></td>
@@ -1774,16 +1787,16 @@
           <div class="bp-sum bp-sum--info"><div class="bp-sum__n">${uniqList(ret.map((e) => e.plId)).length}</div><div class="bp-sum__l">Pricelist disetujui tercatat</div></div>
           <div class="bp-sum bp-sum--mute"><div class="bp-sum__n" style="font-size:16px">${last ? H.esc(last.e.at) : "—"}</div><div class="bp-sum__l">${last ? "Persetujuan terakhir: " + H.esc(last.e.plNo) : "Belum ada persetujuan"}</div></div></div>
         <div class="ap-card ap-card--shadow">${apHead("Riwayat Price List (Pricelist Disetujui)", "Terbaru di atas. Price List lama = Price List pada persetujuan sebelumnya untuk Produk × varian BOM yang sama.", `Total: ${ret.length} entri`, exportBtn("hpexport"))}
-          <div class="ap-card__body">${histBackupNote(hidden)}
+          <div class="ap-card__body">${histBackupNote(hidden, showBk)}
             <div class="ap-filters">${apSel("ui.hpf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hpf.u", F.u, hcVariantOpts(), { struct: 1 })}</div>
-            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hpf.from", F.from)}${dateFld("Sampai tanggal", "ui.hpf.to", F.to)}</div>
+            <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hpf.from", F.from)}${dateFld("Sampai tanggal", "ui.hpf.to", F.to)}<div><label class="ap-lbl" style="display:block;margin-bottom:4px">Data backup</label>${apSel("ui.hpf.bk", F.bk || "", bkOpts, { struct: 1 })}</div></div>
             ${dtTop("hpricelist", v.st)}
             ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian (No. Pricelist)", { t: "Price List/Meter (lama → baru)", c: "ap-r" }, { t: "Price List/Kg (lama → baru)", c: "ap-r" }, { t: "Bottom Price/Meter & Extra Margin", c: "ap-r" }, "Catatan / Alasan", "Oleh"], rows)}
             ${dtBottom("hpricelist", v)}</div></div>`;
     },
     act: Object.assign({
       hpexport() {
-        const rows = hpItems().map(({ e }) => [e.at, up(e.category), up(e.product), e.uniq, e.plNo, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, e.bottomM, Math.round(e.negoPct * 10000) / 100, e.note || "", e.by]);
+        const rows = hpItems(false).map(({ e }) => [e.at, up(e.category), up(e.product), e.uniq, e.plNo, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, e.bottomM, Math.round(e.negoPct * 10000) / 100, e.note || "", e.by]);
         downloadCsv("history-pricelist-" + PC.today() + ".csv",
           ["Waktu", "Product Category", "Produk", "Varian (Uniq ID)", "No. Pricelist", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Bottom Price/Meter", "Rate Extra Margin (%)", "Catatan", "Disetujui Oleh"], rows);
         window.PC_SHELL.toast("Riwayat diekspor (" + rows.length + " baris sesuai filter).", "ok");

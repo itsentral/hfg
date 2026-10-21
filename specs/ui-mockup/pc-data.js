@@ -12,7 +12,7 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 9;
+  const SCHEMA = 10;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
   const seed = () => ({
@@ -152,7 +152,7 @@
     bpNotif: [],
     // 11d. History Costing (hcLog = riwayat perubahan Bottom Price/Price List per varian BOM; hcBase = snapshot terakhir yang dicatat)
     //      dan History Price List (hpLog = kejadian Pricelist/Katalog per Produk × varian BOM; hpSeen = status terakhir yang sudah dicatat).
-    hcLog: [], hcBase: null,
+    hcLog: [], hcBase: null, hcLast: null, // hcLast = waktu Update Costing terakhir (pemicu History Costing)
     hpLog: [], hpSeen: null, hpInit: false, hpSeq: 0,
     hfg: 27400, // pembanding "Pricelist HFG saat ini", Rp/Meter — hanya contoh
     costRange: "",
@@ -175,6 +175,7 @@
   //  v6: pengajuan perubahan Negotiation Allowance (negoReq); rate aktif tetap di `nego` (isian lama utuh).
   //  v7: notifikasi perubahan Bottom Price (bpNotif) dan baseline (bpBase = null → diisi normalize() dari hitungan saat ini).
   //  v8: History Costing (hcLog, hcBase) dan History Price List (hpLog, hpSeen, hpInit, hpSeq).
+  //  v10: pemicu History Costing = tombol Update Costing (hcLast); pencatatan otomatis per perubahan master dihapus.
   //  v9: aturan pencatatan riwayat (jawaban user 2026-10-21): History Costing HANYA saat Bottom Price berubah (perubahan Extra
   //      Margin saja tidak dicatat); History Price List HANYA kejadian Disetujui. Entri lama yang dibuat oleh aturan sebelumnya
   //      dibuang; entri lain milik pengguna tidak disentuh.
@@ -194,6 +195,12 @@
       if (!("hpSeen" in s)) s.hpSeen = null;
       if (!("hpInit" in s)) s.hpInit = false;
       if (!("hpSeq" in s)) s.hpSeq = 0;
+    }
+    if (v < 10) {
+      // v10: History Costing dipicu tombol "Update Costing" (jawaban user 2026-10-21). hcBase tetap menjadi snapshot hasil costing
+      //      terakhir (sebelumnya disegarkan otomatis tiap simpan = sama dengan hitungan terakhir), sehingga Update Costing pertama
+      //      tidak membuat entri palsu. hcLast baru.
+      if (!("hcLast" in s)) s.hcLast = null;
     }
     if (v < 9) {
       const c2 = (n) => Math.round((Number(n) || 0) * 100);
@@ -223,7 +230,7 @@
   let storageFailed = false;
   const save = () => {
     try { bpDetect(); } catch (e) { /* deteksi tidak boleh mengganggu penyimpanan */ }
-    try { hcDetect(); hpDetect(); } catch (e) { /* pencatatan riwayat tidak boleh mengganggu penyimpanan */ }
+    try { hcInit(); hpDetect(); } catch (e) { /* pencatatan riwayat tidak boleh mengganggu penyimpanan */ }
     try { localStorage.setItem(KEY, JSON.stringify({ v: SCHEMA, savedAt: new Date().toISOString(), state })); storageFailed = false; }
     catch (e) { storageFailed = true; }
   };
@@ -509,10 +516,12 @@
   }
   const bpUnreviewed = () => state.bpNotif.filter((n) => n.status === BP_NEW);
 
-  /* ---- History Costing & History Price List (usulan 2026-10-21; rincian menunggu konfirmasi) ----
-     History Costing: tiap kali Bottom Price (Rp/Meter) suatu Produk × varian BOM berubah pada presisi 2 desimal akibat
-     perubahan master/rate/input (update costing terbaru), dicatat satu entri per varian BOM (waktu, pengguna, sumber perubahan
-     lama → baru, snapshot komponen lama dan baru). Perubahan/persetujuan Extra Margin TIDAK dicatat (user 2026-10-21).
+  /* ---- History Costing & History Price List (jawaban user 2026-10-21) ----
+     History Costing: dipicu tombol "Update Costing" di Simulasi (trigger utama update costing terbaru, user 2026-10-21). Saat
+     ditekan, hasil costing saat ini per Produk × varian BOM dibandingkan dengan snapshot Update Costing sebelumnya (hcBase); bila
+     Bottom Price (Rp/Meter) berubah pada presisi 2 desimal dicatat satu entri per varian BOM (waktu, pengguna, SEMUA sumber perubahan
+     sejak Update Costing sebelumnya lama → baru, snapshot komponen lama dan baru). Tidak ada pencatatan otomatis tiap perubahan
+     master. Perubahan/persetujuan Extra Margin TIDAK dicatat (user 2026-10-21).
      Masa simpan 1 tahun: lebih lama dipindahkan ke backup data (disembunyikan dari tampilan, tidak dihapus). Riwayat TERPISAH dari notifikasi Bottom Price: memakai snapshot sendiri
      (state.hcBase) sehingga tidak bergantung pada status tinjau notifikasi. Hanya baca.
      History Price List: HANYA saat Pricelist disetujui (Approved) — satu entri per Produk × varian BOM dengan Price List lama
@@ -565,24 +574,30 @@
     });
     return out;
   }
-  // true bila ada perubahan state (snapshot/entri). Tanpa snapshot sebelumnya → hanya membuat snapshot (tanpa entri).
-  function hcDetect() {
+  // Snapshot awal saja (tanpa entri): varian BOM yang belum punya snapshot Update Costing diberi snapshot dari hitungan saat ini.
+  // true bila ada perubahan state.
+  function hcInit() {
     let changed = false;
     if (!state.hcBase || typeof state.hcBase !== "object") { state.hcBase = {}; changed = true; }
     if (!Array.isArray(state.hcLog)) { state.hcLog = []; changed = true; }
-    const batch = uid("HB"), at = nowStamp();
+    state.boms.forEach((b) => {
+      if (state.hcBase[b.id]) return;
+      const c = costing(b);
+      if (c && c.lengkap) { state.hcBase[b.id] = hcSnap(c); changed = true; }
+    });
+    return changed;
+  }
+  // Update Costing: catat perubahan sejak Update Costing sebelumnya. Mengembalikan { entries, bomIds, at }.
+  function hcUpdate() {
+    hcInit();
+    const batch = uid("HB"), at = nowStamp(), bomIds = [];
     state.boms.forEach((b) => {
       const c = costing(b);
       if (!c || !c.lengkap) return;                                   // data belum lengkap: angka belum bisa diandalkan
       const base = state.hcBase[b.id], now = hcSnap(c);
-      if (!base) { state.hcBase[b.id] = now; changed = true; return; }
+      if (!base) { state.hcBase[b.id] = now; return; }
       let sources = hcSources(base.drivers || {}, now.drivers);
-      if (r2(now.bottomM) === r2(base.bottomM)) {
-        // Bottom Price tidak berubah → tidak dicatat (perubahan Extra Margin/Price List saja bukan update costing). Snapshot
-        // disegarkan diam-diam bila ada selisih lain supaya perbandingan berikutnya memakai nilai terbaru.
-        if (sources.length || r2(now.plM) !== r2(base.plM)) { state.hcBase[b.id] = now; changed = true; }
-        return;
-      }
+      if (r2(now.bottomM) === r2(base.bottomM)) { state.hcBase[b.id] = now; return; }   // Bottom Price tidak berubah → tidak dicatat
       if (!sources.length) sources = [{ k: "lain", g: "Lainnya", l: "Perubahan lain (sumber tidak teridentifikasi)", kind: "text", old: null, now: null }];
       state.hcLog.push({
         id: uid("HC"), batch, at, by: actorName, bomId: b.id, uniq: b.uniq, productName: now.productName, category: now.category,
@@ -591,9 +606,21 @@
         old: base.comps, now: now.comps,
       });
       state.hcBase[b.id] = now;
-      changed = true;
+      bomIds.push(b.id);
     });
-    return changed;
+    state.hcLast = at;
+    return { entries: bomIds.length, bomIds, at };
+  }
+  // Jumlah varian BOM yang hasil costing langsungnya sudah berbeda dari snapshot Update Costing terakhir (belum di-Update Costing).
+  function hcPending() {
+    let n = 0;
+    state.boms.forEach((b) => {
+      const base = state.hcBase && state.hcBase[b.id], c = costing(b);
+      if (!base || !c || !c.lengkap) return;
+      const now = hcSnap(c);
+      if (r2(now.bottomM) !== r2(base.bottomM) || hcSources(base.drivers || {}, now.drivers).length) n++;
+    });
+    return n;
   }
 
   // Masa simpan riwayat 1 tahun (keputusan user 2026-10-21): entri lebih lama dipindahkan ke backup data — di mockup disembunyikan
@@ -669,7 +696,7 @@
     if (!Array.isArray(state.hcLog)) state.hcLog = [];
     if (!Array.isArray(state.hpLog)) state.hpLog = [];
     // Riwayat: snapshot awal dari hitungan saat ini (tanpa entri palsu); riwayat Pricelist direkonstruksi sekali dari data yang ada.
-    try { hcDetect(); hpDetect(); } catch (e) { /* abaikan */ }
+    try { hcInit(); hpDetect(); } catch (e) { /* abaikan */ }
     // Deteksi perubahan Bottom Price saat memuat; baseline awal dibuat dari hitungan saat ini (tanpa notifikasi palsu).
     if (typeof bpDetect === "function" && bpDetect() && ready) { try { save(); } catch (e) { /* abaikan */ } }
   }
@@ -697,7 +724,7 @@
     plRow, plRows, snapPricelist, nextNo, normalize,
     fmt, rp, hasVal, hasHistory, gapReport, LINK,
     setActor, actor: () => actorName,
-    HC: { fmt: hcFmt, detect: hcDetect, retained: histRetained, cutoff: histCutoff },
+    HC: { fmt: hcFmt, init: hcInit, update: hcUpdate, pending: hcPending, retained: histRetained, cutoff: histCutoff },
     HP: { EV: HP_EV, detect: hpDetect, retained: histRetained, cutoff: histCutoff },
     BP: { NEW: BP_NEW, NEGO: BP_NEGO, KEEP: BP_KEEP, detect: bpDetect, unreviewed: bpUnreviewed, shift: bpShift, hargaJual: bpHargaJual, nowStamp },
   };

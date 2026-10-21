@@ -36,8 +36,8 @@
       { id: "approval", file: "pc-approval.html", label: "Approval Pricelist", role: "Management", uc: "UC-19" },
       { id: "egapproval", file: "pc-approval-extra-margin.html", label: "Approval Extra Margin", role: "GM", uc: "UC-10" },
       { id: "catalog", file: "pc-catalog.html", label: "Product Catalog", role: "Sales", uc: "UC-18" },
-      { id: "hcosting", file: "pc-history-costing.html", label: "History Costing", role: "Pengguna dengan hak akses lihat", uc: "UC-N19", viewOnly: true },
-      { id: "hpricelist", file: "pc-history-pricelist.html", label: "History Price List", role: "Pengguna dengan hak akses lihat", uc: "UC-N20", viewOnly: true },
+      { id: "hcosting", file: "pc-history-costing.html", label: "History Costing", role: "View: lihat · Manage: ekspor Excel dan backup (hak akses terpisah per halaman)", uc: "UC-N19", viewOnly: true },
+      { id: "hpricelist", file: "pc-history-pricelist.html", label: "History Price List", role: "View: lihat · Manage: ekspor Excel dan backup (hak akses terpisah per halaman)", uc: "UC-N20", viewOnly: true },
     ] },
   ];
   const flat = MENU.reduce((a, g) => a.concat(g.items), []);
