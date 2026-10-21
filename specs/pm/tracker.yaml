@@ -162,3 +162,16 @@ issues:
       Backlog. Notifikasi ke Sales Manager bila Bottom Price Produk × varian BOM berubah; Sales Manager memutuskan Ajukan Rate
       Extra Margin Baru (alur FR-67) atau Tidak Perlu Diubah. FR-68–FR-70, NFR-16, UC-N18, PG-24, entitas
       bottom_price_notification masih usulan; open question 25–32 belum diputuskan.
+  - id: FEAT-10
+    title: History Costing dan History Price List; nama produk di depan pada Pricelist dan Product Catalog
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-history-costing-pricelist
+    status: open
+    source: permintaan user 2026-10-21 (input/2026-10-21-history-costing-pricelist/)
+    depends_on: [FEAT-06, FEAT-07]
+    blocks: []
+    summary: >-
+      Backlog. Perubahan rate/master yang mengubah Bottom Price disimpan di History Costing; kejadian Pricelist di History
+      Price List (hanya baca, audit). Daftar Pricelist dan Product Catalog menampilkan nama produk di depan. FR-71–FR-73, NFR-17,
+      UC-N19, UC-N20, PG-25, PG-26, entitas history_costing/history_pricelist masih usulan; open question 34–42 belum diputuskan.

@@ -466,6 +466,7 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   (= Ukuran × Price List/Meter) dan **Pricelist Produk/Kg**, sebagai pembanding terhadap "Pricelist
   HFG saat ini" (contoh 27.400 **Rp/Meter**; hanya contoh pembanding hasil hitung pricelist klien
   dengan konsep mock up, user 2026-10-07). Struktur yang sama dikonfirmasi ERD: `Product Costing Header/Detail`.
+  **Direvisi 2026-10-21 (FR-73):** daftar Pricelist dan Product Catalog yang memuat hasil ini menampilkan **nama produk di depan**; nomor Pricelist/katalog menjadi kolom sekunder.
 
 **Pemakaian rate di HPP Laporan Produksi**
 
@@ -524,6 +525,7 @@ Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tet
 | Lebar produk | Tetap per produk (FR-37) | Memakai kolom `wide` yang sudah ada, mm (FR-64) | Berlaku (user, D1, 2026-10-20) |
 | Faktor Indirect Labor | Parameter pada Man Power Rate (FR-43) | Master tersendiri, global, dikelola Costing (FR-53) | Berlaku (user 2026-10-20) |
 | Negotiation Allowance | % global × Bottom Price (FR-45) | % **per Product Category** (FR-55) | Berlaku (user, OQ 16) |
+| Tampilan daftar Pricelist dan Product Catalog | Nomor Pricelist/katalog di depan | Nama produk (dengan varian/Uniq ID) di depan; nomor sekunder (FR-73) | Berlaku (user 2026-10-21) |
 | Perubahan rate Negotiation Allowance | Ditetapkan langsung oleh Sales (FR-55) | Diajukan Sales Manager, **berlaku setelah Approved GM**; Reject kembali ke Sales Manager (FR-67; BPMN To Be Sales D01) | Berlaku (user 2026-10-21); alasan Reject diasumsikan wajib (OQ 20) |
 | Alur Pricelist | Tidak ada | Draft → Approval Management → Product Catalog (FR-58), per Produk × varian BOM, Product Catalog disimpan sebagai data | Berlaku (user, OQ 17) |
 | Kunci Flow & Rate FOH/BPK | Product Category (L2) | BPMN/UC: per Kategori Produk (ERD masih L4) | Konsisten dengan keputusan 2026-10-07; ERD digambar L2 |
@@ -612,6 +614,7 @@ komponen dihitung dalam **Rp/Meter dan Rp/Kg**; sistem mengambil rate Product Ca
   Rp/Kg); Management **wajib mengisi alasan Reject** yang disimpan; **Product Catalog disimpan
   sebagai data** (snapshot harga yang disetujui, dengan pelepas dan waktu rilis). Versi dan periode
   berlaku tidak diminta klien.
+  **Direvisi 2026-10-21 (FR-73; tampilan saja):** pada daftar menu Pricelist dan Product Catalog, **nama produk (dengan varian/Uniq ID) tampil di depan**; nomor Pricelist/katalog bukan yang utama dan menjadi kolom sekunder.
 
 **Aktor Rev.1 (menurut lane BPMN)**: Engineering (UC-01–05), Finance (UC-06), Costing (UC-07–09),
 Sales (UC-10, 16–18), Management (UC-19); perhitungan UC-11–15 dijalankan sistem dengan pemilik
@@ -699,6 +702,29 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
   Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
   (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
+- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **diusulkan, diasumsikan — mohon konfirmasi OQ 34–42**) — **History Costing.**
+  Setiap kali perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference, Master Standard Material,
+  BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor, BPK/FOH, General Rate, Other
+  Cost, Negotiation Allowance) membuat **Bottom Price** suatu Produk × varian BOM berubah, sistem menyimpan **satu catatan
+  riwayat per Produk × varian BOM**: waktu, pengguna yang mengubah, **sumber perubahan** (master atau rate yang diubah,
+  nilai lama → baru), Bottom Price lama → baru (Rp/Meter dan Rp/Kg), snapshot komponen costing lama dan baru (Material
+  Cost, Biaya Proses, Manufacturing Support, HPP, Other Cost, Bottom Price, Price List), dan Rate Extra Margin aktif. Bila satu
+  perubahan memengaruhi banyak produk, dicatat satu baris per Produk × varian BOM (OQ 41). Riwayat dicatat apa pun status
+  tinjau Sales, terpisah dari notifikasi Bottom Price (FR-68..FR-70): notifikasi untuk Sales meninjau, riwayat untuk audit.
+  Riwayat **hanya baca**: tidak dapat diubah atau dihapus (NFR-17). Halaman **History Costing** menyediakan filter produk,
+  Product Category, periode, dan sumber perubahan, daftar, dan detail snapshot. Pembaca: Costing, Accounting, Sales,
+  Management (diasumsikan lihat saja, OQ 36).
+- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **diusulkan, diasumsikan — OQ 34–42**; terhubung ke FR-58 dan FR-67) —
+  **History Price List.** Setiap kejadian pada Pricelist disimpan per Produk × varian BOM: **Diajukan**, **Disetujui**
+  (Approved), **Ditolak** (Rejected, beserta alasan), **Dihitung Ulang** (kembali ke Draft), dan **Dirilis** ke Product
+  Catalog. Catatan memuat nomor Pricelist, status, waktu, pengguna, Price List lama → baru (Rp/Meter dan Rp/Kg), Bottom
+  Price dan Rate Extra Margin saat itu, serta catatan atau alasan. Hanya baca (NFR-17). Halaman **History Price List**
+  menyediakan filter produk, Product Category, periode, dan kejadian. Pencatatan Draft dan perubahan Extra Margin yang
+  disetujui GM: OQ 37, 38.
+- **FR-73** (UC-13, UC-15, UC-N14; sumber permintaan user 2026-10-21; **merevisi tampilan FR-58 dan FR-47**) — **Nama produk
+  di depan.** Pada daftar menu **Pricelist** dan **Product Catalog** (juga judul modal dan dokumen), **nama produk
+  (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
+  tersedia sebagai kolom sekunder. Format tampilan: OQ 42.
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
@@ -810,6 +836,23 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     (termasuk memilih "Ajukan Rate Extra Margin Baru"). Apakah Staf Sales juga boleh mengajukan rate (FR-67 dan UC-12 diubah
     dari Sales Manager menjadi Sales), atau Staf Sales hanya dapat memilih "Tidak Perlu Diubah" dan meneruskan ke Sales
     Manager untuk pengajuan? Saat ini keduanya dapat mengajukan dari dashboard dan FR-67/UC-12 belum diubah.
+34. **Pemicu pencatatan History Costing.** Apakah yang dicatat hanya perubahan yang mengubah Bottom Price (diasumsikan), atau
+    juga perubahan master yang tidak mengubah angka (mis. nama atau status)? Apakah perubahan Price List (bukan Bottom Price)
+    karena Rate Extra Margin juga dicatat di History Costing?
+35. **Masa simpan.** Berapa lama riwayat disimpan (diasumsikan tanpa batas), dan apakah boleh diarsipkan?
+36. **Siapa boleh melihat.** Diasumsikan Costing, Accounting, Sales, dan Management lihat saja; apakah hak akses dibatasi per
+    peran (mis. Sales hanya melihat Price List, bukan komponen costing)?
+37. **Pricelist Draft.** Apakah Draft Pricelist (belum diajukan) dicatat di History Price List, atau hanya sejak Diajukan
+    (diasumsikan sejak Diajukan)?
+38. **Perubahan Extra Margin yang disetujui GM.** Apakah dicatat di History Costing (karena memengaruhi Price List) dan/atau
+    di History Price List? Diasumsikan di History Costing sebagai sumber perubahan "Negotiation Allowance".
+39. **Ekspor.** Apakah riwayat perlu diekspor ke Excel? Diasumsikan ya (tombol Excel seperti halaman lain, hanya contoh di mockup).
+40. **Hubungan dengan Activity Log (`write_log`).** Diasumsikan History Costing dan History Price List adalah catatan bisnis
+    tersendiri (tabel khusus) di samping Activity Log, bukan pengganti. Benar?
+41. **Granularitas History Costing.** Satu baris per Produk × varian BOM per perubahan (diasumsikan), atau satu baris per
+    perubahan master dengan daftar produk terdampak?
+42. **Format nama produk.** Diasumsikan "nama produk + varian/Uniq ID" (mis. HARAPAN SPANDEK POLOS ECO 0.25 X 6 M — Type 001.1)
+    di kolom pertama; nomor Pricelist/katalog menjadi kolom sekunder. Benar?
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -937,6 +980,11 @@ yang sudah resolved di atas (± 0,7%).
   Catalog secara otomatis akibat notifikasi. Fit criterion: setelah notifikasi dibuat, rate aktif dan Pricelist tidak berubah
   satu rupiah pun sampai Sales Manager mengajukan dan GM menyetujui (FR-67); untuk tiap notifikasi dapat ditampilkan siapa
   meninjau, kapan, dan keputusannya.
+- **NFR-17 (History Costing dan History Price List: audit; diusulkan 2026-10-21).** Catatan riwayat (FR-71, FR-72) mencatat
+  **siapa, kapan, dan apa** yang berubah, **tidak dapat diubah atau dihapus** oleh pengguna mana pun, dan tidak boleh
+  dibuat ulang dari data terkini (snapshot nilai saat kejadian). Fit criterion: setelah rate diubah sehingga Bottom Price
+  berubah, tepat satu catatan per Produk × varian BOM yang terdampak muncul di History Costing dengan nilai lama dan baru;
+  setiap perubahan status Pricelist muncul di History Price List; tidak ada fungsi ubah atau hapus riwayat di program.
 
 ## Status
 
@@ -986,3 +1034,10 @@ Sales menilai harga jual terhadap harga pasar dengan Rate Extra Margin lama dan 
 FR-68–FR-70 dan NFR-16 ditambahkan sebagai **usulan**; rinciannya (ambang, baseline, "harga jual saat ini", penerima dan kanal,
 saat deteksi, granularitas keputusan, pengaju) **dikonfirmasi user 2026-10-21** (open question 25–33 terjawab). Entitas ERD
 `bottom_price_notification`, UC-N18, PG-24, dan FEAT-09 mengikuti.
+
+**Pembaruan 2026-10-21 (History Costing dan History Price List).** Permintaan user: perubahan rate yang memengaruhi Bottom Price
+disimpan di History Costing, dan perubahan Pricelist di History Price List; daftar Pricelist dan Product Catalog menampilkan nama
+produk di depan, bukan nomor Pricelist. FR-71–FR-73 dan NFR-17 ditambahkan sebagai **usulan**; rinciannya (pemicu, masa simpan,
+hak lihat, pencatatan Draft dan Extra Margin, ekspor, hubungan dengan Activity Log, granularitas, format nama) **diasumsikan** dan
+tercatat sebagai open question 34–42. Entitas ERD `history_costing` dan `history_pricelist`, UC-N19, UC-N20, PG-25, PG-26, dan
+FEAT-10 mengikuti.

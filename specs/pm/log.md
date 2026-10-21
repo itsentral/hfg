@@ -43,6 +43,12 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-10]` **History Costing, History Price List, dan nama produk di depan (usulan).** Permintaan user:
+  perubahan rate yang memengaruhi Bottom Price disimpan di History Costing; perubahan Pricelist di History Price List; daftar
+  Pricelist dan Product Catalog menampilkan nama produk, bukan nomor Pricelist, di depan. FR-71–FR-73, NFR-17, open question 34–42
+  (diasumsikan), UC-N19/UC-N20, PG-25/PG-26, entitas `history_costing` dan `history_pricelist`; FR-47/FR-58 diberi catatan revisi tampilan.
+  FEAT-10 (open) bergantung FEAT-06 dan FEAT-07.
+
 - **2026-10-21** `[DECISION][FEAT-09]` **Open question 25–33 seluruhnya terjawab.** Baseline = Bottom Price saat terakhir ditinjau;
   deteksi setiap costing dihitung ulang; satu keputusan per notifikasi dan pengajuan per kategori; produk/BOM baru tidak memicu
   notifikasi; "Tidak Perlu Diubah" cukup dengan catatan opsional. OQ 33: pengajuan rate Extra Margin hanya Sales Manager (FR-67
