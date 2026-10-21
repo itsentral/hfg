@@ -43,6 +43,12 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-21** `[DECISION][FEAT-09]` **Open question 25–33 seluruhnya terjawab.** Baseline = Bottom Price saat terakhir ditinjau;
+  deteksi setiap costing dihitung ulang; satu keputusan per notifikasi dan pengajuan per kategori; produk/BOM baru tidak memicu
+  notifikasi; "Tidak Perlu Diubah" cukup dengan catatan opsional. OQ 33: pengajuan rate Extra Margin hanya Sales Manager (FR-67
+  tetap), semua Sales dapat meninjau dan memilih "Tidak Perlu Diubah"; hak akses diatur per pengguna di program (tidak dikunci ke
+  pengguna tertentu). FR-68..70, UC-N18, PG-24, dan catatan mockup disesuaikan.
+
 - **2026-10-21** `[DECISION][FEAT-09]` **Jawaban user untuk notifikasi Bottom Price:** ambang = perubahan sekecil apa pun (≥ Rp0,01);
   pembanding harga = Price List Product Catalog terakhir; peninjau = semua Sales; kanal hanya dashboard (tanpa email/WhatsApp);
   tanpa batas waktu tinjau. OQ 25, 27, 28 terjawab di fr-nfr; UC-N18 dan PG-24 diubah ke aktor Sales. OQ 33 baru: konsistensi

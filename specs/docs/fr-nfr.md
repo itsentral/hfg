@@ -680,8 +680,9 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   Sales; untuk fitur baru dimulai: saat fitur diaktifkan). Bila berbeda — naik atau turun, dan **apa pun penyebabnya**
   (Price Reference, Kurs, BOM atau Berat/Meter, Flow, Man Power, Borongan, Faktor Indirect Labor, BPK/FOH, General Rate,
   Other Cost) — sistem membuat **notifikasi** berstatus Belum Ditinjau. Penyebab hanya **ditampilkan**; sistem tidak mengubah
-  rate, Pricelist, atau Katalog secara otomatis (NFR-16). Ambang: **perubahan sekecil apa pun** (selisih ≥ Rp0,01 pada presisi 2 desimal; keputusan user 2026-10-21, OQ 25). Baseline,
-  saat deteksi, dan perlakuan produk/BOM baru: **diasumsikan, mohon konfirmasi (OQ 26, 29, 31)**.
+  rate, Pricelist, atau Katalog secara otomatis (NFR-16). Ambang: **perubahan sekecil apa pun** (selisih ≥ Rp0,01 pada presisi 2 desimal; keputusan user 2026-10-21, OQ 25). Baseline =
+  Bottom Price saat terakhir ditinjau Sales, deteksi setiap kali costing dihitung ulang, dan produk/BOM baru tidak memicu
+  notifikasi: **dikonfirmasi user 2026-10-21 (OQ 26, 29, 31)**.
 - **FR-69** (UC-N18) — **Dashboard dan isi notifikasi.** Halaman dashboard menampilkan notifikasi yang belum ditinjau
   (lencana jumlah di menu), dikelompokkan per **Product Category** karena Rate Extra Margin berlaku per kategori (FR-55,
   FR-67). Tiap baris (Produk × varian BOM) memuat: Bottom Price lama → baru (Rp/Meter dan Rp/Kg), selisih (Rp dan %),
@@ -691,13 +692,13 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   selisihnya terhadap harga jual saat ini (%), dan waktu terdeteksi. Tujuannya agar Sales menilai apakah harga jual dengan
   costing baru masih sesuai harga pasar.
 - **FR-70** (UC-N18; **terhubung ke FR-67 dan FR-58**) — **Keputusan Sales dan status.** **Semua Sales** (Staf Sales dan Sales Manager; keputusan user
-  2026-10-21, OQ 28; konsistensi dengan pengaju FR-67: OQ 33) memutuskan per notifikasi: (a) **Ajukan Rate Extra Margin Baru** → membuka
+  2026-10-21, OQ 28) meninjau per notifikasi, dengan pembagian hak akses (OQ 33): (a) **Ajukan Rate Extra Margin Baru** — **hanya Sales Manager** (pengaju FR-67/UC-12; hak akses diatur per pengguna di program, tidak dikunci ke pengguna tertentu) → membuka
   pengajuan UC-12 untuk Product Category itu dan melanjutkan ke persetujuan GM (UC-16); status notifikasi **Diajukan Extra
   Margin Baru**, terhubung ke pengajuan (`id_rate_negotiation_allowance_request`); (b) **Tidak Perlu Diubah** (catatan
-  opsional) → status **Tidak Perlu Diubah**. Keduanya menyimpan peninjau dan waktu, dan **menggeser baseline ke Bottom Price
+  opsional; semua Sales) → status **Tidak Perlu Diubah**. Keduanya menyimpan peninjau dan waktu, dan **menggeser baseline ke Bottom Price
   baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
   Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
-  (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); keputusan per kategori atau per varian: OQ 30, 32.
+  (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
@@ -790,21 +791,21 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
 
 25. **RESOLVED 2026-10-21 — perubahan sekecil apa pun memicu notifikasi (FR-68).** Pertanyaan semula: **Ambang perubahan.** Perubahan sekecil berapa yang memicu notifikasi (≥ Rp0,01 pada Bottom Price, persentase tertentu,
     atau berapa pun)? Diasumsikan: berapa pun selisih ≥ Rp0,01 per Rp/Meter (batas pembulatan NFR-11).
-26. **Definisi baseline.** Bottom Price pembanding adalah (a) saat terakhir ditinjau Sales, (b) saat terakhir dirilis ke Product
+26. **RESOLVED 2026-10-21 — baseline = Bottom Price saat terakhir ditinjau Sales; saat fitur diaktifkan untuk awal (FR-68).** Pertanyaan semula: **Definisi baseline.** Bottom Price pembanding adalah (a) saat terakhir ditinjau Sales, (b) saat terakhir dirilis ke Product
     Catalog, atau (c) saat Pricelist terakhir disetujui? Diasumsikan (a); untuk fitur baru dimulai, baseline = Bottom Price saat diaktifkan.
 27. **RESOLVED 2026-10-21 — pembanding = Price List pada Product Catalog terakhir dirilis (FR-69).** Pertanyaan semula: **"Harga jual saat ini".** Diasumsikan Price List pada Product Catalog terakhir dirilis; bila produk belum pernah dirilis,
     Price List baseline. Benar, atau harga pasar/jual disimpan terpisah?
 28. **RESOLVED 2026-10-21 — semua Sales meninjau; kanal hanya dashboard (tanpa email/WhatsApp); tidak ada batas waktu tinjau (FR-70).** Pertanyaan semula: **Siapa menerima dan melalui kanal apa.** Diasumsikan dashboard dengan lencana jumlah; keputusan oleh Sales Manager, Staf Sales
     hanya melihat. Perlu email atau WhatsApp juga? Apakah GM ikut melihat?
-29. **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
+29. **RESOLVED 2026-10-21 — setiap kali costing dihitung ulang; satu notifikasi per varian BOM (FR-68).** Pertanyaan semula: **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
     perubahan terjadi sebelum ditinjau: satu notifikasi per varian BOM yang diperbarui (diasumsikan) atau satu per kejadian?
-30. **Granularitas keputusan.** Extra Margin berlaku per Product Category (FR-55), notifikasi per Produk × varian BOM. Diasumsikan
+30. **RESOLVED 2026-10-21 — satu keputusan per notifikasi; pengajuan Extra Margin tetap satu per kategori (FR-70).** Pertanyaan semula: **Granularitas keputusan.** Extra Margin berlaku per Product Category (FR-55), notifikasi per Produk × varian BOM. Diasumsikan
     satu keputusan per notifikasi, dan pengajuan Extra Margin tetap satu per kategori (OQ 22). Perlu keputusan per kategori sekaligus?
-31. **Produk atau varian BOM baru.** Tanpa baseline, apakah tetap memicu notifikasi (Pengajuan Produk Baru ke Costing) atau tidak
+31. **RESOLVED 2026-10-21 — produk/varian BOM baru tidak memicu notifikasi (FR-68).** Pertanyaan semula: **Produk atau varian BOM baru.** Tanpa baseline, apakah tetap memicu notifikasi (Pengajuan Produk Baru ke Costing) atau tidak
     (diasumsikan tidak)? Bagaimana bila Product Category belum punya rate (OQ 23)?
-32. **"Tidak Perlu Diubah".** Cukup keputusan Sales Manager dengan catatan opsional (diasumsikan), atau perlu alasan wajib atau
+32. **RESOLVED 2026-10-21 — cukup keputusan Sales dengan catatan opsional (FR-70).** Pertanyaan semula: **"Tidak Perlu Diubah".** Cukup keputusan Sales Manager dengan catatan opsional (diasumsikan), atau perlu alasan wajib atau
     persetujuan GM? Apakah notifikasi ditutup otomatis bila Bottom Price kembali ke baseline?
-33. **Konsistensi pengaju Extra Margin (FR-67 vs FR-70).** BPMN To Be Sales D01 menggambar "Update dan Ajukan Rate Extra Margin
+33. **RESOLVED 2026-10-21 — pengajuan rate Extra Margin hanya oleh Sales Manager (FR-67/UC-12 tetap); hak akses diatur per pengguna di program, tidak perlu dikunci ke pengguna tertentu (FR-70).** Pertanyaan semula: **Konsistensi pengaju Extra Margin (FR-67 vs FR-70).** BPMN To Be Sales D01 menggambar "Update dan Ajukan Rate Extra Margin
     baru" di lane Sales Manager, sedangkan keputusan user 2026-10-21 menetapkan **semua Sales** meninjau notifikasi Bottom Price
     (termasuk memilih "Ajukan Rate Extra Margin Baru"). Apakah Staf Sales juga boleh mengajukan rate (FR-67 dan UC-12 diubah
     dari Sales Manager menjadi Sales), atau Staf Sales hanya dapat memilih "Tidak Perlu Diubah" dan meneruskan ke Sales
@@ -983,5 +984,5 @@ banyak kategori, rate pertama, GM mengubah nilai) belum diputuskan; asumsi semen
 **Pembaruan 2026-10-21 (Notifikasi Bottom Price).** Permintaan user: dashboard notifikasi ke Sales bila Bottom Price berubah, agar
 Sales menilai harga jual terhadap harga pasar dengan Rate Extra Margin lama dan memutuskan mengajukan rate baru atau tidak.
 FR-68–FR-70 dan NFR-16 ditambahkan sebagai **usulan**; rinciannya (ambang, baseline, "harga jual saat ini", penerima dan kanal,
-saat deteksi, granularitas keputusan) **diasumsikan** dan tercatat sebagai open question 25–32. Entitas ERD
+saat deteksi, granularitas keputusan, pengaju) **dikonfirmasi user 2026-10-21** (open question 25–33 terjawab). Entitas ERD
 `bottom_price_notification`, UC-N18, PG-24, dan FEAT-09 mengikuti.
