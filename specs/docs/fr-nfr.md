@@ -374,6 +374,9 @@ bawah adalah yang tertulis di sheet **Simulasi Program** / **Simulasi Costing**;
 2%, Rp200/Kg, faktor 1,5) adalah **contoh isian master**, bukan konstanta — lihat NFR-12.
 Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat di UC-N05–UC-N14.
 
+> **Direvisi 2026-10-19:** beberapa rumus dan aktor di bawah digantikan oleh BPMN/Use Case/ERD
+> Rev.1 — baca bagian "Revisi Rev.1" (sebelum "Open questions Product Costing") terlebih dahulu.
+
 **Keputusan user 2026-10-07:**
 
 - Master data Product Costing **dibangun dan diisi lewat UI** (membalik keputusan 2026-09-21).
@@ -463,6 +466,7 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   (= Ukuran × Price List/Meter) dan **Pricelist Produk/Kg**, sebagai pembanding terhadap "Pricelist
   HFG saat ini" (contoh 27.400 **Rp/Meter**; hanya contoh pembanding hasil hitung pricelist klien
   dengan konsep mock up, user 2026-10-07). Struktur yang sama dikonfirmasi ERD: `Product Costing Header/Detail`.
+  **Direvisi 2026-10-21 (FR-73):** daftar Pricelist dan Product Catalog yang memuat hasil ini menampilkan **nama produk di depan**; nomor Pricelist/katalog menjadi kolom sekunder.
 
 **Pemakaian rate di HPP Laporan Produksi**
 
@@ -483,6 +487,255 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
   pada laporan yang sudah ada (keputusan user 2026-10-07). Mekanisme penyimpanan (salinan nilai
   ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
+
+### Revisi Rev.1 — Use Case, BPMN To Be, dan ERD Product Costing — 2026-10-19
+
+Sumber: `input/2026-10-19-product-costing-rev1/notes.md`, yang mencatat tiga file referensi utama
+(`input/Costing To Be D05-PTHFG.png`, `input/Rev.1 Use Case Product Costing.xlsx` UC-01–UC-19,
+`input/ERD Product Costing-Production Report.jpg`) dan jawaban user 2026-10-19. **Ketiganya
+dipakai sebagai referensi utama; jika berbeda dari FR-37–FR-49 di atas, bagian ini yang berlaku**,
+kecuali butir yang ditandai "menunggu open question" (belum boleh diimplementasi sebagai final).
+Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tetap terbaca.
+
+**Keputusan user 2026-10-19:**
+
+- Bottom Price = HPP + seluruh Other Cost (Σ Rate Other Cost × HPP); bukan perkalian.
+- Daftar Other Cost mengikuti **UC-09 (enam elemen)**: Sales & Marketing, Transport, Finance &
+  Admin, Management Fee, Interest, Profit. Daftar empat elemen di sheet *Istilah* dan BPMN usang.
+- Negotiation Allowance (Extra Margin) berupa **persentase**.
+- UC-13 langkah 4 berjudul "Biaya Proses": salah ketik, maksudnya Biaya Manufacturing Support.
+- ERD Rev.1 adalah referensi awal; entitas yang kurang dilengkapi tim pengembang (FR-50, FR-58).
+- `Varian type` pada BOM Header = **Varian Tebal**.
+- Price Reference hanya memakai nilai **Max** dari History Pembelian.
+
+**Peta perubahan terhadap FR-37–FR-49**
+
+| Topik | Versi 2026-10-07 | Rev.1 (berlaku) | Status |
+|---|---|---|---|
+| Berat/Meter | Atribut Master Material (FR-38) | Dihitung di BOM per varian tebal (FR-51) | Berlaku; Master Standard global (OQ 15) |
+| Price Reference | Pilih Harga Terakhir / Rata-rata, per material (FR-40) | Hanya Max History Pembelian × Kurs (FR-52) | Berlaku (user) |
+| Aktor Kurs & Price Reference | Accounting / Purchasing | Finance (UC-06) | Berlaku; role detail saat RBAC |
+| Aktor rate | Accounting | Costing (UC-07, 08, 09), Sales (UC-10) | Berlaku; role detail saat RBAC |
+| Consumables | % × Material Cost (FR-45) | Rate Rp/Kg × Berat/Meter (FR-54) | Berlaku (UC-08 menyebut Rp/Kg eksplisit) |
+| Rate FOH & Bahan Pendukung Khusus | Rp/meter langsung (FR-44) | **Rp/Kg**; Rp/Meter = Rate × Berat/Meter (UC-12) | Berlaku (user, OQ 14) |
+| Man Power Cost | Total Man Hour × Rate Man Power (FR-46) | Total Man Hour × Rate (UC-12 1.1 salah salin); bagian Borongan Rp/Meter → FR-56 | Berlaku (user, OQ 19) |
+| Man Power Rate | Komponen gaji/BPJS/lain-lain ÷ 173 jam × Faktor Indirect (FR-43) | (Rate 1/3 Operator + Rate Borongan Helper per kategori) × Faktor Indirect; rincian FR-43 hanya untuk Operator (FR-53) | Berlaku (user, OQ 13, 18); Borongan hanya Rp/Meter (user 2026-10-20) |
+| Satuan hasil | Rp/meter, lalu Rp/Kg (FR-46) | Setiap komponen dalam **dua satuan**: Rp/Kg dan Rp/Meter (FR-56) | Berlaku |
+| Other Cost | Enam elemen, % × HPP (FR-45) | Sama (UC-09, UC-15) | Konsisten |
+| Lebar produk | Tetap per produk (FR-37) | Memakai kolom `wide` yang sudah ada, mm (FR-64) | Berlaku (user, D1, 2026-10-20) |
+| Faktor Indirect Labor | Parameter pada Man Power Rate (FR-43) | Master tersendiri, global, dikelola Costing (FR-53) | Berlaku (user 2026-10-20) |
+| Negotiation Allowance | % global × Bottom Price (FR-45) | % **per Product Category** (FR-55) | Berlaku (user, OQ 16) |
+| Tampilan daftar Pricelist dan Product Catalog | Nomor Pricelist/katalog di depan | Nama produk (dengan varian/Uniq ID) di depan; nomor sekunder (FR-73) | Berlaku (user 2026-10-21) |
+| Perubahan rate Negotiation Allowance | Ditetapkan langsung oleh Sales (FR-55) | Diajukan Sales Manager, **berlaku setelah Approved GM**; Reject kembali ke Sales Manager (FR-67; BPMN To Be Sales D01) | Berlaku (user 2026-10-21); alasan Reject diasumsikan wajib (OQ 20) |
+| Alur Pricelist | Tidak ada | Draft → Approval Management → Product Catalog (FR-58), per Produk × varian BOM, Product Catalog disimpan sebagai data | Berlaku (user, OQ 17) |
+| Kunci Flow & Rate FOH/BPK | Product Category (L2) | BPMN/UC: per Kategori Produk (ERD masih L4) | Konsisten dengan keputusan 2026-10-07; ERD digambar L2 |
+
+**Master data tambahan**
+
+- **FR-50** (UC-03) — **Master Standard Material** menyimpan Standar Toleransi, Standar Berat Jenis
+  Material Baja, dan Coating; dikelola Engineering dan dipakai FR-51. Master baru (belum ada di
+  ERD referensi). Nilainya **berlaku global** (satu set untuk semua material; user 2026-10-19).
+  **Satuan tidak ditampilkan** di UI karena klien tidak menginformasikannya; angka dipakai apa
+  adanya dan konversi satuan pada formula FR-51 dikalibrasi dengan contoh 0,14 mm × lebar 1219 ×
+  7,85 ≈ 1,34 kg/m (cek hasil dengan klien saat uji).
+- **FR-51** (UC-04) — **BOM per Varian Tebal**: Engineering memilih material dari Master Material
+  untuk setiap varian ketebalan. **Berat/Meter dihitung otomatis** =
+  `((Tebal Material − Standar Toleransi) × Lebar Coil × Standar Berat Jenis) + Coating`
+  (FR-50). Satu produk boleh punya beberapa BOM dengan material berbeda, tetapi **tidak boleh
+  membuat BOM dengan material yang sama dua kali** untuk produk yang sama (unik per
+  produk + material). Prasyarat: Master Produk (UC-01), Master Material (UC-02), Master Standard
+  (UC-03). Menggantikan atribut Berat/Meter pada Master Material (FR-38); kolom Tebal dan Lebar Coil
+  tetap di Master Material. Sebagai cek silang, contoh lama 0,14 mm × 1,219 m × 7,85 ≈ 1,34 kg/m.
+- **FR-52** (UC-06) — **Price Reference**: Finance memperbarui Kurs, lalu Price Reference USD/Kg
+  per material, **diacu dari History Pembelian dengan mengambil nilai tertinggi (Max)**. Sistem
+  menghitung Price Reference Rp/Kg = USD/Kg × Kurs. Nilai rata-rata dan terakhir pada ERD
+  tidak dipakai costing dan tidak ada pilihan pemakaian. Menggantikan FR-40 butir (b)–(d).
+
+**Master rate**
+
+- **FR-53** (UC-07) — Costing menetapkan rate biaya proses:
+  - **Man Power Rate (per Product Category)** terdiri dari dua bagian, lalu dikali **Faktor
+    Indirect Labor** (UC-07):
+    - **Rate 1/3 Operator (Rp/jam)** = Rate Direct Labor **Operator** (FR-43: rincian gaji/BPJS/
+      biaya lain ÷ jam kerja per bulan, contoh 173 jam) × **porsi operator 1/3**. Alasan user
+      2026-10-19: Operator dianggap hanya 1/3 bekerja langsung pada produk. Porsi disimpan sebagai
+      parameter (NFR-12). **Pembulatan:** Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh
+      **setelah** dikali 1/3 (user 2026-10-19), menggantikan pembulatan Rate Direct Labor di FR-43.
+    - **Rate Borongan Helper** diambil dari **master Borongan per Product Category** (master baru),
+      **hanya dalam Rp/Meter** (user 2026-10-20: standar selalu berawal dari Rp/Meter; tidak ada
+      Rp/Pcs dan tidak ada konversi dengan Panjang Produk).
+    - **Faktor Indirect Labor** adalah **master tersendiri** (global, satu nilai) yang dikelola Costing
+      karena nilainya dapat berubah (user 2026-10-20); **bukan per Product Category** dan hanya dipakai sebagai pengali pada Man Power Cost; bukan lagi parameter pada Man Power Rate. Nilai
+      mengalikan jumlah (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) (FR-56).
+      Perubahan nilai tidak mengubah Pricelist yang sudah diajukan dan laporan produksi yang sudah dibuat
+      (FR-49, NFR-09).
+    - Rincian gaji/BPJS/jam kerja FR-43 hanya berlaku untuk bagian Operator; "Rate Man Power
+      (Rp/jam)" tunggal pada FR-43 tidak lagi dipakai langsung (lihat FR-56).
+  - **Rate FOH** dan **Rate Bahan Pendukung Khusus** per Product Category dalam **Rp/Kg**
+    (menggantikan Rp/meter di FR-44); Rp/Meter dihitung `Rate Rp/Kg × Berat/Meter` (FR-56).
+- **FR-54** (UC-08) — Costing menetapkan **Rate Consumable (Rp/Kg)**, **Rate Scrap (% dari Material
+  Cost)**, dan **Rate Biaya Koordinasi (Rp/Kg)**; berlaku semua produk.
+- **FR-55** (UC-09, UC-10) — Rate Other Cost (% × HPP) untuk enam elemen UC-09 ditetapkan Costing;
+  **Rate Negotiation Allowance (Extra Margin, %)** ditetapkan Sales **per Product Category**
+  (user 2026-10-19; bukan lagi bagian Rate Generals). Rate Other Cost berlaku semua produk.
+  **Direvisi 2026-10-21 (FR-67):** rate Negotiation Allowance tidak lagi ditetapkan langsung oleh Sales; perubahannya
+  diajukan **Sales Manager** dan baru berlaku setelah **disetujui GM**.
+
+**Kalkulasi (UC-11 s.d. UC-16)** — `BM` = Berat/Meter varian BOM yang dipilih (FR-51). Setiap
+komponen dihitung dalam **Rp/Meter dan Rp/Kg**; sistem mengambil rate Product Category dari produk.
+
+- **FR-56** —
+  - **Material Cost** (UC-11): Rp/Kg = Price Reference Rp/Kg material BOM (FR-52); Rp/Meter =
+    Price Reference × BM.
+  - **Biaya Proses** (UC-12): Man Power, Bahan Pendukung Khusus, FOH. Bahan Pendukung dan FOH:
+    Rp/Meter = Rate (Rp/Kg) × BM; Rp/Kg = Rp/Meter ÷ BM. **Man Power** (disetujui user
+    2026-10-19, OQ 19): Rp/Meter = `(Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) ×
+    Faktor Indirect Labor` (Rate Borongan Helper sudah Rp/Meter, FR-53); Rp/Kg = Rp/Meter
+    ÷ BM. Butir 1.1 UC-12 (Rate × Berat/Meter) salah salin (user 2026-10-19). Biaya Proses = jumlah
+    ketiganya, per satuan.
+  - **Manufacturing Support** (UC-13): Consumables Rp/Meter = Rate × BM, Rp/Kg = Rate (Rp/Kg);
+    **Scrap** = Rate Scrap × Material Cost (Rp/Meter dan Rp/Kg masing-masing); **Biaya
+    Koordinasi** Rp/Meter = Rate × BM, Rp/Kg = Rate. Manufacturing Support = jumlah ketiganya.
+  - **HPP** (UC-14) = Material Cost + Biaya Proses + Manufacturing Support, per satuan.
+- **FR-57** — **Bottom Price** (UC-15): untuk tiap elemen Other Cost, Other Cost = Rate × HPP
+  (per satuan); `Bottom Price = HPP + Σ Other Cost`. **Price List** (UC-16) = Bottom Price +
+  (Rate Negotiation Allowance % × Bottom Price), per satuan. Sales menerima Bottom Price, lalu
+  menjalankan perhitungan; hasilnya dicetak sebagai **Report Costing Detail/Produk**.
+
+**Alur Pricelist (UC-16 s.d. UC-19)**
+
+- **FR-58** — Sales menyusun **Draft Pricelist** dari hasil FR-57 dan mengirimkannya ke Management
+  (UC-17). Management memeriksa dan memutuskan **Approve** atau **Reject** (UC-19). **Reject**
+  mengembalikan pricelist ke perhitungan ulang (UC-16) lalu diajukan lagi; **Approve** memungkinkan
+  Sales **merilis Product Catalog** berisi harga yang disetujui (UC-18), yang diteruskan ke proses
+  Sales di luar alur ini. Hanya pricelist yang sudah Approve yang boleh dirilis; satu pricelist Approved boleh dirilis **berkali-kali** (user 2026-10-20) dan setiap rilis membuat Product Catalog (snapshot) baru (relasi pricelist → katalog 1 ke 0..N). Status yang
+  tersirat pada BPMN: Draft, Menunggu Approval, Approved, Rejected; tidak ada status lain
+  yang ditambahkan. Keputusan user 2026-10-19: pricelist **per Produk × varian BOM** (Rp/Meter dan
+  Rp/Kg); Management **wajib mengisi alasan Reject** yang disimpan; **Product Catalog disimpan
+  sebagai data** (snapshot harga yang disetujui, dengan pelepas dan waktu rilis). Versi dan periode
+  berlaku tidak diminta klien.
+  **Direvisi 2026-10-21 (FR-73; tampilan saja):** pada daftar menu Pricelist dan Product Catalog, **nama produk (dengan varian/Uniq ID) tampil di depan**; nomor Pricelist/katalog bukan yang utama dan menjadi kolom sekunder.
+
+**Aktor Rev.1 (menurut lane BPMN)**: Engineering (UC-01–05), Finance (UC-06), Costing (UC-07–09),
+Sales (UC-10, 16–18), Management (UC-19); perhitungan UC-11–15 dijalankan sistem dengan pemilik
+proses Accounting (asumsi di sheet Use Case: ikon roda gigi = otomatis).
+
+### Fungsi tambahan hasil review mockup — 2026-10-20
+
+Sumber: review mockup `ui-mockup/pc-*` oleh user dan klien (simulasi disetujui klien 2026-10-20). Melengkapi FR-50–FR-58; tidak
+menimpa teks sebelumnya. Fitur yang hanya ada di mockup (Simpan ke File / Muat dari File, kerangka tema) bukan requirement.
+**FR-53 sudah memuat Faktor Indirect Labor sebagai master global** dan **Rate Borongan Helper hanya Rp/Meter**; tidak diulang di sini.
+
+- **FR-59** (UC-N14, UC-13) — **Peringatan kelengkapan data costing.** Sistem menandai setiap varian BOM yang datanya belum
+  lengkap, menyebut apa yang kurang, dan menunjuk menu tempat mengisinya. Kekurangan yang dideteksi: Flow Process kategori
+  belum ada atau Total Man Hour 0; Rate BPK/FOH kategori belum ada; Rate Borongan Helper kategori belum ada atau kosong;
+  Negotiation Allowance kategori belum ada atau kosong; Price Reference kosong (History Pembelian tanpa nilai); Berat/Meter ≤ 0
+  (periksa Master Standard, tebal, lebar coil); Kurs USD belum ada; General Rate (Consumables, Scrap, Biaya Koordinasi) belum
+  diisi; Faktor Indirect Labor belum diisi atau ≤ 0; jam kerja per bulan atau porsi Operator tidak valid. Rate yang belum ada
+  tidak boleh dihitung diam-diam sebagai 0. Elemen Other Cost yang kosong tetap dianggap 0 (FR-45). **Draft Pricelist boleh
+  disimpan, tetapi tidak boleh diajukan ke Management (UC-13) selama ada baris yang tidak lengkap.**
+- **FR-60** (semua perhitungan) — **Pembulatan.** Semua nilai rupiah dihitung dan ditampilkan 2 desimal tanpa pembulatan,
+  **kecuali Rate 1/3 Operator** yang dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3 (FR-53). Menggantikan `{TBC}`
+  aturan pembulatan komponen lain pada NFR-11.
+- **FR-61** (UC-N05, UC-N06) — **Produk atau material yang sudah dipakai BOM tidak boleh dihapus** (periksa `ms_bom_header.id_produk`
+  / `ms_bom_detail.id_material`); sistem menolak dengan pesan. Pemakaian oleh transaksi lain (PR/PO/gudang) belum diperiksa
+  (keputusan D5, 2026-10-20).
+- **FR-62** (UC-N05, UC-N06) — **Nama otomatis dengan override manual.** Nama Level 4 produk disusun dari Product Type + Category +
+  Jenis + Tebal × Lebar × Panjang; Material Name dari Metal Type + Slitted/Mother + Boron + Tebal-Lebar Coil-Coating-Tensile.
+  Pengguna boleh menimpanya secara manual; nama yang sudah diedit manual tidak ditimpa lagi oleh penyusunan otomatis, dan
+  tersedia aksi "generate ulang" (keputusan D4).
+- **FR-63** (UC-N15) — **Master Standard Material** (melengkapi FR-50): satu baris global (upsert, id tetap), tanpa label satuan
+  di UI, tiga nilai desimal berpresisi `DECIMAL(14,6)`; setiap perubahan nilai dicatat before/after karena memengaruhi
+  Berat/Meter semua BOM (keputusan D6).
+- **FR-64** (UC-N05; **direvisi FR-37**) — **Lebar produk memakai kolom `wide` yang sudah ada** (satuan mm), bukan kolom `lebar`
+  baru (keputusan D1, 2026-10-20). Kolom itu juga dipakai menghitung CBM (panjang × lebar × tinggi kemasan) dan dibaca
+  modul lain, jadi bentuk dan satuannya tidak boleh diubah. Isi `wide` diperiksa setelah `SHOW CREATE TABLE` (D0) diterima.
+- **FR-65** (UC-N08, UC-N14) — **Tanggal dipilih lewat pemilih tanggal**, bukan teks bebas: Expired Price Reference dan filter
+  Range Date Simulasi Costing (format `YYYY-MM-DD`).
+- **FR-66** (UC-N05; data master, bukan aturan) — Contoh pilihan master level produk yang ditambahkan user: Product Type
+  **Baja Ringan** → Product Category **CANAL C** → Product Jenis **C75.70 B**.
+- **FR-67** (UC-12, UC-16; **merevisi FR-55**; sumber BPMN To Be Sales D01, keputusan user 2026-10-21) — **Perubahan rate
+  Negotiation Allowance (Extra Margin) perlu persetujuan GM.** Menurut BPMN: setelah produk ada di Product Catalog,
+  **Sales Manager** menilai "Perlu perubahan margin?"; bila tidak, Quotation dibuat dengan rate yang berlaku; bila perlu,
+  Sales Manager **mengajukan rate Extra Margin baru** (UC-12), lalu **GM** memutuskan **Approved** atau **Reject**
+  (UC-16). Approved → rate dipakai; Reject → kembali ke Sales Manager untuk memperbaiki dan mengajukan ulang.
+  - Rate Negotiation Allowance **aktif** (% per Product Category, FR-55) **hanya berubah setelah Approved GM**. Sebelum itu
+    Simulasi, Pricelist, dan Katalog memakai rate aktif lama; Pricelist yang sudah diajukan tidak berubah (snapshot, FR-58).
+  - Pengajuan menyimpan Product Category (`code_lv2`), rate yang diajukan, pengaju dan waktu, pemutus dan waktu, serta alasan
+    Reject (ERD: `rate_negotiation_allowance_request`). Status hanya **Menunggu Approval GM**, **Approved**, **Rejected**.
+    Approved memperbarui rate aktif beserta Last Update dan Updated By; Reject tidak mengubah rate aktif.
+  - **Diasumsikan, mohon konfirmasi (OQ 20): alasan Reject wajib diisi GM** (BPMN tidak menyebut alasan; mengikuti pola
+    Pricelist FR-58). Pengajuan diasumsikan satu per Product Category (OQ 22).
+  - Poin penilaian customer baru pada BPMN (toko sewa/sendiri, lama berdiri, armada, asset, jumlah cabang) hanya acuan
+    keputusan margin dan **tidak diotomasi**.
+  - **Di luar scope Product Costing:** persetujuan **diskon pada Quotation** (<5% disetujui Sales langsung, 5–10% Sales
+    Manager, >10% GM) beserta pembuatan Sales Order, SPM, dan pengiriman SO ke Production Plan. Itu modul Sales/Quotation
+    dan tidak dimodelkan di sini.
+
+### Notifikasi perubahan Bottom Price — 2026-10-21 (diusulkan, menunggu konfirmasi)
+
+Sumber: permintaan user 2026-10-21 (`input/2026-10-21-bottom-price-change-notification/`), terkait BPMN To Be Sales D01
+(gateway Sales Manager "Perlu Perubahan Margin?") dan FR-67. Seluruh rincian di bawah adalah **usulan tim pengembang —
+diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang berasal dari user.
+
+- **FR-68** (UC-N18; sumber permintaan user 2026-10-21) — **Deteksi perubahan Bottom Price.** Sistem membandingkan Bottom Price
+  (FR-57) setiap Produk × varian BOM, dalam Rp/Meter dan Rp/Kg, dengan **baseline** (Bottom Price saat terakhir ditinjau
+  Sales; untuk fitur baru dimulai: saat fitur diaktifkan). Bila berbeda — naik atau turun, dan **apa pun penyebabnya**
+  (Price Reference, Kurs, BOM atau Berat/Meter, Flow, Man Power, Borongan, Faktor Indirect Labor, BPK/FOH, General Rate,
+  Other Cost) — sistem membuat **notifikasi** berstatus Belum Ditinjau. Penyebab hanya **ditampilkan**; sistem tidak mengubah
+  rate, Pricelist, atau Katalog secara otomatis (NFR-16). Ambang: **perubahan sekecil apa pun** (selisih ≥ Rp0,01 pada presisi 2 desimal; keputusan user 2026-10-21, OQ 25). Baseline =
+  Bottom Price saat terakhir ditinjau Sales, deteksi dipicu **setiap kali Update Costing dijalankan** (tombol di Simulasi Costing; hasil costing terbaru dibandingkan dengan
+  baseline pada saat itu, bukan otomatis setiap master berubah; pemicu yang sama dengan History Costing, FR-71), dan produk/BOM baru
+  tidak memicu notifikasi: **dikonfirmasi user 2026-10-21 (OQ 26, 29, 31, 48)**.
+- **FR-69** (UC-N18) — **Dashboard dan isi notifikasi.** Halaman dashboard menampilkan notifikasi yang belum ditinjau
+  (lencana jumlah di menu), dikelompokkan per **Product Category** karena Rate Extra Margin berlaku per kategori (FR-55,
+  FR-67). Tiap baris (Produk × varian BOM) memuat: Bottom Price lama → baru (Rp/Meter dan Rp/Kg), selisih (Rp dan %),
+  komponen yang berubah (Material Cost, Biaya Proses, Manufacturing Support, Other Cost), **Rate Extra Margin aktif**,
+  **harga jual saat ini** (**dikonfirmasi user 2026-10-21** = Price List pada Product Catalog yang terakhir dirilis; bila belum ada = Price List
+  baseline; OQ 27 terjawab), **Price List baru bila rate Extra Margin lama dipertahankan** = Bottom Price baru × (1 + rate aktif),
+  selisihnya terhadap harga jual saat ini (%), dan waktu terdeteksi. Tujuannya agar Sales menilai apakah harga jual dengan
+  costing baru masih sesuai harga pasar.
+- **FR-70** (UC-N18; **terhubung ke FR-67 dan FR-58**) — **Keputusan Sales dan status.** **Semua Sales** (Staf Sales dan Sales Manager; keputusan user
+  2026-10-21, OQ 28) meninjau per notifikasi, dengan pembagian hak akses (OQ 33): (a) **Ajukan Rate Extra Margin Baru** — **hanya Sales Manager** (pengaju FR-67/UC-12; hak akses diatur per pengguna di program, tidak dikunci ke pengguna tertentu) → membuka
+  pengajuan UC-12 untuk Product Category itu dan melanjutkan ke persetujuan GM (UC-16); status notifikasi **Diajukan Extra
+  Margin Baru**, terhubung ke pengajuan (`id_rate_negotiation_allowance_request`); (b) **Tidak Perlu Diubah** (catatan
+  opsional; semua Sales) → status **Tidak Perlu Diubah**. Keduanya menyimpan peninjau dan waktu, dan **menggeser baseline ke Bottom Price
+  baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
+  Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
+  (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
+- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 43–49; terbuka OQ 41, 42**) — **History Costing.**
+  Pemicu utama adalah aksi **Update Costing** (tombol di Simulasi Costing; user 2026-10-21, OQ 43): setiap kali Update Costing dijalankan dan
+  hasilnya berbeda dari hasil costing terakhir yang tersimpan — karena perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference,
+  Master Standard Material, BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor,
+  BPK/FOH, General Rate, Other Cost) dan hasilnya berubah — **Bottom Price** suatu Produk × varian BOM berubah, sistem menyimpan **satu catatan
+  riwayat per Produk × varian BOM**: waktu, pengguna yang mengubah, **sumber perubahan** (master atau rate yang berubah sejak Update Costing sebelumnya,
+  nilai lama → baru), Bottom Price lama → baru (Rp/Meter dan Rp/Kg), snapshot komponen costing lama dan baru (Material
+  Cost, Biaya Proses, Manufacturing Support, HPP, Other Cost, Bottom Price, Price List), dan Rate Extra Margin aktif. Bila satu
+  perubahan memengaruhi banyak produk, dicatat satu baris per Produk × varian BOM (OQ 41). Riwayat dicatat apa pun status
+  tinjau Sales, terpisah dari notifikasi Bottom Price (FR-68..FR-70): notifikasi untuk Sales meninjau, riwayat untuk audit.
+  Riwayat **hanya baca**: tidak dapat diubah atau dihapus (NFR-17). Halaman **History Costing** menyediakan filter produk,
+  Product Category, periode, dan sumber perubahan, daftar, dan detail snapshot. **Persetujuan perubahan Rate Extra Margin (Negotiation
+  Allowance) oleh GM tidak dicatat** di History Costing, dan Draft Pricelist tidak dicatat (OQ 37, 38). Dapat dilihat oleh
+  **pengguna yang diberi hak akses** (hak akses lihat per pengguna di program, tidak dikunci ke jabatan; OQ 36), dengan hak akses **terpisah** dari History Price List (hak **View** dan **Manage**, diatur di
+  program; OQ 47). **Ekspor ke Excel** sesuai filter memerlukan hak **Manage** (OQ 39, 47) dan **tidak mencakup backup** (OQ 45). Masa simpan **1 tahun**; lewat 1 tahun riwayat **dipindahkan ke backup data**
+  (bukan dihapus), dan halaman menampilkan 12 bulan terakhir (OQ 35, 45). Backup dapat diakses oleh pengguna yang memiliki hak akses
+  (hak **Manage**, sama dengan ekspor Excel; user 2026-10-21, OQ 49). Pencatatan **tidak terpisah dari Activity Log**:
+  ditulis lewat `write_log()` (modul "History Costing") sehingga juga tampil di Activity Log (OQ 40); tabel khusus `history_costing` hanya dibuat bila filter/ekspor terstruktur tidak dapat
+  dipenuhi dari `logs` (disetujui user, OQ 46).
+- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 44–49; terbuka OQ 41, 42**; terhubung ke FR-58 dan FR-67) —
+  **History Price List.** Hanya saat sebuah Pricelist **Disetujui** (Approved) oleh Management dan menjadi harga terbaru, sistem menyimpan satu
+  catatan riwayat per Produk × varian BOM: nomor Pricelist, waktu, pengguna (penyetuju), **Price List lama** (= Price List
+  terakhir yang disetujui untuk Produk × varian BOM itu) → **baru** (Rp/Meter dan Rp/Kg), Bottom Price dan Rate Extra Margin
+  saat itu, serta catatan. **Draft, Diajukan, Ditolak, Dihitung Ulang, dan persetujuan Rate Extra Margin tidak dicatat**
+  (OQ 37, 38); rilis ke Product Catalog **tidak** dicatat: cukup Approval Pricelist yang menetapkan Pricelist terbaru (OQ 44). Hanya baca (NFR-17). Halaman **History Price List**
+  menyediakan filter produk, Product Category, dan periode; dapat dilihat oleh **pengguna yang diberi hak akses**
+  (OQ 36; hak akses terpisah dari History Costing, hak View dan Manage; OQ 47), **diekspor ke Excel** dengan hak Manage dan tanpa backup
+  (OQ 39, 45, 47), masa simpan **1 tahun** lalu **dipindahkan ke backup data** (OQ 35, 45), dan
+  **tidak terpisah dari Activity Log**: ditulis lewat `write_log()` (modul "History Price List"; OQ 40); tabel khusus `history_pricelist` hanya bila filter/ekspor terstruktur tidak dapat dipenuhi dari `logs` (OQ 46).
+- **FR-73** (UC-13, UC-15, UC-N14; sumber permintaan user 2026-10-21; **merevisi tampilan FR-58 dan FR-47**) — **Nama produk
+  di depan.** Pada daftar menu **Pricelist** dan **Product Catalog** (juga judul modal dan dokumen), **nama produk
+  (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
+  tersedia sebagai kolom sekunder. Format tampilan: OQ 42.
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
@@ -525,6 +778,114 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
     dan Engineering. Dicatat di UC-N05–UC-N14.
 11. **RESOLVED 2026-10-07 — disetujui.** Jawaban user: tiap baris punya satuan/jenis sendiri; Koordinasi Rp/Kg, lainnya persentase (FR-45). Pertanyaan semula: Header kolom `Rate/Meter` pada General Rate** salah label: isinya persentase dan Rp/Kg.
     Satuan tiap baris perlu menjadi bagian master (kolom satuan/jenis rate).
+
+**Open questions Rev.1 (2026-10-19)** — butir 1–7 pertanyaan sesi ini sudah dijawab user dan
+tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
+
+12. **RESOLVED 2026-10-19 — Total Man Hour × Rate Man Power; butir 1.1 UC-12 salah salin (FR-56).** Pertanyaan semula: **Rumus Man Power Cost (UC-12 butir 1.1).** Use Case menulis `Rp/Meter = Rate Man Power ×
+    Berat/Meter`, sedangkan BPMN (Total Man Hour/Kategori → Perhitungan Man Power Cost), ERD
+    (`Man Power Cost`: Total Man Hour, Rate Man Power) dan FR-46 memakai `Total Man Hour × Rate
+    Man Power (Rp/jam)`. UC-12 sendiri mensyaratkan UC-05 (Total Man Hour). Dugaan kami: salah
+    salin pola Rate × Berat/Meter. Konfirmasi: tetap Total Man Hour × Rate Man Power?
+13. **RESOLVED 2026-10-19 — rincian gaji/BPJS/173 jam tetap dipakai hanya untuk Operator; Helper dari master Borongan per Product Category (FR-53).** Pertanyaan semula: **Rumus Man Power Rate (UC-07).** Use Case: `(Rate 1/3 Operator + Rate Borongan Helper per
+    kategori produk) × Faktor Indirect Labor`. FR-43/ERD: Salary Direct + BPJS + Biaya Lain ÷ 173
+    jam × Faktor Indirect. Apa arti "1/3 Operator" dan "Borongan Helper", dan apakah rumus UC-07
+    **menggantikan** rincian gaji/BPJS (FR-43), atau Rate 1/3 Operator berasal dari rincian itu?
+14. **RESOLVED 2026-10-19 — Rp/Kg; Rp/Meter = Rate × Berat/Meter (FR-53, FR-56).** Pertanyaan semula: **Satuan Rate FOH dan Rate Bahan Pendukung Khusus.** FR-44 (jawaban 2026-10-07): Rp/meter
+    langsung. UC-12: `Rate × Berat/Meter` (berarti rate Rp/Kg). Mana yang berlaku? Jika Rp/Kg,
+    nilai contoh lama (150 dan 400 per meter) tidak lagi bisa dipakai.
+15. **RESOLVED 2026-10-19 — berlaku global; satuan tidak ditampilkan karena klien tidak menginformasikan (FR-50).** Pertanyaan semula: **Master Standard Material (UC-03).** Apakah Standar Toleransi, Berat Jenis, dan Coating
+    berlaku global, per Metal Type, atau per material? Satuan tiap nilai (Tebal dan Lebar dalam
+    mm atau m; Berat Jenis g/cm³; Coating dalam kg/m atau lainnya)? Tanpa ini relasi entitas dan
+    formula FR-51 belum bisa dipastikan.
+16. **RESOLVED 2026-10-19 — per Product Category (FR-55).** Pertanyaan semula: **Cakupan Negotiation Allowance.** ERD menaruhnya di Rate Generals (semua produk), sedangkan
+    UC-16 langkah 2 menulis "per Category Product". Global atau per Product Category? Apakah
+    Sales boleh mengubahnya per perhitungan pricelist atau hanya memakai nilai master (UC-10)?
+17. **RESOLVED 2026-10-19 — per Produk × varian BOM; alasan Reject disimpan; Product Catalog disimpan sebagai data (FR-58).** Pertanyaan semula: **Struktur Pricelist dan Product Catalog.** Apakah pricelist per Produk × varian BOM (per
+    Rp/Meter dan Rp/Kg), dan apakah Draft Pricelist perlu menyimpan alasan Reject, versi, dan
+    periode berlaku? Apakah Product Catalog disimpan sebagai data (snapshot harga yang disetujui)
+    atau cukup status "Released" pada pricelist?
+18. **RESOLVED 2026-10-19 — Rate 1/3 Operator = (Rate Direct Labor Operator ÷ 173 jam) × 1/3; Rate Borongan Helper Rp/Meter atau Rp/Pcs, dan Rp/Pcs ÷ Panjang Produk = Rp/Meter (FR-53). **Diubah 2026-10-20: Borongan hanya Rp/Meter, tanpa Rp/Pcs dan tanpa konversi.** Pertanyaan semula: **Arti "1/3 Operator" (UC-07, FR-53).** Kami menyimpannya sebagai
+    parameter porsi operator (nilai 1/3) yang mengalikan Rate Direct Labor Operator. Apakah itu
+    maksudnya (satu operator dibagi tiga mesin/lini), atau sudah nama baku dari rate lain? Satuan
+    Rate Borongan Helper kami asumsikan Rp/jam supaya bisa dijumlahkan dengan rate operator.
+19. **RESOLVED 2026-10-19 — rumus disetujui user; pembulatan sesudah dikali 1/3 (FR-53, FR-56).** `Man Power Cost (Rp/Meter) = (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) × Faktor Indirect Labor`; Total Man Hour hanya mengalikan bagian Operator. Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh **setelah** dikali 1/3 (tidak ada pembulatan lebih dulu pada Rate Direct Labor). Pertanyaan semula: **Rumus akhir Man Power Cost dengan Borongan Rp/Meter.** Angka acuan uji Man Power baru ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Open questions Extra Margin (2026-10-21, dari BPMN To Be Sales D01)** — belum diputuskan:
+
+20. **Alasan Reject GM wajib?** BPMN hanya menggambar Reject → kembali ke Sales Manager. Diasumsikan wajib dan disimpan
+    (`reject_reason`), seperti Pricelist (FR-58). Benar begitu, atau boleh kosong?
+21. **Bolehkah Sales Manager menarik (membatalkan) pengajuan yang masih Menunggu Approval GM?** BPMN tidak menyebut. Bila
+    boleh, perlu status tambahan (mis. Dibatalkan); sekarang hanya tiga status.
+22. **Satu pengajuan per Product Category atau beberapa kategori sekaligus?** Diasumsikan satu per kategori. Bila banyak
+    kategori sekaligus, perlu tabel detail pengajuan.
+23. **Apakah rate pertama untuk kategori yang belum punya rate juga lewat approval GM?** BPMN: "Perlu Perubahan Margin?"
+    → "Update dan Ajukan Rate Extra Margin baru". Diasumsikan semua pengisian dan perubahan rate lewat approval.
+24. **Apakah GM boleh mengubah nilai yang diajukan saat menyetujui, atau hanya Approve/Reject apa adanya?** Diasumsikan
+    hanya Approve/Reject apa adanya.
+
+**Open questions Notifikasi Bottom Price (2026-10-21, dari permintaan user)** — belum diputuskan; asumsi sementara di FR-68–FR-70:
+
+25. **RESOLVED 2026-10-21 — perubahan sekecil apa pun memicu notifikasi (FR-68).** Pertanyaan semula: **Ambang perubahan.** Perubahan sekecil berapa yang memicu notifikasi (≥ Rp0,01 pada Bottom Price, persentase tertentu,
+    atau berapa pun)? Diasumsikan: berapa pun selisih ≥ Rp0,01 per Rp/Meter (batas pembulatan NFR-11).
+26. **RESOLVED 2026-10-21 — baseline = Bottom Price saat terakhir ditinjau Sales; saat fitur diaktifkan untuk awal (FR-68).** Pertanyaan semula: **Definisi baseline.** Bottom Price pembanding adalah (a) saat terakhir ditinjau Sales, (b) saat terakhir dirilis ke Product
+    Catalog, atau (c) saat Pricelist terakhir disetujui? Diasumsikan (a); untuk fitur baru dimulai, baseline = Bottom Price saat diaktifkan.
+27. **RESOLVED 2026-10-21 — pembanding = Price List pada Product Catalog terakhir dirilis (FR-69).** Pertanyaan semula: **"Harga jual saat ini".** Diasumsikan Price List pada Product Catalog terakhir dirilis; bila produk belum pernah dirilis,
+    Price List baseline. Benar, atau harga pasar/jual disimpan terpisah?
+28. **RESOLVED 2026-10-21 — semua Sales meninjau; kanal hanya dashboard (tanpa email/WhatsApp); tidak ada batas waktu tinjau (FR-70).** Pertanyaan semula: **Siapa menerima dan melalui kanal apa.** Diasumsikan dashboard dengan lencana jumlah; keputusan oleh Sales Manager, Staf Sales
+    hanya melihat. Perlu email atau WhatsApp juga? Apakah GM ikut melihat?
+29. **RESOLVED 2026-10-21 — setiap kali costing dihitung ulang; satu notifikasi per varian BOM (FR-68). Direvisi 2026-10-21: pemicu deteksi = aksi Update Costing (OQ 48).** Pertanyaan semula: **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
+    perubahan terjadi sebelum ditinjau: satu notifikasi per varian BOM yang diperbarui (diasumsikan) atau satu per kejadian?
+30. **RESOLVED 2026-10-21 — satu keputusan per notifikasi; pengajuan Extra Margin tetap satu per kategori (FR-70).** Pertanyaan semula: **Granularitas keputusan.** Extra Margin berlaku per Product Category (FR-55), notifikasi per Produk × varian BOM. Diasumsikan
+    satu keputusan per notifikasi, dan pengajuan Extra Margin tetap satu per kategori (OQ 22). Perlu keputusan per kategori sekaligus?
+31. **RESOLVED 2026-10-21 — produk/varian BOM baru tidak memicu notifikasi (FR-68).** Pertanyaan semula: **Produk atau varian BOM baru.** Tanpa baseline, apakah tetap memicu notifikasi (Pengajuan Produk Baru ke Costing) atau tidak
+    (diasumsikan tidak)? Bagaimana bila Product Category belum punya rate (OQ 23)?
+32. **RESOLVED 2026-10-21 — cukup keputusan Sales dengan catatan opsional (FR-70).** Pertanyaan semula: **"Tidak Perlu Diubah".** Cukup keputusan Sales Manager dengan catatan opsional (diasumsikan), atau perlu alasan wajib atau
+    persetujuan GM? Apakah notifikasi ditutup otomatis bila Bottom Price kembali ke baseline?
+33. **RESOLVED 2026-10-21 — pengajuan rate Extra Margin hanya oleh Sales Manager (FR-67/UC-12 tetap); hak akses diatur per pengguna di program, tidak perlu dikunci ke pengguna tertentu (FR-70).** Pertanyaan semula: **Konsistensi pengaju Extra Margin (FR-67 vs FR-70).** BPMN To Be Sales D01 menggambar "Update dan Ajukan Rate Extra Margin
+    baru" di lane Sales Manager, sedangkan keputusan user 2026-10-21 menetapkan **semua Sales** meninjau notifikasi Bottom Price
+    (termasuk memilih "Ajukan Rate Extra Margin Baru"). Apakah Staf Sales juga boleh mengajukan rate (FR-67 dan UC-12 diubah
+    dari Sales Manager menjadi Sales), atau Staf Sales hanya dapat memilih "Tidak Perlu Diubah" dan meneruskan ke Sales
+    Manager untuk pengajuan? Saat ini keduanya dapat mengajukan dari dashboard dan FR-67/UC-12 belum diubah.
+34. **RESOLVED 2026-10-21 — dicatat bila costing diperbarui dan hasilnya berubah (Bottom Price/komponen); perubahan Price List karena Extra Margin tidak dicatat (FR-71; tafsiran: OQ 43).** Pertanyaan semula: **Pemicu pencatatan History Costing.** Apakah yang dicatat hanya perubahan yang mengubah Bottom Price (diasumsikan), atau
+    juga perubahan master yang tidak mengubah angka (mis. nama atau status)? Apakah perubahan Price List (bukan Bottom Price)
+    karena Rate Extra Margin juga dicatat di History Costing?
+35. **RESOLVED 2026-10-21 — masa simpan 1 tahun; lewat itu dipindahkan ke backup data (NFR-17; akses backup: OQ 45).** Pertanyaan semula: **Masa simpan.** Berapa lama riwayat disimpan (diasumsikan tanpa batas), dan apakah boleh diarsipkan?
+36. **RESOLVED 2026-10-21 — pengguna yang diberi hak akses (FR-71, FR-72).** Pertanyaan semula: **Siapa boleh melihat.** Diasumsikan Costing, Accounting, Sales, dan Management lihat saja; apakah hak akses dibatasi per
+    peran (mis. Sales hanya melihat Price List, bukan komponen costing)?
+37. **RESOLVED 2026-10-21 — Draft tidak dicatat; History Price List hanya saat Disetujui (FR-72).** Pertanyaan semula: **Pricelist Draft.** Apakah Draft Pricelist (belum diajukan) dicatat di History Price List, atau hanya sejak Diajukan
+    (diasumsikan sejak Diajukan)?
+38. **RESOLVED 2026-10-21 — persetujuan Extra Margin tidak dicatat di History Costing maupun History Price List (FR-71, FR-72); menggantikan asumsi sebelumnya.** Pertanyaan semula: **Perubahan Extra Margin yang disetujui GM.** Apakah dicatat di History Costing (karena memengaruhi Price List) dan/atau
+    di History Price List? Diasumsikan di History Costing sebagai sumber perubahan "Negotiation Allowance".
+39. **RESOLVED 2026-10-21 — dapat diekspor ke Excel (FR-71, FR-72).** Pertanyaan semula: **Ekspor.** Apakah riwayat perlu diekspor ke Excel? Diasumsikan ya (tombol Excel seperti halaman lain, hanya contoh di mockup).
+40. **RESOLVED 2026-10-21 — tidak terpisah dari Activity Log; dicatat lewat write_log (NFR-17; implikasi struktur data: OQ 46).** Pertanyaan semula: **Hubungan dengan Activity Log (`write_log`).** Diasumsikan History Costing dan History Price List adalah catatan bisnis
+    tersendiri (tabel khusus) di samping Activity Log, bukan pengganti. Benar?
+41. **Granularitas History Costing (tetap terbuka; asumsi dipakai: satu baris per Produk × varian BOM per perubahan).** Satu baris per Produk × varian BOM per perubahan (diasumsikan), atau satu baris per
+    perubahan master dengan daftar produk terdampak?
+42. **Format nama produk (tetap terbuka; asumsi dipakai dan sudah diterapkan di mockup).** Diasumsikan "nama produk + varian/Uniq ID" (mis. HARAPAN SPANDEK POLOS ECO 0.25 X 6 M — Type 001.1)
+    di kolom pertama; nomor Pricelist/katalog menjadi kolom sekunder. Benar?
+43. **RESOLVED 2026-10-21 — tombol Update Costing di Simulasi adalah pemicu utama pencatatan History Costing (FR-71).** Pertanyaan semula: **"Update costing terbaru" (History Costing).** Ditafsirkan: setiap kali hasil costing diperbarui karena perubahan master/rate
+    (FR-71). Apakah juga ada **aksi eksplisit** "Update Costing" di Simulasi Costing (tombol yang sudah ada di mockup) yang
+    membuat snapshot riwayat, atau hanya perubahan master/rate yang mengubah angka?
+44. **RESOLVED 2026-10-21 — rilis Product Catalog tidak dicatat; Approval Pricelist menetapkan Pricelist terbaru (FR-72).** Pertanyaan semula: **Rilis ke Product Catalog.** History Price List dicatat hanya saat Pricelist Disetujui. Apakah rilis ke Product Catalog
+    (rilis berulang, FR-58) juga dicatat? Diasumsikan tidak.
+45. **RESOLVED 2026-10-21 — ekspor Excel tidak mencakup backup; backup dapat diakses oleh pengguna yang memiliki hak akses (FR-71, NFR-17; hak yang tepat: OQ 49).** Pertanyaan semula: **Backup data setelah 1 tahun.** Riwayat > 1 tahun dipindahkan ke backup data. Siapa yang boleh mengakses backup dan
+    bagaimana (laporan terpisah, pemulihan ke tabel, atau hanya oleh administrator)? Kapan proses pemindahan terjadwal berjalan
+    (mis. bulanan)? Apakah ekspor Excel juga mencakup backup?
+46. **RESOLVED 2026-10-21 — disetujui: tulis lewat write_log(); tabel khusus hanya bila filter/ekspor terstruktur tidak dapat dipenuhi dari logs (FR-71, FR-72).** Pertanyaan semula: **Sumber data riwayat dan Activity Log.** Pencatatan lewat `write_log()` (tabel `logs`) sudah memenuhi "tidak terpisah dari
+    Activity Log". Apakah halaman History cukup dibangun sebagai tampilan terfilter atas `logs` (modul "History Costing" dan
+    "History Price List"), atau perlu tabel khusus `history_costing` dan `history_pricelist` (kolom terstruktur untuk
+    filter dan ekspor Excel) yang diisi dari event yang sama? Rekomendasi: tetap tulis lewat `write_log()` dan, bila filter/ekspor
+    terstruktur tidak dapat dipenuhi dari `logs`, tambah tabel khusus diisi dari event yang sama. Belum diputuskan.
+47. **RESOLVED 2026-10-21 — hak akses terpisah per halaman (View dan Manage); ekspor Excel memerlukan hak Manage; diatur di hak akses program (NFR-17).** Pertanyaan semula: **Hak akses lihat dan ekspor.** Satu hak akses untuk kedua halaman, atau terpisah per halaman, dan apakah ekspor Excel
+    memerlukan hak akses tersendiri? (Hak akses diatur per pengguna di program, tidak dikunci ke jabatan.)
+48. **RESOLVED 2026-10-21 — notifikasi Bottom Price juga dipicu saat Update Costing ditekan (FR-68); satu pemicu dengan History Costing.** Pertanyaan semula: **Notifikasi Bottom Price dan Update Costing.** Karena Update Costing kini pemicu utama History Costing (OQ 43): apakah Notifikasi
+    Perubahan Bottom Price (FR-68, saat ini otomatis setiap costing dihitung ulang, OQ 29) juga mengikuti aksi Update Costing, atau
+    tetap otomatis? Diasumsikan tetap otomatis seperti sekarang; mohon konfirmasi. Bila Update Costing belum dijalankan setelah
+    master/rate berubah, History Costing belum mencatat perubahan itu.
+49. **RESOLVED 2026-10-21 — hak akses melihat data backup = Manage, sama dengan ekspor Excel (FR-71, NFR-17).** Pertanyaan semula: **Hak akses melihat backup.** Backup data (riwayat > 1 tahun) dapat diakses "oleh yang memiliki akses" (OQ 45): apakah cukup hak View
+    halaman terkait, hak Manage, atau hak khusus "Backup"? Diasumsikan hak Manage (sama dengan ekspor); mohon konfirmasi. Termasuk
+    jadwal dan cara pemindahan ke backup (proses terjadwal), dan cara membuka backup (halaman, laporan, atau pemulihan).
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -595,12 +956,34 @@ yang sudah resolved di atas (± 0,7%).
   Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
   nilai lama tetap dapat ditelusuri. Fit criterion: untuk rate mana pun dapat ditampilkan siapa
   mengubahnya, kapan, dan nilai sebelumnya.
-- **NFR-11 (Akurasi kalkulasi).** Dengan input yang sama dengan sheet **Simulasi Program**,
-  sistem menghasilkan angka sheet **Simulasi Costing** (setelah temuan review baris `Type
-  001.2` dikoreksi) dengan selisih ≤ Rp0,01 per komponen: Rate Man Power Rp56.809,5/jam,
-  Man Power Cost Rp39,45/meter, Material Cost `Type 001.1` Rp17.641,14/meter, Price List/Meter
-  `Type 001.1` Rp21.756,15. Rate Direct Labor dibulatkan ke atas ke Rupiah penuh (FR-43);
-  aturan pembulatan komponen lain `{TBC}`.
+- **NFR-11 (Akurasi kalkulasi).** Angka acuan uji adalah **simulasi yang disetujui klien pada 2026-10-20** (data contoh mockup
+  `ui-mockup/pc-data.js`, menggantikan angka lama sheet Simulasi Costing dan angka sementara `{TBC}`). Dengan input yang sama,
+  sistem menghasilkan angka berikut dengan selisih ≤ Rp0,01 per komponen. **Input kunci:** Kurs USD Rp17.863; Berat Jenis 7,85,
+  Toleransi 0, Coating 0, Lebar Coil 1219; Price Reference = USD/Kg Max History Pembelian (Type 001.1: 0,81; Type 001.2: 0,80);
+  Rate 1/3 Operator Rp12.625/jam (Total Direct Labor Operator Rp6.551.982,55/bulan ÷ 173 × 1/3, dibulatkan ke atas);
+  Total Man Hour 0,000694 jam/meter (cycletime 1/24 menit/meter × 1 orang ÷ 60); Rate Borongan Helper Rp25/Meter; Faktor
+  Indirect Labor 1,5; BPK Rp110/Kg; FOH Rp300/Kg; Consumables Rp300/Kg; Koordinasi Rp200/Kg; Scrap 2%; Other Cost hanya Profit 5%;
+  Negotiation Allowance 5%. **Hasil (Rp/Meter):**
+
+  | Komponen | Type 001.1 (0,14 mm) | Type 001.2 (0,15 mm) |
+  |---|---:|---:|
+  | Berat/Meter (kg/m) | 1,3397 | 1,4354 |
+  | Material Cost | 19.383,88 | 20.512,05 |
+  | Man Power Cost | 50,65 | 50,65 |
+  | Bahan Pendukung Khusus / FOH | 147,36 / 401,90 | 157,89 / 430,61 |
+  | Biaya Proses | 599,92 | 639,15 |
+  | Consumables / Scrap / Koordinasi | 401,90 / 387,68 / 267,94 | 430,61 / 410,24 / 287,07 |
+  | Manufacturing Support | 1.057,52 | 1.127,93 |
+  | HPP | 21.041,32 | 22.279,13 |
+  | Other Cost (Profit 5%) | 1.052,07 | 1.113,96 |
+  | Bottom Price | 22.093,39 | 23.393,08 |
+  | Negotiation Allowance (5%) | 1.104,67 | 1.169,65 |
+  | **Price List/Meter** | **23.198,06** | **24.562,74** |
+  | Price List/Kg | 17.316,11 | 17.112,45 |
+
+  Angka ini data contoh yang disetujui klien sebagai acuan uji; bukan rate produksi. Rate 1/3 Operator dibulatkan ke atas ke
+  Rupiah penuh sesudah dikali 1/3 dan komponen lain 2 desimal tanpa pembulatan (FR-53, FR-60). Rumus lama (Rate Man Power
+  Rp56.809,5/jam; Price List `Type 001.1` Rp21.756,15; Material Cost Rp17.641,14) tidak berlaku lagi.
 - **NFR-12 (Tanpa angka tertanam).** Seluruh persentase, Rp/Kg, faktor, dan konstanta (Faktor
   Indirect Labor, 173 jam, Consumables, Scrap, Koordinasi, Other Cost, Negotiation Allowance)
   dibaca dari master, tidak ditulis di kode. Fit criterion: mengubah nilai di master mengubah
@@ -615,6 +998,33 @@ yang sudah resolved di atas (± 0,7%).
   menunjuk varian BOM (No. Uniq ID) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
   dari satu baris item dapat dibuka kembali seluruh rumus FR-46/FR-48 beserta input yang sama
   dan hasilnya sama dengan yang tersimpan.
+
+- **NFR-15 (Konsistensi nama ERD dan kode).** Untuk data yang berasal dari database, nama tabel dan kolom di kode, migrasi,
+  dan query harus persis sama dengan ERD (`docs/diagrams/erd.drawio`) (user 2026-10-20). Bila berbeda, ERD diperbaiki (jika
+  ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda; keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
+  walkthrough tiap fitur, setiap kolom yang dipakai dicocokkan dengan ERD dan selisihnya nol. Tabel yang sudah ada di aplikasi
+  (`product_lvl_4`, `new_inventory_4`) digambar ringkas sampai `SHOW CREATE TABLE` dikonfirmasi; pemetaannya di
+  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md` (v2: `…_v2.md`). Penunjuk ke produk di tabel baru memakai
+  `code_lv4` dan penunjuk ke Product Category memakai `code_lv2` (user 2026-10-20), mengikuti praktik tabel yang ada (`ms_bom_header.id_produk` = `code_lv4`).
+
+- **NFR-16 (Notifikasi Bottom Price: audit dan tanpa perubahan otomatis; diusulkan 2026-10-21).** Setiap tinjauan notifikasi
+  (FR-70) mencatat peninjau, waktu, status, catatan, dan keterkaitan ke pengajuan Extra Margin, serta ditulis ke log aktivitas
+  dengan Bottom Price lama dan baru. Sistem **tidak boleh** mengubah Rate Negotiation Allowance, Pricelist, atau Product
+  Catalog secara otomatis akibat notifikasi. Fit criterion: setelah notifikasi dibuat, rate aktif dan Pricelist tidak berubah
+  satu rupiah pun sampai Sales Manager mengajukan dan GM menyetujui (FR-67); untuk tiap notifikasi dapat ditampilkan siapa
+  meninjau, kapan, dan keputusannya.
+- **NFR-17 (History Costing dan History Price List: audit; diusulkan 2026-10-21).** Catatan riwayat (FR-71, FR-72) mencatat
+  **siapa, kapan, dan apa** yang berubah, **tidak dapat diubah atau dihapus** oleh pengguna mana pun, dan tidak boleh
+  dibuat ulang dari data terkini (snapshot nilai saat kejadian). Fit criterion: setelah rate diubah sehingga Bottom Price
+  berubah, tepat satu catatan per Produk × varian BOM yang terdampak muncul di History Costing dengan nilai lama dan baru;
+  setiap Pricelist yang disetujui muncul di History Price List; tidak ada fungsi ubah atau hapus riwayat di program.
+  **Retensi, akses, dan Activity Log (dikonfirmasi 2026-10-21):** riwayat disimpan **1 tahun** di tabel/halaman riwayat;
+  lewat 1 tahun **dipindahkan ke backup data** melalui proses terjadwal (tidak dihapus); halaman standar hanya menampilkan
+  12 bulan terakhir. Hak akses **terpisah** untuk History Costing dan History Price List, masing-masing **View** (lihat) dan **Manage**; **ekspor Excel memerlukan hak Manage**
+  dan tidak mencakup backup; backup dapat diakses oleh pengguna dengan hak **Manage** (OQ 45, 47, 49; dikonfirmasi 2026-10-21). Pencatatan lewat
+  `write_log()` sehingga tampil juga di Activity Log (modul "History Costing" dan "History Price List"). Fit criterion:
+  riwayat berumur > 1 tahun tidak tampil di halaman riwayat tetapi dapat dipulihkan dari backup; pengguna tanpa hak akses
+  tanpa hak View tidak dapat membuka halaman dan tanpa hak Manage tidak dapat mengekspor atau membuka backup; setiap catatan riwayat juga terlihat di Activity Log.
 
 ## Status
 
@@ -642,3 +1052,45 @@ Category; Tebal/Panjang tetap di Master Produk; Berat per Pcs = Berat/Meter vari
 Rate Scrap dari Rate Generals; BPJS manual dan 173 jam parameter; Width 1219; Pricelist HFG
 27.400 Rp/Meter; satuan per baris General Rate). FR-37–FR-47 sudah di-decompose ke
 UC-N05–UC-N14. Rumus per pcs di Laporan Produksi mengikuti mock up sebelumnya (di luar FR-37–FR-49).
+
+**Pembaruan 2026-10-19 (Product Costing Rev.1).** BPMN To Be, Use Case UC-01–UC-19, dan ERD baru
+(`input/2026-10-19-product-costing-rev1/`) menjadi referensi utama. FR-50–FR-58 ditambahkan
+("Revisi Rev.1"); FR-38, FR-40, FR-43, FR-44, FR-45, FR-46 sebagian digantikan menurut peta perubahan di
+sana. Open question 12–17 dijawab user 2026-10-19 (ronde kedua) dan sudah masuk FR-50–FR-58; yang
+**tidak ada open question Product Costing yang masih terbuka** (OQ 18 dan 19 dijawab 2026-10-19);
+angka acuan uji ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Pembaruan 2026-10-20.** FR-59–FR-66 (fungsi hasil review mockup) dan NFR-15 (nama kolom = ERD) ditambahkan; NFR-11 memakai angka
+simulasi yang disetujui klien; Lebar produk memakai kolom `wide` (FR-64). Perubahan lain hari itu: Rate Borongan Helper hanya
+Rp/Meter dan Faktor Indirect Labor master global (FR-53).
+
+**Pembaruan 2026-10-21 (BPMN To Be Sales D01).** FR-67 menambah persetujuan GM atas perubahan rate Negotiation Allowance
+(pengaju Sales Manager) dan merevisi FR-55. Persetujuan **diskon Quotation** (Sales/Sales Manager/GM) serta SO, SPM, dan
+Production Plan di BPMN yang sama **di luar scope Product Costing**. Open question baru 20–24 (alasan Reject, tarik pengajuan,
+banyak kategori, rate pertama, GM mengubah nilai) belum diputuskan; asumsi sementara tercantum di FR-67.
+
+**Pembaruan 2026-10-21 (Notifikasi Bottom Price).** Permintaan user: dashboard notifikasi ke Sales bila Bottom Price berubah, agar
+Sales menilai harga jual terhadap harga pasar dengan Rate Extra Margin lama dan memutuskan mengajukan rate baru atau tidak.
+FR-68–FR-70 dan NFR-16 ditambahkan sebagai **usulan**; rinciannya (ambang, baseline, "harga jual saat ini", penerima dan kanal,
+saat deteksi, granularitas keputusan, pengaju) **dikonfirmasi user 2026-10-21** (open question 25–33 terjawab). Entitas ERD
+`bottom_price_notification`, UC-N18, PG-24, dan FEAT-09 mengikuti.
+
+**Pembaruan 2026-10-21 (History Costing dan History Price List).** Permintaan user: perubahan rate yang memengaruhi Bottom Price
+disimpan di History Costing, dan perubahan Pricelist di History Price List; daftar Pricelist dan Product Catalog menampilkan nama
+produk di depan, bukan nomor Pricelist. FR-71–FR-73 dan NFR-17 ditambahkan sebagai **usulan**; rinciannya (pemicu, masa simpan,
+hak lihat, pencatatan Draft dan Extra Margin, ekspor, hubungan dengan Activity Log) **dikonfirmasi user 2026-10-21** (open question
+34–40); granularitas dan format nama (OQ 41, 42) belum dijawab; tafsiran baru tercatat sebagai OQ 43–47. Entitas ERD `history_costing` dan `history_pricelist`, UC-N19, UC-N20, PG-25, PG-26, dan
+FEAT-10 mengikuti.
+
+**Pembaruan 2026-10-21 (jawaban OQ 43–47 History).** Pemicu utama History Costing adalah aksi **Update Costing** (tombol di Simulasi
+Costing), bukan deteksi otomatis pada tiap perubahan master; History Price List tetap hanya saat Pricelist Disetujui, dan rilis Product
+Catalog tidak dicatat. Ekspor Excel tidak mencakup backup. Pencatatan lewat `write_log()` disetujui (tabel khusus hanya bila filter/ekspor
+terstruktur tidak terpenuhi dari `logs`). Hak akses History Costing dan History Price List terpisah (View dan Manage); ekspor Excel
+memerlukan hak Manage. OQ 41 dan 42 tetap terbuka dengan asumsi; OQ 48 (Notifikasi Bottom Price mengikuti Update Costing atau tidak)
+dan OQ 49 (hak akses backup) baru.
+
+**Pembaruan 2026-10-21 (jawaban OQ 48–49).** Notifikasi Bottom Price (FR-68) kini dipicu oleh aksi **Update Costing** yang sama dengan
+History Costing, bukan otomatis pada setiap perubahan master; saat Update Costing dijalankan, hasil costing terbaru dibandingkan dengan
+baseline (Bottom Price saat terakhir ditinjau Sales) dan notifikasi Belum Ditinjau dibuat per varian BOM bila berbeda ≥ Rp0,01. Hak akses
+melihat data backup History = **Manage** (sama dengan ekspor Excel). OQ 48 dan 49 terjawab; yang terbuka tinggal OQ 41 dan 42 (dengan asumsi).
+

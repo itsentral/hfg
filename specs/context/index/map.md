@@ -234,11 +234,12 @@ uc: UC-N07
 
 uc: UC-N08
   name: Kelola Price Reference
-  user: Purchasing
+  user: Finance
   entities: [history_purchase, price_reference_header, price_reference_detail, material, master_kurs]
   code: ui-mockup/pc-price-reference.html (mockup only, localStorage; no backend)
-  note: the user assigned the whole UC to Purchasing, including the per-material choice
-        between Harga Terakhir and Rata-rata.
+  note: owner is Finance (Rev.1 BPMN lane, workbook, FR-52); only the Max of the purchase history is used
+        (user 2026-10-19) - the earlier Purchasing owner and the Harga Terakhir/Rata-rata choice are superseded.
+        history_purchase data itself still originates from Purchasing/PO.
 
 uc: UC-N09
   name: Kelola BOM Produk

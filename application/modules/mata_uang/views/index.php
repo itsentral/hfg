@@ -30,12 +30,13 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             <table id="table_mata_uang" class="table table-striped table-hover align-middle w-100">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center" style="width: 60px;">#</th>
-                        <th style="width: 120px;">Kode</th>
+                        <th class="text-center" style="width: 50px;">#</th>
+                        <th style="width: 100px;">Kode</th>
                         <th>Negara</th>
                         <th>Nama Mata Uang</th>
-                        <th class="text-center" style="width: 130px;">Status</th>
-                        <th class="text-center" style="width: 130px;">Aksi</th>
+                        <th class="text-end" style="width: 160px;">Kurs (Rp)</th>
+                        <th class="text-center" style="width: 120px;">Status</th>
+                        <th class="text-center" style="width: 110px;">Aksi</th>
                     </tr>
                 </thead>
 
@@ -60,6 +61,15 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                     <span class="text-secondary fw-medium">
                                         <?= htmlspecialchars($record->mata_uang ?? '-', ENT_QUOTES, 'UTF-8'); ?>
                                     </span>
+                                </td>
+                                <td class="text-end">
+                                    <?php if (!empty($record->kurs) && (float)$record->kurs > 0) : ?>
+                                        <span class="badge bg-light-success text-success border border-success-subtle fw-bold px-2 py-1 fs-6">
+                                            Rp <?= number_format((float)$record->kurs, 2, ',', '.'); ?>
+                                        </span>
+                                    <?php else : ?>
+                                        <span class="text-muted fst-italic">Belum diset</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="text-center">
                                     <label class="ios-toggle-labeled" title="Klik untuk beralih status">
@@ -137,6 +147,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
     </div>
 </div>
 
+<script src="<?= base_url('assets/js/autoNumeric.js'); ?>"></script>
 <script type="text/javascript">
     // Helper Universal Confirm Dialog untuk SweetAlert 1 & 2
     function customConfirm(title, text, confirmBtnText, onConfirmed) {
@@ -212,6 +223,13 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                 url: "<?= site_url('mata_uang/form'); ?>/" + id,
                 success: function(html) {
                     $("#ModalView").html(html);
+                    if (typeof $.fn.autoNumeric !== 'undefined') {
+                        $('#ModalView .autoNumeric').autoNumeric('init', {
+                            aSep: ',',
+                            aDec: '.',
+                            mDec: '2'
+                        });
+                    }
                 },
                 error: function() {
                     $("#ModalView").html('<div class="alert alert-danger">Gagal memuat form! Silakan coba lagi.</div>');

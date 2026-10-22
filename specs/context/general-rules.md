@@ -46,6 +46,11 @@ Structural and technical naming follows the stack's own conventions
 A term whose business name and technical name diverge goes in
 `context/index/vocabulary.md` — the first time someone asks what it maps to.
 
+**Column names follow the ERD.** For data that comes from the database, table and column names in code, migrations and
+queries must be exactly the names in `docs/diagrams/erd.drawio` (user, 2026-10-20; NFR-15). If they differ, fix the ERD (when
+it is a summary or wrong) or the table — never alias silently. UI labels and mockup captions may differ from column names.
+Tables that already exist in the application are drawn as summaries until `SHOW CREATE TABLE` confirms them.
+
 ## Work Classification
 
 | Kind | Entry |

@@ -55,3 +55,25 @@ issues:
       screenshots of produk/material/bom/flow/general/simulasi. map.md updated
       with the full change note under the Product Costing section; ERD and UC
       rows unchanged (mockup fields are not confirmed schema columns).
+  - id: FEAT-02
+    title: Rekonsiliasi spesifikasi Product Costing dengan BPMN, Use Case, dan ERD Rev.1
+    type: doc
+    epic: product-costing-rev1
+    slug: pc-rev1-spec-reconcile
+    status: done
+    closed: 2026-10-20
+    source: input/2026-10-19-product-costing-rev1/ (user request 2026-10-19)
+    depends_on: []
+    summary: >-
+      Spesifikasi Product Costing diselaraskan dengan BPMN To Be, Use Case
+      UC-01–UC-19, dan ERD Rev.1; open question 12–19 dijawab user. docs/fr-nfr.md
+      mendapat bagian "Revisi Rev.1" (FR-50–FR-58, peta perubahan); vocabulary
+      20 istilah; ERD halaman Product Costing diperbarui; workbook memakai
+      kolom Halaman + sheet Pages (PG-01..PG-21, 31 UC; UC-N11 dipecah menjadi
+      UC-N16 Rate Borongan Helper); mockup pc-* 16 halaman (pc-produk,
+      pc-material, pc-bom mengikuti layout modul aplikasi; rilis Product
+      Catalog boleh berkali-kali). Diverifikasi: XML ERD valid + render dilihat,
+      workbook dimuat ulang (Kode unik, pemeriksaan dua arah UC-halaman),
+      mockup dimuat di Chrome headless tanpa error JS. Tidak dikerjakan:
+      mockup PG-01/02/03 (sudah ada di program), layar pc lain dibiarkan.
+      Angka acuan uji Man Power baru (NFR-11) masih {TBC} dari klien.

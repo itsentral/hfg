@@ -15,6 +15,8 @@ Non-negotiable, even if you skip that read:
 - **Never hand-edit column A of the Entities sheet** — it is a deduped list;
   refresh the source instead.
 - **Never reuse a `Kode`.** Check both UC sheets before assigning one.
+- **Every UC has exactly one `Halaman`** (a `PG-nn` in the `Pages` sheet), and that
+  page lists the UC back. Edit `Pages` in the same pass as the UC.
 - **`ws.max_row` goes stale across separate save/reload cycles** and has
   silently clobbered rows. Reload and print the sheet after every write.
 - **No Google Sheets formulas.** `UNIQUE`, `ARRAYFORMULA`, `QUERY` and `FLATTEN`

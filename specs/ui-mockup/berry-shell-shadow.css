@@ -1,0 +1,54 @@
+/* berry-shell-shadow.css — tambahan di DALAM Shadow DOM kerangka Berry.
+   CSS Berry asli (assets/berry/css/*.css) dimuat apa adanya di shadow root; berkas ini hanya
+   menggantikan hal yang di aplikasi dikerjakan JS Berry/Bootstrap/SimpleBar (dropdown, scroll)
+   dan memuat gaya inline header.php aplikasi (kotak cari menu). */
+
+.berry-root {
+  font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  font-weight: var(--bs-body-font-weight);
+  line-height: var(--bs-body-line-height);
+  color: var(--bs-body-color);
+  -webkit-text-size-adjust: 100%;
+}
+.berry-root a { text-decoration: none; }
+
+/* sidebar: SimpleBar di aplikasi → scroll biasa */
+.pc-sidebar .navbar-content { height: calc(100vh - 80px); overflow-y: auto; overflow-x: hidden; }
+.pc-sidebar .b-brand { display: flex; align-items: center; gap: 10px; }
+.pc-sidebar .b-brand img { height: 50px; width: auto; }
+
+/* kotak cari menu (salinan gaya inline themes/admin/views/header.php) */
+.pc-sidebar-search { position: sticky; top: 0; z-index: 10; background: #fff; padding: 8px 14px 10px 14px; margin-bottom: 4px; border-bottom: 1px solid rgba(0, 0, 0, .06); }
+.pc-sidebar-search .form-control { height: 38px; padding-left: 34px !important; padding-right: 28px !important; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; color: #293240; transition: all .2s ease-in-out; width: 100%; }
+.pc-sidebar-search .form-control:focus { background-color: #fff; border-color: #4680ff; box-shadow: 0 0 0 3px rgba(70, 128, 255, .15); outline: 0; }
+.pc-sidebar-search .pc-search-icon { position: absolute; top: 50%; left: 11px; transform: translateY(-50%); font-size: 16px; color: #8c98a4; pointer-events: none; z-index: 2; }
+.pc-sidebar-search .pc-search-clear { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #8c98a4; background: transparent; border: none; padding: 0; z-index: 2; cursor: pointer; }
+.pc-sidebar-search .pc-search-clear:hover { background-color: #e2e8f0; color: #2d3748; }
+.pc-sidebar-search .pc-search-clear i { font-size: 14px; }
+mark.pc-search-highlight { background-color: #ffe082; color: #1a1a1a; padding: 0 3px; border-radius: 3px; font-weight: 700; }
+
+/* badge peringatan kelengkapan (Product Costing) */
+.pc-sidebar .berry-badge--info { background: #cfe2ff; color: #084298; }
+.pc-sidebar .berry-badge { margin-left: auto; background: #ffe0b2; color: #b45309; border-radius: 10px; padding: 0 7px; font-size: 11px; font-weight: 700; line-height: 18px; }
+
+/* overlay menu untuk layar kecil */
+.berry-overlay { display: none; position: fixed; inset: 0; z-index: 1020; background: rgba(15, 23, 42, .45); }
+.berry-overlay.show { display: block; }
+
+/* dropdown: Popper/Bootstrap JS → posisi statis */
+.pc-header .dropdown { position: relative; }
+.pc-header .dropdown-menu { display: none; position: absolute; top: 100%; margin-top: .5rem; z-index: 1030; }
+.pc-header .dropdown-menu.show { display: block; }
+.pc-header .dropdown-menu-end { right: 0; left: auto; }
+.pc-header .dropdown-toggle::after { display: none; }
+.pc-header .pc-head-link { cursor: pointer; }
+.pc-header .dropdown-menu a { color: inherit; }
+.pc-header .dropdown-menu a.text-danger { color: var(--bs-danger); }
+.pc-header .dropdown-notification, .pc-header .dropdown-user-profile { min-width: 300px; }
+.pc-header .dropdown-notification .list-group-item { border-left: 0; border-right: 0; }
+.pc-header .berry-role { font-size: 12px; }
+
+/* lonceng notifikasi: hitungan belum ditinjau */
+.pc-header .berry-bell { position: relative; }
+.pc-header .berry-bell-count { position: absolute; top: 2px; right: 0; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: #dc3545; color: #fff; font-size: 10.5px; font-weight: 700; line-height: 17px; text-align: center; }

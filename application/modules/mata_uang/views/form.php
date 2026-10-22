@@ -3,21 +3,22 @@ $id_kurs   = (!empty($header->id_kurs)) ? $header->id_kurs : '';
 $negara    = (!empty($header->negara)) ? $header->negara : '';
 $kode      = (!empty($header->kode)) ? $header->kode : '';
 $mata_uang = (!empty($header->mata_uang)) ? $header->mata_uang : '';
-$activation= (!empty($header->activation)) ? $header->activation : 'active';
+$kurs      = (!empty($header->kurs)) ? $header->kurs : '';
+$activation = (!empty($header->activation)) ? $header->activation : 'active';
 $is_edit   = !empty($id_kurs);
 ?>
 
 <input type="hidden" id="id_kurs" name="id_kurs" value="<?= $id_kurs; ?>">
 
 <?php if (!$is_edit) : ?>
-<!-- Loading state saat mode tambah baru memuat data negara dari API -->
-<div id="modal_loading" class="text-center py-5">
-    <div class="spinner-border text-primary" style="width: 2.8rem; height: 2.8rem;" role="status">
-        <span class="visually-hidden">Loading...</span>
+    <!-- Loading state saat mode tambah baru memuat data negara dari API -->
+    <div id="modal_loading" class="text-center py-5">
+        <div class="spinner-border text-primary" style="width: 2.8rem; height: 2.8rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h6 class="mt-3 text-dark fw-bold mb-1">Memuat Form...</h6>
+        <small class="text-muted">Sedang mengambil daftar negara dan mata uang via API</small>
     </div>
-    <h6 class="mt-3 text-dark fw-bold mb-1">Memuat Form...</h6>
-    <small class="text-muted">Sedang mengambil daftar negara dan mata uang via API</small>
-</div>
 <?php endif; ?>
 
 <!-- Container Form (di-hide saat mode tambah baru sebelum API siap) -->
@@ -27,16 +28,16 @@ $is_edit   = !empty($id_kurs);
         <label for="negara" class="form-label fw-semibold">
             Negara <span class="text-danger">*</span>
         </label>
-        
+
         <?php if ($is_edit) : ?>
             <!-- Mode Edit: Langsung tampilkan negara dan di-disabled / readonly, tanpa panggil API -->
             <div class="input-group">
                 <span class="input-group-text bg-light text-primary"><i class="ti ti-world"></i></span>
                 <input type="text"
-                       class="form-control bg-light text-dark fw-bold"
-                       value="<?= htmlspecialchars($negara, ENT_QUOTES, 'UTF-8'); ?>"
-                       readonly
-                       disabled>
+                    class="form-control bg-light text-dark fw-bold"
+                    value="<?= htmlspecialchars($negara, ENT_QUOTES, 'UTF-8'); ?>"
+                    readonly
+                    disabled>
                 <input type="hidden" id="negara" name="negara" value="<?= htmlspecialchars($negara, ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="form-text mt-1 text-muted">
@@ -67,13 +68,13 @@ $is_edit   = !empty($id_kurs);
         <div class="input-group">
             <span class="input-group-text bg-light text-primary"><i class="ti ti-barcode"></i></span>
             <input type="text"
-                   class="form-control text-uppercase fw-bold"
-                   id="kode"
-                   name="kode"
-                   required
-                   maxlength="10"
-                   placeholder="Contoh: USD, IDR"
-                   value="<?= htmlspecialchars($kode, ENT_QUOTES, 'UTF-8'); ?>">
+                class="form-control text-uppercase fw-bold"
+                id="kode"
+                name="kode"
+                required
+                maxlength="10"
+                placeholder="Contoh: USD, IDR"
+                value="<?= htmlspecialchars($kode, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
         <small class="text-muted">Kode ISO mata uang (biasanya 3 huruf)</small>
     </div>
@@ -86,14 +87,32 @@ $is_edit   = !empty($id_kurs);
         <div class="input-group">
             <span class="input-group-text bg-light text-primary"><i class="ti ti-coin"></i></span>
             <input type="text"
-                   class="form-control"
-                   id="mata_uang"
-                   name="mata_uang"
-                   required
-                   placeholder="Contoh: Dollar, Rupiah"
-                   value="<?= htmlspecialchars($mata_uang, ENT_QUOTES, 'UTF-8'); ?>">
+                class="form-control"
+                id="mata_uang"
+                name="mata_uang"
+                required
+                placeholder="Contoh: Dollar, Rupiah"
+                value="<?= htmlspecialchars($mata_uang, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
         <small class="text-muted">Nama resmi atau penyebutan mata uang</small>
+    </div>
+
+    <!-- NOMINAL KURS TERHADAP IDR -->
+    <div class="col-md-12">
+        <label for="kurs" class="form-label fw-semibold">
+            Nominal Kurs Terhadap Rupiah (IDR) <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+            <span class="input-group-text bg-light text-primary fw-bold">Rp</span>
+            <input type="text"
+                class="form-control text-start fw-bold fs-5 autoNumeric"
+                id="kurs"
+                name="kurs"
+                required
+                placeholder="Contoh: 17,863.00"
+                value="<?= (!empty($kurs) && (float)$kurs > 0) ? number_format((float)$kurs, 2, '.', ',') : (($kode === 'IDR') ? '1.00' : ''); ?>">
+        </div>
+        <small class="text-muted">Nilai tukar konversi 1 satuan mata uang ke Rupiah (Contoh: 1 USD = Rp 17.863,00. Untuk Rupiah/IDR diisi 1.00).</small>
     </div>
 
     <!-- STATUS AKTIVASI: IPHONE STYLE TOGGLE DENGAN TEKS DI DALAM -->
@@ -104,7 +123,7 @@ $is_edit   = !empty($id_kurs);
                 <div class="fw-bold text-dark">Status Keaktifan</div>
                 <div class="small text-muted mt-1">Status keaktifan mata uang untuk transaksi di sistem</div>
             </div>
-            
+
             <div class="d-flex align-items-center">
                 <label class="ios-toggle-labeled" title="Klik untuk beralih status">
                     <input type="checkbox" id="status_toggle" <?= ($activation === 'active') ? 'checked' : ''; ?>>
@@ -122,6 +141,21 @@ $is_edit   = !empty($id_kurs);
 
 <script type="text/javascript">
     $(document).ready(function() {
+        // Inisialisasi autoNumeric pada input kurs jika tersedia
+        if (typeof $.fn.autoNumeric !== 'undefined') {
+            $('#kurs').autoNumeric('init', {
+                aSep: ',',
+                aDec: '.',
+                mDec: '2'
+            });
+        }
+
+        // Listener dinamis perubahan kode mata uang
+        $('#kode').on('keyup change', function() {
+            var val = $(this).val().trim().toUpperCase() || 'Unit';
+            $('#kurs_code_label').text(val);
+        });
+
         // Toggle iPhone switch listener pada form
         $('#status_toggle').on('change', function() {
             var val = $(this).is(':checked') ? 'active' : 'inactive';
@@ -186,7 +220,16 @@ $is_edit   = !empty($id_kurs);
                 var currencyCode = selectedOpt.data('kode') || '';
 
                 if (currencyCode) {
-                    $('#kode').val(currencyCode.toUpperCase());
+                    var upperCode = currencyCode.toUpperCase();
+                    $('#kode').val(upperCode);
+                    $('#kurs_code_label').text(upperCode);
+                    if (upperCode === 'IDR') {
+                        if (typeof $.fn.autoNumeric !== 'undefined') {
+                            $('#kurs').autoNumeric('set', 1.00);
+                        } else {
+                            $('#kurs').val('1.00');
+                        }
+                    }
                 }
 
                 var val = selectedOpt.val();
