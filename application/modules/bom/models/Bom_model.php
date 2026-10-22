@@ -12,7 +12,6 @@ class Bom_model extends CI_Model
 
     /**
      * Ambil semua produk dari product_lvl_4 untuk Select2
-     * Filter: category=product, deleted_date IS NULL, status=1
      */
     public function get_produk_list()
     {
@@ -32,12 +31,11 @@ class Bom_model extends CI_Model
 
     /**
      * Ambil semua material dari new_inventory_4 untuk Select2
-     * Filter: category=material, deleted_date IS NULL
      */
     public function get_material_list()
     {
         return $this->db
-            ->select('m4.code_lv4, m4.nama, m4.trade_name, m4.id_unit, u.nama AS nm_unit,
+            ->select('m4.code_lv4, m4.nama, m4.trade_name, m4.id_unit, m4.thickness, m4.width, u.nama AS nm_unit,
                       m1.nama AS nm_lv1, m2.nama AS nm_lv2, m3.nama AS nm_lv3')
             ->from('new_inventory_4 m4')
             ->join('new_inventory_1 m1', 'm1.code_lv1 = m4.code_lv1 AND m1.category = "material"', 'left')
@@ -54,7 +52,7 @@ class Bom_model extends CI_Model
     public function get_material_by_code($code_lv4)
     {
         return $this->db
-            ->select('m4.code_lv4, m4.nama, m4.trade_name, m4.id_unit, u.nama AS nm_unit')
+            ->select('m4.code_lv4, m4.nama, m4.trade_name, m4.id_unit, m4.thickness, m4.width, u.nama AS nm_unit')
             ->from('new_inventory_4 m4')
             ->join('ms_satuan u', 'u.id = m4.id_unit', 'left')
             ->where('m4.code_lv4', $code_lv4)
@@ -64,13 +62,30 @@ class Bom_model extends CI_Model
 
     // ── BOM Header ───────────────────────────────────────────────────────────
 
+    /** Ambil data Master Standard Material (global 1 baris) */
+    public function get_standard_material()
+    {
+        $row = $this->db->where('id', 1)->get('master_standard_material')->row();
+        if (!$row) {
+            return (object) [
+                'standar_toleransi'   => 0.000000,
+                'standar_berat_jenis' => 7.850000,
+                'coating'             => 0.000000,
+            ];
+        }
+        return $row;
+    }
+
     /** Ambil satu BOM by id (hanya yang belum dihapus) */
     public function get_bom($id)
     {
         return $this->db
-            ->where('id', $id)
-            ->where('is_delete', 0)
-            ->get('ms_bom_header')->row();
+            ->select('h.*, p.trade_name')
+            ->from('ms_bom_header h')
+            ->join('product_lvl_4 p', 'p.code_lv4 = h.id_produk', 'left')
+            ->where('h.id', $id)
+            ->where('h.is_delete', 0)
+            ->get()->row();
     }
 
     /** Ambil BOM by produk (hanya yang belum dihapus) */
@@ -79,68 +94,103 @@ class Bom_model extends CI_Model
         return $this->db
             ->where('id_produk', $id_produk)
             ->where('is_delete', 0)
+            ->order_by('id', 'DESC')
             ->get('ms_bom_header')->row();
     }
 
-    /** Ambil detail BOM (hanya yang belum dihapus) */
+    /** Ambil detail BOM (hanya yang belum dihapus) dengan join spesifikasi material */
     public function get_bom_details($id_bom)
     {
         return $this->db
-            ->where('id_bom', $id_bom)
-            ->where('is_delete', 0)
-            ->order_by('urut', 'ASC')
-            ->order_by('id', 'ASC')
-            ->get('ms_bom_detail')->result();
+            ->select('bd.*, m.thickness, m.width')
+            ->from('ms_bom_detail bd')
+            ->join('new_inventory_4 m', 'm.code_lv4 = bd.id_material', 'left')
+            ->where('bd.id_bom', $id_bom)
+            ->where('bd.is_delete', 0)
+            ->order_by('bd.urut', 'ASC')
+            ->order_by('bd.id', 'ASC')
+            ->get()->result();
     }
 
     /**
-     * Simpan atau update BOM (header + detail) dalam satu transaksi
-     * Detail lama di-soft-delete, bukan hard delete
+     * Simpan atau update BOM (header + daftar varian detail) dalam satu transaksi
      */
     public function save_bom($header, $details)
     {
         $this->db->trans_start();
         $now = date('Y-m-d H:i:s');
 
-        $existing = $this->get_bom_by_produk($header['id_produk']);
+        $id_bom = !empty($header['id']) ? (int) $header['id'] : null;
 
-        if ($existing) {
-            $id_bom = $existing->id;
+        // Ambil no_uniq_id dari baris pertama untuk varian_type header (kompatibilitas query lama)
+        $first_uniq = !empty($details[0]['no_uniq_id']) ? trim($details[0]['no_uniq_id']) : 'Type 001.1';
+
+        if ($id_bom) {
             $this->db->update('ms_bom_header', [
-                'nm_produk'  => $header['nm_produk'],
-                'keterangan' => isset($header['keterangan']) ? $header['keterangan'] : null,
-                'updated_at' => $now,
+                'nm_produk'   => $header['nm_produk'],
+                'varian_type' => $first_uniq,
+                'is_default'  => 1,
+                'updated_at'  => $now,
             ], ['id' => $id_bom]);
         } else {
-            $this->db->insert('ms_bom_header', [
-                'id_produk'  => $header['id_produk'],
-                'nm_produk'  => $header['nm_produk'],
-                'keterangan' => isset($header['keterangan']) ? $header['keterangan'] : null,
-                'status'     => 1,
-                'is_delete'  => 0,
-                'created_by' => $header['created_by'],
-                'created_at' => $now,
-            ]);
-            $id_bom = $this->db->insert_id();
+            $existing = $this->get_bom_by_produk($header['id_produk']);
+            if ($existing) {
+                $id_bom = $existing->id;
+                $this->db->update('ms_bom_header', [
+                    'nm_produk'   => $header['nm_produk'],
+                    'varian_type' => $first_uniq,
+                    'is_default'  => 1,
+                    'updated_at'  => $now,
+                ], ['id' => $id_bom]);
+            } else {
+                $this->db->insert('ms_bom_header', [
+                    'id_produk'   => $header['id_produk'],
+                    'nm_produk'   => $header['nm_produk'],
+                    'varian_type' => $first_uniq,
+                    'is_default'  => 1,
+                    'status'      => 1,
+                    'is_delete'   => 0,
+                    'created_by'  => $header['created_by'],
+                    'created_at'  => $now,
+                ]);
+                $id_bom = $this->db->insert_id();
+            }
         }
 
         // Soft delete detail lama
         $this->db->update('ms_bom_detail', ['is_delete' => 1], ['id_bom' => $id_bom]);
 
-        // Insert detail baru
+        $std = $this->get_standard_material();
+
+        // Insert setiap baris varian baru
         foreach ($details as $urut => $d) {
             if (empty($d['id_material'])) continue;
+
+            $bpm = isset($d['berat_per_meter']) && (float) $d['berat_per_meter'] > 0
+                ? (float) $d['berat_per_meter']
+                : 0.0;
+
+            if ($bpm <= 0) {
+                $mat = $this->get_material_by_code($d['id_material']);
+                if ($mat && (float)$mat->thickness > 0 && (float)$mat->width > 0) {
+                    $bpm = round((((float)$mat->thickness - (float)$std->standar_toleransi) * (float)$mat->width * (float)$std->standar_berat_jenis / 1000) + (float)$std->coating, 6);
+                }
+            }
+
+            $no_uniq = !empty($d['no_uniq_id']) ? trim($d['no_uniq_id']) : ('Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.' . ($urut + 1));
+
             $this->db->insert('ms_bom_detail', [
-                'id_bom'      => $id_bom,
-                'id_material' => $d['id_material'],
-                'nm_material' => isset($d['nm_material']) ? $d['nm_material'] : null,
-                'trade_name'  => isset($d['trade_name']) ? $d['trade_name'] : null,
-                'qty'         => isset($d['qty']) ? (float) $d['qty'] : 1,
-                'id_unit'     => isset($d['id_unit']) ? $d['id_unit'] : null,
-                'nm_unit'     => isset($d['nm_unit']) ? $d['nm_unit'] : null,
-                'keterangan'  => isset($d['keterangan']) ? $d['keterangan'] : null,
-                'urut'        => $urut + 1,
-                'is_delete'   => 0,
+                'id_bom'          => $id_bom,
+                'no_uniq_id'      => $no_uniq,
+                'id_material'     => $d['id_material'],
+                'nm_material'     => isset($d['nm_material']) ? $d['nm_material'] : null,
+                'trade_name'      => isset($d['trade_name']) ? $d['trade_name'] : null,
+                'qty'             => isset($d['qty']) ? (float) $d['qty'] : 1,
+                'berat_per_meter' => $bpm,
+                'id_unit'         => isset($d['id_unit']) ? $d['id_unit'] : null,
+                'nm_unit'         => isset($d['nm_unit']) ? $d['nm_unit'] : null,
+                'urut'            => $urut + 1,
+                'is_delete'       => 0,
             ]);
         }
 
@@ -177,8 +227,8 @@ class Bom_model extends CI_Model
         $order_col = isset($params['order'][0]['column']) ? (int) $params['order'][0]['column'] : 0;
         $order_dir = isset($params['order'][0]['dir']) ? $params['order'][0]['dir'] : 'desc';
 
-        $cols     = ['h.id', 'h.id_produk', 'h.nm_produk', 'cnt', 'h.created_at'];
-        $order_by = isset($cols[$order_col]) ? $cols[$order_col] : 'h.created_at';
+        $cols     = ['h.id', 'h.id_produk', 'h.nm_produk', 'cnt', 'latest_act'];
+        $order_by = isset($cols[$order_col]) ? $cols[$order_col] : 'h.id';
 
         // Filter is_delete = 0 dan hanya hitung detail yang aktif
         $base_sql = "FROM ms_bom_header h
@@ -198,12 +248,17 @@ class Bom_model extends CI_Model
         $total    = $this->db->query("SELECT COUNT(*) AS cnt {$base_sql}")->row()->cnt;
         $filtered = $total;
         $data     = $this->db->query(
-            "SELECT h.*, COALESCE(d.cnt, 0) AS jumlah_material
+            "SELECT h.*, COALESCE(d.cnt, 0) AS jumlah_varian,
+                    COALESCE(h.updated_at, h.created_at) AS latest_act
              {$base_sql}
              ORDER BY {$order_by} {$order_dir}
              LIMIT {$start},{$length}"
         )->result();
 
-        return ['total' => $total, 'filtered' => $filtered, 'data' => $data];
+        return [
+            'total'    => (int) $total,
+            'filtered' => (int) $filtered,
+            'data'     => $data,
+        ];
     }
 }

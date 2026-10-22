@@ -93,6 +93,10 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 	<div class="col-md-10">
 		<input type="text" class="form-control" id="nama" name="nama"
 			required placeholder="Product Master Name" value="<?= $nama; ?>">
+		<small class="text-muted">
+			Otomatis: Product Type + Category + Jenis + Tebal &times; Lebar &times; Panjang M (dapat diedit manual).
+			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Generate ulang</span>
+		</small>
 	</div>
 </div>
 
@@ -233,7 +237,8 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 	</div>
 	<div class="col-md-3">
 		<input type="text" class="form-control maskM getCub" id="wide" name="wide"
-			value="<?= $wide; ?>" placeholder="Lebar">
+			value="<?= $wide; ?>" placeholder="Lebar (mm)">
+		<small class="text-muted">Lebar produk (mm), dipakai Product Costing.</small>
 	</div>
 	<div class="col-md-3">
 		<input type="text" class="form-control maskM getCub" id="high" name="high"

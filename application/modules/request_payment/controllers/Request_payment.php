@@ -584,7 +584,7 @@ class Request_payment extends Admin_Controller
 	{
 		$Data		= $this->input->post();
 		$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
-		if ($Data['tipe'] == 'direct_payment') {
+		if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
 			$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
 		}
 		if (in_array($Data['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
@@ -805,31 +805,38 @@ class Request_payment extends Admin_Controller
 				$Harga[] 		= $dtl->nilai;
 			}
 
-			if ($Data['tipe'] == 'direct_payment') {
-				$dtl = $this->db->get_where('tr_direct_payment', ['id' => $detail['id']])->row();
-				$data_request_payment = $this->db->get_where('request_payment', ['no_doc' => $dtl->no_doc])->row();
+			if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
+				$dtl = $this->db->get_where('tr_pr_non_po', ['id' => $detail['id']])->row();
+				if (!$dtl) {
+					$dtl = $this->db->get_where('tr_pr_non_po', ['no_non_po' => $Data['no_doc']])->row();
+				}
+				$data_request_payment = $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc']])->row();
 
-				$nilai = $dtl->grand_total;
+				$nilai = !empty($dtl->total_pr) ? $dtl->total_pr : (!empty($dtl->grand_total) ? $dtl->grand_total : ($data_request_payment->jumlah ?? 0));
+				$deskripsi = !empty($dtl->deskripsi) ? $dtl->deskripsi : ($data_request_payment->keperluan ?? 'PR Cash ' . ($dtl->no_pr ?? ''));
+				$tgl_doc = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : (!empty($dtl->created_date) ? date('Y-m-d', strtotime($dtl->created_date)) : ($data_request_payment->tgl_doc ?? date('Y-m-d')));
 
 				$ArrDetail[] 		= [
 					'id' 			=> $id_detail,
 					'payment_id' 	=> $Id,
-					'no_doc' 		=> $dtl->no_doc,
-					'tgl_doc' 		=> $dtl->tgl_doc,
-					'deskripsi' 	=> $dtl->deskripsi,
+					'no_doc' 		=> $dtl ? $dtl->no_non_po : $Data['no_doc'],
+					'tgl_doc' 		=> $tgl_doc,
+					'deskripsi' 	=> $deskripsi,
 					'qty' 			=> '1',
 					'harga' 		=> $nilai,
 					'total' 		=> $nilai,
-					'keterangan' 	=> $dtl->deskripsi,
-					'doc_file' 		=> $data_request_payment->link_doc,
+					'keterangan' 	=> $deskripsi,
+					'doc_file' 		=> $data_request_payment->link_doc ?? '',
 					'coa' 			=> '',
 					'created_by' 	=> $this->auth->user_name(),
 					'created_on' 	=> date("Y-m-d h:i:s"),
 				];
-				$updateDetail[] = [
-					'id' 			=> $dtl->id,
-					'sts' 		=> '3'
-				];
+				if ($dtl) {
+					$updateDetail[] = [
+						'id' 			=> $dtl->id,
+						'sts' 		=> '3'
+					];
+				}
 				$Harga[] 		= $nilai;
 			}
 

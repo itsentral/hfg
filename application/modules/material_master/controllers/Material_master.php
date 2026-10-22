@@ -101,6 +101,35 @@ class Material_master extends Admin_Controller
       $high       = str_replace(',', '', $post['high']);
       $cub        = str_replace(',', '', $post['cub']);
 
+      // Validasi server (FR-38): level 1-3 dan nama wajib; Thickness (tebal) dan Width (lebar coil) harus > 0.
+      // Material tidak menyimpan Berat/Meter (dihitung di BOM dari Master Standard Material).
+      $errors = [];
+      if (empty($code_lv1) || $code_lv1 == '0') {
+        $errors[] = 'Metal type wajib dipilih.';
+      }
+      if (empty($code_lv2) || $code_lv2 == '0') {
+        $errors[] = 'Slitted/Mother coil wajib dipilih.';
+      }
+      if (empty($code_lv3) || $code_lv3 == '0') {
+        $errors[] = 'Boron/Non boron wajib dipilih.';
+      }
+      if (trim((string) $nama) === '') {
+        $errors[] = 'Nama material wajib diisi.';
+      }
+      if (!is_numeric($thickness) || $thickness <= 0) {
+        $errors[] = 'Thickness harus berupa angka lebih dari 0.';
+      }
+      if (!is_numeric($width) || $width <= 0) {
+        $errors[] = 'Width harus berupa angka lebih dari 0.';
+      }
+      if (!empty($errors)) {
+        echo json_encode([
+          'pesan'  => implode(' ', $errors),
+          'status' => 0
+        ]);
+        return;
+      }
+
       $last_by    = (!empty($id)) ? 'updated_by' : 'created_by';
       $last_date  = (!empty($id)) ? 'updated_date' : 'created_date';
       $label      = (!empty($id)) ? 'Edit' : 'Add';
@@ -194,7 +223,7 @@ class Material_master extends Admin_Controller
       $this->db->trans_complete();
 
       // Siapkan payload log (jika update, sertakan data old & new)
-      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => $dataProcess] : $dataProcess;
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)] : $dataProcess;
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
@@ -255,6 +284,9 @@ class Material_master extends Admin_Controller
     // Persiapkan data untuk update
     $dataProcess = ['status' => $new_status];
 
+    // Ambil data lama sebelum update untuk audit log Before-After
+    $oldData = $this->db->get_where('new_inventory_4', ['id' => $id])->row_array();
+
     // Memulai transaksi untuk memastikan data konsisten
     $this->db->trans_start();
 
@@ -280,7 +312,10 @@ class Material_master extends Admin_Controller
     $kode_universal = $id;
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
-    write_log('Material Master', 'Update Status', $keterangan, ['id' => $id, 'new_status' => $new_status], $sql, $status);
+    $logPayload = !empty($oldData)
+      ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)]
+      : ['id' => $id, 'new_status' => $new_status];
+    write_log('Material Master', 'Update Status', $keterangan, $logPayload, $sql, $status);
 
     // Kembalikan hasil sebagai JSON
     echo json_encode([
@@ -295,6 +330,26 @@ class Material_master extends Admin_Controller
     $this->auth->restrict($this->deletePermission);
 
     $id = $this->input->post('id');
+
+    // Material yang masih dipakai BOM aktif tidak boleh dihapus (ms_bom_detail.id_material = code_lv4)
+    $material = $this->db->get_where('new_inventory_4', ['id' => $id])->row();
+    if (!empty($material)) {
+      $dipakai_bom = $this->db->from('ms_bom_detail d')
+        ->join('ms_bom_header h', 'h.id = d.id_bom')
+        ->where('d.id_material', $material->code_lv4)
+        ->where('d.is_delete', 0)
+        ->where('h.is_delete', 0)
+        ->count_all_results();
+      if ($dipakai_bom > 0) {
+        write_log('Material Master', 'Delete', 'Hapus material master ditolak karena dipakai BOM: ' . $material->code_lv4, ['id' => $id, 'code_lv4' => $material->code_lv4], null, 0);
+        echo json_encode([
+          'pesan'  => 'Material ' . $material->code_lv4 . ' tidak dapat dihapus karena masih dipakai di BOM.',
+          'status' => 0
+        ]);
+        return;
+      }
+    }
+
     $data = [
       'deleted_by'     => $this->id_user,
       'deleted_date'   => $this->datetime

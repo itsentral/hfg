@@ -25,7 +25,7 @@ $price_ref_expired 		= (!empty($listData[0]->price_ref_expired)) ? $listData[0]-
 $price_ref_new_expired 	= (!empty($listData[0]->price_ref_new_expired)) ? $listData[0]->price_ref_new_expired : 0;
 $price_ref_expired_use 	= (!empty($listData[0]->price_ref_expired_use)) ? $listData[0]->price_ref_expired_use : 0;
 
-$kurs 	= (!empty($listData[0]->kurs)) ? $listData[0]->kurs : 0;
+$kurs 	= (!empty($listData[0]->kurs) && (float)$listData[0]->kurs > 0) ? $listData[0]->kurs : (!empty($default_kurs) ? $default_kurs : 17863);
 
 $tgl_expired 		= '';
 $tgl_expired_new 	= '';
