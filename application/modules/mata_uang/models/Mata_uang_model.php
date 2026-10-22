@@ -73,7 +73,7 @@ class Mata_uang_model extends CI_Model
      */
     public function get_all_mata_uang()
     {
-        $this->db->select('id_kurs, kode, negara, mata_uang, activation, created_on, modified_on');
+        $this->db->select('id_kurs, kode, negara, mata_uang, kurs, activation, created_on, modified_on');
         $this->db->from($this->table);
         $this->db->where('(deleted IS NULL OR deleted = 0)', NULL, FALSE);
         $this->db->order_by('negara', 'ASC');
@@ -308,10 +308,13 @@ class Mata_uang_model extends CI_Model
     {
         $date = date('Y-m-d');
 
+        $kurs = isset($data['kurs']) ? (float) str_replace(',', '', (string)$data['kurs']) : 0.0;
+
         $payload = [
             'kode'       => strtoupper(trim($data['kode'])),
             'negara'     => trim($data['negara']),
             'mata_uang'  => trim($data['mata_uang']),
+            'kurs'       => $kurs,
             'activation' => !empty($data['activation']) ? $data['activation'] : 'active',
             'modified_on'=> $date,
             'modified_by'=> $user_id,

@@ -1,21 +1,11 @@
 -- =====================================================
--- Migrasi 002: Permission dan menu Master Standard Material
--- Modul   : master_standard_material (FR-50, UC-N15, PG-08)
--- Pola    : modules/spk_material/migrations/002_add_permissions_and_menu.sql
--- =====================================================
--- Skrip aman dijalankan ulang (setiap INSERT diberi pengecekan WHERE NOT EXISTS).
--- Rollback: 002_add_permissions_and_menu.down.sql
---
--- CATATAN:
---  * Sesuaikan parent_id dengan menu induk "Master Data" (atau sejenisnya) dan `order` sesuai hierarki
---    menu yang berlaku. Nilai bawaan di bawah (parent_id = 0, order = 99) hanya penampung awal.
---  * Skrip ini TIDAK menetapkan permission ke group/role. Penetapan dilakukan sendiri di program
---    (User Management > Roles).
+-- Migrasi: Permission dan menu Master Standard Material
+-- Modul   : master_standard_material (FR-50, FR-63, UC-N15)
 -- =====================================================
 
--- STEP 1: Menu
+-- STEP 1: Menu di bawah Master Material (parent_id = 143)
 INSERT INTO `menus` (`title`, `link`, `icon`, `target`, `group_menu`, `parent_id`, `permission_id`, `status`, `order`)
-SELECT 'Master Standard Material', 'master_standard_material', 'fa fa-sliders', '_self', 1, 0, 0, 1, 99
+SELECT 'Master Standard Material', 'master_standard_material', 'fa fa-cogs', '_self', 1, 143, 0, 1, 20
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `menus` WHERE `link` = 'master_standard_material');
 
@@ -27,23 +17,21 @@ SELECT 'Master_Standard_Material.View', @menu_id, 'Master Standard Material', 'V
 WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Master_Standard_Material.View');
 
 INSERT INTO `permissions` (`nm_permission`, `id_menu`, `nm_menu`, `ket`, `created_on`)
-SELECT 'Master_Standard_Material.Add', @menu_id, 'Master Standard Material', 'Add', NOW() FROM DUAL
-WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Master_Standard_Material.Add');
-
-INSERT INTO `permissions` (`nm_permission`, `id_menu`, `nm_menu`, `ket`, `created_on`)
 SELECT 'Master_Standard_Material.Manage', @menu_id, 'Master Standard Material', 'Manage', NOW() FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Master_Standard_Material.Manage');
 
--- STEP 3: Menu memakai permission .View
+-- STEP 3: Link menu ke permission View
 SET @view_perm_id = (SELECT `id_permission` FROM `permissions` WHERE `nm_permission` = 'Master_Standard_Material.View' LIMIT 1);
 
 UPDATE `menus` SET `permission_id` = @view_perm_id WHERE `id` = @menu_id;
 
--- =====================================================
--- Permission yang tersedia:
---   - Master_Standard_Material.View   : melihat halaman Master Standard Material
---   - Master_Standard_Material.Add    : membuat baris global bila belum ada
---   - Master_Standard_Material.Manage : mengubah nilai standar
--- Controller memakai $this->auth->restrict() pada index() (View) dan save() (Add bila baris belum ada,
--- Manage bila sudah ada).
--- =====================================================
+-- Berikan permission ini otomatis ke group Administrator (id_group = 1)
+INSERT INTO `group_permissions` (`id_group`, `id_permission`)
+SELECT 1, @view_perm_id FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `group_permissions` WHERE `id_group` = 1 AND `id_permission` = @view_perm_id);
+
+SET @manage_perm_id = (SELECT `id_permission` FROM `permissions` WHERE `nm_permission` = 'Master_Standard_Material.Manage' LIMIT 1);
+
+INSERT INTO `group_permissions` (`id_group`, `id_permission`)
+SELECT 1, @manage_perm_id FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `group_permissions` WHERE `id_group` = 1 AND `id_permission` = @manage_perm_id);

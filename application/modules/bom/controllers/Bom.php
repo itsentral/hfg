@@ -11,7 +11,7 @@ class Bom extends Admin_Controller
         $this->template->page_icon('fa fa-sitemap');
     }
 
-    /** List semua BOM */
+    /** List semua BOM per Produk */
     public function index()
     {
         $this->template->render('index');
@@ -22,14 +22,19 @@ class Bom extends Admin_Controller
     {
         $produk_list   = $this->Bom_model->get_produk_list();
         $material_list = $this->Bom_model->get_material_list();
-        $this->template->set(['produk_list' => $produk_list, 'material_list' => $material_list]);
+        $standard_mat  = $this->Bom_model->get_standard_material();
+        $this->template->set([
+            'produk_list'   => $produk_list,
+            'material_list' => $material_list,
+            'standard_mat'  => $standard_mat,
+        ]);
         $this->template->render('form');
     }
 
     /** Form edit BOM */
     public function edit($id)
     {
-        $bom     = $this->Bom_model->get_bom($id);
+        $bom = $this->Bom_model->get_bom($id);
         if (!$bom) {
             $this->session->set_flashdata('error', 'BOM tidak ditemukan');
             redirect('bom');
@@ -38,12 +43,14 @@ class Bom extends Admin_Controller
         $details       = $this->Bom_model->get_bom_details($id);
         $produk_list   = $this->Bom_model->get_produk_list();
         $material_list = $this->Bom_model->get_material_list();
+        $standard_mat  = $this->Bom_model->get_standard_material();
 
         $this->template->set([
             'bom'           => $bom,
             'details'       => $details,
             'produk_list'   => $produk_list,
             'material_list' => $material_list,
+            'standard_mat'  => $standard_mat,
         ]);
         $this->template->render('form');
     }
@@ -51,7 +58,7 @@ class Bom extends Admin_Controller
     /** Detail / view BOM */
     public function view($id)
     {
-        $bom     = $this->Bom_model->get_bom($id);
+        $bom = $this->Bom_model->get_bom($id);
         if (!$bom) {
             $this->session->set_flashdata('error', 'BOM tidak ditemukan');
             redirect('bom');
@@ -62,23 +69,25 @@ class Bom extends Admin_Controller
         $this->template->render('view');
     }
 
-    /** DataTables endpoint */
+    /** DataTables endpoint - List per Produk FG sesuai Mockup BA */
     public function data_side_bom()
     {
         $result = $this->Bom_model->get_list_for_datatable($_REQUEST);
         $data   = [];
 
         foreach ($result['data'] as $i => $row) {
-            $btn_view = '<a href="' . base_url('bom/view/' . $row->id) . '" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>';
-            $btn_edit = '<a href="' . base_url('bom/edit/' . $row->id) . '" class="btn btn-sm btn-warning ms-1"><i class="fa fa-edit"></i></a>';
-            $btn_del  = '<button class="btn btn-sm btn-danger ms-1 btn-delete-bom" data-id="' . $row->id . '"><i class="fa fa-trash"></i></button>';
+            $btn_view = '<a href="' . base_url('bom/view/' . $row->id) . '" class="btn btn-sm btn-info" title="Lihat"><i class="fa fa-eye"></i></a>';
+            $btn_edit = '<a href="' . base_url('bom/edit/' . $row->id) . '" class="btn btn-sm btn-warning ms-1" title="Edit"><i class="fa fa-edit"></i></a>';
+            $btn_del  = '<button class="btn btn-sm btn-danger ms-1 btn-delete-bom" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
+
+            $tgl = !empty($row->latest_act) ? date('d/m/Y H:i', strtotime($row->latest_act)) : '-';
 
             $data[] = [
                 $i + 1 + (int) $_REQUEST['start'],
                 htmlspecialchars($row->id_produk),
                 htmlspecialchars($row->nm_produk ?: '-'),
-                (int) $row->jumlah_material,
-                $row->created_at,
+                '<span class="badge bg-primary fs-6">' . (int) $row->jumlah_varian . ' varian</span>',
+                $tgl,
                 $btn_view . $btn_edit . $btn_del,
             ];
         }
@@ -91,24 +100,29 @@ class Bom extends Admin_Controller
         ]);
     }
 
-    /** AJAX: ambil info material (trade_name, unit) by code_lv4 */
+    /** AJAX: ambil info material (trade_name, thickness, width, unit) by code_lv4 */
     public function get_material_info()
     {
         $code = $this->input->get('code_lv4');
         $mat  = $this->Bom_model->get_material_by_code($code);
+        $std  = $this->Bom_model->get_standard_material();
         if ($mat) {
-            echo json_encode(['success' => true, 'data' => $mat]);
+            $bpm = 0.0;
+            if ((float)$mat->thickness > 0 && (float)$mat->width > 0) {
+                $bpm = round((((float)$mat->thickness - (float)$std->standar_toleransi) * (float)$mat->width * (float)$std->standar_berat_jenis / 1000) + (float)$std->coating, 6);
+            }
+            echo json_encode(['success' => true, 'data' => $mat, 'bpm' => $bpm, 'std' => $std]);
         } else {
             echo json_encode(['success' => false]);
         }
     }
 
-    /** POST: simpan BOM */
+    /** POST: simpan BOM dengan seluruh varian material */
     public function save_bom()
     {
-        $id_produk  = $this->input->post('id_produk');
-        $nm_produk  = $this->input->post('nm_produk');
-        $keterangan = $this->input->post('keterangan');
+        $id_bom    = $this->input->post('id_bom');
+        $id_produk = $this->input->post('id_produk');
+        $nm_produk = $this->input->post('nm_produk');
 
         if (empty($id_produk)) {
             $this->session->set_flashdata('error', 'Produk wajib dipilih');
@@ -116,125 +130,81 @@ class Bom extends Admin_Controller
         }
 
         $header = [
+            'id'         => $id_bom,
             'id_produk'  => $id_produk,
             'nm_produk'  => $nm_produk,
-            'keterangan' => $keterangan,
             'created_by' => $this->auth->user_id(),
         ];
 
         $details_raw = $this->input->post('detail') ?: [];
         $details = [];
+        $material_set = [];
+
         foreach ($details_raw as $d) {
             if (!empty($d['id_material'])) {
+                if (in_array($d['id_material'], $material_set)) {
+                    $this->session->set_flashdata('error', 'Material yang sama tidak boleh dipakai dua kali pada produk ini.');
+                    redirect('bom/add');
+                }
+                $material_set[] = $d['id_material'];
                 $details[] = $d;
             }
         }
 
         if (empty($details)) {
-            $this->session->set_flashdata('error', 'Minimal satu material harus ditambahkan');
+            $this->session->set_flashdata('error', 'Minimal satu varian material harus ditambahkan');
             redirect('bom/add');
         }
 
-        // Ambil data lama jika ada (untuk mendeteksi Edit vs Add dan menghitung diff)
-        $existing = $this->Bom_model->get_bom_by_produk($id_produk);
-        $oldHeader = $existing ? (array) $existing : null;
+        // Ambil data lama jika ada untuk audit trail
+        $existing   = $this->Bom_model->get_bom_by_produk($id_produk);
         $oldDetails = $existing ? $this->Bom_model->get_bom_details($existing->id) : [];
 
         $result = $this->Bom_model->save_bom($header, $details);
 
         if ($result) {
-            if ($existing) {
-                // Mode Update: Hitung perubahan Header & Detail Material
-                $detail_changes = [];
-
-                // Index old detail by id_material
-                $oldDetailMap = [];
-                foreach ($oldDetails as $od) {
-                    $oldDetailMap[$od->id_material] = (array) $od;
-                }
-
-                $newDetailMap = [];
-                foreach ($details as $nd) {
-                    $newDetailMap[$nd['id_material']] = $nd;
-                }
-
-                // Cek item yang diubah atau baru ditambahkan
-                foreach ($newDetailMap as $idMat => $nItem) {
-                    $matName = !empty($nItem['nm_material']) ? $nItem['nm_material'] : $idMat;
-                    if (isset($oldDetailMap[$idMat])) {
-                        $oItem = $oldDetailMap[$idMat];
-                        // Cek Qty
-                        $qtyOld = (float) $oItem['qty'];
-                        $qtyNew = (float) $nItem['qty'];
-                        if (abs($qtyOld - $qtyNew) > 0.0000001) {
-                            $detail_changes["Material [$matName] - Qty"] = [
-                                'old' => $oItem['qty'],
-                                'new' => $nItem['qty']
-                            ];
-                        }
-                        // Cek Unit / Satuan
-                        if (trim((string)($oItem['nm_unit'] ?? '')) !== trim((string)($nItem['nm_unit'] ?? ''))) {
-                            $detail_changes["Material [$matName] - Satuan"] = [
-                                'old' => $oItem['nm_unit'] ?? '-',
-                                'new' => $nItem['nm_unit'] ?? '-'
-                            ];
-                        }
-                        // Cek Keterangan
-                        if (trim((string)($oItem['keterangan'] ?? '')) !== trim((string)($nItem['keterangan'] ?? ''))) {
-                            $detail_changes["Material [$matName] - Keterangan"] = [
-                                'old' => $oItem['keterangan'] ?? '-',
-                                'new' => $nItem['keterangan'] ?? '-'
-                            ];
-                        }
-                    } else {
-                        $detail_changes["Material [$matName] (Ditambahkan)"] = [
-                            'old' => '-',
-                            'new' => 'Qty: ' . $nItem['qty'] . ' ' . ($nItem['nm_unit'] ?? '')
-                        ];
-                    }
-                }
-
-                // Cek item yang dihapus
-                foreach ($oldDetailMap as $idMat => $oItem) {
-                    if (!isset($newDetailMap[$idMat])) {
-                        $matName = !empty($oItem['nm_material']) ? $oItem['nm_material'] : $idMat;
-                        $detail_changes["Material [$matName] (Dihapus)"] = [
-                            'old' => 'Qty: ' . $oItem['qty'] . ' ' . ($oItem['nm_unit'] ?? ''),
-                            'new' => '-'
-                        ];
-                    }
-                }
-
-                $logPayload = [
-                    'old'            => $oldHeader,
-                    'new'            => array_merge($oldHeader, $header),
-                    'detail_changes' => $detail_changes
-                ];
-
-                write_log('BOM', 'Edit', 'Update BOM produk: ' . $nm_produk . ' (ID: ' . $id_produk . ')', $logPayload, null, 1);
-            } else {
-                write_log('BOM', 'Add', 'Tambah BOM baru untuk produk: ' . $nm_produk . ' (ID: ' . $id_produk . ')', ['header' => $header, 'total_materials' => count($details)], null, 1);
-            }
-
-            $this->session->set_flashdata('success', 'BOM berhasil disimpan');
-            redirect('bom/view/' . $result);
+            $action_label = $existing ? 'Edit' : 'Add';
+            $logPayload = [
+                'id_produk'     => $id_produk,
+                'nm_produk'     => $nm_produk,
+                'total_varian'  => count($details),
+                'daftar_varian' => array_map(function($x) {
+                    return [
+                        'no_uniq_id'      => $x['no_uniq_id'] ?? '',
+                        'id_material'     => $x['id_material'] ?? '',
+                        'berat_per_meter' => $x['berat_per_meter'] ?? 0,
+                    ];
+                }, $details),
+            ];
+            write_log('BOM', $action_label, ($action_label == 'Edit' ? 'Update BOM ' : 'Tambah BOM ') . $id_produk, $logPayload, null, 1);
+            $this->session->set_flashdata('success', 'BOM berhasil disimpan.');
+            redirect('bom');
         } else {
-            write_log('BOM', $existing ? 'Edit' : 'Add', 'Gagal simpan BOM untuk produk: ' . $nm_produk, ['header' => $header], null, 0);
+            write_log('BOM', 'Save', 'Gagal simpan BOM ' . $id_produk, ['header' => $header], null, 0);
             $this->session->set_flashdata('error', 'Gagal menyimpan BOM');
             redirect('bom/add');
         }
     }
 
-    /** POST: hapus BOM (soft delete) */
+    /** POST: hapus BOM */
     public function delete_bom()
     {
-        $id     = $this->input->post('id');
-        $result = $this->Bom_model->delete_bom($id, $this->auth->user_id());
-        if ($result) {
-            write_log('BOM', 'Delete', 'Hapus BOM ID: ' . $id, ['id' => $id], null, 1);
-        } else {
-            write_log('BOM', 'Delete', 'Gagal hapus BOM ID: ' . $id, ['id' => $id], null, 0);
+        $id = $this->input->post('id');
+        if (empty($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID BOM tidak valid']);
+            return;
         }
-        echo json_encode(['success' => $result]);
+
+        $bom = $this->Bom_model->get_bom($id);
+        $user_id = $this->auth->user_id();
+        $result  = $this->Bom_model->delete_bom($id, $user_id);
+
+        if ($result) {
+            write_log('BOM', 'Delete', 'Hapus BOM ID ' . $id, ['bom' => $bom], null, 1);
+            echo json_encode(['success' => true]);
+        } else {
+            write_log('BOM', 'Delete', 'Gagal hapus BOM ID ' . $id, [], null, 0);
+            echo json_encode(['success' => false, 'message' => 'Gagal menghapus BOM']);
+        }
     }
 }

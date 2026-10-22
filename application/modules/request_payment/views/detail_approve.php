@@ -43,9 +43,22 @@ if ($type == 'expense') {
 	$keterangan = !empty($header->deskripsi) ? $header->deskripsi : ($data_req_payment['keperluan'] ?? '');
 	$no_doc = !empty($header->no_doc) ? $header->no_doc : ($header->no_non_po ?? ($data_req_payment['no_doc'] ?? ''));
 	$tgl_doc = !empty($header->tgl_doc) ? $header->tgl_doc : ($header->created_date ?? ($data_req_payment['tgl_doc'] ?? ''));
-	$bank_id = $header->bank ?? ($data_req_payment['bank_id'] ?? '');
-	$accnumber = $header->bank_number ?? ($data_req_payment['accnumber'] ?? '');
-	$accname = $header->bank_account ?? ($data_req_payment['accname'] ?? '');
+	$bank_id = !empty($header->bank) ? $header->bank : (!empty($data_req_payment['bank_id']) ? $data_req_payment['bank_id'] : ($data_req_payment['bank_name'] ?? ''));
+	$accnumber = !empty($header->bank_number) ? $header->bank_number : ($data_req_payment['accnumber'] ?? '');
+	$accname = !empty($header->bank_account) ? $header->bank_account : ($data_req_payment['accname'] ?? '');
+
+	if (empty($bank_id) || empty($accnumber) || empty($accname)) {
+		$ci = &get_instance();
+		$no_pr_ref = !empty($data_req_payment['no_surat']) ? $data_req_payment['no_surat'] : (!empty($header->no_pr) ? $header->no_pr : '');
+		if (!empty($no_pr_ref)) {
+			$pr_dept = $ci->db->get_where('rutin_non_planning_header', ['no_pr' => $no_pr_ref])->row();
+			if (!empty($pr_dept)) {
+				$bank_id = !empty($bank_id) ? $bank_id : $pr_dept->bank_name;
+				$accnumber = !empty($accnumber) ? $accnumber : $pr_dept->bank_account_no;
+				$accname = !empty($accname) ? $accname : $pr_dept->bank_account_name;
+			}
+		}
+	}
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
 	$tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
 	$keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
@@ -451,26 +464,52 @@ if ($type == 'expense') {
 								</tr>
 							<?php endif;
 
-							// TIPE 6: DIRECT PAYMENT
-							if ($type == 'direct_payment') { ?>
+							// TIPE 6: DIRECT PAYMENT & CASH
+							if ($type == 'direct_payment' || $type == 'Cash') {
+								$total_val = !empty($dtl->total_pr) ? $dtl->total_pr : (!empty($dtl->grand_total) ? $dtl->grand_total : ($data_req_payment['jumlah'] ?? 0));
+								$gTotal += ($total_val + ($data_req_payment['admin_bank'] ?? 0) - ($data_req_payment['total_pph'] ?? 0));
+								$deskripsi_item = !empty($dtl->deskripsi) ? $dtl->deskripsi : ($data_req_payment['keperluan'] ?? '');
+								$tgl_item = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : (!empty($dtl->created_date) ? date('Y-m-d', strtotime($dtl->created_date)) : ($data_req_payment['tgl_doc'] ?? ''));
+							?>
 								<tr>
 									<td class="text-center"><?= $n; ?></td>
 
-									<td><?= $dtl->deskripsi; ?></td>
-									<td class="text-center"><?= $dtl->tgl_doc; ?></td>
-									<td class="text-end fw-semibold"><?= number_format($dtl->grand_total, 2) ?></td>
-									<td class="text-center small"><?= $data_req_payment['currency']; ?></td>
-									<td class="text-end fw-bold text-success"><?= number_format($dtl->grand_total, 2) ?></td>
-									<td class="text-center"><a href="<?= base_url('assets/expense/') . $data_req_payment['link_doc']; ?>" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fa fa-download"></i></a></td>
+									<td><?= $deskripsi_item; ?></td>
+									<td class="text-center"><?= $tgl_item; ?></td>
+									<td class="text-center">1</td>
+									<td class="text-center small"><?= $data_req_payment['currency'] ?? 'IDR'; ?></td>
+									<td>
+										<table class="w-100 inner-sub-table small">
+											<tr>
+												<td>Pengajuan</td>
+												<td class="text-end fw-semibold"><?= number_format($total_val, 2) ?></td>
+											</tr>
+											<tr>
+												<td>Nilai PPh</td>
+												<td class="text-end text-danger">- <?= number_format($data_req_payment['total_pph'] ?? 0, 2) ?></td>
+											</tr>
+											<tr>
+												<td>Bank Charge</td>
+												<td class="text-end text-muted">+ <?= number_format($data_req_payment['admin_bank'] ?? 0, 2) ?></td>
+											</tr>
+											<tr class="border-top">
+												<td><b>Net Payment</b></td>
+												<td class="text-end fw-bold text-success"><?= number_format(($total_val + ($data_req_payment['admin_bank'] ?? 0) - ($data_req_payment['total_pph'] ?? 0)), 2) ?></td>
+											</tr>
+										</table>
+									</td>
 									<td class="text-center">
-										<?php if ($dtl->sts == '2') : ?>
-											<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
-										<?php elseif ($dtl->sts == '3') : ?><span class="badge bg-warning text-dark">Process</span>
-										<?php elseif ($dtl->sts == '4') : ?><span class="badge bg-success">PAID</span>
-										<?php else : ?><span class="badge bg-secondary">Undefined</span><?php endif; ?>
+										<?php if (!empty($data_req_payment['link_doc'])) : ?>
+											<a href="<?= base_url('assets/expense/' . $data_req_payment['link_doc']); ?>" target="_blank" class="text-primary"><i class="fa fa-download fa-lg"></i></a>
+										<?php else : ?>
+											-
+										<?php endif; ?>
+									</td>
+									<td class="text-center">
+										<input type="checkbox" checked value="<?= $dtl->id ?? ($data_req_payment['ids'] ?? 0); ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
 									</td>
 								</tr>
-							<?php $gTotal += $dtl->grand_total;
+							<?php
 							}
 
 							// TIPE 7: INVOICE PO (DP/IMPORT/LOCAL)
@@ -543,7 +582,7 @@ if ($type == 'expense') {
 										<input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
 									</td>
 								</tr>
-					<?php }
+							<?php }
 
 							// TIPE 8: DOCUMENT IMPORT (ROS Payment: BM/LS/Insurance/Other Cost)
 							if (in_array($type, ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'])) {
@@ -554,7 +593,7 @@ if ($type == 'expense') {
 									['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],
 									$type
 								);
-					?>
+							?>
 								<tr>
 									<td class="text-center"><?= $n; ?></td>
 									<td><?= $label_ros; ?><?= !empty($dtl->keterangan) ? ' - ' . $dtl->keterangan : ''; ?></td>
@@ -581,7 +620,7 @@ if ($type == 'expense') {
 				</tbody>
 				<tfoot>
 					<tr class="table-primary align-middle fw-bold">
-						<td colspan="6" class="text-end text-uppercase fs-6">Grand Total :</td>
+						<td colspan="5" class="text-end text-uppercase fs-6">Grand Total :</td>
 						<td class="text-end fs-5"><?= number_format($gTotal, 2); ?></td>
 						<td colspan="2"></td>
 					</tr>

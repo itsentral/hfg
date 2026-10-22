@@ -1,123 +1,69 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+defined('BASEPATH') || exit('No direct script access allowed');
 
-/**
- * Master Standard Material (FR-50, UC-N15, PG-08)
- *
- * Satu set nilai GLOBAL (satu baris, id = 1) yang dipakai menghitung Berat/Meter di BOM:
- *   ((Tebal Material - Standar Toleransi) x Lebar Coil x Standar Berat Jenis) + Coating
- * Satuan tidak ditampilkan karena klien tidak menginformasikannya.
- * Nama kolom tabel mengikuti ERD (halaman "Product Costing ERD", entitas master_standard_material).
- */
 class Master_standard_material extends Admin_Controller
 {
-	//Permission
-	protected $viewPermission   = 'Master_Standard_Material.View';
-	protected $addPermission    = 'Master_Standard_Material.Add';
-	protected $managePermission = 'Master_Standard_Material.Manage';
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('Master_standard_material/Master_standard_material_model', 'std_model');
+        $this->template->title('Master Standard Material');
+        $this->template->page_icon('fa fa-cogs');
+    }
 
-	public function __construct()
-	{
-		parent::__construct();
+    public function index()
+    {
+        $standard = $this->std_model->get_standard();
+        $sample_materials = $this->std_model->get_sample_materials(10);
+        $this->template->set([
+            'standard'         => $standard,
+            'sample_materials' => $sample_materials,
+        ]);
+        $this->template->render('index');
+    }
 
-		$this->load->model(array(
-			'Master_standard_material/Master_standard_material_model'
-		));
-		$this->template->title('Master Standard Material');
-		$this->template->page_icon('fa fa-sliders');
+    public function save()
+    {
+        $old = $this->std_model->get_standard();
 
-		date_default_timezone_set('Asia/Bangkok');
+        $toleransi   = $this->input->post('standar_toleransi');
+        $berat_jenis = $this->input->post('standar_berat_jenis');
+        $coating     = $this->input->post('coating');
 
-		$this->id_user  = $this->auth->user_id();
-		$this->datetime = date('Y-m-d H:i:s');
-	}
+        if ($berat_jenis <= 0) {
+            $this->session->set_flashdata('error', 'Standar Berat Jenis harus lebih besar dari 0');
+            redirect('master_standard_material');
+        }
 
-	public function index()
-	{
-		$this->auth->restrict($this->viewPermission);
+        $data = [
+            'standar_toleransi'   => $toleransi !== null ? (float) $toleransi : 0.0,
+            'standar_berat_jenis' => $berat_jenis !== null ? (float) $berat_jenis : 7.85,
+            'coating'             => $coating !== null ? (float) $coating : 0.0,
+            'updated_by'          => $this->auth->user_id(),
+        ];
 
-		$standard = $this->Master_standard_material_model->get_standard();
+        $save = $this->std_model->save_standard($data);
 
-		$data = [
-			'standard'   => $standard,
-			'updated_by' => (!empty($standard['updated_by'])) ? get_name('users', 'username', 'id_user', $standard['updated_by']) : '-',
-		];
-		$this->template->set($data);
-		$this->template->title('Master Standard Material');
-		$this->template->render('index');
-	}
+        if ($save) {
+            $logPayload = [
+                'before' => [
+                    'standar_toleransi'   => (float) $old->standar_toleransi,
+                    'standar_berat_jenis' => (float) $old->standar_berat_jenis,
+                    'coating'             => (float) $old->coating,
+                ],
+                'after'  => [
+                    'standar_toleransi'   => (float) $data['standar_toleransi'],
+                    'standar_berat_jenis' => (float) $data['standar_berat_jenis'],
+                    'coating'             => (float) $data['coating'],
+                ],
+            ];
+            write_log('Master Standard Material', 'Edit', 'Update Master Standard Material', $logPayload, null, 1);
+            $this->session->set_flashdata('success', 'Master Standard Material berhasil disimpan');
+        } else {
+            write_log('Master Standard Material', 'Edit', 'Gagal update Master Standard Material', ['data' => $data], null, 0);
+            $this->session->set_flashdata('error', 'Gagal menyimpan Master Standard Material');
+        }
 
-	public function save()
-	{
-		$old = $this->Master_standard_material_model->get_standard();
-
-		// Baris global belum ada -> membuat (Add); sudah ada -> mengubah (Manage)
-		if (empty($old)) {
-			$this->auth->restrict($this->addPermission);
-		} else {
-			$this->auth->restrict($this->managePermission);
-		}
-
-		if (!$this->input->post()) {
-			echo json_encode(['pesan' => 'Tidak ada data yang dikirim.', 'status' => 0]);
-			return;
-		}
-
-		$fields = [
-			'standar_toleransi'   => 'Standar Toleransi',
-			'standar_berat_jenis' => 'Standar Berat Jenis',
-			'coating'             => 'Coating',
-		];
-
-		// Validasi server: angka >= 0, titik sebagai pemisah desimal (maks. 8 digit bulat dan 6 desimal = DECIMAL(14,6)).
-		// Koma sengaja ditolak (bukan dihapus) agar "7,85" tidak berubah menjadi 785.
-		$errors = [];
-		$values = [];
-		foreach ($fields as $field => $label) {
-			$nilai = trim((string) $this->input->post($field));
-			if ($nilai === '') {
-				$errors[] = $label . ' wajib diisi.';
-			} elseif (!preg_match('/^\d{1,8}(\.\d{1,6})?$/', $nilai)) {
-				$errors[] = $label . ' harus berupa angka 0 atau lebih (gunakan titik untuk desimal, maksimal 8 digit bulat dan 6 digit desimal).';
-			} else {
-				$values[$field] = $nilai;
-			}
-		}
-		if (!empty($errors)) {
-			echo json_encode(['pesan' => implode(' ', $errors), 'status' => 0]);
-			return;
-		}
-
-		$dataProcess = $values + [
-			'latest_update' => $this->datetime,
-			'updated_by'    => $this->id_user,
-		];
-
-		$label = (!empty($old)) ? 'Edit' : 'Add';
-
-		$this->db->trans_start();
-		$this->Master_standard_material_model->save_standard($dataProcess, !empty($old));
-		$this->db->trans_complete();
-
-		// Before-After: old diambil SEBELUM update; new = old digabung perubahan
-		$logPayload = (!empty($old)) ? ['old' => $old, 'new' => array_merge($old, $dataProcess)] : $dataProcess;
-
-		if ($this->db->trans_status() === FALSE) {
-			$this->db->trans_rollback();
-			$result = [
-				'pesan'  => 'Failed process data!',
-				'status' => 0,
-			];
-			write_log('Master Standard Material', $label, 'Gagal ' . strtolower($label) . ' master standard material', $logPayload, null, 0);
-		} else {
-			$this->db->trans_commit();
-			$result = [
-				'pesan'  => 'Success process data!',
-				'status' => 1,
-			];
-			write_log('Master Standard Material', $label, $label . ' master standard material (toleransi ' . $values['standar_toleransi'] . ', berat jenis ' . $values['standar_berat_jenis'] . ', coating ' . $values['coating'] . ')', $logPayload, null, 1);
-		}
-
-		echo json_encode($result);
-	}
+        redirect('master_standard_material');
+    }
 }

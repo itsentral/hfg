@@ -101,12 +101,11 @@ class Pembayaran_material_model extends BF_Model
 		// Logika Filter Jenis Payment
 		if ($jenis_payment == 1) {
 			$this->db->group_start()
-				->where_in('a.tipe', ['invoice_dp', 'invoice_import', 'invoice_local'])
+				->where_in('a.tipe', ['invoice_dp', 'invoice_import', 'invoice_local', 'Cash', 'direct_payment'])
 				->or_where('b.exp_inv_po', 1)
-				->or_where('a.tipe', 'Cash')
 				->group_end();
 		} else {
-			$this->db->where_not_in('a.tipe', ['invoice_dp', 'invoice_import', 'invoice_local']);
+			$this->db->where_not_in('a.tipe', ['invoice_dp', 'invoice_import', 'invoice_local', 'Cash', 'direct_payment']);
 			$this->db->group_start()
 				->where('b.exp_inv_po <>', 1)
 				->or_where('b.exp_inv_po IS NULL', null, false)

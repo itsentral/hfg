@@ -4095,6 +4095,10 @@ class Metode_pembelian_model extends BF_Model
 		$userName = $this->auth->user_name();
 		$nm_pic = !empty($user) ? $user->nm_lengkap : (!empty($userName) ? $userName : 'Unknown');
 
+		$bank_name = !empty($header->bank_name) ? $header->bank_name : '';
+		$accnumber = !empty($header->bank_account_no) ? $header->bank_account_no : '';
+		$accname   = !empty($header->bank_account_name) ? $header->bank_account_name : '';
+
 		$this->db->insert('request_payment', [
 			'no_doc'      => $no_non_po,
 			'no_surat'    => $header->no_pr,
@@ -4106,10 +4110,10 @@ class Metode_pembelian_model extends BF_Model
 			'status'      => 'open',
 			'tanggal'     => null,
 			'currency'    => 'IDR',
-			'bank_id'     => '',
-			'accnumber'   => '',
-			'accname'     => '',
-			'bank_name'   => '',
+			'bank_id'     => $bank_name,
+			'accnumber'   => $accnumber,
+			'accname'     => $accname,
+			'bank_name'   => $bank_name,
 			'ids'         => (string)$id_non_po,
 			'admin_bank'  => 0,
 			'total_pph'   => 0,

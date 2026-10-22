@@ -43,9 +43,23 @@ if ($type == 'expense') {
     $keterangan = !empty($header->deskripsi) ? $header->deskripsi : ($data_req_payment['keperluan'] ?? '');
     $no_doc = !empty($header->no_doc) ? $header->no_doc : ($header->no_non_po ?? ($data_req_payment['no_doc'] ?? ''));
     $tgl_doc = !empty($header->tgl_doc) ? $header->tgl_doc : ($header->created_date ?? ($data_req_payment['tgl_doc'] ?? ''));
-    $bank_id = $header->bank ?? ($data_req_payment['bank_id'] ?? '');
-    $accnumber = $header->bank_number ?? ($data_req_payment['accnumber'] ?? '');
-    $accname = $header->bank_account ?? ($data_req_payment['accname'] ?? '');
+    $bank_id = !empty($header->bank) ? $header->bank : (!empty($data_req_payment['bank_id']) ? $data_req_payment['bank_id'] : ($data_req_payment['bank_name'] ?? ''));
+    $accnumber = !empty($header->bank_number) ? $header->bank_number : ($data_req_payment['accnumber'] ?? '');
+    $accname = !empty($header->bank_account) ? $header->bank_account : ($data_req_payment['accname'] ?? '');
+
+    // Fallback ambil dari rutin_non_planning_header jika kolom bank masih kosong
+    if (empty($bank_id) || empty($accnumber) || empty($accname)) {
+        $ci = &get_instance();
+        $no_pr_ref = !empty($data_req_payment['no_surat']) ? $data_req_payment['no_surat'] : (!empty($header->no_pr) ? $header->no_pr : '');
+        if (!empty($no_pr_ref)) {
+            $pr_dept = $ci->db->get_where('rutin_non_planning_header', ['no_pr' => $no_pr_ref])->row();
+            if (!empty($pr_dept)) {
+                $bank_id = !empty($bank_id) ? $bank_id : $pr_dept->bank_name;
+                $accnumber = !empty($accnumber) ? $accnumber : $pr_dept->bank_account_no;
+                $accname = !empty($accname) ? $accname : $pr_dept->bank_account_name;
+            }
+        }
+    }
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
     $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
     $keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
@@ -149,7 +163,7 @@ if ($type == 'expense') {
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Bank Destination</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control bg-light" readonly value="<?= $data_req_payment['bank_id']; ?>">
+                        <input type="text" class="form-control bg-light" readonly value="<?= !empty($bank_id) ? $bank_id : (!empty($data_req_payment['bank_id']) ? $data_req_payment['bank_id'] : ($data_req_payment['bank_name'] ?? '')); ?>">
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">

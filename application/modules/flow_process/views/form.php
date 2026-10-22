@@ -21,27 +21,13 @@ if (empty($rows)) {
 	$rows = [['costcentre_area' => '', 'process_name' => '', 'machine' => '', 'cycletime' => '', 'man_power' => '', 'total_man_hour' => 0]];
 }
 
-// Opsi Costcentre/Area; nilai tersimpan yang tidak ada di master tetap dipertahankan
-$opsi_area = function ($pilih) use ($costcentres) {
-	$html = '<option value="">- Pilih -</option>';
-	$daftar = $costcentres;
-	if ($pilih !== '' && $pilih !== null && !in_array($pilih, $daftar)) {
-		$daftar[] = $pilih;
-	}
-	foreach ($daftar as $nama) {
-		$sel   = ((string) $nama === (string) $pilih) ? ' selected' : '';
-		$html .= '<option value="' . htmlspecialchars($nama, ENT_QUOTES) . '"' . $sel . '>' . htmlspecialchars($nama) . '</option>';
-	}
-	return $html;
-};
-
-$baris = function ($r, $no) use ($plain, $readonly, $disabled, $opsi_area, $view_only) {
+$baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 	ob_start(); ?>
 	<tr class="fp-row">
 		<td class="text-center fp-no"><?= $no; ?></td>
-		<td><select name="costcentre_area[]" class="form-select form-select-sm" <?= $disabled; ?>><?= $opsi_area($r['costcentre_area']); ?></select></td>
-		<td><input type="text" name="process_name[]" class="form-control form-control-sm" maxlength="150" value="<?= htmlspecialchars((string) $r['process_name']); ?>" <?= $readonly; ?>></td>
-		<td><input type="text" name="machine[]" class="form-control form-control-sm" maxlength="150" value="<?= htmlspecialchars((string) $r['machine']); ?>" <?= $readonly; ?>></td>
+		<td><input type="text" name="costcentre_area[]" list="list_costcenter" class="form-control form-control-sm" maxlength="150" placeholder="Pilih / ketik area" value="<?= htmlspecialchars((string) $r['costcentre_area']); ?>" <?= $readonly; ?>></td>
+		<td><input type="text" name="process_name[]" class="form-control form-control-sm" maxlength="150" placeholder="Nama proses" value="<?= htmlspecialchars((string) $r['process_name']); ?>" <?= $readonly; ?> required></td>
+		<td><input type="text" name="machine[]" class="form-control form-control-sm" maxlength="150" placeholder="Mesin" value="<?= htmlspecialchars((string) $r['machine']); ?>" <?= $readonly; ?>></td>
 		<td><input type="text" name="cycletime[]" class="form-control form-control-sm text-end fp-ct" inputmode="decimal" placeholder="0" value="<?= ($r['cycletime'] === '' ? '' : $plain($r['cycletime'])); ?>" <?= $readonly; ?>></td>
 		<td><input type="text" name="man_power[]" class="form-control form-control-sm text-end fp-mp" inputmode="numeric" placeholder="0" value="<?= ($r['man_power'] === '' ? '' : (int) $r['man_power']); ?>" <?= $readonly; ?>></td>
 		<td class="text-end fp-mh"><?= $plain($r['total_man_hour'], 8); ?></td>
@@ -57,13 +43,22 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $opsi_area, $view
 <input type="hidden" id="fp_mode" value="<?= $mode; ?>">
 <input type="hidden" name="id" value="<?= $id; ?>">
 
+<!-- Datalist Cost Centre / Area -->
+<datalist id="list_costcenter">
+	<?php if (!empty($costcentres)): ?>
+		<?php foreach ($costcentres as $c): ?>
+			<option value="<?= htmlspecialchars($c); ?>">
+		<?php endforeach; ?>
+	<?php endif; ?>
+</datalist>
+
 <div class="row mb-3">
 	<div class="col-md-3">
-		<label class="col-form-label">Product Category <span class="text-danger">*</span></label>
+		<label class="col-form-label fw-bold">Product Category <span class="text-danger">*</span></label>
 	</div>
 	<div class="col-md-6">
 		<?php if ($is_add) : ?>
-			<select name="code_lv2" id="code_lv2" class="form-control chosen-select">
+			<select name="code_lv2" id="code_lv2" class="form-select">
 				<option value="0">Select Product Category</option>
 				<?php foreach ($tersedia as $kode => $nama) : ?>
 					<option value="<?= htmlspecialchars($kode, ENT_QUOTES); ?>"><?= strtoupper(htmlspecialchars($nama)); ?></option>
@@ -73,7 +68,8 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $opsi_area, $view
 				<small class="text-muted">Semua Product Category sudah memiliki Flow Process.</small>
 			<?php endif; ?>
 		<?php else : ?>
-			<input type="text" class="form-control" value="<?= strtoupper(htmlspecialchars($nama_kat)); ?>" readonly>
+			<input type="text" class="form-control bg-light" value="<?= strtoupper(htmlspecialchars($nama_kat)); ?>" readonly>
+			<input type="hidden" name="code_lv2" value="<?= htmlspecialchars($code_lv2, ENT_QUOTES); ?>">
 		<?php endif; ?>
 	</div>
 </div>
@@ -86,9 +82,9 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $opsi_area, $view
 				<th style="min-width:160px">Costcentre / Area</th>
 				<th style="min-width:160px">Process Name <span class="text-danger">*</span></th>
 				<th style="min-width:130px">Machine</th>
-				<th class="text-end" style="min-width:120px">Cycletime (menit/meter)</th>
-				<th class="text-end" style="width:90px">Man Power</th>
-				<th class="text-end" style="min-width:120px">Man Hour (jam/meter)</th>
+				<th class="text-end" style="min-width:130px">Cycletime (menit/meter)</th>
+				<th class="text-end" style="width:100px">Man Power</th>
+				<th class="text-end" style="min-width:130px">Man Hour (jam/meter)</th>
 				<?php if (!$view_only) : ?><th class="text-center" style="width:50px">Aksi</th><?php endif; ?>
 			</tr>
 		</thead>
@@ -108,14 +104,13 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $opsi_area, $view
 </div>
 
 <?php if (!$view_only) : ?>
-	<button type="button" class="btn btn-sm btn-outline-primary" id="fp_add_row"><i class="ti ti-plus me-1"></i>Tambah Proses</button>
+	<button type="button" class="btn btn-sm btn-outline-primary mt-2" id="fp_add_row"><i class="ti ti-plus me-1"></i>Tambah Proses</button>
 <?php endif; ?>
-<small class="text-muted d-block mt-2">
-	Man Hour = Cycletime &times; Man Power &divide; 60. Total Man Hour = jumlah Man Hour seluruh proses. Nilai dihitung ulang oleh sistem saat disimpan.
-	Gunakan titik untuk desimal.
-</small>
+<div class="alert alert-light border py-2 mt-3 mb-0 text-muted small">
+	<i class="fa fa-info-circle me-1"></i> <strong>Rumus:</strong> <code>Man Hour = Cycletime &times; Man Power &divide; 60</code>. Total Man Hour = jumlah Man Hour seluruh proses. Contoh: Cycletime <code>0.041667</code> menit/m dengan 1 orang Man Power &rarr; <code>0.000694</code> jam/meter.
+</div>
 
-<!-- Templat baris baru (tidak ikut terkirim karena berada di dalam script bertipe text/html) -->
+<!-- Templat baris baru -->
 <script type="text/html" id="fp_tpl_row">
 	<?= $baris(['costcentre_area' => '', 'process_name' => '', 'machine' => '', 'cycletime' => '', 'man_power' => '', 'total_man_hour' => 0], '__NO__'); ?>
 </script>

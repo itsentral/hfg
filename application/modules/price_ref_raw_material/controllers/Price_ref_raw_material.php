@@ -134,9 +134,11 @@ class Price_ref_raw_material extends Admin_Controller
       echo json_encode($status);
     } else {
       $listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
+      $default_kurs = $this->db->select('kurs')->where('kode', 'USD')->get('mata_uang')->row();
 
       $data = [
-        'listData' => $listData,
+        'listData'     => $listData,
+        'default_kurs' => ($default_kurs && (float)$default_kurs->kurs > 0) ? (float)$default_kurs->kurs : 17863.0,
       ];
       $this->template->set($data);
       $this->template->render('add');
