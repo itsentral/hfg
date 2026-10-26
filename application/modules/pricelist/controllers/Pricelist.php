@@ -17,120 +17,105 @@ class Pricelist extends Admin_Controller
         $this->template->page_icon('fa fa-list-alt');
     }
 
-    /** Daftar Dokumen Pricelist (Sales) */
+        /** Daftar Dokumen Pricelist (Sales) - Hanya render Wadah Tab */
     public function index()
     {
         $this->auth->restrict($this->viewPermission);
 
         $status_filter = $this->input->get('status');
-        $list          = $this->pl_model->get_pricelists($status_filter);
+        $counts        = $this->pl_model->get_counts();
 
         $this->template->set([
-            'list'          => $list,
+            'counts'        => $counts,
             'status_filter' => $status_filter,
         ]);
         $this->template->render('index');
     }
 
-    /** Ambil Detail Dokumen Pricelist (AJAX) */
-    public function view_doc()
-    {
-        $this->auth->restrict($this->viewPermission);
-
-        $id = (int)$this->input->get('id');
-        $pl = $this->pl_model->get_pricelist_by_id($id);
-
-        if (!$pl) {
-            echo json_encode(['status' => 0, 'pesan' => 'Pricelist tidak ditemukan']);
-            return;
-        }
-
-        echo json_encode(['status' => 1, 'data' => $pl]);
-    }
-
-    /** Ajukan Draft ke Management */
-    public function submit()
-    {
-        $this->auth->restrict($this->managePermission);
-
-        $id = (int)$this->input->post('id');
-        $pl = $this->pl_model->get_pricelist_by_id($id);
-
-        if (!$pl || $pl->header->status !== 'Draft') {
-            echo json_encode(['status' => 0, 'pesan' => 'Hanya draft pricelist yang dapat diajukan']);
-            return;
-        }
-
-        if (empty($pl->details)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Draft belum memiliki varian produk']);
-            return;
-        }
-
-        $ok = $this->pl_model->submit_to_management($id, $this->auth->user_id());
-        if ($ok) {
-            write_log('Pricelist', 'Submit', "Pricelist {$pl->header->no_pricelist} diajukan ke Management", (array)$pl->header, null, 1);
-            echo json_encode([
-                'status' => 1,
-                'pesan'  => "Pricelist {$pl->header->no_pricelist} berhasil diajukan ke Management.",
-            ]);
-        } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal mengajukan pricelist']);
-        }
-    }
-
-    /** Hapus Baris Detail Varian dari Draft */
-    public function delete_item()
-    {
-        $this->auth->restrict($this->managePermission);
-
-        $detail_id = (int)$this->input->post('detail_id');
-        $ok = $this->pl_model->delete_detail($detail_id);
-
-        if ($ok) {
-            echo json_encode(['status' => 1, 'pesan' => 'Item varian berhasil dihapus dari draft']);
-        } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus item']);
-        }
-    }
-
-    /** Hapus Draft Dokumen */
-    public function delete()
-    {
-        $this->auth->restrict($this->deletePermission);
-
-        $id = (int)$this->input->post('id');
-        $pl = $this->pl_model->get_pricelist_by_id($id);
-
-        if (!$pl || $pl->header->status !== 'Draft') {
-            echo json_encode(['status' => 0, 'pesan' => 'Hanya draft yang dapat dihapus']);
-            return;
-        }
-
-        $ok = $this->pl_model->delete_draft($id);
-        if ($ok) {
-            write_log('Pricelist', 'Delete', "Draft Pricelist {$pl->header->no_pricelist} dihapus", (array)$pl->header, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => "Draft {$pl->header->no_pricelist} berhasil dihapus"]);
-        } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus draft']);
-        }
-    }
-
-    /** Menu Approval Pricelist (Management / GM) */
+    /** Menu Approval Pricelist (Management / GM) - Hanya render Wadah Tab */
     public function approval()
     {
         $this->auth->restrict($this->viewAppPermission);
 
         $status_filter = $this->input->get('status');
-        $list          = $this->pl_model->get_pricelists($status_filter);
+        $counts        = $this->pl_model->get_counts();
 
         $this->template->title('Approval Pricelist');
         $this->template->page_icon('fa fa-check-circle');
         $this->template->set([
-            'list'          => $list,
+            'counts'        => $counts,
             'status_filter' => $status_filter,
         ]);
         $this->template->render('approval');
     }
+
+    // -------------------------------------------------------------------------
+    // RENDER PARTIAL TABLE PER TAB VIA AJAX (SALES INDEX)
+    // -------------------------------------------------------------------------
+
+    public function render_tab($tab = 'all')
+    {
+        $this->auth->restrict($this->viewPermission);
+
+        $status_map = [
+            'all'      => null,
+            'draft'    => 'Draft',
+            'pending'  => 'Menunggu Approval',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+        ];
+
+        $status           = isset($status_map[$tab]) ? $status_map[$tab] : null;
+        $data['list']     = $this->pl_model->get_pricelists($status);
+        $data['tab']      = $tab;
+        $data['table_id'] = 'tbl-pl-' . $tab;
+
+        $view = in_array($tab, ['all', 'draft', 'pending', 'approved', 'rejected']) ? $tab : 'all';
+        $this->load->view('table/' . $view, $data);
+    }
+
+    public function render_all()      { $this->render_tab('all'); }
+    public function render_draft()    { $this->render_tab('draft'); }
+    public function render_pending()  { $this->render_tab('pending'); }
+    public function render_approved() { $this->render_tab('approved'); }
+    public function render_rejected() { $this->render_tab('rejected'); }
+
+    // -------------------------------------------------------------------------
+    // RENDER PARTIAL TABLE PER TAB VIA AJAX (APPROVAL MANAGEMENT)
+    // -------------------------------------------------------------------------
+
+    public function render_app_tab($tab = 'pending')
+    {
+        $this->auth->restrict($this->viewAppPermission);
+
+        $status_map = [
+            'pending'  => 'Menunggu Approval',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'all'      => null,
+        ];
+
+        $status = isset($status_map[$tab]) ? $status_map[$tab] : null;
+        $list   = $this->pl_model->get_pricelists($status);
+        if ($tab === 'all') {
+            $list = array_values(array_filter($list, function ($r) {
+                return $r->status !== 'Draft';
+            }));
+        }
+
+        $data['list']     = $list;
+        $data['tab']      = $tab;
+        $data['table_id'] = 'tbl-app-' . $tab;
+
+        $view = in_array($tab, ['pending', 'approved', 'rejected', 'all']) ? 'approval_' . $tab : 'approval_pending';
+        $this->load->view('table/' . $view, $data);
+    }
+
+    public function render_app_pending()  { $this->render_app_tab('pending'); }
+    public function render_app_approved() { $this->render_app_tab('approved'); }
+    public function render_app_rejected() { $this->render_app_tab('rejected'); }
+    public function render_app_all()      { $this->render_app_tab('all'); }
+
 
     /** Management Menyetujui Pricelist (Approved) */
     public function approve()

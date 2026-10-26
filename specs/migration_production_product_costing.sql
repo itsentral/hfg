@@ -53,6 +53,15 @@ UPDATE `mata_uang` SET `kurs` = 1.00 WHERE `kode` = 'IDR' AND (`kurs` IS NULL OR
 UPDATE `mata_uang` SET `kurs` = 17863.00 WHERE `kode` = 'USD' AND (`kurs` IS NULL OR `kurs` = 0);
 UPDATE `mata_uang` SET `kurs` = 7000.00 WHERE `kode` = 'RMB' AND (`kurs` IS NULL OR `kurs` = 0);
 
+-- 1.4 Tabel new_inventory_4: Verifikasi Kolom Kurs & Price Reference Material
+CALL AddColIfNotExists('new_inventory_4', 'price_ref', "DOUBLE NULL DEFAULT NULL COMMENT 'Lower price IDR'");
+CALL AddColIfNotExists('new_inventory_4', 'price_ref_usd', "DOUBLE NULL DEFAULT NULL COMMENT 'Lower price USD'");
+CALL AddColIfNotExists('new_inventory_4', 'price_ref_high', "DOUBLE NULL DEFAULT NULL COMMENT 'Higher price IDR'");
+CALL AddColIfNotExists('new_inventory_4', 'price_ref_high_usd', "DOUBLE NULL DEFAULT NULL COMMENT 'Higher price USD'");
+CALL AddColIfNotExists('new_inventory_4', 'price_ref_use', "DOUBLE NULL DEFAULT NULL COMMENT 'Official Price Ref IDR'");
+CALL AddColIfNotExists('new_inventory_4', 'price_ref_use_usd', "DOUBLE NULL DEFAULT NULL COMMENT 'Official Price Ref USD'");
+CALL AddColIfNotExists('new_inventory_4', 'kurs', "DOUBLE NULL DEFAULT NULL COMMENT 'Kurs USD yang dipakai saat set price'");
+
 DROP PROCEDURE IF EXISTS `AddColIfNotExists`;
 
 
@@ -238,12 +247,14 @@ INSERT INTO `permissions` (`id_permission`, `nm_permission`, `ket`, `nm_menu`) V
 (1982, 'History_Price_List.Manage', 'Manage History Price List', 'History Price List')
 ON DUPLICATE KEY UPDATE `nm_permission` = VALUES(`nm_permission`);
 
--- 4.3 Berikan hak akses Administrator (Group ID 1) ke semua permission baru
+-- 4.3 Berikan hak akses Administrator (Group ID 1) ke semua permission baru & Price Reference
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_permission` BETWEEN 1949 AND 1982;
+INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`) VALUES (1, 831), (1, 832), (1, 833), (1, 834);
 
 -- 4.4 Daftarkan 15 Sub-menu di bawah Parent 120 (Product Costing)
 INSERT INTO `menus` (`id`, `title`, `link`, `icon`, `group_menu`, `parent_id`, `permission_id`, `status`, `order`, `created_on`) VALUES
+(532, 'Price Reference', 'price_ref_raw_material', 'ti ti-tags', 0, 120, 831, 1, 1, NOW()),
 (519, 'Faktor Indirect Labor', 'faktor_indirect_labor', 'ti ti-percentage', 0, 120, 1955, 1, 3, NOW()),
 (520, 'Rate Borongan Helper', 'rate_borongan_helper', 'ti ti-users', 0, 120, 1957, 1, 2, NOW()),
 (521, 'Rate Bahan Pendukung & FOH', 'rate_bahan_pendukung_foh', 'ti ti-package', 0, 120, 1959, 1, 4, NOW()),

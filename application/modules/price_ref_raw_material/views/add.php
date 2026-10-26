@@ -113,9 +113,9 @@ $expired12 = (!empty($listData[0]->price_ref_new_expired) && $listData[0]->price
 	<div class="col-md-5">
 		<div class="input-group">
 			<span class="input-group-text">IDR</span>
-			<input type="text" class="form-control text-center autoNumeric" id="price_ref_high_new" name="price_ref_high_new" value="<?= $price_ref_high_new; ?>" readonly>
+			<input type="text" class="form-control text-center autoNumeric" id="price_ref_high_new" name="price_ref_high_new" value="<?= (!empty($price_ref_high_new)) ? $price_ref_high_new : ((!empty($price_ref_use)) ? $price_ref_use : $price_ref_high); ?>" readonly>
 			<span class="input-group-text">USD</span>
-			<input type="text" class="form-control text-center autoNumeric6" id="price_ref_high_new_usd" name="price_ref_high_new_usd" value="<?= $price_ref_high_new_usd; ?>" readonly>
+			<input type="text" class="form-control text-center autoNumeric6" id="price_ref_high_new_usd" name="price_ref_high_new_usd" value="<?= (!empty($price_ref_high_new_usd)) ? $price_ref_high_new_usd : ((!empty($price_ref_use_usd)) ? $price_ref_use_usd : $price_ref_high_usd); ?>" readonly>
 		</div>
 	</div>
 </div>
@@ -143,9 +143,9 @@ $expired12 = (!empty($listData[0]->price_ref_new_expired) && $listData[0]->price
 	<div class="col-md-5">
 		<div class="input-group">
 			<span class="input-group-text">IDR</span>
-			<input type="text" class="form-control text-center autoNumeric" id="price_ref_use_after" name="price_ref_use_after" value="<?= $price_ref_high_new; ?>" required>
+			<input type="text" class="form-control text-center autoNumeric" id="price_ref_use_after" name="price_ref_use_after" value="<?= (!empty($price_ref_high_new)) ? $price_ref_high_new : ((!empty($price_ref_use)) ? $price_ref_use : $price_ref_high); ?>" required>
 			<span class="input-group-text">USD</span>
-			<input type="text" class="form-control text-center autoNumeric6" id="price_ref_use_after_usd" name="price_ref_use_after_usd" value="<?= $price_ref_high_new_usd; ?>" required>
+			<input type="text" class="form-control text-center autoNumeric6" id="price_ref_use_after_usd" name="price_ref_use_after_usd" value="<?= (!empty($price_ref_high_new_usd)) ? $price_ref_high_new_usd : ((!empty($price_ref_use_usd)) ? $price_ref_use_usd : $price_ref_high_usd); ?>" required>
 		</div>
 	</div>
 </div>
@@ -185,7 +185,7 @@ $expired12 = (!empty($listData[0]->price_ref_new_expired) && $listData[0]->price
 	<div class="col-md-2"><label>Action</label></div>
 	<div class="col-md-10">
 		<select id="action_app" name="action_app" class="form-control chosen-select" required>
-			<option value="1">Approve</option>
+			<option value="1"><?= ($status_app == "Y") ? "Approve" : "Save / Update Price Reference"; ?></option>
 			<option value="0">Reject</option>
 		</select>
 	</div>

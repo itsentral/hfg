@@ -72,12 +72,12 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                 <tbody>
                     <?php if (!empty($list)): ?>
                         <?php foreach ($list as $idx => $r): ?>
-                            <?php 
-                                $is_pending = ($r->status === 'Belum Ditinjau');
-                                $lama = (float)$r->bottom_price_lama_meter;
-                                $baru = (float)$r->bottom_price_baru_meter;
-                                $diff = $baru - $lama;
-                                $pct_diff = ($lama > 0) ? (($diff / $lama) * 100) : 0;
+                            <?php
+                            $is_pending = ($r->status === 'Belum Ditinjau');
+                            $lama = (float)$r->bottom_price_lama_meter;
+                            $baru = (float)$r->bottom_price_baru_meter;
+                            $diff = $baru - $lama;
+                            $pct_diff = ($lama > 0) ? (($diff / $lama) * 100) : 0;
                             ?>
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
@@ -125,29 +125,39 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                     <?php endif; ?>
                                 </td>
                                 <?php if ($ENABLE_MANAGE): ?>
-                                    <td class="text-center">
-                                        <?php if ($is_pending): ?>
-                                            <button type="button" class="btn btn-sm btn-primary btn-nego-modal shadow-sm"
-                                                data-id="<?= $r->id ?>"
-                                                data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
-                                                data-cat="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
-                                                data-active="<?= (float)($r->rate_negotiation_allowance * 100) ?>"
-                                                data-bottom-lama="<?= number_format($lama, 2, ',', '.') ?>"
-                                                data-bottom-baru="<?= number_format($baru, 2, ',', '.') ?>"
-                                                title="Ajukan Revisi Extra Margin ke GM">
-                                                <i class="fa fa-tag me-1"></i> Ajukan
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-keep-rate ms-1"
-                                                data-id="<?= $r->id ?>"
-                                                data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
-                                                title="Tetap Gunakan Rate Extra Margin Aktif">
-                                                Keep
-                                            </button>
-                                        <?php else: ?>
-                                            <button type="button" class="btn btn-sm btn-light text-muted" disabled>
-                                                <i class="fa fa-check me-1"></i> Selesai
-                                            </button>
-                                        <?php endif; ?>
+                                    <td class="text-center text-nowrap">
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            <?php if ($is_pending): ?>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-primary btn-nego-modal shadow-sm"
+                                                    data-id="<?= $r->id ?>"
+                                                    data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
+                                                    data-cat="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
+                                                    data-active="<?= (float)($r->rate_negotiation_allowance * 100) ?>"
+                                                    data-bottom-lama="<?= number_format($lama, 2, ',', '.') ?>"
+                                                    data-bottom-baru="<?= number_format($baru, 2, ',', '.') ?>"
+                                                    title="Ajukan Revisi Extra Margin ke GM"
+                                                    style="width: 80px;">
+                                                    <i class="fa fa-paper-plane me-1"></i> Ajukan
+                                                </button>
+
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-secondary btn-keep-rate shadow-sm"
+                                                    data-id="<?= $r->id ?>"
+                                                    data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
+                                                    title="Tetap Gunakan Rate Extra Margin Aktif"
+                                                    style="width: 80px;">
+                                                    <i class="fa fa-thumbs-up me-1"></i> Keep
+                                                </button>
+                                            <?php else: ?>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light text-success border shadow-sm"
+                                                    disabled
+                                                    style="width: 80px;">
+                                                    <i class="fa fa-check me-1"></i> Selesai
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -228,109 +238,154 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#tbl-notif').DataTable({
-        responsive: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        columnDefs: [{ targets: 'no-sort', orderable: false }]
-    });
-
-    // Filter status
-    $('#filter-status').on('change', function() {
-        var s = $(this).val();
-        window.location.href = '<?= base_url('bottom_price_notification') ?>' + (s ? '?status=' + encodeURIComponent(s) : '');
-    });
-
-    // Open Nego Modal
-    $(document).on('click', '.btn-nego-modal', function() {
-        var id       = $(this).data('id');
-        var nama     = $(this).data('nama');
-        var active   = $(this).data('active');
-        var bot_lama = $(this).data('bottom-lama');
-        var bot_baru = $(this).data('bottom-baru');
-
-        $('#notif_id').val(id);
-        $('#txt_prod_name').text(nama);
-        $('#txt_bot_lama').text('Rp ' + bot_lama);
-        $('#txt_bot_baru').text('Rp ' + bot_baru);
-        $('#txt_active_rate').val(Number(active).toFixed(2));
-        $('#txt_new_rate').val(Number(active).toFixed(2));
-
-        $('#modal-nego').modal('show');
-    });
-
-    // Submit Nego Request
-    $('#form-nego').on('submit', function(e) {
-        e.preventDefault();
-        var id   = $('#notif_id').val();
-        var rate = $('#txt_new_rate').val();
-
-        if (rate === '' || isNaN(rate) || Number(rate) < 0 || Number(rate) > 100) {
-            Swal.fire({ title: 'Validasi', text: 'Rate Extra Margin harus antara 0% dan 100%', icon: 'warning' });
-            return;
-        }
-
-        $('#btn-submit-nego').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Mengirim...');
-
-        $.ajax({
-            url: '<?= base_url('bottom_price_notification/submit_extra_margin') ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: { id: id, rate_pct: rate },
-            success: function(resp) {
-                $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
-                if (resp.status == 1) {
-                    $('#modal-nego').modal('hide');
-                    Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
-                        .then(function() { window.location.reload(); });
-                } else {
-                    Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
-                }
-            },
-            error: function(xhr) {
-                $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
-                Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
-            }
+    $(document).ready(function() {
+        $('#tbl-notif').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }]
         });
-    });
 
-    // Keep Active Rate Click
-    $(document).on('click', '.btn-keep-rate', function() {
-        var id   = $(this).data('id');
-        var nama = $(this).data('nama');
+        // Filter status
+        $('#filter-status').on('change', function() {
+            var s = $(this).val();
+            window.location.href = '<?= base_url('bottom_price_notification') ?>' + (s ? '?status=' + encodeURIComponent(s) : '');
+        });
 
-        Swal.fire({
-            title: 'Rate Extra Margin tidak perlu diubah?',
-            text: 'Rate Extra Margin aktif tetap dipakai untuk "' + nama + '" dan baseline Bottom Price bergeser ke nilai baru.',
-            icon: 'question',
-            input: 'text',
-            inputPlaceholder: 'Tuliskan catatan opsional (mis: Harga pasar masih sesuai)...',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            confirmButtonText: 'Ya, Tetap Gunakan Rate Aktif',
-            cancelButtonText: 'Batal'
-        }).then(function(res) {
-            if (!res.isConfirmed) return;
+        // Open Nego Modal
+        $(document).on('click', '.btn-nego-modal', function() {
+            var id = $(this).data('id');
+            var nama = $(this).data('nama');
+            var active = $(this).data('active');
+            var bot_lama = $(this).data('bottom-lama');
+            var bot_baru = $(this).data('bottom-baru');
+
+            $('#notif_id').val(id);
+            $('#txt_prod_name').text(nama);
+            $('#txt_bot_lama').text('Rp ' + bot_lama);
+            $('#txt_bot_baru').text('Rp ' + bot_baru);
+            $('#txt_active_rate').val(Number(active).toFixed(2));
+            $('#txt_new_rate').val(Number(active).toFixed(2));
+
+            $('#modal-nego').modal('show');
+        });
+
+        // Submit Nego Request
+        $('#form-nego').on('submit', function(e) {
+            e.preventDefault();
+            var id = $('#notif_id').val();
+            var rate = $('#txt_new_rate').val();
+
+            if (rate === '' || isNaN(rate) || Number(rate) < 0 || Number(rate) > 100) {
+                Swal.fire({
+                    title: 'Validasi',
+                    text: 'Rate Extra Margin harus antara 0% dan 100%',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            $('#btn-submit-nego').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Mengirim...');
 
             $.ajax({
-                url: '<?= base_url('bottom_price_notification/keep') ?>',
+                url: '<?= base_url('bottom_price_notification/submit_extra_margin') ?>',
                 type: 'POST',
                 dataType: 'json',
-                data: { id: id, catatan: res.value || '' },
+                data: {
+                    id: id,
+                    rate_pct: rate
+                },
                 success: function(resp) {
+                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
                     if (resp.status == 1) {
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
-                            .then(function() { window.location.reload(); });
+                        $('#modal-nego').modal('hide');
+                        Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                timer: 1800,
+                                showConfirmButton: false
+                            })
+                            .then(function() {
+                                window.location.reload();
+                            });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: resp.pesan,
+                            icon: 'error'
+                        });
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
+                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Request error: ' + xhr.status,
+                        icon: 'error'
+                    });
                 }
             });
         });
+
+        // Keep Active Rate Click
+        $(document).on('click', '.btn-keep-rate', function() {
+            var id = $(this).data('id');
+            var nama = $(this).data('nama');
+
+            Swal.fire({
+                title: 'Rate Extra Margin tidak perlu diubah?',
+                text: 'Rate Extra Margin aktif tetap dipakai untuk "' + nama + '" dan baseline Bottom Price bergeser ke nilai baru.',
+                icon: 'question',
+                input: 'text',
+                inputPlaceholder: 'Tuliskan catatan opsional (mis: Harga pasar masih sesuai)...',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                confirmButtonText: 'Ya, Tetap Gunakan Rate Aktif',
+                cancelButtonText: 'Batal'
+            }).then(function(res) {
+                if (!res.isConfirmed) return;
+
+                $.ajax({
+                    url: '<?= base_url('bottom_price_notification/keep') ?>',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        catatan: res.value || ''
+                    },
+                    success: function(resp) {
+                        if (resp.status == 1) {
+                            Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: resp.pesan,
+                                    icon: 'success',
+                                    timer: 1800,
+                                    showConfirmButton: false
+                                })
+                                .then(function() {
+                                    window.location.reload();
+                                });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: resp.pesan,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Request error: ' + xhr.status,
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
+        });
     });
-});
 </script>

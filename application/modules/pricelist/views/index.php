@@ -2,10 +2,80 @@
 $ENABLE_ADD     = has_permission('Pricelist.Add');
 $ENABLE_MANAGE  = has_permission('Pricelist.Manage');
 $ENABLE_DELETE  = has_permission('Pricelist.Delete');
+
+$active_tab = 'all';
+if (!empty($status_filter)) {
+    if ($status_filter === 'Draft') $active_tab = 'draft';
+    elseif ($status_filter === 'Menunggu Approval') $active_tab = 'pending';
+    elseif ($status_filter === 'Approved') $active_tab = 'approved';
+    elseif ($status_filter === 'Rejected') $active_tab = 'rejected';
+}
 ?>
 
+<style>
+    .skeleton {
+        border-radius: 4px;
+        animation: shimmer 1.5s infinite linear;
+        background: linear-gradient(90deg, #f2f2f2 25%, #e0e0e0 50%, #f2f2f2 75%);
+        background-size: 200% 100%;
+    }
+
+    .skeleton-line {
+        height: 20px;
+        margin: 8px 0;
+        border-radius: 4px;
+    }
+
+    .skeleton-line.short {
+        width: 60%;
+    }
+
+    .skeleton-line.medium {
+        width: 80%;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .nav-tabs .nav-link {
+        cursor: pointer;
+        user-select: none;
+        color: #495057;
+        font-weight: 500;
+        border: 1px solid transparent;
+        border-top-left-radius: 0.35rem;
+        border-top-right-radius: 0.35rem;
+        padding: 0.6rem 1.1rem;
+        transition: background-color 0.1s ease, color 0.1s ease;
+    }
+
+    .nav-tabs .nav-link * {
+        pointer-events: none;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd !important;
+        background-color: #fff !important;
+        border-color: #dee2e6 #dee2e6 #fff !important;
+        font-weight: 700;
+    }
+</style>
+
 <div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-white py-3">
+    <div class="card-header bg-white pt-3 pb-0 border-bottom-0">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
                 <h5 class="mb-1 text-primary fw-bold">
@@ -22,123 +92,91 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
             </div>
         </div>
 
-        <div class="row align-items-center g-2">
-            <div class="col-md-4">
-                <label class="form-label text-muted small mb-1 fw-bold">Filter Status Dokumen</label>
-                <select id="filter-status" class="form-select form-select-sm">
-                    <option value="" <?= empty($status_filter) ? 'selected' : '' ?>>-- SEMUA STATUS --</option>
-                    <option value="Draft" <?= ($status_filter === 'Draft') ? 'selected' : '' ?>>Draft</option>
-                    <option value="Menunggu Approval" <?= ($status_filter === 'Menunggu Approval') ? 'selected' : '' ?>>Menunggu Approval</option>
-                    <option value="Approved" <?= ($status_filter === 'Approved') ? 'selected' : '' ?>>Approved</option>
-                    <option value="Rejected" <?= ($status_filter === 'Rejected') ? 'selected' : '' ?>>Rejected</option>
-                </select>
-            </div>
-        </div>
+        <!-- Status Filter Tabs -->
+        <ul class="nav nav-tabs card-header-tabs" id="plStatusTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link pl-tab-btn <?= ($active_tab === 'all') ? 'active' : '' ?>" id="tab-btn-all" data-bs-toggle="tab" data-bs-target="#tab-pane-all" data-tab="all" type="button" role="tab" aria-controls="tab-pane-all" aria-selected="<?= ($active_tab === 'all') ? 'true' : 'false' ?>">
+                    <i class="fa fa-list me-1 text-primary"></i> Semua
+                    <span class="badge rounded-pill bg-secondary ms-1" id="badge-count-all"><?= $counts['all'] ?? 0 ?></span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link pl-tab-btn <?= ($active_tab === 'draft') ? 'active' : '' ?>" id="tab-btn-draft" data-bs-toggle="tab" data-bs-target="#tab-pane-draft" data-tab="draft" type="button" role="tab" aria-controls="tab-pane-draft" aria-selected="<?= ($active_tab === 'draft') ? 'true' : 'false' ?>">
+                    <i class="fa fa-pencil-square-o me-1 text-secondary"></i> Draft
+                    <span class="badge rounded-pill bg-secondary ms-1" id="badge-count-draft"><?= $counts['Draft'] ?? 0 ?></span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link pl-tab-btn <?= ($active_tab === 'pending') ? 'active' : '' ?>" id="tab-btn-pending" data-bs-toggle="tab" data-bs-target="#tab-pane-pending" data-tab="pending" type="button" role="tab" aria-controls="tab-pane-pending" aria-selected="<?= ($active_tab === 'pending') ? 'true' : 'false' ?>">
+                    <i class="fa fa-clock-o me-1 text-warning"></i> Menunggu Approval
+                    <span class="badge rounded-pill bg-warning text-dark ms-1" id="badge-count-pending"><?= $counts['Menunggu Approval'] ?? 0 ?></span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link pl-tab-btn <?= ($active_tab === 'approved') ? 'active' : '' ?>" id="tab-btn-approved" data-bs-toggle="tab" data-bs-target="#tab-pane-approved" data-tab="approved" type="button" role="tab" aria-controls="tab-pane-approved" aria-selected="<?= ($active_tab === 'approved') ? 'true' : 'false' ?>">
+                    <i class="fa fa-check-circle me-1 text-success"></i> Approved
+                    <span class="badge rounded-pill bg-success ms-1" id="badge-count-approved"><?= $counts['Approved'] ?? 0 ?></span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link pl-tab-btn <?= ($active_tab === 'rejected') ? 'active' : '' ?>" id="tab-btn-rejected" data-bs-toggle="tab" data-bs-target="#tab-pane-rejected" data-tab="rejected" type="button" role="tab" aria-controls="tab-pane-rejected" aria-selected="<?= ($active_tab === 'rejected') ? 'true' : 'false' ?>">
+                    <i class="fa fa-times-circle me-1 text-danger"></i> Rejected
+                    <span class="badge rounded-pill bg-danger ms-1" id="badge-count-rejected"><?= $counts['Rejected'] ?? 0 ?></span>
+                </button>
+            </li>
+        </ul>
     </div>
     <div class="card-body p-3">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover align-middle mb-0" id="tbl-pricelist" style="width:100%">
-                <thead class="table-light">
-                    <tr>
-                        <th class="text-center" width="40">#</th>
-                        <th>Produk (Varian Utama)</th>
-                        <th width="140">No. Pricelist</th>
-                        <th class="text-center" width="90">Jumlah Baris</th>
-                        <th width="150">Dibuat Pada</th>
-                        <th class="text-center" width="160">Status</th>
-                        <th width="180">Keputusan Management</th>
-                        <th class="text-center no-sort" width="160">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($list)): ?>
-                        <?php foreach ($list as $idx => $r): ?>
-                            <?php 
-                                $is_draft    = ($r->status === 'Draft');
-                                $is_pending  = ($r->status === 'Menunggu Approval');
-                                $is_approved = ($r->status === 'Approved');
-                                $is_rejected = ($r->status === 'Rejected');
+        <div class="tab-content" id="plStatusTabsContent">
+            <!-- Wadah Tab Semua -->
+            <div class="tab-pane <?= ($active_tab === 'all') ? 'show active' : '' ?>" id="tab-pane-all" role="tabpanel" aria-labelledby="tab-btn-all">
+                <div id="skeleton-all" class="p-3">
+                    <div class="skeleton skeleton-line medium"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line short"></div>
+                </div>
+                <div id="content-all" style="display:none;"></div>
+            </div>
 
-                                $prods = array_filter(array_map('trim', explode(',', $r->product_names)));
-                                $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
-                                $more_count = count($prods) - 1;
-                            ?>
-                            <tr>
-                                <td class="text-center"><?= $idx + 1 ?></td>
-                                <td>
-                                    <strong class="text-dark fs-6"><?= htmlspecialchars(strtoupper($first_prod)) ?></strong>
-                                    <?php if ($more_count > 0): ?>
-                                        <span class="badge bg-secondary ms-1">+<?= $more_count ?> produk</span>
-                                    <?php endif; ?>
-                                    <div class="text-muted small mt-1">
-                                        Varian: <?= htmlspecialchars($r->uniq_ids ?: '-') ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-light text-dark border fw-bold"><?= htmlspecialchars($r->no_pricelist) ?></span>
-                                </td>
-                                <td class="text-center fw-bold">
-                                    <?= $r->total_items ?> varian
-                                </td>
-                                <td class="text-muted small">
-                                    <?= date('d/m/Y H:i', strtotime($r->created_at)) ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php if ($is_draft): ?>
-                                        <span class="badge bg-secondary px-2 py-1">Draft</span>
-                                    <?php elseif ($is_pending): ?>
-                                        <span class="badge bg-warning text-dark border border-warning px-2 py-1">
-                                            <i class="fa fa-clock-o me-1"></i> Menunggu Approval
-                                        </span>
-                                    <?php elseif ($is_approved): ?>
-                                        <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
-                                            <i class="fa fa-check-circle me-1"></i> Approved
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge bg-danger-subtle text-danger border border-danger px-2 py-1" data-bs-toggle="tooltip" title="<?= htmlspecialchars($r->reject_reason ?: '') ?>">
-                                            <i class="fa fa-times-circle me-1"></i> Rejected
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($is_approved): ?>
-                                        <div class="text-success small fw-bold"><i class="fa fa-check me-1"></i> Disetujui</div>
-                                        <div class="text-muted small"><?= htmlspecialchars($r->decided_by_name ?: 'GM') ?> · <?= date('d/m/Y H:i', strtotime($r->decided_at)) ?></div>
-                                    <?php elseif ($is_rejected): ?>
-                                        <div class="text-danger small fw-bold"><i class="fa fa-times me-1"></i> Ditolak</div>
-                                        <div class="text-danger small"><?= htmlspecialchars($r->reject_reason ?: '-') ?></div>
-                                    <?php else: ?>
-                                        <span class="text-muted">&mdash;</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-info text-white btn-view-pl shadow-sm"
-                                        data-id="<?= $r->id ?>"
-                                        title="View Dokumen Pricelist">
-                                        <i class="fa fa-eye"></i> View
-                                    </button>
-                                    <?php if ($is_draft && $ENABLE_MANAGE): ?>
-                                        <button type="button" class="btn btn-sm btn-success btn-submit-pl shadow-sm ms-1"
-                                            data-id="<?= $r->id ?>"
-                                            data-no="<?= $r->no_pricelist ?>"
-                                            title="Ajukan ke Management">
-                                            <i class="fa fa-paper-plane"></i> Ajukan
-                                        </button>
-                                    <?php endif; ?>
-                                    <?php if ($is_draft && $ENABLE_DELETE): ?>
-                                        <button type="button" class="btn btn-sm btn-danger btn-del-pl shadow-sm ms-1"
-                                            data-id="<?= $r->id ?>"
-                                            data-no="<?= $r->no_pricelist ?>"
-                                            title="Hapus Draft">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+            <!-- Wadah Tab Draft -->
+            <div class="tab-pane <?= ($active_tab === 'draft') ? 'show active' : '' ?>" id="tab-pane-draft" role="tabpanel" aria-labelledby="tab-btn-draft">
+                <div id="skeleton-draft" class="p-3">
+                    <div class="skeleton skeleton-line medium"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line short"></div>
+                </div>
+                <div id="content-draft" style="display:none;"></div>
+            </div>
+
+            <!-- Wadah Tab Menunggu Approval -->
+            <div class="tab-pane <?= ($active_tab === 'pending') ? 'show active' : '' ?>" id="tab-pane-pending" role="tabpanel" aria-labelledby="tab-btn-pending">
+                <div id="skeleton-pending" class="p-3">
+                    <div class="skeleton skeleton-line medium"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line short"></div>
+                </div>
+                <div id="content-pending" style="display:none;"></div>
+            </div>
+
+            <!-- Wadah Tab Approved -->
+            <div class="tab-pane <?= ($active_tab === 'approved') ? 'show active' : '' ?>" id="tab-pane-approved" role="tabpanel" aria-labelledby="tab-btn-approved">
+                <div id="skeleton-approved" class="p-3">
+                    <div class="skeleton skeleton-line medium"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line short"></div>
+                </div>
+                <div id="content-approved" style="display:none;"></div>
+            </div>
+
+            <!-- Wadah Tab Rejected -->
+            <div class="tab-pane <?= ($active_tab === 'rejected') ? 'show active' : '' ?>" id="tab-pane-rejected" role="tabpanel" aria-labelledby="tab-btn-rejected">
+                <div id="skeleton-rejected" class="p-3">
+                    <div class="skeleton skeleton-line medium"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line short"></div>
+                </div>
+                <div id="content-rejected" style="display:none;"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -153,7 +191,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4" id="pl-doc-body">
+            <div class="modal-body p-4" id="pl-doc-body" style="max-height: 65vh; overflow: auto;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
                     <div class="mt-2 text-muted">Memuat dokumen pricelist...</div>
@@ -170,50 +208,93 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#tbl-pricelist').DataTable({
-        responsive: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        columnDefs: [{ targets: 'no-sort', orderable: false }]
-    });
+    const BASE_URL = '<?= base_url("pricelist") ?>';
 
-    // Tooltip
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(el) { return new bootstrap.Tooltip(el); });
+    /** Render tabel via AJAX hanya saat tab aktif */
+    function loadTab(tab) {
+        const skeleton = $('#skeleton-' + tab);
+        const content = $('#content-' + tab);
 
-    // Filter status
-    $('#filter-status').on('change', function() {
-        var s = $(this).val();
-        window.location.href = '<?= base_url('pricelist') ?>' + (s ? '?status=' + encodeURIComponent(s) : '');
-    });
+        if (content.data('loaded')) return;
 
-    // View Dokumen
-    $(document).on('click', '.btn-view-pl', function() {
-        var id = $(this).data('id');
-        $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist');
-        $('#modal-pl-doc').modal('show');
-        $('#pl-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat dokumen pricelist...</div></div>');
+        skeleton.show();
+        content.hide();
 
-        $.ajax({
-            url: '<?= base_url('pricelist/view_doc') ?>',
-            type: 'GET',
-            dataType: 'json',
-            data: { id: id },
-            success: function(resp) {
-                if (resp.status != 1) {
-                    $('#pl-doc-body').html('<div class="alert alert-danger">' + resp.pesan + '</div>');
-                    return;
-                }
-                var h = resp.data.header;
-                var details = resp.data.details || [];
-                var fn = function(v) { return Number(v || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+        $.get(BASE_URL + '/render_tab/' + tab, function(html) {
+            skeleton.hide();
+            content.html(html).show();
+            content.data('loaded', true);
+        }).fail(function() {
+            skeleton.hide();
+            content.html('<div class="alert alert-danger my-3">Gagal memuat data tabel. Silakan refresh halaman.</div>').show();
+        });
+    }
 
-                $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist — ' + h.no_pricelist);
+    /** Reload tab tertentu (misal setelah submit / delete) */
+    function reloadTab(tab) {
+        $('#content-' + tab).data('loaded', false);
+        loadTab(tab);
+    }
 
-                var badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : (h.status === 'Menunggu Approval' ? 'bg-warning text-dark' : 'bg-secondary'));
+    $(document).ready(function() {
+        // Load tab awal yang sedang aktif saja!
+        loadTab('<?= $active_tab ?>');
 
-                var html = `
+        // Tab switch handler: pindah seketika dan load tabel jika belum pernah dimuat
+        $(document).on('click', '.pl-tab-btn', function(e) {
+            e.preventDefault();
+            var tab = $(this).data('tab');
+            var target = $(this).attr('data-bs-target');
+            if (!target) return;
+
+            $('.pl-tab-btn').removeClass('active').attr('aria-selected', 'false');
+            $(this).addClass('active').attr('aria-selected', 'true');
+
+            $('#plStatusTabsContent > .tab-pane').removeClass('show active');
+            $(target).addClass('show active');
+
+            loadTab(tab);
+        });
+
+        // Tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(el) {
+            return new bootstrap.Tooltip(el);
+        });
+
+        // View Dokumen
+        $(document).on('click', '.btn-view-pl', function() {
+            var id = $(this).data('id');
+            $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist');
+            $('#modal-pl-doc').modal('show');
+            $('#pl-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat dokumen pricelist...</div></div>');
+
+            $.ajax({
+                url: BASE_URL + '/view_doc',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    id: id
+                },
+                success: function(resp) {
+                    if (resp.status != 1) {
+                        $('#pl-doc-body').html('<div class="alert alert-danger">' + resp.pesan + '</div>');
+                        return;
+                    }
+                    var h = resp.data.header;
+                    var details = resp.data.details || [];
+                    var fn = function(v) {
+                        return Number(v || 0).toLocaleString('id-ID', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    };
+
+                    $('#modalPlDocLabel').html('<i class="fa fa-list-alt me-2"></i>Dokumen Pricelist — ' + h.no_pricelist);
+
+                    var badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : (h.status === 'Menunggu Approval' ? 'bg-warning text-dark' : 'bg-secondary'));
+
+                    var html = `
                     <div class="card bg-light border-0 mb-3">
                         <div class="card-body">
                             <div class="row g-2">
@@ -247,7 +328,7 @@ $(document).ready(function() {
                     <h6 class="fw-bold text-dark mb-2"><i class="fa fa-cubes me-1"></i> Rincian Produk &times; Varian BOM (${details.length} Baris)</h6>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                            <thead class="table-primary text-dark">
+                            <thead class="text-dark">
                                 <tr>
                                     <th width="40" class="text-center">#</th>
                                     <th>Produk Finished Goods</th>
@@ -263,11 +344,11 @@ $(document).ready(function() {
                             <tbody>
                 `;
 
-                if (!details.length) {
-                    html += `<tr><td colspan="${h.status === 'Draft' ? 9 : 8}" class="text-center text-muted py-3">Belum ada baris varian. Masukkan varian dari menu Simulasi Costing.</td></tr>`;
-                } else {
-                    details.forEach(function(d, k) {
-                        html += `
+                    if (!details.length) {
+                        html += `<tr><td colspan="${h.status === 'Draft' ? 9 : 8}" class="text-center text-muted py-3">Belum ada baris varian. Masukkan varian dari menu Simulasi Costing.</td></tr>`;
+                    } else {
+                        details.forEach(function(d, k) {
+                            html += `
                             <tr>
                                 <td class="text-center">${k + 1}</td>
                                 <td class="fw-bold">${d.nm_product}</td>
@@ -286,127 +367,166 @@ $(document).ready(function() {
                                 ` : ''}
                             </tr>
                         `;
-                    });
-                }
+                        });
+                    }
 
-                html += `
+                    html += `
                             </tbody>
                         </table>
                     </div>
                 `;
 
-                $('#pl-doc-body').html(html);
+                    $('#pl-doc-body').html(html);
 
-                // Footer button
-                if (h.status === 'Draft' && details.length > 0) {
-                    $('#pl-doc-footer').html(`
+                    // Footer button
+                    if (h.status === 'Draft' && details.length > 0) {
+                        $('#pl-doc-footer').html(`
                         <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
                         <button type="button" class="btn btn-success px-4 btn-modal-submit" data-id="${h.id}" data-no="${h.no_pricelist}">
                             <i class="fa fa-paper-plane me-1"></i> Ajukan ke Management
                         </button>
                     `);
-                } else {
-                    $('#pl-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>`);
-                }
-            },
-            error: function(xhr) {
-                $('#pl-doc-body').html('<div class="alert alert-danger">Gagal memuat dokumen (Status: ' + xhr.status + ')</div>');
-            }
-        });
-    });
-
-    // Submit Draft Click
-    $(document).on('click', '.btn-submit-pl, .btn-modal-submit', function() {
-        var id = $(this).data('id');
-        var no = $(this).data('no');
-
-        Swal.fire({
-            title: 'Ajukan ke Management?',
-            text: 'Harga pada dokumen ' + no + ' akan dibekukan dan tidak dapat diubah lagi sampai diputuskan oleh Management.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            confirmButtonText: 'Ya, Ajukan!',
-            cancelButtonText: 'Batal'
-        }).then(function(res) {
-            if (!res.isConfirmed) return;
-
-            $.ajax({
-                url: '<?= base_url('pricelist/submit') ?>',
-                type: 'POST',
-                dataType: 'json',
-                data: { id: id },
-                success: function(resp) {
-                    if (resp.status == 1) {
-                        $('#modal-pl-doc').modal('hide');
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
-                            .then(function() { window.location.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        $('#pl-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>`);
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
+                    $('#pl-doc-body').html('<div class="alert alert-danger">Gagal memuat dokumen (Status: ' + xhr.status + ')</div>');
                 }
             });
         });
-    });
 
-    // Delete item from draft
-    $(document).on('click', '.btn-del-item', function() {
-        var detail_id = $(this).data('id');
-        var header_id = $(this).data('header');
+        // Submit Draft Click
+        $(document).on('click', '.btn-submit-pl, .btn-modal-submit', function() {
+            var id = $(this).data('id');
+            var no = $(this).data('no');
 
-        $.ajax({
-            url: '<?= base_url('pricelist/delete_item') ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: { detail_id: detail_id },
-            success: function(resp) {
-                if (resp.status == 1) {
-                    // Refresh modal
-                    $('.btn-view-pl[data-id="' + header_id + '"]').trigger('click');
-                } else {
-                    Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
-                }
-            }
+            Swal.fire({
+                title: 'Ajukan ke Management?',
+                text: 'Harga pada dokumen ' + no + ' akan dibekukan dan tidak dapat diubah lagi sampai diputuskan oleh Management.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                confirmButtonText: 'Ya, Ajukan!',
+                cancelButtonText: 'Batal'
+            }).then(function(res) {
+                if (!res.isConfirmed) return;
+
+                $.ajax({
+                    url: BASE_URL + '/submit',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        id: id
+                    },
+                    success: function(resp) {
+                        if (resp.status == 1) {
+                            $('#modal-pl-doc').modal('hide');
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                timer: 1800,
+                                showConfirmButton: false
+                            }).then(function() {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: resp.pesan,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Request error: ' + xhr.status,
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
         });
-    });
 
-    // Delete whole draft
-    $(document).on('click', '.btn-del-pl', function() {
-        var id = $(this).data('id');
-        var no = $(this).data('no');
-
-        Swal.fire({
-            title: 'Hapus Draft?',
-            text: 'Draft Pricelist ' + no + ' beserta seluruh barisnya akan dihapus.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Ya, Hapus Draft',
-            cancelButtonText: 'Batal'
-        }).then(function(res) {
-            if (!res.isConfirmed) return;
+        // Delete item from draft
+        $(document).on('click', '.btn-del-item', function() {
+            var detail_id = $(this).data('id');
+            var header_id = $(this).data('header');
 
             $.ajax({
-                url: '<?= base_url('pricelist/delete') ?>',
+                url: BASE_URL + '/delete_item',
                 type: 'POST',
                 dataType: 'json',
-                data: { id: id },
+                data: {
+                    detail_id: detail_id
+                },
                 success: function(resp) {
                     if (resp.status == 1) {
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
-                            .then(function() { window.location.reload(); });
+                        $('.btn-view-pl[data-id="' + header_id + '"]').trigger('click');
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: resp.pesan,
+                            icon: 'error'
+                        });
                     }
-                },
-                error: function(xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
                 }
             });
         });
+
+        // Delete whole draft
+        $(document).on('click', '.btn-del-pl', function() {
+            var id = $(this).data('id');
+            var no = $(this).data('no');
+
+            Swal.fire({
+                title: 'Hapus Draft?',
+                text: 'Draft Pricelist ' + no + ' beserta seluruh barisnya akan dihapus.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Ya, Hapus Draft',
+                cancelButtonText: 'Batal'
+            }).then(function(res) {
+                if (!res.isConfirmed) return;
+
+                $.ajax({
+                    url: BASE_URL + '/delete',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        id: id
+                    },
+                    success: function(resp) {
+                        if (resp.status == 1) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(function() {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: resp.pesan,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Request error: ' + xhr.status,
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
+        });
     });
-});
 </script>

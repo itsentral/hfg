@@ -116,20 +116,43 @@ class Simulasi_costing_model extends CI_Model
         return $res;
     }
 
-    /** Ambil Price Reference Max (USD/Kg) per Material dari PO History */
+    /** Ambil Price Reference Max (USD/Kg) per Material dari Master Price Reference (new_inventory_4) & PO History (dt_trans_po) */
     public function get_price_reference_max()
     {
-        $sql = "
+        $res = [];
+
+        // 1. Ambil dari History PO dt_trans_po (nilai MAX USD)
+        $sql_po = "
             SELECT idmaterial, MAX(hargasatuan) AS max_usd
             FROM dt_trans_po
             WHERE hargasatuan > 0
             GROUP BY idmaterial
         ";
-        $rows = $this->db->query($sql)->result();
-        $res = [];
-        foreach ($rows as $r) {
-            $res[$r->idmaterial] = (float)$r->max_usd;
+        $rows_po = $this->db->query($sql_po)->result();
+        foreach ($rows_po as $r) {
+            if (!empty($r->idmaterial)) {
+                $res[$r->idmaterial] = (float)$r->max_usd;
+            }
         }
+
+        // 2. Ambil dari Master Material new_inventory_4 (Price Reference resmi yang disetujui Finance)
+        // Prioritas utama: jika Finance sudah menentukan/approve price_ref_use_usd > 0
+        $sql_mat = "
+            SELECT id, code_lv4, price_ref_use_usd, price_ref_usd, price_ref_high_usd
+            FROM new_inventory_4
+            WHERE category = 'material' AND deleted_date IS NULL
+        ";
+        $rows_mat = $this->db->query($sql_mat)->result();
+        foreach ($rows_mat as $m) {
+            $ref_usd = (float)($m->price_ref_use_usd ?: ($m->price_ref_usd ?: $m->price_ref_high_usd));
+            if ($ref_usd > 0) {
+                if (!empty($m->code_lv4)) {
+                    $res[$m->code_lv4] = $ref_usd;
+                }
+                $res[$m->id] = $ref_usd;
+            }
+        }
+
         return $res;
     }
 
@@ -545,6 +568,14 @@ class Simulasi_costing_model extends CI_Model
 
         if (!$target) {
             return ['status' => 0, 'pesan' => 'Varian BOM tidak ditemukan'];
+        }
+
+        if (!$target->is_lengkap) {
+            $gaps_text = implode(', ', $target->gaps);
+            return [
+                'status' => 0,
+                'pesan'  => "Tidak dapat mengajukan ke Draft Pricelist karena parameter belum lengkap: {$gaps_text}."
+            ];
         }
 
         // Cari draft pricelist aktif atau buat baru

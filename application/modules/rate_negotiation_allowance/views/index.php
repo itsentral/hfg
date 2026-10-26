@@ -1,6 +1,5 @@
 <?php
 $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
-$CAN_APPROVE   = has_permission('Approval_Extra_Margin.View');
 ?>
 
 <div class="card shadow-sm border-0 mb-4">
@@ -18,11 +17,6 @@ $CAN_APPROVE   = has_permission('Approval_Extra_Margin.View');
                 <span class="badge bg-warning text-dark border border-warning px-3 py-2 me-2">
                     <i class="fa fa-clock-o me-1"></i> <strong><?= $pending_count ?></strong> Menunggu Approval GM
                 </span>
-            <?php endif; ?>
-            <?php if ($CAN_APPROVE): ?>
-                <a href="<?= base_url('rate_negotiation_allowance/approval') ?>" class="btn btn-outline-primary btn-sm shadow-sm">
-                    <i class="fa fa-check-square-o me-1"></i> Buka Approval GM
-                </a>
             <?php endif; ?>
         </div>
     </div>
@@ -59,10 +53,10 @@ $CAN_APPROVE   = has_permission('Approval_Extra_Margin.View');
                 <tbody>
                     <?php if (!empty($list)): ?>
                         <?php foreach ($list as $idx => $r): ?>
-                            <?php 
-                                $is_pending = ($r->req_status === 'Menunggu Approval GM');
-                                $is_rejected = ($r->req_status === 'Rejected');
-                                $is_approved = ($r->req_status === 'Approved');
+                            <?php
+                            $is_pending = ($r->req_status === 'Menunggu Approval GM');
+                            $is_rejected = ($r->req_status === 'Rejected');
+                            $is_approved = ($r->req_status === 'Approved');
                             ?>
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
@@ -199,78 +193,103 @@ $CAN_APPROVE   = has_permission('Approval_Extra_Margin.View');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#tbl-nego').DataTable({
-        responsive: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        columnDefs: [{ targets: 'no-sort', orderable: false }]
-    });
+    $(document).ready(function() {
+        $('#tbl-nego').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }]
+        });
 
-    // Tooltip
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(el) { return new bootstrap.Tooltip(el); });
+        // Tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(el) {
+            return new bootstrap.Tooltip(el);
+        });
 
-    // Click Ajukan Perubahan / Ajukan Ulang
-    $(document).on('click', '.btn-request-nego', function() {
-        var code   = $(this).data('code');
-        var nama   = $(this).data('nama');
-        var active = $(this).data('active');
-        var req    = $(this).data('req');
-        var reason = $(this).data('reason');
+        // Click Ajukan Perubahan / Ajukan Ulang
+        $(document).on('click', '.btn-request-nego', function() {
+            var code = $(this).data('code');
+            var nama = $(this).data('nama');
+            var active = $(this).data('active');
+            var req = $(this).data('req');
+            var reason = $(this).data('reason');
 
-        $('#req_code_lv2').val(code);
-        $('#req_category_name').val(nama);
-        $('#req_active_rate').val(active !== '' ? Number(active).toFixed(2) : '—');
-        $('#req_new_rate').val(req !== '' ? Number(req).toFixed(2) : (active !== '' ? Number(active).toFixed(2) : ''));
+            $('#req_code_lv2').val(code);
+            $('#req_category_name').val(nama);
+            $('#req_active_rate').val(active !== '' ? Number(active).toFixed(2) : '—');
+            $('#req_new_rate').val(req !== '' ? Number(req).toFixed(2) : (active !== '' ? Number(active).toFixed(2) : ''));
 
-        if (reason) {
-            $('#txt-reason').text(reason);
-            $('#alert-reason').removeClass('d-none');
-        } else {
-            $('#alert-reason').addClass('d-none');
-        }
-
-        $('#modalRequestLabel').text('Ajukan Extra Margin — ' + nama);
-        $('#modal-request').modal('show');
-    });
-
-    // Submit Request
-    $('#form-request').on('submit', function(e) {
-        e.preventDefault();
-        var code = $('#req_code_lv2').val();
-        var val  = $('#req_new_rate').val();
-
-        if (val === '' || isNaN(val) || Number(val) < 0 || Number(val) > 100) {
-            Swal.fire({ title: 'Validasi', text: 'Rate Extra Margin harus antara 0% dan 100%', icon: 'warning' });
-            return;
-        }
-
-        $('#btn-submit-req').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Mengirim...');
-
-        $.ajax({
-            url: '<?= base_url('rate_negotiation_allowance/save_request') ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                code_lv2: code,
-                rate_negotiation_allowance: val
-            },
-            success: function(resp) {
-                $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
-                if (resp.status == 1) {
-                    $('#modal-request').modal('hide');
-                    Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
-                        .then(function() { window.location.reload(); });
-                } else {
-                    Swal.fire({ title: 'Perhatian', text: resp.pesan, icon: 'warning' });
-                }
-            },
-            error: function(xhr) {
-                $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
-                Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
+            if (reason) {
+                $('#txt-reason').text(reason);
+                $('#alert-reason').removeClass('d-none');
+            } else {
+                $('#alert-reason').addClass('d-none');
             }
+
+            $('#modalRequestLabel').text('Ajukan Extra Margin — ' + nama);
+            $('#modal-request').modal('show');
+        });
+
+        // Submit Request
+        $('#form-request').on('submit', function(e) {
+            e.preventDefault();
+            var code = $('#req_code_lv2').val();
+            var val = $('#req_new_rate').val();
+
+            if (val === '' || isNaN(val) || Number(val) < 0 || Number(val) > 100) {
+                Swal.fire({
+                    title: 'Validasi',
+                    text: 'Rate Extra Margin harus antara 0% dan 100%',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            $('#btn-submit-req').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Mengirim...');
+
+            $.ajax({
+                url: '<?= base_url('rate_negotiation_allowance/save_request') ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    code_lv2: code,
+                    rate_negotiation_allowance: val
+                },
+                success: function(resp) {
+                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
+                    if (resp.status == 1) {
+                        $('#modal-request').modal('hide');
+                        Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                timer: 1800,
+                                showConfirmButton: false
+                            })
+                            .then(function() {
+                                window.location.reload();
+                            });
+                    } else {
+                        Swal.fire({
+                            title: 'Perhatian',
+                            text: resp.pesan,
+                            icon: 'warning'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    $('#btn-submit-req').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim Pengajuan ke GM');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Request error: ' + xhr.status,
+                        icon: 'error'
+                    });
+                }
+            });
         });
     });
-});
 </script>
