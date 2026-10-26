@@ -43,6 +43,8 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-26** `[DECISION][FEAT-04]` **Tabel BOM = `ms_bom_header` dan `ms_bom_detail`; ERD resmi = `erd-revisi.drawio`.** Keputusan user: BOM Product Costing memakai tabel yang sudah ada (`ms_bom_header`, `ms_bom_detail`), bukan tabel baru; usulan `product_bom_header/product_bom_detail` dan K2 gugur. Workbook (UC-N07, Entities) disamakan; `erd.drawio` dibiarkan sebagai arsip. `[TODO]` `ms_bom_header` punya `UNIQUE(id_produk)` dan dipakai SPK/Request List/Production Planning; varian tebal per produk (`varian_type`) butuh perubahan skema (lepas unique, tambah `varian_type`, unik gabungan `id_produk + varian_type`) setelah D0 dan keputusan dampak ke modul lain.
+
 - **2026-10-26** `[DECISION][FEAT-08]` **Kolom varian BOM = `varian_type`; ERD yang diperbarui = `erd-revisi.drawio`.** Keputusan user: nama kolom varian di ERD dan kode memakai `varian_type` (nama ERD klien pada `ms_bom_header`), menggantikan usulan `uniq_id`; nama field ERD harus sama dengan nama pada kolom tampilan program (label "Varian BOM (varian_type)"). OQ 52 dijawab: Hasil Costing = Update Costing terakhir saat laporan dibuat. Stok Bebas dan KW 2 mengikuti varian SPK. `erd-revisi.drawio` diperbarui (kolom `varian_type` di `tr_spk_material_detail` dan `production_report_items`, tampilan ringkas `ms_bom_header` + dua relasi di halaman Produksi, catatan); `erd.drawio` belum disamakan. `[TODO]` mockup memakai label Varian BOM (varian_type); samakan `erd.drawio` atau tetapkan satu ERD utama.
 
 - **2026-10-26** `[DECISION][FEAT-08]` **OQ 50, 51, 53, 54, 55 terjawab.** SPK ditolak (tidak bisa disimpan) bila produk belum punya varian BOM atau

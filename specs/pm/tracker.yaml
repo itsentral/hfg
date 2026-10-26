@@ -96,8 +96,8 @@ issues:
       Dipecah 04a Kurs, 04b Flow Process, 04c Price Reference, 04d BOM varian (plan di
       .artifacts/bom_flow_kurs_price_reference/). 04b: kode modul flow_process ditulis 2026-10-20
       (php -l bersih), belum diuji di database; migrasi dijalankan user di database uji. 04a/04c/04d
-      menunggu D0 diperluas dan keputusan nama tabel BOM baru (bom_header/bom_detail lama sudah dipakai
-      kode) serta sumber History Pembelian.
+      menunggu D0 diperluas dan tabel BOM = ms_bom_header/ms_bom_detail yang sudah ada (keputusan user 2026-10-26; UNIQUE(id_produk)
+      perlu diubah untuk multi-varian varian_type) serta sumber History Pembelian.
   - id: FEAT-05
     title: Master rate (Man Power, FOH, Bahan Pendukung, Manufacturing Support, Other Cost, Negotiation Allowance)
     type: feature
