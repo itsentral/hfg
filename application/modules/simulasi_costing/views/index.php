@@ -1,3 +1,26 @@
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 34px !important;
+        padding: 3px 10px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 6px !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px !important;
+        padding-left: 0 !important;
+        font-size: 0.875rem !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 32px !important;
+        right: 8px !important;
+    }
+
+    .shadow-xs {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+</style>
 <?php
 $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
 ?>
@@ -28,8 +51,8 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
         <div class="row align-items-center g-2">
             <div class="col-md-4">
                 <label class="form-label text-muted small mb-1 fw-bold">Filter Product Category</label>
-                <select id="filter-category" class="form-select form-select-sm">
-                    <option value="" <?= empty($cat_filter) ? 'selected' : '' ?>>-- SEMUA PRODUCT CATEGORY --</option>
+                <select id="filter-category" class="form-select form-select-sm select2 chosen-select" style="width: 100%;">
+                    <option value="">-- SEMUA PRODUCT CATEGORY --</option>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?= htmlspecialchars($cat->code_lv2) ?>" <?= ($cat_filter === $cat->code_lv2) ? 'selected' : '' ?>>
                             <?= htmlspecialchars(strtoupper($cat->nama)) ?>
@@ -108,19 +131,37 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                 <td class="text-center text-muted small">
                                     <?= date('d/m/Y H:i', strtotime($c->last_updated)) ?>
                                 </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-info text-white btn-view-detail shadow-sm"
-                                        data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
-                                        title="Report Costing Detail">
-                                        <i class="fa fa-eye"></i> Detail
-                                    </button>
-                                    <?php if ($ENABLE_MANAGE): ?>
-                                        <button type="button" class="btn btn-sm btn-success btn-add-draft shadow-sm ms-1"
+                                <td class="text-center text-nowrap">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-primary btn-view-detail shadow-xs"
                                             data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
-                                            title="Masukkan ke Draft Pricelist">
-                                            <i class="fa fa-plus"></i> Draft
+                                            title="Lihat Report Costing Detail"
+                                            style="width: 80px;">
+                                            <i class="fa fa-eye me-1"></i> Detail
                                         </button>
-                                    <?php endif; ?>
+
+                                        <?php if ($ENABLE_MANAGE): ?>
+                                            <?php if ($c->is_lengkap): ?>
+                                                <button type="button" class="btn btn-sm btn-success btn-add-draft shadow-xs"
+                                                    data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
+                                                    data-product="<?= htmlspecialchars($c->nm_product) ?>"
+                                                    data-category="<?= htmlspecialchars($c->nm_category) ?>"
+                                                    data-price-m="Rp <?= number_format($c->pricelist_meter, 2, ',', '.') ?>"
+                                                    data-price-kg="Rp <?= number_format($c->pricelist_kg, 2, ',', '.') ?>"
+                                                    title="Ajukan varian ini ke Draft Pricelist"
+                                                    style="width: 80px;">
+                                                    <i class="fa fa-plus-circle me-1"></i> Draft
+                                                </button>
+                                            <?php else: ?>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary opacity-50 shadow-xs" disabled
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Tidak dapat diajukan: <?= htmlspecialchars(implode(', ', $c->gaps)) ?>"
+                                                    style="width: 80px;">
+                                                    <i class="fa fa-lock me-1"></i> Draft
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -136,7 +177,9 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
 </div>
 
 <!-- Modal Report Costing Detail (2 Satuan: Rp/Meter & Rp/Kg) -->
-<div class="modal fade" id="modal-detail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+<div class="modal fade" id="modal-detail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
             <div class="modal-header bg-primary text-white">
@@ -162,121 +205,192 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#tbl-simulasi').DataTable({
-        responsive: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        columnDefs: [{ targets: 'no-sort', orderable: false }]
-    });
+    $(document).ready(function() {
+        $('#tbl-simulasi').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }]
+        });
 
-    // Tooltip
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(el) { return new bootstrap.Tooltip(el); });
+        // Tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(el) {
+            return new bootstrap.Tooltip(el);
+        });
 
-    // Filter Category
-    $('#filter-category').on('change', function() {
-        var c = $(this).val();
-        window.location.href = '<?= base_url('simulasi_costing') ?>' + (c ? '?category=' + encodeURIComponent(c) : '');
-    });
+        // Inisialisasi Select2 pada Filter Product Category
+        if ($.fn.select2) {
+            $('#filter-category').select2({
+                width: '100%',
+                placeholder: '-- SEMUA PRODUCT CATEGORY --',
+                allowClear: true
+            });
+        }
 
-    // Update Costing Click
-    $('.btn-update-costing').on('click', function() {
-        var btn = $(this);
-        Swal.fire({
-            title: 'Jalankan Update Costing?',
-            text: 'Perubahan master sejak update sebelumnya akan dicatat ke History Costing dan memicu Notifikasi Bottom Price untuk Sales.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            confirmButtonText: 'Ya, Update Sekarang!',
-            cancelButtonText: 'Batal'
-        }).then(function(res) {
-            if (!res.isConfirmed) return;
+        // Filter Category
+        $('#filter-category').on('change', function() {
+            var c = $(this).val();
+            window.location.href = '<?= base_url('simulasi_costing') ?>' + (c ? '?category=' + encodeURIComponent(c) : '');
+        });
 
-            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Memperbarui...');
+        // Update Costing Click
+        $('.btn-update-costing').on('click', function() {
+            var btn = $(this);
+            Swal.fire({
+                title: 'Jalankan Update Costing?',
+                text: 'Perubahan master sejak update sebelumnya akan dicatat ke History Costing dan memicu Notifikasi Bottom Price untuk Sales.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                confirmButtonText: 'Ya, Update Sekarang!',
+                cancelButtonText: 'Batal'
+            }).then(function(res) {
+                if (!res.isConfirmed) return;
 
-            $.ajax({
-                url: '<?= base_url('simulasi_costing/update_costing') ?>',
-                type: 'POST',
-                dataType: 'json',
-                success: function(resp) {
-                    btn.prop('disabled', false).html('<i class="fa fa-refresh me-1"></i> Update Costing');
-                    if (resp.status == 1) {
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Memperbarui...');
+
+                $.ajax({
+                    url: '<?= base_url('simulasi_costing/update_costing') ?>',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(resp) {
+                        btn.prop('disabled', false).html('<i class="fa fa-refresh me-1"></i> Update Costing');
+                        if (resp.status == 1) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(function() {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: resp.pesan,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html('<i class="fa fa-refresh me-1"></i> Update Costing');
                         Swal.fire({
-                            title: 'Berhasil!',
-                            text: resp.pesan,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then(function() {
-                            window.location.reload();
+                            title: 'Error!',
+                            text: 'Request error: ' + xhr.status,
+                            icon: 'error'
                         });
-                    } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
                     }
-                },
-                error: function(xhr) {
-                    btn.prop('disabled', false).html('<i class="fa fa-refresh me-1"></i> Update Costing');
-                    Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
-                }
+                });
             });
         });
-    });
 
-    // Add Draft Click
-    $(document).on('click', '.btn-add-draft', function() {
-        var uniq = $(this).data('uniq');
-        var btn  = $(this);
+        // Add Draft Click dengan Alert Konfirmasi
+        $(document).on('click', '.btn-add-draft', function() {
+            var uniq = $(this).data('uniq');
+            var prod = $(this).data('product') || '';
+            var cat = $(this).data('category') || '';
+            var plM = $(this).data('price-m') || '';
+            var plKg = $(this).data('price-kg') || '';
+            var btn = $(this);
 
-        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+            Swal.fire({
+                title: 'Ajukan ke Draft Pricelist?',
+                html: '<div class="text-start">' +
+                    '<p class="mb-2">Anda akan memasukkan varian berikut ke dalam dokumen <strong>Draft Pricelist</strong> aktif:</p>' +
+                    '<div class="p-3 bg-light rounded border small mb-2">' +
+                    '<div><strong>Produk:</strong> ' + prod + '</div>' +
+                    '<div><strong>Kategori:</strong> ' + cat + '</div>' +
+                    '<div><strong>Uniq ID:</strong> <span class="badge bg-secondary">' + uniq + '</span></div>' +
+                    '<div><strong>Price List/m:</strong> <span class="text-primary fw-bold">' + plM + '</span></div>' +
+                    '<div><strong>Price List/kg:</strong> <span class="text-success fw-bold">' + plKg + '</span></div>' +
+                    '</div>' +
+                    '<small class="text-muted"><i class="fa fa-info-circle me-1"></i> Varian ini akan ditambahkan ke Draft Pricelist dan dapat direview sebelum diajukan ke Management.</small>' +
+                    '</div>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-plus-circle me-1"></i> Ya, Masukkan ke Draft',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
 
-        $.ajax({
-            url: '<?= base_url('simulasi_costing/add_draft') ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: { no_uniq_id: uniq },
-            success: function(resp) {
-                btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Draft');
-                if (resp.status == 1) {
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: resp.pesan,
-                        icon: 'success',
-                        timer: 1800,
-                        showConfirmButton: false
-                    });
-                } else {
-                    Swal.fire({ title: 'Perhatian', text: resp.pesan, icon: 'warning' });
-                }
-            },
-            error: function(xhr) {
-                btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Draft');
-                Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
-            }
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Memproses...');
+
+                $.ajax({
+                    url: '<?= base_url('simulasi_costing/add_draft') ?>',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        no_uniq_id: uniq
+                    },
+                    success: function(resp) {
+                        btn.prop('disabled', false).html('<i class="fa fa-plus-circle me-1"></i> + Draft');
+                        if (resp.status == 1) {
+                            Swal.fire({
+                                title: 'Berhasil Masuk Draft!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                confirmButtonText: '<i class="fa fa-list-alt me-1"></i> Buka Pricelist',
+                                showCancelButton: true,
+                                cancelButtonText: 'Tetap di Simulasi'
+                            }).then(function(nav) {
+                                if (nav.isConfirmed) {
+                                    window.location.href = '<?= base_url('pricelist') ?>';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Perhatian',
+                                text: resp.pesan,
+                                icon: 'warning'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html('<i class="fa fa-plus-circle me-1"></i> + Draft');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Request error: ' + xhr.status,
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
         });
-    });
 
-    // View Detail Modal
-    $(document).on('click', '.btn-view-detail', function() {
-        var uniq = $(this).data('uniq');
-        $('#modalDetailLabel').html('<i class="fa fa-file-text-o me-2"></i>Report Costing Detail — Varian ' + uniq);
-        $('#modal-detail').modal('show');
-        $('#detail-body-content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat rincian costing...</div></div>');
+        // View Detail Modal
+        $(document).on('click', '.btn-view-detail', function() {
+            var uniq = $(this).data('uniq');
+            $('#modalDetailLabel').html('<i class="fa fa-file-text-o me-2"></i>Report Costing Detail — Varian ' + uniq);
+            $('#modal-detail').modal('show');
+            $('#detail-body-content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat rincian costing...</div></div>');
 
-        $.ajax({
-            url: '<?= base_url('simulasi_costing/detail_json') ?>',
-            type: 'GET',
-            dataType: 'json',
-            data: { no_uniq_id: uniq },
-            success: function(resp) {
-                if (resp.status != 1) {
-                    $('#detail-body-content').html('<div class="alert alert-danger">' + resp.pesan + '</div>');
-                    return;
-                }
-                var d = resp.data;
-                var fn = function(v) { return Number(v || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+            $.ajax({
+                url: '<?= base_url('simulasi_costing/detail_json') ?>',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    no_uniq_id: uniq
+                },
+                success: function(resp) {
+                    if (resp.status != 1) {
+                        $('#detail-body-content').html('<div class="alert alert-danger">' + resp.pesan + '</div>');
+                        return;
+                    }
+                    var d = resp.data;
+                    var fn = function(v) {
+                        return Number(v || 0).toLocaleString('id-ID', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    };
 
-                var html = `
+                    var html = `
                     <div class="card bg-light border-0 mb-3">
                         <div class="card-body">
                             <div class="row g-2">
@@ -310,7 +424,7 @@ $(document).ready(function() {
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                            <thead class="table-primary text-dark">
+                            <thead class="text-dark">
                                 <tr>
                                     <th>Komponen Costing</th>
                                     <th class="text-end" width="220">Rp / Meter</th>
@@ -371,8 +485,8 @@ $(document).ready(function() {
 
                                 <tr class="table-secondary fw-bold fs-6">
                                     <td>TOTAL HPP (Material + Biaya Proses + Support)</td>
-                                    <td class="text-end text-dark">Rp ${fn(d.hpp_meter)}</td>
-                                    <td class="text-end text-dark">Rp ${fn(d.hpp_kg)}</td>
+                                    <td class="text-end">Rp ${fn(d.hpp_meter)}</td>
+                                    <td class="text-end">Rp ${fn(d.hpp_kg)}</td>
                                 </tr>
 
                                 <tr class="table-light fw-bold"><td colspan="3"><i class="fa fa-pie-chart me-1"></i> 4. Other Cost (% &times; HPP)</td></tr>
@@ -412,12 +526,12 @@ $(document).ready(function() {
                         </table>
                     </div>
                 `;
-                $('#detail-body-content').html(html);
-            },
-            error: function(xhr) {
-                $('#detail-body-content').html('<div class="alert alert-danger">Gagal memuat rincian costing (Status: ' + xhr.status + ')</div>');
-            }
+                    $('#detail-body-content').html(html);
+                },
+                error: function(xhr) {
+                    $('#detail-body-content').html('<div class="alert alert-danger">Gagal memuat rincian costing (Status: ' + xhr.status + ')</div>');
+                }
+            });
         });
     });
-});
 </script>

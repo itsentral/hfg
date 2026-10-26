@@ -36,7 +36,35 @@ class Pricelist_model extends CI_Model
     }
 
     /** Ambil satu Pricelist beserta seluruh baris detail variannya */
-    public function get_pricelist_by_id($id)
+        /** Ambil counter jumlah dokumen per status untuk badge tabs */
+    public function get_counts()
+    {
+        $sql = "SELECT status, count(*) AS total FROM pricelist_header GROUP BY status";
+        $rows = $this->db->query($sql)->result();
+
+        $counts = [
+            'all'               => 0,
+            'Draft'             => 0,
+            'Menunggu Approval' => 0,
+            'Approved'          => 0,
+            'Rejected'          => 0,
+            'all_approval'      => 0,
+        ];
+
+        foreach ($rows as $r) {
+            if (isset($counts[$r->status])) {
+                $counts[$r->status] = (int)$r->total;
+            }
+            $counts['all'] += (int)$r->total;
+            if ($r->status !== 'Draft') {
+                $counts['all_approval'] += (int)$r->total;
+            }
+        }
+
+        return $counts;
+    }
+
+public function get_pricelist_by_id($id)
     {
         $header = $this->db->select('h.*, u_sub.nm_lengkap AS submitted_by_name, u_dec.nm_lengkap AS decided_by_name, u_crt.nm_lengkap AS created_by_name')
             ->from('pricelist_header h')

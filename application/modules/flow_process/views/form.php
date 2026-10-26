@@ -1,3 +1,26 @@
+<style>
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    padding: 5px 12px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 26px !important;
+    padding-left: 0 !important;
+    color: #212529 !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+    right: 8px !important;
+}
+.select2-dropdown {
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    z-index: 1065 !important;
+}
+</style>
 <?php
 // Isi modal Flow Process & Cycletime (parsial; dimuat lewat AJAX dari Flow_process::form).
 // $mode: 'add' | 'edit' | 'view'
@@ -58,7 +81,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 	</div>
 	<div class="col-md-6">
 		<?php if ($is_add) : ?>
-			<select name="code_lv2" id="code_lv2" class="form-select">
+			<select name="code_lv2" id="code_lv2" class="form-select select2 chosen-select" style="width: 100%;">
 				<option value="0">Select Product Category</option>
 				<?php foreach ($tersedia as $kode => $nama) : ?>
 					<option value="<?= htmlspecialchars($kode, ENT_QUOTES); ?>"><?= strtoupper(htmlspecialchars($nama)); ?></option>
@@ -72,6 +95,15 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 			<input type="hidden" name="code_lv2" value="<?= htmlspecialchars($code_lv2, ENT_QUOTES); ?>">
 		<?php endif; ?>
 	</div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+	<h6 class="mb-0 fw-bold text-dark"><i class="ti ti-list-details me-1"></i> Rincian Urutan Proses &amp; Cycletime</h6>
+	<?php if (!$view_only) : ?>
+		<button type="button" class="btn btn-sm btn-primary shadow-xs" id="fp_add_row">
+			<i class="ti ti-plus me-1"></i> Tambah Proses
+		</button>
+	<?php endif; ?>
 </div>
 
 <div class="table-responsive">
@@ -103,9 +135,6 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 	</table>
 </div>
 
-<?php if (!$view_only) : ?>
-	<button type="button" class="btn btn-sm btn-outline-primary mt-2" id="fp_add_row"><i class="ti ti-plus me-1"></i>Tambah Proses</button>
-<?php endif; ?>
 <div class="alert alert-light border py-2 mt-3 mb-0 text-muted small">
 	<i class="fa fa-info-circle me-1"></i> <strong>Rumus:</strong> <code>Man Hour = Cycletime &times; Man Power &divide; 60</code>. Total Man Hour = jumlah Man Hour seluruh proses. Contoh: Cycletime <code>0.041667</code> menit/m dengan 1 orang Man Power &rarr; <code>0.000694</code> jam/meter.
 </div>

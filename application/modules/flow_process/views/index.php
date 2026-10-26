@@ -154,6 +154,16 @@ $fmt = function ($v, $dec = 6) {
 			$('#fp_total_mh').text(ada ? plain(totalMh, 8) : '-');
 		}
 
+		function initSelect2Category() {
+			if ($.fn.select2) {
+				$('#code_lv2, #ModalView .select2, #ModalView .chosen-select').select2({
+					width: '100%',
+					dropdownParent: $('#dialog-popup'),
+					placeholder: 'Select Product Category'
+				});
+			}
+		}
+
 		function bukaModal(url, judul) {
 			$("#head_title").html(judul);
 			$.ajax({
@@ -163,10 +173,7 @@ $fmt = function ($v, $dec = 6) {
 					$("#ModalView").html(data);
 					$("#btn_save").toggle($('#fp_mode').val() !== 'view');
 					$("#dialog-popup").modal('show');
-					$('#ModalView').find('.chosen-select').select2({
-						width: '100%',
-						dropdownParent: $('#dialog-popup .modal-content')
-					});
+					initSelect2Category();
 					hitung();
 				},
 				error: function() {
@@ -178,6 +185,16 @@ $fmt = function ($v, $dec = 6) {
 				}
 			});
 		}
+
+		$('#dialog-popup').on('shown.bs.modal', function() {
+			initSelect2Category();
+		});
+		$('#dialog-popup').on('hidden.bs.modal', function() {
+			if ($('#code_lv2').hasClass('select2-hidden-accessible')) {
+				$('#code_lv2').select2('destroy');
+			}
+			$('#ModalView').html('');
+		});
 
 		$(document).on('click', '.fp-add', function() {
 			bukaModal(base_url + active_controller + 'form', 'Add Flow Process');
