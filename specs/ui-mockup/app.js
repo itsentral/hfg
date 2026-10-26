@@ -764,9 +764,27 @@
       kw1, kw2Internal, kw2Supplier, scrap, sisa, hold,
       rateByBom,
       selisih,
+      form: captureForm(),
       coils: state.coils.filter((c) => c.code).map((c) => ({ source: c.source, material: c.material, nett: num(c.nett) })),
       savedAt: new Date().toISOString(),
     };
+  }
+
+  // Isian mentah form (header, scrap/reject, baris coil/FG/KW2/Sisa/Hold) agar Lihat Laporan memuat input terakhir.
+  const FORM_FIELDS = ["tglProduksi", "mesin", "helper", "setter", "startTime", "finishTime", "scrapTong", "scrapWrapping", "scrapPisau",
+    "rejProdInt", "rejMatInt", "rejKetInt", "rejProdSup", "rejMatSup", "rejKetSup"];
+  function captureForm() {
+    const fields = {};
+    FORM_FIELDS.forEach((id) => { const el = $("#" + id); if (el) fields[id] = el.value; });
+    return { fields, seq, state: JSON.parse(JSON.stringify(state)) };
+  }
+  function restoreForm(form) {
+    if (!form || !form.state) return false;
+    ["coils", "fg", "sisa", "hold", "confirmations"].forEach((k) => { if (Array.isArray(form.state[k])) state[k] = form.state[k]; });
+    if (form.state.kw2) state.kw2 = { internal: form.state.kw2.internal || [], supplier: form.state.kw2.supplier || [] };
+    if (form.seq > seq) seq = form.seq;
+    Object.keys(form.fields || {}).forEach((id) => { const el = $("#" + id); if (el) el.value = form.fields[id]; });
+    return true;
   }
 
   function persistReport() {
@@ -802,6 +820,8 @@
     });
     if (over) items.push({ scope: "summary", ref: "summary", label: "Total Produksi (Summary)", selisih: selisihPct, statement: "Sudah cek lapangan — sesuai aktual" });
 
+    // Isian disimpan lebih dulu sebagai draft, agar tidak hilang bila konfirmasi selisih dibatalkan.
+    persistReport();
     if (items.length) {
       for (let i = 0; i < items.length; i++) {
         const it = items[i];
@@ -853,10 +873,17 @@
     renderSpkMeta();
 
     // Seed 1 coil contoh (sudah terpilih) agar mockup langsung hidup; user bisa tambah/hapus.
-    seedCoil("unpack", "BC-U-1001");
+    // Bila laporan SPK ini pernah disimpan, muat isian terakhir; jika belum, seed dari SPK.
+    const saved = M.report.get(spk.no);
+    if (saved && saved.form && restoreForm(saved.form)) {
+      const done = M.spkStatus.get(spk.no) === "Done";
+      $("#docStatus").textContent = done ? "Submitted" : "Draft (tersimpan)";
+      if (done) $("#docStatus").className = "badge badge--role";
+    } else {
+      seedCoil("unpack", "BC-U-1001");
+      seedFgFromSpk();
+    }
     renderCoils();
-
-    seedFgFromSpk();
     renderFg();
 
     renderKw2("internal");
