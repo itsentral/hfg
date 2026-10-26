@@ -37,8 +37,8 @@
     return sp ? sp.bomUniq : "";
   }
   function rateFor(row) {
-    // Stok Bebas (termasuk laporan lama tanpa bomUniq) mengikuti varian BOM yang dipilih SPK.
-    const uniq = row.bomUniq || (row.kind === "Bebas" ? spkBomFallback() : "");
+    // Stok Bebas dan KW2 (termasuk laporan lama tanpa bomUniq) mengikuti varian BOM yang dipilih SPK.
+    const uniq = row.bomUniq || spkBomFallback();
     const frozen = uniq && data.rateByBom && data.rateByBom[uniq];
     if (frozen) { rateNotes[uniq] = { kind: "frozen", uniq }; return frozen; }
     const live = uniq && M && M.bomRateKg ? M.bomRateKg(uniq) : null;
@@ -67,7 +67,7 @@
   /* ============================================================
      TABEL 1 — HPP KW1 & Stok Bebas (kolom F..W + Size)
      ============================================================ */
-  const bomChip = (r) => { const u = r.bomUniq || (r.kind === "Bebas" ? spkBomFallback() : ""); return u ? ' <span class="chip" title="Varian BOM">' + u + "</span>" : ""; };
+  const bomChip = (r) => { const u = r.bomUniq || spkBomFallback(); return u ? ' <span class="chip" title="Varian BOM">' + u + "</span>" : ""; };
 
   // Catatan sumber rate (di atas tabel 1) — dibangun setelah semua tabel dihitung.
   function renderRateNote() {

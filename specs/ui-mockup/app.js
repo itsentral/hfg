@@ -643,7 +643,7 @@
         qty: qty,
         material: info.material,
         gudang: info.gudang,
-        bomUniq: bomOf(r.productId),
+        bomUniq: bomOfBebas(r.productId),
       };
     };
 
