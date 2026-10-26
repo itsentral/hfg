@@ -414,7 +414,7 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   Reference (IDR/kg)** = Final USD × Kurs.
 - **FR-41** — BOM Produk: satu produk punya satu atau lebih **varian BOM**, dibedakan oleh
   ketebalan material (Varian Thickness diambil dari Master Material). Setiap varian punya **No.
-  Uniq ID** sendiri (mis. `Type 001.1`, `Type 001.2`), Latest Update, dan Update By; aksi View,
+  Uniq ID** sendiri (kolom `varian_type`; mis. `Type 001.1`, `Type 001.2`), Latest Update, dan Update By; aksi View,
   Edit, Delete. Satu produk boleh memakai beberapa varian material sekaligus.
 - **FR-42** — Flow Process & Cycletime: per proses menyimpan Costcentre/Area, Process Name,
   Machine, **Cycletime (menit per meter)**, Man Power (jumlah orang), dan **Man Hour = Cycletime
@@ -747,15 +747,15 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
 
 - **FR-74** (UC-02, UC-04, UC-05, UC-11; sumber permintaan user 2026-10-26; OQ 50–55 dijawab user 2026-10-26) — **SPK memilih varian BOM.**
   Pada Add SPK (Daftar SPK, `beranda.html`), setelah memilih produk, pengguna **wajib memilih varian BOM**
-  produk itu (No. Uniq ID, contoh Type 001.1). Varian dibawa ke item laporan produksi
-  (`production_report_items.uniq_id`, diusulkan) dan menjadi dasar Rp/Kg Hasil Costing pada FR-48.
+  produk itu (kolom `varian_type`, tampil sebagai Varian BOM (varian_type); No. Uniq ID, contoh Type 001.1). Varian dibawa ke item laporan produksi
+  (`production_report_items.varian_type`, diusulkan) dan menjadi dasar Rp/Kg Hasil Costing pada FR-48.
   **Direvisi 2026-10-26 (OQ 50):** bila produk belum punya varian BOM, atau Hasil Costing varian itu
   belum lengkap, **SPK ditolak (tidak dapat disimpan)** — alasan user: bila sudah tercatat di Laporan
   Keuangan, akan repot banyak adjustment data atau input ulang. _Teks sebelumnya (Add SPK hanya diberi
   peringatan, HPP komponen Rp 0 ditandai) digantikan._ Varian dipilih **per produk** pada SPK
   multi-produk (OQ 51). Varian boleh diubah **selama SPK belum diinput laporan produksinya**; sesudah
-  itu terkunci (OQ 53). SPK dibuat di modul Production Planning (eksternal): kolom `uniq_id` ada di
-  `tr_spk_material_detail` dan disalin ke `production_report_items.uniq_id`; mockup Add SPK hanya
+  itu terkunci (OQ 53). SPK dibuat di modul Production Planning (eksternal): kolom `varian_type` ada di
+  `tr_spk_material_detail` dan disalin ke `production_report_items.varian_type`; mockup Add SPK hanya
   simulasi dan menyesuaikan nama field/label ERD (OQ 55). Pada mockup, `hpp.html` membaca Hasil
   Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) **dipensiunkan**
   dan tidak lagi dipakai (OQ 54).
@@ -921,8 +921,8 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
 52. **RESOLVED 2026-10-26 — Hasil Costing yang dipakai = Hasil Costing terakhir yang di-Update Costing (FR-67) saat laporan produksi dibuat, lalu dibekukan (FR-49).** Jawaban user: "betul, sesuai update costing terakhir." Alternatif semula (saat SPK dibuat) tidak dipakai.
 53. **RESOLVED 2026-10-26 — varian boleh diubah selama SPK belum diinput laporan produksinya; sesudahnya terkunci.** Jawaban user: "Diizinkan apabila SPK belum diinput laporan Produksinya." Pertanyaan semula: **Ubah varian setelah SPK dibuat.** Diasumsikan varian boleh diubah selama laporan produksi belum dibuat; sesudahnya terkunci.
 54. **RESOLVED 2026-10-26 — Master Rate lama (`rate.html`) dipensiunkan.** Jawaban user: "Dipensiunkan saja." Pertanyaan semula: **Nasib `rate.html`.** Diasumsikan Master Rate Laporan Produksi tidak dipakai lagi untuk HPP; halaman ditandai usang di mockup.
-55. **RESOLVED 2026-10-26 — SPK dibuat di modul Production Planning (eksternal); `uniq_id` di `tr_spk_material_detail`, disalin ke `production_report_items.uniq_id`; mockup Add SPK menyesuaikan ERD.** Jawaban user: "Betul, saat ini berbeda modul. Kamu bisa menyesuaikan kembali tampilan mockup nya agar sesuai ERD." Pertanyaan semula: **Kepemilikan kolom varian di SPK.** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
-    `uniq_id` ditambahkan di sana dan disalin ke `production_report_items.uniq_id`. Pada mockup Add SPK dibuat sebagai simulasi.
+55. **RESOLVED 2026-10-26 — SPK dibuat di modul Production Planning (eksternal); `varian_type` di `tr_spk_material_detail`, disalin ke `production_report_items.varian_type`; mockup Add SPK menyesuaikan ERD.** Jawaban user: "Betul, saat ini berbeda modul. Kamu bisa menyesuaikan kembali tampilan mockup nya agar sesuai ERD." Pertanyaan semula: **Kepemilikan kolom varian di SPK.** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
+    `varian_type` ditambahkan di sana dan disalin ke `production_report_items.varian_type`. Pada mockup Add SPK dibuat sebagai simulasi.
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
@@ -1032,13 +1032,13 @@ yang sudah resolved di atas (± 0,7%).
   tidak dapat menyimpan perubahan. Detail role dicatat di `docs/rbac-entities.csv` saat
   di-breakdown.
 - **NFR-14 (Traceability costing → laporan).** Setiap baris `production_report_items` dapat
-  menunjuk varian BOM (No. Uniq ID) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
-  dari satu baris item dapat dibuka kembali (lewat `uniq_id`, FR-74) seluruh rumus FR-46/FR-48 beserta input yang sama
+  menunjuk varian BOM (kolom `varian_type`) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
+  dari satu baris item dapat dibuka kembali (lewat `varian_type`, FR-74) seluruh rumus FR-46/FR-48 beserta input yang sama
   dan hasilnya sama dengan yang tersimpan.
 
 - **NFR-15 (Konsistensi nama ERD dan kode).** Untuk data yang berasal dari database, nama tabel dan kolom di kode, migrasi,
-  dan query harus persis sama dengan ERD (`docs/diagrams/erd.drawio`) (user 2026-10-20). Bila berbeda, ERD diperbaiki (jika
-  ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda; keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
+  dan query harus persis sama dengan ERD (ERD resmi: `docs/diagrams/erd-revisi.drawio` sejak 2026-10-26, keputusan user; `erd.drawio` dibiarkan sebagai arsip dan tidak diperbarui) (user 2026-10-20). Bila berbeda, ERD diperbaiki (jika
+  ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda, **kecuali yang diminta user 2026-10-26: nama field ERD harus sama dengan nama pada kolom tampilan program, dengan konvensi label "Nama Bisnis (nama_field)"** (mis. "Produk (id_produk_fg)", "Varian BOM (varian_type)"); keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
   walkthrough tiap fitur, setiap kolom yang dipakai dicocokkan dengan ERD dan selisihnya nol. Tabel yang sudah ada di aplikasi
   (`product_lvl_4`, `new_inventory_4`) digambar ringkas sampai `SHOW CREATE TABLE` dikonfirmasi; pemetaannya di
   `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md` (v2: `…_v2.md`). Penunjuk ke produk di tabel baru memakai

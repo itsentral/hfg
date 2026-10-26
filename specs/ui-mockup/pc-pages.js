@@ -634,7 +634,7 @@
           <div class="ap-card__head ap-card__head--bar ap-card__head--primary"><h4>${ico("list")} Daftar Varian Tebal (Material)</h4>
             <button type="button" class="ap-btn ap-btn--light ap-btn--sm" data-act="bomrowadd">${ico("plus")} Tambah Varian</button></div>
           <div class="ap-card__body ap-card__body--flush">
-            ${apTable("ap-table--bordered ap-table--sm", [{ t: "No", c: "ap-c", w: "40px" }, "No. Uniq ID", { t: "Material *", w: "34%" }, { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }, { t: "Hapus", c: "ap-c", w: "60px" }], rows)}
+            ${apTable("ap-table--bordered ap-table--sm", [{ t: "No", c: "ap-c", w: "40px" }, "Varian BOM (varian_type)", { t: "Material *", w: "34%" }, { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }, { t: "Hapus", c: "ap-c", w: "60px" }], rows)}
           </div>
         </div>
         <p class="ap-hint" style="margin-top:10px">Berat/Meter (otomatis, read-only) = ((Tebal Material − Standar Toleransi) × Lebar Coil × Standar Berat Jenis) + Coating · nilai standar dari Master Standard Material (Toleransi ${f(st.toleransi)}, Berat Jenis ${f(st.bj)}, Coating ${f(st.coating)}). Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).</p>
@@ -660,7 +660,7 @@
         ${bomKeyVal("Latest Update", H.esc(bomLatest(BV().productId)))}
       </tbody></table></div></div>
       <div class="ap-card">${`<div class="ap-card__head ap-card__head--bar"><h6>Daftar Varian Tebal (${rows.length} item)</h6></div>`}
-        <div class="ap-card__body ap-card__body--flush">${apTable("ap-table--bordered ap-table--sm ap-table--hover", [{ t: "No", c: "ap-c", w: "50px" }, "No. Uniq ID", "Kode Material", "Nama Material", { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }], body)}</div></div>`;
+        <div class="ap-card__body ap-card__body--flush">${apTable("ap-table--bordered ap-table--sm ap-table--hover", [{ t: "No", c: "ap-c", w: "50px" }, "Varian BOM (varian_type)", "Kode Material", "Nama Material", { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }], body)}</div></div>`;
   }
 
   const bomErr = (text) => dlg({ icon: "warning", title: "Error Message!", text });
@@ -1397,7 +1397,7 @@
           <div class="ap-filters" style="margin-top:0">${apSel("ui.sf.c", U().sf.c, selOpts("ALL PRODUCT CATEGORY", productCats(), U().sf.c), { struct: 1 })}</div>
         </div>
         <div class="ap-card__body">${dtTop("simulasi", v.st)}
-          ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Uniq ID", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
+          ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Varian BOM (varian_type)", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
           ${dtBottom("simulasi", v)}
           <div class="ap-hint">Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan.</div>
           <div class="ap-hint">Perubahan master baru dicatat ke History Costing dan memicu notifikasi Bottom Price untuk Sales saat Update Costing dijalankan.</div></div></div>`;
@@ -1439,7 +1439,7 @@
   const STATUS_LBL = { "Draft": "secondary", "Menunggu Approval": "warning", "Menunggu Approval GM": "warning", "Approved": "success", "Rejected": "danger" };
   const pill = (st) => `<label class="ap-label ap-label--${STATUS_LBL[st] || "secondary"}">${H.esc(st)}</label>`;
   const plTable = (rows, del) => apTable("ap-table--bordered ap-table--striped ap-table--sm",
-    ["Produk", "Varian BOM", "Product Category", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Bottom Price/Kg", c: "ap-r" }, { t: "Neg. Allowance", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data"].concat(del ? [{ t: "", w: "44px" }] : []),
+    ["Produk", "Varian BOM (varian_type)", "Product Category", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Bottom Price/Kg", c: "ap-r" }, { t: "Neg. Allowance", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data"].concat(del ? [{ t: "", w: "44px" }] : []),
     rows.map((r, k) => `<tr><td>${H.esc(up(r.product))}</td><td>${H.esc(r.uniq)}</td><td>${H.esc(up(r.category))}</td>
       <td class="ap-r">${f(r.bottomM)}</td><td class="ap-r">${f(r.bottomKg)}</td><td class="ap-r">${f(pctVal(r.negoPct))}%</td>
       <td class="ap-r"><strong>${f(r.plM)}</strong></td><td class="ap-r"><strong>${f(r.plKg)}</strong></td>
@@ -1766,7 +1766,7 @@
           e.sources.map((s) => s.l + ": " + PC.HC.fmt(s.kind, s.old) + " → " + PC.HC.fmt(s.kind, s.now)).join(" | "),
           e.oldM, e.newM, e.newM - e.oldM, e.oldKg, e.newKg, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, Math.round(e.negoPct * 10000) / 100, e.by]);
         downloadCsv("history-costing-" + PC.today() + ".csv",
-          ["Waktu", "Product Category", "Produk", "Varian (Uniq ID)", "Sumber Perubahan (lama → baru)", "Bottom Price/Meter Lama", "Bottom Price/Meter Baru", "Selisih Bottom Price/Meter", "Bottom Price/Kg Lama", "Bottom Price/Kg Baru", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Rate Extra Margin Aktif (%)", "Dicatat Oleh"], rows);
+          ["Waktu", "Product Category", "Produk", "Varian BOM (varian_type)", "Sumber Perubahan (lama → baru)", "Bottom Price/Meter Lama", "Bottom Price/Meter Baru", "Selisih Bottom Price/Meter", "Bottom Price/Kg Lama", "Bottom Price/Kg Baru", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Rate Extra Margin Aktif (%)", "Dicatat Oleh"], rows);
         window.PC_SHELL.toast("Riwayat diekspor (" + rows.length + " baris sesuai filter).", "ok");
       },
     }, DT_ACT),
@@ -1805,7 +1805,7 @@
       hpexport() {
         const rows = hpItems(false).map(({ e }) => [e.at, up(e.category), up(e.product), e.uniq, e.plNo, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, e.bottomM, Math.round(e.negoPct * 10000) / 100, e.note || "", e.by]);
         downloadCsv("history-pricelist-" + PC.today() + ".csv",
-          ["Waktu", "Product Category", "Produk", "Varian (Uniq ID)", "No. Pricelist", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Bottom Price/Meter", "Rate Extra Margin (%)", "Catatan", "Disetujui Oleh"], rows);
+          ["Waktu", "Product Category", "Produk", "Varian BOM (varian_type)", "No. Pricelist", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Bottom Price/Meter", "Rate Extra Margin (%)", "Catatan", "Disetujui Oleh"], rows);
         window.PC_SHELL.toast("Riwayat diekspor (" + rows.length + " baris sesuai filter).", "ok");
       },
     }, DT_ACT),

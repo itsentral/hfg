@@ -43,6 +43,8 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-26** `[DECISION][FEAT-08]` **Kolom varian BOM = `varian_type`; ERD yang diperbarui = `erd-revisi.drawio`.** Keputusan user: nama kolom varian di ERD dan kode memakai `varian_type` (nama ERD klien pada `ms_bom_header`), menggantikan usulan `uniq_id`; nama field ERD harus sama dengan nama pada kolom tampilan program (label "Varian BOM (varian_type)"). OQ 52 dijawab: Hasil Costing = Update Costing terakhir saat laporan dibuat. Stok Bebas dan KW 2 mengikuti varian SPK. `erd-revisi.drawio` diperbarui (kolom `varian_type` di `tr_spk_material_detail` dan `production_report_items`, tampilan ringkas `ms_bom_header` + dua relasi di halaman Produksi, catatan); `erd.drawio` belum disamakan. `[TODO]` mockup memakai label Varian BOM (varian_type); samakan `erd.drawio` atau tetapkan satu ERD utama.
+
 - **2026-10-26** `[DECISION][FEAT-08]` **OQ 50, 51, 53, 54, 55 terjawab.** SPK ditolak (tidak bisa disimpan) bila produk belum punya varian BOM atau
   Hasil Costing varian belum lengkap (alasan: sudah tercatat di Laporan Keuangan, adjustment/input ulang repot); varian per produk; varian boleh diubah
   selama SPK belum diinput laporan produksinya; SPK milik modul Production Planning (eksternal), mockup Add SPK harus selaras ERD; `rate.html`
@@ -52,7 +54,7 @@ One `-` bullet per event, newest first:
 - **2026-10-26** `[DECISION][FEAT-08]` **HPP memakai Rp/Kg Hasil Costing varian BOM; Add SPK memilih varian BOM.** Permintaan user: enam komponen
   biaya HPP (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap) tidak lagi dari `rate.html`, tetapi Rp/Kg Hasil
   Costing varian BOM yang dipakai. Ditolak: tetap per Product Category dari Master Rate lama. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74
-  baru, OQ 50–55 (asumsi), ERD `uniq_id` (diusulkan) pada `production_report_items` dan `tr_spk_material_detail`, intake
+  baru, OQ 50–55 (asumsi), ERD `uniq_id` (diusulkan; kemudian diganti `varian_type`) pada `production_report_items` dan `tr_spk_material_detail`, intake
   `input/2026-10-26-hpp-rate-dari-costing/`. `[TODO]` mockup hpp.js/beranda.js; kepemilikan kolom di SPK eksternal (OQ 55).
 
 - **2026-10-21** `[DECISION][FEAT-09/FEAT-10]` **OQ 48 dan 49 terjawab.** Notifikasi Bottom Price (FR-68) dipicu saat Update Costing ditekan (satu pemicu

@@ -6,7 +6,7 @@ Repository ini mengintegrasikan rancangan konsep **Business Analyst (BA)** dan i
 - **Folder `specs/` (Domain BA - Single Source of Truth):**
   Folder ini adalah sumber acuan utama seluruh konsep bisnis, requirement, dan rancangan sebelum dieksekusi ke kode:
   - `specs/docs/fr-nfr.md`: Kebutuhan fungsional (FR) dan non-fungsional (NFR), batasan formula, toleransi, dan logic bisnis.
-  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD terintegrasi `erd.drawio`).
+  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD resmi terintegrasi `erd-revisi.drawio`; `erd.drawio` hanya arsip, tidak diperbarui lagi sejak 2026-10-26).
   - `specs/ui-mockup/`: Desain antarmuka dan prototipe UI yang disepakati dengan klien.
   - `specs/pm/`: Pelacakan status per fitur (`tracker.yaml`, `active.json`, capsule issue di `specs/pm/issues/`).
   - `specs/input/`: Dokumen mentah, notulensi, dan workbook dari klien (append-only / read-only).

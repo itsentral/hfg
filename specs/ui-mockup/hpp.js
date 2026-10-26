@@ -67,7 +67,7 @@
   /* ============================================================
      TABEL 1 — HPP KW1 & Stok Bebas (kolom F..W + Size)
      ============================================================ */
-  const bomChip = (r) => { const u = r.bomUniq || spkBomFallback(); return u ? ' <span class="chip" title="Varian BOM">' + u + "</span>" : ""; };
+  const bomChip = (r) => { const u = r.bomUniq || spkBomFallback(); return u ? ' <span class="chip" title="varian_type">' + u + "</span>" : ""; };
 
   // Catatan sumber rate (di atas tabel 1) — dibangun setelah semua tabel dihitung.
   function renderRateNote() {
