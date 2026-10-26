@@ -63,7 +63,7 @@
     values = M.rateStore.all();
     renderBody();
     markDirty(false);
-    toast("Master Rate tersimpan. Dipakai pada perhitungan HPP.", "ok");
+    toast("Arsip tersimpan. Tidak dipakai pada perhitungan HPP (halaman dipensiunkan).", "ok");
   }
 
   function reset() {

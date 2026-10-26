@@ -13,18 +13,20 @@
   <main class="page">
     <div class="page__header">
       <div>
-        <h1>Master Rate Product Costing</h1>
-        <p class="muted">Rate biaya yang dipakai perhitungan HPP per komponen (FR-19). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
+        <h1>Master Rate Product Costing <span class="badge badge--draft">Dipensiunkan</span></h1>
+        <p class="muted">Arsip rate lama (tidak lagi dipakai HPP; sumber kini Hasil Costing per varian BOM). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
       </div>
       <div class="page__header-status">
         <span class="badge badge--draft" id="saveStatus">Siap diedit</span>
       </div>
     </div>
 
+    <p class="note note--warn" id="rateDeprecated"><strong>DIPENSIUNKAN.</strong> Halaman Master Rate ini sudah tidak dipakai dan tidak memengaruhi HPP. Rate HPP kini bersumber dari <strong>Hasil Costing</strong> (Product Costing › Simulasi Costing) per Uniq ID (varian BOM), dalam Rp/Kg. Halaman ini hanya arsip. <a href="pc-simulasi.html">Buka Simulasi Costing →</a></p>
+
     <section class="card">
       <div class="card__head">
         <h2><span class="card__num">1</span> Rate Saat Ini</h2>
-        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini langsung dipakai pada perhitungan HPP.</p>
+        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini tidak lagi dipakai pada perhitungan HPP (hanya arsip).</p>
       </div>
       <div class="card__body">
         <div class="table-wrap">

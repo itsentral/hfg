@@ -100,7 +100,7 @@ Labor Operator ÷ 173 jam) × 1/3 (dibulatkan ke atas ke Rupiah penuh sesudah di
 **Master Standard Material** (Standar Toleransi, Berat Jenis, Coating; UC-03; global, satuan tidak
 ditampilkan).
 
-**Varian BOM pada SPK** (FR-74; diusulkan 2026-10-26): varian BOM (No. Uniq ID, mis. Type 001.1) yang dipilih saat Add SPK setelah memilih produk;
+**Varian BOM pada SPK** (FR-74; OQ 50, 51, 53, 54, 55 dijawab 2026-10-26: SPK ditolak bila produk tanpa varian BOM atau Hasil Costing belum lengkap, varian per produk, terkunci setelah laporan produksi diinput): varian BOM (No. Uniq ID, mis. Type 001.1) yang dipilih saat Add SPK setelah memilih produk;
 dasar Rp/Kg Hasil Costing untuk HPP (FR-48), disimpan sebagai `uniq_id` pada item laporan produksi.
 
 _Add a term the first time someone has to ask what it maps to._

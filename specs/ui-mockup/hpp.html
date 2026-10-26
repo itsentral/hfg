@@ -36,9 +36,10 @@
     <section class="card">
       <div class="card__head">
         <h2><span class="card__num">1</span> HPP — Finish Good KW 1 &amp; Stok Bebas</h2>
-        <p class="card__hint">Biaya/Pcs = Berat/Pcs × Costbook Material (gudang asal) + rate Product Costing. Total = nilai/pcs × Qty FG. (FR-19)</p>
+        <p class="card__hint">Biaya/Pcs = Berat/Pcs × Costbook Material (gudang asal) + Berat/Pcs × Rp/Kg Hasil Costing varian BOM (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap). Total = nilai/pcs × Qty FG. (FR-19, FR-48)</p>
       </div>
       <div class="card__body">
+        <p class="note" id="rateNote" hidden></p>
         <div class="table-wrap table-wrap--wide">
           <table class="tbl tbl--hpp" id="kw1Table">
             <thead>
@@ -296,6 +297,7 @@
   <div class="toast" id="toast" hidden></div>
   <script src="berry-shell.js"></script>
 
+  <script src="pc-data.js"></script>
   <script src="data.js"></script>
   <script src="hpp.js"></script>
 </body>

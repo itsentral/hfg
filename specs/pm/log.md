@@ -43,6 +43,12 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-26** `[DECISION][FEAT-08]` **OQ 50, 51, 53, 54, 55 terjawab.** SPK ditolak (tidak bisa disimpan) bila produk belum punya varian BOM atau
+  Hasil Costing varian belum lengkap (alasan: sudah tercatat di Laporan Keuangan, adjustment/input ulang repot); varian per produk; varian boleh diubah
+  selama SPK belum diinput laporan produksinya; SPK milik modul Production Planning (eksternal), mockup Add SPK harus selaras ERD; `rate.html`
+  dipensiunkan. Menggantikan asumsi "HPP komponen Rp 0 ditandai". FR-74 dan fr-nfr OQ disesuaikan. OQ 52 dijawab user: Hasil Costing terakhir yang di-Update Costing; tidak ada OQ terbuka. `[TODO]` mockup: Add SPK menolak
+  simpan tanpa varian/costing lengkap, selaraskan label ERD, rate.html ditandai pensiun.
+
 - **2026-10-26** `[DECISION][FEAT-08]` **HPP memakai Rp/Kg Hasil Costing varian BOM; Add SPK memilih varian BOM.** Permintaan user: enam komponen
   biaya HPP (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap) tidak lagi dari `rate.html`, tetapi Rp/Kg Hasil
   Costing varian BOM yang dipakai. Ditolak: tetap per Product Category dari Master Rate lama. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74

@@ -19,7 +19,6 @@
   const td = (v, cls = "") => `<td class="${cls}">${v}</td>`;
   const tdn = (v, cls = "") => `<td class="num rp ${cls}">${v}</td>`;
 
-  const RATE = M ? M.RATE : { manPower: 400, foh: 300, bahanPendukung: 500, consumables: 200, koordinasi: 200, scrapPct: 0.02 };
   const cbRate = (mat, g) => (M ? M.costbookFor(mat, g) : 0);
 
   /* ---------- Snapshot hasil produksi untuk SPK ini ---------- */
@@ -28,16 +27,34 @@
   const EMPTY = { kw1: [], kw2Internal: [], kw2Supplier: [], scrap: [], sisa: [], hold: [], selisih: [] };
   const data = snap || Object.assign({ meta: null }, EMPTY);
 
-  /* ---------- Komponen biaya/pcs (Excel baris 116/123/129) ---------- */
+  /* ---------- Rate Rp/Kg dari Hasil Costing per varian BOM (FR-48/FR-49) ----------
+     Prioritas: rate yang dibekukan di laporan (data.rateByBom) -> Hasil Costing terkini (laporan lama tanpa snapshot).
+     Varian BOM tanpa rate = komponen 0 + peringatan. Catatan sumber dihimpun di rateNotes. */
+  const ZERO_RATE = { manPower: 0, foh: 0, bpk: 0, cons: 0, koord: 0, scrap: 0 };
+  const rateNotes = {};   // key -> { kind: "frozen"|"live"|"none", uniq, produk }
+  function rateFor(row) {
+    const uniq = row.bomUniq || "";
+    const frozen = uniq && data.rateByBom && data.rateByBom[uniq];
+    if (frozen) { rateNotes[uniq] = { kind: "frozen", uniq }; return frozen; }
+    const live = uniq && M && M.bomRateKg ? M.bomRateKg(uniq) : null;
+    if (live) { rateNotes[uniq] = { kind: "live", uniq }; return live; }
+    rateNotes["none:" + (row.produk || "")] = { kind: "none", uniq, produk: row.produk };
+    return ZERO_RATE;
+  }
+
+  /* ---------- Komponen biaya/pcs (Excel baris 116/123/129) ----------
+     Material = Berat/Pcs × Costbook; komponen lain = Berat/Pcs × Rp/Kg Hasil Costing varian BOM
+     (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap). */
   function costPerPcs(row) {
     const cb = cbRate(row.material, row.gudang);
+    const R = rateFor(row);
     const material = row.beratPcs * cb;
-    const manPower = row.beratPcs * RATE.manPower;
-    const foh = row.beratPcs * RATE.foh;
-    const bahan = row.beratPcs * RATE.bahanPendukung;
-    const cons = row.beratPcs * RATE.consumables;
-    const koor = row.beratPcs * RATE.koordinasi;
-    const scrap = material * RATE.scrapPct;            // 2% dari value material
+    const manPower = row.beratPcs * R.manPower;
+    const foh = row.beratPcs * R.foh;
+    const bahan = row.beratPcs * R.bpk;
+    const cons = row.beratPcs * R.cons;
+    const koor = row.beratPcs * R.koord;
+    const scrap = row.beratPcs * R.scrap;               // Rp/Kg Scrap Hasil Costing
     const fgPerPcs = material + manPower + foh + bahan + cons + koor + scrap;
     return { cb, material, manPower, foh, bahan, cons, koor, scrap, fgPerPcs };
   }
@@ -45,6 +62,29 @@
   /* ============================================================
      TABEL 1 — HPP KW1 & Stok Bebas (kolom F..W + Size)
      ============================================================ */
+  const bomChip = (r) => (r.bomUniq ? ' <span class="chip" title="Varian BOM">' + r.bomUniq + "</span>" : "");
+
+  // Catatan sumber rate (di atas tabel 1) — dibangun setelah semua tabel dihitung.
+  function renderRateNote() {
+    const el = $("#rateNote");
+    if (!el) return;
+    const items = Object.keys(rateNotes).map((k) => rateNotes[k]);
+    const frozen = items.filter((x) => x.kind === "frozen").map((x) => x.uniq);
+    const live = items.filter((x) => x.kind === "live").map((x) => x.uniq);
+    const none = items.filter((x) => x.kind === "none");
+    const parts = [];
+    if (frozen.length) parts.push("Rate dari Hasil Costing varian <strong>" + frozen.join(", ") + "</strong> (Rp/Kg), dibekukan saat laporan dibuat.");
+    if (live.length) parts.push("Laporan ini belum menyimpan rate beku; memakai Hasil Costing terkini varian <strong>" + live.join(", ") + "</strong> (Rp/Kg).");
+    el.className = "note";
+    el.innerHTML = parts.join(" ");
+    if (none.length) {
+      const w = none.map((x) => x.produk || "produk").filter((v, i, a) => a.indexOf(v) === i).join(", ");
+      el.innerHTML += (parts.length ? "<br>" : "") + "⚠ Tanpa varian BOM / tanpa rate Hasil Costing: " + w + " — komponen Man Power, FOH, Bahan Pendukung, Consumables, Koordinasi, Scrap = 0.";
+      el.className = "note note--warn";
+    }
+    el.hidden = !el.innerHTML;
+  }
+
   function renderKw1() {
     const body = $("#kw1Table tbody");
     const foot = $("#kw1Table tfoot");
@@ -60,7 +100,7 @@
       t.material += tMaterial; t.mp += tMp; t.foh += tFoh; t.bahan += tBahan;
       t.cons += tCons; t.koor += tKoor; t.scrap += tScrap; t.total += fgValueTotal;
       return `<tr>
-        ${td(i + 1)}${td(r.produk + (r.kind === "Bebas" ? ' <span class="src-tag src-tag--wip">Bebas</span>' : ""))}
+        ${td(i + 1)}${td(r.produk + bomChip(r) + (r.kind === "Bebas" ? ' <span class="src-tag src-tag--wip">Bebas</span>' : ""))}
         ${tdn(kg(r.totalWeight))}${tdn(kg(r.beratPcs))}${tdn(kg(r.size))}${tdn(q)}${tdn(rp(c.cb))}
         ${tdn(rp(c.material))}${tdn(rp(c.manPower))}${tdn(rp(c.foh))}${tdn(rp(c.bahan))}
         ${tdn(rp(c.cons))}${tdn(rp(c.koor))}${tdn(rp(c.scrap))}${tdn(rp(c.fgPerPcs))}
@@ -99,7 +139,7 @@
       t.cons += tCons; t.koor += tKoor; t.scrap += tScrap; t.total += fgValueTotal;
       sumInv += inv; sumLoss += loss;
       return `<tr>
-        ${td(i + 1)}${td(r.produk)}
+        ${td(i + 1)}${td(r.produk + bomChip(r))}
         ${tdn(kg(r.totalWeight))}${tdn(kg(r.beratPcs))}${tdn(kg(r.size))}${tdn(q)}${tdn(rp(c.cb))}
         ${tdn(rp(c.material))}${tdn(rp(c.manPower))}${tdn(rp(c.foh))}${tdn(rp(c.bahan))}
         ${tdn(rp(c.cons))}${tdn(rp(c.koor))}${tdn(rp(c.scrap))}${tdn(rp(c.fgPerPcs))}
@@ -298,6 +338,7 @@
     const sisaVal = renderFullValue(data.sisa, "sisaTable");
     const holdVal = renderFullValue(data.hold, "holdTable");
     const selisihVal = renderFullValue(data.selisih, "selisihTable");
+    renderRateNote();
     renderJournal(t1, kw2i, kw2s, scrap, sisaVal, holdVal, selisihVal);
 
     if (!snap) {

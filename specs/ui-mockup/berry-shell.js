@@ -28,7 +28,6 @@
     ["index.html", "Input Produksi", "ti-forms"],
     ["material.html", "Material", "ti-stack-2"],
     ["costbook.html", "Costbook", "ti-coin"],
-    ["rate.html", "Rate", "ti-percentage"],
     ["hpp.html", "HPP", "ti-report-analytics"],
   ];
   const COSTING = [

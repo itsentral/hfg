@@ -572,12 +572,17 @@
     // Negotiation Allowance (Extra Margin) sengaja BUKAN sumber riwayat costing (keputusan user 2026-10-21).
     return d;
   }
+  // Rate komponen Rp/Kg hasil costing (dipakai HPP Laporan Produksi per varian BOM; FR-48/FR-49).
+  function hcRateKg(c) {
+    const k = c.linesKg;
+    return { manPower: k.manPower, foh: k.foh, bpk: k.bpk, cons: k.cons, koord: k.koord, scrap: k.scrap };
+  }
   function hcSnap(c) {
     const L = c.lines;
     return {
       uniq: c.bom.uniq, productName: c.product.name, category: c.product.category,
       comps: { material: L.material, proses: L.proses, support: L.support, other: sum(L.others, (o) => o.v), hpp: L.hpp, bottom: L.bottom, priceList: L.priceList },
-      bottomM: c.bottomMeter, bottomKg: c.bottomKg, plM: c.hargaMeter, plKg: c.hargaKg, negoPct: c.negoPct, drivers: hcDrivers(c),
+      rateKg: hcRateKg(c), bottomM: c.bottomMeter, bottomKg: c.bottomKg, plM: c.hargaMeter, plKg: c.hargaKg, negoPct: c.negoPct, drivers: hcDrivers(c),
     };
   }
   const r2 = (n) => Math.round((Number(n) || 0) * 100);
@@ -722,6 +727,21 @@
     return state.boms.map((b) => ({ b, c: costing(b) })).filter((x) => x.c && !x.c.lengkap)
       .map((x) => ({ bomId: x.b.id, uniq: x.b.uniq, product: x.c.product.name, gaps: x.c.kekurangan }));
   }
+  // Daftar varian BOM (Uniq ID) per Produk Product Costing — pilihan pada Add SPK.
+  function bomsOfProduct(productId) {
+    return state.boms.filter((b) => b.productId === productId).map((b) => ({ id: b.id, uniq: b.uniq, materialName: (materialById(b.materialId) || {}).name || "" }));
+  }
+  // Rate Rp/Kg per komponen untuk satu varian BOM: dari snapshot Update Costing terakhir (hcBase) bila ada,
+  // jika tidak dihitung langsung (from = "live"). null bila varian tidak ditemukan / costing belum dapat dihitung.
+  function rateKgOfBom(uniq) {
+    const b = state.boms.find((x) => x.uniq === uniq);
+    if (!b) return null;
+    const base = state.hcBase && state.hcBase[b.id];
+    if (base && base.rateKg) return Object.assign({ uniq, from: "update", at: state.hcLast || null }, base.rateKg);
+    const c = costing(b);
+    if (!c || !c.bpm) return null;
+    return Object.assign({ uniq, from: "live", at: null }, hcRateKg(c));
+  }
   const fmt = (n, d = 2) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: d, maximumFractionDigits: d });
   const rp = (n, d = 2) => "Rp " + fmt(n, d);
 
@@ -737,7 +757,7 @@
     productName, materialName, applyProductName, applyMaterialName,
     bpmOf, history, priceRef, priceMetaOf, manPowerRate, faktorOf, boronganRow, boronganPerMeter,
     manHour, totalManHour, rateOf, negoOf, NEGO_PENDING, negoLatest, negoPending, gen, costing,
-    plRow, plRows, snapPricelist, nextNo, normalize,
+    bomsOfProduct, rateKgOfBom, plRow, plRows, snapPricelist, nextNo, normalize,
     fmt, rp, hasVal, hasHistory, gapReport, LINK,
     setActor, actor: () => actorName,
     HC: { fmt: hcFmt, init: hcInit, update: hcUpdate, pending: hcPending, retained: histRetained, cutoff: histCutoff },

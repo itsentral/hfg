@@ -742,14 +742,20 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
   tersedia sebagai kolom sekunder. Format tampilan: OQ 42.
 
-- **FR-74** (UC-02, UC-04, UC-05, UC-11; sumber permintaan user 2026-10-26; **menunggu konfirmasi OQ 50–55**) — **SPK memilih varian BOM.**
+- **FR-74** (UC-02, UC-04, UC-05, UC-11; sumber permintaan user 2026-10-26; OQ 50–55 dijawab user 2026-10-26) — **SPK memilih varian BOM.**
   Pada Add SPK (Daftar SPK, `beranda.html`), setelah memilih produk, pengguna **wajib memilih varian BOM**
   produk itu (No. Uniq ID, contoh Type 001.1). Varian dibawa ke item laporan produksi
   (`production_report_items.uniq_id`, diusulkan) dan menjadi dasar Rp/Kg Hasil Costing pada FR-48.
-  Bila produk belum punya varian BOM atau Hasil Costing varian itu belum ada, Add SPK diberi
-  peringatan dan HPP komponen tidak dapat dihitung (OQ 50). Pada mockup, `hpp.html` membaca Hasil
-  Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) tidak lagi
-  dipakai (OQ 54).
+  **Direvisi 2026-10-26 (OQ 50):** bila produk belum punya varian BOM, atau Hasil Costing varian itu
+  belum lengkap, **SPK ditolak (tidak dapat disimpan)** — alasan user: bila sudah tercatat di Laporan
+  Keuangan, akan repot banyak adjustment data atau input ulang. _Teks sebelumnya (Add SPK hanya diberi
+  peringatan, HPP komponen Rp 0 ditandai) digantikan._ Varian dipilih **per produk** pada SPK
+  multi-produk (OQ 51). Varian boleh diubah **selama SPK belum diinput laporan produksinya**; sesudah
+  itu terkunci (OQ 53). SPK dibuat di modul Production Planning (eksternal): kolom `uniq_id` ada di
+  `tr_spk_material_detail` dan disalin ke `production_report_items.uniq_id`; mockup Add SPK hanya
+  simulasi dan menyesuaikan nama field/label ERD (OQ 55). Pada mockup, `hpp.html` membaca Hasil
+  Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) **dipensiunkan**
+  dan tidak lagi dipakai (OQ 54).
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
@@ -901,14 +907,13 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     halaman terkait, hak Manage, atau hak khusus "Backup"? Diasumsikan hak Manage (sama dengan ekspor); mohon konfirmasi. Termasuk
     jadwal dan cara pemindahan ke backup (proses terjadwal), dan cara membuka backup (halaman, laporan, atau pemulihan).
 
-50. **Produk tanpa varian BOM / tanpa Hasil Costing (diusulkan 2026-10-26).** Diasumsikan Add SPK menolak produk tanpa varian BOM
+50. **RESOLVED 2026-10-26 — SPK ditolak bila produk tanpa varian BOM atau Hasil Costing varian belum lengkap (FR-74).** Jawaban user: "Sebaiknya ditolak. Karena jika sudah tercatat di Laporan Keuangan, akan repot banyak adjustment data atau input ulang." Pertanyaan semula: **Produk tanpa varian BOM / tanpa Hasil Costing.** Diasumsikan Add SPK menolak produk tanpa varian BOM
     dan HPP komponen kosong (Rp 0, ditandai) bila Hasil Costing varian belum ada. Mohon konfirmasi atau beri aturan lain.
-51. **SPK multi-produk (diusulkan).** Diasumsikan varian BOM dipilih **per produk** pada tiap baris SPK. Mohon konfirmasi.
-52. **Hasil Costing yang dipakai (diusulkan).** Diasumsikan Hasil Costing terakhir yang di-Update Costing (FR-67) saat laporan produksi
-    dibuat, lalu dibekukan (FR-49). Alternatif: saat SPK dibuat. Mohon konfirmasi.
-53. **Ubah varian setelah SPK dibuat (diusulkan).** Diasumsikan varian boleh diubah selama laporan produksi belum dibuat; sesudahnya terkunci.
-54. **Nasib `rate.html` (diusulkan).** Diasumsikan Master Rate Laporan Produksi tidak dipakai lagi untuk HPP; halaman ditandai usang di mockup.
-55. **Kepemilikan kolom varian di SPK (diusulkan).** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
+51. **RESOLVED 2026-10-26 — varian BOM dipilih per produk pada tiap baris SPK.** Jawaban user: "Betul sesuai asumsi kamu." Pertanyaan semula: **SPK multi-produk.** Diasumsikan varian BOM dipilih **per produk** pada tiap baris SPK. Mohon konfirmasi.
+52. **RESOLVED 2026-10-26 — Hasil Costing yang dipakai = Hasil Costing terakhir yang di-Update Costing (FR-67) saat laporan produksi dibuat, lalu dibekukan (FR-49).** Jawaban user: "betul, sesuai update costing terakhir." Alternatif semula (saat SPK dibuat) tidak dipakai.
+53. **RESOLVED 2026-10-26 — varian boleh diubah selama SPK belum diinput laporan produksinya; sesudahnya terkunci.** Jawaban user: "Diizinkan apabila SPK belum diinput laporan Produksinya." Pertanyaan semula: **Ubah varian setelah SPK dibuat.** Diasumsikan varian boleh diubah selama laporan produksi belum dibuat; sesudahnya terkunci.
+54. **RESOLVED 2026-10-26 — Master Rate lama (`rate.html`) dipensiunkan.** Jawaban user: "Dipensiunkan saja." Pertanyaan semula: **Nasib `rate.html`.** Diasumsikan Master Rate Laporan Produksi tidak dipakai lagi untuk HPP; halaman ditandai usang di mockup.
+55. **RESOLVED 2026-10-26 — SPK dibuat di modul Production Planning (eksternal); `uniq_id` di `tr_spk_material_detail`, disalin ke `production_report_items.uniq_id`; mockup Add SPK menyesuaikan ERD.** Jawaban user: "Betul, saat ini berbeda modul. Kamu bisa menyesuaikan kembali tampilan mockup nya agar sesuai ERD." Pertanyaan semula: **Kepemilikan kolom varian di SPK.** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
     `uniq_id` ditambahkan di sana dan disalin ke `production_report_items.uniq_id`. Pada mockup Add SPK dibuat sebagai simulasi.
 
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
@@ -1121,3 +1126,5 @@ melihat data backup History = **Manage** (sama dengan ekspor Excel). OQ 48 dan 4
 **Pembaruan 2026-10-26 (HPP memakai Hasil Costing).** Permintaan user: komponen biaya HPP (Man Power, FOH, Bahan Pendukung Khusus,
 Consumables, Biaya Koordinasi, Scrap) memakai Rp/Kg dari Hasil Costing varian BOM yang dipakai, bukan dari `rate.html`; karena itu Add SPK
 memilih varian BOM setelah produk. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74 baru; OQ 50–55 diusulkan dengan asumsi.
+
+**Pembaruan 2026-10-26 (jawaban OQ 50–55).** OQ 50, 51, 53, 54, 55 dijawab user: SPK ditolak bila produk tanpa varian BOM atau Hasil Costing belum lengkap; varian per produk; varian dapat diubah sampai laporan produksi diinput; SPK milik modul Production Planning (mockup Add SPK menyesuaikan ERD); `rate.html` dipensiunkan. OQ 52 dijawab menyusul: Hasil Costing terakhir yang di-Update Costing saat laporan dibuat. Tidak ada OQ terbuka untuk fitur ini.

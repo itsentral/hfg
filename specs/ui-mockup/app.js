@@ -581,6 +581,24 @@
     return { material: c ? c.material : "", gudang: c ? c.source : "unpack" };
   }
 
+  // Varian BOM produk pada SPK ini (dipilih saat Add SPK); "" bila produk tanpa varian / Stok Bebas.
+  const bomOf = (productId) => {
+    const sp = spk.products.find((x) => x.productId === productId);
+    return sp && sp.bomUniq ? sp.bomUniq : "";
+  };
+  // Rate Rp/Kg Hasil Costing dibekukan saat laporan pertama kali dibuat (FR-49, NFR-09): bila laporan tersimpan
+  // sudah memuat rate varian ini, nilai itu dipakai lagi; jika belum, diambil dari Hasil Costing terkini.
+  const prevReport = M.report.get(spk.no);
+  const frozenCache = {};
+  const frozenRate = (uniq) => {
+    if (!uniq) return null;
+    if (!frozenCache[uniq]) {
+      const prev = prevReport && prevReport.rateByBom && prevReport.rateByBom[uniq];
+      frozenCache[uniq] = prev || (M.bomRateKg ? M.bomRateKg(uniq) : null);
+    }
+    return frozenCache[uniq];
+  };
+
   function buildReport() {
     const prim = primaryInfo();
 
@@ -602,6 +620,7 @@
           qty: s.qty || 0,
           material: info.material,
           gudang: info.gudang,
+          bomUniq: f.kind === "bebas" ? "" : bomOf(f.productId),
         };
       });
     };
@@ -617,12 +636,18 @@
         qty: qty,
         material: info.material,
         gudang: info.gudang,
+        bomUniq: bomOf(r.productId),
       };
     };
 
     const kw1 = state.fg.reduce((acc, f) => acc.concat(fgRows(f)), []);   // KW1 + Stok Bebas, dipecah per sumber
     const kw2Internal = state.kw2.internal.map(kw2Row);
     const kw2Supplier = state.kw2.supplier.map(kw2Row);
+    // Rate Rp/Kg Hasil Costing per varian BOM yang dipakai laporan ini (dibekukan).
+    const rateByBom = {};
+    kw1.concat(kw2Internal, kw2Supplier).forEach((r) => {
+      if (r.bomUniq && !rateByBom[r.bomUniq]) { const rt = frozenRate(r.bomUniq); if (rt) rateByBom[r.bomUniq] = rt; }
+    });
 
     // Scrap 7 kategori (Excel baris 135-141) — costbook dari Gudang Produksi 2 (unpack)
     const scrapVal = (id) => num($("#" + id).value);
@@ -730,6 +755,7 @@
         report: "RP-" + spk.no.replace(/[^0-9]/g, "").slice(-8),
       },
       kw1, kw2Internal, kw2Supplier, scrap, sisa, hold,
+      rateByBom,
       selisih,
       coils: state.coils.filter((c) => c.code).map((c) => ({ source: c.source, material: c.material, nett: num(c.nett) })),
       savedAt: new Date().toISOString(),

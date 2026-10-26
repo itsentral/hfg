@@ -11,3 +11,16 @@ Sumber: pesan user (chat), 2026-10-26. Kutipan inti, apa adanya:
 > Sehingga, pada saat "Add SPK" di beranda.html, setelah memilih produk, pilih juga varian BOM-nya.
 
 Dampak: FR-48 direvisi, FR-74 baru, OQ 50–55 (asumsi), ERD `uniq_id` pada `production_report_items` / `tr_spk_material_detail`.
+
+## Jawaban atas pertanyaan terbuka (OQ 50–55), 2026-10-26
+
+Sumber: pesan user (chat). Kutipan apa adanya:
+
+> 1. Sebaiknya ditolak. Karena jika sudah tercatat di Laporan Keuangan, akan repot banyak adjustment data atau input ulang.
+> 2. Betul sesuai asumsi kamu.
+> 3. Diizinkan apabila SPK belum diinput laporan Produksinya.
+> 4. Betul, saat ini berbeda modul. Kamu bisa menyesuaikan kembali tampilan mockup nya agar sesuai ERD.
+> 5. Dipensiunkan saja.
+
+Pemetaan: 1 = OQ 50, 2 = OQ 51, 3 = OQ 53, 4 = OQ 55, 5 = OQ 54. OQ 52 belum ditanyakan (tetap asumsi).
+Extracted: FR-74 dan OQ 50, 51, 53, 54, 55 -> `docs/fr-nfr.md`.
