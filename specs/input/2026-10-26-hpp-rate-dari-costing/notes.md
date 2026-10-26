@@ -35,3 +35,13 @@ Extracted: FR-74 dan OQ 50, 51, 53, 54, 55 -> `docs/fr-nfr.md`.
 
 Pemetaan: OQ 52 RESOLVED; Stok Bebas dan KW 2 mengikuti varian SPK (FR-48, FR-74); kolom varian = `varian_type` (bukan `uniq_id`); label tampilan = "Varian BOM (varian_type)"; ERD yang diperbarui = `docs/diagrams/erd-revisi.drawio`.
 Extracted: FR-48, FR-74, NFR-14, NFR-15 -> `docs/fr-nfr.md`; ERD -> `docs/diagrams/erd-revisi.drawio`.
+
+## Koreksi definisi varian (2026-10-26)
+
+> Satu varian itu adalah Jika Satu Produk hanya memilki 1 jenis material saja di dalam BOMnya. Apabila Produk memiliki berbagai macam jenis Material dengan ketebalan berbeda, makan produk tersebut memiliki beberapa varian.
+
+> Betul, kuncinya pasangan produk dan no_uniq_id jadi aman. Silahkan lanjutkan dengan perubahan di atas.
+
+Konteks: user mengirim `SHOW CREATE TABLE` `ms_bom_header` (masih `UNIQUE uk_produk (id_produk)`; ada `varian_type`, `is_default` nullable) dan `ms_bom_detail` (ada `no_uniq_id`; `berat_per_meter` DECIMAL(10,2)).
+Pemetaan: satu varian = satu baris material pada BOM produk (`ms_bom_detail`); satu header per produk; kunci = `id_produk` + `no_uniq_id`; kolom varian = `no_uniq_id` (menggantikan `varian_type` pada jawaban sebelumnya); label tampilan = "Varian BOM (no_uniq_id)"; `ms_bom_header.varian_type`/`is_default` hanya kompatibilitas; migrasi 003 tidak boleh melepas `uk_produk`; `berat_per_meter` harus DECIMAL(14,6).
+Extracted: FR-41, FR-74, NFR-14, NFR-15, OQ 55 -> `docs/fr-nfr.md`; ERD -> `docs/diagrams/erd-revisi.drawio`; UC-N07/Pages -> `docs/workbook.xlsx`; istilah -> `context/index/vocabulary.md`.

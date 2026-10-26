@@ -634,7 +634,7 @@
           <div class="ap-card__head ap-card__head--bar ap-card__head--primary"><h4>${ico("list")} Daftar Varian Tebal (Material)</h4>
             <button type="button" class="ap-btn ap-btn--light ap-btn--sm" data-act="bomrowadd">${ico("plus")} Tambah Varian</button></div>
           <div class="ap-card__body ap-card__body--flush">
-            ${apTable("ap-table--bordered ap-table--sm", [{ t: "No", c: "ap-c", w: "40px" }, "Varian BOM (varian_type)", { t: "Material *", w: "34%" }, { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }, { t: "Hapus", c: "ap-c", w: "60px" }], rows)}
+            ${apTable("ap-table--bordered ap-table--sm", [{ t: "No", c: "ap-c", w: "40px" }, "Varian BOM (no_uniq_id)", { t: "Material *", w: "34%" }, { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }, { t: "Hapus", c: "ap-c", w: "60px" }], rows)}
           </div>
         </div>
         <p class="ap-hint" style="margin-top:10px">Berat/Meter (otomatis, read-only) = ((Tebal Material − Standar Toleransi) × Lebar Coil × Standar Berat Jenis) + Coating · nilai standar dari Master Standard Material (Toleransi ${f(st.toleransi)}, Berat Jenis ${f(st.bj)}, Coating ${f(st.coating)}). Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).</p>
@@ -660,7 +660,7 @@
         ${bomKeyVal("Latest Update", H.esc(bomLatest(BV().productId)))}
       </tbody></table></div></div>
       <div class="ap-card">${`<div class="ap-card__head ap-card__head--bar"><h6>Daftar Varian Tebal (${rows.length} item)</h6></div>`}
-        <div class="ap-card__body ap-card__body--flush">${apTable("ap-table--bordered ap-table--sm ap-table--hover", [{ t: "No", c: "ap-c", w: "50px" }, "Varian BOM (varian_type)", "Kode Material", "Nama Material", { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }], body)}</div></div>`;
+        <div class="ap-card__body ap-card__body--flush">${apTable("ap-table--bordered ap-table--sm ap-table--hover", [{ t: "No", c: "ap-c", w: "50px" }, "Varian BOM (no_uniq_id)", "Kode Material", "Nama Material", { t: "Varian Tebal", c: "ap-r" }, { t: "Lebar Coil", c: "ap-r" }, { t: "Berat/Meter (kg/m)", c: "ap-r" }], body)}</div></div>`;
   }
 
   const bomErr = (text) => dlg({ icon: "warning", title: "Error Message!", text });
@@ -1253,7 +1253,7 @@
         <div class="ap-card ap-card--shadow">${apHead("Perubahan Bottom Price per Varian BOM", cnt(BP.NEW) ? `${cnt(BP.NEW)} notifikasi menunggu keputusan Sales.` : "Tidak ada notifikasi yang menunggu keputusan.", `Total: ${all.length} notifikasi`, "")}
           <div class="ap-card__body"><div class="ap-hint" style="margin-bottom:10px">Coba: ubah <a class="ap-link" href="pc-kurs.html">Kurs</a> (mis. 17.863 → 18.500) di menu Kurs, lalu tekan Update Costing di <a class="ap-link" href="pc-simulasi.html">Simulasi Costing</a>; notifikasi muncul di halaman ini. Alert hanya lewat dashboard (lencana menu dan lonceng).</div>
             <div class="ap-filters" style="margin-top:0">${apSel("ui.bpf.s", U().bpf.s, stOpts, { struct: 1 })}${apSel("ui.bpf.c", U().bpf.c, selOpts("ALL PRODUCT CATEGORY", uniqList(all.map((n) => n.category)), U().bpf.c), { struct: 1 })}</div>
-            ${apTable("ap-table--bordered ap-table--sm ap-table--fit", ["Produk / Varian", { t: "Bottom Price/Meter (Lama → Baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, "Komponen Berubah (Rp/Meter)", { t: "Extra Margin & Harga Jual", c: "ap-r" }, "Status", { t: "Action", c: "ap-c", w: "190px" }], body)}
+            ${apTable("ap-table--bordered ap-table--sm ap-table--fit", ["Produk / Varian BOM (no_uniq_id)", { t: "Bottom Price/Meter (Lama → Baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, "Komponen Berubah (Rp/Meter)", { t: "Extra Margin & Harga Jual", c: "ap-r" }, "Status", { t: "Action", c: "ap-c", w: "190px" }], body)}
             <div class="ap-hint" style="margin-top:10px">Keputusan user (2026-10-21): ambang = perubahan sekecil apa pun (≥ Rp0,01); pembanding harga pasar = Price List pada Product Catalog terakhir dirilis (bila belum ada: Price List baseline); peninjau = semua Sales; kanal = dashboard saja; tanpa batas waktu tinjau. Dikonfirmasi user (2026-10-21): baseline = Bottom Price yang terakhir ditinjau; deteksi saat tombol Update Costing ditekan (Simulasi Costing), bukan otomatis; notifikasi hanya dibuat bila data costing lengkap; satu notifikasi Belum Ditinjau per varian BOM; produk/BOM baru tidak memicu notifikasi; "Ajukan Rate Extra Margin Baru" berlaku untuk Product Category (semua varian Belum Ditinjau pada kategori itu ikut ditandai) dan hanya untuk Sales Manager (hak akses diatur per pengguna di program); "Tidak Perlu Diubah" cukup dengan catatan opsional.</div></div></div>`;
     },
     act: Object.assign({
@@ -1397,7 +1397,7 @@
           <div class="ap-filters" style="margin-top:0">${apSel("ui.sf.c", U().sf.c, selOpts("ALL PRODUCT CATEGORY", productCats(), U().sf.c), { struct: 1 })}</div>
         </div>
         <div class="ap-card__body">${dtTop("simulasi", v.st)}
-          ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Varian BOM (varian_type)", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
+          ${apTable("ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Product Category", "Product Name", "Varian Material", "Varian BOM (no_uniq_id)", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data", "Last Updated", { t: "Action", c: "ap-c", w: "140px" }], rows)}
           ${dtBottom("simulasi", v)}
           <div class="ap-hint">Pembulatan: hanya Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh; komponen lain 2 desimal tanpa pembulatan.</div>
           <div class="ap-hint">Perubahan master baru dicatat ke History Costing dan memicu notifikasi Bottom Price untuk Sales saat Update Costing dijalankan.</div></div></div>`;
@@ -1439,7 +1439,7 @@
   const STATUS_LBL = { "Draft": "secondary", "Menunggu Approval": "warning", "Menunggu Approval GM": "warning", "Approved": "success", "Rejected": "danger" };
   const pill = (st) => `<label class="ap-label ap-label--${STATUS_LBL[st] || "secondary"}">${H.esc(st)}</label>`;
   const plTable = (rows, del) => apTable("ap-table--bordered ap-table--striped ap-table--sm",
-    ["Produk", "Varian BOM (varian_type)", "Product Category", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Bottom Price/Kg", c: "ap-r" }, { t: "Neg. Allowance", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data"].concat(del ? [{ t: "", w: "44px" }] : []),
+    ["Produk", "Varian BOM (no_uniq_id)", "Product Category", { t: "Bottom Price/Meter", c: "ap-r" }, { t: "Bottom Price/Kg", c: "ap-r" }, { t: "Neg. Allowance", c: "ap-r" }, { t: "Price List/Meter", c: "ap-r" }, { t: "Price List/Kg", c: "ap-r" }, "Data"].concat(del ? [{ t: "", w: "44px" }] : []),
     rows.map((r, k) => `<tr><td>${H.esc(up(r.product))}</td><td>${H.esc(r.uniq)}</td><td>${H.esc(up(r.category))}</td>
       <td class="ap-r">${f(r.bottomM)}</td><td class="ap-r">${f(r.bottomKg)}</td><td class="ap-r">${f(pctVal(r.negoPct))}%</td>
       <td class="ap-r"><strong>${f(r.plM)}</strong></td><td class="ap-r"><strong>${f(r.plKg)}</strong></td>
@@ -1527,7 +1527,7 @@
           <button type="button" class="ap-btn ap-btn--primary" data-act="newDraft">${ico("plus")} Buat Draft Pricelist</button>
         </div>
         <div class="ap-card__body">${dtTop("pricelist", v.st)}
-          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", "Dibuat", { t: "Jumlah Item", c: "ap-r" }, "Status", "Diajukan", "Keputusan Management", "Alasan Reject", "Data", { t: "Option", c: "ap-c", w: "230px" }], rows)}
+          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian BOM (no_uniq_id) · No. Pricelist", "Dibuat", { t: "Jumlah Item", c: "ap-r" }, "Status", "Diajukan", "Keputusan Management", "Alasan Reject", "Data", { t: "Option", c: "ap-c", w: "230px" }], rows)}
           ${dtBottom("pricelist", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1618,7 +1618,7 @@
       const pending = items.filter((x) => x.pl.status === "Menunggu Approval").length;
       return `<div class="ap-card ap-card--shadow">${apHead("Daftar Pricelist yang Diajukan", pending ? `${pending} pricelist menunggu keputusan.` : "Tidak ada pricelist yang menunggu keputusan.", `Total: ${items.length} Pricelist`, "")}
         <div class="ap-card__body">${dtTop("approval", v.st)}
-          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", "Diajukan", { t: "Jumlah Item", c: "ap-r" }, "Status", "Keputusan", "Alasan Reject", { t: "Action", c: "ap-c", w: "160px" }], rows)}
+          ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian BOM (no_uniq_id) · No. Pricelist", "Diajukan", { t: "Jumlah Item", c: "ap-r" }, "Status", "Keputusan", "Alasan Reject", { t: "Action", c: "ap-c", w: "160px" }], rows)}
           ${dtBottom("approval", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1654,10 +1654,10 @@
           <td>${H.esc(ct.releasedBy)}</td><td>${H.esc(ct.releasedAt)}</td><td class="ap-c">${iconBtn("view", "View", "eye", "info", `data-i="${i}"`)}</td></tr>`;
       }).join("") || `<tr><td class="ap-empty" colspan="7">No data available in table</td></tr>`;
       return `<div class="ap-card ap-card--shadow">${apHead("Pricelist Approved — siap dirilis", "Hanya pricelist berstatus Approved yang dapat dirilis; satu pricelist boleh dirilis berkali-kali dan setiap rilis membuat katalog baru.", "", "")}
-          <div class="ap-card__body">${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Pricelist)", { t: "Jumlah Item", c: "ap-r" }, "Disetujui", { t: "Sudah Dirilis (kali)", c: "ap-r" }, { t: "Option", c: "ap-c", w: "210px" }], rrows)}</div></div>
+          <div class="ap-card__body">${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian BOM (no_uniq_id) · No. Pricelist", { t: "Jumlah Item", c: "ap-r" }, "Disetujui", { t: "Sudah Dirilis (kali)", c: "ap-r" }, { t: "Option", c: "ap-c", w: "210px" }], rrows)}</div></div>
         <div class="ap-card ap-card--shadow">${apHead("Daftar Product Catalog", "Snapshot harga yang disetujui, disimpan sebagai data", `Total: ${S().catalogs.length} Katalog`, "")}
           <div class="ap-card__body">${dtTop("catalog", v.st)}
-            ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian (No. Katalog)", "Asal Pricelist", { t: "Jumlah Produk", c: "ap-r" }, "Dirilis Oleh", "Dirilis Pada", { t: "Action", c: "ap-c", w: "90px" }], crows)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover", [{ t: "#", c: "ap-c", w: "50px" }, "Produk / Varian BOM (no_uniq_id) · No. Katalog", "Asal Pricelist", { t: "Jumlah Produk", c: "ap-r" }, "Dirilis Oleh", "Dirilis Pada", { t: "Action", c: "ap-c", w: "90px" }], crows)}
             ${dtBottom("catalog", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1676,7 +1676,7 @@
   const HC_GROUPS = ["Kurs", "Price Reference", "Master Standard", "BOM / Material", "Man Power Rate", "Faktor Indirect Labor", "Flow Process", "Rate Borongan Helper", "Rate BPK & FOH", "General Rate", "Negotiation Allowance", "Lainnya"];
   const inRange = (at, from, to) => { const d = String(at || "").slice(0, 10); return (!from || d >= from) && (!to || d <= to); };
   const hcProductName = (e) => up(e.productName) + " · " + e.uniq;
-  const hcVariantOpts = () => [{ v: "", l: "- Semua Produk / Varian -" }].concat(S().boms.map((b) => { const p = PC.productById(b.productId); return { v: b.id, l: (p ? up(p.name) : "") + " · " + b.uniq }; }));
+  const hcVariantOpts = () => [{ v: "", l: "- Semua Produk / Varian BOM (no_uniq_id) -" }].concat(S().boms.map((b) => { const p = PC.productById(b.productId); return { v: b.id, l: (p ? up(p.name) : "") + " · " + b.uniq }; }));
   const catOptsAll = (first) => [{ v: "", l: first }].concat(uniqList(PC.categories()).map((c) => ({ v: c, l: up(c) })));
   const dateFld = (label, path, val) => `<div><label class="ap-lbl" style="display:block;margin-bottom:4px">${label}</label>${apIn(path, val || "", { struct: 1, date: 1 })}</div>`;
   const histSorted = (log) => log.map((e, i) => ({ e, i })).sort((a, b) => String(b.e.at).localeCompare(String(a.e.at)) || (b.e.seq || 0) - (a.e.seq || 0) || b.i - a.i);
@@ -1713,7 +1713,7 @@
     const same = S().hcLog.filter((x) => x.batch === e.batch).length;
     openModal({
       app: true, mode: "view", size: "xl", title: "View History Costing — " + hcProductName(e), hideSave: true, cancelLabel: "Close",
-      bodyFn: () => `${apRow(lb("Produk / Varian"), fld("c4", ro(hcProductName(e))), lb("Product Category"), fld("c4", ro(up(e.category))))}
+      bodyFn: () => `${apRow(lb("Produk / Varian BOM (no_uniq_id)"), fld("c4", ro(hcProductName(e))), lb("Product Category"), fld("c4", ro(up(e.category))))}
         ${apRow(lb("Waktu"), fld("c4", ro(e.at + (same > 1 ? " · satu perubahan memengaruhi " + same + " varian" : ""))), lb("Dicatat Oleh"), fld("c4", ro(e.by)))}
         ${apRow(lb("Rate Extra Margin"), fld("c4", ro(f(pctVal(e.negoPct)) + " % (aktif saat perubahan)")), lb("Price List/Meter"), fld("c4", ro(f(e.plOldM) + " → " + f(e.plNewM))))}
         <hr class="ap-hr"><h6>Sumber Perubahan</h6>
@@ -1756,7 +1756,7 @@
             <div class="ap-filters">${apSel("ui.hcf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hcf.u", F.u, hcVariantOpts(), { struct: 1 })}${apSel("ui.hcf.g", F.g, [{ v: "", l: "- Semua Sumber Perubahan -" }].concat(HC_GROUPS.map((g) => ({ v: g, l: g }))), { struct: 1 })}</div>
             <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hcf.from", F.from)}${dateFld("Sampai tanggal", "ui.hcf.to", F.to)}<div><label class="ap-lbl" style="display:block;margin-bottom:4px">Data backup</label>${apSel("ui.hcf.bk", F.bk || "", bkOpts, { struct: 1 })}</div></div>
             ${dtTop("hcosting", v.st)}
-            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian", "Sumber Perubahan (lama → baru)", { t: "Bottom Price/Meter (lama → baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, { t: "Price List/Meter (lama → baru)", c: "ap-r" }, "Oleh", { t: "Action", c: "ap-c", w: "70px" }], rows)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian BOM (no_uniq_id)", "Sumber Perubahan (lama → baru)", { t: "Bottom Price/Meter (lama → baru)", c: "ap-r" }, { t: "Selisih", c: "ap-r" }, { t: "Price List/Meter (lama → baru)", c: "ap-r" }, "Oleh", { t: "Action", c: "ap-c", w: "70px" }], rows)}
             ${dtBottom("hcosting", v)}</div></div>`;
     },
     act: Object.assign({
@@ -1766,7 +1766,7 @@
           e.sources.map((s) => s.l + ": " + PC.HC.fmt(s.kind, s.old) + " → " + PC.HC.fmt(s.kind, s.now)).join(" | "),
           e.oldM, e.newM, e.newM - e.oldM, e.oldKg, e.newKg, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, Math.round(e.negoPct * 10000) / 100, e.by]);
         downloadCsv("history-costing-" + PC.today() + ".csv",
-          ["Waktu", "Product Category", "Produk", "Varian BOM (varian_type)", "Sumber Perubahan (lama → baru)", "Bottom Price/Meter Lama", "Bottom Price/Meter Baru", "Selisih Bottom Price/Meter", "Bottom Price/Kg Lama", "Bottom Price/Kg Baru", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Rate Extra Margin Aktif (%)", "Dicatat Oleh"], rows);
+          ["Waktu", "Product Category", "Produk", "Varian BOM (no_uniq_id)", "Sumber Perubahan (lama → baru)", "Bottom Price/Meter Lama", "Bottom Price/Meter Baru", "Selisih Bottom Price/Meter", "Bottom Price/Kg Lama", "Bottom Price/Kg Baru", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Rate Extra Margin Aktif (%)", "Dicatat Oleh"], rows);
         window.PC_SHELL.toast("Riwayat diekspor (" + rows.length + " baris sesuai filter).", "ok");
       },
     }, DT_ACT),
@@ -1798,14 +1798,14 @@
             <div class="ap-filters">${apSel("ui.hpf.c", F.c, catOptsAll("- Semua Product Category -"), { struct: 1 })}${apSel("ui.hpf.u", F.u, hcVariantOpts(), { struct: 1 })}</div>
             <div class="ap-filters" style="margin-top:8px">${dateFld("Dari tanggal", "ui.hpf.from", F.from)}${dateFld("Sampai tanggal", "ui.hpf.to", F.to)}<div><label class="ap-lbl" style="display:block;margin-bottom:4px">Data backup</label>${apSel("ui.hpf.bk", F.bk || "", bkOpts, { struct: 1 })}</div></div>
             ${dtTop("hpricelist", v.st)}
-            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian (No. Pricelist)", { t: "Price List/Meter (lama → baru)", c: "ap-r" }, { t: "Price List/Kg (lama → baru)", c: "ap-r" }, { t: "Bottom Price/Meter & Extra Margin", c: "ap-r" }, "Catatan / Alasan", "Oleh"], rows)}
+            ${apTable("ap-table--bordered ap-table--striped ap-table--hover ap-table--sm ap-table--fit", [{ t: "#", c: "ap-c", w: "40px" }, "Waktu", "Produk / Varian BOM (no_uniq_id) · No. Pricelist", { t: "Price List/Meter (lama → baru)", c: "ap-r" }, { t: "Price List/Kg (lama → baru)", c: "ap-r" }, { t: "Bottom Price/Meter & Extra Margin", c: "ap-r" }, "Catatan / Alasan", "Oleh"], rows)}
             ${dtBottom("hpricelist", v)}</div></div>`;
     },
     act: Object.assign({
       hpexport() {
         const rows = hpItems(false).map(({ e }) => [e.at, up(e.category), up(e.product), e.uniq, e.plNo, e.plOldM, e.plNewM, e.plOldKg, e.plNewKg, e.bottomM, Math.round(e.negoPct * 10000) / 100, e.note || "", e.by]);
         downloadCsv("history-pricelist-" + PC.today() + ".csv",
-          ["Waktu", "Product Category", "Produk", "Varian BOM (varian_type)", "No. Pricelist", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Bottom Price/Meter", "Rate Extra Margin (%)", "Catatan", "Disetujui Oleh"], rows);
+          ["Waktu", "Product Category", "Produk", "Varian BOM (no_uniq_id)", "No. Pricelist", "Price List/Meter Lama", "Price List/Meter Baru", "Price List/Kg Lama", "Price List/Kg Baru", "Bottom Price/Meter", "Rate Extra Margin (%)", "Catatan", "Disetujui Oleh"], rows);
         window.PC_SHELL.toast("Riwayat diekspor (" + rows.length + " baris sesuai filter).", "ok");
       },
     }, DT_ACT),

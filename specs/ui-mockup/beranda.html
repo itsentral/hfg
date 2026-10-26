@@ -82,7 +82,7 @@
           <thead>
             <tr>
               <th>Produk (id_produk_fg)</th>
-              <th style="width:260px">Varian BOM (varian_type) <em>*</em></th>
+              <th style="width:260px">Varian BOM (no_uniq_id) <em>*</em></th>
               <th class="num" style="width:160px">Target Qty (pcs)</th>
               <th style="width:44px"></th>
             </tr>
@@ -91,6 +91,7 @@
           <tfoot><tr><td colspan="4" class="empty">Belum ada produk. Tambahkan minimal satu.</td></tr></tfoot>
         </table>
       </div>
+      <p class="card__hint">Varian BOM = satu baris material pada BOM produk (material + ketebalan). Pilih varian yang dipakai SPK ini; kunci varian = pasangan produk dan <code>no_uniq_id</code>.</p>
       <p class="note" id="spkError" hidden></p>
 
       <div class="modal__actions">
@@ -103,11 +104,12 @@
   <!-- ============ MODAL: UBAH VARIAN BOM SPK ============ -->
   <div class="modal" id="spkEditModal" hidden>
     <div class="modal__box modal__box--wide">
-      <h3 class="modal__title">Ubah Varian BOM (varian_type) — <span id="spkEditNo"></span></h3>
+      <h3 class="modal__title">Ubah Varian BOM (no_uniq_id) — <span id="spkEditNo"></span></h3>
       <p class="modal__body">Varian BOM hanya dapat diubah selama laporan produksi SPK ini belum diinput. Setelah laporan dibuat, varian terkunci.</p>
       <div class="table-wrap">
-        <table class="tbl"><thead><tr><th>Produk (id_produk_fg)</th><th style="width:300px">Varian BOM (varian_type)</th></tr></thead><tbody id="spkEditBody"></tbody></table>
+        <table class="tbl"><thead><tr><th>Produk (id_produk_fg)</th><th style="width:300px">Varian BOM (no_uniq_id)</th></tr></thead><tbody id="spkEditBody"></tbody></table>
       </div>
+      <p class="card__hint">Varian BOM = satu baris material pada BOM produk (material + ketebalan). Varian hanya dapat diubah selama laporan produksi SPK belum dibuat.</p>
       <p class="note" id="spkEditError" hidden></p>
       <div class="modal__actions">
         <button type="button" class="btn btn--ghost" id="spkEditCancel">Batal</button>

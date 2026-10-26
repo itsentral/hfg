@@ -12,7 +12,7 @@
     return spk.products
       .map((p) => {
         const prod = M.productById(p.productId);
-        const bom = p.bomUniq ? ` <span class="chip" title="varian_type">${p.bomUniq}</span>` : "";
+        const bom = p.bomUniq ? ` <span class="chip" title="no_uniq_id">${p.bomUniq}</span>` : "";
         return `${prod ? prod.name : p.productId}${bom} <span class="chip">${p.targetQty} pcs</span>`;
       })
       .join(" ");
@@ -73,7 +73,7 @@
     const opts = M.bomOptions(productId);
     if (!M.productReady(productId)) return `<select data-${attr}="${id}" disabled><option value="">— Belum ada Hasil Costing —</option></select>
         <div class="reject-note" style="font-size:12px;color:#b91c1c">✕ Ditolak: produk belum punya varian BOM dengan Hasil Costing lengkap di Product Costing. SPK tidak dapat dibuat.</div>`;
-    return `<select data-${attr}="${id}"><option value="">— Pilih Varian BOM (varian_type) —</option>` +
+    return `<select data-${attr}="${id}"><option value="">— Pilih Varian BOM (no_uniq_id) —</option>` +
       opts.map((o) => `<option value="${o.uniq}" ${o.uniq === selected ? "selected" : ""} ${M.bomReady(o.uniq) ? "" : "disabled"}>${o.uniq}${o.materialName ? " — " + o.materialName : ""}${M.bomReady(o.uniq) ? "" : " (costing belum lengkap)"}</option>`).join("") + "</select>";
   };
   const bomSelect = (r) => bomHtml(r.id, r.productId, r.bomUniq, "sp-bom");
@@ -116,7 +116,7 @@
   }
   function closeModal() { $("#spkModal").hidden = true; }
 
-  /* ---------- Ubah Varian BOM (varian_type) SPK yang belum punya laporan produksi ---------- */
+  /* ---------- Ubah Varian BOM (no_uniq_id) SPK yang belum punya laporan produksi ---------- */
   let editNo = null;
   function openEdit(no) {
     const spk = spkList().find((s) => s.no === no);
@@ -135,7 +135,7 @@
     const sels = [...document.querySelectorAll("#spkEditBody [data-ed-bom]")];
     const uniqs = sels.map((el) => el.value);
     const err = $("#spkEditError");
-    if (spk.products.some((p, i) => M.bomOptions(p.productId).length && !uniqs[i])) { err.textContent = "⚠ Pilih Varian BOM (varian_type) untuk setiap produk."; err.className = "note note--warn"; err.hidden = false; return; }
+    if (spk.products.some((p, i) => M.bomOptions(p.productId).length && !uniqs[i])) { err.textContent = "⚠ Pilih Varian BOM (no_uniq_id) untuk setiap produk."; err.className = "note note--warn"; err.hidden = false; return; }
     if (!M.setSpkBoms(editNo, uniqs.map((u, i) => u || spk.products[i].bomUniq || ""))) { err.textContent = "⚠ SPK terkunci: laporan produksi sudah dibuat."; err.className = "note note--warn"; err.hidden = false; return; }
     $("#spkEditModal").hidden = true;
     renderTable();
@@ -167,7 +167,7 @@
     const bad = products.find((p) => !M.productReady(p.productId));
     if (bad) { const pr = M.productById(bad.productId); return showError("SPK ditolak: produk " + (pr ? pr.name : bad.productId) + " belum punya varian BOM dengan Hasil Costing lengkap (bila dibiarkan, biaya masuk Laporan Keuangan dan perlu adjustment)."); }
     const noBom = products.find((p) => !p.bomUniq || !M.bomReady(p.bomUniq));
-    if (noBom) { const pr = M.productById(noBom.productId); return showError("Pilih Varian BOM (varian_type) untuk produk " + (pr ? pr.name : noBom.productId) + "."); }
+    if (noBom) { const pr = M.productById(noBom.productId); return showError("Pilih Varian BOM (no_uniq_id) untuk produk " + (pr ? pr.name : noBom.productId) + "."); }
 
     M.userSpk.add({ no, tgl, customer, material, status: "Menunggu Produksi", products });
     closeModal();

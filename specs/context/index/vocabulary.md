@@ -101,6 +101,6 @@ Labor Operator ÷ 173 jam) × 1/3 (dibulatkan ke atas ke Rupiah penuh sesudah di
 ditampilkan).
 
 **Varian BOM pada SPK** (FR-74; OQ 50, 51, 53, 54, 55 dijawab 2026-10-26: SPK ditolak bila produk tanpa varian BOM atau Hasil Costing belum lengkap, varian per produk, terkunci setelah laporan produksi diinput): varian BOM (No. Uniq ID, mis. Type 001.1) yang dipilih saat Add SPK setelah memilih produk;
-dasar Rp/Kg Hasil Costing untuk HPP (FR-48), disimpan di kolom `varian_type` pada `tr_spk_material_detail` dan `production_report_items` (label tampilan: Varian BOM (varian_type); "No. Uniq ID" = istilah bisnis untuk nilainya, mis. Type 001.1). Item Stok Bebas dan KW 2 mengikuti varian SPK (FR-48, FR-74).
+dasar Rp/Kg Hasil Costing untuk HPP (FR-48), disimpan di kolom `no_uniq_id` pada `tr_spk_material_detail` dan `production_report_items` (label tampilan: Varian BOM (no_uniq_id); "No. Uniq ID" = istilah bisnis untuk nilainya, mis. Type 001.1; direvisi 2026-10-26 dari `varian_type`). **Satu varian = satu baris material pada BOM produk** (`ms_bom_detail`); produk dengan beberapa material berbeda ketebalan punya beberapa varian; kunci = pasangan `id_produk` + `no_uniq_id`; `ms_bom_header.varian_type`/`is_default` hanya kompatibilitas. Item Stok Bebas dan KW 2 mengikuti varian SPK (FR-48, FR-74).
 
 _Add a term the first time someone has to ask what it maps to._
