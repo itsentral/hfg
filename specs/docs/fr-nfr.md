@@ -485,7 +485,10 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
   Type 001.1: Berat/Meter 1,3397 Kg). Ini mengisi kolom `main_power_cost_*`,
   `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`, `coordinator_cost_*`,
   `scrap_cost_*`. Untuk KW 1 dan KW 2 pembagian 40%/60% pada FR-21 tetap berlaku.
-  `start_time`/`finished_time` laporan tidak ikut dihitung. _Teks FR-48 sebelumnya (rate dicari
+  `start_time`/`finished_time` laporan tidak ikut dihitung. **Varian BOM tiap item mengikuti SPK
+  (ditambahkan 2026-10-26):** item KW 1 memakai varian produk itu pada SPK; item **Stok Bebas** dan
+  **KW 2** (Internal dan Supplier) memakai varian produk yang sama bila produknya ada di SPK, kalau
+  tidak memakai varian SPK yang pertama (lihat FR-74). _Teks FR-48 sebelumnya (rate dicari
   lewat Product Category (Level 2), KW 2 memakai Master Rate Generals "Scrap") digantikan._
 - **FR-49** — Rate yang dipakai FR-48 **dibekukan saat laporan produksi dibuat**: perubahan Rate
   Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
@@ -756,6 +759,11 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   simulasi dan menyesuaikan nama field/label ERD (OQ 55). Pada mockup, `hpp.html` membaca Hasil
   Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) **dipensiunkan**
   dan tidak lagi dipakai (OQ 54).
+  **Stok Bebas dan KW 2 mengikuti varian SPK (ditambahkan 2026-10-26, jawaban user: "KW2 juga ikuti
+  varian berdasarkan produk yang sudah dipilih di SPK"):** pada Laporan Produksi, item Stok Bebas dan
+  KW 2 tidak memilih varian sendiri. Varian BOM-nya = varian produk yang sama pada SPK; bila produk
+  itu tidak ada di SPK, dipakai varian SPK yang pertama. Dengan begitu komponen Man Power sampai Scrap
+  pada Stok Bebas dan KW 2 tidak Rp 0.
 
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
