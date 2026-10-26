@@ -586,6 +586,13 @@
     const sp = spk.products.find((x) => x.productId === productId);
     return sp && sp.bomUniq ? sp.bomUniq : "";
   };
+  // Stok Bebas mengikuti varian BOM yang dipilih SPK: varian produk yang sama bila ada di SPK, kalau tidak varian SPK pertama.
+  const bomOfBebas = (productId) => {
+    const own = bomOf(productId);
+    if (own) return own;
+    const sp = spk.products.find((x) => x.bomUniq);
+    return sp ? sp.bomUniq : "";
+  };
   // Rate Rp/Kg Hasil Costing dibekukan saat laporan pertama kali dibuat (FR-49, NFR-09): bila laporan tersimpan
   // sudah memuat rate varian ini, nilai itu dipakai lagi; jika belum, diambil dari Hasil Costing terkini.
   const prevReport = M.report.get(spk.no);
@@ -620,7 +627,7 @@
           qty: s.qty || 0,
           material: info.material,
           gudang: info.gudang,
-          bomUniq: f.kind === "bebas" ? "" : bomOf(f.productId),
+          bomUniq: f.kind === "bebas" ? bomOfBebas(f.productId) : bomOf(f.productId),
         };
       });
     };

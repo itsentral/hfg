@@ -32,8 +32,13 @@
      Varian BOM tanpa rate = komponen 0 + peringatan. Catatan sumber dihimpun di rateNotes. */
   const ZERO_RATE = { manPower: 0, foh: 0, bpk: 0, cons: 0, koord: 0, scrap: 0 };
   const rateNotes = {};   // key -> { kind: "frozen"|"live"|"none", uniq, produk }
+  function spkBomFallback() {
+    const sp = spk && spk.products ? spk.products.find((x) => x.bomUniq) : null;
+    return sp ? sp.bomUniq : "";
+  }
   function rateFor(row) {
-    const uniq = row.bomUniq || "";
+    // Stok Bebas (termasuk laporan lama tanpa bomUniq) mengikuti varian BOM yang dipilih SPK.
+    const uniq = row.bomUniq || (row.kind === "Bebas" ? spkBomFallback() : "");
     const frozen = uniq && data.rateByBom && data.rateByBom[uniq];
     if (frozen) { rateNotes[uniq] = { kind: "frozen", uniq }; return frozen; }
     const live = uniq && M && M.bomRateKg ? M.bomRateKg(uniq) : null;
@@ -62,7 +67,7 @@
   /* ============================================================
      TABEL 1 — HPP KW1 & Stok Bebas (kolom F..W + Size)
      ============================================================ */
-  const bomChip = (r) => (r.bomUniq ? ' <span class="chip" title="Varian BOM">' + r.bomUniq + "</span>" : "");
+  const bomChip = (r) => { const u = r.bomUniq || (r.kind === "Bebas" ? spkBomFallback() : ""); return u ? ' <span class="chip" title="Varian BOM">' + u + "</span>" : ""; };
 
   // Catatan sumber rate (di atas tabel 1) — dibangun setelah semua tabel dihitung.
   function renderRateNote() {
