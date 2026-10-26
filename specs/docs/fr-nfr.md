@@ -470,22 +470,27 @@ Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat d
 
 **Pemakaian rate di HPP Laporan Produksi**
 
-- **FR-48** — HPP per item pada `production_report_items` memakai enam rate dari Product
-  Costing: **Man Power** (Total Man Hour × Rate Man Power), **Bahan Pendukung Khusus**, **FOH**,
-  **Consumables** (% × Material Cost), **Biaya Koordinasi** (Rp/Kg × Berat/Meter) dan **Scrap**
-  (% × Material Cost). Untuk HPP Produk **KW 1 dan KW 2**, Rate Scrap diambil dari Master Rate
-  Generals "Scrap"; pembagian 40%/60% pada FR-21 tetap berlaku. Man Power memakai standar rate
-  Product Costing; `start_time`/`finished_time` laporan tidak ikut dihitung.
-  Rate dicari lewat **Product Category (Level 2)** dari produk (`product_lvl_4_id`) item
-  tersebut. Ini mengisi kolom
-  `main_power_cost_*`, `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`,
-  `coordinator_cost_*`, `scrap_cost_*`. _Cara menghitung biaya per pcs mengikuti mock up Laporan Produksi
-  sebelumnya (FR-19/FR-20), bukan didefinisikan ulang di sini (keputusan user 2026-10-07;
-  open question 4). Fokus saat ini hanya Product Costing; FR-48 hanya menetapkan **dari mana
-  rate-nya datang**, bukan rumus per pcs._
+- **FR-48** (**direvisi 2026-10-26**) — HPP per item pada `production_report_items` memakai enam
+  komponen biaya selain Material, dan **rate-nya diambil dalam Rp/Kg dari Hasil Costing varian BOM
+  yang dipakai SPK** (FR-74), bukan dari Master Rate Laporan Produksi (`rate.html`) lagi:
+  1. **Man Power** ← Rp/Kg Man Power Cost,
+  2. **FOH** ← Rp/Kg FOH,
+  3. **Bahan Pendukung Khusus** ← Rp/Kg Bahan Pendukung Khusus,
+  4. **Consumables** ← Rp/Kg Consumables,
+  5. **Biaya Koordinasi** ← Rp/Kg Biaya Koordinasi,
+  6. **Scrap** ← Rp/Kg Scrap.
+
+  Biaya per pcs = Rp/Kg komponen × `berat_per_pcs` item (Kg); Material tetap dari Costbook
+  Material (FR-19/FR-20). Rp/Kg Hasil Costing = Rp/Meter komponen ÷ Berat/Meter (FR-46; contoh
+  Type 001.1: Berat/Meter 1,3397 Kg). Ini mengisi kolom `main_power_cost_*`,
+  `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`, `coordinator_cost_*`,
+  `scrap_cost_*`. Untuk KW 1 dan KW 2 pembagian 40%/60% pada FR-21 tetap berlaku.
+  `start_time`/`finished_time` laporan tidak ikut dihitung. _Teks FR-48 sebelumnya (rate dicari
+  lewat Product Category (Level 2), KW 2 memakai Master Rate Generals "Scrap") digantikan._
 - **FR-49** — Rate yang dipakai FR-48 **dibekukan saat laporan produksi dibuat**: perubahan Rate
   Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
-  pada laporan yang sudah ada (keputusan user 2026-10-07). Mekanisme penyimpanan (salinan nilai
+  pada laporan yang sudah ada (keputusan user 2026-10-07). Sejak 2026-10-26 yang dibekukan adalah
+  Rp/Kg Hasil Costing varian BOM terpilih (FR-48, FR-74). Mekanisme penyimpanan (salinan nilai
   ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
 
 ### Revisi Rev.1 — Use Case, BPMN To Be, dan ERD Product Costing — 2026-10-19
@@ -737,6 +742,15 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
   tersedia sebagai kolom sekunder. Format tampilan: OQ 42.
 
+- **FR-74** (UC-02, UC-04, UC-05, UC-11; sumber permintaan user 2026-10-26; **menunggu konfirmasi OQ 50–55**) — **SPK memilih varian BOM.**
+  Pada Add SPK (Daftar SPK, `beranda.html`), setelah memilih produk, pengguna **wajib memilih varian BOM**
+  produk itu (No. Uniq ID, contoh Type 001.1). Varian dibawa ke item laporan produksi
+  (`production_report_items.uniq_id`, diusulkan) dan menjadi dasar Rp/Kg Hasil Costing pada FR-48.
+  Bila produk belum punya varian BOM atau Hasil Costing varian itu belum ada, Add SPK diberi
+  peringatan dan HPP komponen tidak dapat dihitung (OQ 50). Pada mockup, `hpp.html` membaca Hasil
+  Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) tidak lagi
+  dipakai (OQ 54).
+
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
 1. **RESOLVED 2026-10-07 — per Product Category (Level 2).** Pertanyaan semula: kunci rate
@@ -887,6 +901,16 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
     halaman terkait, hak Manage, atau hak khusus "Backup"? Diasumsikan hak Manage (sama dengan ekspor); mohon konfirmasi. Termasuk
     jadwal dan cara pemindahan ke backup (proses terjadwal), dan cara membuka backup (halaman, laporan, atau pemulihan).
 
+50. **Produk tanpa varian BOM / tanpa Hasil Costing (diusulkan 2026-10-26).** Diasumsikan Add SPK menolak produk tanpa varian BOM
+    dan HPP komponen kosong (Rp 0, ditandai) bila Hasil Costing varian belum ada. Mohon konfirmasi atau beri aturan lain.
+51. **SPK multi-produk (diusulkan).** Diasumsikan varian BOM dipilih **per produk** pada tiap baris SPK. Mohon konfirmasi.
+52. **Hasil Costing yang dipakai (diusulkan).** Diasumsikan Hasil Costing terakhir yang di-Update Costing (FR-67) saat laporan produksi
+    dibuat, lalu dibekukan (FR-49). Alternatif: saat SPK dibuat. Mohon konfirmasi.
+53. **Ubah varian setelah SPK dibuat (diusulkan).** Diasumsikan varian boleh diubah selama laporan produksi belum dibuat; sesudahnya terkunci.
+54. **Nasib `rate.html` (diusulkan).** Diasumsikan Master Rate Laporan Produksi tidak dipakai lagi untuk HPP; halaman ditandai usang di mockup.
+55. **Kepemilikan kolom varian di SPK (diusulkan).** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
+    `uniq_id` ditambahkan di sana dan disalin ke `production_report_items.uniq_id`. Pada mockup Add SPK dibuat sebagai simulasi.
+
 **Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
 
 - Baris varian 2 (`Type 001.2`, 0,15 mm): kolom G (`Price Reference Rp/Kg`) menunjuk absolut ke
@@ -950,7 +974,7 @@ yang sudah resolved di atas (± 0,7%).
   criterion: setelah Rate Man Power / Rate Bahan Pendukung / Rate FOH / General Rate diubah,
   `total_hpp_item` dan seluruh kolom `*_cost_*` laporan yang dibuat sebelum perubahan **tidak
   berubah satu rupiah pun**, dan setiap baris item dapat menunjukkan rate (nilai atau versi) apa
-  yang dipakai. NFR-07(b) (Costbook Material) tidak berubah.
+  yang dipakai (sejak 2026-10-26: Rp/Kg Hasil Costing varian BOM, FR-48/FR-74). NFR-07(b) (Costbook Material) tidak berubah.
 - **NFR-10 (Auditability master costing).** Setiap perubahan pada master Product Costing (Kurs,
   Price Reference & keputusan pemakaiannya, BOM, Flow Process, Man Power Rate, Rate Bahan
   Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
@@ -996,7 +1020,7 @@ yang sudah resolved di atas (± 0,7%).
   di-breakdown.
 - **NFR-14 (Traceability costing → laporan).** Setiap baris `production_report_items` dapat
   menunjuk varian BOM (No. Uniq ID) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
-  dari satu baris item dapat dibuka kembali seluruh rumus FR-46/FR-48 beserta input yang sama
+  dari satu baris item dapat dibuka kembali (lewat `uniq_id`, FR-74) seluruh rumus FR-46/FR-48 beserta input yang sama
   dan hasilnya sama dengan yang tersimpan.
 
 - **NFR-15 (Konsistensi nama ERD dan kode).** Untuk data yang berasal dari database, nama tabel dan kolom di kode, migrasi,
@@ -1094,3 +1118,6 @@ History Costing, bukan otomatis pada setiap perubahan master; saat Update Costin
 baseline (Bottom Price saat terakhir ditinjau Sales) dan notifikasi Belum Ditinjau dibuat per varian BOM bila berbeda ≥ Rp0,01. Hak akses
 melihat data backup History = **Manage** (sama dengan ekspor Excel). OQ 48 dan 49 terjawab; yang terbuka tinggal OQ 41 dan 42 (dengan asumsi).
 
+**Pembaruan 2026-10-26 (HPP memakai Hasil Costing).** Permintaan user: komponen biaya HPP (Man Power, FOH, Bahan Pendukung Khusus,
+Consumables, Biaya Koordinasi, Scrap) memakai Rp/Kg dari Hasil Costing varian BOM yang dipakai, bukan dari `rate.html`; karena itu Add SPK
+memilih varian BOM setelah produk. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74 baru; OQ 50–55 diusulkan dengan asumsi.

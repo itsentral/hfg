@@ -148,7 +148,8 @@ issues:
     blocks: []
     summary: >-
       Backlog Tahap 6. Rate dibekukan saat laporan dibuat (FR-49, NFR-09); rumus
-      per pcs mengikuti mock up Laporan Produksi.
+      per pcs mengikuti mock up Laporan Produksi. Revisi 2026-10-26: enam komponen HPP memakai Rp/Kg
+      Hasil Costing varian BOM yang dipilih pada Add SPK (FR-48, FR-74; OQ 50-55).
   - id: FEAT-09
     title: Dashboard notifikasi perubahan Bottom Price untuk Sales
     type: feature

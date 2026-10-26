@@ -43,6 +43,12 @@ One `-` bullet per event, newest first:
 
 ---
 
+- **2026-10-26** `[DECISION][FEAT-08]` **HPP memakai Rp/Kg Hasil Costing varian BOM; Add SPK memilih varian BOM.** Permintaan user: enam komponen
+  biaya HPP (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, Scrap) tidak lagi dari `rate.html`, tetapi Rp/Kg Hasil
+  Costing varian BOM yang dipakai. Ditolak: tetap per Product Category dari Master Rate lama. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74
+  baru, OQ 50–55 (asumsi), ERD `uniq_id` (diusulkan) pada `production_report_items` dan `tr_spk_material_detail`, intake
+  `input/2026-10-26-hpp-rate-dari-costing/`. `[TODO]` mockup hpp.js/beranda.js; kepemilikan kolom di SPK eksternal (OQ 55).
+
 - **2026-10-21** `[DECISION][FEAT-09/FEAT-10]` **OQ 48 dan 49 terjawab.** Notifikasi Bottom Price (FR-68) dipicu saat Update Costing ditekan (satu pemicu
   dengan History Costing; menggantikan "setiap kali costing dihitung ulang", OQ 29 direvisi); hak akses melihat data backup History =
   Manage (sama dengan ekspor). FR-68, FR-71/72, NFR-17, UC-N18/N19/N20, PG-24/25/26, vocabulary (Update Costing) disesuaikan.
