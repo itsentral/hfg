@@ -2007,11 +2007,24 @@
       scraps: []
     };
 
+    // Helper untuk mencari Varian BOM SPK (FR-48, FR-74)
+    function getSpkVariantFor(productId) {
+      if (SPK_PRODUCTS && SPK_PRODUCTS.length > 0) {
+        var sp = SPK_PRODUCTS.find(function(x) {
+          return x.id_product_lvl_4 == productId || x.product_lvl_4_id == productId || x.id_produk_fg == productId;
+        });
+        if (sp && sp.no_uniq_id) return sp.no_uniq_id;
+        if (SPK_PRODUCTS[0] && SPK_PRODUCTS[0].no_uniq_id) return SPK_PRODUCTS[0].no_uniq_id;
+      }
+      return 'Type 001.1';
+    }
+
     // Items: FG KW1 & Bebas
     $.each(state.fg, function(i, f) {
       payload.items.push({
         kategori: (f.kind === 'bebas') ? 'stok_bebas' : 'kw_1',
         id_product_lvl_4: f.productId,
+        no_uniq_id: f.no_uniq_id || getSpkVariantFor(f.productId),
         nama_produk: f.productName,
         kode_baby_coil: f.coil,
         metode_input: f.method,
@@ -2032,6 +2045,7 @@
       payload.items.push({
         kategori: 'kw_2_internal',
         id_product_lvl_4: r.productId,
+        no_uniq_id: r.no_uniq_id || getSpkVariantFor(r.productId),
         nama_produk: p ? (p.nama + '-KW2-I-' + numStr) : 'KW2-I',
         kode_baby_coil: r.coil || null,
         metode_input: 1,
@@ -2052,6 +2066,7 @@
       payload.items.push({
         kategori: 'kw_2_supplier',
         id_product_lvl_4: r.productId,
+        no_uniq_id: r.no_uniq_id || getSpkVariantFor(r.productId),
         nama_produk: p ? (p.nama + '-KW2-S-' + numStr) : 'KW2-S',
         kode_baby_coil: r.coil || null,
         metode_input: 1,

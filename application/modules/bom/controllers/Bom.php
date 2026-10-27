@@ -140,13 +140,24 @@ class Bom extends Admin_Controller
         $details = [];
         $material_set = [];
 
+        $uniq_set = [];
         foreach ($details_raw as $d) {
             if (!empty($d['id_material'])) {
                 if (in_array($d['id_material'], $material_set)) {
                     $this->session->set_flashdata('error', 'Material yang sama tidak boleh dipakai dua kali pada produk ini.');
-                    redirect('bom/add');
+                    redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                 }
                 $material_set[] = $d['id_material'];
+
+                $uniq = !empty($d['no_uniq_id']) ? trim($d['no_uniq_id']) : '';
+                if (!empty($uniq)) {
+                    if (in_array($uniq, $uniq_set)) {
+                        $this->session->set_flashdata('error', "No. Uniq ID (Varian BOM) '{$uniq}' tidak boleh duplikat pada produk yang sama.");
+                        redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
+                    }
+                    $uniq_set[] = $uniq;
+                }
+
                 $details[] = $d;
             }
         }

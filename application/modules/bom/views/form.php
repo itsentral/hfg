@@ -313,6 +313,25 @@ $(document).ready(function() {
             alert('Material yang sama tidak boleh dipakai dua kali pada produk ini.');
             return false;
         }
+
+        // Cek duplikasi no_uniq_id pada produk yang sama
+        var selectedUniqs = [];
+        var hasDupUniq = false;
+        $('.variant-uniq').each(function() {
+            var val = $(this).val().trim();
+            if (val) {
+                if (selectedUniqs.indexOf(val) !== -1) {
+                    hasDupUniq = true;
+                }
+                selectedUniqs.push(val);
+            }
+        });
+
+        if (hasDupUniq) {
+            e.preventDefault();
+            alert('No. Uniq ID (Varian BOM) tidak boleh duplikat pada produk yang sama.');
+            return false;
+        }
     });
 });
 </script>

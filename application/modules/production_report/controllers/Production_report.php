@@ -189,6 +189,7 @@ class Production_report extends Admin_Controller
                 $items[] = [
                     'category_type'         => !empty($it['kategori']) ? $it['kategori'] : 'kw_1',
                     'product_lvl_4_id'      => !empty($it['id_product_lvl_4']) ? (int)$it['id_product_lvl_4'] : 0,
+                    'no_uniq_id'            => !empty($it['no_uniq_id']) ? $it['no_uniq_id'] : null,
                     'nama_product_custom'   => !empty($it['nama_produk']) ? $it['nama_produk'] : null,
                     'source_material_coil'  => !empty($it['kode_baby_coil']) ? $it['kode_baby_coil'] : null,
                     'qty'                   => !empty($it['qty']) ? (int)$it['qty'] : 0,

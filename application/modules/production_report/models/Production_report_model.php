@@ -77,6 +77,7 @@ class Production_report_model extends CI_Model
             d.urut,
             d.id_produk_fg,
             d.nm_produk_fg,
+            COALESCE(d.no_uniq_id, "") AS no_uniq_id,
             d.target_qty,
             d.berat_per_unit,
             d.total_weight,
@@ -93,7 +94,26 @@ class Production_report_model extends CI_Model
         $this->db->where('d.spk_no', $spk_no);
         $this->db->order_by('d.urut', 'ASC');
 
-        return $this->db->get()->result_array();
+        $res = $this->db->get()->result_array();
+        foreach ($res as &$row) {
+            if (empty($row['no_uniq_id'])) {
+                // Fallback: ambil varian pertama dari ms_bom_detail untuk produk ini
+                $b = $this->db->select('d.no_uniq_id')
+                    ->from('ms_bom_header h')
+                    ->join('ms_bom_detail d', 'd.id_bom = h.id AND d.is_delete = 0')
+                    ->where('h.id_produk', $row['id_produk_fg'])
+                    ->where('h.is_delete', 0)
+                    ->order_by('d.urut', 'ASC')
+                    ->limit(1)
+                    ->get()->row();
+                if ($b && !empty($b->no_uniq_id)) {
+                    $row['no_uniq_id'] = $b->no_uniq_id;
+                } else {
+                    $row['no_uniq_id'] = 'Type 001.1';
+                }
+            }
+        }
+        return $res;
     }
 
     public function get_machines()
@@ -142,6 +162,83 @@ class Production_report_model extends CI_Model
             $map[$r['rate_key']] = (float)$r['rate_value'];
         }
         return $map;
+    }
+
+    /**
+     * Ambil rate Rp/Kg Hasil Costing untuk produk FG dan varian BOM tertentu.
+     * Sesuai FR-48 & FR-74: Mengambil 6 komponen dari product_costing_detail (Update Costing terakhir).
+     */
+    public function get_costing_rates_for_variant($code_lv4_or_id, $no_uniq_id = null)
+    {
+        $code_lv4 = $code_lv4_or_id;
+        if (is_numeric($code_lv4_or_id)) {
+            $p = $this->db->select('code_lv4')->where('id', $code_lv4_or_id)->get('product_lvl_4')->row();
+            if ($p && !empty($p->code_lv4)) {
+                $code_lv4 = $p->code_lv4;
+            }
+        }
+
+        if (empty($no_uniq_id)) {
+            $bom = $this->db->select('d.no_uniq_id')
+                ->from('ms_bom_header h')
+                ->join('ms_bom_detail d', 'd.id_bom = h.id AND d.is_delete = 0')
+                ->where('h.id_produk', $code_lv4)
+                ->where('h.is_delete', 0)
+                ->order_by('d.urut', 'ASC')
+                ->limit(1)
+                ->get()->row();
+            if ($bom && !empty($bom->no_uniq_id)) {
+                $no_uniq_id = $bom->no_uniq_id;
+            }
+        }
+
+        $costing = null;
+        if (!empty($code_lv4)) {
+            $this->db->select('
+                code_lv4,
+                no_uniq_id,
+                biaya_proses_man_power_kg,
+                biaya_proses_foh_kg,
+                biaya_proses_bahan_pendukung_khusus_kg,
+                manufacturing_support_consumables_kg,
+                manufacturing_support_biaya_koordinasi_kg,
+                manufacturing_support_scrap_kg
+            ');
+            $this->db->from('product_costing_detail');
+            $this->db->where('code_lv4', $code_lv4);
+            if (!empty($no_uniq_id)) {
+                $this->db->where('no_uniq_id', $no_uniq_id);
+            }
+            $this->db->order_by('id', 'DESC');
+            $this->db->limit(1);
+            $costing = $this->db->get()->row();
+        }
+
+        if ($costing) {
+            return [
+                'man_power'       => (float)$costing->biaya_proses_man_power_kg,
+                'foh'             => (float)$costing->biaya_proses_foh_kg,
+                'bahan_pendukung' => (float)$costing->biaya_proses_bahan_pendukung_khusus_kg,
+                'consumables'     => (float)$costing->manufacturing_support_consumables_kg,
+                'koordinasi'      => (float)$costing->manufacturing_support_biaya_koordinasi_kg,
+                'scrap'           => (float)$costing->manufacturing_support_scrap_kg,
+                'no_uniq_id'      => $costing->no_uniq_id,
+                'source'          => 'costing_detail',
+            ];
+        }
+
+        // Fallback jika belum pernah di-Update Costing untuk varian ini
+        $legacy = $this->get_cost_rates();
+        return [
+            'man_power'       => (float)($legacy['man_power'] ?? 400.0),
+            'foh'             => (float)($legacy['foh'] ?? 300.0),
+            'bahan_pendukung' => (float)($legacy['bahan_pendukung'] ?? 500.0),
+            'consumables'     => (float)($legacy['consumables'] ?? 200.0),
+            'koordinasi'      => (float)($legacy['koordinasi'] ?? 200.0),
+            'scrap'           => 100.0,
+            'no_uniq_id'      => $no_uniq_id ?: 'Type 001.1',
+            'source'          => 'fallback',
+        ];
     }
 
     public function get_coils_by_source($source)
@@ -216,14 +313,19 @@ class Production_report_model extends CI_Model
     {
         $this->db->trans_start();
 
-        // 1. Ambil Master Rate Costing untuk kalkulasi HPP
-        $rates = $this->get_cost_rates();
-        $rate_mp    = (float)$rates['man_power'];
-        $rate_foh   = (float)$rates['foh'];
-        $rate_bahan = (float)$rates['bahan_pendukung'];
-        $rate_cons  = (float)$rates['consumables'];
-        $rate_koor  = (float)$rates['koordinasi'];
-        $rate_scrap = (float)$rates['scrap_pct'];
+        // 1. Tentukan fallback Varian BOM dari SPK untuk Stok Bebas & KW2 (FR-48, FR-74)
+        $spk_prod_fallback = null;
+        $spk_uniq_fallback = null;
+        if (!empty($header_data['id_tr_spk_detail'])) {
+            $spk_d = $this->db->select('id_produk_fg, no_uniq_id')
+                ->where('id', $header_data['id_tr_spk_detail'])
+                ->get('tr_spk_material_detail')
+                ->row();
+            if ($spk_d) {
+                $spk_prod_fallback = $spk_d->id_produk_fg;
+                $spk_uniq_fallback = $spk_d->no_uniq_id;
+            }
+        }
 
         // 2. Petakan Costbook (harga_beli) per Coil
         $coil_cb_map = [];
@@ -246,7 +348,7 @@ class Production_report_model extends CI_Model
         // Fallback costbook pertama jika ada item/scrap tanpa coil spesifik
         $default_cb = count($coil_cb_map) ? reset($coil_cb_map) : 0;
 
-        // 3. Kalkulasi HPP Items (KW1, Stok Bebas, KW2)
+        // 3. Kalkulasi HPP Items (KW1, Stok Bebas, KW2) memakai Rp/Kg Hasil Costing varian BOM
         $total_cogm_material = 0;
         $total_cogm_mp       = 0;
         $total_cogm_foh      = 0;
@@ -267,14 +369,31 @@ class Production_report_model extends CI_Model
                 $berat_pcs = (float)$it['berat_per_pcs'];
                 $qty       = (int)$it['qty'];
 
-                // Biaya per pcs
+                // Tentukan produk & varian BOM untuk item ini
+                $prod_id = !empty($it['product_lvl_4_id']) ? $it['product_lvl_4_id'] : $spk_prod_fallback;
+                $uniq    = !empty($it['no_uniq_id']) ? $it['no_uniq_id'] : $spk_uniq_fallback;
+
+                // Ambil rate Hasil Costing varian BOM terpilih (FR-48)
+                $c_rates = $this->get_costing_rates_for_variant($prod_id, $uniq);
+                $it['no_uniq_id'] = $c_rates['no_uniq_id'];
+
+                $r_mp    = (float)$c_rates['man_power'];
+                $r_foh   = (float)$c_rates['foh'];
+                $r_bahan = (float)$c_rates['bahan_pendukung'];
+                $r_cons  = (float)$c_rates['consumables'];
+                $r_koor  = (float)$c_rates['koordinasi'];
+                $r_scrap = (float)$c_rates['scrap'];
+
+                // Biaya per pcs:
+                // Material = Berat/Pcs * Costbook
+                // 6 komponen lainnya = Berat/Pcs * Rp/Kg Hasil Costing varian BOM
                 $c_mat   = $berat_pcs * $cb;
-                $c_mp    = $berat_pcs * $rate_mp;
-                $c_foh   = $berat_pcs * $rate_foh;
-                $c_bahan = $berat_pcs * $rate_bahan;
-                $c_cons  = $berat_pcs * $rate_cons;
-                $c_koor  = $berat_pcs * $rate_koor;
-                $c_scrap = $c_mat * $rate_scrap; // 2% dari nilai material
+                $c_mp    = $berat_pcs * $r_mp;
+                $c_foh   = $berat_pcs * $r_foh;
+                $c_bahan = $berat_pcs * $r_bahan;
+                $c_cons  = $berat_pcs * $r_cons;
+                $c_koor  = $berat_pcs * $r_koor;
+                $c_scrap = $berat_pcs * $r_scrap; // Diperbaiki: Berat/Pcs * Rp/Kg Scrap
                 $c_fg_pcs = $c_mat + $c_mp + $c_foh + $c_bahan + $c_cons + $c_koor + $c_scrap;
 
                 $it['material_cost_per_pcs']        = $c_mat;
@@ -406,6 +525,7 @@ class Production_report_model extends CI_Model
         if (!empty($items) && is_array($items)) {
             foreach ($items as &$it) {
                 $it['production_report_id'] = $report_id;
+                unset($it['costbook_rate'], $it['inventory_value_80'], $it['loss_cost_20']);
             }
             $this->db->insert_batch('production_report_items', $items);
         }

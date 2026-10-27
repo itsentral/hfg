@@ -220,12 +220,20 @@
     <div class="card-hpp-header">
       <h2><span class="card-num">1</span> HPP — Finish Good KW 1 &amp; Stok Bebas</h2>
     </div>
+    <div class="p-3 pb-0">
+      <div class="alert alert-info py-2 px-3 mb-2 d-flex align-items-center gap-2 small">
+        <i class="fa fa-info-circle fs-5 text-primary"></i>
+        <div>
+          <strong>Rate HPP dari Hasil Costing:</strong> Komposisi biaya (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, dan Scrap) dihitung menggunakan <strong>Rp/Kg dari Hasil Costing Varian BOM</strong> yang dipilih SPK, dan <strong>dibekukan</strong> saat laporan disimpan (FR-48, FR-49).
+        </div>
+      </div>
+    </div>
     <div class="table-responsive">
       <table class="tbl-hpp">
         <thead>
           <tr>
             <th rowspan="2">No</th>
-            <th rowspan="2">Produk</th>
+            <th rowspan="2">Produk <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
             <th rowspan="2">Coil</th>
             <th rowspan="2" class="num">Berat (kg)</th>
             <th rowspan="2" class="num">Berat/Pcs</th>
@@ -273,7 +281,12 @@
             ?>
               <tr>
                 <td class="text-center"><?= $no++; ?></td>
-                <td><strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong> <?= ($it['category_type'] === 'stok_bebas') ? '<span class="badge bg-warning text-dark small ms-1">Bebas</span>' : ''; ?></td>
+                <td>
+                  <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong> <?= ($it['category_type'] === 'stok_bebas') ? '<span class="badge bg-warning text-dark small ms-1">Bebas</span>' : ''; ?>
+                  <?php if (!empty($it['no_uniq_id'])): ?>
+                    <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                  <?php endif; ?>
+                </td>
                 <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                 <td class="num"><?= kg_format($it['berat_total']); ?></td>
                 <td class="num"><?= kg_format($it['berat_per_pcs']); ?></td>
@@ -330,7 +343,7 @@
           <thead>
             <tr>
               <th rowspan="2">No</th>
-              <th rowspan="2">Produk KW 2</th>
+              <th rowspan="2">Produk KW 2 <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
               <th rowspan="2">Coil</th>
               <th rowspan="2" class="num">Berat (kg)</th>
               <th rowspan="2" class="num">Qty</th>
@@ -357,7 +370,12 @@
               <?php $no = 1; foreach ($kw2_int_items as $it): ?>
                 <tr>
                   <td class="text-center"><?= $no++; ?></td>
-                  <td><strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong></td>
+                  <td>
+                    <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong>
+                    <?php if (!empty($it['no_uniq_id'])): ?>
+                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                    <?php endif; ?>
+                  </td>
                   <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                   <td class="num"><?= kg_format($it['berat_total']); ?></td>
                   <td class="num"><?= number_format($it['qty']); ?></td>
@@ -385,7 +403,7 @@
           <thead>
             <tr>
               <th rowspan="2">No</th>
-              <th rowspan="2">Produk KW 2</th>
+              <th rowspan="2">Produk KW 2 <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
               <th rowspan="2">Coil</th>
               <th rowspan="2" class="num">Berat (kg)</th>
               <th rowspan="2" class="num">Qty</th>
@@ -412,7 +430,12 @@
               <?php $no = 1; foreach ($kw2_sup_items as $it): ?>
                 <tr>
                   <td class="text-center"><?= $no++; ?></td>
-                  <td><strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong></td>
+                  <td>
+                    <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong>
+                    <?php if (!empty($it['no_uniq_id'])): ?>
+                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                    <?php endif; ?>
+                  </td>
                   <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                   <td class="num"><?= kg_format($it['berat_total']); ?></td>
                   <td class="num"><?= number_format($it['qty']); ?></td>
