@@ -155,11 +155,29 @@ $fmt = function ($v, $dec = 6) {
 		}
 
 		function initSelect2Category() {
+			if ($.fn.select2 && $('#code_lv2').length) {
+				if (!$('#code_lv2').hasClass('select2-hidden-accessible')) {
+					$('#code_lv2').select2({
+						width: '100%',
+						dropdownParent: $('#dialog-popup'),
+						placeholder: 'Select Product Category'
+					});
+				}
+			}
+		}
+
+		function initSelect2Machine($container) {
 			if ($.fn.select2) {
-				$('#code_lv2, #ModalView .select2, #ModalView .chosen-select').select2({
-					width: '100%',
-					dropdownParent: $('#dialog-popup'),
-					placeholder: 'Select Product Category'
+				var $el = $container ? $container.find('select.select-machine') : $('#tbl_proses select.select-machine');
+				$el.each(function() {
+					if (!$(this).hasClass('select2-hidden-accessible')) {
+						$(this).select2({
+							width: '100%',
+							dropdownParent: $('#dialog-popup'),
+							placeholder: '-- Pilih Mesin --',
+							allowClear: true
+						});
+					}
 				});
 			}
 		}
@@ -173,7 +191,6 @@ $fmt = function ($v, $dec = 6) {
 					$("#ModalView").html(data);
 					$("#btn_save").toggle($('#fp_mode').val() !== 'view');
 					$("#dialog-popup").modal('show');
-					initSelect2Category();
 					hitung();
 				},
 				error: function() {
@@ -188,11 +205,17 @@ $fmt = function ($v, $dec = 6) {
 
 		$('#dialog-popup').on('shown.bs.modal', function() {
 			initSelect2Category();
+			initSelect2Machine();
 		});
 		$('#dialog-popup').on('hidden.bs.modal', function() {
 			if ($('#code_lv2').hasClass('select2-hidden-accessible')) {
 				$('#code_lv2').select2('destroy');
 			}
+			$('#tbl_proses select.select-machine').each(function() {
+				if ($(this).hasClass('select2-hidden-accessible')) {
+					$(this).select2('destroy');
+				}
+			});
 			$('#ModalView').html('');
 		});
 
@@ -208,12 +231,20 @@ $fmt = function ($v, $dec = 6) {
 
 		// Tambah / hapus baris proses, hitung ulang saat angka berubah
 		$(document).on('click', '#fp_add_row', function() {
-			var html = $('#fp_tpl_row').html().replace('__NO__', $('#tbl_proses tbody tr.fp-row').length + 1);
-			$('#tbl_proses tbody').append(html);
+			var html = $('#fp_tpl_row').html().replace(/__NO__/g, $('#tbl_proses tbody tr.fp-row').length + 1);
+			var $newRow = $(html);
+			$('#tbl_proses tbody').append($newRow);
+			initSelect2Machine($newRow);
 			hitung();
 		});
 		$(document).on('click', '.fp-del', function() {
-			$(this).closest('tr').remove();
+			var $row = $(this).closest('tr');
+			$row.find('select.select-machine').each(function() {
+				if ($(this).hasClass('select2-hidden-accessible')) {
+					$(this).select2('destroy');
+				}
+			});
+			$row.remove();
 			hitung();
 		});
 		$(document).on('input', '.fp-ct, .fp-mp', hitung);
@@ -258,8 +289,12 @@ $fmt = function ($v, $dec = 6) {
 				confirmButtonClass: "btn-info",
 				confirmButtonText: "Ya, Simpan!",
 				cancelButtonText: "Batal",
-				closeOnConfirm: false
-			}, function() {
+				closeOnConfirm: false,
+				closeOnCancel: true
+			}, function(isConfirm) {
+				if (!isConfirm) {
+					return false;
+				}
 				$.ajax({
 					type: 'POST',
 					url: base_url + active_controller + 'save',
@@ -304,8 +339,12 @@ $fmt = function ($v, $dec = 6) {
 				confirmButtonClass: "btn-danger",
 				confirmButtonText: "Ya, Hapus!",
 				cancelButtonText: "Batal",
-				closeOnConfirm: false
-			}, function() {
+				closeOnConfirm: false,
+				closeOnCancel: true
+			}, function(isConfirm) {
+				if (!isConfirm) {
+					return false;
+				}
 				$.ajax({
 					type: 'POST',
 					url: base_url + active_controller + 'delete',

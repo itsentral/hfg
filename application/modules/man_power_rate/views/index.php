@@ -344,14 +344,10 @@ $groups = [
                             <td class="text-end fw-bold text-secondary">Rp <?= number_format($rate->rate_direct_labor, 2, ',', '.') ?></td>
                             <td class="text-muted">Total &divide; jam kerja per bulan (belum dibulatkan)</td>
                         </tr>
-                        <tr class="table-primary border-primary">
-                            <td class="fw-bold fs-6 text-primary"><strong>Rate 1/3 Operator (Rp/jam)</strong></td>
-                            <td class="text-end fw-bold fs-5 text-primary">
-                                Rp <?= number_format($rate->rate_1_3_operator, 0, ',', '.') ?>
-                            </td>
-                            <td class="small">
-                                <strong>CEIL(Rate Direct Labor &times; 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>)</strong> &mdash; dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3. Satu-satunya angka yang dibulatkan.
-                            </td>
+                        <tr>
+                            <td><strong>Rate 1/3 Operator (Rp/jam)</strong></td>
+                            <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format($rate->rate_1_3_operator, 0, ',', '.') ?></td>
+                            <td class="text-muted"><strong>CEIL(Rate Direct Labor &times; 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>)</strong> &mdash; dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3. Satu-satunya angka yang dibulatkan.</td>
                         </tr>
                     </tbody>
                 </table>

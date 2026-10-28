@@ -20,6 +20,19 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
     z-index: 1065 !important;
 }
+#tbl_proses .select2-container--default .select2-selection--single {
+    height: 31px !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+}
+#tbl_proses .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 25px !important;
+    font-size: 0.875rem !important;
+}
+#tbl_proses .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 29px !important;
+    right: 4px !important;
+}
 </style>
 <?php
 // Isi modal Flow Process & Cycletime (parsial; dimuat lewat AJAX dari Flow_process::form).
@@ -31,6 +44,7 @@ $code_lv2   = (!empty($header['code_lv2'])) ? $header['code_lv2'] : '';
 $nama_kat   = (isset($categories[$code_lv2])) ? $categories[$code_lv2] : $code_lv2;
 $readonly   = ($view_only) ? 'readonly' : '';
 $disabled   = ($view_only) ? 'disabled' : '';
+$machines   = (!empty($machines)) ? $machines : [];
 
 // Tampilan angka: titik desimal untuk input; tanpa nol berlebih
 $plain = function ($v, $dec = 6) {
@@ -44,13 +58,37 @@ if (empty($rows)) {
 	$rows = [['costcentre_area' => '', 'process_name' => '', 'machine' => '', 'cycletime' => '', 'man_power' => '', 'total_man_hour' => 0]];
 }
 
-$baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
+$baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $machines) {
 	ob_start(); ?>
 	<tr class="fp-row">
 		<td class="text-center fp-no"><?= $no; ?></td>
 		<td><input type="text" name="costcentre_area[]" list="list_costcenter" class="form-control form-control-sm" maxlength="150" placeholder="Pilih / ketik area" value="<?= htmlspecialchars((string) $r['costcentre_area']); ?>" <?= $readonly; ?>></td>
 		<td><input type="text" name="process_name[]" class="form-control form-control-sm" maxlength="150" placeholder="Nama proses" value="<?= htmlspecialchars((string) $r['process_name']); ?>" <?= $readonly; ?> required></td>
-		<td><input type="text" name="machine[]" class="form-control form-control-sm" maxlength="150" placeholder="Mesin" value="<?= htmlspecialchars((string) $r['machine']); ?>" <?= $readonly; ?>></td>
+		<td>
+			<select name="machine[]" class="form-select form-select-sm select-machine" style="width: 100%;" <?= $disabled; ?>>
+				<option value="">-- Pilih Mesin --</option>
+				<?php 
+				$current_val = (string) $r['machine'];
+				$found = false;
+				if (!empty($machines)):
+					foreach ($machines as $m):
+						$is_sel = ($current_val !== '' && ($current_val === $m['kd_asset'] || $current_val === $m['nm_asset'] || $current_val === (string)$m['id']));
+						if ($is_sel) $found = true;
+				?>
+					<option value="<?= htmlspecialchars($m['kd_asset']); ?>" <?= $is_sel ? 'selected' : ''; ?>>
+						<?= htmlspecialchars($m['nm_asset']); ?> (<?= htmlspecialchars($m['kd_asset']); ?>)
+					</option>
+				<?php 
+					endforeach;
+				endif;
+				if (!$found && $current_val !== ''):
+				?>
+					<option value="<?= htmlspecialchars($current_val); ?>" selected>
+						<?= htmlspecialchars($current_val); ?>
+					</option>
+				<?php endif; ?>
+			</select>
+		</td>
 		<td><input type="text" name="cycletime[]" class="form-control form-control-sm text-end fp-ct" inputmode="decimal" placeholder="0" value="<?= ($r['cycletime'] === '' ? '' : $plain($r['cycletime'])); ?>" <?= $readonly; ?>></td>
 		<td><input type="text" name="man_power[]" class="form-control form-control-sm text-end fp-mp" inputmode="numeric" placeholder="0" value="<?= ($r['man_power'] === '' ? '' : (int) $r['man_power']); ?>" <?= $readonly; ?>></td>
 		<td class="text-end fp-mh"><?= $plain($r['total_man_hour'], 8); ?></td>
@@ -81,7 +119,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 	</div>
 	<div class="col-md-6">
 		<?php if ($is_add) : ?>
-			<select name="code_lv2" id="code_lv2" class="form-select select2 chosen-select" style="width: 100%;">
+			<select name="code_lv2" id="code_lv2" class="form-select" style="width: 100%;">
 				<option value="0">Select Product Category</option>
 				<?php foreach ($tersedia as $kode => $nama) : ?>
 					<option value="<?= htmlspecialchars($kode, ENT_QUOTES); ?>"><?= strtoupper(htmlspecialchars($nama)); ?></option>
@@ -111,9 +149,9 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only) {
 		<thead class="table-light">
 			<tr>
 				<th class="text-center" style="width:40px">#</th>
-				<th style="min-width:160px">Costcentre / Area</th>
-				<th style="min-width:160px">Process Name <span class="text-danger">*</span></th>
-				<th style="min-width:130px">Machine</th>
+				<th style="min-width:150px">Costcentre / Area</th>
+				<th style="min-width:150px">Process Name <span class="text-danger">*</span></th>
+				<th style="min-width:240px">Machine</th>
 				<th class="text-end" style="min-width:130px">Cycletime (menit/meter)</th>
 				<th class="text-end" style="width:100px">Man Power</th>
 				<th class="text-end" style="min-width:130px">Man Hour (jam/meter)</th>

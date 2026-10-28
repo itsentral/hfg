@@ -82,6 +82,22 @@ class Flow_process_model extends CI_Model
 		return $out;
 	}
 
+	/** Master asset kategori machine (category = 4 atau nm_category = MACHINE). */
+	public function get_machines()
+	{
+		return $this->db->select('a.id, a.kd_asset, a.nm_asset')
+			->from('asset a')
+			->join('asset_category b', 'a.category = b.id', 'left')
+			->where('a.deleted', 'N')
+			->where('a.deleted_date IS NULL', null, false)
+			->group_start()
+				->where('a.category', 4)
+				->or_like('b.nm_category', 'MACHINE')
+			->group_end()
+			->order_by('a.nm_asset', 'ASC')
+			->get()->result_array();
+	}
+
 	public function get_username($id_user)
 	{
 		if (empty($id_user)) {
