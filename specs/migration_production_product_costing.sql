@@ -254,7 +254,7 @@ INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`) VALUES (1, 
 
 -- 4.4 Daftarkan 15 Sub-menu di bawah Parent 120 (Product Costing)
 INSERT INTO `menus` (`id`, `title`, `link`, `icon`, `group_menu`, `parent_id`, `permission_id`, `status`, `order`, `created_on`) VALUES
-(532, 'Price Reference', 'price_ref_raw_material', 'ti ti-tags', 0, 120, 831, 1, 1, NOW()),
+(532, 'Price Reference', 'price_reference', 'ti ti-tags', 0, 120, 831, 1, 1, NOW()),
 (519, 'Faktor Indirect Labor', 'faktor_indirect_labor', 'ti ti-percentage', 0, 120, 1955, 1, 3, NOW()),
 (520, 'Rate Borongan Helper', 'rate_borongan_helper', 'ti ti-users', 0, 120, 1957, 1, 2, NOW()),
 (521, 'Rate Bahan Pendukung & FOH', 'rate_bahan_pendukung_foh', 'ti ti-package', 0, 120, 1959, 1, 4, NOW()),
