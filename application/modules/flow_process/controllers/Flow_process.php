@@ -87,6 +87,7 @@ class Flow_process extends Admin_Controller
 			'categories'   => $categories,
 			'tersedia'     => $tersedia,
 			'costcentres'  => $this->Flow_process_model->get_costcentres(),
+			'machines'     => $this->Flow_process_model->get_machines(),
 			'mode'         => ($mode === 'view') ? 'view' : ((empty($id)) ? 'add' : 'edit'),
 		];
 		$this->load->view('flow_process/form', $data);
