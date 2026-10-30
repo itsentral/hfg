@@ -1220,6 +1220,8 @@ class Finalize_incoming extends Admin_Controller
             m.cost_book,
             m.total_nilai_inventory,
             m.id_po_detail,
+            m.unit_price_usd,
+            po.hargasatuan          AS po_hargasatuan,
             h.no_po,
             h.id_supplier,
             h.kurs_pib,
@@ -1227,6 +1229,7 @@ class Finalize_incoming extends Admin_Controller
         FROM tr_ros_material_coil c
         JOIN tr_ros_material m ON m.id = c.id_ros_material
         JOIN tr_ros_header h   ON h.id = m.id_ros
+        LEFT JOIN dt_trans_po po ON po.id = m.id_po_detail
         LEFT JOIN tr_ros_pack p ON p.id = c.id_ros_pack
         WHERE m.id_ros = ?
         ORDER BY m.id_barang, c.no_coil ASC
@@ -1409,6 +1412,35 @@ class Finalize_incoming extends Admin_Controller
             $this->db->set('qty_in', 'qty_in + ' . $berat_bersih, FALSE);
             $this->db->where('id', $c['id_po_detail']);
             $this->db->update('dt_trans_po');
+
+            // Simpan riwayat pembelian per coil ke history_purchase
+            $price_unit = !empty($c['po_hargasatuan']) && (float) $c['po_hargasatuan'] > 0
+                ? (float) $c['po_hargasatuan']
+                : (float) ($c['unit_price_usd'] ?? 0);
+
+            $mata_uang = !empty($po_row->matauang) ? strtoupper(trim($po_row->matauang)) : 'USD';
+            $kurs_val  = 1.0000;
+            if ($mata_uang !== 'IDR') {
+                $kurs_val = (float) ($ros_header->kurs_pib ?? 0);
+                if ($kurs_val <= 0 && $po_row) {
+                    $kurs_val = (float) ($po_row->nominal_kurs ?? 0);
+                }
+                if ($kurs_val <= 0) {
+                    $kurs_val = 1.0000;
+                }
+            }
+
+            $this->db->insert('history_purchase', [
+                'id_purchase_order' => $ros_header->no_po,
+                'no_coil'           => $c['no_coil'],
+                'id_material'       => $c['id_material'],
+                'price_unit'        => $price_unit,
+                'mata_uang'         => $mata_uang,
+                'kurs'              => $kurs_val,
+                'period_month'      => (string) (int) date('n', strtotime($tanggal)),
+                'created_at'        => date('Y-m-d H:i:s'),
+                'created_by'        => $this->auth->user_id(),
+            ]);
         }
 
         // ── Susun summary per material per gudang ────────────────────────────────
