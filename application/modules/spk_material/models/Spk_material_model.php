@@ -184,7 +184,7 @@ class Spk_material_model extends BF_Model
               AND p.deleted_date IS NULL
               AND EXISTS (
                   SELECT 1 FROM warehouse_stock_coil wsc
-                  WHERE wsc.id_material = bd.id_material
+                  WHERE wsc.id_material = bd.id_material COLLATE utf8mb4_general_ci
                     AND wsc.id_pack IS NOT NULL
                     AND wsc.status = 1
               )
@@ -232,9 +232,9 @@ class Spk_material_model extends BF_Model
             ROUND(bd.qty * ?, 4) as qty_needed,
             bd.id_unit,
             bd.nm_unit,
-            COALESCE((SELECT SUM(ws.qty_stock) FROM warehouse_stock ws WHERE ws.code_lv4 = bd.id_material AND ws.kd_gudang = 'WIP'), 0) as stok_wip,
-            COALESCE((SELECT SUM(ws2.qty_stock) FROM warehouse_stock ws2 WHERE ws2.code_lv4 = bd.id_material AND ws2.kd_gudang = 'PRO'), 0) as stok_produksi,
-            (SELECT COUNT(DISTINCT wsc.id_pack) FROM warehouse_stock_coil wsc WHERE wsc.id_material = bd.id_material AND wsc.id_pack IS NOT NULL AND wsc.status = 1) as pack_count
+            COALESCE((SELECT SUM(ws.qty_stock) FROM warehouse_stock ws WHERE ws.code_lv4 = bd.id_material COLLATE utf8mb4_general_ci AND ws.kd_gudang = 'WIP'), 0) as stok_wip,
+            COALESCE((SELECT SUM(ws2.qty_stock) FROM warehouse_stock ws2 WHERE ws2.code_lv4 = bd.id_material COLLATE utf8mb4_general_ci AND ws2.kd_gudang = 'PRO'), 0) as stok_produksi,
+            (SELECT COUNT(DISTINCT wsc.id_pack) FROM warehouse_stock_coil wsc WHERE wsc.id_material = bd.id_material COLLATE utf8mb4_general_ci AND wsc.id_pack IS NOT NULL AND wsc.status = 1) as pack_count
         FROM ms_bom_header bh
         JOIN ms_bom_detail bd ON bd.id_bom = bh.id
         WHERE bh.id_produk = ? AND bh.is_delete = 0 AND bd.is_delete = 0

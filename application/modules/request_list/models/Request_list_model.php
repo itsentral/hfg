@@ -228,7 +228,7 @@ class Request_list_model extends BF_Model
                     SELECT GROUP_CONCAT(DISTINCT wrh.spk_coil_no SEPARATOR ', ')
                     FROM tr_warehouse_request_coil_detail wrcd
                     JOIN tr_warehouse_request_header wrh ON wrh.id = wrcd.request_id
-                    WHERE wrcd.pack_code = wp.pack_code
+                    WHERE wrcd.pack_code = wp.pack_code COLLATE utf8mb4_general_ci
                       AND wrh.status NOT IN ('Rejected', 'Cancelled')
                     LIMIT 1
                 ) AS assigned_spkc,
@@ -236,14 +236,14 @@ class Request_list_model extends BF_Model
                     SELECT MAX(wrcd2.scan_status)
                     FROM tr_warehouse_request_coil_detail wrcd2
                     JOIN tr_warehouse_request_header wrh2 ON wrh2.id = wrcd2.request_id
-                    WHERE wrcd2.pack_code = wp.pack_code
+                    WHERE wrcd2.pack_code = wp.pack_code COLLATE utf8mb4_general_ci
                       AND wrh2.status NOT IN ('Rejected', 'Cancelled')
                 ) AS scan_status,
                 (
                     SELECT wrcd3.request_id
                     FROM tr_warehouse_request_coil_detail wrcd3
                     JOIN tr_warehouse_request_header wrh3 ON wrh3.id = wrcd3.request_id
-                    WHERE wrcd3.pack_code = wp.pack_code
+                    WHERE wrcd3.pack_code = wp.pack_code COLLATE utf8mb4_general_ci
                       AND wrh3.status NOT IN ('Rejected', 'Cancelled')
                     LIMIT 1
                 ) AS assigned_request_id
