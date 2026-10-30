@@ -85,13 +85,16 @@ class Price_reference_model extends CI_Model
             return [];
         }
 
-        $this->db->from($this->table_history);
+        $this->db->select('h.*, po.no_surat, po.loi');
+        $this->db->from($this->table_history . ' h');
+        $this->db->join('tr_purchase_order po', 'po.no_po = h.id_purchase_order', 'left');
         if (count($identifiers) > 1) {
-            $this->db->where_in('id_material', $identifiers);
+            $this->db->where_in('h.id_material', $identifiers);
         } else {
-            $this->db->where('id_material', reset($identifiers));
+            $this->db->where('h.id_material', reset($identifiers));
         }
-        $this->db->order_by('id', 'ASC');
+        $this->db->where('(po.loi IS NULL OR LOWER(po.loi) = "import")');
+        $this->db->order_by('h.id', 'ASC');
         $rows = $this->db->get()->result();
 
         $history = [];
@@ -103,7 +106,10 @@ class Price_reference_model extends CI_Model
                 if (isset($r->mata_uang) && strtoupper(trim($r->mata_uang)) === 'IDR' && isset($r->kurs) && (float)$r->kurs > 1) {
                     $price = round($price / (float)$r->kurs, 6);
                 }
-                $history[$bln] = $price;
+                // Ambil nilai tertinggi (Max) jika di bulan yang sama terdapat beberapa pembelian
+                if (!isset($history[$bln]) || $price > $history[$bln]) {
+                    $history[$bln] = $price;
+                }
             }
         }
         return $history;
@@ -148,12 +154,13 @@ class Price_reference_model extends CI_Model
             return [];
         }
 
-        $this->db->select('a.no_po, b.tanggal, a.hargasatuan as harga_usd, a.qty, b.id_suplier, s.nama as nm_supplier');
+        $this->db->select('a.no_po, b.no_surat, b.tanggal, a.hargasatuan as harga_usd, a.qty, b.id_suplier, s.nama as nm_supplier');
         $this->db->from('dt_trans_po a');
         $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
         $this->db->join('new_supplier s', 's.kode_supplier = b.id_suplier', 'left');
         $this->db->where_in('a.idmaterial', $identifiers);
         $this->db->where('a.hargasatuan >', 0);
+        $this->db->where('LOWER(b.loi)', 'import');
         $this->db->order_by('b.tanggal', 'DESC');
         $this->db->limit(10);
         return $this->db->get()->result();

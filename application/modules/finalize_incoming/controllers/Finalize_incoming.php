@@ -1413,34 +1413,36 @@ class Finalize_incoming extends Admin_Controller
             $this->db->where('id', $c['id_po_detail']);
             $this->db->update('dt_trans_po');
 
-            // Simpan riwayat pembelian per coil ke history_purchase
-            $price_unit = !empty($c['po_hargasatuan']) && (float) $c['po_hargasatuan'] > 0
-                ? (float) $c['po_hargasatuan']
-                : (float) ($c['unit_price_usd'] ?? 0);
+            // Simpan riwayat pembelian per coil ke history_purchase (khusus PO Import)
+            if (!$is_lokal) {
+                $price_unit = !empty($c['po_hargasatuan']) && (float) $c['po_hargasatuan'] > 0
+                    ? (float) $c['po_hargasatuan']
+                    : (float) ($c['unit_price_usd'] ?? 0);
 
-            $mata_uang = !empty($po_row->matauang) ? strtoupper(trim($po_row->matauang)) : 'USD';
-            $kurs_val  = 1.0000;
-            if ($mata_uang !== 'IDR') {
-                $kurs_val = (float) ($ros_header->kurs_pib ?? 0);
-                if ($kurs_val <= 0 && $po_row) {
-                    $kurs_val = (float) ($po_row->nominal_kurs ?? 0);
+                $mata_uang = !empty($po_row->matauang) ? strtoupper(trim($po_row->matauang)) : 'USD';
+                $kurs_val  = 1.0000;
+                if ($mata_uang !== 'IDR') {
+                    $kurs_val = (float) ($ros_header->kurs_pib ?? 0);
+                    if ($kurs_val <= 0 && $po_row) {
+                        $kurs_val = (float) ($po_row->nominal_kurs ?? 0);
+                    }
+                    if ($kurs_val <= 0) {
+                        $kurs_val = 1.0000;
+                    }
                 }
-                if ($kurs_val <= 0) {
-                    $kurs_val = 1.0000;
-                }
+
+                $this->db->insert('history_purchase', [
+                    'id_purchase_order' => $ros_header->no_po,
+                    'no_coil'           => $c['no_coil'],
+                    'id_material'       => $c['id_material'],
+                    'price_unit'        => $price_unit,
+                    'mata_uang'         => $mata_uang,
+                    'kurs'              => $kurs_val,
+                    'period_month'      => (string) (int) date('n', strtotime($tanggal)),
+                    'created_at'        => date('Y-m-d H:i:s'),
+                    'created_by'        => $this->auth->user_id(),
+                ]);
             }
-
-            $this->db->insert('history_purchase', [
-                'id_purchase_order' => $ros_header->no_po,
-                'no_coil'           => $c['no_coil'],
-                'id_material'       => $c['id_material'],
-                'price_unit'        => $price_unit,
-                'mata_uang'         => $mata_uang,
-                'kurs'              => $kurs_val,
-                'period_month'      => (string) (int) date('n', strtotime($tanggal)),
-                'created_at'        => date('Y-m-d H:i:s'),
-                'created_by'        => $this->auth->user_id(),
-            ]);
         }
 
         // ── Susun summary per material per gudang ────────────────────────────────
@@ -1557,6 +1559,7 @@ class Finalize_incoming extends Admin_Controller
             'gl_advance_purchase_from_ros'      => round((float) ($ros_header->gl_advance_purchase ?? 0), 2),
             'gl_persediaan_intransit_from_ros'  => round((float) ($ros_header->gl_persediaan_intransit ?? 0), 2),
             'gl_unbill_from_ros'                => round((float) ($ros_header->gl_unbill ?? 0), 2),
+            'gl_hutang_forwarding_from_ros'     => round((float) ($ros_header->gl_hutang_forwarding ?? 0), 2),
             // 'gl_pembulatan_from_ros'            => round((float) ($ros_header->gl_pembulatan ?? 0), 2), // ★ BARU
 
             'file_dokumen'       => $ros_header->file_hash   ?? '',
@@ -1602,7 +1605,8 @@ class Finalize_incoming extends Admin_Controller
                     round((float) ($ros_header->gl_unbill ?? 0), 2),
                     round((float) ($ros_header->gl_pembulatan ?? 0), 2), // ★ BARU
                     $value_inc_pro,   // ★ BARU: dikirim langsung, bukan dihitung ulang
-                    $value_inc_sli    // ★ BARU
+                    $value_inc_sli,   // ★ BARU
+                    round((float) ($ros_header->gl_hutang_forwarding ?? 0), 2) // ★ BARU
                 );
             } catch (Exception $e) {
                 $jurnal_error = $e->getMessage();
@@ -1755,7 +1759,8 @@ class Finalize_incoming extends Admin_Controller
         $gl_unbill = 0,
         $gl_pembulatan = 0,     // ★ BARU
         $value_inc_pro = null,  // ★ BARU: kalau null, fallback hitung dari $details (backward compatible)
-        $value_inc_sli = null   // ★ BARU
+        $value_inc_sli = null,  // ★ BARU
+        $gl_hutang_forwarding = 0 // ★ BARU: Hutang forwarding untuk jurnal PO lokal
     ) {
         // ★ PERUBAHAN: value_inc_pro/sli sebaiknya dikirim langsung dari finalize()
         // (hasil alokasi per-pack yang presisi). Kalau caller lama belum
@@ -1832,6 +1837,7 @@ class Finalize_incoming extends Admin_Controller
         $gl_persediaan_intransit = (int) round($gl_persediaan_intransit, 0);
         $gl_unbill               = (int) round($gl_unbill, 0);
         $gl_pembulatan           = (int) round($gl_pembulatan, 0);
+        $gl_hutang_forwarding    = (int) round($gl_hutang_forwarding, 0);
 
         $data_source = [
             'tanggal'        => date('Y-m-d'),
@@ -1849,6 +1855,8 @@ class Finalize_incoming extends Admin_Controller
             'gl_advance_purchase_from_ros'     => $gl_advance_purchase,
             'gl_persediaan_intransit_from_ros' => $gl_persediaan_intransit,
             'gl_unbill_from_ros'               => $gl_unbill,
+            'gl_hutang_forwarding_from_ros'    => $gl_hutang_forwarding,
+            'gl_pembulatan_from_ros'           => $gl_pembulatan,
 
             'loi'            => $tipe_label,
         ];

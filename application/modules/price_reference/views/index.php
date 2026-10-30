@@ -341,8 +341,9 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                         var htmlPo = '';
                         po.forEach(function(item) {
                             var hrgUsd = parseFloat(item.harga_usd || 0);
+                            var noSurat = item.no_surat || item.no_po || '-';
                             htmlPo += '<tr>' +
-                                '<td><strong>' + (item.no_po || '-') + '</strong></td>' +
+                                '<td><strong>' + noSurat + '</strong></td>' +
                                 '<td>' + (item.tanggal || '-') + '</td>' +
                                 '<td>' + (item.nm_supplier || '-') + '</td>' +
                                 '<td class="text-end font-monospace">' + parseFloat(item.qty || 0).toLocaleString('id-ID') + '</td>' +
