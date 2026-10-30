@@ -124,12 +124,18 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                             <thead class="text-center small table-light">
                                 <tr>
                                     <th style="min-width: 200px;">Material Name</th>
-                                    <th style="width: 100px;">Januari</th>
-                                    <th style="width: 100px;">Februari</th>
-                                    <th style="width: 100px;">Maret</th>
-                                    <th style="width: 100px;">April</th>
-                                    <th style="width: 100px;">Mei</th>
-                                    <th style="width: 100px;">Juni</th>
+                                    <th style="width: 90px;">Januari</th>
+                                    <th style="width: 90px;">Februari</th>
+                                    <th style="width: 90px;">Maret</th>
+                                    <th style="width: 90px;">April</th>
+                                    <th style="width: 90px;">Mei</th>
+                                    <th style="width: 90px;">Juni</th>
+                                    <th style="width: 90px;">Juli</th>
+                                    <th style="width: 90px;">Agustus</th>
+                                    <th style="width: 90px;">September</th>
+                                    <th style="width: 90px;">Oktober</th>
+                                    <th style="width: 90px;">November</th>
+                                    <th style="width: 90px;">Desember</th>
                                     <th style="width: 110px;">Terakhir (info)</th>
                                     <th style="width: 110px;">Rata-rata (info)</th>
                                     <th class="fw-bold" style="width: 120px;">Max (dipakai)</th>
@@ -138,7 +144,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                             <tbody>
                                 <tr>
                                     <td id="cell_mat_name" class="fw-bold small text-truncate" style="max-width: 220px;">-</td>
-                                    <?php for ($bln = 1; $bln <= 6; $bln++): ?>
+                                    <?php for ($bln = 1; $bln <= 12; $bln++): ?>
                                         <td class="text-end font-monospace" id="month_<?= $bln ?>">-</td>
                                     <?php endfor; ?>
                                     <td class="text-end font-monospace text-muted bg-light" id="disp_calc_latest">0.0000</td>
@@ -266,7 +272,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
             // Reset tampilan modal
             $('#alert_not_set').addClass('d-none');
             $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2"><i class="fas fa-spinner fa-spin me-1"></i> Memuat riwayat...</td></tr>');
-            for (var b = 1; b <= 6; b++) {
+            for (var b = 1; b <= 12; b++) {
                 $('#month_' + b).text('-');
             }
             $('#disp_calc_latest').text('0.0000');
@@ -304,8 +310,8 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                     $('#m_badge_status').removeClass('bg-warning bg-success bg-danger')
                         .addClass('bg-' + mat.status_badge).text(mat.status_label);
 
-                    // Populate 6 bulan
-                    for (var b = 1; b <= 6; b++) {
+                    // Populate 12 bulan (Jan-Des)
+                    for (var b = 1; b <= 12; b++) {
                         var val = (hist && hist[b] !== undefined && hist[b] !== null) ? parseFloat(hist[b]) : null;
                         if (val !== null && val > 0) {
                             $('#month_' + b).text(formatUSD(val));

@@ -74,14 +74,23 @@ class Price_reference_model extends CI_Model
     /**
      * Ambil riwayat bulanan dari tabel ERD history_purchase
      */
-    public function get_monthly_history($id_material)
+    public function get_monthly_history($id_material, $code_lv4 = null)
     {
         if (!$this->db->table_exists($this->table_history)) {
             return [];
         }
 
+        $identifiers = array_unique(array_filter([$id_material, $code_lv4]));
+        if (empty($identifiers)) {
+            return [];
+        }
+
         $this->db->from($this->table_history);
-        $this->db->where('id_material', $id_material);
+        if (count($identifiers) > 1) {
+            $this->db->where_in('id_material', $identifiers);
+        } else {
+            $this->db->where('id_material', reset($identifiers));
+        }
         $this->db->order_by('id', 'ASC');
         $rows = $this->db->get()->result();
 
@@ -89,7 +98,12 @@ class Price_reference_model extends CI_Model
         foreach ($rows as $r) {
             $bln = (int)$r->period_month;
             if ($bln >= 1 && $bln <= 12) {
-                $history[$bln] = (float)$r->price_unit;
+                $price = (float)$r->price_unit;
+                // Jika transaksi lokal (IDR) dan ada kurs > 1, konversikan ke ekuivalen USD untuk acuan Price Reference
+                if (isset($r->mata_uang) && strtoupper(trim($r->mata_uang)) === 'IDR' && isset($r->kurs) && (float)$r->kurs > 1) {
+                    $price = round($price / (float)$r->kurs, 6);
+                }
+                $history[$bln] = $price;
             }
         }
         return $history;
@@ -98,9 +112,14 @@ class Price_reference_model extends CI_Model
     /**
      * Ambil detail Price Reference dari tabel ERD price_reference_header & detail
      */
-    public function get_price_reference_detail($id_material)
+    public function get_price_reference_detail($id_material, $code_lv4 = null)
     {
         if (!$this->db->table_exists($this->table_header) || !$this->db->table_exists($this->table_detail)) {
+            return null;
+        }
+
+        $identifiers = array_unique(array_filter([$id_material, $code_lv4]));
+        if (empty($identifiers)) {
             return null;
         }
 
@@ -110,7 +129,11 @@ class Price_reference_model extends CI_Model
         ');
         $this->db->from($this->table_header . ' h');
         $this->db->join($this->table_detail . ' d', 'd.id_price_reference_header = h.id', 'left');
-        $this->db->where('h.id_material', $id_material);
+        if (count($identifiers) > 1) {
+            $this->db->where_in('h.id_material', $identifiers);
+        } else {
+            $this->db->where('h.id_material', reset($identifiers));
+        }
         $this->db->order_by('h.id', 'DESC');
         return $this->db->get()->row();
     }

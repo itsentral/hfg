@@ -37,8 +37,11 @@ CREATE TABLE IF NOT EXISTS `price_reference_detail` (
 CREATE TABLE IF NOT EXISTS `history_purchase` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `id_purchase_order` VARCHAR(50) DEFAULT NULL COMMENT 'FK / No PO (nullable jika manual)',
+  `no_coil` VARCHAR(100) DEFAULT NULL COMMENT 'Nomor Coil (Incoming)',
   `id_material` VARCHAR(50) NOT NULL COMMENT 'FK new_inventory_4',
-  `price_unit` DECIMAL(14,6) NOT NULL DEFAULT '0.000000' COMMENT 'Harga USD/Kg',
+  `price_unit` DECIMAL(14,6) NOT NULL DEFAULT '0.000000' COMMENT 'Harga Satuan per Kg (sesuai mata uang PO)',
+  `mata_uang` VARCHAR(10) DEFAULT 'USD' COMMENT 'Mata Uang PO (USD, IDR, dll)',
+  `kurs` DECIMAL(14,4) NOT NULL DEFAULT '1.0000' COMMENT 'Kurs Transaksi / PIB saat Finalize',
   `period_month` VARCHAR(20) NOT NULL COMMENT 'Bulan / Periode (1 s.d. 12 atau YYYY-MM)',
   `created_at` DATETIME NOT NULL,
   `created_by` INT DEFAULT NULL,

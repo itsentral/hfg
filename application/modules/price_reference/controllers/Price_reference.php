@@ -75,14 +75,14 @@ class Price_reference extends Admin_Controller
         }
 
         $kurs_info  = $this->model_pr->get_usd_kurs();
-        $history_db = $this->model_pr->get_monthly_history($id);
-        $pr_detail  = $this->model_pr->get_price_reference_detail($id);
+        $history_db = $this->model_pr->get_monthly_history($id, $material->code_lv4);
+        $pr_detail  = $this->model_pr->get_price_reference_detail($id, $material->code_lv4);
         $po_history = $this->model_pr->get_po_history($id, $material->code_lv4);
 
-        // Siapkan array 6 bulan pertama (Jan-Jun)
+        // Siapkan array 12 bulan (Jan-Des)
         $months = [];
         $numeric_vals = [];
-        for ($m = 1; $m <= 6; $m++) {
+        for ($m = 1; $m <= 12; $m++) {
             $val = isset($history_db[$m]) ? (float)$history_db[$m] : null;
             $months[$m] = $val;
             if ($val !== null && $val > 0) {
@@ -100,7 +100,7 @@ class Price_reference extends Admin_Controller
             }
 
             if ($existing_usd > 0) {
-                $current_month = min(6, (int)date('n'));
+                $current_month = min(12, (int)date('n'));
                 $months[$current_month] = $existing_usd;
                 $numeric_vals[] = $existing_usd;
             }
