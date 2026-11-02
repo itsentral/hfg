@@ -119,37 +119,113 @@ class Simulasi_costing_model extends CI_Model
     /** Ambil Price Reference Max (USD/Kg) per Material dari Master Price Reference (new_inventory_4) & PO History (dt_trans_po) */
     public function get_price_reference_max()
     {
-        $res = [];
+        // 1. Ambil mapping id <-> code_lv4 dan nilai master dari new_inventory_4
+        $sql_map = "
+            SELECT id, code_lv4, price_ref_use_usd, price_ref_usd, price_ref_high_usd 
+            FROM new_inventory_4 
+            WHERE category = 'material' AND deleted_date IS NULL
+        ";
+        $rows_map = $this->db->query($sql_map)->result();
+        $id_to_code    = [];
+        $code_to_id    = [];
+        $master_prices = [];
 
-        // 1. Ambil dari History PO dt_trans_po (nilai MAX USD)
+        foreach ($rows_map as $m) {
+            $id_to_code[$m->id] = $m->code_lv4;
+            $code_to_id[$m->code_lv4] = $m->id;
+            $val = (float)($m->price_ref_use_usd ?: ($m->price_ref_usd ?: $m->price_ref_high_usd));
+            if ($val > 0) {
+                $master_prices[$m->id] = $val;
+                $master_prices[$m->code_lv4] = $val;
+            }
+        }
+
+        $po_prices = [];
+
+        // 2. Ambil dari History PO dt_trans_po (nilai MAX USD) KHUSUS PO IMPORT
         $sql_po = "
-            SELECT idmaterial, MAX(hargasatuan) AS max_usd
-            FROM dt_trans_po
-            WHERE hargasatuan > 0
-            GROUP BY idmaterial
+            SELECT dt.idmaterial, MAX(dt.hargasatuan) AS max_usd
+            FROM dt_trans_po dt
+            JOIN tr_purchase_order po ON po.no_po = dt.no_po
+            WHERE dt.hargasatuan > 0
+              AND LOWER(po.loi) = 'import'
+            GROUP BY dt.idmaterial
         ";
         $rows_po = $this->db->query($sql_po)->result();
         foreach ($rows_po as $r) {
             if (!empty($r->idmaterial)) {
-                $res[$r->idmaterial] = (float)$r->max_usd;
+                $mat = $r->idmaterial;
+                $val = (float)$r->max_usd;
+                $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
+                if (isset($id_to_code[$mat])) {
+                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
+                }
+                if (isset($code_to_id[$mat])) {
+                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
+                }
             }
         }
 
-        // 2. Ambil dari Master Material new_inventory_4 (Price Reference resmi yang disetujui Finance)
-        // Prioritas utama: jika Finance sudah menentukan/approve price_ref_use_usd > 0
-        $sql_mat = "
-            SELECT id, code_lv4, price_ref_use_usd, price_ref_usd, price_ref_high_usd
-            FROM new_inventory_4
-            WHERE category = 'material' AND deleted_date IS NULL
+        // 3. Ambil dari history_purchase (pencatatan resmi incoming PO) KHUSUS PO IMPORT
+        $sql_hp = "
+            SELECT hp.id_material, MAX(hp.price_unit) AS max_usd
+            FROM history_purchase hp
+            LEFT JOIN tr_purchase_order po ON po.no_po = hp.id_purchase_order
+            WHERE hp.price_unit > 0
+              AND (po.loi IS NULL OR LOWER(po.loi) = 'import')
+            GROUP BY hp.id_material
         ";
-        $rows_mat = $this->db->query($sql_mat)->result();
-        foreach ($rows_mat as $m) {
-            $ref_usd = (float)($m->price_ref_use_usd ?: ($m->price_ref_usd ?: $m->price_ref_high_usd));
-            if ($ref_usd > 0) {
-                if (!empty($m->code_lv4)) {
-                    $res[$m->code_lv4] = $ref_usd;
+        $rows_hp = $this->db->query($sql_hp)->result();
+        foreach ($rows_hp as $r) {
+            if (!empty($r->id_material)) {
+                $mat = $r->id_material;
+                $val = (float)$r->max_usd;
+                $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
+                if (isset($id_to_code[$mat])) {
+                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
                 }
-                $res[$m->id] = $ref_usd;
+                if (isset($code_to_id[$mat])) {
+                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
+                }
+            }
+        }
+
+        // 4. Ambil dari price_reference_detail (referensi periodik)
+        $sql_prd = "
+            SELECT id_material, MAX(max_price_reference) AS max_usd
+            FROM price_reference_detail
+            WHERE max_price_reference > 0
+            GROUP BY id_material
+        ";
+        $rows_prd = $this->db->query($sql_prd)->result();
+        foreach ($rows_prd as $r) {
+            if (!empty($r->id_material)) {
+                $mat = $r->id_material;
+                $val = (float)$r->max_usd;
+                $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
+                if (isset($id_to_code[$mat])) {
+                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
+                }
+                if (isset($code_to_id[$mat])) {
+                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
+                }
+            }
+        }
+
+        // 5. Gabungkan kandidat harga tertinggi (Master Price Ref vs PO Import Max)
+        $res = [];
+        foreach ($id_to_code as $id => $code) {
+            $candidates = array_filter([
+                isset($master_prices[$id]) ? $master_prices[$id] : 0,
+                isset($master_prices[$code]) ? $master_prices[$code] : 0,
+                isset($po_prices[$id]) ? $po_prices[$id] : 0,
+                isset($po_prices[$code]) ? $po_prices[$code] : 0,
+            ], function($v) { return $v > 0; });
+
+            if (!empty($candidates)) {
+                $max_val = max($candidates);
+                $res[$id]   = $max_val;
+                $res[$code] = $max_val;
             }
         }
 
@@ -238,7 +314,7 @@ class Simulasi_costing_model extends CI_Model
         $mat_id   = $b->id_material;
 
         // 1. Price Reference & Kurs
-        $pr_usd = isset($pr_max_map[$mat_id]) ? (float)$pr_max_map[$mat_id] : 0.6800; // default jika belum ada history
+        $pr_usd = isset($pr_max_map[$mat_id]) ? (float)$pr_max_map[$mat_id] : 0.0;
         $pr_idr = $pr_usd * $kurs_usd;
 
         // 2. Berat per Meter & Ukuran
@@ -554,15 +630,33 @@ class Simulasi_costing_model extends CI_Model
     }
 
     /** Masukkan varian ke Draft Pricelist */
-    public function add_to_draft_pricelist($no_uniq_id, $user_id)
+    public function add_to_draft_pricelist($bom_detail_id, $no_uniq_id = null, $user_id = null)
     {
+        // Support backwards compatibility jika parameter kedua adalah user_id (int/numeric)
+        if (is_numeric($no_uniq_id) && $user_id === null) {
+            $user_id = (int)$no_uniq_id;
+            $no_uniq_id = null;
+        }
+
         // Cari varian costing
         $costings = $this->calculate_all_costing();
         $target = null;
-        foreach ($costings as $c) {
-            if ($c->no_uniq_id === $no_uniq_id) {
-                $target = $c;
-                break;
+
+        if (!empty($bom_detail_id)) {
+            foreach ($costings as $c) {
+                if ($c->bom_detail_id == $bom_detail_id) {
+                    $target = $c;
+                    break;
+                }
+            }
+        }
+
+        if (!$target && !empty($no_uniq_id)) {
+            foreach ($costings as $c) {
+                if ($c->no_uniq_id === $no_uniq_id) {
+                    $target = $c;
+                    break;
+                }
             }
         }
 
@@ -598,27 +692,32 @@ class Simulasi_costing_model extends CI_Model
             $pl_no = $pl->no_pricelist;
         }
 
-        // Cek apakah varian sudah ada di draft ini
-        $exists = $this->db->where('id_pricelist_header', $pl_id)
-            ->where('no_uniq_id', $no_uniq_id)
-            ->get('pricelist_detail')
-            ->row();
+        // Cek apakah varian sudah ada di draft ini (kombinasi id_pricelist_header, code_lv4, dan no_uniq_id)
+        $this->db->where('id_pricelist_header', $pl_id)
+            ->where('code_lv4', $target->code_lv4);
+        if (!empty($target->no_uniq_id)) {
+            $this->db->where('no_uniq_id', $target->no_uniq_id);
+        }
+        $exists = $this->db->get('pricelist_detail')->row();
+
+        $label_item = !empty($target->no_uniq_id) ? "Varian {$target->no_uniq_id} ({$target->nm_product})" : $target->nm_product;
 
         if ($exists) {
-            return ['status' => 0, 'pesan' => "Varian {$no_uniq_id} sudah ada di Draft Pricelist {$pl_no}."];
+            return ['status' => 0, 'pesan' => "{$label_item} sudah ada di Draft Pricelist {$pl_no}."];
         }
 
         // Ambil snapshot id_product_costing_detail jika ada
-        $pcd = $this->db->where('code_lv4', $target->code_lv4)
-            ->where('no_uniq_id', $no_uniq_id)
-            ->get('product_costing_detail')
-            ->row();
+        $this->db->where('code_lv4', $target->code_lv4);
+        if (!empty($target->no_uniq_id)) {
+            $this->db->where('no_uniq_id', $target->no_uniq_id);
+        }
+        $pcd = $this->db->get('product_costing_detail')->row();
 
         $this->db->insert('pricelist_detail', [
             'id_pricelist_header'       => $pl_id,
             'id_product_costing_detail' => $pcd ? $pcd->id : null,
             'code_lv4'                  => $target->code_lv4,
-            'no_uniq_id'                => $target->no_uniq_id,
+            'no_uniq_id'                => $target->no_uniq_id ?: '',
             'code_lv2'                  => $target->code_lv2,
             'ukuran_product'            => $target->ukuran,
             'berat_per_meter'           => $target->berat_per_meter,
@@ -632,7 +731,7 @@ class Simulasi_costing_model extends CI_Model
 
         return [
             'status' => 1,
-            'pesan'  => "Varian {$no_uniq_id} berhasil dimasukkan ke Draft Pricelist {$pl_no}.",
+            'pesan'  => "{$label_item} berhasil dimasukkan ke Draft Pricelist {$pl_no}.",
             'no_pl'  => $pl_no,
         ];
     }

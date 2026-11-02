@@ -129,12 +129,14 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center text-muted small">
-                                    <?= date('d/m/Y H:i', strtotime($c->last_updated)) ?>
+                                    <?= (!empty($c->last_updated) && strtotime($c->last_updated) > 0) ? date('d/m/Y H:i', strtotime($c->last_updated)) : '-' ?>
                                 </td>
                                 <td class="text-center text-nowrap">
                                     <div class="d-flex flex-column align-items-center gap-1">
                                         <button type="button" class="btn btn-sm btn-primary btn-view-detail shadow-xs"
+                                            data-bom-detail-id="<?= $c->bom_detail_id ?>"
                                             data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
+                                            data-product="<?= htmlspecialchars($c->nm_product) ?>"
                                             title="Lihat Report Costing Detail"
                                             style="width: 80px;">
                                             <i class="fa fa-eye me-1"></i> Detail
@@ -143,6 +145,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                         <?php if ($ENABLE_MANAGE): ?>
                                             <?php if ($c->is_lengkap): ?>
                                                 <button type="button" class="btn btn-sm btn-success btn-add-draft shadow-xs"
+                                                    data-bom-detail-id="<?= $c->bom_detail_id ?>"
                                                     data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
                                                     data-product="<?= htmlspecialchars($c->nm_product) ?>"
                                                     data-category="<?= htmlspecialchars($c->nm_category) ?>"
@@ -210,10 +213,20 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             responsive: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
-            columnDefs: [{
-                targets: 'no-sort',
-                orderable: false
-            }]
+            columnDefs: [
+                {
+                    targets: 'no-sort',
+                    orderable: false
+                },
+                {
+                    targets: [0, 5, 6, 7, 8, 9, 10],
+                    searchable: false
+                }
+            ],
+            language: {
+                search: "Cari Data:",
+                searchPlaceholder: "Nama Produk / Material / Varian..."
+            }
         });
 
         // Tooltip
@@ -290,6 +303,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
 
         // Add Draft Click dengan Alert Konfirmasi
         $(document).on('click', '.btn-add-draft', function() {
+            var bomDetailId = $(this).data('bom-detail-id');
             var uniq = $(this).data('uniq');
             var prod = $(this).data('product') || '';
             var cat = $(this).data('category') || '';
@@ -304,7 +318,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                     '<div class="p-3 bg-light rounded border small mb-2">' +
                     '<div><strong>Produk:</strong> ' + prod + '</div>' +
                     '<div><strong>Kategori:</strong> ' + cat + '</div>' +
-                    '<div><strong>Uniq ID:</strong> <span class="badge bg-secondary">' + uniq + '</span></div>' +
+                    '<div><strong>Uniq ID:</strong> <span class="badge bg-secondary">' + (uniq || '-') + '</span></div>' +
                     '<div><strong>Price List/m:</strong> <span class="text-primary fw-bold">' + plM + '</span></div>' +
                     '<div><strong>Price List/kg:</strong> <span class="text-success fw-bold">' + plKg + '</span></div>' +
                     '</div>' +
@@ -326,6 +340,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                     type: 'POST',
                     dataType: 'json',
                     data: {
+                        bom_detail_id: bomDetailId,
                         no_uniq_id: uniq
                     },
                     success: function(resp) {
@@ -365,8 +380,16 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
 
         // View Detail Modal
         $(document).on('click', '.btn-view-detail', function() {
+            var bomDetailId = $(this).data('bom-detail-id');
             var uniq = $(this).data('uniq');
-            $('#modalDetailLabel').html('<i class="fa fa-file-text-o me-2"></i>Report Costing Detail — Varian ' + uniq);
+            var prod = $(this).data('product') || '';
+            var titleLabel = 'Report Costing Detail';
+            if (prod) {
+                titleLabel += ' — ' + prod;
+            } else if (uniq) {
+                titleLabel += ' — Varian ' + uniq;
+            }
+            $('#modalDetailLabel').html('<i class="fa fa-file-text-o me-2"></i>' + titleLabel);
             $('#modal-detail').modal('show');
             $('#detail-body-content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat rincian costing...</div></div>');
 
@@ -375,6 +398,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                 type: 'GET',
                 dataType: 'json',
                 data: {
+                    bom_detail_id: bomDetailId,
                     no_uniq_id: uniq
                 },
                 success: function(resp) {

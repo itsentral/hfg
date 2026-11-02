@@ -65,15 +65,17 @@ class Simulasi_costing extends Admin_Controller
     {
         $this->auth->restrict($this->managePermission);
 
-        $no_uniq_id = trim($this->input->post('no_uniq_id'));
-        if (empty($no_uniq_id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Uniq ID tidak valid']);
+        $bom_detail_id = $this->input->post('bom_detail_id');
+        $no_uniq_id    = trim($this->input->post('no_uniq_id'));
+        if (empty($bom_detail_id) && empty($no_uniq_id)) {
+            echo json_encode(['status' => 0, 'pesan' => 'Identifier varian tidak valid']);
             return;
         }
 
-        $res = $this->sc_model->add_to_draft_pricelist($no_uniq_id, $this->auth->user_id());
+        $res = $this->sc_model->add_to_draft_pricelist($bom_detail_id, $no_uniq_id, $this->auth->user_id());
         if ($res['status'] == 1) {
-            write_log('Simulasi Costing', 'Add Draft', "Varian {$no_uniq_id} dimasukkan ke Draft Pricelist {$res['no_pl']}", $res, null, 1);
+            $identifier_log = !empty($no_uniq_id) ? "Varian {$no_uniq_id}" : "BOM Detail #{$bom_detail_id}";
+            write_log('Simulasi Costing', 'Add Draft', "{$identifier_log} dimasukkan ke Draft Pricelist {$res['no_pl']}", $res, null, 1);
         }
 
         echo json_encode($res);
@@ -84,14 +86,24 @@ class Simulasi_costing extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
 
-        $no_uniq_id = trim($this->input->get('no_uniq_id'));
-        $costings   = $this->sc_model->calculate_all_costing();
+        $bom_detail_id = $this->input->get('bom_detail_id');
+        $no_uniq_id    = trim($this->input->get('no_uniq_id'));
+        $costings      = $this->sc_model->calculate_all_costing();
 
         $target = null;
-        foreach ($costings as $c) {
-            if ($c->no_uniq_id === $no_uniq_id) {
-                $target = $c;
-                break;
+        if (!empty($bom_detail_id)) {
+            foreach ($costings as $c) {
+                if ($c->bom_detail_id == $bom_detail_id) {
+                    $target = $c;
+                    break;
+                }
+            }
+        } elseif (!empty($no_uniq_id)) {
+            foreach ($costings as $c) {
+                if ($c->no_uniq_id === $no_uniq_id) {
+                    $target = $c;
+                    break;
+                }
             }
         }
 
