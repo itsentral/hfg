@@ -288,17 +288,54 @@ class New_ros_model extends BF_Model
 
     /**
      * Generate pack code: PCK-YYMM-XXX (global counter)
+     * Mengambil nomor urut tertinggi dari gabungan tr_ros_pack dan warehouse_pack
+     * serta memvalidasi ketiadaan duplikasi di kedua tabel untuk mencegah fatal error saat finalize incoming
+     *
+     * @param array $exclude_codes Daftar kode pack yang sudah di-generate dalam batch yang sama
+     * @return string
      */
-    public function generate_pack_code()
+    public function generate_pack_code($exclude_codes = [])
     {
         $prefix = 'PCK-' . date('ym');
-        $row = $this->db->query("SELECT MAX(pack_code) AS max_code FROM tr_ros_pack WHERE pack_code LIKE '{$prefix}%'")->row();
+
+        // Ambil nilai MAX dari kedua tabel (tr_ros_pack dan warehouse_pack)
+        $sql = "
+            SELECT MAX(pack_code) AS max_code FROM (
+                SELECT pack_code FROM tr_ros_pack WHERE pack_code LIKE '{$prefix}%'
+                UNION ALL
+                SELECT pack_code FROM warehouse_pack WHERE pack_code LIKE '{$prefix}%'
+            ) AS combined_packs
+        ";
+        $row = $this->db->query($sql)->row();
         $urutan = 0;
         if ($row && $row->max_code) {
-            // PCK-YYMM-XXX → ambil 3 digit terakhir
-            $urutan = (int) substr($row->max_code, -3);
+            $parts = explode('-', $row->max_code);
+            $last_part = end($parts);
+            $urutan = (int) $last_part;
         }
-        $urutan++;
-        return $prefix . '-' . sprintf("%03d", $urutan);
+
+        // Safeguard: loop memastikan kode benar-benar belum pernah dipakai di tr_ros_pack, warehouse_pack, maupun exclude_codes
+        do {
+            $urutan++;
+            $candidate = $prefix . '-' . sprintf("%03d", $urutan);
+
+            if (!empty($exclude_codes) && in_array($candidate, $exclude_codes)) {
+                continue;
+            }
+
+            $in_tr_ros = $this->db->where('pack_code', $candidate)->count_all_results('tr_ros_pack') > 0;
+            if ($in_tr_ros) {
+                continue;
+            }
+
+            $in_wh = $this->db->where('pack_code', $candidate)->count_all_results('warehouse_pack') > 0;
+            if ($in_wh) {
+                continue;
+            }
+
+            break;
+        } while (true);
+
+        return $candidate;
     }
 }

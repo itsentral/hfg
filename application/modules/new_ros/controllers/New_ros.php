@@ -903,8 +903,10 @@ class New_ros extends Admin_Controller
         // ── Generate Pack records dari data coil ──
         if (!empty($all_pack_coils)) {
             $material_pack_assigned = [];
+            $generated_packs = [];
             foreach ($all_pack_coils as $pack_no => $pack_coil_list) {
-                $pack_code = $this->New_ros_model->generate_pack_code();
+                $pack_code = $this->New_ros_model->generate_pack_code($generated_packs);
+                $generated_packs[] = $pack_code;
                 $this->db->insert('tr_ros_pack', [
                     'id_ros'     => $id_ros,
                     'pack_no'    => $pack_no,
@@ -1664,8 +1666,10 @@ class New_ros extends Admin_Controller
 
         // Generate tr_ros_pack untuk setiap pack_no unik dan buat mapping pack_no → id
         $pack_map = []; // pack_no => id_ros_pack
+        $generated_packs = [];
         foreach (array_keys($pack_nos) as $pack_no) {
-            $pack_code = $this->New_ros_model->generate_pack_code();
+            $pack_code = $this->New_ros_model->generate_pack_code($generated_packs);
+            $generated_packs[] = $pack_code;
             $this->db->insert('tr_ros_pack', [
                 'id_ros'     => $id_ros,
                 'pack_no'    => $pack_no,
