@@ -142,31 +142,7 @@ class Simulasi_costing_model extends CI_Model
 
         $po_prices = [];
 
-        // 2. Ambil dari History PO dt_trans_po (nilai MAX USD) KHUSUS PO IMPORT
-        $sql_po = "
-            SELECT dt.idmaterial, MAX(dt.hargasatuan) AS max_usd
-            FROM dt_trans_po dt
-            JOIN tr_purchase_order po ON po.no_po = dt.no_po
-            WHERE dt.hargasatuan > 0
-              AND LOWER(po.loi) = 'import'
-            GROUP BY dt.idmaterial
-        ";
-        $rows_po = $this->db->query($sql_po)->result();
-        foreach ($rows_po as $r) {
-            if (!empty($r->idmaterial)) {
-                $mat = $r->idmaterial;
-                $val = (float)$r->max_usd;
-                $po_prices[$mat] = max($val, isset($po_prices[$mat]) ? $po_prices[$mat] : 0);
-                if (isset($id_to_code[$mat])) {
-                    $po_prices[$id_to_code[$mat]] = max($val, isset($po_prices[$id_to_code[$mat]]) ? $po_prices[$id_to_code[$mat]] : 0);
-                }
-                if (isset($code_to_id[$mat])) {
-                    $po_prices[$code_to_id[$mat]] = max($val, isset($po_prices[$code_to_id[$mat]]) ? $po_prices[$code_to_id[$mat]] : 0);
-                }
-            }
-        }
-
-        // 3. Ambil dari history_purchase (pencatatan resmi incoming PO) KHUSUS PO IMPORT
+        // 2. Ambil dari history_purchase (pencatatan resmi incoming PO yang sudah masuk gudang) KHUSUS PO IMPORT
         $sql_hp = "
             SELECT hp.id_material, MAX(hp.price_unit) AS max_usd
             FROM history_purchase hp

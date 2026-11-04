@@ -30,15 +30,7 @@ class Price_reference_model extends CI_Model
                 LEFT JOIN tr_purchase_order po ON po.no_po = hp.id_purchase_order
                 WHERE (hp.id_material = m.id OR hp.id_material = m.code_lv4)
                   AND (po.loi IS NULL OR LOWER(po.loi) = "import")
-            ) AS max_history_usd,
-            (
-                SELECT MAX(dt.hargasatuan)
-                FROM dt_trans_po dt
-                JOIN tr_purchase_order po2 ON po2.no_po = dt.no_po
-                WHERE (dt.idmaterial = m.id OR dt.idmaterial = m.code_lv4)
-                  AND dt.hargasatuan > 0
-                  AND LOWER(po2.loi) = "import"
-            ) AS max_po_usd
+            ) AS max_history_usd
         ');
         $this->db->from($this->table_material . ' m');
         $this->db->join($this->table_detail . ' prd', 'prd.id_material = m.id OR prd.id_material = m.code_lv4', 'left');
@@ -65,7 +57,6 @@ class Price_reference_model extends CI_Model
                 (float)$r->max_price_reference,
                 (float)$r->price_ref_use_usd,
                 (float)$r->max_history_usd,
-                (float)$r->max_po_usd,
             ], function($v) { return $v > 0; });
 
             if (!empty($usd_candidates)) {
@@ -102,7 +93,7 @@ class Price_reference_model extends CI_Model
     }
 
     /**
-     * Ambil riwayat bulanan dari tabel ERD history_purchase dan transaksi PO Import nyata
+     * Ambil riwayat bulanan dari tabel ERD history_purchase (hanya realisasi incoming PO Import)
      */
     public function get_monthly_history($id_material, $code_lv4 = null)
     {
@@ -113,7 +104,7 @@ class Price_reference_model extends CI_Model
 
         $history = [];
 
-        // 1. Ambil dari tabel ERD history_purchase (penerimaan fisik / finalize incoming PO Import)
+        // Ambil dari tabel ERD history_purchase (penerimaan fisik / finalize incoming PO Import)
         if ($this->db->table_exists($this->table_history)) {
             $this->db->select('h.*, po.no_surat, po.loi');
             $this->db->from($this->table_history . ' h');
@@ -138,30 +129,6 @@ class Price_reference_model extends CI_Model
                     if (!isset($history[$bln]) || $price > $history[$bln]) {
                         $history[$bln] = $price;
                     }
-                }
-            }
-        }
-
-        // 2. Ambil dari tabel transaksi PO Import nyata (dt_trans_po) berdasarkan bulan tanggal PO
-        $this->db->select('MONTH(po.tanggal) AS period_month, a.hargasatuan AS price_unit');
-        $this->db->from('dt_trans_po a');
-        $this->db->join('tr_purchase_order po', 'po.no_po = a.no_po', 'left');
-        if (count($identifiers) > 1) {
-            $this->db->where_in('a.idmaterial', $identifiers);
-        } else {
-            $this->db->where('a.idmaterial', reset($identifiers));
-        }
-        $this->db->where('a.hargasatuan >', 0);
-        $this->db->where('LOWER(po.loi)', 'import');
-        $this->db->order_by('po.tanggal', 'ASC');
-        $rows_po = $this->db->get()->result();
-
-        foreach ($rows_po as $po_item) {
-            $bln = (int)$po_item->period_month;
-            if ($bln >= 1 && $bln <= 12) {
-                $price = (float)$po_item->price_unit;
-                if (!isset($history[$bln]) || $price > $history[$bln]) {
-                    $history[$bln] = $price;
                 }
             }
         }
@@ -199,7 +166,7 @@ class Price_reference_model extends CI_Model
     }
 
     /**
-     * Ambil riwayat transaksi PO nyata dari dt_trans_po
+     * Ambil riwayat transaksi pembelian nyata yang sudah di-incoming dari history_purchase
      */
     public function get_po_history($id_material, $code_lv4 = null)
     {
@@ -208,14 +175,23 @@ class Price_reference_model extends CI_Model
             return [];
         }
 
-        $this->db->select('a.no_po, b.no_surat, b.tanggal, a.hargasatuan as harga_usd, a.qty, b.id_suplier, s.nama as nm_supplier');
-        $this->db->from('dt_trans_po a');
-        $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
-        $this->db->join('new_supplier s', 's.kode_supplier = b.id_suplier', 'left');
-        $this->db->where_in('a.idmaterial', $identifiers);
-        $this->db->where('a.hargasatuan >', 0);
-        $this->db->where('LOWER(b.loi)', 'import');
-        $this->db->order_by('b.tanggal', 'DESC');
+        $this->db->select('
+            hp.id_purchase_order AS no_po,
+            po.no_surat,
+            DATE(hp.created_at) AS tanggal,
+            MAX(hp.price_unit) AS harga_usd,
+            COALESCE(MAX(dt.qty), 0) AS qty,
+            s.nama AS nm_supplier
+        ');
+        $this->db->from('history_purchase hp');
+        $this->db->join('tr_purchase_order po', 'po.no_po = hp.id_purchase_order', 'left');
+        $this->db->join('dt_trans_po dt', 'dt.no_po = hp.id_purchase_order AND dt.idmaterial = hp.id_material', 'left');
+        $this->db->join('new_supplier s', 's.kode_supplier = po.id_suplier', 'left');
+        $this->db->where_in('hp.id_material', $identifiers);
+        $this->db->where('hp.price_unit >', 0);
+        $this->db->where('(po.loi IS NULL OR LOWER(po.loi) = "import")');
+        $this->db->group_by(['hp.id_purchase_order', 'DATE(hp.created_at)']);
+        $this->db->order_by('hp.created_at', 'DESC');
         $this->db->limit(10);
         return $this->db->get()->result();
     }

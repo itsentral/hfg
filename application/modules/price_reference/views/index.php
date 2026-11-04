@@ -186,12 +186,12 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                     </div>
                 </div>
 
-                <!-- 3. Riwayat Pembelian dari PO Sistem (dt_trans_po) -->
+                <!-- 3. Riwayat Pembelian dari Realisasi Incoming PO (history_purchase) -->
                 <div class="accordion" id="accPoHistory">
                     <div class="accordion-item border">
                         <h2 class="accordion-header" id="headingPo">
                             <button class="accordion-button collapsed py-2 bg-light text-dark small fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePo" aria-expanded="false" aria-controls="collapsePo">
-                                <i class="ti ti-history me-2 text-primary"></i> Riwayat Transaksi PO Sistem (<span id="po_count">0</span> PO ditemukan)
+                                <i class="ti ti-history me-2 text-primary"></i> Riwayat Pembelian Realisasi (Incoming PO) (<span id="po_count">0</span> PO ditemukan)
                             </button>
                         </h2>
                         <div id="collapsePo" class="accordion-collapse collapse" aria-labelledby="headingPo" data-bs-parent="#accPoHistory">
@@ -352,7 +352,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                         });
                         $('#po_rows').html(htmlPo);
                     } else {
-                        $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2">Belum ada riwayat PO di sistem untuk material ini.</td></tr>');
+                        $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2">Belum ada riwayat kedatangan/incoming PO di sistem untuk material ini.</td></tr>');
                     }
 
                     $('#modal-price-ref').modal('show');
