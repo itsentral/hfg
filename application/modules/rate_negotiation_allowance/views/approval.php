@@ -140,6 +140,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                         </button>
                                     <?php else: ?>
                                         <button type="button" class="btn btn-sm btn-outline-secondary btn-view-decide"
+                                            data-id="<?= $r->id ?>"
                                             data-category="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
                                             data-active="<?= ($act_val !== null) ? number_format($act_val, 2, ',', '.') . ' %' : '—' ?>"
                                             data-req="<?= number_format($req_val, 2, ',', '.') ?> %"
@@ -166,7 +167,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
 
 <!-- Modal Keputusan GM (Approve / Reject) -->
 <div class="modal fade" id="modal-decide" tabindex="-1" aria-labelledby="modalDecideLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
             <form id="form-decide" autocomplete="off">
                 <input type="hidden" name="id" id="decide_id">
@@ -202,6 +203,39 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                     <label class="text-muted small mb-1">Selisih Perubahan</label>
                                     <div class="fw-bold text-success fs-6" id="dec_diff"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail Impact Section -->
+                    <div class="card border mb-4">
+                        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-dark mb-0">
+                                <i class="fa fa-line-chart text-warning me-1"></i> Detail Impact :
+                            </h6>
+                            <span class="badge bg-secondary" id="dec_impact_count">0 Produk</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="dec_impact_loading" class="text-center py-4 text-muted" style="display:none;">
+                                <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
+                                <div>Memuat simulasi impact produk...</div>
+                            </div>
+                            <div class="table-responsive" id="dec_impact_wrapper" style="max-height: 280px; overflow-y: auto;">
+                                <table class="table table-sm table-bordered table-hover align-middle mb-0" id="dec_tbl_impact">
+                                    <thead class="table-light sticky-top">
+                                        <tr class="text-center text-nowrap">
+                                            <th width="40">No</th>
+                                            <th>Category Produk</th>
+                                            <th>Produk</th>
+                                            <th class="text-end">Bottom Price</th>
+                                            <th class="text-end">Pricelist Saat Ini</th>
+                                            <th class="text-center">Pengajuan Ext. Margin</th>
+                                            <th class="text-end" style="background-color: #fff3cd; color: #856404;">Pricelist/Meter</th>
+                                            <th class="text-end">Selisih</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dec_impact_tbody"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -247,7 +281,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
 
 <!-- Modal View Detail -->
 <div class="modal fade" id="modal-view" tabindex="-1" aria-labelledby="modalViewLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
             <div class="modal-header bg-light">
                 <h5 class="modal-title" id="modalViewLabel"><i class="fa fa-info-circle me-2"></i>Detail Pengajuan Extra Margin</h5>
@@ -281,9 +315,42 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                     <label class="text-muted small mb-1">Diputuskan Oleh / Waktu</label>
                     <div class="fw-bold" id="v_dec_by_at"></div>
                 </div>
-                <div class="mb-2" id="v_group_reason">
+                <div class="mb-3" id="v_group_reason">
                     <label class="text-muted small mb-1">Alasan Penolakan</label>
                     <div class="alert alert-danger mb-0" id="v_reason"></div>
+                </div>
+
+                <!-- Detail Impact Section -->
+                <div class="card border mb-2">
+                    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold text-dark mb-0">
+                            <i class="fa fa-line-chart text-warning me-1"></i> Detail Impact :
+                        </h6>
+                        <span class="badge bg-secondary" id="v_impact_count">0 Produk</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="v_impact_loading" class="text-center py-4 text-muted" style="display:none;">
+                            <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
+                            <div>Memuat data impact...</div>
+                        </div>
+                        <div class="table-responsive" id="v_impact_wrapper" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table table-sm table-bordered table-hover align-middle mb-0" id="v_tbl_impact">
+                                <thead class="table-light sticky-top">
+                                    <tr class="text-center text-nowrap">
+                                        <th width="40">No</th>
+                                        <th>Category Produk</th>
+                                        <th>Produk</th>
+                                        <th class="text-end">Bottom Price</th>
+                                        <th class="text-end">Pricelist Saat Ini</th>
+                                        <th class="text-center">Pengajuan Ext. Margin</th>
+                                        <th class="text-end" style="background-color: #fff3cd; color: #856404;">Pricelist/Meter</th>
+                                        <th class="text-end">Selisih</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="v_impact_tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer bg-light">
@@ -324,6 +391,58 @@ $(document).ready(function() {
         }
     });
 
+    function formatMoney(n) {
+        return Number(n || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function escHtml(str) {
+        return $('<div>').text(str || '').html();
+    }
+
+    function renderImpactTable(items, tbodyId, countId, customReqPct) {
+        var $tbody = $('#' + tbodyId);
+        $tbody.empty();
+        if (!items || items.length === 0) {
+            $tbody.html('<tr><td colspan="8" class="text-center text-muted py-3">Tidak ada data produk / costing untuk kategori ini.</td></tr>');
+            if (countId) $('#' + countId).text('0 Produk');
+            return;
+        }
+        if (countId) $('#' + countId).text(items.length + ' Produk');
+
+        var reqPct = (customReqPct !== undefined && customReqPct !== null) ? Number(customReqPct) : null;
+
+        items.forEach(function(it, idx) {
+            var pct = (reqPct !== null) ? reqPct : Number(it.req_rate_pct || 0);
+            var bottom = Number(it.bottom_price || 0);
+            var curPl = Number(it.current_pricelist || 0);
+            var newPl = (reqPct !== null) ? (bottom * (1 + pct / 100)) : Number(it.new_pricelist || 0);
+            var diffRp = newPl - curPl;
+
+            var diffBadge = '';
+            if (diffRp > 0) {
+                diffBadge = '<span class="text-success fw-bold">+' + formatMoney(diffRp) + '</span>';
+            } else if (diffRp < 0) {
+                diffBadge = '<span class="text-danger fw-bold">' + formatMoney(diffRp) + '</span>';
+            } else {
+                diffBadge = '<span class="text-muted">Rp 0,00</span>';
+            }
+
+            var varianBadge = it.no_uniq_id ? '<span class="badge bg-secondary ms-1">' + escHtml(it.no_uniq_id) + '</span>' : '';
+
+            var tr = '<tr>' +
+                '<td class="text-center">' + (idx + 1) + '</td>' +
+                '<td class="fw-semibold">' + escHtml(it.nm_category || '-') + '</td>' +
+                '<td>' + escHtml(it.nm_product || '-') + varianBadge + '</td>' +
+                '<td class="text-end">Rp ' + formatMoney(bottom) + '</td>' +
+                '<td class="text-end text-muted">Rp ' + formatMoney(curPl) + '</td>' +
+                '<td class="text-center"><span class="badge bg-primary px-2 py-1">' + pct.toFixed(2) + '%</span></td>' +
+                '<td class="text-end fw-bold" style="background-color: #fff3cd; color: #856404;">Rp ' + formatMoney(newPl) + '</td>' +
+                '<td class="text-end">' + diffBadge + '</td>' +
+                '</tr>';
+            $tbody.append(tr);
+        });
+    }
+
     // Click Decide (GM)
     $(document).on('click', '.btn-decide', function() {
         var id   = $(this).data('id');
@@ -344,6 +463,36 @@ $(document).ready(function() {
         $('#dec_approve').prop('checked', true).trigger('change');
         $('#dec_reason').val('');
         $('#modalDecideLabel').html('<i class="fa fa-gavel me-2"></i>Periksa Pengajuan Extra Margin — ' + cat);
+
+        // Load Detail Impact
+        $('#dec_impact_tbody').empty();
+        $('#dec_impact_loading').show();
+        $('#dec_impact_wrapper').hide();
+        $('#dec_impact_count').text('Memuat...');
+
+        $.ajax({
+            url: '<?= base_url('rate_negotiation_allowance/get_detail_impact') ?>',
+            type: 'GET',
+            dataType: 'json',
+            data: { request_id: id },
+            success: function(resp) {
+                $('#dec_impact_loading').hide();
+                $('#dec_impact_wrapper').show();
+                if (resp.status == 1) {
+                    renderImpactTable(resp.items, 'dec_impact_tbody', 'dec_impact_count');
+                } else {
+                    $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Gagal memuat impact.') + '</td></tr>');
+                    $('#dec_impact_count').text('0 Produk');
+                }
+            },
+            error: function() {
+                $('#dec_impact_loading').hide();
+                $('#dec_impact_wrapper').show();
+                $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">Terjadi kesalahan jaringan saat memuat impact.</td></tr>');
+                $('#dec_impact_count').text('0 Produk');
+            }
+        });
+
         $('#modal-decide').modal('show');
     });
 
@@ -403,6 +552,7 @@ $(document).ready(function() {
 
     // View Detail Decided
     $(document).on('click', '.btn-view-decide', function() {
+        var id       = $(this).data('id');
         var cat      = $(this).data('category');
         var act      = $(this).data('active');
         var req      = $(this).data('req');
@@ -426,6 +576,42 @@ $(document).ready(function() {
             $('#v_status').html('<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Rejected</span>');
             $('#v_reason').text(reason);
             $('#v_group_reason').removeClass('d-none');
+        }
+
+        // Load Detail Impact
+        $('#v_impact_tbody').empty();
+        $('#v_impact_loading').show();
+        $('#v_impact_wrapper').hide();
+        $('#v_impact_count').text('Memuat...');
+
+        if (id) {
+            $.ajax({
+                url: '<?= base_url('rate_negotiation_allowance/get_detail_impact') ?>',
+                type: 'GET',
+                dataType: 'json',
+                data: { request_id: id },
+                success: function(resp) {
+                    $('#v_impact_loading').hide();
+                    $('#v_impact_wrapper').show();
+                    if (resp.status == 1) {
+                        renderImpactTable(resp.items, 'v_impact_tbody', 'v_impact_count');
+                    } else {
+                        $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Gagal memuat impact.') + '</td></tr>');
+                        $('#v_impact_count').text('0 Produk');
+                    }
+                },
+                error: function() {
+                    $('#v_impact_loading').hide();
+                    $('#v_impact_wrapper').show();
+                    $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">Terjadi kesalahan jaringan saat memuat impact.</td></tr>');
+                    $('#v_impact_count').text('0 Produk');
+                }
+            });
+        } else {
+            $('#v_impact_loading').hide();
+            $('#v_impact_wrapper').show();
+            $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-muted py-3">ID pengajuan tidak ditemukan.</td></tr>');
+            $('#v_impact_count').text('0 Produk');
         }
 
         $('#modal-view').modal('show');

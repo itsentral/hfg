@@ -1,6 +1,8 @@
 <?php defined('BASEPATH') || exit('No direct script access allowed');
-$is_edit    = isset($bom) && $bom;
-$page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
+$is_edit     = isset($bom) && $bom;
+$page_title  = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
+$bom_num     = !empty($bom->id) ? (int)$bom->id : (isset($next_bom_id) ? (int)$next_bom_id : 1);
+$bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
 ?>
 
 <!-- Select2 -->
@@ -28,6 +30,7 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                         <option value="">-- Pilih Produk --</option>
                         <?php foreach ($produk_list as $idx => $p): ?>
                             <option value="<?= htmlspecialchars($p->code_lv4) ?>"
+                                data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad($p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
                                 data-idx="<?= str_pad($idx + 1, 3, '0', STR_PAD_LEFT) ?>"
                                 data-nama="<?= htmlspecialchars($p->nama) ?>"
                                 data-trade="<?= htmlspecialchars(!empty($p->trade_name) ? $p->trade_name : $p->nama) ?>"
@@ -66,7 +69,7 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                             <thead class="table-light">
                                 <tr>
                                     <th width="45" class="text-center">No</th>
-                                    <th width="180">No. Uniq ID <span class="text-danger">*</span></th>
+                                    <th width="180">No. Uniq ID <small class="text-muted fw-normal d-block">(Otomatis)</small></th>
                                     <th width="38%">Material <span class="text-danger">*</span></th>
                                     <th width="120" class="text-end">Varian Tebal</th>
                                     <th width="120" class="text-end">Lebar Coil</th>
@@ -81,8 +84,8 @@ $page_title = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
                                         <td class="text-center row-no"><?= $i + 1 ?></td>
                                         <td>
                                             <input type="text" name="detail[<?= $i ?>][no_uniq_id]"
-                                                class="form-control form-control-sm variant-uniq" required
-                                                value="<?= htmlspecialchars(!empty($d->no_uniq_id) ? $d->no_uniq_id : 'Type 001.' . ($i + 1)) ?>">
+                                                class="form-control form-control-sm variant-uniq bg-light" readonly
+                                                value="<?= htmlspecialchars(!empty($d->no_uniq_id) ? $d->no_uniq_id : ('Type ' . $bom_num_str . '.' . ($i + 1))) ?>">
                                         </td>
                                         <td>
                                             <select name="detail[<?= $i ?>][id_material]"
@@ -158,6 +161,17 @@ $(document).ready(function() {
 
     var materialList = <?= json_encode($material_list) ?>;
     var rowIndex = <?= ($is_edit && !empty($details)) ? count($details) : 0 ?>;
+    var defaultBomNumStr = '<?= $bom_num_str ?>';
+    var currentBomNumStr = defaultBomNumStr;
+
+    // Helper untuk merefresh nomor urut & No. Uniq ID secara otomatis
+    function refreshRowNumbers() {
+        $('#tbody-variant tr').each(function(i) {
+            var rowNo = i + 1;
+            $(this).find('.row-no').text(rowNo);
+            $(this).find('.variant-uniq').val('Type ' + currentBomNumStr + '.' + rowNo);
+        });
+    }
 
     // Inisialisasi Select2 Produk
     $('#select-produk').select2({
@@ -183,16 +197,18 @@ $(document).ready(function() {
         var opt = $(this).find(':selected');
         var nama = opt.data('nama') || '';
         var trade = opt.data('trade') || nama;
-        var pIdx = opt.data('idx') || '001';
+        var existingBomId = opt.data('bom-id');
 
         $('#nm_produk').val(nama);
         $('#trade-name-produk').val(trade);
 
-        // Update Uniq ID pada baris-baris varian jika belum diisi custom
-        $('#tbody-variant tr').each(function(i) {
-            var rowNo = i + 1;
-            $(this).find('.variant-uniq').val('Type ' + pIdx + '.' + rowNo);
-        });
+        if (existingBomId) {
+            currentBomNumStr = existingBomId;
+        } else {
+            currentBomNumStr = defaultBomNumStr;
+        }
+
+        refreshRowNumbers();
     });
 
     // Fungsi hitung Berat/Meter
@@ -226,11 +242,9 @@ $(document).ready(function() {
 
     // Tambah Varian Baru
     $('#btn-add-variant').on('click', function() {
-        var pOpt = $('#select-produk').find(':selected');
-        var pIdx = pOpt.data('idx') || '001';
         var currentRows = $('#tbody-variant tr').length;
         var nextRow = currentRows + 1;
-        var uniqId = 'Type ' + pIdx + '.' + nextRow;
+        var uniqId = 'Type ' + currentBomNumStr + '.' + nextRow;
 
         var matOptions = '<option value="">-- Pilih Material --</option>';
         materialList.forEach(function(m) {
@@ -245,7 +259,7 @@ $(document).ready(function() {
 
         var html = '<tr data-index="' + rowIndex + '">'
             + '<td class="text-center row-no">' + nextRow + '</td>'
-            + '<td><input type="text" name="detail[' + rowIndex + '][no_uniq_id]" class="form-control form-control-sm variant-uniq" required value="' + uniqId + '"></td>'
+            + '<td><input type="text" name="detail[' + rowIndex + '][no_uniq_id]" class="form-control form-control-sm variant-uniq bg-light" readonly value="' + uniqId + '"></td>'
             + '<td>'
             +   '<select name="detail[' + rowIndex + '][id_material]" class="form-select form-select-sm select2-material" required>'
             +     matOptions
@@ -276,10 +290,8 @@ $(document).ready(function() {
             return;
         }
         $(this).closest('tr').remove();
-        // Re-index nomor urut
-        $('#tbody-variant tr').each(function(i) {
-            $(this).find('.row-no').text(i + 1);
-        });
+        // Re-index nomor urut dan No. Uniq ID
+        refreshRowNumbers();
     });
 
     // Jika form add baru dan tabel masih kosong, tambahkan 1 baris otomatis

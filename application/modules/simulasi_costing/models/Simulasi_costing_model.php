@@ -337,6 +337,14 @@ class Simulasi_costing_model extends CI_Model
         $hpp_m       = $material_meter + $proses_m + $support_m;
 
         // 8. Other Cost (% x HPP)
+        $other_labels = [];
+        if (!empty($gen->other_cost_labels)) {
+            $decoded = json_decode($gen->other_cost_labels, true);
+            if (is_array($decoded)) {
+                $other_labels = $decoded;
+            }
+        }
+
         $o_sales     = $hpp_m * (float)$gen->rate_other_cost_sales_marketing;
         $o_trans     = $hpp_m * (float)$gen->rate_other_cost_transport;
         $o_fa        = $hpp_m * (float)$gen->rate_other_cost_finance_admin;
@@ -426,6 +434,15 @@ class Simulasi_costing_model extends CI_Model
             'bottom_kg'        => $div_kg($bottom_m),
             'nego_kg'          => $div_kg($nego_m),
             'pricelist_kg'     => $div_kg($pricelist_m),
+
+            'other_labels'     => [
+                'sales' => $other_labels['rate_other_cost_sales_marketing'] ?? 'Sales & Marketing',
+                'trans' => $other_labels['rate_other_cost_transport'] ?? 'Transport',
+                'fa'    => $other_labels['rate_other_cost_finance_admin'] ?? 'Finance & Admin',
+                'mgmt'  => $other_labels['rate_other_cost_management_fee'] ?? 'Management Fee',
+                'int'   => $other_labels['rate_other_cost_interest'] ?? 'Interest',
+                'prof'  => $other_labels['rate_other_cost_profit'] ?? 'Profit',
+            ],
 
             'last_updated'     => date('Y-m-d H:i:s'),
         ];

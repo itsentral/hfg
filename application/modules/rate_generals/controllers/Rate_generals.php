@@ -43,16 +43,20 @@ class Rate_generals extends Admin_Controller
             return;
         }
 
+        // Snapshot data sebelum update (standar audit log)
+        $oldData = $this->db->get_where('rate_generals', ['id' => 1])->row_array();
+
         // Jika satuan persen (pct), input UI berupa persen (misal 2.00), simpan ke DB sebagai desimal (0.0200)
         $db_val = ($unit === 'pct') ? ($val / 100) : $val;
 
-        $save = $this->rg_model->update_element($key, $db_val, $this->auth->user_id());
+        $save = $this->rg_model->update_element($key, $db_val, $this->auth->user_id(), $label);
 
         if ($save) {
+            $newData = $this->db->get_where('rate_generals', ['id' => 1])->row_array();
             $formatted = ($unit === 'pct') ? number_format($val, 2, ',', '.') . ' %' : 'Rp ' . number_format($val, 2, ',', '.') . ' / Kg';
             write_log('General Rate', 'Edit', 'Update General Rate: ' . $label . ' menjadi ' . $formatted, [
-                'key'   => $key,
-                'value' => $db_val,
+                'old' => $oldData,
+                'new' => $newData,
             ], null, 1);
 
             echo json_encode([
@@ -93,10 +97,17 @@ class Rate_generals extends Admin_Controller
             }
         }
 
+        // Snapshot data sebelum update (standar audit log)
+        $oldData = $this->db->get_where('rate_generals', ['id' => 1])->row_array();
+
         $save = $this->rg_model->update_all($data, $this->auth->user_id());
 
         if ($save) {
-            write_log('General Rate', 'Batch Edit', 'Update seluruh komponen General Rate', $data, null, 1);
+            $newData = $this->db->get_where('rate_generals', ['id' => 1])->row_array();
+            write_log('General Rate', 'Edit', 'Update seluruh komponen General Rate', [
+                'old' => $oldData,
+                'new' => $newData,
+            ], null, 1);
             $this->session->set_flashdata('success', 'Seluruh komponen General Rate berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui General Rate.');

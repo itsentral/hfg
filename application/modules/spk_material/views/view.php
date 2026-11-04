@@ -123,6 +123,7 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                         <tr>
                             <th class="text-center" width="5%">Urut</th>
                             <th>Nama Produk</th>
+                            <th class="text-center" width="20%">Varian Tebal (BOM)</th>
                             <th class="text-center" width="12%">Target Qty</th>
                             <th class="text-center" width="14%">Total Weight (Kg)</th>
                         </tr>
@@ -133,13 +134,23 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                             <tr>
                                 <td class="text-center"><?= $row['urut'] ?></td>
                                 <td><?= htmlspecialchars($row['nm_produk_fg']) ?></td>
+                                <td class="text-center">
+                                    <?php if (!empty($row['no_uniq_id'])): ?>
+                                        <span class="badge bg-primary"><?= htmlspecialchars($row['no_uniq_id']) ?></span>
+                                        <?php if (!empty($row['thickness']) && (float)$row['thickness'] > 0): ?>
+                                            <span class="badge bg-secondary"><?= number_format((float)$row['thickness'], 3, ',', '.') ?> mm</span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">-</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="text-end"><?= number_format($row['target_qty'], 0, ',', '.') ?></td>
                                 <td class="text-end"><?= number_format($row['total_weight'], 2, ',', '.') ?></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Tidak ada detail produk.</td>
+                                <td colspan="5" class="text-center text-muted">Tidak ada detail produk.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

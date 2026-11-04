@@ -117,6 +117,114 @@ class Pricelist extends Admin_Controller
     public function render_app_all()      { $this->render_app_tab('all'); }
 
 
+    // -------------------------------------------------------------------------
+    // AKSI SALES: LIHAT DOKUMEN, AJUKAN, HAPUS
+    // -------------------------------------------------------------------------
+
+    /** Ambil header + detail Pricelist (AJAX, dipakai halaman Sales & Approval) */
+    public function view_doc()
+    {
+        if (has_permission($this->viewAppPermission) && !has_permission($this->viewPermission)) {
+            $this->auth->restrict($this->viewAppPermission);
+        } else {
+            $this->auth->restrict($this->viewPermission);
+        }
+
+        $id = (int)$this->input->get('id');
+        $pl = $this->pl_model->get_pricelist_by_id($id);
+
+        if (!$pl) {
+            echo json_encode(['status' => 0, 'pesan' => 'Dokumen Pricelist tidak ditemukan']);
+            return;
+        }
+
+        echo json_encode([
+            'status' => 1,
+            'data'   => [
+                'header'  => $pl->header,
+                'details' => $pl->details,
+            ],
+        ]);
+    }
+
+    /** Sales Mengajukan Draft Pricelist ke Management */
+    public function submit()
+    {
+        $this->auth->restrict($this->managePermission);
+
+        $id = (int)$this->input->post('id');
+        $pl = $this->pl_model->get_pricelist_by_id($id);
+
+        if (!$pl || $pl->header->status !== 'Draft') {
+            echo json_encode(['status' => 0, 'pesan' => 'Hanya dokumen berstatus Draft yang dapat diajukan']);
+            return;
+        }
+
+        if (empty($pl->details)) {
+            echo json_encode(['status' => 0, 'pesan' => 'Dokumen belum memiliki baris varian, tidak dapat diajukan']);
+            return;
+        }
+
+        $ok = $this->pl_model->submit_to_management($id, $this->auth->user_id());
+        if ($ok) {
+            write_log('Pricelist', 'Submit', "Sales mengajukan Pricelist {$pl->header->no_pricelist} ke Management", (array)$pl->header, null, 1);
+            echo json_encode([
+                'status' => 1,
+                'pesan'  => "Pricelist {$pl->header->no_pricelist} berhasil diajukan ke Management.",
+            ]);
+        } else {
+            echo json_encode(['status' => 0, 'pesan' => 'Gagal mengajukan pricelist']);
+        }
+    }
+
+    /** Hapus satu baris varian dari dokumen Draft */
+    public function delete_item()
+    {
+        $this->auth->restrict($this->deletePermission);
+
+        $detail_id = (int)$this->input->post('detail_id');
+        $detail    = $this->db->get_where('pricelist_detail', ['id' => $detail_id])->row();
+
+        if (!$detail) {
+            echo json_encode(['status' => 0, 'pesan' => 'Baris varian tidak ditemukan']);
+            return;
+        }
+
+        $pl = $this->pl_model->get_pricelist_by_id($detail->id_pricelist_header);
+        if (!$pl || $pl->header->status !== 'Draft') {
+            echo json_encode(['status' => 0, 'pesan' => 'Baris hanya dapat dihapus dari dokumen berstatus Draft']);
+            return;
+        }
+
+        if ($this->pl_model->delete_detail($detail_id)) {
+            write_log('Pricelist', 'Delete Item', "Menghapus baris varian {$detail->no_uniq_id} dari Draft {$pl->header->no_pricelist}", (array)$detail, null, 1);
+            echo json_encode(['status' => 1, 'pesan' => 'Baris varian berhasil dihapus']);
+        } else {
+            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus baris varian']);
+        }
+    }
+
+    /** Hapus seluruh dokumen Draft */
+    public function delete()
+    {
+        $this->auth->restrict($this->deletePermission);
+
+        $id = (int)$this->input->post('id');
+        $pl = $this->pl_model->get_pricelist_by_id($id);
+
+        if (!$pl || $pl->header->status !== 'Draft') {
+            echo json_encode(['status' => 0, 'pesan' => 'Hanya dokumen berstatus Draft yang dapat dihapus']);
+            return;
+        }
+
+        if ($this->pl_model->delete_draft($id)) {
+            write_log('Pricelist', 'Delete', "Menghapus Draft Pricelist {$pl->header->no_pricelist}", (array)$pl->header, null, 1);
+            echo json_encode(['status' => 1, 'pesan' => "Draft Pricelist {$pl->header->no_pricelist} berhasil dihapus."]);
+        } else {
+            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus draft pricelist']);
+        }
+    }
+
     /** Management Menyetujui Pricelist (Approved) */
     public function approve()
     {

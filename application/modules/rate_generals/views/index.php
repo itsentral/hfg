@@ -1,5 +1,9 @@
 <?php
 $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
+$el_map = [];
+foreach ($elements as $el) {
+    $el_map[$el['key']] = $el['label'];
+}
 ?>
 
 <div class="card shadow-sm border-0 mb-4">
@@ -85,11 +89,13 @@ $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-primary btn-edit-single shadow-sm"
                                         data-key="<?= $el['key'] ?>"
+                                        data-group="<?= $el['group'] ?>"
                                         data-label="<?= htmlspecialchars($el['label']) ?>"
                                         data-basis="<?= htmlspecialchars($el['basis']) ?>"
                                         data-unit="<?= $el['unit'] ?>"
                                         data-val="<?= $el['unit'] === 'pct' ? (float)($el['value'] * 100) : (float)$el['value'] ?>"
                                         data-req="<?= $el['required'] ? '1' : '0' ?>"
+                                        data-editable="<?= !empty($el['is_label_editable']) ? '1' : '0' ?>"
                                         title="Edit Rate">
                                         <i class="fa fa-edit"></i> Edit
                                     </button>
@@ -118,8 +124,9 @@ $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label text-muted small mb-1">Element Costing</label>
-                        <input type="text" id="disp_label" class="form-control bg-light fw-bold" readonly>
+                        <label class="form-label text-muted small mb-1" id="lbl_disp_label">Element Costing</label>
+                        <input type="text" name="label" id="disp_label" class="form-control fw-bold" required>
+                        <div class="form-text text-muted" id="hint_disp_label"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small mb-1">Rumus / Dasar</label>
@@ -201,42 +208,42 @@ $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Sales &amp; Marketing</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_sales_marketing'] ?? 'Sales & Marketing') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_sales_marketing" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_sales_marketing * 100) ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Transport</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_transport'] ?? 'Transport') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_transport" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_transport * 100) ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Finance &amp; Admin</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_finance_admin'] ?? 'Finance & Admin') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_finance_admin" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_finance_admin * 100) ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Management Fee</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_management_fee'] ?? 'Management Fee') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_management_fee" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_management_fee * 100) ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Interest</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_interest'] ?? 'Interest') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_interest" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_interest * 100) ?>">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Profit</label>
+                                    <label class="form-label fw-bold"><?= htmlspecialchars($el_map['rate_other_cost_profit'] ?? 'Profit') ?></label>
                                     <div class="input-group">
                                         <input type="number" step="0.01" min="0" max="100" name="rate_other_cost_profit" class="form-control text-end" value="<?= (float)($rate_row->rate_other_cost_profit * 100) ?>">
                                         <span class="input-group-text">%</span>
@@ -261,86 +268,126 @@ $ENABLE_MANAGE = has_permission('Rate_Generals.Manage');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#tbl-general-rate').DataTable({
-        responsive: true,
-        paging: false,
-        searching: false,
-        info: false,
-        columnDefs: [{ targets: 'no-sort', orderable: false }]
-    });
+    $(document).ready(function() {
+        $('#tbl-general-rate').DataTable({
+            responsive: true,
+            paging: false,
+            searching: false,
+            info: false,
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }]
+        });
 
-    // Single Edit Click
-    $(document).on('click', '.btn-edit-single', function() {
-        var key   = $(this).data('key');
-        var label = $(this).data('label');
-        var basis = $(this).data('basis');
-        var unit  = $(this).data('unit');
-        var val   = $(this).data('val');
+        // Single Edit Click
+        $(document).on('click', '.btn-edit-single', function() {
+            var key = $(this).data('key');
+            var group = $(this).data('group');
+            var label = $(this).data('label');
+            var basis = $(this).data('basis');
+            var unit = $(this).data('unit');
+            var val = $(this).data('val');
+            var editable = $(this).data('editable') == '1';
 
-        $('#edit_key').val(key);
-        $('#edit_label').val(label);
-        $('#edit_unit').val(unit);
-        $('#disp_label').val(label);
-        $('#disp_basis').val(basis);
-        $('#edit_val').val(val);
+            $('#edit_key').val(key);
+            $('#edit_label').val(label);
+            $('#edit_unit').val(unit);
+            $('#disp_label').val(label);
+            $('#disp_basis').val(basis);
+            $('#edit_val').val(val);
 
-        if (unit === 'pct') {
-            $('#prefix_val').addClass('d-none');
-            $('#suffix_val').removeClass('d-none').text('%');
-            $('#lbl_edit_val').html('Nilai Persentase (%) <span class="text-danger">*</span>');
-            $('#hint_edit_val').text('Persentase dihitung terhadap HPP (atau terhadap Material Cost untuk Scrap).');
-        } else {
-            $('#prefix_val').removeClass('d-none').text('Rp');
-            $('#suffix_val').removeClass('d-none').text('/ Kg');
-            $('#lbl_edit_val').html('Nilai Tarif (Rp/Kg) <span class="text-danger">*</span>');
-            $('#hint_edit_val').text('Tarif per kilogram material dalam Rupiah.');
-        }
-
-        $('#modalSingleLabel').text('Edit Rate — ' + label);
-        $('#modal-single-edit').modal('show');
-    });
-
-    // Single Edit Submit
-    $('#form-single-edit').on('submit', function(e) {
-        e.preventDefault();
-        var key   = $('#edit_key').val();
-        var label = $('#edit_label').val();
-        var unit  = $('#edit_unit').val();
-        var val   = $('#edit_val').val();
-
-        if (val === '' || isNaN(val) || Number(val) < 0) {
-            Swal.fire({ title: 'Validasi', text: 'Nilai tarif tidak valid atau bernilai negatif', icon: 'warning' });
-            return;
-        }
-
-        $('#btn-save-single').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Menyimpan...');
-
-        $.ajax({
-            url: '<?= base_url('rate_generals/save_element') ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                key: key,
-                label: label,
-                unit: unit,
-                value: val
-            },
-            success: function(resp) {
-                $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
-                if (resp.status == 1) {
-                    $('#modal-single-edit').modal('hide');
-                    Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
-                        .then(function() { window.location.reload(); });
-                } else {
-                    Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
-                }
-            },
-            error: function(xhr) {
-                $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
-                Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
+            if (editable) {
+                $('#disp_label').prop('readonly', false).removeClass('bg-light').addClass('bg-white');
+            } else {
+                $('#disp_label').prop('readonly', true).addClass('bg-light').removeClass('bg-white');
             }
+
+            if (unit === 'pct') {
+                $('#prefix_val').addClass('d-none');
+                $('#suffix_val').removeClass('d-none').text('%');
+                $('#lbl_edit_val').html('Nilai Persentase (%) <span class="text-danger">*</span>');
+                $('#hint_edit_val').text('Persentase dihitung terhadap HPP (atau terhadap Material Cost untuk Scrap).');
+            } else {
+                $('#prefix_val').removeClass('d-none').text('Rp');
+                $('#suffix_val').removeClass('d-none').text('/ Kg');
+                $('#lbl_edit_val').html('Nilai Tarif (Rp/Kg) <span class="text-danger">*</span>');
+                $('#hint_edit_val').text('Tarif per kilogram material dalam Rupiah.');
+            }
+
+            $('#modalSingleLabel').text('Edit Rate — ' + label);
+            $('#modal-single-edit').modal('show');
+        });
+
+        // Single Edit Submit
+        $('#form-single-edit').on('submit', function(e) {
+            e.preventDefault();
+            var key = $('#edit_key').val();
+            var label = $('#disp_label').val().trim();
+            var unit = $('#edit_unit').val();
+            var val = $('#edit_val').val();
+
+            if (label === '') {
+                Swal.fire({
+                    title: 'Validasi',
+                    text: 'Nama Element Costing tidak boleh kosong',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            if (val === '' || isNaN(val) || Number(val) < 0) {
+                Swal.fire({
+                    title: 'Validasi',
+                    text: 'Nilai tarif tidak valid atau bernilai negatif',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            $('#btn-save-single').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Menyimpan...');
+
+            $.ajax({
+                url: '<?= base_url('rate_generals/save_element') ?>',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    key: key,
+                    label: label,
+                    unit: unit,
+                    value: val
+                },
+                success: function(resp) {
+                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
+                    if (resp.status == 1) {
+                        $('#modal-single-edit').modal('hide');
+                        Swal.fire({
+                                title: 'Berhasil!',
+                                text: resp.pesan,
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            })
+                            .then(function() {
+                                window.location.reload();
+                            });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: resp.pesan,
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Request error: ' + xhr.status,
+                        icon: 'error'
+                    });
+                }
+            });
         });
     });
-});
 </script>

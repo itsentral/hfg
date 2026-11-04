@@ -235,11 +235,13 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                         <table class="table table-bordered table-sm align-middle">
                             <thead class="table-light">
                                 <tr>
+                                    <th width="120">Varian BOM</th>
+                                    <th width="110" class="text-end">Varian Tebal</th>
                                     <th>Nama Material</th>
-                                    <th class="text-end">Berat Dibutuhkan</th>
-                                    <th class="text-end">Stok WIP</th>
-                                    <th class="text-end">Stok Gudang Produksi</th>
-                                    <th class="text-center">Pack Available</th>
+                                    <th class="text-end" width="140">Berat Dibutuhkan (Kg)</th>
+                                    <th class="text-end" width="110">Stok WIP</th>
+                                    <th class="text-end" width="110">Stok Produksi</th>
+                                    <th class="text-center" width="110">Pack Available</th>
                                 </tr>
                             </thead>
                             <tbody id="modal-material-body"></tbody>
@@ -310,7 +312,8 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         $('#btnRetryMaterial').on('click', function() {
             var produkId = $(this).data('produk-id');
             var targetQty = $(this).data('target-qty');
-            if (produkId && targetQty) loadMaterialBom(produkId, targetQty);
+            var noUniqId = $(this).data('no-uniq-id');
+            if (produkId && targetQty) loadMaterialBom(produkId, targetQty, noUniqId);
         });
     });
 
@@ -374,6 +377,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
         var selectedProduct = detail.id_produk_fg || '';
         var selectedProductName = detail.nm_produk_fg || '';
+        var selectedVariant = detail.no_uniq_id || '';
         var targetQty = detail.target_qty || '';
         var beratPerUnit = detail.berat_per_unit || 0;
         var totalWeight = detail.total_weight || 0;
@@ -385,20 +389,28 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 <i class="fa fa-times"></i>
             </button>
             <div class="row g-3 mt-1">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Produk <span class="text-danger">*</span></label>
                     <select class="form-select select-produk" id="produk_${idx}" data-idx="${idx}">
                         <option value="">-- Pilih Produk --</option>
                         ${selectedProduct ? '<option value="'+escHtml(selectedProduct)+'" selected>'+escHtml(selectedProductName)+'</option>' : ''}
                     </select>
                 </div>
+                <div class="col-md-3">
+                    <label class="form-label">Varian Tebal (BOM) <span class="text-danger">*</span></label>
+                    <select class="form-select select-variant" id="variant_${idx}" data-idx="${idx}">
+                        <option value="">-- Pilih Varian Tebal --</option>
+                        ${selectedVariant ? '<option value="'+escHtml(selectedVariant)+'" selected>'+escHtml(selectedVariant)+'</option>' : ''}
+                    </select>
+                    <small class="text-muted d-block mt-1 variant-info" id="variant_info_${idx}"></small>
+                </div>
                 <div class="col-md-2">
                     <label class="form-label">Target Qty <span class="text-danger">*</span></label>
                     <input type="number" class="form-control input-target-qty" id="qty_${idx}" data-idx="${idx}"
                            min="1" max="999999" step="1" placeholder="0" value="${targetQty}">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Berat/Unit (Kg)</label>
+                <div class="col-md-1">
+                    <label class="form-label">Berat/Unit</label>
                     <input type="text" class="form-control input-berat-per-unit" id="berat_${idx}" readonly
                            value="${beratPerUnit ? parseFloat(beratPerUnit).toFixed(2) : '0.00'}">
                 </div>
@@ -410,7 +422,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="button" class="btn btn-sm btn-outline-info w-100 btn-show-material"
-                            data-idx="${idx}" title="Show Material"><i class="fa fa-cubes"></i></button>
+                            data-idx="${idx}" title="Detail Material BOM"><i class="fa fa-cubes"></i></button>
                 </div>
             </div>
         </div>`;
@@ -420,27 +432,15 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         bindLineEvents(idx);
         renumberLines();
         toggleRemoveButtons();
+
+        if (selectedProduct) {
+            fetchProdukInfo(idx, selectedProduct, selectedVariant);
+        }
     }
 
     // ---------------------------------------------------------------
     // INIT SELECT2 - PRODUK
     // ---------------------------------------------------------------
-
-    /**
-     * Ambil daftar ID produk yang sudah dipilih di baris lain
-     * (exclude baris dengan idx tertentu agar tidak memblokir dirinya sendiri)
-     */
-    function getSelectedProductIds(excludeIdx) {
-        var ids = [];
-        $('#product-lines-container .select-produk').each(function() {
-            var thisIdx = $(this).data('idx');
-            if (thisIdx != excludeIdx) {
-                var val = $(this).val();
-                if (val) ids.push(String(val));
-            }
-        });
-        return ids;
-    }
 
     function initProdukSelect2(idx) {
         $('#produk_' + idx).select2({
@@ -457,15 +457,10 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     };
                 },
                 processResults: function(res) {
-                    // Ambil produk yang sudah dipilih di baris lain
-                    var selectedIds = getSelectedProductIds(idx);
-
                     var items = (res.data || []).map(function(p) {
-                        var isUsed = selectedIds.indexOf(String(p.code_lv4)) > -1;
                         return {
                             id: p.code_lv4,
-                            text: isUsed ? p.nama + ' (sudah dipilih)' : p.nama,
-                            disabled: isUsed
+                            text: p.nama
                         };
                     });
                     return {
@@ -477,24 +472,15 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             minimumInputLength: 0
         });
 
-        // Intercept pilihan: cegah duplikat meskipun disabled gagal
-        $('#produk_' + idx).on('select2:selecting', function(e) {
-            var choosingId = String(e.params.args.data.id);
-            var selectedIds = getSelectedProductIds(idx);
-            if (selectedIds.indexOf(choosingId) > -1) {
-                e.preventDefault();
-                Swal.fire('Perhatian', 'Produk ini sudah dipilih di baris lain.', 'warning');
-                return false;
-            }
-        });
-
         $('#produk_' + idx).on('change', function() {
             var prodId = $(this).val();
             var lineIdx = $(this).data('idx');
             if (prodId) {
-                fetchProdukWeight(lineIdx, prodId);
+                fetchProdukInfo(lineIdx, prodId);
             } else {
-                $('#berat_' + lineIdx).val(0);
+                $('#berat_' + lineIdx).val('0.00');
+                $('#variant_' + lineIdx).html('<option value="">-- Pilih Varian Tebal --</option>');
+                $('#variant_info_' + lineIdx).html('');
                 recalcWeight(lineIdx);
             }
         });
@@ -525,10 +511,16 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             e.preventDefault();
         });
 
+        $('#variant_' + idx).on('change', function() {
+            updateVariantInfo(idx);
+            checkDuplicateProductVariant(idx);
+        });
+
         $(document).on('click', '.btn-show-material[data-idx="' + idx + '"]', function() {
             var lineIdx = $(this).data('idx');
             var prodId = $('#produk_' + lineIdx).val();
             var qty = parseInt($('#qty_' + lineIdx).val()) || 0;
+            var noUniqId = $('#variant_' + lineIdx).val() || '';
             if (!prodId) {
                 Swal.fire('Perhatian', 'Pilih produk terlebih dahulu.', 'warning');
                 return;
@@ -537,26 +529,115 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 Swal.fire('Perhatian', 'Masukkan Target Qty terlebih dahulu.', 'warning');
                 return;
             }
-            loadMaterialBom(prodId, qty);
+            loadMaterialBom(prodId, qty, noUniqId);
         });
     }
 
     // ---------------------------------------------------------------
-    // FETCH PRODUCT WEIGHT & WEIGHT CALCULATOR
+    // FETCH PRODUCT INFO & BOM VARIANTS
     // ---------------------------------------------------------------
-    function fetchProdukWeight(idx, prodId) {
-        $.get(BASE_URL + '/get_produk_info/' + prodId, function(res) {
+    function fetchProdukInfo(idx, prodId, selectedVariant) {
+        var $variantSelect = $('#variant_' + idx);
+        var $variantInfo = $('#variant_info_' + idx);
+
+        $variantSelect.html('<option value="">Memuat varian...</option>').prop('disabled', true);
+        $variantInfo.html('');
+
+        $.get(BASE_URL + '/get_produk_info/' + encodeURIComponent(prodId), function(res) {
+            $variantSelect.prop('disabled', false);
             if (res.status == 1) {
                 var weight = parseFloat(res.data.weight) || 0;
-                $('#berat_' + idx).val(weight);
+                $('#berat_' + idx).val(weight.toFixed(2));
                 if (weight === 0) {
                     $('#weight_warn_' + idx).show();
                 } else {
                     $('#weight_warn_' + idx).hide();
                 }
                 recalcWeight(idx);
+
+                var variants = res.data.variants || [];
+                var options = '<option value="">-- Pilih Varian Tebal --</option>';
+                var foundSelected = false;
+
+                variants.forEach(function(v) {
+                    var thickStr = (v.thickness && parseFloat(v.thickness) > 0) ? parseFloat(v.thickness).toFixed(3) + ' mm' : '';
+                    var label = v.no_uniq_id;
+                    if (thickStr) {
+                        label += ' - ' + thickStr;
+                    }
+                    if (v.nm_material) {
+                        label += ' (' + v.nm_material + ')';
+                    }
+
+                    var isSel = (selectedVariant && v.no_uniq_id === selectedVariant);
+                    if (isSel) foundSelected = true;
+
+                    options += '<option value="' + escHtml(v.no_uniq_id) + '" data-thickness="' + (v.thickness || '') + '" data-material="' + escHtml(v.nm_material || '') + '" ' + (isSel ? 'selected' : '') + '>' + escHtml(label) + '</option>';
+                });
+
+                $variantSelect.html(options);
+
+                // Auto-select if only 1 variant exists and no pre-selected variant
+                if (!foundSelected && variants.length === 1) {
+                    $variantSelect.val(variants[0].no_uniq_id);
+                } else if (selectedVariant) {
+                    $variantSelect.val(selectedVariant);
+                }
+
+                updateVariantInfo(idx);
+                checkDuplicateProductVariant(idx);
+            } else {
+                $variantSelect.html('<option value="">-- Gagal memuat varian --</option>');
             }
-        }, 'json');
+        }, 'json').fail(function() {
+            $variantSelect.prop('disabled', false).html('<option value="">-- Gagal memuat varian --</option>');
+        });
+    }
+
+    function updateVariantInfo(idx) {
+        var $opt = $('#variant_' + idx).find('option:selected');
+        var val = $('#variant_' + idx).val();
+        var $info = $('#variant_info_' + idx);
+
+        if (val && $opt.length > 0) {
+            var thickness = $opt.data('thickness');
+            var material = $opt.data('material');
+            var text = '';
+            if (thickness && parseFloat(thickness) > 0) {
+                text += 'Tebal: ' + parseFloat(thickness).toFixed(3) + ' mm';
+            }
+            if (material) {
+                text += (text ? ' | ' : '') + 'Coil: ' + material;
+            }
+            $info.html(text ? '<i class="fa fa-info-circle text-info"></i> ' + escHtml(text) : '');
+        } else {
+            $info.html('');
+        }
+    }
+
+    function checkDuplicateProductVariant(currentIdx) {
+        var currentProd = $('#produk_' + currentIdx).val();
+        var currentVar = $('#variant_' + currentIdx).val();
+        if (!currentProd || !currentVar) return;
+
+        var isDup = false;
+        $('#product-lines-container .product-line').each(function() {
+            var thisIdx = $(this).data('line-idx');
+            if (thisIdx != currentIdx) {
+                var p = $('#produk_' + thisIdx).val();
+                var v = $('#variant_' + thisIdx).val();
+                if (p === currentProd && v === currentVar) {
+                    isDup = true;
+                    return false;
+                }
+            }
+        });
+
+        if (isDup) {
+            Swal.fire('Perhatian', 'Kombinasi Produk dan Varian Tebal ini sudah dipilih di baris lain.', 'warning');
+            $('#variant_' + currentIdx).val('');
+            updateVariantInfo(currentIdx);
+        }
     }
 
     function recalcWeight(idx) {
@@ -601,15 +682,19 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     // ---------------------------------------------------------------
     // MATERIAL VIEWER MODAL
     // ---------------------------------------------------------------
-    function loadMaterialBom(produkId, targetQty) {
+    function loadMaterialBom(produkId, targetQty, noUniqId) {
         $('#modal-skeleton').show();
         $('#modal-content').hide();
         $('#modal-error').hide();
         $('#modalMaterial').modal('show');
-        $('#btnRetryMaterial').data('produk-id', produkId).data('target-qty', targetQty);
+        $('#btnRetryMaterial')
+            .data('produk-id', produkId)
+            .data('target-qty', targetQty)
+            .data('no-uniq-id', noUniqId || '');
 
-        $.get(BASE_URL + '/get_material_bom/' + produkId, {
-            target_qty: targetQty
+        $.get(BASE_URL + '/get_material_bom/' + encodeURIComponent(produkId), {
+            target_qty: targetQty,
+            no_uniq_id: noUniqId || ''
         }, function(res) {
             $('#modal-skeleton').hide();
             if (res.status == 1) {
@@ -619,12 +704,24 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                         var packBadge = parseInt(m.pack_count) > 0
                             ? '<span class="badge bg-success">' + m.pack_count + ' pack</span>'
                             : '<span class="badge bg-danger">0</span>';
-                        tbody += '<tr><td>' + escHtml(m.nm_material) + '</td><td class="text-end">' + parseFloat(m.qty_needed).toFixed(4) + '</td>';
-                        tbody += '<td class="text-end">' + parseFloat(m.stok_wip || 0).toFixed(2) + '</td><td class="text-end">' + parseFloat(m.stok_produksi || 0).toFixed(2) + '</td>';
-                        tbody += '<td class="text-center">' + packBadge + '</td></tr>';
+                        var thickText = (m.thickness && parseFloat(m.thickness) > 0)
+                            ? parseFloat(m.thickness).toFixed(3) + ' mm'
+                            : '-';
+                        var variantBadge = m.no_uniq_id
+                            ? '<span class="badge bg-primary">' + escHtml(m.no_uniq_id) + '</span>'
+                            : '-';
+                        tbody += '<tr>';
+                        tbody += '<td>' + variantBadge + '</td>';
+                        tbody += '<td class="text-end fw-semibold">' + thickText + '</td>';
+                        tbody += '<td>' + escHtml(m.nm_material) + '</td>';
+                        tbody += '<td class="text-end">' + parseFloat(m.qty_needed).toFixed(4) + '</td>';
+                        tbody += '<td class="text-end">' + parseFloat(m.stok_wip || 0).toFixed(2) + '</td>';
+                        tbody += '<td class="text-end">' + parseFloat(m.stok_produksi || 0).toFixed(2) + '</td>';
+                        tbody += '<td class="text-center">' + packBadge + '</td>';
+                        tbody += '</tr>';
                     });
                 } else {
-                    tbody = '<tr><td colspan="5" class="text-center text-muted">Tidak ada data material.</td></tr>';
+                    tbody = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data material.</td></tr>';
                 }
                 $('#modal-material-body').html(tbody);
                 $('#modal-content').show();
@@ -664,13 +761,14 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         }
 
         // Validate product lines
-        var productIds = [];
+        var productKeys = [];
         $('#product-lines-container .product-line').each(function(i) {
             var $line = $(this);
             var idx = $line.data('line-idx');
 
             var produkId = $('#produk_' + idx).val();
             var produkText = $('#produk_' + idx).find('option:selected').text() || '';
+            var noUniqId = $('#variant_' + idx).val() || '';
             var targetQty = parseInt($('#qty_' + idx).val()) || 0;
             var beratPerUnit = parseFloat($('#berat_' + idx).val()) || 0;
             var totalWeight = parseFloat($('#weight_' + idx).val()) || 0;
@@ -678,12 +776,21 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             if (!produkId) {
                 markInvalid('#produk_' + idx, 'Produk harus dipilih.');
                 isValid = false;
-            } else {
-                if (productIds.indexOf(produkId) > -1) {
-                    markInvalid('#produk_' + idx, 'Produk sudah dipilih di baris lain.');
+            }
+
+            var variantCount = $('#variant_' + idx + ' option').length - 1;
+            if (produkId && variantCount > 0 && !noUniqId) {
+                markInvalid('#variant_' + idx, 'Varian tebal wajib dipilih.');
+                isValid = false;
+            }
+
+            if (produkId) {
+                var prodKey = produkId + '___' + noUniqId;
+                if (productKeys.indexOf(prodKey) > -1) {
+                    markInvalid('#variant_' + idx, 'Kombinasi Produk dan Varian ini sudah dipilih di baris lain.');
                     isValid = false;
                 }
-                productIds.push(produkId);
+                productKeys.push(prodKey);
             }
 
             var rawQty = $('#qty_' + idx).val();
@@ -701,6 +808,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             products.push({
                 id_produk_fg: produkId,
                 nm_produk_fg: produkText,
+                no_uniq_id: noUniqId,
                 target_qty: targetQty,
                 berat_per_unit: beratPerUnit,
                 total_weight: totalWeight

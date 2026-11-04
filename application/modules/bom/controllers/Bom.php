@@ -23,10 +23,12 @@ class Bom extends Admin_Controller
         $produk_list   = $this->Bom_model->get_produk_list();
         $material_list = $this->Bom_model->get_material_list();
         $standard_mat  = $this->Bom_model->get_standard_material();
+        $next_bom_id   = $this->Bom_model->get_next_bom_id();
         $this->template->set([
             'produk_list'   => $produk_list,
             'material_list' => $material_list,
             'standard_mat'  => $standard_mat,
+            'next_bom_id'   => $next_bom_id,
         ]);
         $this->template->render('form');
     }
@@ -51,6 +53,7 @@ class Bom extends Admin_Controller
             'produk_list'   => $produk_list,
             'material_list' => $material_list,
             'standard_mat'  => $standard_mat,
+            'next_bom_id'   => $id,
         ]);
         $this->template->render('form');
     }

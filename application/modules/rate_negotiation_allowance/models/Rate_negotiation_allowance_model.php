@@ -191,4 +191,55 @@ class Rate_negotiation_allowance_model extends CI_Model
             'decided_at'    => $now,
         ]);
     }
+
+    /**
+     * Ambil daftar produk dan bottom price untuk simulasi dampak perubahan Extra Margin
+     *
+     * @param string $code_lv2 Kode kategori produk (Level 2)
+     * @return array Daftar baris produk dengan bottom price dan info varian
+     */
+    public function get_category_impact_items($code_lv2)
+    {
+        // 1. Coba ambil dari snapshot product_costing_detail
+        $sql = "
+            SELECT 
+                pcd.code_lv4,
+                pcd.no_uniq_id,
+                pcd.code_lv2,
+                p.nama AS nm_product,
+                cat.nama AS nm_category,
+                COALESCE(pcd.selling_price_bottom_price_meter, 0) AS bottom_price_meter,
+                COALESCE(pcd.selling_price_price_list_meter, 0) AS current_pricelist_meter,
+                COALESCE(pcd.rate_negotiation_allowance, 0) AS recorded_rate
+            FROM product_costing_detail pcd
+            JOIN product_lvl_4 p ON p.code_lv4 = pcd.code_lv4
+            LEFT JOIN product_lvl_2 cat ON cat.code_lv2 = pcd.code_lv2
+            WHERE pcd.code_lv2 = ?
+            ORDER BY p.nama ASC, pcd.no_uniq_id ASC
+        ";
+        $rows = $this->db->query($sql, [$code_lv2])->result();
+
+        // 2. Jika snapshot belum ada, hitung on-the-fly dari BOM via Simulasi_costing_model (fallback)
+        if (empty($rows)) {
+            $this->load->model('simulasi_costing/Simulasi_costing_model', 'sim_model');
+            if (method_exists($this->sim_model, 'calculate_all_costing')) {
+                $calc = $this->sim_model->calculate_all_costing($code_lv2);
+                $rows = [];
+                foreach ($calc as $c) {
+                    $rows[] = (object)[
+                        'code_lv4'               => $c->code_lv4,
+                        'no_uniq_id'             => $c->no_uniq_id,
+                        'code_lv2'               => $c->code_lv2,
+                        'nm_product'             => $c->nm_product,
+                        'nm_category'            => $c->nm_category,
+                        'bottom_price_meter'     => (float)$c->bottom_meter,
+                        'current_pricelist_meter'=> (float)$c->pricelist_meter,
+                        'recorded_rate'          => (float)$c->nego_pct,
+                    ];
+                }
+            }
+        }
+
+        return $rows;
+    }
 }

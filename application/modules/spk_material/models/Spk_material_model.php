@@ -129,14 +129,27 @@ class Spk_material_model extends BF_Model
     }
 
     /**
-     * Get semua detail baris produk untuk SPK tertentu
+     * Get semua detail baris produk untuk SPK tertentu (beserta ketebalan varian BOM)
      *
      * @param string $spk_no Nomor SPK
      * @return array Array of detail rows
      */
     public function get_spk_details($spk_no)
     {
-        return $this->db->where('spk_no', $spk_no)->order_by('urut', 'ASC')->get('tr_spk_material_detail')->result_array();
+        $sql = "
+            SELECT 
+                d.*,
+                COALESCE(m.thickness, 0) as thickness,
+                COALESCE(bd.berat_per_meter, 0) as berat_per_meter
+            FROM tr_spk_material_detail d
+            LEFT JOIN ms_bom_header bh ON bh.id_produk = d.id_produk_fg AND bh.is_delete = 0
+            LEFT JOIN ms_bom_detail bd ON bd.id_bom = bh.id AND (bd.no_uniq_id = d.no_uniq_id OR d.no_uniq_id IS NULL) AND bd.is_delete = 0
+            LEFT JOIN new_inventory_4 m ON (m.code_lv4 = bd.id_material OR m.id = bd.id_material)
+            WHERE d.spk_no = ?
+            GROUP BY d.id
+            ORDER BY d.urut ASC
+        ";
+        return $this->db->query($sql, [$spk_no])->result_array();
     }
 
     // ---------------------------------------------------------------
@@ -211,6 +224,33 @@ class Spk_material_model extends BF_Model
         return $row ? $row->weight : null;
     }
 
+    /**
+     * Get daftar varian BOM produk beserta ketebalan material
+     *
+     * @param string $id_produk code_lv4 produk
+     * @return array Array of BOM variant records (no_uniq_id, id_material, nm_material, thickness, width, berat_per_meter)
+     */
+    public function get_bom_variants($id_produk)
+    {
+        $sql = "
+            SELECT 
+                bd.id as bom_detail_id,
+                bd.id_bom,
+                COALESCE(bd.no_uniq_id, CONCAT('Type ', LPAD(bd.id_bom, 3, '0'), '.', IF(bd.urut > 0, bd.urut, bd.id))) as no_uniq_id,
+                bd.id_material,
+                bd.nm_material,
+                COALESCE(m.thickness, 0) as thickness,
+                COALESCE(m.width, 0) as width,
+                COALESCE(bd.berat_per_meter, 0) as berat_per_meter
+            FROM ms_bom_header bh
+            JOIN ms_bom_detail bd ON bd.id_bom = bh.id
+            LEFT JOIN new_inventory_4 m ON (m.code_lv4 = bd.id_material OR m.id = bd.id_material)
+            WHERE bh.id_produk = ? AND bh.is_delete = 0 AND bd.is_delete = 0
+            ORDER BY bd.urut ASC, bd.id ASC
+        ";
+        return $this->db->query($sql, [$id_produk])->result_array();
+    }
+
     // ---------------------------------------------------------------
     // BOM & MATERIAL
     // ---------------------------------------------------------------
@@ -220,15 +260,26 @@ class Spk_material_model extends BF_Model
      * JOIN ms_bom_header + ms_bom_detail, hitung qty_needed = bom_qty × target_qty
      * LEFT JOIN warehouse_stock untuk stok WIP dan Gudang Produksi
      *
-     * @param string $id_produk  ID produk (code_lv4/id_produk)
-     * @param int    $target_qty Target quantity produksi
+     * @param string      $id_produk  ID produk (code_lv4/id_produk)
+     * @param int         $target_qty Target quantity produksi
+     * @param string|null $no_uniq_id Varian BOM tertentu (opsional)
      * @return array Array of material records dengan qty_needed, stok_wip, stok_produksi
      */
-    public function get_bom_materials($id_produk, $target_qty)
+    public function get_bom_materials($id_produk, $target_qty, $no_uniq_id = null)
     {
+        $params = [$target_qty, $id_produk];
+        $where_variant = '';
+        if (!empty($no_uniq_id)) {
+            $where_variant = " AND bd.no_uniq_id = ?";
+            $params[] = $no_uniq_id;
+        }
+
         $sql = "SELECT 
             bd.id_material, 
             bd.nm_material, 
+            COALESCE(bd.no_uniq_id, CONCAT('Type ', LPAD(bd.id_bom, 3, '0'), '.', IF(bd.urut > 0, bd.urut, bd.id))) as no_uniq_id,
+            COALESCE(m.thickness, 0) as thickness,
+            COALESCE(bd.berat_per_meter, 0) as berat_per_meter,
             ROUND(bd.qty * ?, 4) as qty_needed,
             bd.id_unit,
             bd.nm_unit,
@@ -237,10 +288,12 @@ class Spk_material_model extends BF_Model
             (SELECT COUNT(DISTINCT wsc.id_pack) FROM warehouse_stock_coil wsc WHERE wsc.id_material = bd.id_material COLLATE utf8mb4_general_ci AND wsc.id_pack IS NOT NULL AND wsc.status = 1) as pack_count
         FROM ms_bom_header bh
         JOIN ms_bom_detail bd ON bd.id_bom = bh.id
+        LEFT JOIN new_inventory_4 m ON (m.code_lv4 = bd.id_material OR m.id = bd.id_material)
         WHERE bh.id_produk = ? AND bh.is_delete = 0 AND bd.is_delete = 0
-        ORDER BY bd.nm_material ASC";
+        {$where_variant}
+        ORDER BY bd.urut ASC, bd.nm_material ASC";
 
-        return $this->db->query($sql, [$target_qty, $id_produk])->result_array();
+        return $this->db->query($sql, $params)->result_array();
     }
 
     /**

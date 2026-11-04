@@ -179,4 +179,95 @@ class Rate_negotiation_allowance extends Admin_Controller
             ]);
         }
     }
+
+    /** AJAX: Ambil data Detail Impact per pengajuan atau per kategori */
+    public function get_detail_impact()
+    {
+        if (!has_permission($this->viewPermission) && !has_permission($this->viewAppPermission)) {
+            echo json_encode(['status' => 0, 'pesan' => 'Akses ditolak']);
+            return;
+        }
+
+        $request_id = (int) $this->input->get_post('request_id');
+        $code_lv2   = trim($this->input->get_post('code_lv2'));
+        $rate_pct   = $this->input->get_post('rate_pct');
+
+        $active_rate_pct = 0.0;
+        $req_rate_pct    = null;
+        $cat_name        = '';
+
+        if (!empty($request_id)) {
+            $req = $this->rna_model->get_request_by_id($request_id);
+            if ($req) {
+                $code_lv2        = $req->code_lv2;
+                $cat_name        = $req->nm_category;
+                $active_rate_pct = ($req->active_rate !== null) ? ((float)$req->active_rate * 100) : 0.0;
+                $req_rate_pct    = (float)$req->rate_negotiation_allowance * 100;
+            }
+        }
+
+        if (empty($code_lv2)) {
+            echo json_encode(['status' => 0, 'pesan' => 'Kategori produk tidak valid']);
+            return;
+        }
+
+        // Ambil data kategori & active rate jika belum terisi
+        if (empty($cat_name)) {
+            $cat = $this->rna_model->get_by_code($code_lv2);
+            if ($cat) {
+                $cat_name        = $cat->nm_category;
+                $active_rate_pct = ($cat->active_rate !== null) ? ((float)$cat->active_rate * 100) : 0.0;
+            }
+        }
+
+        if ($rate_pct !== null && $rate_pct !== '') {
+            $req_rate_pct = (float)$rate_pct;
+        }
+
+        if ($req_rate_pct === null) {
+            $req_rate_pct = $active_rate_pct;
+        }
+
+        $items = $this->rna_model->get_category_impact_items($code_lv2);
+
+        $data_items = [];
+        $active_rate_dec = $active_rate_pct / 100;
+        $req_rate_dec    = $req_rate_pct / 100;
+
+        foreach ($items as $idx => $it) {
+            $bottom = (float)$it->bottom_price_meter;
+            
+            // Hitung pricelist saat ini berdasarkan active rate kategori
+            $cur_pl = $bottom * (1 + $active_rate_dec);
+            
+            // Hitung pricelist baru berdasarkan rate yang diajukan
+            $new_pl = $bottom * (1 + $req_rate_dec);
+            
+            $diff_rp  = $new_pl - $cur_pl;
+            $diff_pct = ($cur_pl > 0) ? (($new_pl - $cur_pl) / $cur_pl) * 100 : 0.0;
+
+            $data_items[] = [
+                'no'               => $idx + 1,
+                'code_lv4'         => $it->code_lv4,
+                'no_uniq_id'       => $it->no_uniq_id,
+                'nm_category'      => $it->nm_category ?: $cat_name,
+                'nm_product'       => $it->nm_product,
+                'bottom_price'     => $bottom,
+                'current_pricelist'=> $cur_pl,
+                'req_rate_pct'     => $req_rate_pct,
+                'new_pricelist'    => $new_pl,
+                'diff_rp'          => $diff_rp,
+                'diff_pct'         => $diff_pct,
+            ];
+        }
+
+        echo json_encode([
+            'status'          => 1,
+            'code_lv2'        => $code_lv2,
+            'nm_category'     => $cat_name,
+            'active_rate_pct' => $active_rate_pct,
+            'req_rate_pct'    => $req_rate_pct,
+            'items'           => $data_items,
+        ]);
+    }
 }
