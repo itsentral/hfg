@@ -213,8 +213,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             responsive: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
-            columnDefs: [
-                {
+            columnDefs: [{
                     targets: 'no-sort',
                     orderable: false
                 },
@@ -414,6 +413,13 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                         });
                     };
 
+                    var lbl_sales = (d.other_labels && d.other_labels.sales) ? d.other_labels.sales : 'Sales & Marketing';
+                    var lbl_trans = (d.other_labels && d.other_labels.trans) ? d.other_labels.trans : 'Transport';
+                    var lbl_fa = (d.other_labels && d.other_labels.fa) ? d.other_labels.fa : 'Finance & Admin';
+                    var lbl_mgmt = (d.other_labels && d.other_labels.mgmt) ? d.other_labels.mgmt : 'Management Fee';
+                    var lbl_int = (d.other_labels && d.other_labels.int) ? d.other_labels.int : 'Interest';
+                    var lbl_prof = (d.other_labels && d.other_labels.prof) ? d.other_labels.prof : 'Profit';
+
                     var html = `
                     <div class="card bg-light border-0 mb-3">
                         <div class="card-body">
@@ -514,12 +520,12 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                 </tr>
 
                                 <tr class="table-light fw-bold"><td colspan="3"><i class="fa fa-pie-chart me-1"></i> 4. Other Cost (% &times; HPP)</td></tr>
-                                <tr><td>Sales &amp; Marketing</td><td class="text-end">Rp ${fn(d.other_sales_meter)}</td><td class="text-end">Rp ${fn(d.other_sales_kg)}</td></tr>
-                                <tr><td>Transport</td><td class="text-end">Rp ${fn(d.other_trans_meter)}</td><td class="text-end">Rp ${fn(d.other_trans_kg)}</td></tr>
-                                <tr><td>Finance &amp; Admin</td><td class="text-end">Rp ${fn(d.other_fa_meter)}</td><td class="text-end">Rp ${fn(d.other_fa_kg)}</td></tr>
-                                <tr><td>Management Fee</td><td class="text-end">Rp ${fn(d.other_mgmt_meter)}</td><td class="text-end">Rp ${fn(d.other_mgmt_kg)}</td></tr>
-                                <tr><td>Interest</td><td class="text-end">Rp ${fn(d.other_int_meter)}</td><td class="text-end">Rp ${fn(d.other_int_kg)}</td></tr>
-                                <tr><td>Profit</td><td class="text-end">Rp ${fn(d.other_prof_meter)}</td><td class="text-end">Rp ${fn(d.other_prof_kg)}</td></tr>
+                                <tr><td>${lbl_sales}</td><td class="text-end">Rp ${fn(d.other_sales_meter)}</td><td class="text-end">Rp ${fn(d.other_sales_kg)}</td></tr>
+                                <tr><td>${lbl_trans}</td><td class="text-end">Rp ${fn(d.other_trans_meter)}</td><td class="text-end">Rp ${fn(d.other_trans_kg)}</td></tr>
+                                <tr><td>${lbl_fa}</td><td class="text-end">Rp ${fn(d.other_fa_meter)}</td><td class="text-end">Rp ${fn(d.other_fa_kg)}</td></tr>
+                                <tr><td>${lbl_mgmt}</td><td class="text-end">Rp ${fn(d.other_mgmt_meter)}</td><td class="text-end">Rp ${fn(d.other_mgmt_kg)}</td></tr>
+                                <tr><td>${lbl_int}</td><td class="text-end">Rp ${fn(d.other_int_meter)}</td><td class="text-end">Rp ${fn(d.other_int_kg)}</td></tr>
+                                <tr><td>${lbl_prof}</td><td class="text-end">Rp ${fn(d.other_prof_meter)}</td><td class="text-end">Rp ${fn(d.other_prof_kg)}</td></tr>
                                 <tr class="fw-bold bg-light">
                                     <td>Total Other Cost</td>
                                     <td class="text-end text-primary">Rp ${fn(d.other_total_meter)}</td>
@@ -544,7 +550,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                 </tr>
                                 <tr class="table-info fw-bold">
                                     <td>PRICE LIST PRODUK (${d.ukuran} m &times; Price List/m)</td>
-                                    <td colspan="2" class="text-end text-primary fs-5">Rp ${fn(d.pricelist_pcs)} / pcs</td>
+                                    <td colspan="2" class="text-end text-primary fs-5">Rp ${fn(d.pricelist_pcs)}</td>
                                 </tr>
                             </tbody>
                         </table>

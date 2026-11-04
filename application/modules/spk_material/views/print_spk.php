@@ -471,11 +471,20 @@
 
     <?php if (!empty($details)): ?>
         <?php foreach ($details as $idx => $detail): ?>
-
+            <?php
+                $variant_desc = '';
+                if (!empty($detail['no_uniq_id'])) {
+                    $variant_desc = ' [Varian: ' . htmlspecialchars($detail['no_uniq_id']);
+                    if (!empty($detail['thickness']) && (float)$detail['thickness'] > 0) {
+                        $variant_desc .= ' - ' . number_format((float)$detail['thickness'], 3, ',', '.') . ' mm';
+                    }
+                    $variant_desc .= ']';
+                }
+            ?>
             <div class="product-group">
 
                 <div class="section-header">
-                    <?php echo ($idx + 1) . '. ' . $detail['nm_produk_fg']; ?>
+                    <?php echo ($idx + 1) . '. ' . htmlspecialchars($detail['nm_produk_fg']) . $variant_desc; ?>
                 </div>
 
                 <table class="product-info-table">
@@ -484,6 +493,17 @@
                         <td class="product-info-value"><strong><?php echo number_format($detail['target_qty']); ?></strong></td>
                         <td class="product-info-label">Total Weight</td>
                         <td class="product-info-value"><strong><?php echo number_format($detail['total_weight'], 2); ?> Kg</strong></td>
+                        <td class="product-info-label">Varian Tebal</td>
+                        <td class="product-info-value">
+                            <?php if (!empty($detail['no_uniq_id'])): ?>
+                                <strong><?php echo htmlspecialchars($detail['no_uniq_id']); ?></strong>
+                                <?php if (!empty($detail['thickness']) && (float)$detail['thickness'] > 0): ?>
+                                    (<?php echo number_format((float)$detail['thickness'], 3, ',', '.'); ?> mm)
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <span style="color:#a0aec0;">-</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 </table>
             </div>

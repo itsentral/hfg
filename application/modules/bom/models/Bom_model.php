@@ -17,11 +17,13 @@ class Bom_model extends CI_Model
     {
         return $this->db
             ->select('p4.code_lv4, p4.nama, p4.trade_name,
-                      p1.nama AS nm_lv1, p2.nama AS nm_lv2, p3.nama AS nm_lv3')
+                      p1.nama AS nm_lv1, p2.nama AS nm_lv2, p3.nama AS nm_lv3,
+                      bh.id AS existing_bom_id')
             ->from('product_lvl_4 p4')
             ->join('product_lvl_1 p1', 'p1.code_lv1 = p4.code_lv1 AND p1.category = "product"', 'left')
             ->join('product_lvl_2 p2', 'p2.code_lv2 = p4.code_lv2 AND p2.category = "product"', 'left')
             ->join('product_lvl_3 p3', 'p3.code_lv3 = p4.code_lv3 AND p3.category = "product"', 'left')
+            ->join('ms_bom_header bh', 'bh.id_produk = p4.code_lv4 AND bh.is_delete = 0', 'left')
             ->where('p4.category', 'product')
             ->where('p4.deleted_date', null)
             ->where('p4.status', 1)
@@ -122,10 +124,8 @@ class Bom_model extends CI_Model
 
         $id_bom = !empty($header['id']) ? (int) $header['id'] : null;
 
-        // Ambil no_uniq_id dari baris pertama untuk varian_type header (kompatibilitas query lama)
-        $first_uniq = !empty($details[0]['no_uniq_id']) ? trim($details[0]['no_uniq_id']) : 'Type 001.1';
-
         if ($id_bom) {
+            $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
             $this->db->update('ms_bom_header', [
                 'nm_produk'   => $header['nm_produk'],
                 'varian_type' => $first_uniq,
@@ -136,6 +136,7 @@ class Bom_model extends CI_Model
             $existing = $this->get_bom_by_produk($header['id_produk']);
             if ($existing) {
                 $id_bom = $existing->id;
+                $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
                 $this->db->update('ms_bom_header', [
                     'nm_produk'   => $header['nm_produk'],
                     'varian_type' => $first_uniq,
@@ -146,7 +147,7 @@ class Bom_model extends CI_Model
                 $this->db->insert('ms_bom_header', [
                     'id_produk'   => $header['id_produk'],
                     'nm_produk'   => $header['nm_produk'],
-                    'varian_type' => $first_uniq,
+                    'varian_type' => 'Type 001.1',
                     'is_default'  => 1,
                     'status'      => 1,
                     'is_delete'   => 0,
@@ -154,6 +155,8 @@ class Bom_model extends CI_Model
                     'created_at'  => $now,
                 ]);
                 $id_bom = $this->db->insert_id();
+                $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
+                $this->db->update('ms_bom_header', ['varian_type' => $first_uniq], ['id' => $id_bom]);
             }
         }
 
@@ -162,7 +165,7 @@ class Bom_model extends CI_Model
 
         $std = $this->get_standard_material();
 
-        // Insert setiap baris varian baru
+        // Insert setiap baris varian baru dengan penomoran unik kanonikal otomatis: Type {id_bom_3_digit}.{urut}
         foreach ($details as $urut => $d) {
             if (empty($d['id_material'])) continue;
 
@@ -177,7 +180,8 @@ class Bom_model extends CI_Model
                 }
             }
 
-            $no_uniq = !empty($d['no_uniq_id']) ? trim($d['no_uniq_id']) : ('Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.' . ($urut + 1));
+            // Opsi A: Unik Global kanonikal dari sistem
+            $no_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.' . ($urut + 1);
 
             $this->db->insert('ms_bom_detail', [
                 'id_bom'          => $id_bom,
@@ -260,5 +264,12 @@ class Bom_model extends CI_Model
             'filtered' => (int) $filtered,
             'data'     => $data,
         ];
+    }
+
+    /** Ambil ID BOM berikutnya untuk preview di form Add */
+    public function get_next_bom_id()
+    {
+        $row = $this->db->select_max('id')->get('ms_bom_header')->row();
+        return $row && $row->id ? ((int)$row->id + 1) : 1;
     }
 }
