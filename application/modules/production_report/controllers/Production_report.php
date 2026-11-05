@@ -217,7 +217,8 @@ class Production_report extends Admin_Controller
         }
 
         $existing_report_id = !empty($payload['report_id']) ? (int)$payload['report_id'] : null;
-        $report_id = $this->pr_model->save_production_report($header_data, $materials, $items, $scraps, $existing_report_id);
+        $user_id = $this->auth ? $this->auth->user_id() : 1;
+        $report_id = $this->pr_model->save_production_report($header_data, $materials, $items, $scraps, $existing_report_id, $user_id);
 
         if ($report_id) {
             echo json_encode([

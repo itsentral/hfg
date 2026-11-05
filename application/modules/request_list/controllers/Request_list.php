@@ -945,60 +945,15 @@ class Request_list extends Admin_Controller
             return $this->_json(array('status' => 0, 'message' => 'SPK Coil sudah dikonfirmasi oleh user lain.'));
         }
 
-        $summary_map = []; // accumulator: key = id_material_kd_gudang
-
         foreach ($coil_details as $coil) {
             // reduce_coil_stock: PURE pindah posisi coil (+ pack + companion pack) ke PRT.
-            // TIDAK mengubah nilai warehouse_stock. Return ARRAY of result per coil
-            // (bisa >1 karena seluruh coil dalam 1 pack ikut dipindah).
-            $reduce_results = $this->Request_list_model->reduce_coil_stock(
+            // TIDAK mengubah nilai warehouse_stock dan TIDAK dicatat ke stock transaction summary
+            // agar tidak merusak buku saldo berjalan di gudang sumber.
+            $this->Request_list_model->reduce_coil_stock(
                 $coil['id_coil'],
                 $request['spk_coil_no'],
                 $this->id_user
             );
-
-            if (empty($reduce_results) || !is_array($reduce_results)) {
-                continue;
-            }
-
-            // Accumulate summary per material + gudang sumber untuk setiap coil yang dipindah
-            foreach ($reduce_results as $reduce_result) {
-                $key = $reduce_result['id_material'] . '_' . $reduce_result['kd_gudang'];
-
-                if (!isset($summary_map[$key])) {
-                    $summary_map[$key] = [
-                        'kode_trans'    => $request['spk_coil_no'],
-                        'id_material'   => $reduce_result['id_material'],
-                        'nm_material'   => $reduce_result['nm_material'],
-                        'id_gudang'     => $reduce_result['id_gudang'],
-                        'kd_gudang'     => $reduce_result['kd_gudang'],
-                        'tanggal'       => date('Y-m-d'),
-                        'jumlah_coil'   => 0,
-                        'qty_awal'      => $reduce_result['qty_awal'],
-                        'qty_transaksi' => 0,
-                        'qty_akhir'     => 0,
-                        'costbook'      => 0,
-                        'total_harga'   => 0,
-                        'saldo_awal'    => $reduce_result['saldo_awal'],
-                        'saldo_akhir'   => 0,
-                        'harga_lama'    => $reduce_result['harga_lama'],
-                        'created_by'    => $this->id_user,
-                        'created_at'    => $this->datetime,
-                    ];
-                }
-
-                $summary_map[$key]['jumlah_coil']++;
-                $summary_map[$key]['qty_transaksi'] += (float) $reduce_result['net_weight'];
-                $summary_map[$key]['total_harga']   += (float) $reduce_result['total_nilai'];
-                $summary_map[$key]['qty_akhir']   = $reduce_result['qty_akhir'];
-                $summary_map[$key]['saldo_akhir'] = $reduce_result['saldo_akhir'];
-                $summary_map[$key]['costbook']    = $reduce_result['costbook'];
-            }
-        }
-
-        // Insert summary sekali per grup material+gudang (setelah loop selesai)
-        foreach ($summary_map as $s) {
-            $this->Request_list_model->insert_transaction_summary($s);
         }
 
         $this->Request_list_model->update_request_status($request_id, array(

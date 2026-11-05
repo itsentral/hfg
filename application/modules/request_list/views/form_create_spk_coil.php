@@ -79,6 +79,7 @@
                                                             <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars($material['id_material']) ?>" data-target="wip">
                                                         </th>
                                                         <th>Pack Code</th>
+                                                        <th>Kode Internal</th>
                                                         <th class="text-center" width="8%">Roll</th>
                                                         <th class="text-end" width="12%">N.W. Total</th>
                                                         <th class="text-end" width="12%">G.W. Total</th>
@@ -87,7 +88,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="pack-body-wip-<?= htmlspecialchars($material['id_material']) ?>">
-                                                    <tr><td colspan="7" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
+                                                    <tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -102,6 +103,7 @@
                                                             <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars($material['id_material']) ?>" data-target="pro">
                                                         </th>
                                                         <th>Pack Code</th>
+                                                        <th>Kode Internal</th>
                                                         <th class="text-center" width="8%">Roll</th>
                                                         <th class="text-end" width="12%">N.W. Total</th>
                                                         <th class="text-end" width="12%">G.W. Total</th>
@@ -110,7 +112,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="pack-body-pro-<?= htmlspecialchars($material['id_material']) ?>">
-                                                    <tr><td colspan="7" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
+                                                    <tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -171,6 +173,7 @@
                             <tr>
                                 <th width="5%" class="text-center"><input type="checkbox" class="form-check-input" id="checkAllAddPack"></th>
                                 <th>Pack Code</th>
+                                <th>Kode Internal</th>
                                 <th class="text-center">Roll</th>
                                 <th class="text-end">N.W.</th>
                                 <th class="text-end">G.W.</th>
@@ -179,7 +182,7 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-add-pack">
-                            <tr><td colspan="7" class="text-center text-muted py-3">Loading...</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-3">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -419,7 +422,7 @@ $(document).ready(function() {
 
     function renderAddPackModal(packs) {
         if (!packs || packs.length === 0) {
-            $('#tbody-add-pack').html('<tr><td colspan="7" class="text-center text-muted py-3">Tidak ada pack tersedia.</td></tr>');
+            $('#tbody-add-pack').html('<tr><td colspan="8" class="text-center text-muted py-3">Tidak ada pack tersedia.</td></tr>');
             return;
         }
         var html = '';
@@ -449,11 +452,12 @@ $(document).ready(function() {
                 actionHtml = '-';
             }
 
-            html += '<tr class="add-pack-row" data-search="' + (p.pack_code || '').toLowerCase() + '">' +
+            html += '<tr class="add-pack-row" data-search="' + (p.pack_code + ' ' + (p.kode_internal || '')).toLowerCase() + '">' +
                 '<td class="text-center"><input type="checkbox" class="form-check-input add-pack-check" ' + (isDisabled ? 'disabled' : '') +
                 ' data-id-pack="' + p.id_pack + '" data-pack-code="' + esc(p.pack_code) + '" data-id-material="' + esc(p._id_material || '') + '"' +
                 ' data-assigned-spkc="' + esc(assignedSPKC) + '" data-assigned-req-id="' + assignedReqId + '"></td>' +
                 '<td><span class="badge bg-primary">' + esc(p.pack_code) + '</span></td>' +
+                '<td><span class="fw-semibold text-dark">' + esc(p.kode_internal || '-') + '</span></td>' +
                 '<td class="text-center">' + (parseInt(p.roll_count) || 0) + '</td>' +
                 '<td class="text-end">' + fmt(p.total_nw) + '</td>' +
                 '<td class="text-end">' + fmt(p.total_gw) + '</td>' +
@@ -573,13 +577,13 @@ $(document).ready(function() {
 function loadPackData(idMaterial) {
     var tbodyWip = $('#pack-body-wip-' + idMaterial);
     var tbodyPro = $('#pack-body-pro-' + idMaterial);
-    tbodyWip.html('<tr><td colspan="7" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
-    tbodyPro.html('<tr><td colspan="7" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
+    tbodyWip.html('<tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
+    tbodyPro.html('<tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
 
     $.get(BASE_URL + '/get_available_packs/' + idMaterial + '?spk_no=' + SPK_NO, function(res) {
         if (res.status != 1 || !res.data || res.data.length === 0) {
-            tbodyWip.html('<tr><td colspan="7" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
-            tbodyPro.html('<tr><td colspan="7" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
+            tbodyWip.html('<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
+            tbodyPro.html('<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
             return;
         }
 
@@ -602,10 +606,11 @@ function loadPackData(idMaterial) {
                 badge = '<span class="badge bg-light text-dark border">Available</span>';
             }
 
-            var row = '<tr class="pack-row" data-search="' + (p.pack_code + ' ' + idMaterial).toLowerCase() + '">' +
+            var row = '<tr class="pack-row" data-search="' + (p.pack_code + ' ' + (p.kode_internal || '') + ' ' + idMaterial).toLowerCase() + '">' +
                 '<td class="text-center"><input type="checkbox" class="form-check-input pack-checkbox" ' + (isDisabled ? 'disabled' : '') +
                 ' data-id-pack="' + p.id_pack + '" data-pack-code="' + esc(p.pack_code) + '" data-id-material="' + esc(idMaterial) + '" data-assigned-req-id="' + esc(String(assignedReqId)) + '"></td>' +
                 '<td><span class="badge bg-primary">' + esc(p.pack_code) + '</span></td>' +
+                '<td><span class="fw-semibold text-dark">' + esc(p.kode_internal || '-') + '</span></td>' +
                 '<td class="text-center">' + (parseInt(p.roll_count) || 0) + '</td>' +
                 '<td class="text-end">' + fmt(p.total_nw) + '</td>' +
                 '<td class="text-end">' + fmt(p.total_gw) + '</td>' +
@@ -620,11 +625,11 @@ function loadPackData(idMaterial) {
             }
         });
 
-        tbodyWip.html(htmlWip || '<tr><td colspan="7" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
-        tbodyPro.html(htmlPro || '<tr><td colspan="7" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
+        tbodyWip.html(htmlWip || '<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
+        tbodyPro.html(htmlPro || '<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
     }, 'json').fail(function() {
-        tbodyWip.html('<tr><td colspan="7" class="text-center text-danger">Gagal memuat data.</td></tr>');
-        tbodyPro.html('<tr><td colspan="7" class="text-center text-danger">Gagal memuat data.</td></tr>');
+        tbodyWip.html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
+        tbodyPro.html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
     });
 }
 
@@ -642,9 +647,12 @@ function loadSavedSpkCoils() {
             var packMap = {};
             (spkc.coils || []).forEach(function(c) {
                 if (c.pack_code) {
-                    if (!packMap[c.pack_code]) packMap[c.pack_code] = { count: 0, scanned: true };
+                    if (!packMap[c.pack_code]) packMap[c.pack_code] = { count: 0, scanned: true, kode_internals: [] };
                     packMap[c.pack_code].count++;
                     if (parseInt(c.scan_status) === 0) packMap[c.pack_code].scanned = false;
+                    if (c.kode_internal && packMap[c.pack_code].kode_internals.indexOf(c.kode_internal) === -1) {
+                        packMap[c.pack_code].kode_internals.push(c.kode_internal);
+                    }
                 }
             });
             var packCodes = Object.keys(packMap);
@@ -663,11 +671,13 @@ function loadSavedSpkCoils() {
             var packListHtml = '<div class="mt-2" style="font-size:11px;">';
             packCodes.forEach(function(pc) {
                 var isPackScanned = packMap[pc].scanned;
+                var kiStr = (packMap[pc].kode_internals || []).join(', ');
+                var kiBadge = kiStr ? ' <span class="badge bg-light text-dark border ms-1" title="Kode Internal"><i class="fa fa-tag me-1"></i>' + esc(kiStr) + '</span>' : '';
                 if (!allScanned && !isPackScanned) {
-                    packListHtml += '<span class="badge bg-primary me-1 mb-1">' + esc(pc) +
-                        ' <a href="#" class="text-white ms-1 btn-remove-pack-item" data-request-id="' + spkc.id + '" data-pack-code="' + esc(pc) + '" title="Hapus pack ini"><i class="fa fa-times"></i></a></span>';
+                    packListHtml += '<span class="d-inline-block me-2 mb-1"><span class="badge bg-primary">' + esc(pc) +
+                        ' <a href="#" class="text-white ms-1 btn-remove-pack-item" data-request-id="' + spkc.id + '" data-pack-code="' + esc(pc) + '" title="Hapus pack ini"><i class="fa fa-times"></i></a></span>' + kiBadge + '</span>';
                 } else {
-                    packListHtml += '<span class="badge bg-success me-1 mb-1"><i class="fa fa-check me-1"></i>' + esc(pc) + '</span>';
+                    packListHtml += '<span class="d-inline-block me-2 mb-1"><span class="badge bg-success"><i class="fa fa-check me-1"></i>' + esc(pc) + '</span>' + kiBadge + '</span>';
                 }
             });
             packListHtml += '</div>';

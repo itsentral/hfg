@@ -118,13 +118,19 @@
     overflow: hidden;
   }
 
-  /* Izinkan seleksi & copy teks pada cell ag-Grid */
+  /* Izinkan seleksi & copy teks pada cell ag-Grid & buat rata atas-bawah (vertikal center) */
   .ag-theme-alpine .ag-cell {
     user-select: text !important;
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     cursor: text;
+    display: flex;
+    align-items: center;
+  }
+
+  .ag-theme-alpine .ag-header-cell.text-center .ag-header-cell-label {
+    justify-content: center;
   }
 
   /* Biarkan kursor tombol/link tetap pointer */
@@ -472,6 +478,7 @@
         field: "spk_no",
         width: 200,
         pinned: 'left',
+        cellClass: 'd-flex align-items-center',
         cellRenderer: function(params) {
           const spk = params.value || '-';
           const st = params.data.report_status;
@@ -483,7 +490,7 @@
           } else {
             badgeHtml = '<span class="badge-sub-status badge-sub-menunggu"><i class="fa fa-clock-o"></i> Menunggu</span>';
           }
-          return '<div class="d-flex flex-column justify-content-center" style="height: 100%; line-height: 1.25;">' +
+          return '<div class="d-flex flex-column justify-content-center text-start my-auto" style="line-height: 1.25;">' +
             '<span class="fw-bold text-dark">' + spk + '</span>' +
             '<div>' + badgeHtml + '</div>' +
             '</div>';
@@ -529,24 +536,30 @@
         field: "action",
         width: 195,
         pinned: 'right',
+        cellClass: 'd-flex align-items-center justify-content-center',
+        headerClass: 'text-center',
         cellRenderer: function(params) {
           const spkNo = params.data.spk_no;
           const reportStatus = params.data.report_status;
           const reportId = params.data.report_id;
 
           if (reportStatus === 'Done' && reportId) {
-            return '<div class="d-flex gap-1">' +
+            return '<div class="d-flex align-items-center justify-content-center gap-1 w-100">' +
               '<a href="<?= site_url('production_report/view/') ?>' + reportId + '" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Lihat Detail Laporan">' +
                 '<i class="fa fa-eye me-1"></i>Laporan</a>' +
               '<a href="<?= site_url('production_report/hpp/') ?>' + reportId + '" class="btn btn-sm btn-outline-primary py-1 px-2" title="Lihat Perhitungan HPP & Jurnal">' +
                 '<i class="fa fa-calculator me-1"></i>HPP</a>' +
               '</div>';
           } else if (reportStatus === 'Draft' && spkNo) {
-            return '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
-              '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>';
+            return '<div class="d-flex align-items-center justify-content-center w-100">' +
+              '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
+                '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>' +
+              '</div>';
           } else {
-            return '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-primary py-1 px-2">' +
-              'Buat Laporan <i class="fa fa-arrow-right ms-1"></i></a>';
+            return '<div class="d-flex align-items-center justify-content-center w-100">' +
+              '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-primary py-1 px-2">' +
+                'Buat Laporan <i class="fa fa-arrow-right ms-1"></i></a>' +
+              '</div>';
           }
         }
       }

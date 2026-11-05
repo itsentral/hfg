@@ -10,53 +10,72 @@
     --pr-text: #0f172a;
     --pr-muted: #64748b;
   }
+
   .hpp-header {
     background: #fff;
     border-radius: 12px;
     padding: 20px 24px;
     margin-bottom: 20px;
     border: 1px solid var(--pr-border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   }
+
   .meta-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    /* desktop: 6 kolom sama lebar */
     background: #f8fafc;
-    padding: 12px 18px;
     border-radius: 8px;
     border: 1px solid var(--pr-border);
     margin-top: 14px;
+    overflow: hidden;
   }
+
   .meta-item {
     display: flex;
     flex-direction: column;
-    min-width: 130px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 10px;
+    min-width: 0;
+    border-right: 1px solid var(--pr-border);
   }
+
+  .meta-item:last-child {
+    border-right: 0;
+  }
+
   .meta-item .lbl {
     font-size: 11px;
     text-transform: uppercase;
     color: var(--pr-muted);
     font-weight: 600;
+    margin-bottom: 2px;
   }
+
   .meta-item .val {
     font-size: 14px;
     font-weight: 700;
     color: var(--pr-text);
+    word-break: break-word;
   }
+
   .card-hpp {
     background: #fff;
     border-radius: 12px;
     border: 1px solid var(--pr-border);
     margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   }
+
   .card-hpp-header {
     padding: 16px 20px;
     border-bottom: 1px solid var(--pr-border);
     background: #fff;
     border-radius: 12px 12px 0 0;
   }
+
   .card-hpp-header h2 {
     font-size: 16px;
     font-weight: 700;
@@ -66,6 +85,7 @@
     align-items: center;
     gap: 8px;
   }
+
   .card-num {
     background: var(--pr-primary-soft);
     color: var(--pr-primary);
@@ -78,98 +98,157 @@
     font-size: 12px;
     font-weight: 700;
   }
+
   .tbl-hpp {
     width: 100%;
     font-size: 12.5px;
     border-collapse: collapse;
     margin-bottom: 0;
   }
-  .tbl-hpp th, .tbl-hpp td {
+
+  .tbl-hpp th,
+  .tbl-hpp td {
     padding: 8px 10px;
     border: 1px solid var(--pr-border);
     vertical-align: middle;
   }
+
   .tbl-hpp thead th {
     background: #f1f5f9;
     font-weight: 600;
     text-align: center;
     color: #334155;
   }
+
   .tbl-hpp th.grp {
     background: #e2e8f0;
   }
+
   .tbl-hpp th.grp-total {
     background: #dbeafe;
     color: #1e40af;
   }
+
   .tbl-hpp td.num {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
+
   .tbl-hpp td.grp-total {
     background: #eff6ff;
     font-weight: 700;
   }
+
   .tbl-hpp tfoot td {
     font-weight: 700;
     background: #f8fafc;
   }
+
   .tbl-journal thead th {
     background: #f8fafc;
   }
+
   .tbl-journal tr.jgroup td {
     background: #f1f5f9;
     font-weight: 700;
     color: var(--pr-primary);
     padding: 8px 12px;
   }
+
+  /* Tablet: 3 x 2 */
+  @media (max-width: 991.98px) {
+    .meta-strip {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .meta-item {
+      border-bottom: 1px solid var(--pr-border);
+    }
+
+    .meta-item:nth-child(3n) {
+      border-right: 0;
+    }
+
+    .meta-item:nth-child(n+4) {
+      border-bottom: 0;
+    }
+  }
+
+  /* Mobile: 2 x 3 */
+  @media (max-width: 575.98px) {
+    .meta-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .meta-item:nth-child(3n) {
+      border-right: 1px solid var(--pr-border);
+    }
+
+    .meta-item:nth-child(2n) {
+      border-right: 0;
+    }
+
+    .meta-item:nth-child(n+4) {
+      border-bottom: 1px solid var(--pr-border);
+    }
+
+    .meta-item:nth-child(n+5) {
+      border-bottom: 0;
+    }
+  }
 </style>
 
 <div class="container-fluid px-3 py-2">
   <?php
-    $h = $report['header'] ?? [];
-    $spk_h = $report['spk_header'] ?? [];
-    $mesin = $report['mesin'] ?? [];
-    $materials = $report['materials'] ?? [];
-    $items = $report['items'] ?? [];
-    $scraps = $report['scraps'] ?? [];
+  $h = $report['header'] ?? [];
+  $spk_h = $report['spk_header'] ?? [];
+  $mesin = $report['mesin'] ?? [];
+  $materials = $report['materials'] ?? [];
+  $items = $report['items'] ?? [];
+  $scraps = $report['scraps'] ?? [];
 
-    // Pisahkan items
-    $kw1_items = [];
-    $kw2_int_items = [];
-    $kw2_sup_items = [];
+  // Pisahkan items
+  $kw1_items = [];
+  $kw2_int_items = [];
+  $kw2_sup_items = [];
 
-    foreach ($items as $it) {
-      if ($it['category_type'] === 'kw_2_internal') {
-        $kw2_int_items[] = $it;
-      } elseif ($it['category_type'] === 'kw_2_supplier') {
-        $kw2_sup_items[] = $it;
-      } else {
-        $kw1_items[] = $it;
-      }
+  foreach ($items as $it) {
+    if ($it['category_type'] === 'kw_2_internal') {
+      $kw2_int_items[] = $it;
+    } elseif ($it['category_type'] === 'kw_2_supplier') {
+      $kw2_sup_items[] = $it;
+    } else {
+      $kw1_items[] = $it;
     }
+  }
 
-    // Pisahkan scraps
-    $waste_scraps = [];
-    $sisa_scraps  = [];
-    $hold_scraps  = [];
-    foreach ($scraps as $sc) {
-      if ($sc['scrap_type'] === 'sisa_coil') {
-        $sisa_scraps[] = $sc;
-      } elseif ($sc['scrap_type'] === 'hold_coil') {
-        $hold_scraps[] = $sc;
-      } else {
-        $waste_scraps[] = $sc;
-      }
+  // Pisahkan scraps
+  $waste_scraps = [];
+  $sisa_scraps  = [];
+  $hold_scraps  = [];
+  foreach ($scraps as $sc) {
+    if ($sc['scrap_type'] === 'sisa_coil') {
+      $sisa_scraps[] = $sc;
+    } elseif ($sc['scrap_type'] === 'hold_coil') {
+      $hold_scraps[] = $sc;
+    } else {
+      $waste_scraps[] = $sc;
     }
+  }
 
-    // Helper formatter
-    if (!function_exists('rp_format')) {
-      function rp_format($n) { return 'Rp ' . number_format((float)$n, 0, ',', '.'); }
+  // Helper formatter
+  if (!function_exists('rp_format')) {
+    function rp_format($n)
+    {
+      return 'Rp ' . number_format((float)$n, 0, ',', '.');
     }
-    if (!function_exists('kg_format')) {
-      function kg_format($n) { return number_format((float)$n, 2, ',', '.'); }
+  }
+  if (!function_exists('kg_format')) {
+    function kg_format($n)
+    {
+      return number_format((float)$n, 2, ',', '.');
     }
+  }
   ?>
 
   <div class="hpp-header d-flex justify-content-between align-items-center">
@@ -263,21 +342,30 @@
         </thead>
         <tbody>
           <?php if (empty($kw1_items)): ?>
-            <tr><td colspan="23" class="text-center text-muted py-3">Tidak ada data KW 1 / Stok Bebas.</td></tr>
+            <tr>
+              <td colspan="23" class="text-center text-muted py-3">Tidak ada data KW 1 / Stok Bebas.</td>
+            </tr>
           <?php else: ?>
-            <?php 
-              $no = 1; 
-              $t_mat = 0; $t_mp = 0; $t_foh = 0; $t_bahan = 0; $t_cons = 0; $t_koor = 0; $t_scrap = 0; $t_fg = 0;
-              foreach ($kw1_items as $it): 
-                $val_pcs = (float)$it['material_cost_per_pcs'] + (float)$it['main_power_cost_per_pcs'] + (float)$it['foh_cost_per_pcs'] + (float)$it['bahan_pendukung_cost_per_pcs'] + (float)$it['consumables_cost_per_pcs'] + (float)$it['coordinator_cost_per_pcs'] + (float)$it['scrap_cost_per_pcs'];
-                $t_mat += (float)$it['material_cost_total'];
-                $t_mp += (float)$it['main_power_cost_total'];
-                $t_foh += (float)$it['foh_cost_total'];
-                $t_bahan += (float)$it['bahan_pendukung_cost_total'];
-                $t_cons += (float)$it['consumables_cost_total'];
-                $t_koor += (float)$it['coordinator_cost_total'];
-                $t_scrap += (float)$it['scrap_cost_total'];
-                $t_fg += (float)$it['total_hpp_item'];
+            <?php
+            $no = 1;
+            $t_mat = 0;
+            $t_mp = 0;
+            $t_foh = 0;
+            $t_bahan = 0;
+            $t_cons = 0;
+            $t_koor = 0;
+            $t_scrap = 0;
+            $t_fg = 0;
+            foreach ($kw1_items as $it):
+              $val_pcs = (float)$it['material_cost_per_pcs'] + (float)$it['main_power_cost_per_pcs'] + (float)$it['foh_cost_per_pcs'] + (float)$it['bahan_pendukung_cost_per_pcs'] + (float)$it['consumables_cost_per_pcs'] + (float)$it['coordinator_cost_per_pcs'] + (float)$it['scrap_cost_per_pcs'];
+              $t_mat += (float)$it['material_cost_total'];
+              $t_mp += (float)$it['main_power_cost_total'];
+              $t_foh += (float)$it['foh_cost_total'];
+              $t_bahan += (float)$it['bahan_pendukung_cost_total'];
+              $t_cons += (float)$it['consumables_cost_total'];
+              $t_koor += (float)$it['coordinator_cost_total'];
+              $t_scrap += (float)$it['scrap_cost_total'];
+              $t_fg += (float)$it['total_hpp_item'];
             ?>
               <tr>
                 <td class="text-center"><?= $no++; ?></td>
@@ -365,9 +453,12 @@
           </thead>
           <tbody>
             <?php if (empty($kw2_int_items)): ?>
-              <tr><td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Internal.</td></tr>
+              <tr>
+                <td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Internal.</td>
+              </tr>
             <?php else: ?>
-              <?php $no = 1; foreach ($kw2_int_items as $it): ?>
+              <?php $no = 1;
+              foreach ($kw2_int_items as $it): ?>
                 <tr>
                   <td class="text-center"><?= $no++; ?></td>
                   <td>
@@ -425,9 +516,12 @@
           </thead>
           <tbody>
             <?php if (empty($kw2_sup_items)): ?>
-              <tr><td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Supplier.</td></tr>
+              <tr>
+                <td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Supplier.</td>
+              </tr>
             <?php else: ?>
-              <?php $no = 1; foreach ($kw2_sup_items as $it): ?>
+              <?php $no = 1;
+              foreach ($kw2_sup_items as $it): ?>
                 <tr>
                   <td class="text-center"><?= $no++; ?></td>
                   <td>
@@ -480,9 +574,12 @@
         </thead>
         <tbody>
           <?php if (empty($waste_scraps)): ?>
-            <tr><td colspan="8" class="text-center text-muted py-2">Tidak ada komponen scrap.</td></tr>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-2">Tidak ada komponen scrap.</td>
+            </tr>
           <?php else: ?>
-            <?php $no = 1; foreach ($waste_scraps as $sc): ?>
+            <?php $no = 1;
+            foreach ($waste_scraps as $sc): ?>
               <tr>
                 <td class="text-center"><?= $no++; ?></td>
                 <td><strong><?= strtoupper(str_replace('_', ' ', $sc['scrap_type'])); ?></strong></td>
@@ -526,7 +623,9 @@
             </thead>
             <tbody>
               <?php if (empty($sisa_scraps)): ?>
-                <tr><td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td></tr>
+                <tr>
+                  <td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td>
+                </tr>
               <?php else: ?>
                 <?php foreach ($sisa_scraps as $s): ?>
                   <tr>
@@ -564,7 +663,9 @@
             </thead>
             <tbody>
               <?php if (empty($hold_scraps)): ?>
-                <tr><td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td></tr>
+                <tr>
+                  <td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td>
+                </tr>
               <?php else: ?>
                 <?php foreach ($hold_scraps as $s): ?>
                   <tr>
@@ -632,8 +733,17 @@
         </thead>
         <tbody>
           <?php
-            // Baris Jurnal
-            $cogm_mat  = 0; $cogm_mp = 0; $cogm_foh = 0; $cogm_bahan = 0; $cogm_cons = 0; $cogm_koor = 0; $cogm_scrap = 0;
+          // Baris Jurnal - Prioritaskan baca langsung dari field header production_reports (siap pakai)
+          $cogm_mat   = isset($h['cogm_material']) ? (float)$h['cogm_material'] : 0;
+          $cogm_mp    = isset($h['cogm_labor_cost_pc']) ? (float)$h['cogm_labor_cost_pc'] : 0;
+          $cogm_foh   = isset($h['cogm_foh_pc']) ? (float)$h['cogm_foh_pc'] : 0;
+          $cogm_bahan = isset($h['cogm_bpp_pc']) ? (float)$h['cogm_bpp_pc'] : 0;
+          $cogm_cons  = isset($h['cogm_consumable_pc']) ? (float)$h['cogm_consumable_pc'] : 0;
+          $cogm_koor  = isset($h['cogm_biaya_koordinasi_pc']) ? (float)$h['cogm_biaya_koordinasi_pc'] : 0;
+          $cogm_scrap = isset($h['cogm_biaya_scrap_pc']) ? (float)$h['cogm_biaya_scrap_pc'] : 0;
+
+          // Fallback kalkulasi dari items jika data header kosong
+          if ($cogm_mat == 0 && $cogm_mp == 0 && !empty($items)) {
             foreach ($items as $it) {
               $cogm_mat   += (float)$it['material_cost_total'];
               $cogm_mp    += (float)$it['main_power_cost_total'];
@@ -643,20 +753,41 @@
               $cogm_koor  += (float)$it['coordinator_cost_total'];
               $cogm_scrap += (float)$it['scrap_cost_total'];
             }
-            $kw2_loss = (float)($h['total_loss_kw2'] ?? 0);
-            $fg_inv   = (float)($h['total_inventory_fg'] ?? 0);
-            $cogm_tot = (float)($h['total_cogm'] ?? 0);
+          }
+          $kw2_loss  = isset($h['biaya_kw2_20']) ? (float)$h['biaya_kw2_20'] : (float)($h['total_loss_kw2'] ?? 0);
+          $fg_inv    = isset($h['journal_inventory_fg']) ? (float)$h['journal_inventory_fg'] : (float)($h['total_inventory_fg'] ?? 0);
+          $cogm_tot  = isset($h['journal_total_cogm']) ? (float)$h['journal_total_cogm'] : (float)($h['total_cogm'] ?? 0);
 
-            $inv_scrap = (float)($h['total_inventory_scrap'] ?? 0);
-            $foh_scrap = (float)($h['total_beban_foh_scrap'] ?? 0);
-            $inv_sisa  = (float)($h['total_inventory_sisa'] ?? 0);
+          $inv_scrap = isset($h['persediaan_waste']) ? (float)$h['persediaan_waste'] : (float)($h['total_inventory_scrap'] ?? 0);
+          $foh_scrap = isset($h['biaya_scrap_60']) ? (float)$h['biaya_scrap_60'] : (float)($h['total_beban_foh_scrap'] ?? 0);
+          $inv_sisa  = isset($h['journal_inventory_sisa']) ? (float)$h['journal_inventory_sisa'] : (float)($h['total_inventory_sisa'] ?? 0);
 
-            // Coil usage per gudang
-            $mat_unpack_hold = 0;
-            $mat_wip = 0;
+          // Coil usage per gudang dari header (fallback kalkulasi materials jika kosong)
+          $mat_wip = isset($h['wip_manufactur']) ? (float)$h['wip_manufactur'] : 0;
+          $mat_unpack_hold = isset($h['persediaan_bahan_baku']) ? (float)$h['persediaan_bahan_baku'] : 0;
+
+          if ($mat_wip == 0 && $mat_unpack_hold == 0 && !empty($materials)) {
+            $cb_coil_map = [];
+            foreach ($items as $it) {
+              $cc = trim($it['source_material_coil'] ?? '');
+              if ($cc && (float)($it['costbook_rate'] ?? 0) > 0) {
+                $cb_coil_map[$cc] = (float)$it['costbook_rate'];
+              }
+            }
+            $default_cb_view = 0;
+            foreach ($cb_coil_map as $cval) {
+              if ($cval > 0) {
+                $default_cb_view = $cval;
+                break;
+              }
+            }
+            if ($default_cb_view == 0 && !empty($items[0]['costbook_rate'])) {
+              $default_cb_view = (float)$items[0]['costbook_rate'];
+            }
+
             foreach ($materials as $m) {
-              $cb = (float)($m['harga_beli'] ?? 0);
-              if ($cb == 0 && isset($it['costbook_rate'])) $cb = (float)$it['costbook_rate'];
+              $cc = trim($m['coil_code'] ?? '');
+              $cb = isset($cb_coil_map[$cc]) && $cb_coil_map[$cc] > 0 ? $cb_coil_map[$cc] : $default_cb_view;
               $val = (float)$m['nett_weight_packing'] * $cb;
               if ($m['source_warehouse'] === 'wip') {
                 $mat_wip += $val;
@@ -664,49 +795,243 @@
                 $mat_unpack_hold += $val;
               }
             }
+          }
 
-            $sel_audit = (float)($h['selisih_weight_value'] ?? 0);
+          $sel_audit = isset($h['journal_selisih_audit']) ? (float)$h['journal_selisih_audit'] : (float)($h['selisih_weight_value'] ?? 0);
+
+          // Akumulasi Total Debit & Kredit
+          $tot_debit = $cogm_mat + $cogm_mp + $cogm_foh + $cogm_bahan + $cogm_cons + $cogm_koor + $cogm_scrap
+            + $inv_scrap + $inv_sisa
+            + $foh_scrap + $kw2_loss
+            + ($sel_audit >= 0 ? $sel_audit : 0)
+            + $fg_inv;
+
+          $tot_kredit = $kw2_loss
+            + $mat_wip + $mat_unpack_hold
+            + ($sel_audit < 0 ? abs($sel_audit) : 0)
+            + $cogm_mp + $cogm_foh + $cogm_bahan + $cogm_cons + $cogm_koor + $cogm_scrap
+            + $cogm_tot;
           ?>
-          <tr class="jgroup"><td colspan="5">COGM (Cost of Goods Manufactured)</td></tr>
-          <tr><td>5101-01-01</td><td>COGM MATERIAL</td><td>Material KW 1 &amp; KW 2</td><td class="num"><?= rp_format($cogm_mat); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-02-01</td><td>COGM LABOUR COST PC</td><td>Labour cost FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_mp); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-05-01</td><td>COGM FACTORY OVERHEAD PC</td><td>Factory Overhead FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_foh); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-03-01</td><td>COGM BAHAN PENDUKUNG KHUSUS PC</td><td>Bahan Pendukung Khusus FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_bahan); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-04-01</td><td>COGM CONSUMABLE PC</td><td>Consumables FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_cons); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-06-01</td><td>COGM BIAYA KOORDINASI PC</td><td>Biaya Koordinasi FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_koor); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>5101-07-01</td><td>COGM BIAYA SCRAP PC</td><td>Biaya Scrap FG KW1 &amp; KW2</td><td class="num"><?= rp_format($cogm_scrap); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>&mdash;</td><td>COGM Loss KW 2</td><td>Total Biaya Loss KW 2 (20%)</td><td class="num">&mdash;</td><td class="num"><?= rp_format($kw2_loss); ?></td></tr>
-
-          <tr class="jgroup"><td colspan="5">Persediaan (Inventory)</td></tr>
-          <tr><td>1105-03-01</td><td>PERSEDIAAN BARANG WASTE</td><td>40% dari Scrap Waste</td><td class="num"><?= rp_format($inv_scrap); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>1105-05-02</td><td>WIP MANUFACTURING</td><td>Sisa Material dikembalikan ke WIP</td><td class="num"><?= rp_format($inv_sisa); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>1105-05-02</td><td>WIP MANUFACTURING</td><td>Material yang dipakai produksi (keluar WIP)</td><td class="num">&mdash;</td><td class="num"><?= rp_format($mat_wip); ?></td></tr>
-          <tr><td>1105-01-01</td><td>PERSEDIAAN BAHAN BAKU PRODUKSI</td><td>Nett Weight Material Unpack/Hold &times; Costbook</td><td class="num">&mdash;</td><td class="num"><?= rp_format($mat_unpack_hold); ?></td></tr>
-
-          <tr class="jgroup"><td colspan="5">Biaya Aktual Based On Standard Costing</td></tr>
-          <tr><td>5205-01-01</td><td>BIAYA SCRAP</td><td>60% dari Scrap Waste</td><td class="num"><?= rp_format($foh_scrap); ?></td><td class="num">&mdash;</td></tr>
-          <tr><td>&mdash;</td><td>Biaya KW 2 (20%)</td><td>Beban Loss KW 2 (20%)</td><td class="num"><?= rp_format($kw2_loss); ?></td><td class="num">&mdash;</td></tr>
-
-          <tr class="jgroup"><td colspan="5">Biaya Loss/Profit Akibat Selisih Material</td></tr>
+          <tr class="jgroup">
+            <td colspan="5">COGM (Cost of Goods Manufactured)</td>
+          </tr>
           <tr>
-            <td>7201-01-03</td><td>B. SELISIH STOCK AUDIT</td><td>Selisih timbang berat tercatat vs aktual <?= ($sel_audit < 0) ? '(Favorable)' : ''; ?></td>
+            <td>5101-01-01</td>
+            <td>COGM MATERIAL</td>
+            <td>Material KW 1 &amp; KW 2</td>
+            <td class="num"><?= rp_format($cogm_mat); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-02-01</td>
+            <td>COGM LABOUR COST PC</td>
+            <td>Labour cost FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_mp); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-05-01</td>
+            <td>COGM FACTORY OVERHEAD PC</td>
+            <td>Factory Overhead FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_foh); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-03-01</td>
+            <td>COGM BAHAN PENDUKUNG KHUSUS PC</td>
+            <td>Bahan Pendukung Khusus FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_bahan); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-04-01</td>
+            <td>COGM CONSUMABLE PC</td>
+            <td>Consumables FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_cons); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-06-01</td>
+            <td>COGM BIAYA KOORDINASI PC</td>
+            <td>Biaya Koordinasi FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_koor); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>5101-07-01</td>
+            <td>COGM BIAYA SCRAP PC</td>
+            <td>Biaya Scrap FG KW1 &amp; KW2</td>
+            <td class="num"><?= rp_format($cogm_scrap); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>&mdash;</td>
+            <td>COGM Loss KW 2</td>
+            <td>Total Biaya Loss KW 2 (20%) — internal &amp; supplier</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($kw2_loss); ?></td>
+          </tr>
+
+          <tr class="jgroup">
+            <td colspan="5">Persediaan (Inventory)</td>
+          </tr>
+          <tr>
+            <td>1105-03-01</td>
+            <td>PERSEDIAAN BARANG WASTE</td>
+            <td>40% dari Scrap (semua kategori)</td>
+            <td class="num"><?= rp_format($inv_scrap); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>1105-05-02</td>
+            <td>WIP MANUFACTURING</td>
+            <td>Sisa Material dikembalikan ke WIP Manufacturing</td>
+            <td class="num"><?= rp_format($inv_sisa); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>1105-05-02</td>
+            <td>WIP MANUFACTURING</td>
+            <td>Material yang dipakai produksi (keluar dari WIP)</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($mat_wip); ?></td>
+          </tr>
+          <tr>
+            <td>1105-01-01</td>
+            <td>PERSEDIAAN BAHAN BAKU PRODUKSI</td>
+            <td>Nett Weight Material Unpack/Hold &times; Costbook</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($mat_unpack_hold); ?></td>
+          </tr>
+
+          <tr class="jgroup">
+            <td colspan="5">Biaya Aktual Based On Standard Costing (diCrossing)</td>
+          </tr>
+          <tr>
+            <td>5205-01-01</td>
+            <td>BIAYA SCRAP</td>
+            <td>60% dari Scrap (semua kategori)</td>
+            <td class="num"><?= rp_format($foh_scrap); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+          <tr>
+            <td>&mdash;</td>
+            <td>Biaya KW 2 (20%)</td>
+            <td>Total Biaya Loss KW 2 (20%) — internal &amp; supplier</td>
+            <td class="num"><?= rp_format($kw2_loss); ?></td>
+            <td class="num">&mdash;</td>
+          </tr>
+
+          <tr class="jgroup">
+            <td colspan="5">Biaya Loss/Profit Akibat Selisih Material</td>
+          </tr>
+          <tr>
+            <td>7201-01-03</td>
+            <td>B. SELISIH STOCK AUDIT</td>
+            <td>Selisih timbang berat tercatat vs aktual <?= ($sel_audit < 0) ? '(Favorable)' : ''; ?></td>
             <td class="num"><?= ($sel_audit >= 0) ? rp_format($sel_audit) : '&mdash;'; ?></td>
             <td class="num"><?= ($sel_audit < 0) ? rp_format(abs($sel_audit)) : '&mdash;'; ?></td>
           </tr>
 
-          <tr class="jgroup"><td colspan="5">Cek Balancing HPP vs COGM</td></tr>
+          <tr class="jgroup">
+            <td colspan="5">Hutang yang akan diCrossing di akhir bulan</td>
+          </tr>
+          <tr>
+            <td>2107-01-01</td>
+            <td>HUTANG LABOUR COST PC</td>
+            <td>Man Power KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_mp); ?></td>
+          </tr>
+          <tr>
+            <td>2107-01-04</td>
+            <td>HUTANG FACTORY OVERHEAD PC</td>
+            <td>FOH KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_foh); ?></td>
+          </tr>
+          <tr>
+            <td>2107-01-02</td>
+            <td>HUTANG BAHAN PENDUKUNG PC</td>
+            <td>Bahan Pendukung Khusus KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_bahan); ?></td>
+          </tr>
+          <tr>
+            <td>2107-01-03</td>
+            <td>HUTANG CONSOMABLE PC</td>
+            <td>Consumables KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_cons); ?></td>
+          </tr>
+          <tr>
+            <td>2107-01-05</td>
+            <td>HUTANG BIAYA KOORDINASI PC</td>
+            <td>Biaya Koordinasi KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_koor); ?></td>
+          </tr>
+          <tr>
+            <td>2107-01-06</td>
+            <td>HUTANG BIAYA SCRAP PC</td>
+            <td>Biaya Scrap KW 1 &amp; KW 2</td>
+            <td class="num">&mdash;</td>
+            <td class="num"><?= rp_format($cogm_scrap); ?></td>
+          </tr>
+
+          <tr class="jgroup">
+            <td colspan="5">Cek Balancing HPP vs COGM</td>
+          </tr>
           <tr class="table-light fw-bold">
-            <td>1106-03-01</td><td>INVENTORY FINISHED GOODS</td><td>Total Nilai Finish Good KW 1 &amp; KW 2</td>
+            <td>1106-03-01</td>
+            <td>INVENTORY FINISHED GOODS</td>
+            <td>Total Nilai Finish Good KW 1 &amp; KW 2</td>
             <td class="num text-primary"><?= rp_format($fg_inv); ?></td>
             <td class="num">&mdash;</td>
           </tr>
           <tr class="table-light fw-bold">
-            <td>5103-01-01</td><td>COST OF GOOD MANUFACTURING</td><td>Total Komponen COGM (Material s.d. Scrap)</td>
+            <td>5103-01-01</td>
+            <td>COST OF GOOD MANUFACTURING</td>
+            <td>Total Komponen COGM (Material s.d. Scrap)</td>
             <td class="num">&mdash;</td>
             <td class="num text-primary"><?= rp_format($cogm_tot); ?></td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr class="table-light">
+            <td colspan="3" class="fw-bold">
+              Cek Balancing HPP vs COGM (FG = COGM)
+              <?php if (round($fg_inv) == round($cogm_tot)): ?>
+                <span class="badge bg-success ms-2"><i class="fa fa-check me-1"></i>SEIMBANG</span>
+              <?php else: ?>
+                <span class="badge bg-danger ms-2"><i class="fa fa-times me-1"></i>TIDAK SEIMBANG</span>
+              <?php endif; ?>
+            </td>
+            <td class="num fw-bold"><?= rp_format($fg_inv); ?></td>
+            <td class="num fw-bold"><?= rp_format($cogm_tot); ?></td>
+          </tr>
+          <tr>
+            <td colspan="3" class="fw-bold">
+              Total Debit / Kredit Jurnal Voucher
+              <?php if (round($tot_debit) == round($tot_kredit)): ?>
+                <span class="badge bg-success ms-2"><i class="fa fa-check me-1"></i>SEIMBANG</span>
+              <?php else: ?>
+                <span class="badge bg-danger ms-2"><i class="fa fa-times me-1"></i>TIDAK SEIMBANG</span>
+              <?php endif; ?>
+            </td>
+            <td class="num fw-bold text-success fs-6"><?= rp_format($tot_debit); ?></td>
+            <td class="num fw-bold text-success fs-6"><?= rp_format($tot_kredit); ?></td>
+          </tr>
+        </tfoot>
       </table>
+      <div class="d-flex justify-content-between align-items-center p-3 bg-light border-top rounded-bottom">
+        <span class="fw-bold text-muted small text-uppercase">Status Keseimbangan Jurnal GL Interface</span>
+        <?php if (round($tot_debit) == round($tot_kredit)): ?>
+          <span class="badge bg-success fs-6 px-3 py-2"><i class="fa fa-check-circle me-1"></i> Jurnal Seimbang (Balance)</span>
+        <?php else: ?>
+          <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa fa-exclamation-triangle me-1"></i> Selisih: <?= rp_format(abs($tot_debit - $tot_kredit)); ?></span>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
 </div>

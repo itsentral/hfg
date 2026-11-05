@@ -221,6 +221,7 @@ class Request_list_model extends BF_Model
                 wp.id AS id_pack,
                 wp.pack_code,
                 wp.kd_gudang,
+                GROUP_CONCAT(DISTINCT wsc.kode_internal ORDER BY wsc.kode_internal ASC SEPARATOR ', ') AS kode_internal,
                 COUNT(wsc.id) AS roll_count,
                 SUM(wsc.net_weight) AS total_nw,
                 SUM(wsc.gross_weight) AS total_gw,
