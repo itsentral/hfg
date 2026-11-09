@@ -18,14 +18,19 @@
       .join(" ");
   }
 
+  // SPK sedang di-hold: ada claim dari Hold & Claim untuk SPK ini yang belum diputuskan Purchasing (FR-94; keputusan user 2026-10-30).
+  function holdOf(no) { return window.CL ? CL.state.claims.filter((c) => c.spk === no && !c.decisions.length) : []; }
+
   function renderStats() {
     const list = spkList();
     const totalSpk = list.length;
     const doneCount = list.filter((spk) => M.spkStatus.get(spk.no) === "Done").length;
-    const menunggu = totalSpk - doneCount;
+    const holdCount = list.filter((spk) => M.spkStatus.get(spk.no) !== "Done" && holdOf(spk.no).length).length;
+    const menunggu = totalSpk - doneCount - holdCount;
     const totalQty = list.reduce((s, spk) => s + spk.products.reduce((a, p) => a + p.targetQty, 0), 0);
     $("#statRow").innerHTML = `
       <div class="stat"><span class="stat__v">${menunggu}</span><span class="stat__k">SPK Menunggu</span></div>
+      <div class="stat"><span class="stat__v">${holdCount}</span><span class="stat__k">SPK Sedang Di-Hold</span></div>
       <div class="stat"><span class="stat__v">${doneCount}</span><span class="stat__k">SPK Selesai (Done)</span></div>
       <div class="stat"><span class="stat__v">${totalQty.toLocaleString("id-ID")}</span><span class="stat__k">Target Qty (pcs)</span></div>`;
   }
@@ -34,9 +39,12 @@
     const body = $("#spkTable tbody");
     body.innerHTML = spkList().map((spk) => {
       const done = M.spkStatus.get(spk.no) === "Done";
+      const hold = done ? [] : holdOf(spk.no);
       const statusBadge = done
         ? `<span class="badge badge--done">Done</span>`
-        : `<span class="badge badge--draft">${spk.status}</span>`;
+        : hold.length
+          ? `<span class="badge badge--hold">SPK Sedang Di-Hold</span><div class="hold-note">&#9888; Catatan: ada material yang di-hold &mdash; ${hold.map((c) => `${c.material} &middot; ${c.coil} &middot; ${Number(c.kg).toLocaleString("id-ID")} Kg (${c.asal}, ${c.id})`).join("; ")}. Menunggu keputusan Purchasing.</div>`
+          : `<span class="badge badge--draft">${spk.status}</span>`;
       const actionBtn = done
         ? `<button type="button" class="btn btn--ghost btn--tiny" data-open="${spk.no}">Lihat Laporan</button>`
         : `<button type="button" class="btn btn--primary btn--tiny" data-open="${spk.no}">Buat Laporan →</button>`;

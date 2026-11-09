@@ -30,6 +30,28 @@
     ["costbook.html", "Costbook", "ti-coin"],
     ["hpp.html", "HPP", "ti-report-analytics"],
   ];
+  const GUDANG = [
+    ["wh-material-master.html", "Material Master", "ti-database"],
+    ["wh-stock-coil.html", "Stock Gudang Coil", "ti-building-warehouse"],
+    ["wh-stock-value.html", "Stock Value", "ti-coin"],
+    ["wh-kartu-stok.html", "Kartu Stok", "ti-notebook"],
+    ["wh-spk-material.html", "SPK Material", "ti-clipboard-list"],
+    ["wh-request-list.html", "Request List (SPK Coil)", "ti-truck-loading"],
+    ["wh-stock-from-warehouse.html", "Stock From Warehouse", "ti-packages"],
+    ["wh-unpack-coil.html", "Unpack Coil", "ti-package-export"],
+  ];
+  const CLAIM = [
+    ["claim-on-hold.html", "Material On Hold", "ti-hand-stop"],
+    ["claim-material.html", "Daftar Claim Material", "ti-mail"],
+    ["claim-slitting.html", "Material Dijual (Gudang Slitting)", "ti-box"],
+    ["claim-spk-repack.html", "SPK Re-Pack", "ti-package"],
+    ["claim-sj-retur.html", "Surat Jalan Retur", "ti-truck-delivery"],
+    ["claim-debit-note.html", "Debit Note", "ti-receipt"],
+    ["claim-report-biaya.html", "Report Biaya Kompensasi", "ti-chart-bar"],
+    ["claim-bayar-po-dn.html", "Request Payment - Alokasi DN", "ti-cash"],
+    ["claim-tagihan-dn.html", "Tagihan Debit Note Langsung", "ti-file-invoice"],
+    ["claim-penerimaan-uang.html", "Penerimaan Uang dari Supplier", "ti-cash-banknote"],
+  ];
   const COSTING = [
     { group: "Master Data", icon: "ti-database", items: [
       ["pc-produk.html", "Master Produk", "ti-box"],
@@ -108,6 +130,8 @@
     const menu = `<ul class="pc-navbar">
       <li class="pc-item"><a href="beranda.html" class="pc-link"><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a></li>
       ${parent("ti-building-factory", "Produksi", PRODUKSI.map((x) => leaf(x)).join(""), prodOpen)}
+      ${parent("ti-building-warehouse", "Gudang Coil", GUDANG.map((x) => leaf(x)).join(""), GUDANG.some((x) => x[0] === cur))}
+      ${parent("ti-alert-triangle", "Claim Material", CLAIM.map((x) => leaf(x)).join(""), CLAIM.some((x) => x[0] === cur))}
       ${parent("ti-calculator", "Product Costing", COSTING.map((g) => parent(g.icon, g.group, g.items.map((x) => leaf(x)).join(""), pcOpen(g))).join(""), COSTING.some(pcOpen))}
     </ul>`;
 
@@ -173,6 +197,10 @@
     const cur = here();
     const p = PRODUKSI.find((x) => x[0] === cur);
     if (p) return ["Produksi", p[1]];
+    const gd = GUDANG.find((x) => x[0] === cur);
+    if (gd) return ["Gudang Coil", gd[1]];
+    const cl = CLAIM.find((x) => x[0] === cur);
+    if (cl) return ["Claim Material", cl[1]];
     for (const g of COSTING) { const it = g.items.find((x) => x[0] === cur); if (it) return ["Product Costing", g.group, it[1]]; }
     return [];
   }
@@ -297,7 +325,7 @@
     document.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#berrySearch").focus(); } });
   }
 
-  window.BERRY = { mount, menu: { PRODUKSI, COSTING } };
+  window.BERRY = { mount, menu: { PRODUKSI, GUDANG, CLAIM, COSTING } };
   // halaman Produksi (statis) → auto-mount; halaman pc-* memanggil mount() sendiri dari pc-shell.js
   document.addEventListener("DOMContentLoaded", () => { if (!document.body.dataset.page && !document.body.dataset.berryManual) mount(); });
 })();

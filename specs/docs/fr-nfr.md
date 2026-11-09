@@ -158,8 +158,9 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
   percabangan **Kondisi Coil**: _Tidak sesuai_ → FR-06, atau _Ok, diproduksi sebagian/seluruhnya_
   → FR-07.
 - **FR-06** — Jika kondisi coil tidak sesuai, Operator menghasilkan Laporan Ketidaksesuaian
-  Material yang dikirim ke Claim Material (PPIC); setelah proses klaim, PPIC melakukan Release
-  kembali Material Coil untuk Produksi dengan konfirmasi kelanjutan material coil ke Operator.
+  Material yang dikirim ke Claim Material (Purchasing, dikonfirmasi user 2026-10-27, OQ-C1); setelah proses klaim, Release
+  kembali Material Coil untuk Produksi berlangsung **otomatis** saat Purchasing memilih Lanjut Produksi (FR-80; tanpa konfirmasi
+  manual PPIC, jawaban user 2026-10-27), dengan konfirmasi kelanjutan material coil ke Operator.
 - **FR-07** — Operator memasang coil di mesin & memulai produksi, termasuk kemungkinan memakai
   Sisa Coil (dari Stok Gudang WIP) sebagai input tambahan.
 
@@ -219,11 +220,15 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
 - **FR-16** — Bila selisih di luar toleransi, Admin Produksi harus melakukan "Cek kembali ke
   lapangan dan verifikasi laporan" dan mendapat status Approved Toleransi sebelum lanjut ke
   submit. _(BPMN: gateway "Output Berat Produksi" → Cek kembali ke lapangan)_
-- **FR-17** — Tombol Save pada laporan produksi hanya aktif apabila tidak ada Hold Coil
-  tercatat pada sesi tersebut; bila ada Hold Coil, alur harus melalui Hold & Claim.
-  _(sheet, baris 106–109)_
+- **FR-17** (**direvisi 2026-11-09**, keputusan user; lihat FR-98) — Tombol Save pada laporan produksi **selalu aktif**. Aturan lama
+  ("Save hanya aktif bila tidak ada Hold Coil; bila ada, alur harus melalui Hold & Claim") **dicabut**. Bila laporan memuat baris Hold Coil,
+  KW 2 (Supplier), atau Reject (Supplier), Save **menyimpan laporan sekaligus mengirim claim** ke Claim Material dalam satu input. Yang dikunci
+  oleh Hold Coil adalah **Submit** (FR-18, NFR-06), bukan Save. _(sheet, baris 106–109)_
 - **FR-18** — Admin Produksi men-submit Laporan Produksi. Submit memperbarui Stok Gudang WIP
   (untuk Sisa Coil) dan mengirim Report Produksi serta Sisa Coil ke Warehouse Finish Good.
+  **Tambahan 2026-11-09 (FR-98, NFR-06):** Submit **ditolak** selama masih ada claim **Hold Coil** milik laporan itu yang belum diputuskan
+  Purchasing (karena material Hold belum dijurnal sampai claim diputuskan, FR-75). Claim KW 2 (Supplier) dan Reject (Supplier) tidak memblokir
+  Submit _(asumsi agen, menunggu konfirmasi BA; lihat FR-98 butir d)_.
 
 ### HPP & posting jurnal
 
@@ -773,6 +778,202 @@ diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang
   itu tidak ada di SPK, dipakai varian SPK yang pertama. Dengan begitu komponen Man Power sampai Scrap
   pada Stok Bebas dan KW 2 tidak Rp 0.
 
+### Claim Material (Kompensasi / Retur) — 2026-10-27
+
+Sumber: BPMN To Be `input/Claim Process/To Be_Claim Coil_D003-PTHFG.png`, workbook `input/Claim Process/4. Rev.2 Mockup
+Claim Material (based on Concept).xlsx`, dan jawaban user 2026-10-27 (`input/2026-10-27-claim-material/notes.md`). Fitur
+FEAT-11. **Nama tabel dan kolom di bagian ini masih usulan** dan belum ada di `erd-revisi.drawio` (NFR-15 berlaku saat ERD
+disinkronkan). Nama tampilan UI mengikuti workbook.
+
+- **FR-75** (BPMN D003; terhubung ke FR-06, FR-11, FR-13, FR-17) — **Pemicu dari Laporan Produksi.** Tombol **Save** pada
+  Laporan Produksi (direvisi 2026-11-09, FR-98: tidak ada lagi tombol/popup Hold & Claim terpisah) mengirim tiga jenis baris ke Claim Material: **KW 2 (Supplier)**, **Hold Coil**, dan **Reject (Supplier)**
+  (Reject Material Plat / Reject Product). Setiap baris membawa Supplier, Material, No. Coil Packing List, No. PO,
+  Berat (Kg), dan Alasan/Problem dari Produksi. Coil berstatus Hold tampil di tab **Material On Hold** pada Stok Gudang Coil
+  (Warehouse > Gudang Coil > Stock) dan tidak dijurnal sampai claim diputuskan (workbook "Saat Claim dari Produksi", baris 53). Tab ini
+  digabung ke halaman Stok Gudang Coil yang sudah ada (keputusan user 2026-10-27) dan tampil sebagai use case **UC-N35** (baca saja;
+  Status Material: Hold / Dapat Dipakai (Release) / Dijual (Gudang Slitting) / Dalam Retur / Dikompensasi).
+- **FR-76** — **Daftar Claim Material** (pengguna Purchasing): filter Supplier; kolom No, Nama Supplier, Nama Material,
+  No. Coil Packing List, No. PO, Berat (Kg), Problem, Status Claim, Action. Action: **Email**, **Process
+  Decision**, dan **View Alasan Hold dari Produksi**.
+  Kolom input angka (nilai, harga, kurs, berat) di halaman Claim, Costbook, dan Rate diformat dengan **pemisah ribuan titik dan desimal koma** saat diketik (mis. 2.306.810,81); nilai tersimpan sebagai angka murni (keputusan user 2026-10-30). Header kolom di seluruh halaman Claim mengikuti nama kolom ERD (aturan penamaan seragam, AGENTS.md; audit 2026-10-29). Kolom turunan yang tidak punya kolom ERD
+  (Progres, Status Material, Biaya Material di-Claim, Beban Ditanggung HFG, Akun Beban, Material Claim, Jenis) dan nama hasil gabungan tabel lain (Nama Supplier = `new_supplier.nama`,
+  Nama Material, Mata Uang = `mata_uang.mata_uang`) dikecualikan.
+- **FR-77** — **Email.** Purchasing mengirim email keluhan beserta dokumen claim ke supplier; konfirmasi dan diskusi
+  kesepakatan penanganan terjadi di luar sistem (BPMN: Supplier → Diskusi → Kesepakatan Penanganan). Sistem mencatat tanggal
+  email terkirim dan ringkasan kesepakatan. _(OQ-C2 ditunda: master setting email.)_ **Bukti pendukung dari Produksi (FR-94) ikut terlihat di email**
+  sebagai lampiran bersama dokumen claim, dan isi email menyebut jumlah berkas bukti (keputusan user 2026-10-29).
+- **FR-78** — **Process Decision.** Untuk satu baris claim, Purchasing menetapkan **satu atau lebih jalur** (jawaban user:
+  satu coil boleh di dua jalur, mis. KW 2 dikompensasi dan Hold diretur). Tiap jalur memuat Berat (Kg) dan keterangan:
+  **Kompensasi** → (1) Debit Note, (2) Lanjut Produksi, (3) Jual Material; **Retur** → (1) Retur ke Supplier. Status Claim
+  menampilkan jalur yang dipilih (Kompensasi, Retur, atau keduanya).
+  **Process Decision beberapa claim sekaligus** (keputusan user 2026-10-29; contoh: KW 2 dan Hold dari satu SPK tidak perlu diputuskan satu per
+  satu): Daftar Claim punya kotak centang per baris (hanya claim yang belum diputuskan) dan centang semua di header, serta tombol **Process Decision
+  (Terpilih)**. Claim yang dipilih harus dari **satu supplier** (kesepakatan dibuat per supplier). Satu modal memuat semua claim terpilih dengan
+  **satu Kesepakatan dengan Supplier bersama**, lalu jalur dan berat per claim; total berat tiap claim tidak boleh melebihi beratnya. Satu Confirm
+  menyimpan keputusan semua claim. Keputusan tetap tercatat **per claim** (`claim_material_decision`): Debit Note, SPK Re-Pack (digabung per supplier saat
+  Create SPK, FR-83), dan Jual Material tetap dibuat per keputusan, bukan digabung menjadi satu dokumen.
+  **Kurs saat claim** (OQ-C12, keputusan user 2026-10-29): bila supplier/PO non-IDR, tiap claim di modal Process Decision menampilkan **Mata Uang** (dari PO, hanya baca) dan **Kurs** (wajib diinput); kurs tersimpan pada Debit Note yang dibuat dari keputusan itu (`debit_note.id_kurs`, `debit_note.kurs`). Supplier IDR: kurs selalu 1.
+- **FR-79** — **Kompensasi — Debit Note.** Purchasing mengisi **Nilai Debit Note langsung dalam Rupiah (tanpa PPN)**; tidak
+  ada field persen (jawaban user: 20% pada simulasi hanya contoh kasus HFG). Hasilnya otomatis masuk List Debit Note
+  berstatus Belum Terbit. Sistem menampilkan Report Biaya Kompensasi vs Biaya Scrap (FR-87).
+- **FR-80** — **Kompensasi — Lanjut Produksi.** Purchasing mengisi Catatan untuk Produksi; status coil otomatis berubah dari
+  Hold menjadi dapat dipakai (Release, FR-06). Tidak ada jurnal.
+- **FR-81** — **Kompensasi — Jual Material.** Purchasing mengisi keterangan; material masuk Inventory Material Khusus Dijual
+  (Gudang Slitting). Nilai material dari Gudang Bahan Persediaan Produksi dipecah menjadi **Material KW** (diakui inventory) dan
+  **Biaya Scrap** (kerugian). Jurnal: Db Material KW, Db Biaya Scrap / Cr Gudang Bahan Persediaan Produksi. _(OQ-C4: cara input
+  pembagian bobot.)_
+- **FR-82** — **Retur ke Supplier.** Jalur Retur otomatis masuk ke List SPK Re-Pack (FR-83) dan, setelahnya, Surat Jalan Retur
+  (FR-84).
+- **FR-83** — **SPK Re-Pack** (PPIC; BPMN: Buat Perintah Re-Pack Material → Produksi memindahkan material dari produksi ke
+  gudang). **Satu SPK memuat beberapa baris material satu supplier** (keputusan user 2026-10-28, G6): Process Decision Retur membuat baris
+  WAITING per keputusan; saat **Create SPK**, semua baris WAITING dari supplier yang sama tercentang awalnya dan digabung menjadi satu SPK
+  (centang dapat dilepas untuk memisahkan; `spk_repack` + `spk_repack_detail`). Header: No. SPK Re-Pack (otomatis), Tgl Perintah Kerja, Nama Supplier,
+  Material Claim (daftar), Status SPK (**WAITING**, **ON PROGRESS**, **COMPLETED**), Action (**Create SPK**, **Confirm SPK**, **View**,
+  **Print**). Confirm SPK = material sudah di-re-pack. Tidak ada jurnal. **Print** (keputusan user 2026-10-29): pratinjau dokumen "Surat Perintah Kerja Re-Pack" berlogo HFG berisi No. SPK Re-Pack, Tgl Perintah Kerja, Nama Supplier, daftar material (No. Coil Packing List, No. PO, Berat (Kg), Problem) beserta total berat, dan kolom tanda tangan (Dibuat oleh PPIC, Diterima oleh Produksi, Mengetahui); tombol Cetak memanggil cetak browser.
+- **FR-84** — **Surat Jalan Retur** (PPIC), dibuat dari SPK Re-Pack berstatus COMPLETED; **satu SPK menjadi satu Surat Jalan** (`surat_jalan_retur.id_spk_repack`
+  1:1), jadi satu SJ dapat memuat beberapa claim satu supplier. Field: No. Surat Jalan (otomatis), Tgl,
+  Alamat (supplier), Driver, No. Polisi Truk, dan daftar coil. Status SJ: **WAITING SJ**, **NOT CONFIRMED**, **SJ CONFIRMED**.
+  Action: **Create SJ**, **Confirm SJ** (surat jalan diterima supplier), **View**, **Print**. Jurnal saat Create SJ: Db In Transit
+  / Cr Inventory; saat Confirm SJ: Db Debit Note (Retur) sebesar Berat × **Price/Unit PO** / Cr Nilai Material Retur (In Transit) sebesar Berat × **Costbook/Kg gudang asal** / **Db atau Cr Selisih Costbook vs Price/Unit PO** (Kredit bila Price/Unit PO > Costbook, Debit bila lebih kecil; baris tidak muncul bila sama; keputusan user 2026-10-29). Nilai Create SJ = **jumlah** Berat × **Costbook/Kg gudang asal** (`claim_material.costbook_per_kg`; tidak dibagi 1,11; keputusan user 2026-10-29)
+  semua baris di SPK itu. Debit Note Retur tetap satu per keputusan dan tertaut ke Surat Jalan yang sama. **Print** (keputusan user 2026-10-29): dokumen "Surat Jalan Retur" berlogo HFG berisi No. Surat Jalan, Tgl Surat Jalan, Nama Supplier, Alamat, Driver, No. Polisi Truk, No. SPK Re-Pack, daftar coil dan total berat (tanpa nilai), serta tanda tangan (Dibuat oleh PPIC, Driver, Diterima oleh Supplier).
+- **FR-85** — **Debit Note** (Purchasing). Header: No. Debit Note, Tgl Terbit, Nama Supplier, Mata Uang, Total Nilai, Jalur,
+  Status Dokumen, Action (View, Print, Edit, Create). Saat Create: Jalur (Retur/Kompensasi); untuk Retur sistem
+  otomatis menarik detail Surat Jalan dan **hanya dapat dibuat setelah Surat Jalan Retur dibuat** (dikonfirmasi user 2026-10-27).
+  **Edit hanya sebelum terbit** (status Belum Terbit) dan hanya oleh pengguna yang memiliki hak akses (jawaban user 2026-10-27). Nilai
+  claim dihitung dalam mata uang PO supplier (dikonfirmasi 2026-10-27). Total Debit Note × Kurs (input untuk mata uang non-IDR) = Total Debit Note (IDR). Status
+  Dokumen mengikuti workbook: **Belum Terbit**, **Sudah Terbit**, **Belum Terima Uang**, **Sudah Terima Uang**, **Sudah Alokasi
+  ke Hutang**. **Total Nilai Debit Note Retur = Berat × Price/Unit PO** (harga saat PO; supplier menagih/mengakui berdasarkan harga ini, bukan costbook — keputusan user 2026-10-29), sedangkan nilai material yang keluar dari gudang tetap Berat × Costbook/Kg; selisihnya dijurnal saat Confirm Surat Jalan (FR-84, FR-93). **Print** (keputusan user 2026-10-29): dokumen "Debit Note" berlogo HFG berisi No. Debit Note, Tgl Terbit, Nama Supplier, Jalur, Mata Uang, Kurs, No. Claim, No. Surat Jalan, rincian (Retur: Nama Material, No. Coil Packing List, No. PO, Berat (Kg), Price/Unit PO, Total Nilai; Kompensasi: Keterangan, Total Nilai), Total Nilai dan Total Nilai (IDR), tanda tangan (Dibuat oleh Purchasing, Diterima oleh Supplier); Debit Note berstatus Belum Terbit diberi tanda air "BELUM TERBIT". **Mata Uang dan Kurs pada Create Debit Note ditarik dari Process Decision (hanya baca, tidak diinput ulang)**; Total Nilai (IDR) = Total Nilai × Kurs tersebut (OQ-C12, keputusan user 2026-10-29).
+- **FR-86** — **Jurnal Debit Note** (jawaban user 2026-10-27): (a) **Kompensasi terbit**: Db Debit Note (Kompensasi) / Cr Biaya KW 2
+  Supplier dan/atau Cr Biaya Scrap (mengurangi biaya KW 2 yang terjurnal di HPP dan mengurangi Biaya Scrap; _OQ-C3: pemetaan per
+  asal baris, dikonfirmasi_); (b) **Retur terbit**: tidak ada jurnal (jurnal Db Debit Note (Retur) terjadi saat Confirm SJ, FR-84).
+- **FR-87** (cakupan dipertegas user 2026-10-28, G5) — **Report Biaya Kompensasi vs Biaya Scrap** atas material yang di-claim (BPMN: keluaran
+  Penetapan Nilai Kompensasi). Memuat dua jenis baris: **Debit Note** (biaya material di-claim, Nilai Kompensasi, beban = biaya − kompensasi, akun
+  kredit DN) dan **Jual Material** (biaya material, Material KW, beban = Biaya Scrap yang diakui = nilai material − Material KW). **Retur dan
+  Lanjut Produksi tidak ditampilkan** karena tidak mengakui kompensasi atau kerugian. Disertai total per kolom.
+- **FR-88** (Accounting/Finance) — **Pembayaran PO dengan Debit Note.** Alokasi Debit Note menjadi **baris tambahan pada alur pembayaran
+  yang sudah ada** (`request_payment` → `payment_approve`), bukan dokumen pembayaran terpisah (OQ-C7 dan OQ-C8, dijawab user 2026-10-27).
+  **Alokasi dipilih saat Request Payment**, sehingga nilai yang di-approve checker dan management sudah bersih; saat pembayaran final
+  di `payment_approve`, tiap DN muncul sebagai **baris detail bernilai negatif** pada `payment_approve_details`, dan tabel
+  penghubung `alokasi_debit_note` (`id_debit_note`, `id_request_payment`, `id_payment_approve_details`, `nilai_alokasi`) menjadi jejak
+  audit. Pada Request Payment, **Alokasi Debit Note** dipilih dengan
+  Add Debit Note; Nilai Debit Note muncul sesuai DN yang dipilih. Total Bayar = Nilai Invoice − DN Kompensasi − DN Retur + PPN.
+  Jurnal: Db Hutang / Cr Bank, Cr Bank Admin, Cr Debit Note (Kompensasi), Cr Debit Note (Retur), Db Admin. Status DN menjadi
+  **Sudah Alokasi ke Hutang**.
+- **FR-89** (Accounting/Finance) — **Tagihan Debit Note Langsung.** Debit Note yang tidak dialokasikan ke PO ditagihkan langsung ke
+  supplier: daftar DN siap ditagih (No. DN, Supplier, Jalur, Total Nilai (IDR), Status Belum/Sudah ditagih); form Buat Penagihan
+  (Tanggal Jatuh Tempo, Catatan). Setelah diterbitkan, baris otomatis muncul di Penerimaan Uang dari Supplier.
+- **FR-90** (Accounting/Finance) — **Penerimaan Uang dari Supplier.** Ringkasan (Total belum diterima, per jalur Retur/Kompensasi,
+  Diterima bulan ini), filter (cari, jalur, status, tanggal), daftar DN, dan **Konfirmasi Terima**: Tanggal diterima, Rekening
+  penerima, Nominal diterima, Bukti transfer, Catatan. Jurnal (jawaban user, dua jalur sama): **Db Bank / Cr Debit Note**. **Nominal diterima harus sama dengan nominal Debit Note;
+  bila berbeda, konfirmasi ditolak** (jawaban user 2026-10-27).
+- **FR-91** — Setiap aksi pada modul ini (Email, Process Decision, buat/Confirm SPK Re-Pack, buat/Confirm SJ, buat DN, Alokasi,
+  Tagihan, Konfirmasi Terima) mencatat `write_log('Claim Material', …)` sesuai standar AGENTS.md (old/new pada Edit).
+- **FR-92** — Pajak: nilai Debit Note Kompensasi diinput langsung tanpa PPN. **Nilai Retur (material) = Berat × Costbook/Kg gudang asal, tidak dibagi 1,11 dan tidak mempedulikan apakah costbook sudah termasuk PPN; Nilai Debit Note Retur = Berat × Price/Unit PO (FR-85)** (keputusan user 2026-10-29, menggantikan ÷ 1,11 dari workbook klien 2026-10-27 untuk Retur). PO dan DP memakai DPP = Total
+  × 11/12 dan PPN = DPP × 12% (jawaban user 2026-10-27: sesuai workbook).
+- **FR-93** (OQ-C6, dijawab user 2026-10-27) — **Posting jurnal ke GL otomatis per peristiwa proses.** Setiap titik jurnal (Jual Material,
+  Debit Note Kompensasi terbit, Buat Surat Jalan Retur, Confirm Surat Jalan Retur, Pembayaran PO dengan DN, Penerimaan Uang) langsung
+  terposting ke GL saat peristiwanya terjadi. Akun (COA) tidak ditulis di kode: diambil dari **Master Jurnal khusus proses Claim** yang
+  dibuat kemudian; mekanisme Master Jurnal yang sudah ada di aplikasi (`master_oto_jurnal_detail` / `ms_jurnal_mapping`) dipakai,
+  pilihan tepatnya ditentukan saat Master Jurnal Claim dibuat. Nama akun pada FR-81/84/86/88/90 adalah label bisnis, bukan kode COA.
+  **Tampilan jurnal di layar** (keputusan user 2026-10-28, bukan tabel/laporan terpisah): Daftar Claim punya tautan **Lihat Jurnal** per claim yang
+  sudah diputuskan; isinya jurnal semua peristiwa claim itu berurutan, dengan penanda **Terposting** atau **Belum terjadi** (proyeksi dari nilai saat
+  ini), total Debit = Kredit per jurnal, dan catatan bila satu Surat Jalan/Request Payment mencakup beberapa claim. Debit Note Retur tidak menghasilkan
+  jurnal saat terbit.
+  **Tanpa approval Debit Note** (keputusan user 2026-10-28): Debit Note langsung "Sudah Terbit" saat diterbitkan oleh yang berhak, tidak ada langkah
+  persetujuan, agar prosesnya lebih cepat. **Hak akses** diatur lewat permission aplikasi saat implementasi; di mockup dibiarkan terbuka.
+
+- **FR-94** (FR-75 diperinci; mockup `index.html`) — **Isian claim pada Laporan Produksi.** _(Direvisi 2026-11-09 oleh FR-98: popup Hold & Claim
+  digantikan isian yang menyatu di form Laporan Produksi dan dikirim oleh Save; aturan isi di bawah tetap berlaku, kecuali yang dicoret.)_
+  Isian ini mengirim ke Claim Material baris: (a) **Hold Coil** (satu baris per baris Hold Coil, FR-13); (b) **KW 2 (Supplier)**
+  (FR-11; berat dijumlahkan per baby coil yang dipilih pada barisnya, Problem awal "KW 2", Alasan awal dari Keterangan KW 2);
+  (c) **Reject (Supplier)** (FR-14; satu baris untuk Reject Product dan satu untuk Reject Material Plat bila berat > 0, Alasan awal dari
+  Keterangan Reject Supplier). Tiap baris menampilkan Asal, Baby Coil, Material, Supplier, No. PO, No. Coil Packing List (ditarik dari
+  database lewat baby coil), Berat (Kg), Harga Beli/Kg (`warehouse_stock_coil.harga_beli`, harga per Kg saat incoming; dasar Nilai Material) , Costbook/Kg (Costbook Material gudang asal baby coil, NFR-07; dasar Nilai Retur) dan Price/Unit PO (harga satuan saat PO, `dt_trans_po.hargasatuan`; dasar Nilai Debit Note Retur), serta **Problem** dan **Alasan
+  Produksi** yang wajib diisi. Baby coil asal Reject (Supplier) dipilih di popup (otomatis hanya bila SPK memakai satu baby coil; selain itu wajib dipilih, OQ-C9a).
+  Kirim membuat baris `claim_material` berstatus Baru; baris yang sama (SPK + coil + asal + problem) tidak
+  dibuat dua kali. ~~Save tetap dikunci hanya oleh Hold Coil (FR-17, NFR-06); KW 2 / Reject (Supplier) tanpa Hold Coil tetap dikirim lewat tombol ini
+  (dikonfirmasi user 2026-10-27).~~ **Dicabut 2026-11-09:** Save tidak dikunci; Save mengirim semua baris claim, dan yang dikunci adalah Submit (FR-98).
+  **Bukti dokumen pendukung wajib** (keputusan user 2026-10-29): setiap baris di popup harus punya minimal satu berkas bukti dari Produksi (mis. foto
+  coil, berita acara QC); Save ditolak bila ada baris claim tanpa bukti. Satu baris boleh memuat beberapa berkas. Berkas dapat dihapus/ditambah selama laporan belum disimpan (atau claim masih berstatus Baru, FR-98 butir f), tetapi **setelah terkirim tersimpan bersama claim dan tidak dapat dihapus sampai claim selesai**. Bukti ditampilkan di Daftar Claim
+  pada View Alasan Hold dari Produksi (penanda jumlah berkas pada tautan). **Setiap berkas dapat diunduh dan dipratinjau langsung di halaman tanpa
+  mengunduh** (gambar tampil sebagai gambar, PDF tampil di penampil di dalam halaman, jenis lain hanya Unduh/Buka di tab baru) — keputusan user
+  2026-10-29; lampiran di email juga dapat diunduh (FR-77). Disimpan di `claim_material_bukti`
+  (`id_claim_material`, `file_original_name`, `file_hash_name`, `created_at`, `created_by`). **Status SPK ikut berubah** (keputusan user 2026-10-30): setelah Hold & Claim, SPK produksi pada Daftar SPK (Beranda) menampilkan **"SPK Sedang Di-Hold"** beserta nomor claim yang menunggu keputusan; statusnya kembali normal bila semua claim SPK itu sudah diputuskan Purchasing, dan "Done" tetap menang bila laporan sudah disubmit. Kartu ringkasan Beranda menambah hitungan "SPK Sedang Di-Hold". Status kembali normal setelah semua claim SPK itu diputuskan (dikonfirmasi user 2026-10-30). **Catatan material di-hold** (keputusan user 2026-10-30): selama ada claim yang belum diputuskan, Daftar SPK menampilkan catatan "ada material yang di-hold" berisi material, No. Coil Packing List, berat (Kg), asal, dan nomor claim; Laporan Produksi SPK itu menampilkan catatan yang sama di bawah tombol Add Coil dan hilang saat claim sudah diputuskan. **Format berkas bebas (termasuk video); batas ukuran 20 MB per berkas** (OQ-C11, keputusan user 2026-10-29): berkas yang lebih besar ditolak dengan pesan dan tidak diunggah, berkas lain pada pilihan yang sama tetap diproses. Gambar, video, dan PDF dapat dipratinjau langsung di Daftar Claim; jenis lain hanya dapat diunduh.
+
+- **FR-95** (keputusan user 2026-10-28, G1 "Sambungkan saja"; terhubung ke FR-06, FR-08, FR-80) — **Release tersambung ke Laporan Produksi.** Coil
+  Hold Coil yang keputusannya **Lanjut Produksi** tersedia kembali pada Add Coil From Hold di Laporan Produksi, bertanda "Release {No. Claim}",
+  datanya (material, berat, meter) ditarik dari master baby coil, dan **Catatan untuk Produksi** dari keputusan itu tampil di bawah tabel coil.
+  Pembatasan (dikonfirmasi user 2026-10-28, OQ-C10): coil Hold yang sudah di-claim tidak dapat dipilih lagi dari Unpack/WIP, dan tidak di-seed
+  otomatis pada Laporan Produksi baru.
+  Penegasan implementasi (keputusan user 2026-10-28): coil dipindah ke gudang Hold (HLD) saat claim terkirim; saat **Lanjut Produksi** coil
+  **dikembalikan ke gudang asalnya** (tidak ada status baru). Gudang asal disimpan di `claim_material.id_gudang_asal` dan `kd_gudang_asal`
+  (nullable). "No. Coil Packing List" = `warehouse_stock_coil.no_coil` (nomor coil dari supplier); Supplier dan No. PO ditarik lewat
+  `warehouse_stock_coil.no_ros` → `tr_ros_header.id` → `no_po`/`id_supplier`; `claim_material.harga_beli_per_kg` diambil dari **`warehouse_stock_coil.harga_beli`** (harga per Kg saat incoming) dan dipakai untuk **Nilai Material** (Jual Material, biaya material pada Report Biaya). `claim_material.costbook_per_kg` = **Costbook Material per Kg gudang asal** baby coil (di database: `tr_cost_book.costbook`), dibaca saat claim dibuat dan menjadi dasar **Nilai Retur** (keputusan user 2026-10-29: "Nilai Retur = Berat x Costbook material dari gudang tersebut"). `claim_material.price_per_unit_po` = **Price/Unit PO** saat PO (di database: `dt_trans_po.hargasatuan` per Kg, mata uang PO, dicari lewat `no_po` dan material; contoh PO P2600001: USD 0,586/Kg), dasar **Nilai Debit Note Retur**. Catatan data uji: di `hfg_dev`, `warehouse_stock_coil.harga_beli` diisi 2026-10-29 untuk 268 coil ber-PO (dari harga per Kg di `tr_ros_material_coil`); `tr_cost_book` kosong di `hfg_dev`.
+- **FR-98** (keputusan user 2026-11-09; merevisi FR-17, FR-18, FR-75, FR-94, NFR-06; BPMN D003; use case Laporan Produksi) — **Laporan Produksi dan claim
+  diinput sekaligus.** Latar belakang: alur lama membuat satu SPK dilaporkan dua kali (laporan hasil produksi yang berhasil, lalu laporan claim lewat
+  Hold & Claim). Sekarang satu input:
+  (a) **Satu input, satu transaksi.** Tidak ada tombol/popup Hold & Claim terpisah. Isian claim (Baby Coil asal, Problem, Alasan Produksi, bukti)
+  berada di bagian **Claim Material** pada form Laporan Produksi; barisnya **otomatis muncul** dari baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) di form. Save menyimpan `production_reports` lebih dulu (karena
+  `claim_material.production_report_id` NOT NULL), lalu membuat baris `claim_material` berstatus Baru; bila salah satu gagal, keduanya dibatalkan
+  (NFR-06). Validasi FR-94 tetap (Problem, Alasan, bukti wajib; tidak ada claim ganda per SPK + coil + asal + problem). **ERD tidak berubah.**
+  (b) **Save tidak pernah dikunci Hold Coil** (FR-17). Coil Hold pindah ke gudang On Hold saat Save (FR-95).
+  (c) **SPK tidak langsung close.** Laporan tersimpan berstatus **Draft (tersimpan)** dengan penanda jumlah claim (tanpa status laporan baru,
+  keputusan user 2026-11-09); SPK menampilkan "SPK Sedang Di-Hold" selama ada claim belum diputuskan (FR-94).
+  (d) **Submit dikunci** selama ada claim **Hold Coil** laporan itu yang belum diputuskan Purchasing (FR-18, NFR-06). Claim KW 2 (Supplier) dan
+  Reject (Supplier) tidak memblokir Submit — _asumsi agen, menunggu konfirmasi BA_.
+  (e) **Kelanjutan memakai laporan yang sama** (keputusan user 2026-11-09, "cara 1"): bila Purchasing memutuskan Lanjut Produksi (FR-80, FR-95), coil
+  kembali ke gudang asal dan tersedia di Add Coil From Hold pada **Draft yang sama** (bertanda "Release {No. Claim}"); Produksi menambahkan coil itu
+  lalu Submit. Tidak dibuat laporan kedua untuk SPK yang sama. Keputusan lain (Retur, Kompensasi, Jual Material) tidak mengembalikan coil ke produksi.
+  (f) **Edit setelah Save** — _usulan agen, menunggu konfirmasi BA_: claim berstatus **Baru** (belum diemail): semua isian ikut tersinkron dari
+  laporan; menghapus baris sumber (Hold / KW 2 Supplier / Reject Supplier) membatalkan claim-nya setelah konfirmasi. Claim **Email Terkirim** atau sudah
+  diputuskan: baris sumber dan nilai claim (coil, asal, berat, supplier) **dikunci**; bagian laporan lain tetap dapat diedit; bukti hanya dapat
+  ditambah. Menambah claim baru selalu boleh (Save ulang menambah baris baru; baris yang sama tidak dibuat dua kali). Koreksi claim yang sudah diemail
+  dilakukan Purchasing di modul Claim Material.
+  (g) **Log:** perubahan laporan dan claim dicatat `write_log()` dengan data sebelum dan sesudah (standar AGENTS.md).
+- **FR-96** (keputusan user 2026-10-28, G3) — **Daftar Material Dijual (Gudang Slitting)**, baca saja: No, Tgl Masuk, No. Claim, Supplier, Nama
+  Material, No. Coil Packing List, Berat (Kg), Nilai Material, Material KW (inventory), Biaya Scrap. Baris muncul otomatis dari keputusan Jual
+  Material (`stok_gudang_slitting`, FR-81). Pengelolaan stok selanjutnya milik modul gudang yang ada. UC-N36.
+- **FR-97** (keputusan user 2026-10-28, G4) — **Kolom Progres pada Daftar Claim Material.** Progres per jalur **diturunkan** dari dokumen yang sudah
+  ada, bukan status baru pada claim (OQ-C5 tidak berubah): Debit Note → status DN (Belum Terbit / Sudah Terbit / dialokasikan ke hutang
+  dengan status Request Payment atau Dibayar / Belum Terima Uang / Sudah Terima Uang); Retur → SPK → SJ → DN Retur; Lanjut Produksi → coil dirilis;
+  Jual Material → masuk Gudang Slitting. Tiap jalur bertanda selesai (✓) bila DN sudah diterima uang atau teralokasi dan dibayar, SJ sudah
+  confirmed (Retur), atau tindakannya tuntas; ringkasan "n/m selesai".
+
+### Open questions Claim Material (dijawab user 2026-10-27)
+
+- **OQ-C1 — RESOLVED.** Claim Material diproses oleh **Purchasing** (sesuai BPMN D003); PPIC hanya pada Retur (SPK Re-Pack, Surat Jalan).
+  FR-06 disesuaikan; FR-17 dan NFR-06 hanya menyebut "Hold & Claim" sehingga tidak berubah _(direvisi 2026-11-09: FR-17 dan NFR-06 kini berubah, lihat FR-98)_.
+- **OQ-C2 — DITUNDA.** Master setting email supplier (template dan alamat tujuan) boleh menyusul; sementara alamat tujuan diinput manual.
+- **OQ-C3 — RESOLVED ("Perlu").** Pemetaan akun kredit Debit Note Kompensasi dipakai: asal **KW 2 Supplier** → Biaya KW 2 Supplier; asal
+  **Hold Coil / Reject Supplier** → Biaya Scrap. Karena itu **asal baris claim wajib disimpan** per baris claim.
+- **OQ-C4 — RESOLVED ("Iya betul").** Jual Material: input Rp Material KW, sisanya otomatis Biaya Scrap.
+- **OQ-C5 — RESOLVED ("Betul").** Status Claim: Baru → Email Terkirim → Kompensasi / Retur / Kompensasi + Retur; status Debit Note mengikuti
+  urutan: Belum Terbit → Sudah Terbit → (Sudah Alokasi ke Hutang | Belum Terima Uang → Sudah Terima Uang).
+
+- **OQ-C6 — RESOLVED 2026-10-27.** COA ditentukan nanti lewat Master Jurnal khusus proses Claim; posting ke GL otomatis per peristiwa
+  proses (FR-93).
+- **OQ-C7 — RESOLVED 2026-10-27 (arah).** Alokasi Debit Note menjadi baris tambahan di alur pembayaran yang ada (FR-88). Konsekuensi: tabel
+  usulan `pembayaran_po_debit_note` tidak jadi dokumen pembayaran sendiri; rancangan ERD menunggu OQ-C8.
+- **OQ-C8 — RESOLVED 2026-10-27 (setuju dengan usulan).** (a) Alokasi DN dipilih saat **Request Payment**. (b) DN tampil sebagai **baris
+  detail negatif** di `payment_approve_details` saat pembayaran, ditambah tabel penghubung `alokasi_debit_note` sebagai jejak. Tabel usulan
+  `pembayaran_po_debit_note` dihapus dari ERD. Status DN menjadi Sudah Alokasi ke Hutang saat alokasi disimpan pada Request Payment; jurnal
+  FR-88 terposting saat pembayaran final (FR-93).
+
+- **OQ-C9 — RESOLVED 2026-10-27.** (a) Reject (Supplier) tidak punya baby coil di form Laporan Produksi, maka baby coil asalnya dipilih di popup
+  Hold & Claim (FR-94): terisi otomatis hanya bila SPK memakai tepat satu baby coil, selain itu wajib dipilih eksplisit (setuju dengan usulan).
+  (b) ~~KW 2 (Supplier) atau Reject (Supplier) tanpa Hold Coil dikirim lewat tombol Hold & Claim; Save tetap aktif.~~ _Digantikan 2026-11-09 oleh FR-98: semua jenis claim dikirim oleh Save._
+
+- **OQ-C12 — RESOLVED 2026-10-29.** (a) **Kurs yang dipakai = kurs pada saat claim**: diinput Purchasing di Process Decision untuk supplier non-IDR (satu kurs per claim); Create Debit Note hanya **menarik** kurs itu (tidak diinput ulang) dan jurnal Confirm Surat Jalan memakainya untuk mengonversi Price/Unit PO (mata uang PO) ke IDR. (b) Akun COA "Selisih Costbook vs Price/Unit PO": sementara memakai nama akun tersebut sebagai label di mockup, COA sesungguhnya menunggu Master Jurnal Claim. (c) Contoh kasus USD akan dibuat kemudian (mockup sudah mendukung perhitungannya; data contoh claim masih supplier IDR).
+- **OQ-C11 — RESOLVED 2026-10-29.** Format bukti pendukung Hold & Claim bebas (termasuk video); batas ukuran **20 MB per berkas** (asumsi agen: batas per berkas, bukan per baris atau total; belum dikonfirmasi). Tidak ada batas jumlah berkas per baris.
+- **OQ-C10 — RESOLVED 2026-10-28 ("OQ-C10 benar").** Coil Hold yang sudah di-claim disembunyikan dari pilihan Unpack/WIP dan tidak di-seed pada
+  Laporan Produksi baru, sehingga tidak terpakai sebelum Release (FR-95).
+
+### Asumsi mockup yang dikonfirmasi user 2026-10-27
+
+Aktor UC-N34, PG-27, UC-N35 dari mockup (Purchasing / PPIC / Accounting) dipakai; master email ditunda (OQ-C2); Release coil otomatis
+(FR-06); Debit Note Retur hanya setelah Surat Jalan ada (FR-85); nominal penerimaan yang berbeda ditolak (FR-90); nilai claim dalam
+mata uang PO (FR-85); Edit Debit Note hanya sebelum terbit dan hanya yang berhak akses (FR-85).
+
 ### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
 
 1. **RESOLVED 2026-10-07 — per Product Category (Level 2).** Pertanyaan semula: kunci rate
@@ -971,9 +1172,11 @@ yang sudah resolved di atas (± 0,7%).
   melakukan Posting Jurnal ke GL (FR-24); hanya role yang berwenang dapat memberi Approved
   Toleransi (FR-16) — verifikasi: user di luar role tersebut tidak melihat/bisa memicu aksi itu.
   Detail role/entity dicatat di `docs/rbac-entities.csv` saat modul ini di-breakdown ke UC.
-- **NFR-06 (Hold Coil gate).** Tombol Save pada Laporan Produksi non-aktif selama ada Hold Coil
-  yang belum di-release atau di-claim pada sesi tersebut (FR-17) — verifikasi: mencoba submit
-  dengan Hold Coil aktif ditolak sistem, bukan hanya diperingatkan di UI.
+- **NFR-06 (Hold Coil gate; direvisi 2026-11-09).** Gerbang Hold Coil **pindah dari Save ke Submit**: Submit Laporan Produksi ditolak sistem
+  (bukan hanya diperingatkan di UI) selama ada claim Hold Coil laporan itu yang belum diputuskan Purchasing (FR-17, FR-18, FR-98). Save tidak
+  pernah dikunci oleh Hold Coil. **Atomik:** Save laporan dan pembuatan claim terjadi dalam satu transaksi; bila salah satu gagal (mis. bukti
+  claim belum lengkap) keduanya dibatalkan — verifikasi: menyimpan laporan dengan baris claim tanpa bukti ditolak dan tidak meninggalkan laporan
+  maupun baris claim setengah jadi.
 - **NFR-07 (Integrasi rate biaya & costbook).** (a) Standard rate Man Power, FOH, Bahan
   Pendukung Khusus, Consumables, dan Biaya Koordinasi yang dipakai FR-19/FR-20 diambil real-time
   dari Product Costing, bukan nilai yang disalin/statis. (b) Costbook Material yang dipakai
@@ -1144,3 +1347,14 @@ Consumables, Biaya Koordinasi, Scrap) memakai Rp/Kg dari Hasil Costing varian BO
 memilih varian BOM setelah produk. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74 baru; OQ 50–55 diusulkan dengan asumsi.
 
 **Pembaruan 2026-10-26 (jawaban OQ 50–55).** OQ 50, 51, 53, 54, 55 dijawab user: SPK ditolak bila produk tanpa varian BOM atau Hasil Costing belum lengkap; varian per produk; varian dapat diubah sampai laporan produksi diinput; SPK milik modul Production Planning (mockup Add SPK menyesuaikan ERD); `rate.html` dipensiunkan. OQ 52 dijawab menyusul: Hasil Costing terakhir yang di-Update Costing saat laporan dibuat. Tidak ada OQ terbuka untuk fitur ini.
+
+**Pembaruan 2026-10-27 (Claim Material).** Sumber: `input/Claim Process/` (BPMN D003 + workbook Rev.2) dan jawaban user 2026-10-27
+(`input/2026-10-27-claim-material/notes.md`). FR-75–FR-94 ditambahkan (Hold Coil, KW 2 Supplier, Reject Supplier menuju Claim Material;
+Process Decision Kompensasi/Retur, SPK Re-Pack, Surat Jalan Retur, Debit Note, alokasi pada Request Payment, tagihan dan penerimaan uang,
+posting jurnal otomatis dari Master Jurnal Claim); FR-06 disesuaikan (Purchasing, Release otomatis). OQ-C1–C9 dijawab; OQ-C2 (master
+email supplier) ditunda dan Master Jurnal Claim dibuat kemudian. Tabel claim (9 entitas) sudah ada di `erd-revisi.drawio` halaman 1.
+
+**Pembaruan 2026-10-28 (telaah alur mockup Claim).** Keputusan user atas G1–G6: FR-95 (Release coil tersambung ke Add Coil From Hold), FR-96 (daftar baca Gudang
+Slitting), FR-97 (kolom Progres turunan); FR-83/FR-84 direvisi (satu SPK dan satu SJ memuat beberapa claim satu supplier); FR-87 dipertegas (baris Debit Note
+dan Jual Material; Retur dan Lanjut Produksi tidak). OQ-C10 dijawab. Tidak ada pertanyaan terbuka untuk mockup; tersisa OQ-C2 (master email, ditunda) dan Master
+Jurnal Claim (dibuat kemudian).
