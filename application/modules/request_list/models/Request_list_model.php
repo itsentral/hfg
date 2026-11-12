@@ -13,21 +13,37 @@ class Request_list_model extends BF_Model
 
     /**
      * Get daftar SPK Material dengan filter status untuk DataTables server-side
-     * WHERE status IN ('Material Requested', 'Material On Load', 'Material Confirmed')
+     * Filter status: 'waiting' (default), 'released', atau 'all'
      * Include subquery detail_count untuk jumlah produk
      *
-     * @param string $search    Search keyword (spk_no)
-     * @param int    $start     Offset untuk pagination
-     * @param int    $length    Limit rows
-     * @param string $order_by  Kolom untuk ORDER BY
-     * @param string $order_dir ASC atau DESC
+     * @param string $search        Search keyword (spk_no)
+     * @param int    $start         Offset untuk pagination
+     * @param int    $length        Limit rows
+     * @param string $order_by      Kolom untuk ORDER BY
+     * @param string $order_dir     ASC atau DESC
+     * @param string $status_filter Filter status tab ('waiting', 'released', 'all')
      * @return array Array of SPK Material rows
      */
-    public function get_spk_list($search, $start, $length, $order_by, $order_dir)
+    public function get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter = 'waiting')
     {
-        $this->db->select('h.*, (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count');
+        $this->db->select("
+            h.*,
+            (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count,
+            (SELECT COUNT(DISTINCT COALESCE(wsc.id_pack, ks.id_coil))
+             FROM warehouse_coil_kartu_stok ks
+             LEFT JOIN warehouse_stock_coil wsc ON wsc.id = ks.id_coil
+             WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') as scanned_pack_count
+        ", false);
         $this->db->from('tr_spk_material_header h');
-        $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+
+        if ($status_filter === 'released') {
+            $this->db->where('h.status', 'Released');
+        } elseif ($status_filter === 'all') {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+        } else {
+            // Waiting / belum dirilis (tombol Release tersedia per baris SPK)
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        }
 
         if (!empty($search)) {
             $this->db->like('h.spk_no', $search);
@@ -42,19 +58,488 @@ class Request_list_model extends BF_Model
     /**
      * Count total SPK Material filtered untuk DataTables recordsFiltered
      *
-     * @param string $search Search keyword
+     * @param string $search        Search keyword
+     * @param string $status_filter Filter status tab ('waiting', 'released', 'all')
      * @return int Total count
      */
-    public function count_spk_filtered($search)
+    public function count_spk_filtered($search, $status_filter = 'waiting')
     {
-        $this->db->from('tr_spk_material_header');
-        $this->db->where_in('status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        $this->db->from('tr_spk_material_header h');
+
+        if ($status_filter === 'released') {
+            $this->db->where('h.status', 'Released');
+        } elseif ($status_filter === 'all') {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+        } else {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        }
 
         if (!empty($search)) {
-            $this->db->like('spk_no', $search);
+            $this->db->like('h.spk_no', $search);
         }
 
         return $this->db->count_all_results();
+    }
+
+    /**
+     * Hitung jumlah SPK per kategori status untuk tab badge
+     *
+     * @return array
+     */
+    public function get_status_counts()
+    {
+        $sql = "SELECT
+                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
+                    SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) as released_count,
+                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
+                FROM tr_spk_material_header";
+        $row = $this->db->query($sql)->row_array();
+
+        return array(
+            'waiting'  => (int) (isset($row['waiting_count']) ? $row['waiting_count'] : 0),
+            'released' => (int) (isset($row['released_count']) ? $row['released_count'] : 0),
+            'all'      => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
+        );
+    }
+
+    // ---------------------------------------------------------------
+    // SCAN NO. PACK -> PILIH SPK -> PRT + RELEASE SPK (ALUR BARU)
+    // ---------------------------------------------------------------
+
+    /**
+     * Daftar SPK aktif untuk popup pilihan setelah scan No. Pack:
+     * semua SPK selain Cancelled yang belum berstatus selesai (Done) di Production Report.
+     *
+     * @return array
+     */
+    public function get_scannable_spk_list()
+    {
+        $sql = "
+            SELECT
+                h.spk_no,
+                h.tgl_spk,
+                h.status,
+                h.shift_names,
+                (SELECT GROUP_CONCAT(CONCAT(d.nm_produk_fg, ' (', d.target_qty, ' pcs)') ORDER BY d.urut ASC SEPARATOR ', ')
+                 FROM tr_spk_material_detail d
+                 WHERE d.spk_no = h.spk_no) AS produk_summary
+            FROM tr_spk_material_header h
+            WHERE h.status != 'Cancelled'
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM production_reports pr
+                  JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                  WHERE d2.spk_no = h.spk_no
+                    AND pr.status_draft = 0
+              )
+            ORDER BY h.tgl_spk DESC, h.spk_no DESC
+        ";
+        return $this->db->query($sql)->result_array();
+    }
+
+    /**
+     * Validasi No. Pack sebelum menampilkan popup pemilihan No. SPK.
+     * Aturan:
+     * - Tidak mengikat material pack ke BOM SPK tertentu.
+     * - Hanya menerima pack aktif dari gudang PRO (bukan WIP / SLI / PRT).
+     *
+     * @param string $pack_code
+     * @return array
+     */
+    public function check_pack_for_scan($pack_code)
+    {
+        $pack_code = trim((string) $pack_code);
+        if ($pack_code === '') {
+            return ['status' => false, 'message' => 'Nomor Pack wajib diisi.'];
+        }
+
+        $pack = $this->db->query(
+            "SELECT * FROM warehouse_pack WHERE UPPER(TRIM(pack_code)) = UPPER(?) AND status = 1 LIMIT 1",
+            [$pack_code]
+        )->row_array();
+
+        if (!$pack) {
+            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" tidak ditemukan atau tidak aktif.'];
+        }
+
+        $pack_kd = strtoupper(trim((string) $pack['kd_gudang']));
+        if ($pack_kd === 'PRT') {
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah berada di gudang WRH Production 2 (PRT).'];
+        }
+        if ($pack_kd !== 'PRO') {
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' berada di gudang ' . ($pack_kd ?: '-') . '. Scan hanya menerima pack dari gudang PRO (WRH Production 1).'];
+        }
+
+        $coils = $this->db->query(
+            "SELECT id, id_material, nm_material, no_coil, kode_internal, id_gudang, kd_gudang,
+                    net_weight, gross_weight, status, status_proses, is_baby_coil
+             FROM warehouse_stock_coil
+             WHERE id_pack = ? AND status = 1
+             ORDER BY id ASC",
+            [(int) $pack['id']]
+        )->result_array();
+
+        if (empty($coils)) {
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' tidak memiliki coil aktif (kosong / sudah terpakai).'];
+        }
+
+        $eligible_coils = [];
+        $total_net      = 0.0;
+        $total_gross    = 0.0;
+
+        foreach ($coils as $c) {
+            $coil_kd = strtoupper(trim((string) $c['kd_gudang']));
+            $sp      = trim((string) $c['status_proses']);
+
+            if ($coil_kd === 'PRT' || $sp === 'in_transit') {
+                return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah memiliki coil di WRH Production 2 (PRT).'];
+            }
+            if ($coil_kd !== 'PRO') {
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' berada di gudang ' . ($coil_kd ?: '-') . ' (scan hanya menerima PRO).'];
+            }
+            if (in_array($sp, ['unpacked', 'consumed', 'wip', 'on_hold', 'finish_good'], true)) {
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' berstatus "' . $sp . '" dan tidak dapat dipindahkan.'];
+            }
+
+            $total_net   += (float) $c['net_weight'];
+            $total_gross += (float) $c['gross_weight'];
+            $eligible_coils[] = $c;
+        }
+
+        $spk_list = $this->get_scannable_spk_list();
+        if (empty($spk_list)) {
+            return ['status' => false, 'message' => 'Tidak ada SPK aktif yang dapat dipilih saat ini.'];
+        }
+
+        return [
+            'status' => true,
+            'pack'   => [
+                'id'                 => (int) $pack['id'],
+                'pack_code'          => $pack['pack_code'],
+                'ref_number'         => $pack['ref_number'],
+                'no_po'              => $pack['no_po'],
+                'kd_gudang'          => $pack['kd_gudang'],
+                'coil_count'         => count($eligible_coils),
+                'total_net_weight'   => round($total_net, 3),
+                'total_gross_weight' => round($total_gross, 3),
+            ],
+            'coils'    => $eligible_coils,
+            'spk_list' => $spk_list,
+        ];
+    }
+
+    /**
+     * Konfirmasi pemindahan seluruh coil aktif dalam pack dari PRO ke PRT
+     * dengan no_trs Kartu Pemakaian Material = $spk_no terpilih.
+     * Catatan: Tidak mengubah tr_spk_material_header.status.
+     *
+     * @param string $pack_code
+     * @param string $spk_no
+     * @param int    $created_by
+     * @return array
+     */
+    public function confirm_scan_pack_to_prt($pack_code, $spk_no, $created_by)
+    {
+        $pack_code = trim((string) $pack_code);
+        $spk_no    = trim((string) $spk_no);
+
+        if ($pack_code === '' || $spk_no === '') {
+            return ['status' => false, 'message' => 'No. Pack dan No. SPK wajib diisi.'];
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $this->load->helper('coil_kartu_stok');
+
+        $this->db->trans_begin();
+
+        $spk = $this->db->query(
+            "SELECT * FROM tr_spk_material_header WHERE spk_no = ? LIMIT 1 FOR UPDATE",
+            [$spk_no]
+        )->row_array();
+
+        if (!$spk) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'No. SPK "' . $spk_no . '" tidak ditemukan.'];
+        }
+        if ($spk['status'] === 'Cancelled') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat dipilih.'];
+        }
+
+        $done_pr = $this->db->query(
+            "SELECT pr.id
+             FROM production_reports pr
+             JOIN tr_spk_material_detail d ON d.id = pr.id_tr_spk_detail
+             WHERE d.spk_no = ? AND pr.status_draft = 0
+             LIMIT 1",
+            [$spk_no]
+        )->row_array();
+
+        if ($done_pr) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah selesai (Done) pada Production Report.'];
+        }
+
+        $pack = $this->db->query(
+            "SELECT * FROM warehouse_pack WHERE UPPER(TRIM(pack_code)) = UPPER(?) AND status = 1 LIMIT 1 FOR UPDATE",
+            [$pack_code]
+        )->row_array();
+
+        if (!$pack) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'No. Pack "' . $pack_code . '" tidak ditemukan atau tidak aktif.'];
+        }
+
+        $pack_kd = strtoupper(trim((string) $pack['kd_gudang']));
+        if ($pack_kd === 'PRT') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' sudah berada di gudang WRH Production 2 (PRT).'];
+        }
+        if ($pack_kd !== 'PRO') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' berada di gudang ' . ($pack_kd ?: '-') . ' (hanya menerima PRO).'];
+        }
+
+        $coils = $this->db->query(
+            "SELECT * FROM warehouse_stock_coil WHERE id_pack = ? AND status = 1 ORDER BY id ASC FOR UPDATE",
+            [(int) $pack['id']]
+        )->result_array();
+
+        if (empty($coils)) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Pack ' . $pack['pack_code'] . ' tidak memiliki coil aktif.'];
+        }
+
+        foreach ($coils as $c) {
+            $coil_kd = strtoupper(trim((string) $c['kd_gudang']));
+            $sp      = trim((string) $c['status_proses']);
+            if ($coil_kd !== 'PRO' || in_array($sp, ['in_transit', 'unpacked', 'consumed', 'wip', 'on_hold', 'finish_good'], true)) {
+                $this->db->trans_rollback();
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' pada pack ' . $pack['pack_code'] . ' tidak berada pada kondisi siap di gudang PRO.'];
+            }
+        }
+
+        $old_pack_snapshot = $pack;
+        $moved_coils       = [];
+        $total_weight      = 0.0;
+
+        foreach ($coils as $c) {
+            $res = $this->_move_coil_to_prt((int) $c['id'], $spk_no, (int) $created_by);
+            if ($res === false) {
+                $this->db->trans_rollback();
+                return ['status' => false, 'message' => 'Coil ' . $c['no_coil'] . ' gagal dipindahkan ke PRT.'];
+            }
+
+            $moved_coils[] = $c['no_coil'];
+            $total_weight += (float) $c['net_weight'];
+
+            $this->db->insert('tr_spk_scan_log', [
+                'spk_no'      => $spk_no,
+                'no_coil'     => !empty($c['no_coil']) ? $c['no_coil'] : $pack['pack_code'],
+                'scan_time'   => $now,
+                'scan_user'   => (int) $created_by,
+                'status_scan' => 'success',
+                'keterangan'  => 'Scan Pack ' . $pack['pack_code'] . ' (' . $c['kode_internal'] . ') PRO -> PRT | No. Trs: ' . $spk_no,
+            ]);
+        }
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Gagal menyimpan transaksi pindah pack ke PRT.'];
+        }
+
+        $this->db->trans_commit();
+
+        $new_pack_snapshot = array_merge($old_pack_snapshot, [
+            'id_gudang' => 3,
+            'kd_gudang' => 'PRT',
+        ]);
+
+        return [
+            'status'      => true,
+            'message'     => 'Pack ' . $pack['pack_code'] . ' (' . count($moved_coils) . ' coil, ' . number_format($total_weight, 2, '.', ',') . ' Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi ' . $spk_no . '.',
+            'pack_code'   => $pack['pack_code'],
+            'spk_no'      => $spk_no,
+            'coil_count'  => count($moved_coils),
+            'total_weight'=> round($total_weight, 3),
+            'log_payload' => [
+                'old' => $old_pack_snapshot,
+                'new' => $new_pack_snapshot,
+            ],
+        ];
+    }
+
+    /**
+     * Release SPK secara eksplisit melalui tombol per baris SPK di Request List.
+     * Menjadi syarat pembuatan Production Report.
+     *
+     * @param string $spk_no
+     * @param int    $user_id
+     * @return array
+     */
+    public function release_spk($spk_no, $user_id)
+    {
+        $spk_no = trim((string) $spk_no);
+        if ($spk_no === '') {
+            return ['status' => false, 'message' => 'Nomor SPK tidak valid.'];
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $this->db->trans_begin();
+
+        $old = $this->db->query(
+            "SELECT * FROM tr_spk_material_header WHERE spk_no = ? LIMIT 1 FOR UPDATE",
+            [$spk_no]
+        )->row_array();
+
+        if (!$old) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK "' . $spk_no . '" tidak ditemukan.'];
+        }
+
+        if ($old['status'] === 'Released') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah berstatus Released.'];
+        }
+
+        if ($old['status'] === 'Cancelled') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat di-release.'];
+        }
+
+        $update_data = [
+            'status'     => 'Released',
+            'updated_by' => (int) $user_id,
+            'updated_at' => $now,
+        ];
+
+        $this->db->where('spk_no', $spk_no)->update('tr_spk_material_header', $update_data);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Gagal mengubah status SPK menjadi Released.'];
+        }
+
+        $this->db->trans_commit();
+
+        return [
+            'status'      => true,
+            'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
+            'log_payload' => [
+                'old' => $old,
+                'new' => array_merge($old, $update_data),
+            ],
+            'counts'      => $this->get_status_counts(),
+        ];
+    }
+
+    /**
+     * Ambil detail SPK + produk sesuai format spk_material/view untuk halaman view_spk_coil.
+     *
+     * @param string $spk_no
+     * @return array|null
+     */
+    public function get_spk_detail_for_view($spk_no)
+    {
+        $header = $this->db
+            ->select('h.*, COALESCE(u.nm_lengkap, u.username, h.created_by) AS created_by_name')
+            ->from('tr_spk_material_header h')
+            ->join('users u', 'u.id_user = h.created_by', 'left')
+            ->where('h.spk_no', $spk_no)
+            ->get()
+            ->row_array();
+
+        if (!$header) {
+            return null;
+        }
+
+        $sql = "
+            SELECT
+                d.*,
+                MAX(COALESCE(m.thickness, 0)) AS thickness,
+                MAX(COALESCE(bd.berat_per_meter, 0)) AS berat_per_meter
+            FROM tr_spk_material_detail d
+            LEFT JOIN ms_bom_header bh ON bh.id_produk = d.id_produk_fg AND bh.is_delete = 0
+            LEFT JOIN ms_bom_detail bd ON bd.id_bom = bh.id AND (bd.no_uniq_id = d.no_uniq_id OR d.no_uniq_id IS NULL) AND bd.is_delete = 0
+            LEFT JOIN new_inventory_4 m ON (m.code_lv4 = bd.id_material OR m.id = bd.id_material)
+            WHERE d.spk_no = ?
+            GROUP BY d.id
+            ORDER BY d.urut ASC
+        ";
+        $details = $this->db->query($sql, [$spk_no])->result_array();
+
+        return [
+            'spk'     => $header,
+            'details' => $details,
+        ];
+    }
+
+    /**
+     * Ambil riwayat read-only Pack / Coil yang pernah di-scan ke PRT dengan no_trs = $spk_no.
+     *
+     * @param string $spk_no
+     * @return array
+     */
+    public function get_spk_scan_pack_history($spk_no)
+    {
+        $rows = $this->db->query(
+            "SELECT
+                ks.id,
+                ks.no_trs,
+                ks.id_coil,
+                ks.id_material,
+                ks.nm_material,
+                ks.no_coil,
+                ks.kode_internal,
+                ks.dari,
+                ks.ke,
+                ks.qty_trans,
+                ks.keterangan,
+                ks.created_by,
+                ks.created_at,
+                wp.pack_code,
+                wsc.kd_gudang AS current_kd_gudang,
+                wsc.status_proses
+             FROM warehouse_coil_kartu_stok ks
+             LEFT JOIN warehouse_stock_coil wsc ON wsc.id = ks.id_coil
+             LEFT JOIN warehouse_pack wp ON wp.id = wsc.id_pack
+             WHERE ks.no_trs = ?
+               AND ks.status = 'in'
+               AND ks.ke = 'prod. 2'
+             ORDER BY ks.created_at DESC, ks.id DESC",
+            [$spk_no]
+        )->result_array();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        // Map numeric user IDs cleanly without risking mixed collation/int cast issues
+        $user_ids = [];
+        foreach ($rows as $r) {
+            if (!empty($r['created_by']) && ctype_digit((string) $r['created_by'])) {
+                $user_ids[] = (int) $r['created_by'];
+            }
+        }
+        $user_map = [];
+        if (!empty($user_ids)) {
+            $users = $this->db
+                ->select('id_user, nm_lengkap, username')
+                ->where_in('id_user', array_values(array_unique($user_ids)))
+                ->get('users')
+                ->result_array();
+            foreach ($users as $u) {
+                $user_map[(string) $u['id_user']] = !empty($u['nm_lengkap']) ? $u['nm_lengkap'] : $u['username'];
+            }
+        }
+
+        foreach ($rows as &$r) {
+            $uid = (string) ($r['created_by'] ?? '');
+            $r['scanned_by_name'] = isset($user_map[$uid]) ? $user_map[$uid] : ($uid !== '' ? $uid : '-');
+        }
+        unset($r);
+
+        return $rows;
     }
 
     // ---------------------------------------------------------------
@@ -827,6 +1312,38 @@ class Request_list_model extends BF_Model
             $this->db->update('warehouse_coil_per_day', $coil_snap_in_data, ['id' => $coil_snap_in->id]);
         }
 
+        // ===== KARTU PEMAKAIAN MATERIAL: Catat IN masuk WRH. Production 2 (PRT) =====
+        $this->load->helper('coil_kartu_stok');
+        if ($this->db->table_exists('warehouse_coil_kartu_stok')) {
+            $parent_spk = kartu_stok_extract_parent_spk($kode_trans);
+            if ($parent_spk === '') {
+                $parent_spk = $kode_trans;
+            }
+            $exists_ks = $this->db->get_where('warehouse_coil_kartu_stok', [
+                'id_coil' => (int) $id_coil,
+                'no_trs'  => $parent_spk,
+                'status'  => 'in',
+                'ke'      => 'prod. 2',
+            ])->row();
+            if (!$exists_ks) {
+                kartu_stok_record_entry([
+                    'id_coil'       => (int) $id_coil,
+                    'no_trs'        => $parent_spk,
+                    'id_material'   => $coil['id_material'],
+                    'nm_material'   => $coil['nm_material'],
+                    'no_coil'       => $coil['no_coil'],
+                    'kode_internal' => $coil['kode_internal'],
+                    'status'        => 'in',
+                    'dari'          => kartu_stok_map_gudang_label($source_kd_gudang),
+                    'ke'            => 'prod. 2',
+                    'qty_trans'     => $net_weight,
+                    'keterangan'    => 'Coil pindah ke WRH Production 2 (' . $kode_trans . ')',
+                    'created_by'    => $created_by,
+                    'created_at'    => $now,
+                ]);
+            }
+        }
+
         // Ringkasan per coil — TANPA nilai saldo (tidak menggerakkan warehouse_stock).
         return [
             'id_material' => $coil['id_material'],
@@ -1094,5 +1611,56 @@ class Request_list_model extends BF_Model
         }
 
         return array('status' => true, 'message' => count($detail_records) . ' coil berhasil ditambahkan ke ' . $header['spk_coil_no'] . '.', 'spk_no' => $header['spk_no']);
+    }
+
+    /**
+     * Ambil daftar material yang dibutuhkan SPK dari formula BOM produk
+     */
+    public function get_materials_by_spk($spk_no)
+    {
+        $sql = "
+            SELECT DISTINCT bd.id_material, m.nama as nm_material
+            FROM tr_spk_material_detail d
+            JOIN ms_bom_header bh ON bh.id_produk = d.id_produk_fg AND bh.is_delete = 0
+            JOIN ms_bom_detail bd ON bd.id_bom = bh.id AND bd.is_delete = 0
+            LEFT JOIN new_inventory_4 m ON (m.code_lv4 = bd.id_material OR m.id = bd.id_material)
+            WHERE d.spk_no = ?
+        ";
+        return $this->db->query($sql, [$spk_no])->result_array();
+    }
+
+    /**
+     * Cek status pack di gudang untuk material-material SPK
+     */
+    public function check_material_packs($materials_needed)
+    {
+        if (empty($materials_needed)) return ['unpacked_packs' => [], 'raw_packs' => []];
+
+        $mat_ids = array_column($materials_needed, 'id_material');
+        if (empty($mat_ids)) return ['unpacked_packs' => [], 'raw_packs' => []];
+
+        $this->db->select('wsc.id_pack, wp.pack_code, wsc.id_material, wsc.status_proses, COUNT(wsc.id) as coil_count');
+        $this->db->from('warehouse_stock_coil wsc');
+        $this->db->join('warehouse_pack wp', 'wp.id = wsc.id_pack', 'left');
+        $this->db->where_in('wsc.id_material', $mat_ids);
+        $this->db->where('wsc.id_pack IS NOT NULL', null, false);
+        $this->db->group_by('wsc.id_pack, wp.pack_code, wsc.id_material, wsc.status_proses');
+        $rows = $this->db->get()->result_array();
+
+        $unpacked_packs = [];
+        $raw_packs = [];
+        foreach ($rows as $r) {
+            $pcode = !empty($r['pack_code']) ? $r['pack_code'] : ('Pack #' . $r['id_pack']);
+            if ($r['status_proses'] === 'unpacked') {
+                $unpacked_packs[] = $pcode;
+            } else {
+                $raw_packs[] = $pcode;
+            }
+        }
+
+        return [
+            'unpacked_packs' => array_values(array_unique(array_filter($unpacked_packs))),
+            'raw_packs'      => array_values(array_unique(array_filter($raw_packs))),
+        ];
     }
 }

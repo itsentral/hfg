@@ -862,50 +862,54 @@ class Finalize_incoming extends Admin_Controller
             : $price_unit_idr;
 
         // ── 5. Upsert warehouse_stock ─────────────────────────────────────────
+        // PROTEKSI 2: Hanya izinkan update/insert warehouse_stock untuk Gudang Produksi (1) dan Slitting (2)
+        // Mencegah penambahan stok agregat secara tidak sengaja ke Gudang WIP, Hold, atau gudang lainnya
         $now     = date('Y-m-d H:i:s');
         $today   = date('Y-m-d');
         $user_id = $this->auth->user_id();
         $id_pack_val = isset($extra['id_pack']) ? (int) $extra['id_pack'] : null;
 
-        if (empty($get_stock)) {
-            $this->db->insert('warehouse_stock', [
-                'code_lv1'        => $code_lv1,
-                'code_lv2'        => $code_lv2,
-                'code_lv3'        => $code_lv3,
-                'code_lv4'        => $id_material,
-                'code_incoming'   => $kode_trans,
-                'nm_material'     => $nm_material,
-                'trade_name'      => $trade_name,
-                'id_gudang'       => $id_gudang,
-                'kd_gudang'       => $kd_gudang,
-                'id_unit'         => $id_unit,
-                'id_unit_packing' => $id_unit_packing,
-                'id_pack'         => $id_pack_val,
-                'begining'        => 0,
-                'incoming'        => $qty_in,
-                'outgoing'        => 0,
-                'qty_stock'       => $qty_akhir,
-                'qty_booking'     => 0,
-                'qty_free'        => $qty_akhir,
-                'use_qty_free'    => 0,
-                'harga_beli'      => $costbook,             // hapus (int) round()
-                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
-                'update_by'       => $user_id,
-                'update_date'     => $now,
-            ]);
-        } else {
-            $this->db->update('warehouse_stock', [
-                'code_incoming'   => $kode_trans,
-                'trade_name'      => $trade_name,
-                'id_pack'         => $id_pack_val,
-                'incoming'        => $incoming_lama + $qty_in,
-                'qty_stock'       => $qty_akhir,
-                'qty_free'        => $qty_free_awal + $qty_in,
-                'harga_beli'      => $costbook,             // hapus (int) round()
-                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
-                'update_by'       => $user_id,
-                'update_date'     => $now,
-            ], ['id' => $get_stock->id]);
+        if (in_array((int) $id_gudang, [1, 2])) {
+            if (empty($get_stock)) {
+                $this->db->insert('warehouse_stock', [
+                    'code_lv1'        => $code_lv1,
+                    'code_lv2'        => $code_lv2,
+                    'code_lv3'        => $code_lv3,
+                    'code_lv4'        => $id_material,
+                    'code_incoming'   => $kode_trans,
+                    'nm_material'     => $nm_material,
+                    'trade_name'      => $trade_name,
+                    'id_gudang'       => $id_gudang,
+                    'kd_gudang'       => $kd_gudang,
+                    'id_unit'         => $id_unit,
+                    'id_unit_packing' => $id_unit_packing,
+                    'id_pack'         => $id_pack_val,
+                    'begining'        => 0,
+                    'incoming'        => $qty_in,
+                    'outgoing'        => 0,
+                    'qty_stock'       => $qty_akhir,
+                    'qty_booking'     => 0,
+                    'qty_free'        => $qty_akhir,
+                    'use_qty_free'    => 0,
+                    'harga_beli'      => $costbook,             // hapus (int) round()
+                    'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
+                    'update_by'       => $user_id,
+                    'update_date'     => $now,
+                ]);
+            } else {
+                $this->db->update('warehouse_stock', [
+                    'code_incoming'   => $kode_trans,
+                    'trade_name'      => $trade_name,
+                    'id_pack'         => $id_pack_val,
+                    'incoming'        => $incoming_lama + $qty_in,
+                    'qty_stock'       => $qty_akhir,
+                    'qty_free'        => $qty_free_awal + $qty_in,
+                    'harga_beli'      => $costbook,             // hapus (int) round()
+                    'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
+                    'update_by'       => $user_id,
+                    'update_date'     => $now,
+                ], ['id' => $get_stock->id]);
+            }
         }
 
         // ── 6. Snapshot harian warehouse_stock_per_day ────────────────────────
@@ -977,7 +981,16 @@ class Finalize_incoming extends Admin_Controller
         LIMIT 1
         ", [$id_material, $no_coil, $id_gudang])->row();
 
-        if (empty($existing_coil)) {
+        // PROTEKSI 3: Pastikan nomor coil tidak menimpa coil yang sudah berada di proses internal (WIP, Hold, atau Consumed)
+        $coil_internal = $this->db->query("
+        SELECT id, kd_gudang, status_proses FROM warehouse_stock_coil
+        WHERE no_coil = ? AND status_proses IN ('wip', 'on_hold', 'consumed')
+        LIMIT 1
+        ", [$no_coil])->row();
+
+        if (!empty($coil_internal)) {
+            log_message('error', "Incoming coil {$no_coil} ditolak / di-skip karena coil tersebut sudah terdaftar di proses internal (status: {$coil_internal->status_proses}, gudang: {$coil_internal->kd_gudang})");
+        } elseif (empty($existing_coil)) {
             $this->db->insert('warehouse_stock_coil', [
                 'id_material'    => $id_material,
                 'id_pack'        => isset($extra['id_pack']) ? (int) $extra['id_pack'] : null,
@@ -1240,9 +1253,24 @@ class Finalize_incoming extends Admin_Controller
             return;
         }
 
+        $allowed_gudang_id = [1, 2];
+        $allowed_gudang_kd = ['PRO', 'SLI'];
+
         foreach ($coils as $c) {
             if (empty($c['id_gudang_ke'])) {
-                echo json_encode(['status' => 0, 'pesan' => 'Some coils have not been assigned a warehouse!']);
+                echo json_encode(['status' => 0, 'pesan' => 'Ada coil yang belum ditentukan gudang tujuannya!']);
+                return;
+            }
+
+            $id_g = (int) $c['id_gudang_ke'];
+            $kd_g = strtoupper(trim($c['kd_gudang_ke'] ?? ''));
+
+            // PROTEKSI 1: Whitelist Gudang Tujuan (Hanya Gudang Produksi dan Slitting)
+            if (!in_array($id_g, $allowed_gudang_id) || (!empty($kd_g) && !in_array($kd_g, $allowed_gudang_kd))) {
+                echo json_encode([
+                    'status' => 0,
+                    'pesan'  => "Penyimpanan Incoming Material hanya diizinkan untuk Gudang Produksi (PRO) atau Gudang Slitting (SLI). Ditemukan coil [{$c['no_coil']}] yang dialokasikan ke gudang lain ({$c['kd_gudang_ke']})."
+                ]);
                 return;
             }
         }

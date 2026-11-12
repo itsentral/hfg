@@ -147,7 +147,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                         <div class="border-start ps-4">
                             <small class="text-muted d-block text-uppercase fw-bold" style="font-size:10px;">Status</small>
                             <?php
-                            $status_badges = ['Material Requested' => 'bg-warning text-dark', 'Material Confirmed' => 'bg-info text-dark'];
+                            $status_badges = ['Material Requested' => 'bg-warning text-dark', 'Material Confirmed' => 'bg-info text-dark', 'Released' => 'bg-success'];
                             $badge = isset($status_badges[$spk['status']]) ? $status_badges[$spk['status']] : 'bg-secondary';
                             ?>
                             <span class="badge <?= $badge ?>"><?= htmlspecialchars($spk['status']) ?></span>
@@ -214,52 +214,6 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     </div>
 </div>
 
-<!-- Material Viewer Modal -->
-<div class="modal fade" id="modalMaterial" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fa fa-cubes me-2"></i> Detail Material (BOM)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modal-skeleton">
-                    <div class="skeleton skeleton-line medium"></div>
-                    <div class="skeleton skeleton-line"></div>
-                    <div class="skeleton skeleton-line short"></div>
-                    <div class="skeleton skeleton-line"></div>
-                    <div class="skeleton skeleton-line medium"></div>
-                </div>
-                <div id="modal-content" style="display:none;">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-sm align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="120">Varian BOM</th>
-                                    <th width="110" class="text-end">Varian Tebal</th>
-                                    <th>Nama Material</th>
-                                    <th class="text-end" width="140">Berat Dibutuhkan (Kg)</th>
-                                    <th class="text-end" width="110">Stok WIP</th>
-                                    <th class="text-end" width="110">Stok Produksi</th>
-                                    <th class="text-center" width="110">Pack Available</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modal-material-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div id="modal-error" style="display:none;" class="text-center py-4">
-                    <i class="fa fa-exclamation-triangle text-danger fa-2x mb-2"></i>
-                    <p class="text-danger mb-3" id="modal-error-msg"></p>
-                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnRetryMaterial">
-                        <i class="fa fa-refresh"></i> Coba Lagi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     const BASE_URL = siteurl + active_controller;
     const MODE = '<?= $mode ?>';
@@ -308,13 +262,6 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         });
 
         $('#btnSubmitSpk').on('click', submitForm);
-
-        $('#btnRetryMaterial').on('click', function() {
-            var produkId = $(this).data('produk-id');
-            var targetQty = $(this).data('target-qty');
-            var noUniqId = $(this).data('no-uniq-id');
-            if (produkId && targetQty) loadMaterialBom(produkId, targetQty, noUniqId);
-        });
     });
 
     // ---------------------------------------------------------------
@@ -368,7 +315,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     }
 
     // ---------------------------------------------------------------
-    // ADD PRODUCT LINE (no shift — shift is in header now)
+    // ADD PRODUCT LINE
     // ---------------------------------------------------------------
     function addProductLine(data) {
         lineCounter++;
@@ -377,7 +324,6 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
         var selectedProduct = detail.id_produk_fg || '';
         var selectedProductName = detail.nm_produk_fg || '';
-        var selectedVariant = detail.no_uniq_id || '';
         var targetQty = detail.target_qty || '';
         var beratPerUnit = detail.berat_per_unit || 0;
         var totalWeight = detail.total_weight || 0;
@@ -389,40 +335,28 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 <i class="fa fa-times"></i>
             </button>
             <div class="row g-3 mt-1">
-                <div class="col-md-3">
+                <div class="col-md-5">
                     <label class="form-label">Produk <span class="text-danger">*</span></label>
                     <select class="form-select select-produk" id="produk_${idx}" data-idx="${idx}">
                         <option value="">-- Pilih Produk --</option>
                         ${selectedProduct ? '<option value="'+escHtml(selectedProduct)+'" selected>'+escHtml(selectedProductName)+'</option>' : ''}
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Varian Tebal (BOM) <span class="text-danger">*</span></label>
-                    <select class="form-select select-variant" id="variant_${idx}" data-idx="${idx}">
-                        <option value="">-- Pilih Varian Tebal --</option>
-                        ${selectedVariant ? '<option value="'+escHtml(selectedVariant)+'" selected>'+escHtml(selectedVariant)+'</option>' : ''}
-                    </select>
-                    <small class="text-muted d-block mt-1 variant-info" id="variant_info_${idx}"></small>
-                </div>
                 <div class="col-md-2">
                     <label class="form-label">Target Qty <span class="text-danger">*</span></label>
                     <input type="number" class="form-control input-target-qty" id="qty_${idx}" data-idx="${idx}"
                            min="1" max="999999" step="1" placeholder="0" value="${targetQty}">
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label class="form-label">Berat/Unit</label>
                     <input type="text" class="form-control input-berat-per-unit" id="berat_${idx}" readonly
                            value="${beratPerUnit ? parseFloat(beratPerUnit).toFixed(2) : '0.00'}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label class="form-label">Total Weight (Kg)</label>
                     <input type="text" class="form-control input-total-weight" id="weight_${idx}" readonly
                            value="${totalWeight ? parseFloat(totalWeight).toFixed(2) : '0.00'}">
                     <div class="weight-warning" id="weight_warn_${idx}" style="display:none; font-size: 11px; color: #dc3545;">Berat/Unit belum diset</div>
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="button" class="btn btn-sm btn-outline-info w-100 btn-show-material"
-                            data-idx="${idx}" title="Detail Material BOM"><i class="fa fa-cubes"></i></button>
                 </div>
             </div>
         </div>`;
@@ -434,14 +368,13 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         toggleRemoveButtons();
 
         if (selectedProduct) {
-            fetchProdukInfo(idx, selectedProduct, selectedVariant);
+            fetchProdukInfo(idx, selectedProduct);
         }
     }
 
     // ---------------------------------------------------------------
     // INIT SELECT2 - PRODUK
     // ---------------------------------------------------------------
-
     function initProdukSelect2(idx) {
         $('#produk_' + idx).select2({
             placeholder: '-- Pilih Produk --',
@@ -476,11 +409,10 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             var prodId = $(this).val();
             var lineIdx = $(this).data('idx');
             if (prodId) {
+                checkDuplicateProduct(lineIdx);
                 fetchProdukInfo(lineIdx, prodId);
             } else {
                 $('#berat_' + lineIdx).val('0.00');
-                $('#variant_' + lineIdx).html('<option value="">-- Pilih Varian Tebal --</option>');
-                $('#variant_info_' + lineIdx).html('');
                 recalcWeight(lineIdx);
             }
         });
@@ -510,41 +442,13 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) return;
             e.preventDefault();
         });
-
-        $('#variant_' + idx).on('change', function() {
-            updateVariantInfo(idx);
-            checkDuplicateProductVariant(idx);
-        });
-
-        $(document).on('click', '.btn-show-material[data-idx="' + idx + '"]', function() {
-            var lineIdx = $(this).data('idx');
-            var prodId = $('#produk_' + lineIdx).val();
-            var qty = parseInt($('#qty_' + lineIdx).val()) || 0;
-            var noUniqId = $('#variant_' + lineIdx).val() || '';
-            if (!prodId) {
-                Swal.fire('Perhatian', 'Pilih produk terlebih dahulu.', 'warning');
-                return;
-            }
-            if (qty < 1) {
-                Swal.fire('Perhatian', 'Masukkan Target Qty terlebih dahulu.', 'warning');
-                return;
-            }
-            loadMaterialBom(prodId, qty, noUniqId);
-        });
     }
 
     // ---------------------------------------------------------------
-    // FETCH PRODUCT INFO & BOM VARIANTS
+    // FETCH PRODUCT INFO (Weight)
     // ---------------------------------------------------------------
-    function fetchProdukInfo(idx, prodId, selectedVariant) {
-        var $variantSelect = $('#variant_' + idx);
-        var $variantInfo = $('#variant_info_' + idx);
-
-        $variantSelect.html('<option value="">Memuat varian...</option>').prop('disabled', true);
-        $variantInfo.html('');
-
+    function fetchProdukInfo(idx, prodId) {
         $.get(BASE_URL + '/get_produk_info/' + encodeURIComponent(prodId), function(res) {
-            $variantSelect.prop('disabled', false);
             if (res.status == 1) {
                 var weight = parseFloat(res.data.weight) || 0;
                 $('#berat_' + idx).val(weight.toFixed(2));
@@ -554,79 +458,20 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     $('#weight_warn_' + idx).hide();
                 }
                 recalcWeight(idx);
-
-                var variants = res.data.variants || [];
-                var options = '<option value="">-- Pilih Varian Tebal --</option>';
-                var foundSelected = false;
-
-                variants.forEach(function(v) {
-                    var thickStr = (v.thickness && parseFloat(v.thickness) > 0) ? parseFloat(v.thickness).toFixed(3) + ' mm' : '';
-                    var label = v.no_uniq_id;
-                    if (thickStr) {
-                        label += ' - ' + thickStr;
-                    }
-                    if (v.nm_material) {
-                        label += ' (' + v.nm_material + ')';
-                    }
-
-                    var isSel = (selectedVariant && v.no_uniq_id === selectedVariant);
-                    if (isSel) foundSelected = true;
-
-                    options += '<option value="' + escHtml(v.no_uniq_id) + '" data-thickness="' + (v.thickness || '') + '" data-material="' + escHtml(v.nm_material || '') + '" ' + (isSel ? 'selected' : '') + '>' + escHtml(label) + '</option>';
-                });
-
-                $variantSelect.html(options);
-
-                // Auto-select if only 1 variant exists and no pre-selected variant
-                if (!foundSelected && variants.length === 1) {
-                    $variantSelect.val(variants[0].no_uniq_id);
-                } else if (selectedVariant) {
-                    $variantSelect.val(selectedVariant);
-                }
-
-                updateVariantInfo(idx);
-                checkDuplicateProductVariant(idx);
-            } else {
-                $variantSelect.html('<option value="">-- Gagal memuat varian --</option>');
             }
-        }, 'json').fail(function() {
-            $variantSelect.prop('disabled', false).html('<option value="">-- Gagal memuat varian --</option>');
-        });
+        }, 'json');
     }
 
-    function updateVariantInfo(idx) {
-        var $opt = $('#variant_' + idx).find('option:selected');
-        var val = $('#variant_' + idx).val();
-        var $info = $('#variant_info_' + idx);
-
-        if (val && $opt.length > 0) {
-            var thickness = $opt.data('thickness');
-            var material = $opt.data('material');
-            var text = '';
-            if (thickness && parseFloat(thickness) > 0) {
-                text += 'Tebal: ' + parseFloat(thickness).toFixed(3) + ' mm';
-            }
-            if (material) {
-                text += (text ? ' | ' : '') + 'Coil: ' + material;
-            }
-            $info.html(text ? '<i class="fa fa-info-circle text-info"></i> ' + escHtml(text) : '');
-        } else {
-            $info.html('');
-        }
-    }
-
-    function checkDuplicateProductVariant(currentIdx) {
+    function checkDuplicateProduct(currentIdx) {
         var currentProd = $('#produk_' + currentIdx).val();
-        var currentVar = $('#variant_' + currentIdx).val();
-        if (!currentProd || !currentVar) return;
+        if (!currentProd) return;
 
         var isDup = false;
         $('#product-lines-container .product-line').each(function() {
             var thisIdx = $(this).data('line-idx');
             if (thisIdx != currentIdx) {
                 var p = $('#produk_' + thisIdx).val();
-                var v = $('#variant_' + thisIdx).val();
-                if (p === currentProd && v === currentVar) {
+                if (p === currentProd) {
                     isDup = true;
                     return false;
                 }
@@ -634,9 +479,8 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         });
 
         if (isDup) {
-            Swal.fire('Perhatian', 'Kombinasi Produk dan Varian Tebal ini sudah dipilih di baris lain.', 'warning');
-            $('#variant_' + currentIdx).val('');
-            updateVariantInfo(currentIdx);
+            Swal.fire('Perhatian', 'Produk ini sudah dipilih di baris lain.', 'warning');
+            $('#produk_' + currentIdx).val('').trigger('change');
         }
     }
 
@@ -680,63 +524,6 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     }
 
     // ---------------------------------------------------------------
-    // MATERIAL VIEWER MODAL
-    // ---------------------------------------------------------------
-    function loadMaterialBom(produkId, targetQty, noUniqId) {
-        $('#modal-skeleton').show();
-        $('#modal-content').hide();
-        $('#modal-error').hide();
-        $('#modalMaterial').modal('show');
-        $('#btnRetryMaterial')
-            .data('produk-id', produkId)
-            .data('target-qty', targetQty)
-            .data('no-uniq-id', noUniqId || '');
-
-        $.get(BASE_URL + '/get_material_bom/' + encodeURIComponent(produkId), {
-            target_qty: targetQty,
-            no_uniq_id: noUniqId || ''
-        }, function(res) {
-            $('#modal-skeleton').hide();
-            if (res.status == 1) {
-                var tbody = '';
-                if (res.data && res.data.length > 0) {
-                    res.data.forEach(function(m) {
-                        var packBadge = parseInt(m.pack_count) > 0
-                            ? '<span class="badge bg-success">' + m.pack_count + ' pack</span>'
-                            : '<span class="badge bg-danger">0</span>';
-                        var thickText = (m.thickness && parseFloat(m.thickness) > 0)
-                            ? parseFloat(m.thickness).toFixed(3) + ' mm'
-                            : '-';
-                        var variantBadge = m.no_uniq_id
-                            ? '<span class="badge bg-primary">' + escHtml(m.no_uniq_id) + '</span>'
-                            : '-';
-                        tbody += '<tr>';
-                        tbody += '<td>' + variantBadge + '</td>';
-                        tbody += '<td class="text-end fw-semibold">' + thickText + '</td>';
-                        tbody += '<td>' + escHtml(m.nm_material) + '</td>';
-                        tbody += '<td class="text-end">' + parseFloat(m.qty_needed).toFixed(4) + '</td>';
-                        tbody += '<td class="text-end">' + parseFloat(m.stok_wip || 0).toFixed(2) + '</td>';
-                        tbody += '<td class="text-end">' + parseFloat(m.stok_produksi || 0).toFixed(2) + '</td>';
-                        tbody += '<td class="text-center">' + packBadge + '</td>';
-                        tbody += '</tr>';
-                    });
-                } else {
-                    tbody = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data material.</td></tr>';
-                }
-                $('#modal-material-body').html(tbody);
-                $('#modal-content').show();
-            } else {
-                $('#modal-error-msg').text(res.message || 'Gagal memuat data material.');
-                $('#modal-error').show();
-            }
-        }, 'json').fail(function() {
-            $('#modal-skeleton').hide();
-            $('#modal-error-msg').text('Terjadi kesalahan jaringan.');
-            $('#modal-error').show();
-        });
-    }
-
-    // ---------------------------------------------------------------
     // FORM VALIDATION & SUBMIT
     // ---------------------------------------------------------------
     function submitForm() {
@@ -768,7 +555,6 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
             var produkId = $('#produk_' + idx).val();
             var produkText = $('#produk_' + idx).find('option:selected').text() || '';
-            var noUniqId = $('#variant_' + idx).val() || '';
             var targetQty = parseInt($('#qty_' + idx).val()) || 0;
             var beratPerUnit = parseFloat($('#berat_' + idx).val()) || 0;
             var totalWeight = parseFloat($('#weight_' + idx).val()) || 0;
@@ -776,21 +562,12 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             if (!produkId) {
                 markInvalid('#produk_' + idx, 'Produk harus dipilih.');
                 isValid = false;
-            }
-
-            var variantCount = $('#variant_' + idx + ' option').length - 1;
-            if (produkId && variantCount > 0 && !noUniqId) {
-                markInvalid('#variant_' + idx, 'Varian tebal wajib dipilih.');
-                isValid = false;
-            }
-
-            if (produkId) {
-                var prodKey = produkId + '___' + noUniqId;
-                if (productKeys.indexOf(prodKey) > -1) {
-                    markInvalid('#variant_' + idx, 'Kombinasi Produk dan Varian ini sudah dipilih di baris lain.');
+            } else {
+                if (productKeys.indexOf(produkId) > -1) {
+                    markInvalid('#produk_' + idx, 'Produk ini sudah dipilih di baris lain.');
                     isValid = false;
                 }
-                productKeys.push(prodKey);
+                productKeys.push(produkId);
             }
 
             var rawQty = $('#qty_' + idx).val();
@@ -808,7 +585,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             products.push({
                 id_produk_fg: produkId,
                 nm_produk_fg: produkText,
-                no_uniq_id: noUniqId,
+                no_uniq_id: null,
                 target_qty: targetQty,
                 berat_per_unit: beratPerUnit,
                 total_weight: totalWeight

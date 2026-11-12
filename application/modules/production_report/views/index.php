@@ -485,6 +485,8 @@
           let badgeHtml = '';
           if (st === 'Done') {
             badgeHtml = '<span class="badge-sub-status badge-sub-done"><i class="fa fa-check-circle"></i> Selesai</span>';
+          } else if (st === 'On Hold') {
+            badgeHtml = '<span class="badge-sub-status badge bg-danger text-white py-1 px-2"><i class="fa fa-pause-circle me-1"></i>SPK Sedang Di-Hold (' + (params.data.hold_claim_no || '') + ')</span>';
           } else if (st === 'Draft') {
             badgeHtml = '<span class="badge-sub-status badge-sub-draft"><i class="fa fa-pencil"></i> Draft</span>';
           } else {
@@ -534,7 +536,7 @@
       {
         headerName: "Aksi",
         field: "action",
-        width: 195,
+        width: 270,
         pinned: 'right',
         cellClass: 'd-flex align-items-center justify-content-center',
         headerClass: 'text-center',
@@ -549,8 +551,10 @@
                 '<i class="fa fa-eye me-1"></i>Laporan</a>' +
               '<a href="<?= site_url('production_report/hpp/') ?>' + reportId + '" class="btn btn-sm btn-outline-primary py-1 px-2" title="Lihat Perhitungan HPP & Jurnal">' +
                 '<i class="fa fa-calculator me-1"></i>HPP</a>' +
+              '<a href="<?= site_url('production_report/export_excel/') ?>' + reportId + '" class="btn btn-sm btn-outline-success py-1 px-2" title="Export Report Excel">' +
+                '<i class="fa fa-file-excel me-1"></i>Export</a>' +
               '</div>';
-          } else if (reportStatus === 'Draft' && spkNo) {
+          } else if ((reportStatus === 'Draft' || reportStatus === 'On Hold') && spkNo) {
             return '<div class="d-flex align-items-center justify-content-center w-100">' +
               '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
                 '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>' +

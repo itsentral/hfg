@@ -257,6 +257,7 @@ $ex      = $existing;
                     materials = {};
                     res.data.forEach(function(m) {
                         var key = m.id_material + '|' + m.id_gudang;
+                        var isMother = (m.category_name && String(m.category_name).toLowerCase() === 'mother');
                         materials[key] = {
                             id_material: m.id_material,
                             id_gudang: m.id_gudang,
@@ -264,10 +265,11 @@ $ex      = $existing;
                             no_coil: m.no_coil,
                             kode_internal_sample: m.kode_internal_sample,
                             nm_material: m.nm_material,
+                            category_name: m.category_name,
                             net_weight_pl: parseFloat(m.net_weight_pl) || 0,
                             gross_weight_pl: parseFloat(m.gross_weight_pl) || 0,
-                            jumlah_coil: parseInt(m.jumlah_coil) || 0,
-                            jumlah_coil_adjusted: null,
+                            jumlah_coil: isMother ? 1 : (parseInt(m.jumlah_coil) || 0),
+                            jumlah_coil_adjusted: isMother ? 1 : null,
                             babies: []
                         };
                     });
@@ -338,7 +340,8 @@ $ex      = $existing;
 
             keys.forEach(function(key, i) {
                 var m = materials[key];
-                var displayCount = (m.jumlah_coil_adjusted != null) ? m.jumlah_coil_adjusted : m.jumlah_coil;
+                var isMother = (m.category_name && String(m.category_name).toLowerCase() === 'mother');
+                var displayCount = isMother ? 1 : ((m.jumlah_coil_adjusted != null) ? m.jumlah_coil_adjusted : m.jumlah_coil);
 
                 var tr = '<tr data-key="' + key + '">';
 
@@ -361,7 +364,9 @@ $ex      = $existing;
                     })() + '</td>' +
                     '<td class="text-center">' +
                     '<input type="number" min="0" class="form-control form-control-sm text-center jumlah-coil-input" ' +
-                    'data-key="' + key + '" value="' + displayCount + '" style="width:70px;margin:0 auto;">' +
+                    'data-key="' + key + '" value="' + displayCount + '" style="width:70px;margin:0 auto;" ' +
+                    (isMother ? 'disabled readonly title="Mother Coil otomatis 1 roll"' : '') + '>' +
+                    (isMother ? '<small class="badge bg-secondary d-block mt-1" style="font-size:9px;">Mother (1 Roll)</small>' : '') +
                     '</td>';
 
                 if (i === 0) {
@@ -384,6 +389,11 @@ $ex      = $existing;
             var key = $(this).data('key');
             var m = materials[key];
             if (!m) return;
+            if (m.category_name && String(m.category_name).toLowerCase() === 'mother') {
+                $(this).val(1);
+                m.jumlah_coil_adjusted = 1;
+                return;
+            }
 
             var n = parseInt($(this).val());
             if (isNaN(n) || n < 0) n = 0;
@@ -782,16 +792,18 @@ $ex      = $existing;
             materials = {};
             (EXISTING.materials || []).forEach(function(m) {
                 var key = m.id_material + '|' + m.id_gudang;
+                var isMother = (m.category_name && String(m.category_name).toLowerCase() === 'mother');
                 materials[key] = {
                     id_material: m.id_material,
                     id_gudang: m.id_gudang,
                     kd_gudang: m.kd_gudang,
                     no_coil: m.no_coil,
                     nm_material: m.nm_material,
+                    category_name: m.category_name,
                     net_weight_pl: parseFloat(m.net_weight_pl) || 0,
                     gross_weight_pl: parseFloat(m.gross_weight_pl) || 0,
-                    jumlah_coil: (m.babies || []).length,
-                    jumlah_coil_adjusted: null,
+                    jumlah_coil: isMother ? 1 : (m.babies || []).length,
+                    jumlah_coil_adjusted: isMother ? 1 : null,
                     babies: (m.babies || []).map(function(b) {
                         return {
                             babycoil_code: b.babycoil_code,
