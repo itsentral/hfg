@@ -60,6 +60,7 @@ as part of the work that changes the schema, not as a later chore.
 - **Inspect every affected table, constraint and relationship before changing
   persistence behaviour**, and prefer a scoped, reversible change over a
   destructive one. Real client data is not a place to find out.
+- **Database: only `hfg_dev`; never `db_hfg_dev`. New tables/columns are written as migration SQL and never executed by the agent** (see `context/coder-only/testing.md`).
 - **Never run tests against anything but the isolated test database.** Once the
   project has code, write its **exact** test commands here in full — including
   any flag that is load-bearing, and what happens without it. A command that

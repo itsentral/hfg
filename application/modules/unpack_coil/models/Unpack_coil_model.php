@@ -44,7 +44,7 @@ class Unpack_coil_model extends BF_Model
     }
 
     // ===============================================================
-    // SUMBER PACK: pack yang sudah "Material Confirmed" (untuk select2)
+    // SUMBER PACK: pack yang sudah discan masuk PRT (tanpa ikatan BOM SPK)
     // 1 baris per pack (unik). Exclude pack yang sudah di-unpack (header aktif).
     // ===============================================================
 
@@ -53,32 +53,34 @@ class Unpack_coil_model extends BF_Model
         $params = array();
         $like = '';
         if (!empty($search)) {
-            $like = " AND (wrcd.pack_code LIKE ? OR wrh.spk_coil_no LIKE ?)";
+            $like = " AND (wp.pack_code LIKE ? OR wsc.no_coil LIKE ?)";
             $s = '%' . $search . '%';
-            $params = array($s, $s);
+            $params[] = $s;
+            $params[] = $s;
         }
 
         $sql = "
             SELECT
-                wrcd.pack_code,
-                wrcd.id_pack,
-                MIN(wrh.id)                 AS request_id,
-                COUNT(DISTINCT wsc.id)      AS coil_count,
+                wp.pack_code,
+                wp.id                           AS id_pack,
+                NULL                            AS request_id,
+                COUNT(DISTINCT wsc.id)          AS coil_count,
                 COUNT(DISTINCT wsc.id_material) AS material_count
-            FROM tr_warehouse_request_coil_detail wrcd
-            JOIN tr_warehouse_request_header wrh ON wrh.id = wrcd.request_id
-            JOIN warehouse_stock_coil wsc ON wsc.id = wrcd.id_coil
-            WHERE wrh.status = 'Material Confirmed'
-              AND wsc.status = 1
-              AND wsc.status_proses = 'in_transit'
+            FROM warehouse_pack wp
+            JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
+            WHERE wsc.status = 1
+              AND wsc.kd_gudang = 'PRT'
+              AND (wsc.status_proses IS NULL OR wsc.status_proses != 'unpacked')
+              AND wsc.is_baby_coil = 0
+              -- HANYA tampilkan pack yang BELUM PERNAH di-unpack
               AND NOT EXISTS (
                   SELECT 1 FROM tr_unpack_coil_header uh
-                  WHERE uh.id_pack = wrcd.id_pack
+                  WHERE uh.id_pack = wp.id
                     AND uh.is_delete = 0
               )
               {$like}
-            GROUP BY wrcd.pack_code, wrcd.id_pack
-            ORDER BY wrcd.pack_code ASC
+            GROUP BY wp.pack_code, wp.id
+            ORDER BY wp.pack_code ASC
         ";
 
         return $this->db->query($sql, $params)->result_array();
@@ -102,11 +104,15 @@ class Unpack_coil_model extends BF_Model
             GROUP_CONCAT(DISTINCT wsc.no_coil ORDER BY wsc.no_coil SEPARATOR ', ') AS no_coil,
             MIN(wsc.kode_internal) AS kode_internal_sample,
             SUM(wsc.net_weight)   AS net_weight_pl,
-            SUM(wsc.gross_weight) AS gross_weight_pl
+            SUM(wsc.gross_weight) AS gross_weight_pl,
+            MAX(i2.nama)          AS category_name
         FROM warehouse_stock_coil wsc
+        LEFT JOIN new_inventory_4 i4 ON (i4.code_lv4 = wsc.id_material OR i4.id = wsc.id_material)
+        LEFT JOIN new_inventory_2 i2 ON i2.code_lv2 = i4.code_lv2
         WHERE wsc.id_pack = ?
           AND wsc.status = 1
-          AND wsc.status_proses = 'in_transit'
+          AND wsc.kd_gudang = 'PRT'
+          AND (wsc.status_proses IS NULL OR wsc.status_proses != 'unpacked')
         GROUP BY wsc.id_material, wsc.id_gudang
         ORDER BY nm_material ASC
         ";
@@ -141,7 +147,8 @@ class Unpack_coil_model extends BF_Model
         AND wsc.id_material = ?
         AND wsc.id_gudang = ?
         AND wsc.status = 1
-        AND wsc.status_proses = 'in_transit'
+        AND wsc.kd_gudang = 'PRT'
+        AND (wsc.status_proses IS NULL OR wsc.status_proses != 'unpacked')
         ORDER BY wsc.id ASC
         ";
         return $this->db->query($sql, array($id_pack, $id_material, $id_gudang))->result_array();
@@ -280,8 +287,9 @@ class Unpack_coil_model extends BF_Model
     public function mark_induk_unpacked($id_coil_induk, $unpack_no)
     {
         $this->db->where('id', $id_coil_induk)->update('warehouse_stock_coil', array(
-            'status'  => 0,
-            'no_ipp'  => $unpack_no,
+            'status'        => 0,
+            'status_proses' => 'unpacked',
+            'no_ipp'        => $unpack_no,
         ));
     }
 
@@ -359,7 +367,13 @@ class Unpack_coil_model extends BF_Model
     public function get_materials_by_unpack($unpack_no)
     {
         return $this->db->query(
-            "SELECT * FROM tr_unpack_coil_material WHERE unpack_no = ? AND is_delete = 0 ORDER BY id ASC",
+            "SELECT m.*, MAX(i2.nama) AS category_name 
+             FROM tr_unpack_coil_material m 
+             LEFT JOIN new_inventory_4 i4 ON (i4.code_lv4 = m.id_material OR i4.id = m.id_material)
+             LEFT JOIN new_inventory_2 i2 ON i2.code_lv2 = i4.code_lv2
+             WHERE m.unpack_no = ? AND m.is_delete = 0 
+             GROUP BY m.id
+             ORDER BY m.id ASC",
             array($unpack_no)
         )->result_array();
     }

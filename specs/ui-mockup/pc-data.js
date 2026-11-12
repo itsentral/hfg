@@ -12,10 +12,34 @@
   // dengan mengganti kunci, supaya isian pengguna tidak hilang saat mockup diperbarui.
   const KEY = "mockPC.data";
   const LEGACY_KEYS = ["mockPC.v5"]; // bentuk data sama dengan SCHEMA 5
-  const SCHEMA = 11;
+  const SCHEMA = 12;
   const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
 
-  const seed = () => ({
+  // Produk contoh tambahan (ikut Master Produk; dipakai juga oleh mockup Gudang Coil > SPK Material lewat kode produk).
+  // Berat/unit (kg per pcs) di sini contoh untuk SPK Material; costing tetap menurunkan berat dari BOM.
+  const sampleProducts = () => {
+    const mk = (n, type, category, jenis, tebal, lebar, panjang, beratUnit, o) => Object.assign({
+      id: "PR" + (n + 2), kode: "P4260000" + String(n).padStart(2, "0"), status: "Aktif", type, category, jenis, name: "", nameManual: false,
+      codeMaster: "", lebar, tebal, panjang, retail: "", productCode: "", tradeName: "", packUnit: "Roll", conversion: 1, uom: "Meter",
+      maxStock: 0, minStock: 0, moq: 0, msds: "", dimP: panjang, dimT: 0.025, beratUnit, cbm: 0,
+    }, o || {});
+    const list = [
+      mk(1, "Atap", "Spandek", "Polos", 0.4, 1000, 6, 3.2, { retail: "Spandek Silver", tradeName: "SPANDEK SL 0.40", codeMaster: "SM1020402001" }),
+      mk(2, "Atap", "Genteng Metal", "Polos", 0.35, 800, 1.2, 2.4, { retail: "Genteng Metal Pasir", tradeName: "GENTENG PASIR 0.35", codeMaster: "GM1020403002", packUnit: "Pallet", conversion: 100, uom: "Lembar" }),
+      mk(3, "Baja Ringan", "RENG", "R35.45", 0.45, 35, 6, 1.9, { retail: "Reng 0.45", tradeName: "RENG 0.45", codeMaster: "RG1020404003", uom: "Batang" }),
+      mk(4, "Rangka", "Hollow", "Galvanis", 1.2, 40, 6, 4.6, { retail: "Hollow 40x40", tradeName: "HOLLOW 40X40", codeMaster: "HL1020405004", uom: "Batang" }),
+      mk(5, "Atap", "Spandek", "Warna", 0.45, 1000, 6, 3.4, { retail: "Spandek Biru", tradeName: "SPANDEK BIRU 0.45", codeMaster: "SM1020406005" }),
+      mk(6, "Baja Ringan", "CANAL C", "C75.70 B", 0.75, 75, 6, 2.2, { retail: "Kanal C", tradeName: "KANAL C 0.75", codeMaster: "KC1020407006", uom: "Batang" }),
+      mk(7, "Atap", "Genteng Metal", "Polos", 0.3, 800, 1.2, 2.1, { retail: "Genteng Metal Polos", tradeName: "GENTENG POLOS 0.30", codeMaster: "GM1020408007", packUnit: "Pallet", conversion: 100, uom: "Lembar" }),
+      mk(8, "Rangka", "Hollow", "Galvanis", 1.4, 50, 6, 6.1, { retail: "Hollow 50x50", tradeName: "HOLLOW 50X50", codeMaster: "HL1020409008", uom: "Batang" }),
+      mk(9, "Atap", "Spandek", "Polos", 0.5, 1050, 6, 4.0, { retail: "Spandek Silver Lebar", tradeName: "SPANDEK SL 0.50", codeMaster: "SM1020410009", moq: 300 }),
+      mk(10, "Baja Ringan", "CANAL C", "C75.70 B", 0.6, 75, 6, 1.8, { retail: "Kanal C Lama", tradeName: "KANAL C 0.60", codeMaster: "KC1020411010", uom: "Batang", status: "Nonaktif" }),
+    ];
+    list.forEach((p) => { p.name = [p.type, p.category, p.jenis].join(" ").toUpperCase() + " " + [p.tebal, p.lebar, p.panjang].join(" X ") + " M"; });  // sama dengan productName() (belum terdefinisi saat seed dibuat)
+    return list;
+  };
+  const seed = () => { const o = seedBase(); o.products = o.products.concat(sampleProducts()); return o; };
+  const seedBase = () => ({
     // 1. Master Produk (UC-01, FR-37) — hierarki 4 level. Berat per pcs tidak disimpan;
     //    diturunkan dari Berat/Meter varian BOM × Panjang.
     products: [
@@ -38,6 +62,7 @@
         dimP: 6, dimT: 0.05, beratUnit: 0, cbm: 0,
       },
     ],
+    // (produk contoh tambahan ditambahkan di bawah lewat sampleProducts())
     // 2. Master Material (UC-02) — Tebal (thickness) dan Lebar Coil (width). Berat/Meter
     //    TIDAK lagi atribut master: dihitung di BOM (UC-04) dari Master Standard Material.
     materials: [
@@ -183,6 +208,9 @@
   //      dibuang; entri lain milik pengguna tidak disentuh.
   function migrate(s, v) {
     s = s || {};
+    if (v < 12 && Array.isArray(s.products)) {   // v12: tambah produk contoh (kode P4260000xx) bila belum ada
+      sampleProducts().forEach((p) => { if (!s.products.some((x) => x.kode === p.kode)) s.products.push(p); });
+    }
     if (v < 6 && !Array.isArray(s.negoReq)) s.negoReq = [];
     if (v < 7) {
       if (!Array.isArray(s.bpNotif)) s.bpNotif = [];

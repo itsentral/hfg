@@ -24,6 +24,7 @@
     sisa: [],
     hold: [],
     confirmations: [],
+    claimIn: {},          // isian Produksi untuk baris Claim Material (problem/alasan/bukti/coil), kunci = key baris (FR-98)
   };
   let seq = 0;
   const uid = () => `r${++seq}`;
@@ -59,14 +60,52 @@
 
   // Opsi baby coil per sumber; sembunyikan yang sudah dipakai baris lain (dedup),
   // dan batasi ke material yang terdaftar di Master Costbook saja.
+  // G1 (FR-95): coil Hold yang sudah di-claim tidak tersedia di Unpack/WIP; yang diputuskan Lanjut Produksi tersedia lagi di sumber Hold
+  // (lengkap dengan catatan untuk Produksi). Dibaca dari data Claim (window.CL; mockClaim.data).
+  function claimHeld() {
+    const out = { held: new Set(), released: [] };
+    if (!window.CL) return out;
+    window.CL.state.claims.forEach((c) => {
+      if (c.asal !== "Hold Coil" || !c.babyCoil) return;
+      out.held.add(c.babyCoil);
+      const d = c.decisions.find((x) => x.aksi === "Lanjut Produksi");
+      if (d) out.released.push({ code: c.babyCoil, claim: c.id, catatan: d.ket || "" });
+    });
+    return out;
+  }
+  function coilMasterByCode(code) {
+    const all = M.COILS;
+    for (const k of Object.keys(all)) { const f = all[k].find((c) => c.code === code); if (f) return Object.assign({}, f); }
+    return null;
+  }
+  function releasedCoils() {
+    const have = new Set(M.COILS.hold.map((c) => c.code));
+    return claimHeld().released.filter((r) => !have.has(r.code)).map((r) => { const d = coilMasterByCode(r.code); return d ? Object.assign(d, { claim: r.claim, catatan: r.catatan }) : null; }).filter(Boolean);
+  }
+  // Catatan material di-hold untuk SPK ini: claim dari Hold & Claim yang belum diputuskan Purchasing (FR-94; keputusan user 2026-10-30)
+  function updateHoldNote() {
+    const el = $("#spkHoldNote"); if (!el) return;
+    const hm = window.CL ? CL.state.claims.filter((c) => c.spk === spk.no && !c.decisions.length) : [];
+    el.hidden = !hm.length;
+    el.innerHTML = hm.length ? "&#9888; Catatan: ada material yang di-hold dari SPK ini (menunggu keputusan Purchasing): " + hm.map((c) => `<strong>${c.coil}</strong> ${c.material} &middot; ${M.fmtNum(c.kg)} Kg (${c.asal}, ${c.id})`).join("; ") + "." : "";
+  }
+  function updateReleaseNote() {
+    updateHoldNote();
+    const el = $("#releaseNote"); if (!el) return;
+    const rc = releasedCoils();
+    el.hidden = !rc.length;
+    el.innerHTML = rc.length ? "Coil Release dari Claim tersedia di Add Coil From Hold: " + rc.map((r) => `<strong>${r.code}</strong> (${r.claim}${r.catatan ? " — Catatan untuk Produksi: " + r.catatan : ""})`).join("; ") : "";
+  }
   function babyCoilOptions(source, selectedCode) {
     const usedElsewhere = new Set(state.coils.filter((c) => c.code && c.code !== selectedCode).map((c) => c.code));
     const cbMaterials = new Set(M.costbook.materials());   // material yang ada di costbook
-    const opts = M.COILS[source]
+    const ch = claimHeld();
+    const base = source === "hold" ? M.COILS.hold.concat(releasedCoils()) : M.COILS[source].filter((c) => !ch.held.has(c.code) || c.code === selectedCode);
+    const opts = base
       .filter((c) => !usedElsewhere.has(c.code))
       // hanya material yang ada di costbook; kecualikan yang sedang terpilih agar nilai tak hilang
       .filter((c) => cbMaterials.has(c.material) || c.code === selectedCode)
-      .map((c) => `<option value="${c.code}" ${c.code === selectedCode ? "selected" : ""}>${c.code} · ${c.material}</option>`)
+      .map((c) => `<option value="${c.code}" ${c.code === selectedCode ? "selected" : ""}>${c.code} · ${c.material}${c.claim ? " · Release " + c.claim : ""}</option>`)
       .join("");
     return `<option value="">— Pilih Baby Coil —</option>${opts}`;
   }
@@ -90,6 +129,7 @@
       </tr>`;
     }).join("");
     empty.parentElement.style.display = state.coils.length ? "none" : "";
+    updateReleaseNote();
   }
 
   // Saat user memilih baby coil, tarik data material/berat/meter (FR-08)
@@ -99,7 +139,7 @@
     if (!code) {
       Object.assign(row, { code: "", material: "", nett: null, gross: null, meter: null, kulit: null, clamp: null });
     } else {
-      const data = M.coilByCode(row.source, code);
+      const data = M.coilByCode(row.source, code) || (row.source === "hold" ? coilMasterByCode(code) : null);
       if (data) Object.assign(row, data);
     }
     renderCoils();
@@ -380,16 +420,16 @@
   }
 
   /* ============================================================
-     GATE SAVE vs HOLD & CLAIM (FR-17, NFR-06)
+     GATE: Save tidak pernah dikunci Hold Coil; Submit dikunci selama claim Hold Coil belum diputuskan (FR-17/FR-18/NFR-06 revisi FR-98)
      ============================================================ */
   function updateGate() {
-    const hasHold = state.hold.length > 0;
-    $("#btnSave").disabled = hasHold;
-    $("#btnHoldClaim").disabled = !hasHold;
-    $("#holdNote").hidden = !hasHold;
-    $("#gateMsg").textContent = hasHold
-      ? "Ada Hold Coil — Save dikunci. Gunakan Hold & Claim."
-      : "Save aktif bila tidak ada Hold Coil.";
+    const pend = holdPending(), hasClaim = claimRows().length > 0;
+    $("#btnSave").disabled = pend.length > 0;
+    $("#holdNote").hidden = !state.hold.length;
+    $("#gateMsg").textContent = pend.length
+      ? "Submit dikunci: claim Hold Coil " + pend.map((c) => c.id).join(", ") + " menunggu keputusan Purchasing. Save tetap aktif."
+      : (hasClaim ? "Save menyimpan laporan sekaligus mengirim claim ke Claim Material." : "Save dan Submit aktif.");
+    renderClaims();
   }
 
   /* ============================================================
@@ -781,6 +821,7 @@
   function restoreForm(form) {
     if (!form || !form.state) return false;
     ["coils", "fg", "sisa", "hold", "confirmations"].forEach((k) => { if (Array.isArray(form.state[k])) state[k] = form.state[k]; });
+    if (form.state.claimIn && typeof form.state.claimIn === "object") state.claimIn = form.state.claimIn;
     if (form.state.kw2) state.kw2 = { internal: form.state.kw2.internal || [], supplier: form.state.kw2.supplier || [] };
     if (form.seq > seq) seq = form.seq;
     Object.keys(form.fields || {}).forEach((id) => { const el = $("#" + id); if (el) el.value = form.fields[id]; });
@@ -792,20 +833,163 @@
   }
 
   /* ============================================================
-     ACTIONS: Draft / Hold&Claim / Save
+     CLAIM MATERIAL MENYATU DI LAPORAN PRODUKSI (FR-98, merevisi FR-17/FR-75/FR-94/NFR-06)
+     Tidak ada lagi popup Hold & Claim. Baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) otomatis muncul di bagian "Claim Material"
+     pada form; Save menyimpan laporan SEKALIGUS membuat/memperbarui claim (satu input, atomik: validasi dulu, baru simpan keduanya).
+     Submit dikunci selama ada claim Hold Coil laporan ini yang belum diputuskan Purchasing. Supplier / No. PO / No. Coil Packing List
+     ditarik dari database lewat asal coil (CL.ORIGIN = data mockup).
      ============================================================ */
-  $("#btnDraft").addEventListener("click", () => {
+  const CLM = window.CL;
+  const hcCoil = (id) => state.coils.find((c) => c.id === id) || null;
+  const hcInfo = (r) => {
+    const c = hcCoil(r.coilId); const o = c && c.code ? CLM.ORIGIN[c.code] : null;
+    return { c, o, material: c ? c.material : "", gudang: c ? c.source : "unpack",
+      hargaKg: o ? o.hargaBeli : 0, costbookKg: c ? M.costbookFor(c.material, c.source) : 0, priceUnitPo: o ? o.priceUnitPo : 0 };
+  };
+  const HC_MAX = 20 * 1024 * 1024;   // batas ukuran bukti per berkas: 20 MB (OQ-C11, keputusan user 2026-10-29); format bebas, termasuk video
+  const hcKb = (n) => (n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB");
+  const escH = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // claim Hold Coil laporan ini yang belum diputuskan Purchasing -> mengunci Submit (FR-18, NFR-06)
+  const holdPending = () => CLM.state.claims.filter((c) => c.spk === spk.no && c.asal === "Hold Coil" && !c.decisions.length);
+
+  // Baris claim dari form (urutan: Hold, KW 2 Supplier, Reject Supplier); isian Production (problem/alasan/bukti) disimpan di state.claimIn[key]
+  function claimRows() {
+    const rows = [];
+    const push = (key, o) => {
+      const s = state.claimIn[key] || {};
+      const ex = rows.find((r) => r.key === key);
+      if (ex) { ex.kg += o.kg; return; }                                  // dua baris form untuk coil yang sama dijumlahkan
+      rows.push(Object.assign({}, o, { key, problem: s.problem != null ? s.problem : o.problem, alasan: s.alasan != null ? s.alasan : o.alasan,
+        bukti: s.bukti || [], coilId: o.fixed ? o.coilId : (s.coilId || o.coilId) }));
+    };
+    state.hold.forEach((h) => { if (h.coil && num(h.berat) > 0) push("Hold Coil:" + h.coil, { asal: "Hold Coil", coilId: h.coil, fixed: true, kg: num(h.berat), problem: "", alasan: "" }); });
+    const kw2 = {};
+    state.kw2.supplier.forEach((r) => {
+      if (!(num(r.total) > 0)) return;
+      const k = r.coil || "";
+      kw2[k] = kw2[k] || { kg: 0, ket: [] };
+      kw2[k].kg += num(r.total);
+      if (r.ket) kw2[k].ket.push(r.ket);
+    });
+    Object.keys(kw2).forEach((k) => push("KW 2 Supplier:" + k, { asal: "KW 2 Supplier", coilId: k, fixed: true, kg: kw2[k].kg, problem: "KW 2", alasan: [...new Set(kw2[k].ket)].join("; ") }));
+    // OQ-C9(a): coil asal Reject terisi otomatis hanya bila SPK memakai tepat satu baby coil; selain itu wajib dipilih eksplisit.
+    const withCode = state.coils.filter((c) => c.code);
+    const first = withCode.length === 1 ? withCode[0] : null;
+    [["rejProdSup", "Reject Product"], ["rejMatSup", "Reject Material"]].forEach(([id, p]) => {
+      const kg = num($("#" + id).value);
+      if (kg > 0) push("Reject Supplier:" + p, { asal: "Reject Supplier", coilId: first ? first.id : "", fixed: false, kg, problem: p, alasan: $("#rejKetSup").value.trim() });
+    });
+    return rows;
+  }
+  // Susun baris claim siap kirim + daftar kesalahan (validasi FR-94: baby coil asal, supplier/PO, Problem, Alasan, bukti)
+  function claimPayload(rows) {
+    const err = [], items = [];
+    rows.forEach((r, i) => {
+      const x = hcInfo(r), n = `Baris claim ${i + 1} (${r.asal})`;
+      if (!x.c) err.push(`${n}: baby coil asal belum dipilih${r.fixed ? " di form" : ""}.`);
+      else if (!x.o) err.push(`${n}: supplier/PO untuk ${x.c.code} belum ada di database Incoming.`);
+      if (!r.problem.trim() || !r.alasan.trim()) err.push(`${n}: Problem dan Alasan Produksi wajib diisi.`);
+      if (!r.bukti.length) err.push(`${n}: bukti dokumen pendukung wajib diunggah (minimal satu berkas).`);
+      if (x.c && x.o) items.push({ key: r.key, asal: r.asal, supplier: x.o.supplier, material: x.material, coil: x.o.packing, po: x.o.po, kg: r.kg, hargaKg: x.hargaKg,
+        costbookKg: x.costbookKg, priceUnitPo: x.priceUnitPo, problem: r.problem.trim(), alasan: r.alasan.trim(), babyCoil: x.c.code, gudang: x.gudang, bukti: r.bukti.map((b) => Object.assign({}, b)) });
+    });
+    return { err, items };
+  }
+
+  let claimSig = "", claimCache = [];
+  function renderClaims(force) {
+    const box = $("#claimBody"); if (!box) return;
+    const rows = claimRows();
+    const exOf = (r) => { const x = hcInfo(r); return CLM.A.cari(spk.no, { key: r.key, asal: r.asal, babyCoil: x.c ? x.c.code : "", problem: r.problem.trim() }); };
+    const sig = JSON.stringify(rows.map((r) => { const e = exOf(r); return [r.key, r.coilId, r.kg, r.bukti.length, e ? e.id + e.status : ""]; }));
+    if (!force && sig === claimSig) return;
+    claimSig = sig; claimCache = rows;
+    $("#claimCount").textContent = rows.length ? rows.length + " baris" : "tidak ada";
+    if (!rows.length) { box.innerHTML = '<p class="note" style="margin:0">Tidak ada Hold Coil, KW 2 (Supplier), atau Reject (Supplier) pada laporan ini, jadi tidak ada claim yang dikirim.</p>'; return; }
+    const coilSel = (r, i) => r.fixed
+      ? (hcCoil(r.coilId) ? hcCoil(r.coilId).code : '<span class="bad">— belum dipilih di form —</span>')
+      : `<select data-cl="${i}" data-f="coilId"><option value="">— Baby Coil —</option>${state.coils.filter((c) => c.code).map((c) => `<option value="${c.id}"${c.id === r.coilId ? " selected" : ""}>${c.code}</option>`).join("")}</select>`;
+    box.innerHTML = `<div class="table-wrap"><table class="tbl hc-tbl"><thead><tr>
+        <th>Asal</th><th>Baby Coil</th><th>Nama Material</th><th>Nama Supplier</th><th>No. PO</th><th>No. Coil Packing List</th><th class="num">Berat (Kg)</th><th class="num">Harga Beli/Kg</th><th class="num">Costbook/Kg</th><th class="num">Price/Unit PO</th><th>Problem</th><th>Alasan Produksi</th><th>Bukti Pendukung</th><th>Status Claim</th></tr></thead><tbody>
+      ${rows.map((r, i) => { const x = hcInfo(r), e = exOf(r), lock = !!e && e.status !== "Baru"; return `<tr>
+        <td>${r.asal}</td><td>${coilSel(r, i)}</td><td>${x.material || "—"}</td><td>${x.o ? x.o.supplier : "—"}</td><td>${x.o ? x.o.po : "—"}</td><td>${x.o ? x.o.packing : "—"}</td>
+        <td class="num">${M.fmtNum(r.kg)}</td><td class="num">${M.fmtNum(x.hargaKg)}</td><td class="num">${M.fmtNum(x.costbookKg)}</td><td class="num">${M.fmtNum(x.priceUnitPo)}</td>
+        <td><input type="text" data-cl="${i}" data-f="problem" value="${escH(r.problem)}" placeholder="mis. Karat"${lock ? " disabled" : ""} /></td>
+        <td><textarea data-cl="${i}" data-f="alasan" placeholder="Alasan / keterangan dari Produksi"${lock ? " disabled" : ""}>${escH(r.alasan)}</textarea></td>
+        <td class="hc-bukti">${r.bukti.map((b, j) => `<div class="hc-file">📎 ${escH(b.nama)} <small>(${hcKb(b.ukuran)})</small>${lock ? "" : ` <a href="#" data-cl-del="${i}:${j}">hapus</a>`}</div>`).join("")}<input type="file" multiple data-cl="${i}" data-f="bukti" /></td>
+        <td>${e ? `<strong>${e.id}</strong><br><span class="${lock ? "bad-txt" : ""}">${e.status}${lock ? " — terkunci" : " — dapat diedit"}</span>` : '<span class="muted">Dibuat saat Save</span>'}</td></tr>`; }).join("")}
+      </tbody></table></div>`;
+  }
+  function claimErr(msg) { const el = $("#claimErr"); el.textContent = msg || ""; el.hidden = !msg; if (msg) el.scrollIntoView({ block: "center", behavior: "smooth" }); }
+  function claimIn(i) { const r = claimCache[i]; return state.claimIn[r.key] || (state.claimIn[r.key] = {}); }
+  $("#claimBody").addEventListener("input", (e) => {
+    const t = e.target; if (t.dataset.cl == null || t.type === "file" || t.tagName === "SELECT") return;
+    claimIn(+t.dataset.cl)[t.dataset.f] = t.value;
+  });
+  $("#claimBody").addEventListener("change", (e) => {
+    const t = e.target; if (t.dataset.cl == null) return;
+    const i = +t.dataset.cl;
+    if (t.dataset.f === "coilId") { claimIn(i).coilId = t.value; renderClaims(true); return; }
+    if (t.dataset.f !== "bukti") return;
+    const all = [...t.files], ok = all.filter((f) => f.size <= HC_MAX), big = all.filter((f) => f.size > HC_MAX), tgt = claimIn(i);
+    Promise.all(ok.map(async (f) => ({ nama: f.name, ukuran: f.size, tipe: f.type || "", fid: await CLM.files.put(f) }))).then((list) => {
+      tgt.bukti = (tgt.bukti || []).concat(list); renderClaims(true);
+      if (big.length) claimErr("Berkas melebihi batas " + (HC_MAX / 1048576) + " MB per berkas dan tidak diunggah: " + big.map((f) => f.name + " (" + hcKb(f.size) + ")").join(", ") + ".");
+    });
+  });
+  $("#claimBody").addEventListener("click", (e) => {
+    const d = e.target.closest ? e.target.closest("[data-cl-del]") : null; if (!d) return;
+    e.preventDefault(); const [i, j] = d.dataset.clDel.split(":").map(Number); claimIn(i).bukti = (claimIn(i).bukti || []).filter((_, k) => k !== j); renderClaims(true);
+  });
+
+  // dialog umum (konfirmasi / ringkasan), memakai #hcModal
+  function askDlg(title, html, okText, cancelText) {
+    return new Promise((resolve) => {
+      const m = $("#hcModal"); m.hidden = false;
+      $("#hcBox").innerHTML = `<h3 class="modal__title">${title}</h3><div class="modal__body">${html}</div><div class="modal__actions" style="margin-top:16px">${cancelText ? `<button type="button" class="btn btn--ghost" data-dlg="0">${cancelText}</button>` : ""}<button type="button" class="btn btn--primary" data-dlg="1">${okText || "OK"}</button></div>`;
+      m.querySelectorAll("[data-dlg]").forEach((b) => b.addEventListener("click", () => { m.hidden = true; $("#hcBox").innerHTML = ""; resolve(b.dataset.dlg === "1"); }));
+    });
+  }
+  function refreshDocStatus() {
+    const done = M.spkStatus.get(spk.no) === "Done"; if (done) return;
+    const n = CLM.state.claims.filter((c) => c.spk === spk.no && c.babyCoil).length;
+    $("#docStatus").textContent = "Draft (tersimpan)" + (n ? " · " + n + " claim" : "");
+  }
+
+  /* Save = simpan laporan + kirim claim (FR-17 revisi, FR-98). Validasi dulu seluruhnya; bila ada yang gagal, tidak ada yang tersimpan (atomik). */
+  async function saveReport(quiet) {
+    const rows = claimRows(), p = claimPayload(rows);
+    if (p.err.length) { claimErr(p.err.join(" ")); toast("Save dibatalkan: isian Claim Material belum lengkap. Laporan belum tersimpan.", "warn"); return false; }
+    const meta = { spk: spk.no, tgl: $("#tglProduksi").value || new Date().toISOString().slice(0, 10) };
+    const kunci = CLM.A.cekKunci(meta, p.items);
+    if (kunci.length) { claimErr(kunci.join(" ")); toast("Save dibatalkan: ada baris claim yang terkunci. Laporan belum tersimpan.", "warn"); return false; }
+    claimErr("");
+    const hapus = CLM.A.akanDibatalkan(meta, p.items);
+    if (hapus.length) {
+      const ok = await askDlg("Batalkan claim?", `Baris sumber claim berikut sudah dihapus dari laporan dan claim-nya masih berstatus <strong>Baru</strong>, sehingga akan <strong>dibatalkan</strong>:<ul>${hapus.map((c) => `<li>${c.id} — ${c.asal}, ${c.babyCoil}, ${M.fmtNum(c.kg)} Kg</li>`).join("")}</ul>`, "Ya, simpan dan batalkan claim", "Kembali");
+      if (!ok) return false;
+    }
     persistReport();
-    $("#docStatus").textContent = "Draft (tersimpan)";
-    toast("Draft disimpan. Aktual dapat dicek terlebih dahulu.", "ok");
-  });
-  $("#btnHoldClaim").addEventListener("click", () => {
-    toast("Laporan dikirim ke alur Hold & Claim Material (PPIC).", "warn");
-    $("#docStatus").textContent = "Hold & Claim";
-  });
+    const res = CLM.A.sinkronDariProduksi(meta, p.items);
+    updateHoldNote(); updateGate(); renderClaims(true); refreshDocStatus();
+    const bits = [];
+    if (res.made.length) bits.push(`${res.made.length} claim dibuat (${res.made.join(", ")})`);
+    if (res.updated.length) bits.push(`${res.updated.length} claim diperbarui (${res.updated.join(", ")})`);
+    if (res.kept.length) bits.push(`${res.kept.length} claim terkunci tidak berubah (${res.kept.join(", ")})`);
+    if (res.removed.length) bits.push(`${res.removed.length} claim dibatalkan (${res.removed.join(", ")})`);
+    if (quiet) return true;
+    const pend = holdPending();
+    await askDlg("Laporan tersimpan", `<p>Laporan Produksi <strong>${spk.no}</strong> tersimpan sebagai <strong>Draft</strong>.</p>${bits.length ? `<p>${bits.join("; ")}.</p>` : "<p>Tidak ada claim yang dikirim.</p>"}${pend.length ? `<p class="note note--warn">SPK tetap terbuka (SPK Sedang Di-Hold). <strong>Submit</strong> terkunci sampai claim Hold Coil ${pend.map((c) => c.id).join(", ")} diputuskan Purchasing; produksi tidak perlu input ulang.</p>` : ""}${res.made.length ? '<p><a href="claim-material.html">Buka Daftar Claim Material</a></p>' : ""}`, "Tutup");
+    return true;
+  }
+  $("#btnDraft").addEventListener("click", () => { saveReport(false); });
 
   $("#prodForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+    // FR-98: Submit lebih dulu menyimpan laporan + claim (sama dengan Save), lalu ditolak bila claim Hold Coil belum diputuskan Purchasing (FR-18, NFR-06).
+    if (!(await saveReport(true))) return;
+    const pend = holdPending();
+    if (pend.length) { toast("Submit ditolak: claim Hold Coil " + pend.map((c) => c.id).join(", ") + " belum diputuskan Purchasing. Laporan dan claim sudah tersimpan.", "warn"); return; }
     const { over, selisihPct } = recalc();
 
     const items = [];
@@ -892,10 +1076,13 @@
     renderLines("hold");
     renderAudit();
     recalc();
+    renderClaims(true);
+    refreshDocStatus();
   }
 
   // Helper seed: tambah baris coil yang langsung terpilih
   function seedCoil(source, code) {
+    if (claimHeld().held.has(code)) return;   // coil yang sedang ditahan claim tidak di-seed (FR-95)
     const data = M.coilByCode(source, code);
     state.coils.push({ id: uid(), source, ...(data || { code: "", material: "", nett: null, gross: null, meter: null, kulit: null, clamp: null }) });
   }

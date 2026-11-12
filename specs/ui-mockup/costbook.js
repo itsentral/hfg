@@ -39,9 +39,9 @@
       const cells = WAREHOUSES.map((w) => {
         const v = table[mat] ? table[mat][w.key] : null;
         return `<td class="num">
-          <input type="number" min="0" step="1" class="cb-in"
+          <input type="text" inputmode="decimal" data-numfmt="1" class="cb-in"
                  data-material="${encodeURIComponent(mat)}" data-gudang="${w.key}"
-                 value="${v != null ? v : ""}" placeholder="—" />
+                 value="${v != null ? NumFmt.fmt(v) : ""}" placeholder="—" />
         </td>`;
       }).join("");
       return `<tr><td><strong>${mat}</strong></td>${cells}</tr>`;
@@ -54,7 +54,7 @@
     const mat = decodeURIComponent(t.dataset.material);
     const g = t.dataset.gudang;
     if (!table[mat]) table[mat] = {};
-    table[mat][g] = num(t.value);
+    table[mat][g] = num(NumFmt.norm(t.value));
     markDirty(true);
   }
 

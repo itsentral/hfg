@@ -72,6 +72,8 @@
             <button type="button" class="btn btn--soft" data-add-coil="wip">+ Add Coil From WIP</button>
             <button type="button" class="btn btn--soft" data-add-coil="hold">+ Add Coil From Hold</button>
           </div>
+          <p class="note" id="releaseNote" hidden></p>
+          <p class="note note--hold" id="spkHoldNote" hidden></p>
           <div class="table-wrap">
             <table class="tbl" id="coilTable">
               <thead>
@@ -181,7 +183,7 @@
       <section class="card">
         <div class="card__head">
           <h2><span class="card__num">5</span> Sisa Coil &amp; Hold Coil</h2>
-          <p class="card__hint">Sisa Coil masuk Gudang WIP. Bila ada Hold Coil, tombol Save nonaktif — harus lewat Hold &amp; Claim.</p>
+          <p class="card__hint">Sisa Coil masuk Gudang WIP. Bila ada Hold Coil, Save tetap aktif dan sekaligus mengirim claim; hanya Submit yang menunggu keputusan Purchasing (bagian 7).</p>
         </div>
         <div class="card__body grid grid--2">
           <div class="panel">
@@ -213,7 +215,7 @@
                 <tfoot><tr><td colspan="3" class="empty">Tidak ada hold coil.</td></tr></tfoot>
               </table>
             </div>
-            <p class="note note--warn" id="holdNote" hidden>⚠ Ada Hold Coil — tombol Save dikunci, gunakan <strong>Hold &amp; Claim</strong>.</p>
+            <p class="note note--warn" id="holdNote" hidden>⚠ Ada Hold Coil — <strong>Save</strong> sekaligus mengirim claim (lengkapi bagian 7 Claim Material); <strong>Submit</strong> menunggu keputusan Purchasing.</p>
           </div>
         </div>
       </section>
@@ -272,10 +274,23 @@
         </div>
       </section>
 
+      <!-- ============ SECTION: CLAIM MATERIAL (FR-98: diinput bersamaan dengan laporan) ============ -->
+      <section class="card" id="claimCard">
+        <div class="card__head">
+          <h2><span class="card__num">7</span> Claim Material <small class="muted" id="claimCount"></small></h2>
+          <p class="card__hint">Baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) di atas otomatis muncul di sini. Lengkapi Problem, Alasan, dan bukti; <strong>Save</strong> menyimpan laporan sekaligus mengirim claim ke Purchasing (satu input). Claim yang sudah diemail ke supplier terkunci.</p>
+        </div>
+        <div class="card__body">
+          <div id="claimBody"></div>
+          <p class="note"><strong>Bukti pendukung wajib</strong> (foto, video, berita acara QC, dsb.; format bebas, maksimal 20 MB per berkas; minimal satu berkas per baris). Bukti disimpan bersama claim dan tidak dapat dihapus setelah claim terkirim. Reject (Supplier) tidak punya baby coil di form, jadi baby coil asalnya dipilih di sini (terisi otomatis hanya bila SPK memakai satu baby coil). Hold Coil tidak dijurnal sampai claim diputuskan.</p>
+          <p class="hc-err" id="claimErr" hidden></p>
+        </div>
+      </section>
+
       <!-- ============ SECTION: SUMMARY ============ -->
       <section class="card card--summary">
         <div class="card__head">
-          <h2><span class="card__num">7</span> Summary — Packing List vs Aktual</h2>
+          <h2><span class="card__num">8</span> Summary — Packing List vs Aktual</h2>
         </div>
         <div class="card__body">
           <div class="summary-grid" id="summaryGrid">
@@ -296,7 +311,7 @@
       <!-- ============ AUDIT: KONFIRMASI SELISIH ============ -->
       <section class="card" id="auditCard" hidden>
         <div class="card__head">
-          <h2><span class="card__num">8</span> Jejak Konfirmasi Selisih</h2>
+          <h2><span class="card__num">9</span> Jejak Konfirmasi Selisih</h2>
           <p class="card__hint">Rekam jejak siapa mengonfirmasi selisih di luar toleransi &plusmn; 0,7% dan kapan (NFR-04 — Auditability).</p>
         </div>
         <div class="card__body">
@@ -321,13 +336,12 @@
       <!-- ============ ACTION BAR ============ -->
       <div class="actionbar">
         <div class="actionbar__note">
-          <span id="gateMsg" class="muted">Save aktif bila tidak ada Hold Coil.</span>
+          <span id="gateMsg" class="muted">Save dan Submit aktif.</span>
         </div>
         <div class="actionbar__btns">
           <a class="btn btn--ghost" href="hpp.html">Lihat HPP →</a>
-          <button type="button" class="btn btn--ghost" id="btnDraft">Save Draft</button>
-          <button type="button" class="btn btn--warn" id="btnHoldClaim" disabled>Hold &amp; Claim</button>
-          <button type="submit" class="btn btn--primary" id="btnSave">Save</button>
+          <button type="button" class="btn btn--primary" id="btnDraft">Save</button>
+          <button type="submit" class="btn btn--primary" id="btnSave">Submit</button>
         </div>
       </div>
     </form>
@@ -347,12 +361,18 @@
     </div>
   </div>
 
+  <!-- ============ DIALOG UMUM (konfirmasi / ringkasan Save; dulu popup Hold & Claim) ============ -->
+  <div class="modal" id="hcModal" hidden>
+    <div class="modal__box modal__box--xl" id="hcBox" role="dialog" aria-modal="true"></div>
+  </div>
+
   <!-- ============ TOAST ============ -->
   <div class="toast" id="toast" hidden></div>
   <script src="berry-shell.js"></script>
 
   <script src="pc-data.js"></script>
   <script src="data.js"></script>
+  <script src="claim-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

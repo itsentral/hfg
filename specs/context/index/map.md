@@ -441,6 +441,19 @@ status and the reasoning below):
 - **NFR-01–NFR-08** — quality constraints, not actor flows; see *Where NFRs go* in
   `workbook-conventions.md`.
 
+uc: UC-N21..UC-N36
+  name: Claim Material (Kompensasi / Retur) — FEAT-11
+  user: Purchasing (UC-N21–N25, N30, N34–N36), PPIC (UC-N26–N29, N35, N36), Accounting / Finance (UC-N31–N34)
+  entities: [claim_material, claim_material_decision, stok_gudang_slitting, spk_repack, spk_repack_detail, surat_jalan_retur,
+             debit_note, penerimaan_uang_supplier, alokasi_debit_note]
+  spec: docs/fr-nfr.md "Claim Material (Kompensasi / Retur)" FR-75–FR-97, OQ-C1–OQ-C10
+  erd: docs/diagrams/erd-revisi.drawio page 1, group "Claim Material"
+  code: ui-mockup/claim-*.html + claim-data.js + claim-pages.js (mockup only, localStorage "mockClaim.data"); popup Hold & Claim in
+        ui-mockup/index.html + app.js (FR-94). No backend yet.
+  note: client material in `input/Claim Process/`; every user answer is quoted in `input/2026-10-27-claim-material/notes.md`.
+        Journal COA come from a Master Jurnal for the Claim process that does not exist yet (FR-93); alokasi DN attaches to the existing
+        payment flow, not a new payment table (OQ-C7/C8). Open: OQ-C2 (supplier email master, deferred).
+
 ## Diagrams → what they own
 
 Which diagram is authoritative for which part of the model, so that two diagrams

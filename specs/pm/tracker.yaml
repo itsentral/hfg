@@ -177,3 +177,22 @@ issues:
       Backlog. Perubahan rate/master yang mengubah Bottom Price disimpan di History Costing; kejadian Pricelist di History
       Price List (hanya baca, audit). Daftar Pricelist dan Product Catalog menampilkan nama produk di depan. FR-71–FR-73, NFR-17,
       UC-N19, UC-N20, PG-25, PG-26, entitas history_costing/history_pricelist masih usulan; open question 34–40 dijawab user 2026-10-21 (pemicu: costing diperbarui / Pricelist disetujui; retensi 1 tahun lalu backup data; akses per hak akses pengguna; ekspor Excel; lewat Activity Log; Draft dan Extra Margin tidak dicatat); OQ 43–47 dijawab 2026-10-21 (Update Costing = pemicu utama History Costing; rilis katalog tidak dicatat; ekspor tanpa backup; write_log disetujui; hak akses View/Manage terpisah per halaman, ekspor perlu Manage); OQ 41, 42, 48, 49 masih terbuka.
+  - id: FEAT-11
+    title: Claim Material (Kompensasi / Retur) — dari Hold Coil, KW 2 Supplier, Reject Supplier sampai Debit Note dan Penerimaan Uang
+    type: feature
+    epic: claim-material
+    slug: claim-material
+    status: in_progress
+    source: input/Claim Process/ (BPMN D003 + workbook Rev.2); jawaban user 2026-10-27 (input/2026-10-27-claim-material/)
+    depends_on: []
+    blocks: []
+    summary: >-
+      2026-10-27: FR-75–FR-94 di docs/fr-nfr.md; OQ-C1–C5 terjawab (C2 ditunda), OQ-C6 (COA/gl_interface) dan OQ-C7 (kaitan ke
+      pembayaran PO yang ada) terbuka. Mockup claim-*.html di ui-mockup/ (9 halaman). ERD: 10 entitas claim di erd-revisi.drawio
+      halaman 1 (FK mata uang = id_kurs, keputusan user 2026-10-27); workbook: UC-N21–N35, PG-27–35 (tab Material On Hold = UC-N35).
+      OQ-C6/C7/C8 terjawab (FR-93; Alokasi DN dipilih saat Request Payment, baris detail negatif saat pembayaran; ERD 9 entitas claim).
+      Popup Hold & Claim di Laporan Produksi selesai (FR-94); OQ-C9 terjawab. 2026-10-28: Release tersambung ke Laporan Produksi (FR-95), halaman
+      Gudang Slitting (FR-96), kolom Progres (FR-97). G5/G6/OQ-C10 diputuskan 2026-10-28 (SPK gabung per supplier; Report Biaya + Jual Material). Mockup final; Handover ke Dev: rencana CI3 dan task disusun 2026-10-28 (.artifacts/claim_material/plan_claim_material_28-10-2026.md), keputusan D0-D7 menunggu user sebelum kode. Terbuka: OQ-C2 (master email, ditunda), Master Jurnal Claim.
+      2026-10-28: Debit Note tanpa approval, hak akses terbuka di mockup, jurnal tampil di layar (Lihat Jurnal); 9 tabel dibuat user di hfg_dev (SQL di
+      application/modules/*/migrations/); ruang lingkup = desain dan mockup, kode aplikasi oleh programmer kemudian.
+      Belum: Master Jurnal Claim, template email (OQ-C2), kode CI3. Plan di .artifacts/claim_material/.
