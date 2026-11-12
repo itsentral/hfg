@@ -158,12 +158,11 @@ class Spk_material extends Admin_Controller
                 return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Target Qty harus antara 1 - 999.999."]);
             }
 
-            // Check duplicate product + variant combination
-            $prod_key = $prod['id_produk_fg'] . '___' . (!empty($prod['no_uniq_id']) ? $prod['no_uniq_id'] : '');
-            if (in_array($prod_key, $product_ids)) {
-                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk dengan varian yang sama sudah dipilih di baris lain."]);
+            // Check duplicate product
+            if (in_array($prod['id_produk_fg'], $product_ids)) {
+                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk ini sudah dipilih di baris lain."]);
             }
-            $product_ids[] = $prod_key;
+            $product_ids[] = $prod['id_produk_fg'];
 
             // Check BOM existence
             if (!$this->Spk_material_model->has_bom($prod['id_produk_fg'])) {
