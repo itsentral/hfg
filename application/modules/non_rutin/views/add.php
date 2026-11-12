@@ -9,6 +9,9 @@ $no_so 			= (!empty($header)) ? $header[0]->no_so : '';
 $project_name 	= (!empty($header)) ? $header[0]->project_name : '';
 $pr_coa 	= (!empty($header)) ? $header[0]->coa : '';
 $tingkat_pr = (!empty($header)) ? $header[0]->tingkat_pr : '';
+$bank_name         = (!empty($header) && isset($header[0]->bank_name)) ? $header[0]->bank_name : '';
+$bank_account_no   = (!empty($header) && isset($header[0]->bank_account_no)) ? $header[0]->bank_account_no : '';
+$bank_account_name = (!empty($header) && isset($header[0]->bank_account_name)) ? $header[0]->bank_account_name : '';
 if (!empty($header) && !empty($header[0]->nm_pembuat)) {
 	$nm_pembuat = $header[0]->nm_pembuat;
 } else {
@@ -325,6 +328,32 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 					</tbody>
 				</table>
 			</div>
+
+			<!-- Section: INFORMASI BANK -->
+			<div class="section-title text-primary fw-bold mt-4 mb-3 pt-3 border-top" style="font-size: 1.05rem;">
+				<i class="fa fa-university me-1"></i> INFORMASI BANK
+			</div>
+
+			<div class="form-group row g-3 mb-3">
+				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Bank <span class="text-danger text-red">*</span></b></label>
+				<div class="col-sm-5">
+					<input type="text" name="bank_name" id="bank_name" class="form-control input-md" placeholder="Nama Bank (e.g. BCA, Mandiri)" value="<?= htmlspecialchars($bank_name); ?>" <?= $disabled; ?>>
+				</div>
+			</div>
+
+			<div class="form-group row g-3 mb-3">
+				<label class="label-control col-sm-2 col-form-label fw-bold"><b>No Rekening <span class="text-danger text-red">*</span></b></label>
+				<div class="col-sm-5">
+					<input type="text" name="bank_account_no" id="bank_account_no" class="form-control input-md" placeholder="No. Rekening" value="<?= htmlspecialchars($bank_account_no); ?>" <?= $disabled; ?>>
+				</div>
+			</div>
+
+			<div class="form-group row g-3 mb-3">
+				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Nama Rekening <span class="text-danger text-red">*</span></b></label>
+				<div class="col-sm-5">
+					<input type="text" name="bank_account_name" id="bank_account_name" class="form-control input-md" placeholder="Nama Pemilik Rekening" value="<?= htmlspecialchars($bank_account_name); ?>" <?= $disabled; ?>>
+				</div>
+			</div>
 		</div>
 
 		<div class="card-footer bg-white py-3 d-flex justify-content-end gap-2">
@@ -614,6 +643,19 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 					showConfirmButton: false,
 					allowOutsideClick: false,
 					timer: 2000
+				});
+				$('#save').prop('disabled', false);
+				return false;
+			}
+
+			var bank_name = $.trim($('#bank_name').val());
+			var bank_account_no = $.trim($('#bank_account_no').val());
+			var bank_account_name = $.trim($('#bank_account_name').val());
+			if (bank_name == '' || bank_account_no == '' || bank_account_name == '') {
+				Swal.fire({
+					title: "Error Message!",
+					text: 'Informasi Bank (Bank, No Rekening, dan Nama Rekening) wajib diisi !',
+					icon: "warning"
 				});
 				$('#save').prop('disabled', false);
 				return false;

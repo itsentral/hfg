@@ -5,46 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Master Rate Product Costing — Modul Produksi</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="berry-shell.css" />
 </head>
-<body>
+<body data-user="Andri P." data-role="Accounting">
   <!-- ============ TOP BAR ============ -->
-  <header class="topbar">
-    <div class="topbar__brand">
-      <span class="topbar__logo">PT</span>
-      <div>
-        <div class="topbar__title">Modul Produksi</div>
-        <div class="topbar__subtitle">Master Rate Product Costing</div>
-      </div>
-    </div>
-    <nav class="topbar__steps" aria-label="Alur proses">
-      <a class="step" href="beranda.html">Daftar SPK</a>
-      <a class="step" href="index.html">Input Produksi</a>
-      <a class="step" href="material.html">Material</a>
-      <a class="step" href="costbook.html">Costbook</a>
-      <span class="step step--active">Rate</span>
-      <a class="step" href="hpp.html">HPP</a>
-    </nav>
-    <div class="topbar__user">
-      <span class="badge badge--role">Accounting</span>
-      <span class="topbar__user-name">Andri P.</span>
-    </div>
-  </header>
-
+  <!-- Sidebar + top bar: kerangka Berry (berry-shell.js) -->
   <main class="page">
     <div class="page__header">
       <div>
-        <h1>Master Rate Product Costing</h1>
-        <p class="muted">Rate biaya yang dipakai perhitungan HPP per komponen (FR-19). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
+        <h1>Master Rate Product Costing <span class="badge badge--draft">Dipensiunkan</span></h1>
+        <p class="muted">Arsip rate lama (tidak lagi dipakai HPP; sumber kini Hasil Costing per varian BOM). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
       </div>
       <div class="page__header-status">
         <span class="badge badge--draft" id="saveStatus">Siap diedit</span>
       </div>
     </div>
 
+    <p class="note note--warn" id="rateDeprecated"><strong>DIPENSIUNKAN.</strong> Halaman Master Rate ini sudah tidak dipakai dan tidak memengaruhi HPP. Rate HPP kini bersumber dari <strong>Hasil Costing</strong> (Product Costing › Simulasi Costing) per Uniq ID (varian BOM), dalam Rp/Kg. Halaman ini hanya arsip. <a href="pc-simulasi.html">Buka Simulasi Costing →</a></p>
+
     <section class="card">
       <div class="card__head">
         <h2><span class="card__num">1</span> Rate Saat Ini</h2>
-        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini langsung dipakai pada perhitungan HPP.</p>
+        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini tidak lagi dipakai pada perhitungan HPP (hanya arsip).</p>
       </div>
       <div class="card__body">
         <div class="table-wrap">
@@ -76,8 +58,10 @@
   </main>
 
   <div class="toast" id="toast" hidden></div>
+  <script src="berry-shell.js"></script>
 
   <script src="data.js"></script>
+  <script src="numfmt.js"></script>
   <script src="rate.js"></script>
 </body>
 </html>

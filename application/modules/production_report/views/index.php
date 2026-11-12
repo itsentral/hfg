@@ -118,13 +118,19 @@
     overflow: hidden;
   }
 
-  /* Izinkan seleksi & copy teks pada cell ag-Grid */
+  /* Izinkan seleksi & copy teks pada cell ag-Grid & buat rata atas-bawah (vertikal center) */
   .ag-theme-alpine .ag-cell {
     user-select: text !important;
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     cursor: text;
+    display: flex;
+    align-items: center;
+  }
+
+  .ag-theme-alpine .ag-header-cell.text-center .ag-header-cell-label {
+    justify-content: center;
   }
 
   /* Biarkan kursor tombol/link tetap pointer */
@@ -472,18 +478,21 @@
         field: "spk_no",
         width: 200,
         pinned: 'left',
+        cellClass: 'd-flex align-items-center',
         cellRenderer: function(params) {
           const spk = params.value || '-';
           const st = params.data.report_status;
           let badgeHtml = '';
           if (st === 'Done') {
             badgeHtml = '<span class="badge-sub-status badge-sub-done"><i class="fa fa-check-circle"></i> Selesai</span>';
+          } else if (st === 'On Hold') {
+            badgeHtml = '<span class="badge-sub-status badge bg-danger text-white py-1 px-2"><i class="fa fa-pause-circle me-1"></i>SPK Sedang Di-Hold (' + (params.data.hold_claim_no || '') + ')</span>';
           } else if (st === 'Draft') {
             badgeHtml = '<span class="badge-sub-status badge-sub-draft"><i class="fa fa-pencil"></i> Draft</span>';
           } else {
             badgeHtml = '<span class="badge-sub-status badge-sub-menunggu"><i class="fa fa-clock-o"></i> Menunggu</span>';
           }
-          return '<div class="d-flex flex-column justify-content-center" style="height: 100%; line-height: 1.25;">' +
+          return '<div class="d-flex flex-column justify-content-center text-start my-auto" style="line-height: 1.25;">' +
             '<span class="fw-bold text-dark">' + spk + '</span>' +
             '<div>' + badgeHtml + '</div>' +
             '</div>';
@@ -527,26 +536,34 @@
       {
         headerName: "Aksi",
         field: "action",
-        width: 195,
+        width: 270,
         pinned: 'right',
+        cellClass: 'd-flex align-items-center justify-content-center',
+        headerClass: 'text-center',
         cellRenderer: function(params) {
           const spkNo = params.data.spk_no;
           const reportStatus = params.data.report_status;
           const reportId = params.data.report_id;
 
           if (reportStatus === 'Done' && reportId) {
-            return '<div class="d-flex gap-1">' +
+            return '<div class="d-flex align-items-center justify-content-center gap-1 w-100">' +
               '<a href="<?= site_url('production_report/view/') ?>' + reportId + '" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Lihat Detail Laporan">' +
                 '<i class="fa fa-eye me-1"></i>Laporan</a>' +
               '<a href="<?= site_url('production_report/hpp/') ?>' + reportId + '" class="btn btn-sm btn-outline-primary py-1 px-2" title="Lihat Perhitungan HPP & Jurnal">' +
                 '<i class="fa fa-calculator me-1"></i>HPP</a>' +
+              '<a href="<?= site_url('production_report/export_excel/') ?>' + reportId + '" class="btn btn-sm btn-outline-success py-1 px-2" title="Export Report Excel">' +
+                '<i class="fa fa-file-excel me-1"></i>Export</a>' +
               '</div>';
-          } else if (reportStatus === 'Draft' && spkNo) {
-            return '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
-              '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>';
+          } else if ((reportStatus === 'Draft' || reportStatus === 'On Hold') && spkNo) {
+            return '<div class="d-flex align-items-center justify-content-center w-100">' +
+              '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
+                '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>' +
+              '</div>';
           } else {
-            return '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-primary py-1 px-2">' +
-              'Buat Laporan <i class="fa fa-arrow-right ms-1"></i></a>';
+            return '<div class="d-flex align-items-center justify-content-center w-100">' +
+              '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-primary py-1 px-2">' +
+                'Buat Laporan <i class="fa fa-arrow-right ms-1"></i></a>' +
+              '</div>';
           }
         }
       }

@@ -6,14 +6,22 @@ Repository ini mengintegrasikan rancangan konsep **Business Analyst (BA)** dan i
 - **Folder `specs/` (Domain BA - Single Source of Truth):**
   Folder ini adalah sumber acuan utama seluruh konsep bisnis, requirement, dan rancangan sebelum dieksekusi ke kode:
   - `specs/docs/fr-nfr.md`: Kebutuhan fungsional (FR) dan non-fungsional (NFR), batasan formula, toleransi, dan logic bisnis.
-  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD).
-  - `specs/ui-mockup/`: Desain antarmuka, tata letak input/tabel, dan prototipe UI yang disepakati dengan stakeholder/klien.
+  - `specs/docs/diagrams/`: Diagram alur proses (BPMN / Activity Diagram) dan skema database (ERD resmi terintegrasi `erd-revisi.drawio`; `erd.drawio` hanya arsip, tidak diperbarui lagi sejak 2026-10-26).
+  - `specs/ui-mockup/`: Desain antarmuka dan prototipe UI yang disepakati dengan klien.
   - `specs/pm/`: Pelacakan status per fitur (`tracker.yaml`, `active.json`, capsule issue di `specs/pm/issues/`).
-  - `specs/input/`: Dokumen mentah, notulensi, dan feedback dari klien (append-only / read-only).
+  - `specs/input/`: Dokumen mentah, notulensi, dan workbook dari klien (append-only / read-only).
+
+- **Cakupan Modul di `specs/` Saat Ini:**
+  1. **Modul Laporan Produksi:**
+     - FR-01 s.d. FR-36 di `specs/docs/fr-nfr.md`
+     - Mockup UI: `specs/ui-mockup/beranda.html`, `material.html`, `hpp.html`, `costbook.html`, `rate.html`
+  2. **Modul Product Costing (Update Terkini 2026-10-07):**
+     - FR-37 s.d. FR-49 di `specs/docs/fr-nfr.md` (Master Produk 4 Level, Master Material, Price Reference & Kurs USD, BOM Varian, Flow Process, Man Power Rate, Bahan Pendukung & FOH Rate, General Rate, Simulasi Costing HPP)
+     - Mockup UI lengkap: `specs/ui-mockup/pc-produk.html`, `pc-material.html`, `pc-price-reference.html`, `pc-kurs.html`, `pc-bom.html`, `pc-flow.html`, `pc-man-power-rate.html`, `pc-bpk-foh.html`, `pc-general-rate.html`, `pc-simulasi.html`
 
 ### Prinsip Vibe Coding Bersama AI:
 1. **Spec-Driven Development:** Programmer dan AI **TIDAK BOLEH** mengarang alur bisnis, status transaksi, rumus perhitungan, atau nama field sendiri jika fitur bersangkutan sudah/sedang didefinisikan di dalam `specs/`. Selalu rujuk ke dokumen terkait di `specs/docs/` atau `specs/pm/`.
-2. **Skema Database:** Sebelum membuat query create/alter tabel database, **WAJIB** mencocokkan dengan ERD di `specs/docs/diagrams/` atau spesifikasi field di `specs/docs/fr-nfr.md`.
+2. **Skema Database:** Sebelum membuat query create/alter tabel database, **WAJIB** mencocokkan dengan ERD di `specs/docs/diagrams/` atau spesifikasi field di `specs/docs/fr-nfr.md`. **Nama tabel dan kolom di kode, migrasi, dan query HARUS persis sama dengan ERD** untuk data yang berasal dari database; bila berbeda, perbaiki ERD (jika ringkas/keliru) atau tabelnya, jangan membuat alias diam-diam. **Penamaan harus seragam di semua lapisan (aturan user 2026-10-29):** nama di ERD, tabel database, kode, **dan header kolom/label field di tampilan (UI/mockup)** harus sama. Header tampilan memakai kata yang sama dengan nama kolom (garis bawah menjadi spasi, huruf kapital di awal kata; satuan boleh ditulis dalam kurung atau garis miring), mis. `harga_beli_per_kg` → "Harga Beli/Kg", `no_coil_packing_list` → "No. Coil Packing List". Jangan memberi label berbeda dari kolomnya (mis. "Costbook/Kg" untuk kolom `harga_beli_per_kg`); bila konsepnya berubah, ubah nama kolom di ERD, tabel, dan kode sekaligus.
 3. **Mockup UI:** Gunakan `specs/ui-mockup/` sebagai acuan komponen form, tabel, filter, dan penamaan tombol sebelum membuat view CodeIgniter di `application/modules/`.
 4. **Siklus Kerja Kolaborasi:**
    - **Tahap BA:** BA mematangkan konsep di `specs/` (FR/NFR, BPMN, ERD, UI Mockup).

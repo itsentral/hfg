@@ -32,6 +32,10 @@ Read this small set before working:
 4. **`context/index/map.md`** — who owns what, so you navigate instead of
    re-discovering.
 5. **The active issue's plan**, `pm/issues/{slug}/plan.md`, when one exists.
+6. **`context/shape/{area}.md`** for the business area the task touches, when
+   one exists (index: `context/shape/README.md`). It is how that area *thinks*
+   — intent and leanings, in the user's own words — and it never overrides
+   code. If the two disagree, raise it with the user.
 
 Skim **`context/index/decisions.md`** — one line per architectural decision —
 and read a decision's own file only before reversing it, not before every task.
@@ -41,13 +45,14 @@ That is the whole startup set. Everything else is loaded on demand.
 ## Finding things
 
 Three files answer "where is it" and "what is this called". They are meant to be
-searched, not read:
+searched, not read. A fourth answers "what does it mean":
 
 | Question | File |
 |---|---|
 | Where does X live, and what does it touch? | `context/index/inventory.md` — **grep it**, one line per item |
 | The ticket says "{business term}" — what is that here? | `context/index/vocabulary.md` |
 | Who owns this behaviour, and why is it like that? | `context/index/map.md` |
+| What does this area mean, and which way does the user lean? | `context/shape/{area}.md` |
 
 `context/index/README.md` explains the split and why only the inventory can be
 generated.

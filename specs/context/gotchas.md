@@ -54,18 +54,23 @@ from the artifacts themselves:
 - a trap that cost real time, or that can destroy work
 - a convention that emerged from a decision made in passing
 - a piece of ownership that moved
+- what the user said the business **means**, why a rule exists, or which way to
+  lean — a `type: shape` entry, drafted by the harvest skill
+  (`.claude/skills/harvest/`) and approved by the user before it lands here
 
 Not: issue status, narrative history, or anything already stated in `context/`.
 Those are `pm/tracker.yaml`, `pm/log.md`, and their existing owner respectively.
 
 ## Entry format
 
-Append to the bottom. One `##` section per observation.
+Append to the bottom. One `##` section per observation; delete the `_Empty. Append below._`
+line when you add the first.
 
 ```markdown
 ## Short name for the fact
 
-- **type:** convention | hazard | ownership | decision | tooling
+- **type:** convention | hazard | trap | ownership | decision | tooling | workflow | shape
+- **area:** orders (shape entries only — the `context/shape/` file it feeds)
 - **date:** YYYY-MM-DD
 - **issue:** UC-07 (optional)
 
@@ -81,6 +86,17 @@ cannot. "Gateway styles need `gwType=`" is a note; "the installed shape library
 diverges from the spec's attribute names, so a plausible-looking style renders
 blank" is a rule that generalises to the next attribute.
 
+A `shape` entry replaces the **Why** / **How to apply** pair with the user's
+own words, because the user is its only evidence:
+
+```markdown
+**Quote:** "the user's words, trimmed, typos left alone" (YYYY-MM-DD)
+**Replaces:** the earlier claim it reverses, if any.
+```
+
+No quote and no pointer to code or a decision means it is an agent's inference,
+and it does not go in. `context/shape/README.md` owns the rules.
+
 `type` is a routing hint for the compile, not a taxonomy:
 
 | type | roughly |
@@ -90,6 +106,7 @@ blank" is a rule that generalises to the next attribute.
 | `ownership` | which artifact or code owns which behaviour |
 | `decision` | an architectural choice and its consequence |
 | `tooling` | repository-level tooling, exports, build, `.gitignore` |
+| `shape` | what the business means, why, which way to lean — **quote the user** and date it; the code cannot verify it |
 
 **This is a hint about the kind of fact, not a destination.** Routing is decided
 by `context/distill.md`, which owns the destination table — do not restate that

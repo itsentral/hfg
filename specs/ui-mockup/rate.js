@@ -33,7 +33,7 @@
       const step = f.type === "pct" ? "0.1" : "1";
       return `<tr>
         <td><strong>${f.label}</strong></td>
-        <td class="num"><input type="number" min="0" step="${step}" class="rate-in" data-key="${f.key}" value="${disp}" /></td>
+        <td class="num"><input type="text" inputmode="decimal" data-numfmt="1" class="rate-in" data-key="${f.key}" value="${NumFmt.fmt(disp)}" /></td>
         <td>${f.unit}</td>
       </tr>`;
     }).join("");
@@ -44,7 +44,7 @@
     if (!t.classList || !t.classList.contains("rate-in")) return;
     const f = FIELDS.find((x) => x.key === t.dataset.key);
     if (!f) return;
-    values[f.key] = fromDisplay(f, t.value);
+    values[f.key] = fromDisplay(f, NumFmt.norm(t.value));
     markDirty(true);
   }
 
@@ -63,7 +63,7 @@
     values = M.rateStore.all();
     renderBody();
     markDirty(false);
-    toast("Master Rate tersimpan. Dipakai pada perhitungan HPP.", "ok");
+    toast("Arsip tersimpan. Tidak dipakai pada perhitungan HPP (halaman dipensiunkan).", "ok");
   }
 
   function reset() {

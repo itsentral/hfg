@@ -135,9 +135,11 @@ class Price_sup_raw_material extends Admin_Controller
       echo json_encode($status);
     } else {
       $listData = $this->db->get_where('new_inventory_4', array('id' => $id))->result();
+      $default_kurs = $this->db->select('kurs')->where('kode', 'USD')->get('mata_uang')->row();
 
       $data = [
-        'listData' => $listData,
+        'listData'     => $listData,
+        'default_kurs' => ($default_kurs && (float)$default_kurs->kurs > 0) ? (float)$default_kurs->kurs : 17863.0,
       ];
       $this->template->set($data);
       $this->template->render('add');
@@ -147,16 +149,25 @@ class Price_sup_raw_material extends Admin_Controller
   public function update_kurs()
   {
     $data     = $this->input->post();
-    $session   = $this->session->userdata('app_session');
-    $id        = $data['id'];
-    $kurs     = $this->db->order_by('id', 'desc')->limit(1)->get_where('master_kurs', array('deleted_date' => NULL))->result();
+    $session  = $this->session->userdata('app_session');
+    $id       = $data['id'];
+
+    // Ambil kurs USD aktif dari master mata_uang
+    $kursRow = $this->db->order_by('id_kurs', 'desc')
+                        ->get_where('mata_uang', array('kode' => 'USD', 'activation' => 'active', '(deleted IS NULL OR deleted = 0)' => NULL))
+                        ->row();
+    if (empty($kursRow)) {
+      $kursRow = $this->db->order_by('id_kurs', 'desc')
+                          ->get_where('mata_uang', array('kode' => 'USD'))
+                          ->row();
+    }
+
+    $nominal_kurs = (!empty($kursRow) && (float)$kursRow->kurs > 0) ? (float)$kursRow->kurs : 17863.0;
+    $id_kurs      = !empty($kursRow) ? $kursRow->id_kurs : 6;
 
     $ArrHeader = array(
-      'id_kurs'    => $kurs[0]->id,
-      'kurs'  => $kurs[0]->kurs
-      // 'kurs_tanggal'=> $kurs[0]->tanggal,
-      // 'kurs_by'	  	=> $session['id_user'],
-      // 'kurs_date'	=> date('Y-m-d H:i:s')
+      'id_kurs' => $id_kurs,
+      'kurs'    => $nominal_kurs
     );
 
     $this->db->trans_start();
@@ -169,7 +180,7 @@ class Price_sup_raw_material extends Admin_Controller
       $Arr_Data  = array(
         'pesan'    => 'Save gagal disimpan ...',
         'status'  => 0,
-        'kurs' => number_format($kurs[0]->kurs)
+        'kurs'    => number_format($nominal_kurs)
       );
       write_log('Price Sup Raw Material', 'Update Kurs', 'Gagal update kurs material ID: ' . $id, $ArrHeader, null, 0);
     } else {
@@ -177,9 +188,9 @@ class Price_sup_raw_material extends Admin_Controller
       $Arr_Data  = array(
         'pesan'    => 'Kurs berhasil di update ...',
         'status'  => 1,
-        'kurs' => number_format($kurs[0]->kurs)
+        'kurs'    => number_format($nominal_kurs)
       );
-      write_log('Price Sup Raw Material', 'Update Kurs', 'Update kurs material ID: ' . $id . ' ke ' . number_format($kurs[0]->kurs), $ArrHeader, null, 1);
+      write_log('Price Sup Raw Material', 'Update Kurs', 'Update kurs material ID: ' . $id . ' ke ' . number_format($nominal_kurs), $ArrHeader, null, 1);
     }
 
     echo json_encode($Arr_Data);

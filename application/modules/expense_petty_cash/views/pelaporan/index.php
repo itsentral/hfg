@@ -50,7 +50,7 @@
                     <i class="fa fa-filter me-1"></i> Filter
                 </button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-reset-filter" title="Reset Filter">
-                    <i class="fa fa-refresh"></i>
+                    <i class="fa fa-filter"></i>
                 </button>
             </div>
         </div>
@@ -116,9 +116,15 @@
                     }
                 }
             },
-            order: [[0, 'desc']],
-            columns: [
-                { data: 'no', orderable: false, searchable: false, className: 'text-center' },
+            order: [
+                [0, 'desc']
+            ],
+            columns: [{
+                    data: 'no',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
                 {
                     data: 'no_pelaporan',
                     render: function(data) {
@@ -164,11 +170,16 @@
                     className: 'text-center',
                     render: function(data) {
                         switch (data) {
-                            case 'draft': return '<span class="badge bg-warning text-dark px-2 py-1">Draft</span>';
-                            case 'waiting': return '<span class="badge bg-info text-dark px-2 py-1">Waiting Approval</span>';
-                            case 'approved': return '<span class="badge bg-success px-2 py-1">Approved</span>';
-                            case 'reject': return '<span class="badge bg-danger px-2 py-1">Reject</span>';
-                            default: return '<span class="badge bg-secondary px-2 py-1">' + data + '</span>';
+                            case 'draft':
+                                return '<span class="badge bg-warning text-dark px-2 py-1">Draft</span>';
+                            case 'waiting':
+                                return '<span class="badge bg-info text-dark px-2 py-1">Waiting Approval</span>';
+                            case 'approved':
+                                return '<span class="badge bg-success px-2 py-1">Approved</span>';
+                            case 'reject':
+                                return '<span class="badge bg-danger px-2 py-1">Reject</span>';
+                            default:
+                                return '<span class="badge bg-secondary px-2 py-1">' + data + '</span>';
                         }
                     }
                 },

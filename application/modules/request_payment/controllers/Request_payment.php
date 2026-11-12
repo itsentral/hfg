@@ -261,10 +261,13 @@ class Request_payment extends Admin_Controller
 			$data_detail	= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $id])->result();
 		}
 
-		// Direct Payment
-		if (isset($type) && $type == 'direct_payment') {
-			$data 			= $this->db->get_where('tr_direct_payment', ['no_doc' => $get_id->no_doc])->row();
-			$data_detail	= $this->db->get_where('tr_direct_payment', ['no_doc' => $get_id->no_doc])->result();
+		// Direct Payment & Cash
+		if (isset($type) && ($type == 'direct_payment' || $type == 'Cash')) {
+			$data 			= $this->db->get_where('tr_pr_non_po', ['no_non_po' => $get_id->no_doc])->row();
+			if (!$data && $id) {
+				$data 		= $this->db->get_where('tr_pr_non_po', ['id' => $id])->row();
+			}
+			$data_detail	= $data ? [$data] : [];
 		}
 
 		// Invoice PO (DP, Import, Local)
@@ -339,10 +342,13 @@ class Request_payment extends Admin_Controller
 			$data_detail	= $this->db->get_where('tr_pengajuan_rutin_detail', ['id' => $id])->result();
 		}
 
-		// Direct Payment
-		if (isset($type) && $type == 'direct_payment') {
-			$data 			= $this->db->get_where('tr_direct_payment', ['no_doc' => $get_id->no_doc])->row();
-			$data_detail	= $this->db->get_where('tr_direct_payment', ['no_doc' => $get_id->no_doc])->result();
+		// Direct Payment & Cash
+		if (isset($type) && ($type == 'direct_payment' || $type == 'Cash')) {
+			$data 			= $this->db->get_where('tr_pr_non_po', ['no_non_po' => $get_id->no_doc])->row();
+			if (!$data && $id) {
+				$data 		= $this->db->get_where('tr_pr_non_po', ['id' => $id])->row();
+			}
+			$data_detail	= $data ? [$data] : [];
 		}
 
 		// Invoice PO (DP, Import, Local)
@@ -578,7 +584,7 @@ class Request_payment extends Admin_Controller
 	{
 		$Data		= $this->input->post();
 		$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']])->row_array();
-		if ($Data['tipe'] == 'direct_payment') {
+		if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
 			$header 	= $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']])->row_array();
 		}
 		if (in_array($Data['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
@@ -799,31 +805,38 @@ class Request_payment extends Admin_Controller
 				$Harga[] 		= $dtl->nilai;
 			}
 
-			if ($Data['tipe'] == 'direct_payment') {
-				$dtl = $this->db->get_where('tr_direct_payment', ['id' => $detail['id']])->row();
-				$data_request_payment = $this->db->get_where('request_payment', ['no_doc' => $dtl->no_doc])->row();
+			if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
+				$dtl = $this->db->get_where('tr_pr_non_po', ['id' => $detail['id']])->row();
+				if (!$dtl) {
+					$dtl = $this->db->get_where('tr_pr_non_po', ['no_non_po' => $Data['no_doc']])->row();
+				}
+				$data_request_payment = $this->db->get_where('request_payment', ['no_doc' => $Data['no_doc']])->row();
 
-				$nilai = $dtl->grand_total;
+				$nilai = !empty($dtl->total_pr) ? $dtl->total_pr : (!empty($dtl->grand_total) ? $dtl->grand_total : ($data_request_payment->jumlah ?? 0));
+				$deskripsi = !empty($dtl->deskripsi) ? $dtl->deskripsi : ($data_request_payment->keperluan ?? 'PR Cash ' . ($dtl->no_pr ?? ''));
+				$tgl_doc = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : (!empty($dtl->created_date) ? date('Y-m-d', strtotime($dtl->created_date)) : ($data_request_payment->tgl_doc ?? date('Y-m-d')));
 
 				$ArrDetail[] 		= [
 					'id' 			=> $id_detail,
 					'payment_id' 	=> $Id,
-					'no_doc' 		=> $dtl->no_doc,
-					'tgl_doc' 		=> $dtl->tgl_doc,
-					'deskripsi' 	=> $dtl->deskripsi,
+					'no_doc' 		=> $dtl ? $dtl->no_non_po : $Data['no_doc'],
+					'tgl_doc' 		=> $tgl_doc,
+					'deskripsi' 	=> $deskripsi,
 					'qty' 			=> '1',
 					'harga' 		=> $nilai,
 					'total' 		=> $nilai,
-					'keterangan' 	=> $dtl->deskripsi,
-					'doc_file' 		=> $data_request_payment->link_doc,
+					'keterangan' 	=> $deskripsi,
+					'doc_file' 		=> $data_request_payment->link_doc ?? '',
 					'coa' 			=> '',
 					'created_by' 	=> $this->auth->user_name(),
 					'created_on' 	=> date("Y-m-d h:i:s"),
 				];
-				$updateDetail[] = [
-					'id' 			=> $dtl->id,
-					'sts' 		=> '3'
-				];
+				if ($dtl) {
+					$updateDetail[] = [
+						'id' 			=> $dtl->id,
+						'sts' 		=> '3'
+					];
+				}
 				$Harga[] 		= $nilai;
 			}
 
@@ -899,7 +912,7 @@ class Request_payment extends Admin_Controller
 			'status' => 'approve management' // pastikan sesuai dengan list enum Anda
 		];
 
-		if (in_array($Data['tipe'], ['direct_payment', 'invoice_dp', 'invoice_import', 'invoice_local'])) {
+		if (in_array($Data['tipe'], ['direct_payment', 'Cash', 'invoice_dp', 'invoice_import', 'invoice_local'])) {
 			$this->db->update('request_payment', $update_req, ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe']]);
 		} else {
 			$this->db->update('request_payment', $update_req, ['no_doc' => $Data['no_doc'], 'tipe' => $Data['tipe'], 'ids' => $Data['id']]);
@@ -929,8 +942,10 @@ class Request_payment extends Admin_Controller
 				$this->db->update_batch('tr_pengajuan_rutin_detail', $updateDetail, 'id');
 			}
 
-			if ($Data['tipe'] == 'direct_payment') {
-				$this->db->update_batch('tr_direct_payment', $updateDetail, 'id');
+			if ($Data['tipe'] == 'direct_payment' || $Data['tipe'] == 'Cash') {
+				if (!empty($updateDetail)) {
+					$this->db->update_batch('tr_pr_non_po', $updateDetail, 'id');
+				}
 			}
 
 			if (in_array($Data['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
@@ -1007,6 +1022,9 @@ class Request_payment extends Admin_Controller
 					}
 					if ($post['tipe'] == "kasbon") {
 						$this->db->update('tr_kasbon', ['sts_reject' => 0, 'sts_reject_manage' => 0], ['no_doc' => $post['no_doc']]);
+					}
+					if ($post['tipe'] == "Cash" || $post['tipe'] == "direct_payment") {
+						$this->db->update('tr_pr_non_po', ['sts' => '2'], ['no_non_po' => $post['no_doc']]);
 					}
 					if (in_array($post['tipe'], ['invoice_dp', 'invoice_import', 'invoice_local'])) {
 						$this->db->update('tr_receive_invoice', ['status' => 'approve checker'], ['id' => $item['id']]);
@@ -2769,6 +2787,9 @@ class Request_payment extends Admin_Controller
 						'no_doc' => $key
 					]);
 
+					// Update status tr_pr_non_po jika tipe Cash
+					$this->db->update('tr_pr_non_po', ['sts' => '2'], ['no_non_po' => $key]);
+
 					// Update status_bayar TOP terkait menjadi 'request_payment'
 					$this->_update_status_bayar_top_by_request_payment('no_doc', $key);
 				}
@@ -3040,18 +3061,33 @@ class Request_payment extends Admin_Controller
 	public function print_cash($id)
 	{
 		$get_data_cash = $this->db->get_where('tr_pr_non_po', ['id' => $id])->row();
+		if (!$get_data_cash) {
+			$get_data_cash = $this->db->get_where('tr_pr_non_po', ['no_non_po' => $id])->row();
+		}
 		$get_v_req_payment = $this->db->get_where('v_request_payment', ['id' => $id])->row();
+		if (!$get_v_req_payment && $get_data_cash) {
+			$get_v_req_payment = $this->db->get_where('request_payment', ['no_doc' => $get_data_cash->no_non_po])->row();
+		}
 
-		if ($get_data_cash->jenis_pr == 'pr departemen') {
-			$this->db->select('CONCAT("assets/pr/", a.document) as doc_file, a.no_pr as no_doc');
-			$this->db->from('rutin_non_planning_header a');
-			$this->db->where('a.no_pr', $get_data_cash->no_pr);
-			$get_doc_pr = $this->db->get()->row();
+		if (!empty($get_data_cash)) {
+			if ($get_data_cash->jenis_pr == 'pr departemen') {
+				$this->db->select('CONCAT("assets/pr/", a.document) as doc_file, a.no_pr as no_doc');
+				$this->db->from('rutin_non_planning_header a');
+				$this->db->where('a.no_pr', $get_data_cash->no_pr);
+				$get_doc_pr = $this->db->get()->row();
+			} elseif ($get_data_cash->jenis_pr == 'pr asset') {
+				$this->db->select('CONCAT("assets/pr/", a.dokument_pendukung) as doc_file, a.no_pr as no_doc');
+				$this->db->from('tran_pr_header a');
+				$this->db->where('a.no_pr', $get_data_cash->no_pr);
+				$get_doc_pr = $this->db->get()->row();
+			} else {
+				$this->db->select('CONCAT("assets/pr/", a.upload_file) as doc_file, a.no_pr as no_doc');
+				$this->db->from('material_planning_base_on_produksi a');
+				$this->db->where('a.no_pr', $get_data_cash->no_pr);
+				$get_doc_pr = $this->db->get()->row();
+			}
 		} else {
-			$this->db->select('CONCAT("assets/pr/", a.dokument_pendukung) as doc_file, a.no_pr as no_doc');
-			$this->db->from('tran_pr_header a');
-			$this->db->where('a.no_pr', $get_data_cash->no_pr);
-			$get_doc_pr = $this->db->get()->row();
+			$get_doc_pr = null;
 		}
 
 		$data = [

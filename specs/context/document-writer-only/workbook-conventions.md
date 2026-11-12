@@ -229,7 +229,9 @@ Columns: `Modul`, `Deskripsi`, `Owner`. One row per business module/domain (Sale
 
 ## Sheet "UC BPMN"
 
-Output of Route 1. Columns: `Kode` (UC-xx), `Nama Use Case`, `User` (actor), `Modul`, `Input`, `Deskripsi`, `Output`, `Entity/Objek Terkait` (comma-separated, feeds the Entities sheet — keep spelling/case consistent across rows).
+Output of Route 1. Columns: `Kode` (UC-xx), `Nama Use Case`, `User` (actor), `Modul`, `Input`, `Deskripsi`, `Output`, `Entity/Objek Terkait` (comma-separated, feeds the Entities sheet — keep spelling/case consistent across rows), `Halaman` (the `Kode` of the one page that serves this UC; see sheet "Pages").
+
+**`Deskripsi` style** (set 2026-10-20 from the reference workbook): open with the FR reference(s), then numbered steps `1) … 2) … 3) …` in one paragraph, then only the notes that matter (`(menunggu MQ-n)` only when something is really waiting, `(L)` for later). Keep formulas and unit statements exact. Cite the client's own use-case number at the end when one exists.
 
 `Kode` is unique across the whole workbook, not just this sheet.
 
@@ -238,6 +240,63 @@ Output of Route 1. Columns: `Kode` (UC-xx), `Nama Use Case`, `User` (actor), `Mo
 Output of Routes 2 and 3. Same columns as "UC BPMN". Holds use cases that didn't originate from the BPMN diagram.
 
 `Kode` prefix `UC-N` (e.g. `UC-N01`) to keep these visually distinct at a glance; still unique workbook-wide, never reuses a `Kode` already used on "UC BPMN".
+
+## Sheet "Pages"
+
+The page inventory: **which screens the system has, and which use cases each one serves.** It is
+the bridge from a use case (what an actor wants) to a mockup in `ui-mockup/` and to the code that
+will implement it. Adopted 2026-10-20 from the client-side reference workbook
+`input/workbook.xlsx` (project OFC), which keeps the same sheet next to its UC sheets.
+
+Columns: `Kode` | `Area` | `Halaman` | `Path` | `Jenis` | `Tujuan` | `Use Case` | `Akses` | `Status` | `Catatan` | `Asal`.
+
+| Column | Meaning |
+|---|---|
+| `Kode` | `PG-nn`. Unique, never reused. A retired page keeps its row and its `Kode`. |
+| `Area` | The menu group the page sits under (e.g. `Master Data`, `Rate`, `Produksi`). |
+| `Halaman` | The screen's name as the user sees it in the menu. |
+| `Path` | The route. Several routes of one page are joined with ` · `. A route that is a proposal, not yet in code, is marked `usulan` in `Catatan`. |
+| `Jenis` | The kind of page for this stack, e.g. `Halaman CI3 (modul/controller)`, `Halaman CI3 + modal`, `Halaman CI3 ×3` when one page spans several routes. |
+| `Tujuan` | One line: what the actor does here. For a retired page, the reason. |
+| `Use Case` | Comma-separated `Kode`s of every UC this page serves. Empty only for a retired page. |
+| `Akses` | `Role: K · Role: L · Role: S`. **K** = kelola (create / edit), **L** = lihat (read only), **S** = setujui (decision). A limit goes in brackets, e.g. `Karyawan: K (milik sendiri)`. Only list roles the sources name. |
+| `Status` | `Draft`, `Disiapkan, isi terbuka` (page exists, its content is still open), or `Dipensiunkan`. |
+| `Catatan` | Menu or mode notes, `usulan`, overlaps with existing modules, open points. |
+| `Asal` | `baru`, or where it comes from: an existing module (`application/modules/bom`) and/or the source mockup (`ui-mockup/pc-bom.html`). |
+
+### The `Halaman` column on the UC sheets
+
+Both `UC BPMN` and `UC Non-BPMN` carry `Halaman` as their last column (9th): the `Kode` of **exactly
+one** page. Empty only for a retired UC. The two sheets must agree:
+
+- every UC `Halaman` exists in `Pages`, and that page lists the UC in its `Use Case` column;
+- every `Kode` in a page's `Use Case` column exists on a UC sheet and points back to that page.
+
+### Page-versus-use-case grouping rule
+
+One page may serve many use cases; one use case lives on one page. Use cases **share a page** when
+the same actor works on the same entity in the same sitting: list, create, edit, deactivate and
+detail of one master are one page (the reference serves eight customer UCs from one page). Use
+cases get **separate pages** when:
+
+- the actor differs and the UC is a **decision queue** (an approval inbox is its own page);
+- the **context differs** (public or portal page versus internal page);
+- the **kind differs** (a report or read-only view versus a master or form);
+- the **menu area differs**.
+
+A mockup file in `ui-mockup/` is normally one page. When a UC has no mockup and no existing
+module, still give it a page row, with `Path` marked `usulan` and `Asal` = `baru`.
+
+A page with no UC is a gap, not a convention: either a UC is missing (add it) or the mockup is dead
+(retire the page). Never leave it unlisted.
+
+### Pages and the rest of the workbook
+
+- `Modul` on a UC row and `Area` on a page are different: `Modul` is the owning business domain,
+  `Area` is the navigation group.
+- `Pages` does not replace the ERD or `context/index/map.md`. It stops at the screen; the data
+  behind it is the ERD, and the code that implements it is `map.md` territory.
+- Adding or retiring a UC means touching `Pages` in the same edit.
 
 ## Sheet "Entities"
 

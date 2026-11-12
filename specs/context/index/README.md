@@ -24,42 +24,9 @@ and never duplicate one file's content into another.
 
 ## `inventory.md` — generated
 
-Write the generator in whatever suits the stack. What matters is the contract:
-
-**1. One line per thing, answering both questions at once.**
-
-```
-Name | path/under/src | Kind -> what it depends on
-```
-
-A single `grep PaymentService` must return where it lives **and** what it
-touches, with no second lookup in a second file. Splitting those answers across
-a paths file and a dependencies file was tried in the project these conventions
-came from and cost roughly 22k tokens for the same information.
-
-**2. It is grepped, not read.** Say so in the file's own header. A 400-line
-inventory is an excellent grep target and a useless thing to load whole — and a
-reader who does not know that will load it whole.
-
-**3. Edges come from the source, never from naming.** An edge inferred from a
-naming convention is a guess that looks like a fact.
-
-**4. Drop edges that carry no information.** Framework scaffolding that imports
-itself by construction inflates the file and tells a reader nothing the path
-did not.
-
-**5. The generator refuses.** This is what keeps it alive. A generator that
-silently emits a partial result produces a file that is quietly wrong; one that
-exits non-zero when something is unclassified — a new module nobody assigned, a
-reference nobody categorised — forces the human decision that keeps the index
-honest. Take counts from the source of truth (the database, the compiler, the
-file system) rather than counting them off the artifact.
-
-**6. Regenerate as part of the change that made it stale**, and commit the
-result. A stale index is worse than no index: it sends a reader confidently to a
-path that moved. There is no automated freshness check here and there is not
-meant to be one — running the generator is a line in the definition of done, not
-a pipeline someone else maintains.
+The contract a generator has to meet (one line per thing, grepped not read, edges from the
+source, refuses on the unclassified, one definition of "module") is in
+`context/guide/building-the-layers.md`.
 
 ## `vocabulary.md` — business language → our names
 

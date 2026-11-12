@@ -223,9 +223,10 @@
                 url: BASE_URL + 'get_data_pencatatan',
                 type: 'POST'
             },
-            order: [[3, 'desc']],
-            columns: [
-                {
+            order: [
+                [3, 'desc']
+            ],
+            columns: [{
                     data: null,
                     orderable: false,
                     searchable: false,
@@ -241,7 +242,12 @@
                         return '<input type="checkbox" class="form-check-input check-item" value="' + row.id + '" data-company="' + row.company + '" ' + (isChecked ? 'checked' : '') + ' ' + (isLocked ? 'disabled' : '') + '>';
                     }
                 },
-                { data: 'no', orderable: false, searchable: false, className: 'text-center' },
+                {
+                    data: 'no',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
                 {
                     data: 'no_pencatatan',
                     render: function(data) {
@@ -268,7 +274,9 @@
                         return '<span class="badge ' + badgeClass + ' px-2 py-1">' + $('<div>').text(data).html() + '</span>';
                     }
                 },
-                { data: 'request_by' },
+                {
+                    data: 'request_by'
+                },
                 {
                     data: 'keterangan',
                     render: function(data) {
@@ -322,7 +330,7 @@
                         btn += '<a href="' + BASE_URL + 'view/' + row.id + '" class="btn btn-outline-info btn-sm" title="Detail"><i class="fa fa-eye"></i></a>';
 
                         if (row.status === 'draft' && !row.in_pelaporan && PERMISSIONS.has_manage) {
-                            btn += '<a href="' + BASE_URL + 'edit/' + row.id + '" class="btn btn-outline-warning btn-sm" title="Edit"><i class="fa fa-pencil"></i></a>';
+                            btn += '<a href="' + BASE_URL + 'edit/' + row.id + '" class="btn btn-outline-warning btn-sm" title="Edit"><i class="fa fa-pen"></i></a>';
                         }
 
                         if (row.status === 'draft' && !row.in_pelaporan && PERMISSIONS.has_delete) {
@@ -433,14 +441,18 @@
                         title: 'Memproses...',
                         text: 'Sedang membuat pelaporan petty cash',
                         allowOutsideClick: false,
-                        didOpen: function() { Swal.showLoading(); }
+                        didOpen: function() {
+                            Swal.showLoading();
+                        }
                     });
 
                     $.ajax({
                         url: BASE_URL + 'create_pelaporan',
                         type: 'POST',
                         dataType: 'json',
-                        data: { pencatatan_ids: selectedIds },
+                        data: {
+                            pencatatan_ids: selectedIds
+                        },
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({

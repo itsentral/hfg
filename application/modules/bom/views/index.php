@@ -1,35 +1,37 @@
 <?php defined('BASEPATH') || exit('No direct script access allowed'); ?>
 
 <?php if ($this->session->flashdata('success')): ?>
-    <div class="alert alert-success alert-dismissible fade show">
-        <?= $this->session->flashdata('success') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-check-circle me-1"></i> <?= $this->session->flashdata('success') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible fade show">
-        <?= $this->session->flashdata('error') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa fa-exclamation-triangle me-1"></i> <?= $this->session->flashdata('error') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fa fa-sitemap"></i> Daftar BOM (Bill of Material)</h5>
-        <a href="<?= base_url('bom/add') ?>" class="btn btn-success btn-sm">
-            <i class="fa fa-plus"></i> Buat BOM Baru
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 fw-bold text-dark">
+            <i class="fa fa-sitemap text-primary me-2"></i> Daftar BOM (Bill of Material)
+        </h5>
+        <a href="<?= base_url('bom/add') ?>" class="btn btn-success">
+            <i class="fa fa-plus me-1"></i> Buat BOM Baru
         </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table id="tbl-bom" class="table table-bordered table-striped table-hover" width="100%">
-                <thead>
+            <table id="tbl-bom" class="table table-bordered table-striped table-hover align-middle w-100">
+                <thead class="table-light">
                     <tr>
                         <th class="text-center" width="50">No</th>
-                        <th>Kode Produk</th>
+                        <th width="180">Kode Produk</th>
                         <th>Nama Produk</th>
-                        <th class="text-center">Jumlah Material</th>
-                        <th class="text-center">Dibuat</th>
+                        <th class="text-center" width="160">Jumlah Varian</th>
+                        <th class="text-center" width="180">Latest Update</th>
                         <th class="text-center no-sort" width="140">Aksi</th>
                     </tr>
                 </thead>
@@ -70,7 +72,7 @@ $(document).ready(function () {
         var id = $(this).data('id');
         Swal.fire({
             title: 'Hapus BOM?',
-            text: 'BOM dan semua detail material akan dihapus.',
+            text: 'BOM dan semua varian material produk ini akan dihapus.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
@@ -88,7 +90,7 @@ $(document).ready(function () {
                         Swal.fire({ title: 'Berhasil!', text: 'BOM berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function () { $('#tbl-bom').DataTable().ajax.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                        Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
                     }
                 },
                 error: function (xhr) {

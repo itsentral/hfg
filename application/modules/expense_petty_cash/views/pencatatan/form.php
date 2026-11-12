@@ -28,7 +28,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil aktif</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
-                    <i class="fa fa-money"></i>
+                    <i class="fas fa-money-bill-alt"></i>
                 </div>
             </div>
         </div>
@@ -318,7 +318,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 </tr>
                             </thead>
                             <tbody id="jurnal-stm-body">
-                                <tr><td colspan="6" class="text-center text-muted py-2">Belum ada data</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
@@ -349,7 +351,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 </tr>
                             </thead>
                             <tbody id="jurnal-company-body">
-                                <tr><td colspan="6" class="text-center text-muted py-2">Belum ada data</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
@@ -377,7 +381,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 </tr>
                             </thead>
                             <tbody id="jurnal-stm-side-body">
-                                <tr><td colspan="6" class="text-center text-muted py-2">Belum ada data</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
@@ -845,7 +851,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         title: 'Menyimpan...',
                         text: 'Sedang memproses pencatatan kas kecil',
                         allowOutsideClick: false,
-                        didOpen: function() { Swal.showLoading(); }
+                        didOpen: function() {
+                            Swal.showLoading();
+                        }
                     });
 
                     var formData = new FormData($('#frm_pencatatan')[0]);

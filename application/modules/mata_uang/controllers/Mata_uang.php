@@ -83,6 +83,8 @@ class Mata_uang extends Admin_Controller
         $negara    = trim($post['negara'] ?? '');
         $kode      = strtoupper(trim($post['kode'] ?? ''));
         $mata_uang = trim($post['mata_uang'] ?? '');
+        $kurs_raw  = $post['kurs'] ?? 0;
+        $kurs      = (float) str_replace(',', '', (string)$kurs_raw);
         $activation= !empty($post['activation']) ? $post['activation'] : 'active';
 
         // 1. Validasi Input Required
@@ -116,6 +118,7 @@ class Mata_uang extends Admin_Controller
             'kode'       => $kode,
             'negara'     => $negara,
             'mata_uang'  => $mata_uang,
+            'kurs'       => $kurs,
             'activation' => $activation
         ];
 

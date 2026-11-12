@@ -862,50 +862,54 @@ class Finalize_incoming extends Admin_Controller
             : $price_unit_idr;
 
         // ── 5. Upsert warehouse_stock ─────────────────────────────────────────
+        // PROTEKSI 2: Hanya izinkan update/insert warehouse_stock untuk Gudang Produksi (1) dan Slitting (2)
+        // Mencegah penambahan stok agregat secara tidak sengaja ke Gudang WIP, Hold, atau gudang lainnya
         $now     = date('Y-m-d H:i:s');
         $today   = date('Y-m-d');
         $user_id = $this->auth->user_id();
         $id_pack_val = isset($extra['id_pack']) ? (int) $extra['id_pack'] : null;
 
-        if (empty($get_stock)) {
-            $this->db->insert('warehouse_stock', [
-                'code_lv1'        => $code_lv1,
-                'code_lv2'        => $code_lv2,
-                'code_lv3'        => $code_lv3,
-                'code_lv4'        => $id_material,
-                'code_incoming'   => $kode_trans,
-                'nm_material'     => $nm_material,
-                'trade_name'      => $trade_name,
-                'id_gudang'       => $id_gudang,
-                'kd_gudang'       => $kd_gudang,
-                'id_unit'         => $id_unit,
-                'id_unit_packing' => $id_unit_packing,
-                'id_pack'         => $id_pack_val,
-                'begining'        => 0,
-                'incoming'        => $qty_in,
-                'outgoing'        => 0,
-                'qty_stock'       => $qty_akhir,
-                'qty_booking'     => 0,
-                'qty_free'        => $qty_akhir,
-                'use_qty_free'    => 0,
-                'harga_beli'      => $costbook,             // hapus (int) round()
-                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
-                'update_by'       => $user_id,
-                'update_date'     => $now,
-            ]);
-        } else {
-            $this->db->update('warehouse_stock', [
-                'code_incoming'   => $kode_trans,
-                'trade_name'      => $trade_name,
-                'id_pack'         => $id_pack_val,
-                'incoming'        => $incoming_lama + $qty_in,
-                'qty_stock'       => $qty_akhir,
-                'qty_free'        => $qty_free_awal + $qty_in,
-                'harga_beli'      => $costbook,             // hapus (int) round()
-                'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
-                'update_by'       => $user_id,
-                'update_date'     => $now,
-            ], ['id' => $get_stock->id]);
+        if (in_array((int) $id_gudang, [1, 2])) {
+            if (empty($get_stock)) {
+                $this->db->insert('warehouse_stock', [
+                    'code_lv1'        => $code_lv1,
+                    'code_lv2'        => $code_lv2,
+                    'code_lv3'        => $code_lv3,
+                    'code_lv4'        => $id_material,
+                    'code_incoming'   => $kode_trans,
+                    'nm_material'     => $nm_material,
+                    'trade_name'      => $trade_name,
+                    'id_gudang'       => $id_gudang,
+                    'kd_gudang'       => $kd_gudang,
+                    'id_unit'         => $id_unit,
+                    'id_unit_packing' => $id_unit_packing,
+                    'id_pack'         => $id_pack_val,
+                    'begining'        => 0,
+                    'incoming'        => $qty_in,
+                    'outgoing'        => 0,
+                    'qty_stock'       => $qty_akhir,
+                    'qty_booking'     => 0,
+                    'qty_free'        => $qty_akhir,
+                    'use_qty_free'    => 0,
+                    'harga_beli'      => $costbook,             // hapus (int) round()
+                    'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
+                    'update_by'       => $user_id,
+                    'update_date'     => $now,
+                ]);
+            } else {
+                $this->db->update('warehouse_stock', [
+                    'code_incoming'   => $kode_trans,
+                    'trade_name'      => $trade_name,
+                    'id_pack'         => $id_pack_val,
+                    'incoming'        => $incoming_lama + $qty_in,
+                    'qty_stock'       => $qty_akhir,
+                    'qty_free'        => $qty_free_awal + $qty_in,
+                    'harga_beli'      => $costbook,             // hapus (int) round()
+                    'total_nilai'     => $total_nilai_akhir,    // hapus (int) round()
+                    'update_by'       => $user_id,
+                    'update_date'     => $now,
+                ], ['id' => $get_stock->id]);
+            }
         }
 
         // ── 6. Snapshot harian warehouse_stock_per_day ────────────────────────
@@ -977,7 +981,16 @@ class Finalize_incoming extends Admin_Controller
         LIMIT 1
         ", [$id_material, $no_coil, $id_gudang])->row();
 
-        if (empty($existing_coil)) {
+        // PROTEKSI 3: Pastikan nomor coil tidak menimpa coil yang sudah berada di proses internal (WIP, Hold, atau Consumed)
+        $coil_internal = $this->db->query("
+        SELECT id, kd_gudang, status_proses FROM warehouse_stock_coil
+        WHERE no_coil = ? AND status_proses IN ('wip', 'on_hold', 'consumed')
+        LIMIT 1
+        ", [$no_coil])->row();
+
+        if (!empty($coil_internal)) {
+            log_message('error', "Incoming coil {$no_coil} ditolak / di-skip karena coil tersebut sudah terdaftar di proses internal (status: {$coil_internal->status_proses}, gudang: {$coil_internal->kd_gudang})");
+        } elseif (empty($existing_coil)) {
             $this->db->insert('warehouse_stock_coil', [
                 'id_material'    => $id_material,
                 'id_pack'        => isset($extra['id_pack']) ? (int) $extra['id_pack'] : null,
@@ -1220,6 +1233,8 @@ class Finalize_incoming extends Admin_Controller
             m.cost_book,
             m.total_nilai_inventory,
             m.id_po_detail,
+            m.unit_price_usd,
+            po.hargasatuan          AS po_hargasatuan,
             h.no_po,
             h.id_supplier,
             h.kurs_pib,
@@ -1227,6 +1242,7 @@ class Finalize_incoming extends Admin_Controller
         FROM tr_ros_material_coil c
         JOIN tr_ros_material m ON m.id = c.id_ros_material
         JOIN tr_ros_header h   ON h.id = m.id_ros
+        LEFT JOIN dt_trans_po po ON po.id = m.id_po_detail
         LEFT JOIN tr_ros_pack p ON p.id = c.id_ros_pack
         WHERE m.id_ros = ?
         ORDER BY m.id_barang, c.no_coil ASC
@@ -1237,9 +1253,24 @@ class Finalize_incoming extends Admin_Controller
             return;
         }
 
+        $allowed_gudang_id = [1, 2];
+        $allowed_gudang_kd = ['PRO', 'SLI'];
+
         foreach ($coils as $c) {
             if (empty($c['id_gudang_ke'])) {
-                echo json_encode(['status' => 0, 'pesan' => 'Some coils have not been assigned a warehouse!']);
+                echo json_encode(['status' => 0, 'pesan' => 'Ada coil yang belum ditentukan gudang tujuannya!']);
+                return;
+            }
+
+            $id_g = (int) $c['id_gudang_ke'];
+            $kd_g = strtoupper(trim($c['kd_gudang_ke'] ?? ''));
+
+            // PROTEKSI 1: Whitelist Gudang Tujuan (Hanya Gudang Produksi dan Slitting)
+            if (!in_array($id_g, $allowed_gudang_id) || (!empty($kd_g) && !in_array($kd_g, $allowed_gudang_kd))) {
+                echo json_encode([
+                    'status' => 0,
+                    'pesan'  => "Penyimpanan Incoming Material hanya diizinkan untuk Gudang Produksi (PRO) atau Gudang Slitting (SLI). Ditemukan coil [{$c['no_coil']}] yang dialokasikan ke gudang lain ({$c['kd_gudang_ke']})."
+                ]);
                 return;
             }
         }
@@ -1409,6 +1440,37 @@ class Finalize_incoming extends Admin_Controller
             $this->db->set('qty_in', 'qty_in + ' . $berat_bersih, FALSE);
             $this->db->where('id', $c['id_po_detail']);
             $this->db->update('dt_trans_po');
+
+            // Simpan riwayat pembelian per coil ke history_purchase (khusus PO Import)
+            if (!$is_lokal) {
+                $price_unit = !empty($c['po_hargasatuan']) && (float) $c['po_hargasatuan'] > 0
+                    ? (float) $c['po_hargasatuan']
+                    : (float) ($c['unit_price_usd'] ?? 0);
+
+                $mata_uang = !empty($po_row->matauang) ? strtoupper(trim($po_row->matauang)) : 'USD';
+                $kurs_val  = 1.0000;
+                if ($mata_uang !== 'IDR') {
+                    $kurs_val = (float) ($ros_header->kurs_pib ?? 0);
+                    if ($kurs_val <= 0 && $po_row) {
+                        $kurs_val = (float) ($po_row->nominal_kurs ?? 0);
+                    }
+                    if ($kurs_val <= 0) {
+                        $kurs_val = 1.0000;
+                    }
+                }
+
+                $this->db->insert('history_purchase', [
+                    'id_purchase_order' => $ros_header->no_po,
+                    'no_coil'           => $c['no_coil'],
+                    'id_material'       => $c['id_material'],
+                    'price_unit'        => $price_unit,
+                    'mata_uang'         => $mata_uang,
+                    'kurs'              => $kurs_val,
+                    'period_month'      => (string) (int) date('n', strtotime($tanggal)),
+                    'created_at'        => date('Y-m-d H:i:s'),
+                    'created_by'        => $this->auth->user_id(),
+                ]);
+            }
         }
 
         // ── Susun summary per material per gudang ────────────────────────────────
@@ -1525,6 +1587,7 @@ class Finalize_incoming extends Admin_Controller
             'gl_advance_purchase_from_ros'      => round((float) ($ros_header->gl_advance_purchase ?? 0), 2),
             'gl_persediaan_intransit_from_ros'  => round((float) ($ros_header->gl_persediaan_intransit ?? 0), 2),
             'gl_unbill_from_ros'                => round((float) ($ros_header->gl_unbill ?? 0), 2),
+            'gl_hutang_forwarding_from_ros'     => round((float) ($ros_header->gl_hutang_forwarding ?? 0), 2),
             // 'gl_pembulatan_from_ros'            => round((float) ($ros_header->gl_pembulatan ?? 0), 2), // ★ BARU
 
             'file_dokumen'       => $ros_header->file_hash   ?? '',
@@ -1570,7 +1633,8 @@ class Finalize_incoming extends Admin_Controller
                     round((float) ($ros_header->gl_unbill ?? 0), 2),
                     round((float) ($ros_header->gl_pembulatan ?? 0), 2), // ★ BARU
                     $value_inc_pro,   // ★ BARU: dikirim langsung, bukan dihitung ulang
-                    $value_inc_sli    // ★ BARU
+                    $value_inc_sli,   // ★ BARU
+                    round((float) ($ros_header->gl_hutang_forwarding ?? 0), 2) // ★ BARU
                 );
             } catch (Exception $e) {
                 $jurnal_error = $e->getMessage();
@@ -1723,7 +1787,8 @@ class Finalize_incoming extends Admin_Controller
         $gl_unbill = 0,
         $gl_pembulatan = 0,     // ★ BARU
         $value_inc_pro = null,  // ★ BARU: kalau null, fallback hitung dari $details (backward compatible)
-        $value_inc_sli = null   // ★ BARU
+        $value_inc_sli = null,  // ★ BARU
+        $gl_hutang_forwarding = 0 // ★ BARU: Hutang forwarding untuk jurnal PO lokal
     ) {
         // ★ PERUBAHAN: value_inc_pro/sli sebaiknya dikirim langsung dari finalize()
         // (hasil alokasi per-pack yang presisi). Kalau caller lama belum
@@ -1800,6 +1865,7 @@ class Finalize_incoming extends Admin_Controller
         $gl_persediaan_intransit = (int) round($gl_persediaan_intransit, 0);
         $gl_unbill               = (int) round($gl_unbill, 0);
         $gl_pembulatan           = (int) round($gl_pembulatan, 0);
+        $gl_hutang_forwarding    = (int) round($gl_hutang_forwarding, 0);
 
         $data_source = [
             'tanggal'        => date('Y-m-d'),
@@ -1817,6 +1883,8 @@ class Finalize_incoming extends Admin_Controller
             'gl_advance_purchase_from_ros'     => $gl_advance_purchase,
             'gl_persediaan_intransit_from_ros' => $gl_persediaan_intransit,
             'gl_unbill_from_ros'               => $gl_unbill,
+            'gl_hutang_forwarding_from_ros'    => $gl_hutang_forwarding,
+            'gl_pembulatan_from_ros'           => $gl_pembulatan,
 
             'loi'            => $tipe_label,
         ];

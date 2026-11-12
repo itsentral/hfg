@@ -15,6 +15,16 @@
     { id: "P05", name: "Spandek 0.35 x 1000", std: 34.6, size: 3.0 },
   ];
   const productById = (id) => PRODUCTS.find((p) => p.id === id) || null;
+  // Pemetaan eksplisit Produk Produksi -> Produk Product Costing (pcProductId). Produk tanpa pemetaan = tanpa varian BOM.
+  const PC_PRODUCT = { P01: "PR1", P05: "PR1", P02: "PR2" };
+  const pcOk = () => !!(window.PC && window.PC.bomsOfProduct);
+  // Varian BOM (Uniq ID) yang tersedia untuk produk Produksi; [] bila tidak ada / Product Costing belum termuat.
+  const bomOptions = (productId) => (pcOk() && PC_PRODUCT[productId] ? window.PC.bomsOfProduct(PC_PRODUCT[productId]) : []);
+  // Rate Rp/Kg Hasil Costing varian BOM (snapshot Update Costing terakhir, atau hitung langsung); null bila tidak ada.
+  const bomRateKg = (uniq) => (pcOk() && uniq ? window.PC.rateKgOfBom(uniq) : null);
+  // Varian BOM siap dipakai SPK bila Hasil Costing-nya dapat dihitung (rate Rp/Kg tersedia).
+  const bomReady = (uniq) => !!bomRateKg(uniq);
+  const productReady = (productId) => bomOptions(productId).some((o) => bomReady(o.uniq));
 
   /* ---------- SPK + daftar produk FG (FR-01/FR-25: tr_spk_material_detail.id_produk_fg) ---------- */
   // Tiap SPK punya daftar produk FG KW1 yang harus dilaporkan produksinya.
@@ -23,8 +33,8 @@
       no: "SPK-2026-0912", tgl: "2026-09-24", customer: "PT Baja Sejahtera",
       material: "Coil Galvanis 1.0mm", status: "Menunggu Produksi",
       products: [
-        { productId: "P01", targetQty: 100 },
-        { productId: "P05", targetQty: 40 },
+        { productId: "P01", bomUniq: "Type 001.1", targetQty: 100 },
+        { productId: "P05", bomUniq: "Type 001.1", targetQty: 40 },
       ],
     },
     {
@@ -40,7 +50,7 @@
       products: [
         { productId: "P03", targetQty: 80 },
         { productId: "P02", targetQty: 60 },
-        { productId: "P05", targetQty: 30 },
+        { productId: "P05", bomUniq: "Type 001.1", targetQty: 30 },
       ],
     },
   ];
@@ -57,7 +67,23 @@
     reset() { localStorage.removeItem(USER_SPK_KEY); },
   };
   // Daftar SPK gabungan: bawaan + buatan user (user di atas / paling baru).
-  const allSpks = () => userSpk.all().concat(SPKS);
+  // Ubah Uniq ID (varian BOM) SPK yang belum punya laporan produksi; SPK bawaan disimpan sebagai override.
+  const SPK_BOM_KEY = "mockProduksi.spkBom";
+  const spkBomOverride = () => { try { return JSON.parse(localStorage.getItem(SPK_BOM_KEY)) || {}; } catch (e) { return {}; } };
+  const withOverride = (s) => {
+    const o = spkBomOverride()[s.no];
+    return o ? Object.assign({}, s, { products: s.products.map((p, i) => (o[i] != null ? Object.assign({}, p, { bomUniq: o[i] }) : p)) }) : s;
+  };
+  const allSpks = () => userSpk.all().concat(SPKS).map(withOverride);
+  // Terkunci setelah laporan produksi diinput (snapshot laporan ada) atau SPK Done.
+  const spkLocked = (no) => !!(report.get(no) || spkStatus.get(no) === "Done");
+  const setSpkBoms = (no, uniqs) => {
+    if (spkLocked(no)) return false;
+    const list = userSpk.all();
+    const u = list.find((s) => s.no === no);
+    if (u) { u.products.forEach((p, i) => { if (uniqs[i] != null) p.bomUniq = uniqs[i]; }); localStorage.setItem(USER_SPK_KEY, JSON.stringify(list)); return true; }
+    const m = spkBomOverride(); m[no] = uniqs; localStorage.setItem(SPK_BOM_KEY, JSON.stringify(m)); return true;
+  };
   const spkByNo = (no) => allSpks().find((s) => s.no === no) || null;
 
   /* ---------- Baby coil per sumber gudang (FR-08) ---------- */
@@ -249,7 +275,7 @@
   };
 
   window.MOCK = {
-    PRODUCTS, productById,
+    PRODUCTS, productById, PC_PRODUCT, bomOptions, bomRateKg, bomReady, productReady, spkLocked, setSpkBoms,
     SPKS, spkByNo, allSpks, userSpk,
     SRC_LABEL, coilByCode,
     material, MATERIAL_SOURCES, COIL_FIELDS,

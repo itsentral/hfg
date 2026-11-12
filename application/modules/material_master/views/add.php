@@ -112,6 +112,10 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<input type="hidden" class="form-control" id="id" name="id" value="<?= $id; ?>">
 		<input type="hidden" class="form-control" id="code_lv4" name="code_lv4" value="<?= $code_lv4; ?>">
 		<input type="text" class="form-control" id="nama" name="nama" required placeholder="Material Master" value="<?= $nama; ?>">
+		<small class="text-muted">
+			Otomatis dari pilihan di bawah (dapat diedit manual).
+			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Generate ulang</span>
+		</small>
 	</div>
 </div>
 
@@ -447,7 +451,23 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		});
 	});
 
+	// Nama otomatis: material baru mengikuti pilihan; material yang diedit mempertahankan nama tersimpan.
+	// Setelah nama diketik manual, pilihan lain tidak menimpanya sampai "Generate ulang" diklik.
+	var namaManual = <?= !empty($id) ? 'true' : 'false'; ?>;
+
+	// Form dimuat ulang lewat ajax setiap modal dibuka: pakai event ber-namespace agar handler tidak menumpuk
+	$(document).off('input.namaMaterial').on('input.namaMaterial', '#nama', function() {
+		namaManual = true;
+	});
+	$(document).off('click.namaMaterial').on('click.namaMaterial', '#regenerateNama', function() {
+		namaManual = false;
+		generateNama();
+	});
+
 	function generateNama() {
+		if (namaManual) {
+			return;
+		}
 		// Ambil nilai dari setiap dropdown dan input
 		var jenisLogam = $("#code_lv1 option:selected").text().trim();
 		var slithed = $("#code_lv2 option:selected").text().trim();

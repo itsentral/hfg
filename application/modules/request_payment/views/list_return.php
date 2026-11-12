@@ -56,7 +56,7 @@ if (!empty($row)) {
 					<small class="text-muted" style="font-size: 11px;">Pengembalian expense</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 44px; height: 44px; font-size: 18px;">
-					<i class="fa fa-files-o"></i>
+					<i class="fas fa-copy"></i>
 				</div>
 			</div>
 		</div>
@@ -70,7 +70,7 @@ if (!empty($row)) {
 					<small class="text-muted" style="font-size: 11px;">Total nilai kembali</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-purple" style="width: 44px; height: 44px; font-size: 18px; color: #7c3aed;">
-					<i class="fa fa-money"></i>
+					<i class="fas fa-money-bill-alt"></i>
 				</div>
 			</div>
 		</div>
@@ -136,7 +136,8 @@ if (!empty($row)) {
 				</thead>
 				<tbody>
 					<?php if (!empty($processed_rows)) : ?>
-						<?php $numb = 1; foreach ($processed_rows as $rowItem) : ?>
+						<?php $numb = 1;
+						foreach ($processed_rows as $rowItem) : ?>
 							<?php
 							$rec = $rowItem['record'];
 							$tgl_formatted = !empty($rec->tgl_doc) ? date('d/m/Y', strtotime($rec->tgl_doc)) : '-';
@@ -217,7 +218,9 @@ if (!empty($row)) {
 
 	$(document).ready(function() {
 		$("#mytabledata").DataTable({
-			order: [[0, 'asc']],
+			order: [
+				[0, 'asc']
+			],
 			pageLength: 10,
 			responsive: true
 		});
@@ -229,7 +232,7 @@ if (!empty($row)) {
 
 	function edit(id) {
 		$("#listexpense").html('<div class="text-center py-5"><i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i><p class="text-muted mb-0">Memuat data expense...</p></div>');
-		
+
 		// Compatible modal show (Bootstrap 5 or Bootstrap 3/4 jQuery fallback)
 		var modalEl = document.getElementById('Mymodal');
 		if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {

@@ -82,6 +82,11 @@ has not been mined yet.** No separate status tracking, no processed/unprocessed 
   a new intake event that supersedes the old one — record the supersession in the new `notes.md`.
   The point of this layer is that it records what was actually said, including what was later
   wrong.
+- **Pruning is the one exception, and only on the user's say-so.** Once `input/` has grown with
+  material nothing ever used, a source may be deleted if **nothing in the repo cites it**: grep
+  `context/`, `docs/`, `pm/`, the application code and the agent configs for its folder and file
+  name first, and delete only what has no hit. A cited source stays, and so does anything the
+  user names as reference material regardless of citations. Pruning removes; it never edits.
 - **Never work directly from `input/`.** It is not a task queue. Material is extracted into
   `docs/requests.md` (or a BPMN, or an FR list) and classified there first — the same rule
   `requests.md` already has relative to the workbook.

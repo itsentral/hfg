@@ -18,7 +18,24 @@ mock-up sheet with explicit input/database/formula concepts per column.
   Total, dan dua dimensi baru per laporan produksi: mesin/asset (`asset`, `id_asset`) dan
   employee/department (`employee`, `id_employee`).
 
+- `input/ERD Product Costing-Production Report.jpg` — ERD klien untuk Product Costing (Material
+  Cost, Man Power Cost, Rate Bahan Pendukung Khusus & FOH, Rate Generals) dan relasinya ke
+  `production_report_items` (2026-10-07)
+- `input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx` — sheet **Ide**, **Simulasi Program**
+  (contoh input master produk/material/rate), **Simulasi Costing** (output kalkulasi), serta
+  sheet **Simulasi ide (copy)per kg** (versi lama, per Kg; hanya sebagai pembanding)
+  (2026-10-07)
+- Keputusan user 2026-10-07 (percakapan, belum ada dokumen): lihat "Keputusan 2026-10-07" di
+  bagian Product Costing di bawah.
+
 ## Re-Confirm
+
+- **Kepemilikan Product Costing — REVERSAL 2026-10-07.** Entri 2026-09-21 di bawah menyatakan
+  Product Costing modul terpisah yang hanya dibaca. User kini memutuskan **master data Product
+  Costing dibangun dan diisi lewat UI di sistem ini** (Master Produk, Master Material, Price
+  Reference, BOM, Flow Process, Man Power Rate, Rate Bahan Pendukung Khusus & FOH, Rate
+  Generals). Konsekuensi: FR-37–FR-49 di bawah ada di scope; teks NFR-07(a) tidak lagi berlaku
+  seperti tertulis (lihat NFR-09). Entri 2026-09-21 tidak dihapus supaya jejaknya terlihat.
 
 - **Ambang toleransi selisih berat — RESOLVED 2026-09-21.** Kedua sumber sempat berbeda: BPMN
   (swimlane Admin Produksi, gateway "Output Berat Produksi") menyebut ± 0,5%, sheet "Konsep yang
@@ -141,8 +158,9 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
   percabangan **Kondisi Coil**: _Tidak sesuai_ → FR-06, atau _Ok, diproduksi sebagian/seluruhnya_
   → FR-07.
 - **FR-06** — Jika kondisi coil tidak sesuai, Operator menghasilkan Laporan Ketidaksesuaian
-  Material yang dikirim ke Claim Material (PPIC); setelah proses klaim, PPIC melakukan Release
-  kembali Material Coil untuk Produksi dengan konfirmasi kelanjutan material coil ke Operator.
+  Material yang dikirim ke Claim Material (Purchasing, dikonfirmasi user 2026-10-27, OQ-C1); setelah proses klaim, Release
+  kembali Material Coil untuk Produksi berlangsung **otomatis** saat Purchasing memilih Lanjut Produksi (FR-80; tanpa konfirmasi
+  manual PPIC, jawaban user 2026-10-27), dengan konfirmasi kelanjutan material coil ke Operator.
 - **FR-07** — Operator memasang coil di mesin & memulai produksi, termasuk kemungkinan memakai
   Sisa Coil (dari Stok Gudang WIP) sebagai input tambahan.
 
@@ -163,6 +181,9 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
   hitung Berat/Pcs = Total Berat ÷ Qty). Kedua pilihan menghasilkan %Selisih =
   (Berat/pcs − Berat Standard/pcs) ÷ Berat Standard/pcs, dan sistem menampilkan popup
   notifikasi cek ulang bila selisih melebihi **± 0,7%**. _(sheet, baris 39–49)_
+  _Diubah 2026-10-07: **Berat Standard/pcs** tidak lagi kolom di database produk, melainkan hasil
+  perhitungan = Berat/Meter varian BOM yang dipilih × Panjang produk (FR-37, FR-46); nilainya
+  tersimpan ke `berat_standard` pada item laporan. FR-10 mengikuti._
 - **FR-10** — Admin Produksi dapat mencatat Stok Bebas untuk sisa coil yang dijadikan produk di
   luar SPK (bukan hasil SPK yang sedang berjalan), dengan alur input yang identik dengan FR-09
   (pilihan Master Product, baby coil sumber, dua pilihan input berat, %Selisih, popup toleransi).
@@ -199,11 +220,15 @@ Setiap FR nantinya di-decompose jadi satu atau lebih UC (Route 1/2) saat masuk
 - **FR-16** — Bila selisih di luar toleransi, Admin Produksi harus melakukan "Cek kembali ke
   lapangan dan verifikasi laporan" dan mendapat status Approved Toleransi sebelum lanjut ke
   submit. _(BPMN: gateway "Output Berat Produksi" → Cek kembali ke lapangan)_
-- **FR-17** — Tombol Save pada laporan produksi hanya aktif apabila tidak ada Hold Coil
-  tercatat pada sesi tersebut; bila ada Hold Coil, alur harus melalui Hold & Claim.
-  _(sheet, baris 106–109)_
+- **FR-17** (**direvisi 2026-11-09**, keputusan user; lihat FR-98) — Tombol Save pada laporan produksi **selalu aktif**. Aturan lama
+  ("Save hanya aktif bila tidak ada Hold Coil; bila ada, alur harus melalui Hold & Claim") **dicabut**. Bila laporan memuat baris Hold Coil,
+  KW 2 (Supplier), atau Reject (Supplier), Save **menyimpan laporan sekaligus mengirim claim** ke Claim Material dalam satu input. Yang dikunci
+  oleh Hold Coil adalah **Submit** (FR-18, NFR-06), bukan Save. _(sheet, baris 106–109)_
 - **FR-18** — Admin Produksi men-submit Laporan Produksi. Submit memperbarui Stok Gudang WIP
   (untuk Sisa Coil) dan mengirim Report Produksi serta Sisa Coil ke Warehouse Finish Good.
+  **Tambahan 2026-11-09 (FR-98, NFR-06):** Submit **ditolak** selama masih ada claim **Hold Coil** milik laporan itu yang belum diputuskan
+  Purchasing (karena material Hold belum dijurnal sampai claim diputuskan, FR-75). Claim KW 2 (Supplier) dan Reject (Supplier) tidak memblokir
+  Submit _(asumsi agen, menunggu konfirmasi BA; lihat FR-98 butir d)_.
 
 ### HPP & posting jurnal
 
@@ -346,6 +371,781 @@ bagian yang tergantikan ditandai di bawah. Ditambahkan sebagai item baru.
   (Man Power, Consumable, Coordination) — dianggap penamaan ulang komponen yang sama, belum
   dikonfirmasi.
 
+### Product Costing — master data, kalkulasi, dan pemakaian rate di HPP — 2026-10-07
+
+Sumber: `input/ERD Product Costing-Production Report.jpg` (struktur tabel) dan
+`input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx` (contoh input & rumus). Angka dan rumus di
+bawah adalah yang tertulis di sheet **Simulasi Program** / **Simulasi Costing**; nilai (mis. 5%,
+2%, Rp200/Kg, faktor 1,5) adalah **contoh isian master**, bukan konstanta — lihat NFR-12.
+Aktor setiap master ditetapkan user 2026-10-07 (open question 10) dan tercatat di UC-N05–UC-N14.
+
+> **Direvisi 2026-10-19:** beberapa rumus dan aktor di bawah digantikan oleh BPMN/Use Case/ERD
+> Rev.1 — baca bagian "Revisi Rev.1" (sebelum "Open questions Product Costing") terlebih dahulu.
+
+**Keputusan user 2026-10-07:**
+
+- Master data Product Costing **dibangun dan diisi lewat UI** (membalik keputusan 2026-09-21).
+- Rate Consumables dan Rate Scrap adalah **persentase dari Material Cost**; hasilnya dinyatakan
+  dalam Rp/meter dan Rp/Kg.
+- Man Power Cost = **Total Man Hour × Rate Man Power**, tidak ada faktor lain.
+- Kolom "Row 3" pada ERD `Rate Bahan Pendukung Khusus & FOH` adalah **Rate FOH**.
+- Laporan produksi yang sudah dibuat **tetap memakai rate saat laporan dibuat**; perubahan rate
+  tidak mengubah laporan lama.
+- (Jawaban open question 2, 3, 5–9, 11 — 2026-10-07, lihat `input/2026-10-07-product-costing-jawaban/`.)
+- Contoh bentuk input dan output ada pada `input/Rev.1 Ide Costing Kg konversi ke Meter.xlsx`.
+
+**Master data**
+
+- **FR-37** — Master Produk menyimpan hierarki 4 level (Level 1 Product Type, Level 2 Product
+  Category, Level 3 Product Jenis, Level 4 Product Master/nama produk) dan **Lebar** (tetap per
+  produk, karena satu lebar bisa memakai ketebalan material berbeda). **Tebal** dan **Panjang (meter)**
+  tetap disimpan di Master Produk (keputusan user 2026-10-07, open question 3; menggantikan
+  catatan sheet Ide E9–E11). **Berat per Pcs tidak disimpan di produk**: = Berat/Meter varian
+  BOM × Panjang produk (FR-46). Contoh user: Produk 1 panjang 6 m; material A 1 kg/m → 6 kg,
+  material B 1,3 kg/m → 7,8 kg.
+- **FR-38** — Master Material menyimpan Metal Type, Slitted/Non Slit, Boron/Non Boron, Material
+  Name, Width, Thickness, dan **Berat/Meter (kg/m)**. Berat/Meter ditambahkan ke master karena
+  dibutuhkan untuk konversi biaya dari Rp/Kg ke Rp/meter (catatan sheet Simulasi Program, I10),
+  dan dipakai per varian BOM untuk menghitung Berat per Pcs. Contoh baris di sheet menulis Width
+  914 untuk material "…-1219-…"; itu salah ketik, nilai yang benar **1219**
+  (`input/2026-10-07-product-costing-jawaban/`).
+- **FR-39** — Master Kurs menyimpan Currency, Kurs, Last Updated, dan Updated By. Kurs dipakai
+  mengubah Price Reference dari USD ke Rupiah.
+- **FR-40** — Price Reference per material: (a) **History Pembelian** — harga/unit (USD/kg) per
+  bulan; (b) sistem menurunkan **Harga Pembelian Terakhir** (harga bulan terisi paling baru) dan
+  **Harga Pembelian Rata-rata** (rata-rata bulan yang terisi); (c) per material, user memilih
+  **Keputusan Pemakaian Price Reference** — "Harga Terakhir" atau rata-rata — dan pilihan itu
+  dapat diubah; (d) **Final Price Reference (USD)** = harga sesuai pilihan; **Final Price
+  Reference (IDR/kg)** = Final USD × Kurs.
+- **FR-41** — BOM Produk: satu produk punya satu atau lebih **varian BOM**, dibedakan oleh
+  ketebalan material (Varian Thickness diambil dari Master Material). Setiap varian punya **No.
+  Uniq ID** sendiri (kolom `ms_bom_detail.no_uniq_id`; mis. `Type 001.1`, `Type 001.2`), Latest Update, dan Update By; aksi View,
+  Edit, Delete. Satu produk boleh memakai beberapa varian material sekaligus.
+  **Direvisi 2026-10-26 (definisi varian, jawaban user):** "Satu varian itu adalah jika satu produk hanya memiliki 1 jenis material
+  saja di dalam BOM-nya. Apabila produk memiliki berbagai macam jenis material dengan ketebalan berbeda, maka produk tersebut memiliki
+  beberapa varian." Jadi **satu varian = satu baris material pada BOM produk** (tingkat detail `ms_bom_detail`); satu produk punya **satu
+  header `ms_bom_header`** (UNIQUE `id_produk` tetap) dan banyak varian. Kunci varian = **pasangan `id_produk` + `no_uniq_id`** (jawaban user:
+  "kuncinya pasangan produk dan no_uniq_id jadi aman"). `ms_bom_header.varian_type` dan `is_default` hanya kolom kompatibilitas (diisi
+  `no_uniq_id` baris pertama oleh kode) dan **tidak dipakai SPK maupun laporan**. _Keputusan sementara 2026-10-26 yang memakai
+  `varian_type` sebagai identitas varian digantikan oleh ketentuan ini._
+- **FR-42** — Flow Process & Cycletime: per proses menyimpan Costcentre/Area, Process Name,
+  Machine, **Cycletime (menit per meter)**, Man Power (jumlah orang), dan **Man Hour = Cycletime
+  × Man Power ÷ 60** (jam per meter). **Total Man Hour** = jumlah Man Hour seluruh proses pada
+  flow. Contoh sheet: Cutting Spandek, mesin 24 m/menit → cycletime 1 ÷ 24 = 0,0417 menit/meter,
+  1 man power → 0,000694 jam/meter. **Flow dikunci per Product Category (Level 2)**, bukan per
+  produk Level 4 (keputusan user 2026-10-07; open question 1).
+- **FR-43** — Man Power Rate dihitung dari tiga kelompok komponen per bulan: **Salary Direct Man
+  Power** (Gaji Pokok, Tunjangan Keluarga, Tunjangan Jabatan, THR, Cuti, Uang Makan, Transport),
+  **BPJS** (Jaminan Kecelakaan Kerja 0,89%, Kematian 0,3%, Hari Tua 3,7%, Pensiun 2%, Kesehatan
+  4%) — **nilai rupiah tiap komponen BPJS diinput manual** (persentase hanya keterangan) —
+  dan **Biaya Lain-Lain** (Seragam, Sepatu, Helm, Sarung Tangan, Masker — dihitung prorate
+  per bulan). Lalu: **Total Biaya Direct Labor/Bulan** = jumlah tiga kelompok; **Rate Direct
+  Labor** = pembulatan ke atas (Total ÷ **jam kerja per bulan**, parameter yang di contoh bernilai
+  173 jam; layar menampilkan keterangan konstanta yang dipakai); **Rate Man Power (Rp/jam)** = Rate Direct Labor
+  × **Faktor Indirect Labor**. Contoh sheet: 6.551.982,55 → 37.873 → × 1,5 = 56.809,5 per jam.
+  Komponen dapat ditambah/dihapus per kelompok (tombol Add/Delete di sheet).
+- **FR-44** — Rate Bahan Pendukung Khusus dan **Rate FOH** disimpan per Product Category dalam
+  **Rp/meter** (contoh sheet: BONDECK 150 dan 400 — "contoh saja"). **Kunci rate adalah
+  Product Category (Level 2)**, bukan Level 4 (keputusan user 2026-10-07; open question 1).
+- **FR-45** — General Rate (berlaku semua produk): **Consumables** (% × Material Cost),
+  **Scrap** (% × Material Cost), **Biaya Koordinasi** (Rp/Kg × Berat/Meter), **Other Cost** — Sales
+  & Marketing, Transport, Finance & Admin, Management Fee, Interest, Profit (masing-masing % ×
+  HPP) — dan **Negotiation Allowance** (% × Bottom Price). Setiap baris punya **jenis/satuan** sendiri di master: Biaya Koordinasi
+  = **Rp/Kg**, baris lainnya **persentase**. Contoh nilai di sheet: Consumables 5%,
+  Scrap 2%, Koordinasi Rp200/Kg, Profit 5%, Negotiation Allowance 5%, lima Other Cost lain kosong
+  (= 0). ERD menyediakan 6 slot `Other Cost` dan satu `Negotiation Allowance`.
+
+**Kalkulasi Product Costing (per meter, per varian BOM)**
+
+- **FR-46** — Sistem menghitung, untuk setiap kombinasi Produk × varian BOM, dalam Rp/meter:
+  - Price Reference (Rp/Kg) = Final Price Reference IDR material varian tersebut (FR-40)
+  - **Material Cost** = Price Reference (Rp/Kg) × Berat/Meter material (FR-38)
+  - **Man Power Cost** = Total Man Hour (FR-42) × Rate Man Power (FR-43)
+  - **Bahan Pendukung Khusus**, **FOH** = rate FR-44
+  - **Consumables** = % × Material Cost; **Scrap** = % × Material Cost;
+    **Biaya Koordinasi** = Rp/Kg × Berat/Meter (FR-45)
+  - **HPP** = Material + Man Power + Bahan Pendukung + FOH + Consumables + Scrap + Koordinasi
+  - **Other Cost** (6 komponen) = % × HPP; **Bottom Price** = HPP + seluruh Other Cost
+  - **Negotiation Allowance** = % × Bottom Price; **Price List/Meter** = Bottom Price +
+    Negotiation Allowance
+  - Setiap nilai juga ditampilkan dalam **Rp/Kg** = nilai Rp/meter ÷ Berat/Meter.
+  - **Berat per Pcs** varian BOM = Berat/Meter material varian × Panjang produk (FR-37).
+  - Material Cost memakai Berat/Meter material utuh tanpa faktor lebar produk (dikonfirmasi user
+    2026-10-07, open question 2).
+- **FR-47** — Output Simulasi Costing menampilkan satu baris per Produk × varian BOM (No. Uniq
+  ID, Price Reference USD/Kg, Kurs, Rp/Kg, Berat/Meter, seluruh komponen FR-46 dalam Rp/meter dan
+  Rp/Kg), ditambah **Ukuran Produk (meter)** yang diambil otomatis dari Panjang Master Produk (FR-37; keputusan user 2026-10-07), **Pricelist Produk/Meter**
+  (= Ukuran × Price List/Meter) dan **Pricelist Produk/Kg**, sebagai pembanding terhadap "Pricelist
+  HFG saat ini" (contoh 27.400 **Rp/Meter**; hanya contoh pembanding hasil hitung pricelist klien
+  dengan konsep mock up, user 2026-10-07). Struktur yang sama dikonfirmasi ERD: `Product Costing Header/Detail`.
+  **Direvisi 2026-10-21 (FR-73):** daftar Pricelist dan Product Catalog yang memuat hasil ini menampilkan **nama produk di depan**; nomor Pricelist/katalog menjadi kolom sekunder.
+
+**Pemakaian rate di HPP Laporan Produksi**
+
+- **FR-48** (**direvisi 2026-10-26**) — HPP per item pada `production_report_items` memakai enam
+  komponen biaya selain Material, dan **rate-nya diambil dalam Rp/Kg dari Hasil Costing varian BOM
+  yang dipakai SPK** (FR-74), bukan dari Master Rate Laporan Produksi (`rate.html`) lagi:
+  1. **Man Power** ← Rp/Kg Man Power Cost,
+  2. **FOH** ← Rp/Kg FOH,
+  3. **Bahan Pendukung Khusus** ← Rp/Kg Bahan Pendukung Khusus,
+  4. **Consumables** ← Rp/Kg Consumables,
+  5. **Biaya Koordinasi** ← Rp/Kg Biaya Koordinasi,
+  6. **Scrap** ← Rp/Kg Scrap.
+
+  Biaya per pcs = Rp/Kg komponen × `berat_per_pcs` item (Kg); Material tetap dari Costbook
+  Material (FR-19/FR-20). Rp/Kg Hasil Costing = Rp/Meter komponen ÷ Berat/Meter (FR-46; contoh
+  Type 001.1: Berat/Meter 1,3397 Kg). Ini mengisi kolom `main_power_cost_*`,
+  `bahan_pendukung_cost_*`, `foh_cost_*`, `consumables_cost_*`, `coordinator_cost_*`,
+  `scrap_cost_*`. Untuk KW 1 dan KW 2 pembagian 40%/60% pada FR-21 tetap berlaku.
+  `start_time`/`finished_time` laporan tidak ikut dihitung. **Varian BOM tiap item mengikuti SPK
+  (ditambahkan 2026-10-26):** item KW 1 memakai varian produk itu pada SPK; item **Stok Bebas** dan
+  **KW 2** (Internal dan Supplier) memakai varian produk yang sama bila produknya ada di SPK, kalau
+  tidak memakai varian SPK yang pertama (lihat FR-74). _Teks FR-48 sebelumnya (rate dicari
+  lewat Product Category (Level 2), KW 2 memakai Master Rate Generals "Scrap") digantikan._
+- **FR-49** — Rate yang dipakai FR-48 **dibekukan saat laporan produksi dibuat**: perubahan Rate
+  Man Power, Rate Bahan Pendukung/FOH, atau General Rate sesudahnya tidak mengubah angka biaya
+  pada laporan yang sudah ada (keputusan user 2026-10-07). Sejak 2026-10-26 yang dibekukan adalah
+  Rp/Kg Hasil Costing varian BOM terpilih (FR-48, FR-74). Mekanisme penyimpanan (salinan nilai
+  ke baris item vs. rate ber-versi yang ditunjuk FK) belum dipilih — NFR-09.
+
+### Revisi Rev.1 — Use Case, BPMN To Be, dan ERD Product Costing — 2026-10-19
+
+Sumber: `input/2026-10-19-product-costing-rev1/notes.md`, yang mencatat tiga file referensi utama
+(`input/Costing To Be D05-PTHFG.png`, `input/Rev.1 Use Case Product Costing.xlsx` UC-01–UC-19,
+`input/ERD Product Costing-Production Report.jpg`) dan jawaban user 2026-10-19. **Ketiganya
+dipakai sebagai referensi utama; jika berbeda dari FR-37–FR-49 di atas, bagian ini yang berlaku**,
+kecuali butir yang ditandai "menunggu open question" (belum boleh diimplementasi sebagai final).
+Teks FR-37–FR-49 di atas tidak dihapus supaya riwayat keputusan 2026-10-07 tetap terbaca.
+
+**Keputusan user 2026-10-19:**
+
+- Bottom Price = HPP + seluruh Other Cost (Σ Rate Other Cost × HPP); bukan perkalian.
+- Daftar Other Cost mengikuti **UC-09 (enam elemen)**: Sales & Marketing, Transport, Finance &
+  Admin, Management Fee, Interest, Profit. Daftar empat elemen di sheet *Istilah* dan BPMN usang.
+- Negotiation Allowance (Extra Margin) berupa **persentase**.
+- UC-13 langkah 4 berjudul "Biaya Proses": salah ketik, maksudnya Biaya Manufacturing Support.
+- ERD Rev.1 adalah referensi awal; entitas yang kurang dilengkapi tim pengembang (FR-50, FR-58).
+- `Varian type` pada BOM Header = **Varian Tebal**.
+- Price Reference hanya memakai nilai **Max** dari History Pembelian.
+
+**Peta perubahan terhadap FR-37–FR-49**
+
+| Topik | Versi 2026-10-07 | Rev.1 (berlaku) | Status |
+|---|---|---|---|
+| Berat/Meter | Atribut Master Material (FR-38) | Dihitung di BOM per varian tebal (FR-51) | Berlaku; Master Standard global (OQ 15) |
+| Price Reference | Pilih Harga Terakhir / Rata-rata, per material (FR-40) | Hanya Max History Pembelian × Kurs (FR-52) | Berlaku (user) |
+| Aktor Kurs & Price Reference | Accounting / Purchasing | Finance (UC-06) | Berlaku; role detail saat RBAC |
+| Aktor rate | Accounting | Costing (UC-07, 08, 09), Sales (UC-10) | Berlaku; role detail saat RBAC |
+| Consumables | % × Material Cost (FR-45) | Rate Rp/Kg × Berat/Meter (FR-54) | Berlaku (UC-08 menyebut Rp/Kg eksplisit) |
+| Rate FOH & Bahan Pendukung Khusus | Rp/meter langsung (FR-44) | **Rp/Kg**; Rp/Meter = Rate × Berat/Meter (UC-12) | Berlaku (user, OQ 14) |
+| Man Power Cost | Total Man Hour × Rate Man Power (FR-46) | Total Man Hour × Rate (UC-12 1.1 salah salin); bagian Borongan Rp/Meter → FR-56 | Berlaku (user, OQ 19) |
+| Man Power Rate | Komponen gaji/BPJS/lain-lain ÷ 173 jam × Faktor Indirect (FR-43) | (Rate 1/3 Operator + Rate Borongan Helper per kategori) × Faktor Indirect; rincian FR-43 hanya untuk Operator (FR-53) | Berlaku (user, OQ 13, 18); Borongan hanya Rp/Meter (user 2026-10-20) |
+| Satuan hasil | Rp/meter, lalu Rp/Kg (FR-46) | Setiap komponen dalam **dua satuan**: Rp/Kg dan Rp/Meter (FR-56) | Berlaku |
+| Other Cost | Enam elemen, % × HPP (FR-45) | Sama (UC-09, UC-15) | Konsisten |
+| Lebar produk | Tetap per produk (FR-37) | Memakai kolom `wide` yang sudah ada, mm (FR-64) | Berlaku (user, D1, 2026-10-20) |
+| Faktor Indirect Labor | Parameter pada Man Power Rate (FR-43) | Master tersendiri, global, dikelola Costing (FR-53) | Berlaku (user 2026-10-20) |
+| Negotiation Allowance | % global × Bottom Price (FR-45) | % **per Product Category** (FR-55) | Berlaku (user, OQ 16) |
+| Tampilan daftar Pricelist dan Product Catalog | Nomor Pricelist/katalog di depan | Nama produk (dengan varian/Uniq ID) di depan; nomor sekunder (FR-73) | Berlaku (user 2026-10-21) |
+| Perubahan rate Negotiation Allowance | Ditetapkan langsung oleh Sales (FR-55) | Diajukan Sales Manager, **berlaku setelah Approved GM**; Reject kembali ke Sales Manager (FR-67; BPMN To Be Sales D01) | Berlaku (user 2026-10-21); alasan Reject diasumsikan wajib (OQ 20) |
+| Alur Pricelist | Tidak ada | Draft → Approval Management → Product Catalog (FR-58), per Produk × varian BOM, Product Catalog disimpan sebagai data | Berlaku (user, OQ 17) |
+| Kunci Flow & Rate FOH/BPK | Product Category (L2) | BPMN/UC: per Kategori Produk (ERD masih L4) | Konsisten dengan keputusan 2026-10-07; ERD digambar L2 |
+
+**Master data tambahan**
+
+- **FR-50** (UC-03) — **Master Standard Material** menyimpan Standar Toleransi, Standar Berat Jenis
+  Material Baja, dan Coating; dikelola Engineering dan dipakai FR-51. Master baru (belum ada di
+  ERD referensi). Nilainya **berlaku global** (satu set untuk semua material; user 2026-10-19).
+  **Satuan tidak ditampilkan** di UI karena klien tidak menginformasikannya; angka dipakai apa
+  adanya dan konversi satuan pada formula FR-51 dikalibrasi dengan contoh 0,14 mm × lebar 1219 ×
+  7,85 ≈ 1,34 kg/m (cek hasil dengan klien saat uji).
+- **FR-51** (UC-04) — **BOM per Varian Tebal**: Engineering memilih material dari Master Material
+  untuk setiap varian ketebalan. **Berat/Meter dihitung otomatis** =
+  `((Tebal Material − Standar Toleransi) × Lebar Coil × Standar Berat Jenis) + Coating`
+  (FR-50). Satu produk boleh punya beberapa BOM dengan material berbeda, tetapi **tidak boleh
+  membuat BOM dengan material yang sama dua kali** untuk produk yang sama (unik per
+  produk + material). Prasyarat: Master Produk (UC-01), Master Material (UC-02), Master Standard
+  (UC-03). Menggantikan atribut Berat/Meter pada Master Material (FR-38); kolom Tebal dan Lebar Coil
+  tetap di Master Material. Sebagai cek silang, contoh lama 0,14 mm × 1,219 m × 7,85 ≈ 1,34 kg/m.
+- **FR-52** (UC-06) — **Price Reference**: Finance memperbarui Kurs, lalu Price Reference USD/Kg
+  per material, **diacu dari History Pembelian dengan mengambil nilai tertinggi (Max)**. Sistem
+  menghitung Price Reference Rp/Kg = USD/Kg × Kurs. Nilai rata-rata dan terakhir pada ERD
+  tidak dipakai costing dan tidak ada pilihan pemakaian. Menggantikan FR-40 butir (b)–(d).
+
+**Master rate**
+
+- **FR-53** (UC-07) — Costing menetapkan rate biaya proses:
+  - **Man Power Rate (per Product Category)** terdiri dari dua bagian, lalu dikali **Faktor
+    Indirect Labor** (UC-07):
+    - **Rate 1/3 Operator (Rp/jam)** = Rate Direct Labor **Operator** (FR-43: rincian gaji/BPJS/
+      biaya lain ÷ jam kerja per bulan, contoh 173 jam) × **porsi operator 1/3**. Alasan user
+      2026-10-19: Operator dianggap hanya 1/3 bekerja langsung pada produk. Porsi disimpan sebagai
+      parameter (NFR-12). **Pembulatan:** Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh
+      **setelah** dikali 1/3 (user 2026-10-19), menggantikan pembulatan Rate Direct Labor di FR-43.
+    - **Rate Borongan Helper** diambil dari **master Borongan per Product Category** (master baru),
+      **hanya dalam Rp/Meter** (user 2026-10-20: standar selalu berawal dari Rp/Meter; tidak ada
+      Rp/Pcs dan tidak ada konversi dengan Panjang Produk).
+    - **Faktor Indirect Labor** adalah **master tersendiri** (global, satu nilai) yang dikelola Costing
+      karena nilainya dapat berubah (user 2026-10-20); **bukan per Product Category** dan hanya dipakai sebagai pengali pada Man Power Cost; bukan lagi parameter pada Man Power Rate. Nilai
+      mengalikan jumlah (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) (FR-56).
+      Perubahan nilai tidak mengubah Pricelist yang sudah diajukan dan laporan produksi yang sudah dibuat
+      (FR-49, NFR-09).
+    - Rincian gaji/BPJS/jam kerja FR-43 hanya berlaku untuk bagian Operator; "Rate Man Power
+      (Rp/jam)" tunggal pada FR-43 tidak lagi dipakai langsung (lihat FR-56).
+  - **Rate FOH** dan **Rate Bahan Pendukung Khusus** per Product Category dalam **Rp/Kg**
+    (menggantikan Rp/meter di FR-44); Rp/Meter dihitung `Rate Rp/Kg × Berat/Meter` (FR-56).
+- **FR-54** (UC-08) — Costing menetapkan **Rate Consumable (Rp/Kg)**, **Rate Scrap (% dari Material
+  Cost)**, dan **Rate Biaya Koordinasi (Rp/Kg)**; berlaku semua produk.
+- **FR-55** (UC-09, UC-10) — Rate Other Cost (% × HPP) untuk enam elemen UC-09 ditetapkan Costing;
+  **Rate Negotiation Allowance (Extra Margin, %)** ditetapkan Sales **per Product Category**
+  (user 2026-10-19; bukan lagi bagian Rate Generals). Rate Other Cost berlaku semua produk.
+  **Direvisi 2026-10-21 (FR-67):** rate Negotiation Allowance tidak lagi ditetapkan langsung oleh Sales; perubahannya
+  diajukan **Sales Manager** dan baru berlaku setelah **disetujui GM**.
+
+**Kalkulasi (UC-11 s.d. UC-16)** — `BM` = Berat/Meter varian BOM yang dipilih (FR-51). Setiap
+komponen dihitung dalam **Rp/Meter dan Rp/Kg**; sistem mengambil rate Product Category dari produk.
+
+- **FR-56** —
+  - **Material Cost** (UC-11): Rp/Kg = Price Reference Rp/Kg material BOM (FR-52); Rp/Meter =
+    Price Reference × BM.
+  - **Biaya Proses** (UC-12): Man Power, Bahan Pendukung Khusus, FOH. Bahan Pendukung dan FOH:
+    Rp/Meter = Rate (Rp/Kg) × BM; Rp/Kg = Rp/Meter ÷ BM. **Man Power** (disetujui user
+    2026-10-19, OQ 19): Rp/Meter = `(Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) ×
+    Faktor Indirect Labor` (Rate Borongan Helper sudah Rp/Meter, FR-53); Rp/Kg = Rp/Meter
+    ÷ BM. Butir 1.1 UC-12 (Rate × Berat/Meter) salah salin (user 2026-10-19). Biaya Proses = jumlah
+    ketiganya, per satuan.
+  - **Manufacturing Support** (UC-13): Consumables Rp/Meter = Rate × BM, Rp/Kg = Rate (Rp/Kg);
+    **Scrap** = Rate Scrap × Material Cost (Rp/Meter dan Rp/Kg masing-masing); **Biaya
+    Koordinasi** Rp/Meter = Rate × BM, Rp/Kg = Rate. Manufacturing Support = jumlah ketiganya.
+  - **HPP** (UC-14) = Material Cost + Biaya Proses + Manufacturing Support, per satuan.
+- **FR-57** — **Bottom Price** (UC-15): untuk tiap elemen Other Cost, Other Cost = Rate × HPP
+  (per satuan); `Bottom Price = HPP + Σ Other Cost`. **Price List** (UC-16) = Bottom Price +
+  (Rate Negotiation Allowance % × Bottom Price), per satuan. Sales menerima Bottom Price, lalu
+  menjalankan perhitungan; hasilnya dicetak sebagai **Report Costing Detail/Produk**.
+
+**Alur Pricelist (UC-16 s.d. UC-19)**
+
+- **FR-58** — Sales menyusun **Draft Pricelist** dari hasil FR-57 dan mengirimkannya ke Management
+  (UC-17). Management memeriksa dan memutuskan **Approve** atau **Reject** (UC-19). **Reject**
+  mengembalikan pricelist ke perhitungan ulang (UC-16) lalu diajukan lagi; **Approve** memungkinkan
+  Sales **merilis Product Catalog** berisi harga yang disetujui (UC-18), yang diteruskan ke proses
+  Sales di luar alur ini. Hanya pricelist yang sudah Approve yang boleh dirilis; satu pricelist Approved boleh dirilis **berkali-kali** (user 2026-10-20) dan setiap rilis membuat Product Catalog (snapshot) baru (relasi pricelist → katalog 1 ke 0..N). Status yang
+  tersirat pada BPMN: Draft, Menunggu Approval, Approved, Rejected; tidak ada status lain
+  yang ditambahkan. Keputusan user 2026-10-19: pricelist **per Produk × varian BOM** (Rp/Meter dan
+  Rp/Kg); Management **wajib mengisi alasan Reject** yang disimpan; **Product Catalog disimpan
+  sebagai data** (snapshot harga yang disetujui, dengan pelepas dan waktu rilis). Versi dan periode
+  berlaku tidak diminta klien.
+  **Direvisi 2026-10-21 (FR-73; tampilan saja):** pada daftar menu Pricelist dan Product Catalog, **nama produk (dengan varian/Uniq ID) tampil di depan**; nomor Pricelist/katalog bukan yang utama dan menjadi kolom sekunder.
+
+**Aktor Rev.1 (menurut lane BPMN)**: Engineering (UC-01–05), Finance (UC-06), Costing (UC-07–09),
+Sales (UC-10, 16–18), Management (UC-19); perhitungan UC-11–15 dijalankan sistem dengan pemilik
+proses Accounting (asumsi di sheet Use Case: ikon roda gigi = otomatis).
+
+### Fungsi tambahan hasil review mockup — 2026-10-20
+
+Sumber: review mockup `ui-mockup/pc-*` oleh user dan klien (simulasi disetujui klien 2026-10-20). Melengkapi FR-50–FR-58; tidak
+menimpa teks sebelumnya. Fitur yang hanya ada di mockup (Simpan ke File / Muat dari File, kerangka tema) bukan requirement.
+**FR-53 sudah memuat Faktor Indirect Labor sebagai master global** dan **Rate Borongan Helper hanya Rp/Meter**; tidak diulang di sini.
+
+- **FR-59** (UC-N14, UC-13) — **Peringatan kelengkapan data costing.** Sistem menandai setiap varian BOM yang datanya belum
+  lengkap, menyebut apa yang kurang, dan menunjuk menu tempat mengisinya. Kekurangan yang dideteksi: Flow Process kategori
+  belum ada atau Total Man Hour 0; Rate BPK/FOH kategori belum ada; Rate Borongan Helper kategori belum ada atau kosong;
+  Negotiation Allowance kategori belum ada atau kosong; Price Reference kosong (History Pembelian tanpa nilai); Berat/Meter ≤ 0
+  (periksa Master Standard, tebal, lebar coil); Kurs USD belum ada; General Rate (Consumables, Scrap, Biaya Koordinasi) belum
+  diisi; Faktor Indirect Labor belum diisi atau ≤ 0; jam kerja per bulan atau porsi Operator tidak valid. Rate yang belum ada
+  tidak boleh dihitung diam-diam sebagai 0. Elemen Other Cost yang kosong tetap dianggap 0 (FR-45). **Draft Pricelist boleh
+  disimpan, tetapi tidak boleh diajukan ke Management (UC-13) selama ada baris yang tidak lengkap.**
+- **FR-60** (semua perhitungan) — **Pembulatan.** Semua nilai rupiah dihitung dan ditampilkan 2 desimal tanpa pembulatan,
+  **kecuali Rate 1/3 Operator** yang dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3 (FR-53). Menggantikan `{TBC}`
+  aturan pembulatan komponen lain pada NFR-11.
+- **FR-61** (UC-N05, UC-N06) — **Produk atau material yang sudah dipakai BOM tidak boleh dihapus** (periksa `ms_bom_header.id_produk`
+  / `ms_bom_detail.id_material`); sistem menolak dengan pesan. Pemakaian oleh transaksi lain (PR/PO/gudang) belum diperiksa
+  (keputusan D5, 2026-10-20).
+- **FR-62** (UC-N05, UC-N06) — **Nama otomatis dengan override manual.** Nama Level 4 produk disusun dari Product Type + Category +
+  Jenis + Tebal × Lebar × Panjang; Material Name dari Metal Type + Slitted/Mother + Boron + Tebal-Lebar Coil-Coating-Tensile.
+  Pengguna boleh menimpanya secara manual; nama yang sudah diedit manual tidak ditimpa lagi oleh penyusunan otomatis, dan
+  tersedia aksi "generate ulang" (keputusan D4).
+- **FR-63** (UC-N15) — **Master Standard Material** (melengkapi FR-50): satu baris global (upsert, id tetap), tanpa label satuan
+  di UI, tiga nilai desimal berpresisi `DECIMAL(14,6)`; setiap perubahan nilai dicatat before/after karena memengaruhi
+  Berat/Meter semua BOM (keputusan D6).
+- **FR-64** (UC-N05; **direvisi FR-37**) — **Lebar produk memakai kolom `wide` yang sudah ada** (satuan mm), bukan kolom `lebar`
+  baru (keputusan D1, 2026-10-20). Kolom itu juga dipakai menghitung CBM (panjang × lebar × tinggi kemasan) dan dibaca
+  modul lain, jadi bentuk dan satuannya tidak boleh diubah. Isi `wide` diperiksa setelah `SHOW CREATE TABLE` (D0) diterima.
+- **FR-65** (UC-N08, UC-N14) — **Tanggal dipilih lewat pemilih tanggal**, bukan teks bebas: Expired Price Reference dan filter
+  Range Date Simulasi Costing (format `YYYY-MM-DD`).
+- **FR-66** (UC-N05; data master, bukan aturan) — Contoh pilihan master level produk yang ditambahkan user: Product Type
+  **Baja Ringan** → Product Category **CANAL C** → Product Jenis **C75.70 B**.
+- **FR-67** (UC-12, UC-16; **merevisi FR-55**; sumber BPMN To Be Sales D01, keputusan user 2026-10-21) — **Perubahan rate
+  Negotiation Allowance (Extra Margin) perlu persetujuan GM.** Menurut BPMN: setelah produk ada di Product Catalog,
+  **Sales Manager** menilai "Perlu perubahan margin?"; bila tidak, Quotation dibuat dengan rate yang berlaku; bila perlu,
+  Sales Manager **mengajukan rate Extra Margin baru** (UC-12), lalu **GM** memutuskan **Approved** atau **Reject**
+  (UC-16). Approved → rate dipakai; Reject → kembali ke Sales Manager untuk memperbaiki dan mengajukan ulang.
+  - Rate Negotiation Allowance **aktif** (% per Product Category, FR-55) **hanya berubah setelah Approved GM**. Sebelum itu
+    Simulasi, Pricelist, dan Katalog memakai rate aktif lama; Pricelist yang sudah diajukan tidak berubah (snapshot, FR-58).
+  - Pengajuan menyimpan Product Category (`code_lv2`), rate yang diajukan, pengaju dan waktu, pemutus dan waktu, serta alasan
+    Reject (ERD: `rate_negotiation_allowance_request`). Status hanya **Menunggu Approval GM**, **Approved**, **Rejected**.
+    Approved memperbarui rate aktif beserta Last Update dan Updated By; Reject tidak mengubah rate aktif.
+  - **Diasumsikan, mohon konfirmasi (OQ 20): alasan Reject wajib diisi GM** (BPMN tidak menyebut alasan; mengikuti pola
+    Pricelist FR-58). Pengajuan diasumsikan satu per Product Category (OQ 22).
+  - Poin penilaian customer baru pada BPMN (toko sewa/sendiri, lama berdiri, armada, asset, jumlah cabang) hanya acuan
+    keputusan margin dan **tidak diotomasi**.
+  - **Di luar scope Product Costing:** persetujuan **diskon pada Quotation** (<5% disetujui Sales langsung, 5–10% Sales
+    Manager, >10% GM) beserta pembuatan Sales Order, SPM, dan pengiriman SO ke Production Plan. Itu modul Sales/Quotation
+    dan tidak dimodelkan di sini.
+
+### Notifikasi perubahan Bottom Price — 2026-10-21 (diusulkan, menunggu konfirmasi)
+
+Sumber: permintaan user 2026-10-21 (`input/2026-10-21-bottom-price-change-notification/`), terkait BPMN To Be Sales D01
+(gateway Sales Manager "Perlu Perubahan Margin?") dan FR-67. Seluruh rincian di bawah adalah **usulan tim pengembang —
+diasumsikan, mohon konfirmasi** (open question 25–32); hanya tujuan fitur yang berasal dari user.
+
+- **FR-68** (UC-N18; sumber permintaan user 2026-10-21) — **Deteksi perubahan Bottom Price.** Sistem membandingkan Bottom Price
+  (FR-57) setiap Produk × varian BOM, dalam Rp/Meter dan Rp/Kg, dengan **baseline** (Bottom Price saat terakhir ditinjau
+  Sales; untuk fitur baru dimulai: saat fitur diaktifkan). Bila berbeda — naik atau turun, dan **apa pun penyebabnya**
+  (Price Reference, Kurs, BOM atau Berat/Meter, Flow, Man Power, Borongan, Faktor Indirect Labor, BPK/FOH, General Rate,
+  Other Cost) — sistem membuat **notifikasi** berstatus Belum Ditinjau. Penyebab hanya **ditampilkan**; sistem tidak mengubah
+  rate, Pricelist, atau Katalog secara otomatis (NFR-16). Ambang: **perubahan sekecil apa pun** (selisih ≥ Rp0,01 pada presisi 2 desimal; keputusan user 2026-10-21, OQ 25). Baseline =
+  Bottom Price saat terakhir ditinjau Sales, deteksi dipicu **setiap kali Update Costing dijalankan** (tombol di Simulasi Costing; hasil costing terbaru dibandingkan dengan
+  baseline pada saat itu, bukan otomatis setiap master berubah; pemicu yang sama dengan History Costing, FR-71), dan produk/BOM baru
+  tidak memicu notifikasi: **dikonfirmasi user 2026-10-21 (OQ 26, 29, 31, 48)**.
+- **FR-69** (UC-N18) — **Dashboard dan isi notifikasi.** Halaman dashboard menampilkan notifikasi yang belum ditinjau
+  (lencana jumlah di menu), dikelompokkan per **Product Category** karena Rate Extra Margin berlaku per kategori (FR-55,
+  FR-67). Tiap baris (Produk × varian BOM) memuat: Bottom Price lama → baru (Rp/Meter dan Rp/Kg), selisih (Rp dan %),
+  komponen yang berubah (Material Cost, Biaya Proses, Manufacturing Support, Other Cost), **Rate Extra Margin aktif**,
+  **harga jual saat ini** (**dikonfirmasi user 2026-10-21** = Price List pada Product Catalog yang terakhir dirilis; bila belum ada = Price List
+  baseline; OQ 27 terjawab), **Price List baru bila rate Extra Margin lama dipertahankan** = Bottom Price baru × (1 + rate aktif),
+  selisihnya terhadap harga jual saat ini (%), dan waktu terdeteksi. Tujuannya agar Sales menilai apakah harga jual dengan
+  costing baru masih sesuai harga pasar.
+- **FR-70** (UC-N18; **terhubung ke FR-67 dan FR-58**) — **Keputusan Sales dan status.** **Semua Sales** (Staf Sales dan Sales Manager; keputusan user
+  2026-10-21, OQ 28) meninjau per notifikasi, dengan pembagian hak akses (OQ 33): (a) **Ajukan Rate Extra Margin Baru** — **hanya Sales Manager** (pengaju FR-67/UC-12; hak akses diatur per pengguna di program, tidak dikunci ke pengguna tertentu) → membuka
+  pengajuan UC-12 untuk Product Category itu dan melanjutkan ke persetujuan GM (UC-16); status notifikasi **Diajukan Extra
+  Margin Baru**, terhubung ke pengajuan (`id_rate_negotiation_allowance_request`); (b) **Tidak Perlu Diubah** (catatan
+  opsional; semua Sales) → status **Tidak Perlu Diubah**. Keduanya menyimpan peninjau dan waktu, dan **menggeser baseline ke Bottom Price
+  baru** sehingga notifikasi tidak berulang untuk angka yang sama. Status hanya **Belum Ditinjau**, **Diajukan Extra Margin
+  Baru**, **Tidak Perlu Diubah**. Notifikasi yang belum ditinjau tetap tampil. Kanal **hanya dashboard** (tidak ada email/WhatsApp) dan **tidak ada batas waktu tinjau**
+  (tanpa SLA, eskalasi, atau penanda terlambat; keputusan user 2026-10-21); satu keputusan per notifikasi dan pengajuan per kategori (OQ 30), "Tidak Perlu Diubah" cukup dengan catatan opsional (OQ 32): dikonfirmasi user 2026-10-21.
+- **FR-71** (UC-N19; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 43–49; terbuka OQ 41, 42**) — **History Costing.**
+  Pemicu utama adalah aksi **Update Costing** (tombol di Simulasi Costing; user 2026-10-21, OQ 43): setiap kali Update Costing dijalankan dan
+  hasilnya berbeda dari hasil costing terakhir yang tersimpan — karena perubahan master, rate, atau input yang memengaruhi costing (Kurs, Price Reference,
+  Master Standard Material, BOM atau Berat/Meter, Flow Process, Man Power Rate, Borongan Helper, Faktor Indirect Labor,
+  BPK/FOH, General Rate, Other Cost) dan hasilnya berubah — **Bottom Price** suatu Produk × varian BOM berubah, sistem menyimpan **satu catatan
+  riwayat per Produk × varian BOM**: waktu, pengguna yang mengubah, **sumber perubahan** (master atau rate yang berubah sejak Update Costing sebelumnya,
+  nilai lama → baru), Bottom Price lama → baru (Rp/Meter dan Rp/Kg), snapshot komponen costing lama dan baru (Material
+  Cost, Biaya Proses, Manufacturing Support, HPP, Other Cost, Bottom Price, Price List), dan Rate Extra Margin aktif. Bila satu
+  perubahan memengaruhi banyak produk, dicatat satu baris per Produk × varian BOM (OQ 41). Riwayat dicatat apa pun status
+  tinjau Sales, terpisah dari notifikasi Bottom Price (FR-68..FR-70): notifikasi untuk Sales meninjau, riwayat untuk audit.
+  Riwayat **hanya baca**: tidak dapat diubah atau dihapus (NFR-17). Halaman **History Costing** menyediakan filter produk,
+  Product Category, periode, dan sumber perubahan, daftar, dan detail snapshot. **Persetujuan perubahan Rate Extra Margin (Negotiation
+  Allowance) oleh GM tidak dicatat** di History Costing, dan Draft Pricelist tidak dicatat (OQ 37, 38). Dapat dilihat oleh
+  **pengguna yang diberi hak akses** (hak akses lihat per pengguna di program, tidak dikunci ke jabatan; OQ 36), dengan hak akses **terpisah** dari History Price List (hak **View** dan **Manage**, diatur di
+  program; OQ 47). **Ekspor ke Excel** sesuai filter memerlukan hak **Manage** (OQ 39, 47) dan **tidak mencakup backup** (OQ 45). Masa simpan **1 tahun**; lewat 1 tahun riwayat **dipindahkan ke backup data**
+  (bukan dihapus), dan halaman menampilkan 12 bulan terakhir (OQ 35, 45). Backup dapat diakses oleh pengguna yang memiliki hak akses
+  (hak **Manage**, sama dengan ekspor Excel; user 2026-10-21, OQ 49). Pencatatan **tidak terpisah dari Activity Log**:
+  ditulis lewat `write_log()` (modul "History Costing") sehingga juga tampil di Activity Log (OQ 40); tabel khusus `history_costing` hanya dibuat bila filter/ekspor terstruktur tidak dapat
+  dipenuhi dari `logs` (disetujui user, OQ 46).
+- **FR-72** (UC-N20; sumber permintaan user 2026-10-21; **dikonfirmasi user 2026-10-21, OQ 34–40 dan 44–49; terbuka OQ 41, 42**; terhubung ke FR-58 dan FR-67) —
+  **History Price List.** Hanya saat sebuah Pricelist **Disetujui** (Approved) oleh Management dan menjadi harga terbaru, sistem menyimpan satu
+  catatan riwayat per Produk × varian BOM: nomor Pricelist, waktu, pengguna (penyetuju), **Price List lama** (= Price List
+  terakhir yang disetujui untuk Produk × varian BOM itu) → **baru** (Rp/Meter dan Rp/Kg), Bottom Price dan Rate Extra Margin
+  saat itu, serta catatan. **Draft, Diajukan, Ditolak, Dihitung Ulang, dan persetujuan Rate Extra Margin tidak dicatat**
+  (OQ 37, 38); rilis ke Product Catalog **tidak** dicatat: cukup Approval Pricelist yang menetapkan Pricelist terbaru (OQ 44). Hanya baca (NFR-17). Halaman **History Price List**
+  menyediakan filter produk, Product Category, dan periode; dapat dilihat oleh **pengguna yang diberi hak akses**
+  (OQ 36; hak akses terpisah dari History Costing, hak View dan Manage; OQ 47), **diekspor ke Excel** dengan hak Manage dan tanpa backup
+  (OQ 39, 45, 47), masa simpan **1 tahun** lalu **dipindahkan ke backup data** (OQ 35, 45), dan
+  **tidak terpisah dari Activity Log**: ditulis lewat `write_log()` (modul "History Price List"; OQ 40); tabel khusus `history_pricelist` hanya bila filter/ekspor terstruktur tidak dapat dipenuhi dari `logs` (OQ 46).
+- **FR-73** (UC-13, UC-15, UC-N14; sumber permintaan user 2026-10-21; **merevisi tampilan FR-58 dan FR-47**) — **Nama produk
+  di depan.** Pada daftar menu **Pricelist** dan **Product Catalog** (juga judul modal dan dokumen), **nama produk
+  (disertai varian atau Uniq ID) tampil di depan**; nomor Pricelist atau nomor katalog **bukan yang utama di depan** dan tetap
+  tersedia sebagai kolom sekunder. Format tampilan: OQ 42.
+
+- **FR-74** (UC-02, UC-04, UC-05, UC-11; sumber permintaan user 2026-10-26; OQ 50–55 dijawab user 2026-10-26) — **SPK memilih varian BOM.**
+  Pada Add SPK (Daftar SPK, `beranda.html`), setelah memilih produk, pengguna **wajib memilih varian BOM**
+  produk itu (kolom `no_uniq_id` pada `ms_bom_detail`, tampil sebagai Varian BOM (no_uniq_id), contoh Type 001.1; kunci pasangan `id_produk` +
+  `no_uniq_id`). **Direvisi 2026-10-26:** kolom `varian_type` (header) yang sempat dipakai hari yang sama digantikan `no_uniq_id`. Varian dibawa ke item laporan produksi
+  (`production_report_items.no_uniq_id`, diusulkan) dan menjadi dasar Rp/Kg Hasil Costing pada FR-48.
+  **Direvisi 2026-10-26 (OQ 50):** bila produk belum punya varian BOM, atau Hasil Costing varian itu
+  belum lengkap, **SPK ditolak (tidak dapat disimpan)** — alasan user: bila sudah tercatat di Laporan
+  Keuangan, akan repot banyak adjustment data atau input ulang. _Teks sebelumnya (Add SPK hanya diberi
+  peringatan, HPP komponen Rp 0 ditandai) digantikan._ Varian dipilih **per produk** pada SPK
+  multi-produk (OQ 51). Varian boleh diubah **selama SPK belum diinput laporan produksinya**; sesudah
+  itu terkunci (OQ 53). SPK dibuat di modul Production Planning (eksternal): kolom `no_uniq_id` ada di
+  `tr_spk_material_detail` dan disalin ke `production_report_items.no_uniq_id`; mockup Add SPK hanya
+  simulasi dan menyesuaikan nama field/label ERD (OQ 55). Pada mockup, `hpp.html` membaca Hasil
+  Costing dari data Simulasi (`pc-simulasi.html`); Master Rate lama (`rate.html`) **dipensiunkan**
+  dan tidak lagi dipakai (OQ 54).
+  **Stok Bebas dan KW 2 mengikuti varian SPK (ditambahkan 2026-10-26, jawaban user: "KW2 juga ikuti
+  varian berdasarkan produk yang sudah dipilih di SPK"):** pada Laporan Produksi, item Stok Bebas dan
+  KW 2 tidak memilih varian sendiri. Varian BOM-nya = varian produk yang sama pada SPK; bila produk
+  itu tidak ada di SPK, dipakai varian SPK yang pertama. Dengan begitu komponen Man Power sampai Scrap
+  pada Stok Bebas dan KW 2 tidak Rp 0.
+
+### Claim Material (Kompensasi / Retur) — 2026-10-27
+
+Sumber: BPMN To Be `input/Claim Process/To Be_Claim Coil_D003-PTHFG.png`, workbook `input/Claim Process/4. Rev.2 Mockup
+Claim Material (based on Concept).xlsx`, dan jawaban user 2026-10-27 (`input/2026-10-27-claim-material/notes.md`). Fitur
+FEAT-11. **Nama tabel dan kolom di bagian ini masih usulan** dan belum ada di `erd-revisi.drawio` (NFR-15 berlaku saat ERD
+disinkronkan). Nama tampilan UI mengikuti workbook.
+
+- **FR-75** (BPMN D003; terhubung ke FR-06, FR-11, FR-13, FR-17) — **Pemicu dari Laporan Produksi.** Tombol **Save** pada
+  Laporan Produksi (direvisi 2026-11-09, FR-98: tidak ada lagi tombol/popup Hold & Claim terpisah) mengirim tiga jenis baris ke Claim Material: **KW 2 (Supplier)**, **Hold Coil**, dan **Reject (Supplier)**
+  (Reject Material Plat / Reject Product). Setiap baris membawa Supplier, Material, No. Coil Packing List, No. PO,
+  Berat (Kg), dan Alasan/Problem dari Produksi. Coil berstatus Hold tampil di tab **Material On Hold** pada Stok Gudang Coil
+  (Warehouse > Gudang Coil > Stock) dan tidak dijurnal sampai claim diputuskan (workbook "Saat Claim dari Produksi", baris 53). Tab ini
+  digabung ke halaman Stok Gudang Coil yang sudah ada (keputusan user 2026-10-27) dan tampil sebagai use case **UC-N35** (baca saja;
+  Status Material: Hold / Dapat Dipakai (Release) / Dijual (Gudang Slitting) / Dalam Retur / Dikompensasi).
+- **FR-76** — **Daftar Claim Material** (pengguna Purchasing): filter Supplier; kolom No, Nama Supplier, Nama Material,
+  No. Coil Packing List, No. PO, Berat (Kg), Problem, Status Claim, Action. Action: **Email**, **Process
+  Decision**, dan **View Alasan Hold dari Produksi**.
+  Kolom input angka (nilai, harga, kurs, berat) di halaman Claim, Costbook, dan Rate diformat dengan **pemisah ribuan titik dan desimal koma** saat diketik (mis. 2.306.810,81); nilai tersimpan sebagai angka murni (keputusan user 2026-10-30). Header kolom di seluruh halaman Claim mengikuti nama kolom ERD (aturan penamaan seragam, AGENTS.md; audit 2026-10-29). Kolom turunan yang tidak punya kolom ERD
+  (Progres, Status Material, Biaya Material di-Claim, Beban Ditanggung HFG, Akun Beban, Material Claim, Jenis) dan nama hasil gabungan tabel lain (Nama Supplier = `new_supplier.nama`,
+  Nama Material, Mata Uang = `mata_uang.mata_uang`) dikecualikan.
+- **FR-77** — **Email.** Purchasing mengirim email keluhan beserta dokumen claim ke supplier; konfirmasi dan diskusi
+  kesepakatan penanganan terjadi di luar sistem (BPMN: Supplier → Diskusi → Kesepakatan Penanganan). Sistem mencatat tanggal
+  email terkirim dan ringkasan kesepakatan. _(OQ-C2 ditunda: master setting email.)_ **Bukti pendukung dari Produksi (FR-94) ikut terlihat di email**
+  sebagai lampiran bersama dokumen claim, dan isi email menyebut jumlah berkas bukti (keputusan user 2026-10-29).
+- **FR-78** — **Process Decision.** Untuk satu baris claim, Purchasing menetapkan **satu atau lebih jalur** (jawaban user:
+  satu coil boleh di dua jalur, mis. KW 2 dikompensasi dan Hold diretur). Tiap jalur memuat Berat (Kg) dan keterangan:
+  **Kompensasi** → (1) Debit Note, (2) Lanjut Produksi, (3) Jual Material; **Retur** → (1) Retur ke Supplier. Status Claim
+  menampilkan jalur yang dipilih (Kompensasi, Retur, atau keduanya).
+  **Process Decision beberapa claim sekaligus** (keputusan user 2026-10-29; contoh: KW 2 dan Hold dari satu SPK tidak perlu diputuskan satu per
+  satu): Daftar Claim punya kotak centang per baris (hanya claim yang belum diputuskan) dan centang semua di header, serta tombol **Process Decision
+  (Terpilih)**. Claim yang dipilih harus dari **satu supplier** (kesepakatan dibuat per supplier). Satu modal memuat semua claim terpilih dengan
+  **satu Kesepakatan dengan Supplier bersama**, lalu jalur dan berat per claim; total berat tiap claim tidak boleh melebihi beratnya. Satu Confirm
+  menyimpan keputusan semua claim. Keputusan tetap tercatat **per claim** (`claim_material_decision`): Debit Note, SPK Re-Pack (digabung per supplier saat
+  Create SPK, FR-83), dan Jual Material tetap dibuat per keputusan, bukan digabung menjadi satu dokumen.
+  **Kurs saat claim** (OQ-C12, keputusan user 2026-10-29): bila supplier/PO non-IDR, tiap claim di modal Process Decision menampilkan **Mata Uang** (dari PO, hanya baca) dan **Kurs** (wajib diinput); kurs tersimpan pada Debit Note yang dibuat dari keputusan itu (`debit_note.id_kurs`, `debit_note.kurs`). Supplier IDR: kurs selalu 1.
+- **FR-79** — **Kompensasi — Debit Note.** Purchasing mengisi **Nilai Debit Note langsung dalam Rupiah (tanpa PPN)**; tidak
+  ada field persen (jawaban user: 20% pada simulasi hanya contoh kasus HFG). Hasilnya otomatis masuk List Debit Note
+  berstatus Belum Terbit. Sistem menampilkan Report Biaya Kompensasi vs Biaya Scrap (FR-87).
+- **FR-80** — **Kompensasi — Lanjut Produksi.** Purchasing mengisi Catatan untuk Produksi; status coil otomatis berubah dari
+  Hold menjadi dapat dipakai (Release, FR-06). Tidak ada jurnal.
+- **FR-81** — **Kompensasi — Jual Material.** Purchasing mengisi keterangan; material masuk Inventory Material Khusus Dijual
+  (Gudang Slitting). Nilai material dari Gudang Bahan Persediaan Produksi dipecah menjadi **Material KW** (diakui inventory) dan
+  **Biaya Scrap** (kerugian). Jurnal: Db Material KW, Db Biaya Scrap / Cr Gudang Bahan Persediaan Produksi. _(OQ-C4: cara input
+  pembagian bobot.)_
+- **FR-82** — **Retur ke Supplier.** Jalur Retur otomatis masuk ke List SPK Re-Pack (FR-83) dan, setelahnya, Surat Jalan Retur
+  (FR-84).
+- **FR-83** — **SPK Re-Pack** (PPIC; BPMN: Buat Perintah Re-Pack Material → Produksi memindahkan material dari produksi ke
+  gudang). **Satu SPK memuat beberapa baris material satu supplier** (keputusan user 2026-10-28, G6): Process Decision Retur membuat baris
+  WAITING per keputusan; saat **Create SPK**, semua baris WAITING dari supplier yang sama tercentang awalnya dan digabung menjadi satu SPK
+  (centang dapat dilepas untuk memisahkan; `spk_repack` + `spk_repack_detail`). Header: No. SPK Re-Pack (otomatis), Tgl Perintah Kerja, Nama Supplier,
+  Material Claim (daftar), Status SPK (**WAITING**, **ON PROGRESS**, **COMPLETED**), Action (**Create SPK**, **Confirm SPK**, **View**,
+  **Print**). Confirm SPK = material sudah di-re-pack. Tidak ada jurnal. **Print** (keputusan user 2026-10-29): pratinjau dokumen "Surat Perintah Kerja Re-Pack" berlogo HFG berisi No. SPK Re-Pack, Tgl Perintah Kerja, Nama Supplier, daftar material (No. Coil Packing List, No. PO, Berat (Kg), Problem) beserta total berat, dan kolom tanda tangan (Dibuat oleh PPIC, Diterima oleh Produksi, Mengetahui); tombol Cetak memanggil cetak browser.
+- **FR-84** — **Surat Jalan Retur** (PPIC), dibuat dari SPK Re-Pack berstatus COMPLETED; **satu SPK menjadi satu Surat Jalan** (`surat_jalan_retur.id_spk_repack`
+  1:1), jadi satu SJ dapat memuat beberapa claim satu supplier. Field: No. Surat Jalan (otomatis), Tgl,
+  Alamat (supplier), Driver, No. Polisi Truk, dan daftar coil. Status SJ: **WAITING SJ**, **NOT CONFIRMED**, **SJ CONFIRMED**.
+  Action: **Create SJ**, **Confirm SJ** (surat jalan diterima supplier), **View**, **Print**. Jurnal saat Create SJ: Db In Transit
+  / Cr Inventory; saat Confirm SJ: Db Debit Note (Retur) sebesar Berat × **Price/Unit PO** / Cr Nilai Material Retur (In Transit) sebesar Berat × **Costbook/Kg gudang asal** / **Db atau Cr Selisih Costbook vs Price/Unit PO** (Kredit bila Price/Unit PO > Costbook, Debit bila lebih kecil; baris tidak muncul bila sama; keputusan user 2026-10-29). Nilai Create SJ = **jumlah** Berat × **Costbook/Kg gudang asal** (`claim_material.costbook_per_kg`; tidak dibagi 1,11; keputusan user 2026-10-29)
+  semua baris di SPK itu. Debit Note Retur tetap satu per keputusan dan tertaut ke Surat Jalan yang sama. **Print** (keputusan user 2026-10-29): dokumen "Surat Jalan Retur" berlogo HFG berisi No. Surat Jalan, Tgl Surat Jalan, Nama Supplier, Alamat, Driver, No. Polisi Truk, No. SPK Re-Pack, daftar coil dan total berat (tanpa nilai), serta tanda tangan (Dibuat oleh PPIC, Driver, Diterima oleh Supplier).
+- **FR-85** — **Debit Note** (Purchasing). Header: No. Debit Note, Tgl Terbit, Nama Supplier, Mata Uang, Total Nilai, Jalur,
+  Status Dokumen, Action (View, Print, Edit, Create). Saat Create: Jalur (Retur/Kompensasi); untuk Retur sistem
+  otomatis menarik detail Surat Jalan dan **hanya dapat dibuat setelah Surat Jalan Retur dibuat** (dikonfirmasi user 2026-10-27).
+  **Edit hanya sebelum terbit** (status Belum Terbit) dan hanya oleh pengguna yang memiliki hak akses (jawaban user 2026-10-27). Nilai
+  claim dihitung dalam mata uang PO supplier (dikonfirmasi 2026-10-27). Total Debit Note × Kurs (input untuk mata uang non-IDR) = Total Debit Note (IDR). Status
+  Dokumen mengikuti workbook: **Belum Terbit**, **Sudah Terbit**, **Belum Terima Uang**, **Sudah Terima Uang**, **Sudah Alokasi
+  ke Hutang**. **Total Nilai Debit Note Retur = Berat × Price/Unit PO** (harga saat PO; supplier menagih/mengakui berdasarkan harga ini, bukan costbook — keputusan user 2026-10-29), sedangkan nilai material yang keluar dari gudang tetap Berat × Costbook/Kg; selisihnya dijurnal saat Confirm Surat Jalan (FR-84, FR-93). **Print** (keputusan user 2026-10-29): dokumen "Debit Note" berlogo HFG berisi No. Debit Note, Tgl Terbit, Nama Supplier, Jalur, Mata Uang, Kurs, No. Claim, No. Surat Jalan, rincian (Retur: Nama Material, No. Coil Packing List, No. PO, Berat (Kg), Price/Unit PO, Total Nilai; Kompensasi: Keterangan, Total Nilai), Total Nilai dan Total Nilai (IDR), tanda tangan (Dibuat oleh Purchasing, Diterima oleh Supplier); Debit Note berstatus Belum Terbit diberi tanda air "BELUM TERBIT". **Mata Uang dan Kurs pada Create Debit Note ditarik dari Process Decision (hanya baca, tidak diinput ulang)**; Total Nilai (IDR) = Total Nilai × Kurs tersebut (OQ-C12, keputusan user 2026-10-29).
+- **FR-86** — **Jurnal Debit Note** (jawaban user 2026-10-27): (a) **Kompensasi terbit**: Db Debit Note (Kompensasi) / Cr Biaya KW 2
+  Supplier dan/atau Cr Biaya Scrap (mengurangi biaya KW 2 yang terjurnal di HPP dan mengurangi Biaya Scrap; _OQ-C3: pemetaan per
+  asal baris, dikonfirmasi_); (b) **Retur terbit**: tidak ada jurnal (jurnal Db Debit Note (Retur) terjadi saat Confirm SJ, FR-84).
+- **FR-87** (cakupan dipertegas user 2026-10-28, G5) — **Report Biaya Kompensasi vs Biaya Scrap** atas material yang di-claim (BPMN: keluaran
+  Penetapan Nilai Kompensasi). Memuat dua jenis baris: **Debit Note** (biaya material di-claim, Nilai Kompensasi, beban = biaya − kompensasi, akun
+  kredit DN) dan **Jual Material** (biaya material, Material KW, beban = Biaya Scrap yang diakui = nilai material − Material KW). **Retur dan
+  Lanjut Produksi tidak ditampilkan** karena tidak mengakui kompensasi atau kerugian. Disertai total per kolom.
+- **FR-88** (Accounting/Finance) — **Pembayaran PO dengan Debit Note.** Alokasi Debit Note menjadi **baris tambahan pada alur pembayaran
+  yang sudah ada** (`request_payment` → `payment_approve`), bukan dokumen pembayaran terpisah (OQ-C7 dan OQ-C8, dijawab user 2026-10-27).
+  **Alokasi dipilih saat Request Payment**, sehingga nilai yang di-approve checker dan management sudah bersih; saat pembayaran final
+  di `payment_approve`, tiap DN muncul sebagai **baris detail bernilai negatif** pada `payment_approve_details`, dan tabel
+  penghubung `alokasi_debit_note` (`id_debit_note`, `id_request_payment`, `id_payment_approve_details`, `nilai_alokasi`) menjadi jejak
+  audit. Pada Request Payment, **Alokasi Debit Note** dipilih dengan
+  Add Debit Note; Nilai Debit Note muncul sesuai DN yang dipilih. Total Bayar = Nilai Invoice − DN Kompensasi − DN Retur + PPN.
+  Jurnal: Db Hutang / Cr Bank, Cr Bank Admin, Cr Debit Note (Kompensasi), Cr Debit Note (Retur), Db Admin. Status DN menjadi
+  **Sudah Alokasi ke Hutang**.
+- **FR-89** (Accounting/Finance) — **Tagihan Debit Note Langsung.** Debit Note yang tidak dialokasikan ke PO ditagihkan langsung ke
+  supplier: daftar DN siap ditagih (No. DN, Supplier, Jalur, Total Nilai (IDR), Status Belum/Sudah ditagih); form Buat Penagihan
+  (Tanggal Jatuh Tempo, Catatan). Setelah diterbitkan, baris otomatis muncul di Penerimaan Uang dari Supplier.
+- **FR-90** (Accounting/Finance) — **Penerimaan Uang dari Supplier.** Ringkasan (Total belum diterima, per jalur Retur/Kompensasi,
+  Diterima bulan ini), filter (cari, jalur, status, tanggal), daftar DN, dan **Konfirmasi Terima**: Tanggal diterima, Rekening
+  penerima, Nominal diterima, Bukti transfer, Catatan. Jurnal (jawaban user, dua jalur sama): **Db Bank / Cr Debit Note**. **Nominal diterima harus sama dengan nominal Debit Note;
+  bila berbeda, konfirmasi ditolak** (jawaban user 2026-10-27).
+- **FR-91** — Setiap aksi pada modul ini (Email, Process Decision, buat/Confirm SPK Re-Pack, buat/Confirm SJ, buat DN, Alokasi,
+  Tagihan, Konfirmasi Terima) mencatat `write_log('Claim Material', …)` sesuai standar AGENTS.md (old/new pada Edit).
+- **FR-92** — Pajak: nilai Debit Note Kompensasi diinput langsung tanpa PPN. **Nilai Retur (material) = Berat × Costbook/Kg gudang asal, tidak dibagi 1,11 dan tidak mempedulikan apakah costbook sudah termasuk PPN; Nilai Debit Note Retur = Berat × Price/Unit PO (FR-85)** (keputusan user 2026-10-29, menggantikan ÷ 1,11 dari workbook klien 2026-10-27 untuk Retur). PO dan DP memakai DPP = Total
+  × 11/12 dan PPN = DPP × 12% (jawaban user 2026-10-27: sesuai workbook).
+- **FR-93** (OQ-C6, dijawab user 2026-10-27) — **Posting jurnal ke GL otomatis per peristiwa proses.** Setiap titik jurnal (Jual Material,
+  Debit Note Kompensasi terbit, Buat Surat Jalan Retur, Confirm Surat Jalan Retur, Pembayaran PO dengan DN, Penerimaan Uang) langsung
+  terposting ke GL saat peristiwanya terjadi. Akun (COA) tidak ditulis di kode: diambil dari **Master Jurnal khusus proses Claim** yang
+  dibuat kemudian; mekanisme Master Jurnal yang sudah ada di aplikasi (`master_oto_jurnal_detail` / `ms_jurnal_mapping`) dipakai,
+  pilihan tepatnya ditentukan saat Master Jurnal Claim dibuat. Nama akun pada FR-81/84/86/88/90 adalah label bisnis, bukan kode COA.
+  **Tampilan jurnal di layar** (keputusan user 2026-10-28, bukan tabel/laporan terpisah): Daftar Claim punya tautan **Lihat Jurnal** per claim yang
+  sudah diputuskan; isinya jurnal semua peristiwa claim itu berurutan, dengan penanda **Terposting** atau **Belum terjadi** (proyeksi dari nilai saat
+  ini), total Debit = Kredit per jurnal, dan catatan bila satu Surat Jalan/Request Payment mencakup beberapa claim. Debit Note Retur tidak menghasilkan
+  jurnal saat terbit.
+  **Tanpa approval Debit Note** (keputusan user 2026-10-28): Debit Note langsung "Sudah Terbit" saat diterbitkan oleh yang berhak, tidak ada langkah
+  persetujuan, agar prosesnya lebih cepat. **Hak akses** diatur lewat permission aplikasi saat implementasi; di mockup dibiarkan terbuka.
+
+- **FR-94** (FR-75 diperinci; mockup `index.html`) — **Isian claim pada Laporan Produksi.** _(Direvisi 2026-11-09 oleh FR-98: popup Hold & Claim
+  digantikan isian yang menyatu di form Laporan Produksi dan dikirim oleh Save; aturan isi di bawah tetap berlaku, kecuali yang dicoret.)_
+  Isian ini mengirim ke Claim Material baris: (a) **Hold Coil** (satu baris per baris Hold Coil, FR-13); (b) **KW 2 (Supplier)**
+  (FR-11; berat dijumlahkan per baby coil yang dipilih pada barisnya, Problem awal "KW 2", Alasan awal dari Keterangan KW 2);
+  (c) **Reject (Supplier)** (FR-14; satu baris untuk Reject Product dan satu untuk Reject Material Plat bila berat > 0, Alasan awal dari
+  Keterangan Reject Supplier). Tiap baris menampilkan Asal, Baby Coil, Material, Supplier, No. PO, No. Coil Packing List (ditarik dari
+  database lewat baby coil), Berat (Kg), Harga Beli/Kg (`warehouse_stock_coil.harga_beli`, harga per Kg saat incoming; dasar Nilai Material) , Costbook/Kg (Costbook Material gudang asal baby coil, NFR-07; dasar Nilai Retur) dan Price/Unit PO (harga satuan saat PO, `dt_trans_po.hargasatuan`; dasar Nilai Debit Note Retur), serta **Problem** dan **Alasan
+  Produksi** yang wajib diisi. Baby coil asal Reject (Supplier) dipilih di popup (otomatis hanya bila SPK memakai satu baby coil; selain itu wajib dipilih, OQ-C9a).
+  Kirim membuat baris `claim_material` berstatus Baru; baris yang sama (SPK + coil + asal + problem) tidak
+  dibuat dua kali. ~~Save tetap dikunci hanya oleh Hold Coil (FR-17, NFR-06); KW 2 / Reject (Supplier) tanpa Hold Coil tetap dikirim lewat tombol ini
+  (dikonfirmasi user 2026-10-27).~~ **Dicabut 2026-11-09:** Save tidak dikunci; Save mengirim semua baris claim, dan yang dikunci adalah Submit (FR-98).
+  **Bukti dokumen pendukung wajib** (keputusan user 2026-10-29): setiap baris di popup harus punya minimal satu berkas bukti dari Produksi (mis. foto
+  coil, berita acara QC); Save ditolak bila ada baris claim tanpa bukti. Satu baris boleh memuat beberapa berkas. Berkas dapat dihapus/ditambah selama laporan belum disimpan (atau claim masih berstatus Baru, FR-98 butir f), tetapi **setelah terkirim tersimpan bersama claim dan tidak dapat dihapus sampai claim selesai**. Bukti ditampilkan di Daftar Claim
+  pada View Alasan Hold dari Produksi (penanda jumlah berkas pada tautan). **Setiap berkas dapat diunduh dan dipratinjau langsung di halaman tanpa
+  mengunduh** (gambar tampil sebagai gambar, PDF tampil di penampil di dalam halaman, jenis lain hanya Unduh/Buka di tab baru) — keputusan user
+  2026-10-29; lampiran di email juga dapat diunduh (FR-77). Disimpan di `claim_material_bukti`
+  (`id_claim_material`, `file_original_name`, `file_hash_name`, `created_at`, `created_by`). **Status SPK ikut berubah** (keputusan user 2026-10-30): setelah Hold & Claim, SPK produksi pada Daftar SPK (Beranda) menampilkan **"SPK Sedang Di-Hold"** beserta nomor claim yang menunggu keputusan; statusnya kembali normal bila semua claim SPK itu sudah diputuskan Purchasing, dan "Done" tetap menang bila laporan sudah disubmit. Kartu ringkasan Beranda menambah hitungan "SPK Sedang Di-Hold". Status kembali normal setelah semua claim SPK itu diputuskan (dikonfirmasi user 2026-10-30). **Catatan material di-hold** (keputusan user 2026-10-30): selama ada claim yang belum diputuskan, Daftar SPK menampilkan catatan "ada material yang di-hold" berisi material, No. Coil Packing List, berat (Kg), asal, dan nomor claim; Laporan Produksi SPK itu menampilkan catatan yang sama di bawah tombol Add Coil dan hilang saat claim sudah diputuskan. **Format berkas bebas (termasuk video); batas ukuran 20 MB per berkas** (OQ-C11, keputusan user 2026-10-29): berkas yang lebih besar ditolak dengan pesan dan tidak diunggah, berkas lain pada pilihan yang sama tetap diproses. Gambar, video, dan PDF dapat dipratinjau langsung di Daftar Claim; jenis lain hanya dapat diunduh.
+
+- **FR-95** (keputusan user 2026-10-28, G1 "Sambungkan saja"; terhubung ke FR-06, FR-08, FR-80) — **Release tersambung ke Laporan Produksi.** Coil
+  Hold Coil yang keputusannya **Lanjut Produksi** tersedia kembali pada Add Coil From Hold di Laporan Produksi, bertanda "Release {No. Claim}",
+  datanya (material, berat, meter) ditarik dari master baby coil, dan **Catatan untuk Produksi** dari keputusan itu tampil di bawah tabel coil.
+  Pembatasan (dikonfirmasi user 2026-10-28, OQ-C10): coil Hold yang sudah di-claim tidak dapat dipilih lagi dari Unpack/WIP, dan tidak di-seed
+  otomatis pada Laporan Produksi baru.
+  Penegasan implementasi (keputusan user 2026-10-28): coil dipindah ke gudang Hold (HLD) saat claim terkirim; saat **Lanjut Produksi** coil
+  **dikembalikan ke gudang asalnya** (tidak ada status baru). Gudang asal disimpan di `claim_material.id_gudang_asal` dan `kd_gudang_asal`
+  (nullable). "No. Coil Packing List" = `warehouse_stock_coil.no_coil` (nomor coil dari supplier); Supplier dan No. PO ditarik lewat
+  `warehouse_stock_coil.no_ros` → `tr_ros_header.id` → `no_po`/`id_supplier`; `claim_material.harga_beli_per_kg` diambil dari **`warehouse_stock_coil.harga_beli`** (harga per Kg saat incoming) dan dipakai untuk **Nilai Material** (Jual Material, biaya material pada Report Biaya). `claim_material.costbook_per_kg` = **Costbook Material per Kg gudang asal** baby coil (di database: `tr_cost_book.costbook`), dibaca saat claim dibuat dan menjadi dasar **Nilai Retur** (keputusan user 2026-10-29: "Nilai Retur = Berat x Costbook material dari gudang tersebut"). `claim_material.price_per_unit_po` = **Price/Unit PO** saat PO (di database: `dt_trans_po.hargasatuan` per Kg, mata uang PO, dicari lewat `no_po` dan material; contoh PO P2600001: USD 0,586/Kg), dasar **Nilai Debit Note Retur**. Catatan data uji: di `hfg_dev`, `warehouse_stock_coil.harga_beli` diisi 2026-10-29 untuk 268 coil ber-PO (dari harga per Kg di `tr_ros_material_coil`); `tr_cost_book` kosong di `hfg_dev`.
+- **FR-98** (keputusan user 2026-11-09; merevisi FR-17, FR-18, FR-75, FR-94, NFR-06; BPMN D003; use case Laporan Produksi) — **Laporan Produksi dan claim
+  diinput sekaligus.** Latar belakang: alur lama membuat satu SPK dilaporkan dua kali (laporan hasil produksi yang berhasil, lalu laporan claim lewat
+  Hold & Claim). Sekarang satu input:
+  (a) **Satu input, satu transaksi.** Tidak ada tombol/popup Hold & Claim terpisah. Isian claim (Baby Coil asal, Problem, Alasan Produksi, bukti)
+  berada di bagian **Claim Material** pada form Laporan Produksi; barisnya **otomatis muncul** dari baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) di form. Save menyimpan `production_reports` lebih dulu (karena
+  `claim_material.production_report_id` NOT NULL), lalu membuat baris `claim_material` berstatus Baru; bila salah satu gagal, keduanya dibatalkan
+  (NFR-06). Validasi FR-94 tetap (Problem, Alasan, bukti wajib; tidak ada claim ganda per SPK + coil + asal + problem). **ERD tidak berubah.**
+  (b) **Save tidak pernah dikunci Hold Coil** (FR-17). Coil Hold pindah ke gudang On Hold saat Save (FR-95).
+  (c) **SPK tidak langsung close.** Laporan tersimpan berstatus **Draft (tersimpan)** dengan penanda jumlah claim (tanpa status laporan baru,
+  keputusan user 2026-11-09); SPK menampilkan "SPK Sedang Di-Hold" selama ada claim belum diputuskan (FR-94).
+  (d) **Submit dikunci** selama ada claim **Hold Coil** laporan itu yang belum diputuskan Purchasing (FR-18, NFR-06). Claim KW 2 (Supplier) dan
+  Reject (Supplier) tidak memblokir Submit — _asumsi agen, menunggu konfirmasi BA_.
+  (e) **Kelanjutan memakai laporan yang sama** (keputusan user 2026-11-09, "cara 1"): bila Purchasing memutuskan Lanjut Produksi (FR-80, FR-95), coil
+  kembali ke gudang asal dan tersedia di Add Coil From Hold pada **Draft yang sama** (bertanda "Release {No. Claim}"); Produksi menambahkan coil itu
+  lalu Submit. Tidak dibuat laporan kedua untuk SPK yang sama. Keputusan lain (Retur, Kompensasi, Jual Material) tidak mengembalikan coil ke produksi.
+  (f) **Edit setelah Save** — _usulan agen, menunggu konfirmasi BA_: claim berstatus **Baru** (belum diemail): semua isian ikut tersinkron dari
+  laporan; menghapus baris sumber (Hold / KW 2 Supplier / Reject Supplier) membatalkan claim-nya setelah konfirmasi. Claim **Email Terkirim** atau sudah
+  diputuskan: baris sumber dan nilai claim (coil, asal, berat, supplier) **dikunci**; bagian laporan lain tetap dapat diedit; bukti hanya dapat
+  ditambah. Menambah claim baru selalu boleh (Save ulang menambah baris baru; baris yang sama tidak dibuat dua kali). Koreksi claim yang sudah diemail
+  dilakukan Purchasing di modul Claim Material.
+  (g) **Log:** perubahan laporan dan claim dicatat `write_log()` dengan data sebelum dan sesudah (standar AGENTS.md).
+- **FR-96** (keputusan user 2026-10-28, G3) — **Daftar Material Dijual (Gudang Slitting)**, baca saja: No, Tgl Masuk, No. Claim, Supplier, Nama
+  Material, No. Coil Packing List, Berat (Kg), Nilai Material, Material KW (inventory), Biaya Scrap. Baris muncul otomatis dari keputusan Jual
+  Material (`stok_gudang_slitting`, FR-81). Pengelolaan stok selanjutnya milik modul gudang yang ada. UC-N36.
+- **FR-97** (keputusan user 2026-10-28, G4) — **Kolom Progres pada Daftar Claim Material.** Progres per jalur **diturunkan** dari dokumen yang sudah
+  ada, bukan status baru pada claim (OQ-C5 tidak berubah): Debit Note → status DN (Belum Terbit / Sudah Terbit / dialokasikan ke hutang
+  dengan status Request Payment atau Dibayar / Belum Terima Uang / Sudah Terima Uang); Retur → SPK → SJ → DN Retur; Lanjut Produksi → coil dirilis;
+  Jual Material → masuk Gudang Slitting. Tiap jalur bertanda selesai (✓) bila DN sudah diterima uang atau teralokasi dan dibayar, SJ sudah
+  confirmed (Retur), atau tindakannya tuntas; ringkasan "n/m selesai".
+
+### Open questions Claim Material (dijawab user 2026-10-27)
+
+- **OQ-C1 — RESOLVED.** Claim Material diproses oleh **Purchasing** (sesuai BPMN D003); PPIC hanya pada Retur (SPK Re-Pack, Surat Jalan).
+  FR-06 disesuaikan; FR-17 dan NFR-06 hanya menyebut "Hold & Claim" sehingga tidak berubah _(direvisi 2026-11-09: FR-17 dan NFR-06 kini berubah, lihat FR-98)_.
+- **OQ-C2 — DITUNDA.** Master setting email supplier (template dan alamat tujuan) boleh menyusul; sementara alamat tujuan diinput manual.
+- **OQ-C3 — RESOLVED ("Perlu").** Pemetaan akun kredit Debit Note Kompensasi dipakai: asal **KW 2 Supplier** → Biaya KW 2 Supplier; asal
+  **Hold Coil / Reject Supplier** → Biaya Scrap. Karena itu **asal baris claim wajib disimpan** per baris claim.
+- **OQ-C4 — RESOLVED ("Iya betul").** Jual Material: input Rp Material KW, sisanya otomatis Biaya Scrap.
+- **OQ-C5 — RESOLVED ("Betul").** Status Claim: Baru → Email Terkirim → Kompensasi / Retur / Kompensasi + Retur; status Debit Note mengikuti
+  urutan: Belum Terbit → Sudah Terbit → (Sudah Alokasi ke Hutang | Belum Terima Uang → Sudah Terima Uang).
+
+- **OQ-C6 — RESOLVED 2026-10-27.** COA ditentukan nanti lewat Master Jurnal khusus proses Claim; posting ke GL otomatis per peristiwa
+  proses (FR-93).
+- **OQ-C7 — RESOLVED 2026-10-27 (arah).** Alokasi Debit Note menjadi baris tambahan di alur pembayaran yang ada (FR-88). Konsekuensi: tabel
+  usulan `pembayaran_po_debit_note` tidak jadi dokumen pembayaran sendiri; rancangan ERD menunggu OQ-C8.
+- **OQ-C8 — RESOLVED 2026-10-27 (setuju dengan usulan).** (a) Alokasi DN dipilih saat **Request Payment**. (b) DN tampil sebagai **baris
+  detail negatif** di `payment_approve_details` saat pembayaran, ditambah tabel penghubung `alokasi_debit_note` sebagai jejak. Tabel usulan
+  `pembayaran_po_debit_note` dihapus dari ERD. Status DN menjadi Sudah Alokasi ke Hutang saat alokasi disimpan pada Request Payment; jurnal
+  FR-88 terposting saat pembayaran final (FR-93).
+
+- **OQ-C9 — RESOLVED 2026-10-27.** (a) Reject (Supplier) tidak punya baby coil di form Laporan Produksi, maka baby coil asalnya dipilih di popup
+  Hold & Claim (FR-94): terisi otomatis hanya bila SPK memakai tepat satu baby coil, selain itu wajib dipilih eksplisit (setuju dengan usulan).
+  (b) ~~KW 2 (Supplier) atau Reject (Supplier) tanpa Hold Coil dikirim lewat tombol Hold & Claim; Save tetap aktif.~~ _Digantikan 2026-11-09 oleh FR-98: semua jenis claim dikirim oleh Save._
+
+- **OQ-C12 — RESOLVED 2026-10-29.** (a) **Kurs yang dipakai = kurs pada saat claim**: diinput Purchasing di Process Decision untuk supplier non-IDR (satu kurs per claim); Create Debit Note hanya **menarik** kurs itu (tidak diinput ulang) dan jurnal Confirm Surat Jalan memakainya untuk mengonversi Price/Unit PO (mata uang PO) ke IDR. (b) Akun COA "Selisih Costbook vs Price/Unit PO": sementara memakai nama akun tersebut sebagai label di mockup, COA sesungguhnya menunggu Master Jurnal Claim. (c) Contoh kasus USD akan dibuat kemudian (mockup sudah mendukung perhitungannya; data contoh claim masih supplier IDR).
+- **OQ-C11 — RESOLVED 2026-10-29.** Format bukti pendukung Hold & Claim bebas (termasuk video); batas ukuran **20 MB per berkas** (asumsi agen: batas per berkas, bukan per baris atau total; belum dikonfirmasi). Tidak ada batas jumlah berkas per baris.
+- **OQ-C10 — RESOLVED 2026-10-28 ("OQ-C10 benar").** Coil Hold yang sudah di-claim disembunyikan dari pilihan Unpack/WIP dan tidak di-seed pada
+  Laporan Produksi baru, sehingga tidak terpakai sebelum Release (FR-95).
+
+### Asumsi mockup yang dikonfirmasi user 2026-10-27
+
+Aktor UC-N34, PG-27, UC-N35 dari mockup (Purchasing / PPIC / Accounting) dipakai; master email ditunda (OQ-C2); Release coil otomatis
+(FR-06); Debit Note Retur hanya setelah Surat Jalan ada (FR-85); nominal penerimaan yang berbeda ditolak (FR-90); nilai claim dalam
+mata uang PO (FR-85); Edit Debit Note hanya sebelum terbit dan hanya yang berhak akses (FR-85).
+
+### Open questions Product Costing (belum diresolusi, dicatat apa adanya)
+
+1. **RESOLVED 2026-10-07 — per Product Category (Level 2).** Pertanyaan semula: kunci rate
+   Product Category atau Level 4? Sheet Simulasi Program menulis Flow Process
+   "(Cycletime per Kategori Produk)" dan Rate Bahan Pendukung/FOH per `Product Category`; ERD
+   (`Flow Process Header`, `Rate Bahan Pendukung Khusus & FOH`) memakai `id product level 4`.
+   Jawaban user: per kategori produk; ERD
+   `Flow Process Header` dan `Rate Bahan Pendukung Khusus & FOH` harus memakai Product
+   Category, bukan `id product level 4`, saat digambar.
+2. **RESOLVED 2026-10-07 — benar.** Jawaban user: Material Cost memang memakai Berat/Meter material utuh, tanpa faktor lebar. Pertanyaan semula: Material Cost per meter memakai berat per meter material utuh, bukan lebar produk.**
+   Rumus sheet: Berat/Meter material (mis. 1,34 kg/m untuk coil lebar 1219 mm) × Rp/Kg, tanpa
+   memakai Lebar produk (750 mm). Dua produk berbeda lebar dari coil yang sama akan mendapat
+   Material Cost identik. Apakah itu benar (coil dipakai utuh/slit penuh) atau perlu faktor
+   lebar? Sheet Ide sendiri sempat memakai "Berat per m² × Lebar Efektif".
+3. **RESOLVED 2026-10-07 — Tebal dan Panjang tetap ada.** Jawaban user: Berat per Pcs = Berat/Meter varian BOM × Panjang produk; produksi mengambil produk dengan varian BOM yang dipilih (FR-37, FR-46). Pertanyaan semula: Master Produk: Tebal/Panjang/Berat standard.** Sheet Ide: tebal dan berat/unit dihapus dari
+   Master Produk; sheet Simulasi Program: Panjang dan Tebal masih ada. Dan bila Berat/unit
+   dihapus, dari mana `berat_standard` per pcs (FR-09 dan kolom `berat_standard` di
+   `production_report_items`) diambil?
+4. **RESOLVED 2026-10-07 — di luar scope Product Costing.** Jawaban user: biaya per pcs sudah
+   mengikuti mock up Laporan Produksi sebelumnya; fokus sekarang hanya Product Costing.
+   Pertanyaan semula: Rate Product Costing per meter; `production_report_items`
+   per pcs. Apakah per pcs = per meter × panjang pcs (panjang dari mana?) dan memakai Berat/Meter
+   varian BOM yang sesuai coil yang benar-benar dipakai (`source_material_coil`)?
+5. **RESOLVED 2026-10-07 — Rate Scrap dari Master Rate Generals.** Jawaban user: HPP KW 1 dan KW 2 memakai Rate Scrap dari Master Rate Generals; pembagian 40/60 tetap ada. Pertanyaan semula: Scrap: rate standar atau aktual?** Rate Scrap = 2% × Material Cost adalah penyisihan standar;
+   `production_report_scraps` mencatat scrap aktual (qty, berat). `scrap_cost_*` pada item
+   memakai yang mana? Terkait FR-21/FR-35 dan pembagian 40/60 yang masih terbuka.
+6. **RESOLVED 2026-10-07 — jam tidak dihitung.** Jawaban user: `start_time`/`finished_time` tidak dihitung; Man Power memakai standar rate Product Costing. Pertanyaan semula: Man Power standar vs aktual.** Rumus yang diputuskan memakai Total Man Hour dari flow
+   (standar). `start_time`/`finished_time` laporan tidak dipakai di perhitungan — dikonfirmasi?
+7. **RESOLVED 2026-10-07 — BPJS manual, 173 jam parameter.** Jawaban user: BPJS diinput manual; 173 jam menjadi parameter dan keterangan konstanta ditampilkan (FR-43). Pertanyaan semula: Dasar BPJS.** Nilai BPJS di sheet setara 0,89%/0,3%/3,7%/2%/4% dari ≈ Rp4.570.000, bukan
+   dari Gaji Pokok Rp4.828.884. Apakah nilai BPJS diinput manual (seperti sheet) atau dihitung
+   sistem dari persentase × dasar tertentu? Konstanta **173 jam** juga perlu jadi parameter.
+8. **RESOLVED 2026-10-07 — salah ketik, 1219.** Jawaban user: Width yang benar 1219; sumber tidak diedit, koreksi dicatat di `input/2026-10-07-product-costing-jawaban/`. Pertanyaan semula: Master Material: Width 914 vs nama "…-1219-…"** pada baris contoh yang sama; dan baris
+   contoh Berat/Meter 1,34 berasal dari kontrak supplier untuk lebar 1219.
+9. **RESOLVED 2026-10-07 — Rp/Meter, hanya contoh.** Jawaban user: 27.400 dalam Rp/Meter, contoh pembanding saja. Pertanyaan semula: Satuan "Pricelist HFG saat ini: 27.400"** (Simulasi Costing, Y9) tidak disebut — per meter,
+   per kg, atau per produk? Hasil simulasi 21.756 Rp/meter dan 16.236 Rp/Kg.
+10. **RESOLVED 2026-10-07 — aktor tiap master.** Engineering: Master Produk, Master Material,
+    BOM, Flow Process & Cycletime. Accounting: Kurs, Man Power Rate, Rate Bahan Pendukung/FOH,
+    General Rate. Purchasing: Price Reference. Simulasi Costing & Pricelist: Accounting, Sales,
+    dan Engineering. Dicatat di UC-N05–UC-N14.
+11. **RESOLVED 2026-10-07 — disetujui.** Jawaban user: tiap baris punya satuan/jenis sendiri; Koordinasi Rp/Kg, lainnya persentase (FR-45). Pertanyaan semula: Header kolom `Rate/Meter` pada General Rate** salah label: isinya persentase dan Rp/Kg.
+    Satuan tiap baris perlu menjadi bagian master (kolom satuan/jenis rate).
+
+**Open questions Rev.1 (2026-10-19)** — butir 1–7 pertanyaan sesi ini sudah dijawab user dan
+tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
+
+12. **RESOLVED 2026-10-19 — Total Man Hour × Rate Man Power; butir 1.1 UC-12 salah salin (FR-56).** Pertanyaan semula: **Rumus Man Power Cost (UC-12 butir 1.1).** Use Case menulis `Rp/Meter = Rate Man Power ×
+    Berat/Meter`, sedangkan BPMN (Total Man Hour/Kategori → Perhitungan Man Power Cost), ERD
+    (`Man Power Cost`: Total Man Hour, Rate Man Power) dan FR-46 memakai `Total Man Hour × Rate
+    Man Power (Rp/jam)`. UC-12 sendiri mensyaratkan UC-05 (Total Man Hour). Dugaan kami: salah
+    salin pola Rate × Berat/Meter. Konfirmasi: tetap Total Man Hour × Rate Man Power?
+13. **RESOLVED 2026-10-19 — rincian gaji/BPJS/173 jam tetap dipakai hanya untuk Operator; Helper dari master Borongan per Product Category (FR-53).** Pertanyaan semula: **Rumus Man Power Rate (UC-07).** Use Case: `(Rate 1/3 Operator + Rate Borongan Helper per
+    kategori produk) × Faktor Indirect Labor`. FR-43/ERD: Salary Direct + BPJS + Biaya Lain ÷ 173
+    jam × Faktor Indirect. Apa arti "1/3 Operator" dan "Borongan Helper", dan apakah rumus UC-07
+    **menggantikan** rincian gaji/BPJS (FR-43), atau Rate 1/3 Operator berasal dari rincian itu?
+14. **RESOLVED 2026-10-19 — Rp/Kg; Rp/Meter = Rate × Berat/Meter (FR-53, FR-56).** Pertanyaan semula: **Satuan Rate FOH dan Rate Bahan Pendukung Khusus.** FR-44 (jawaban 2026-10-07): Rp/meter
+    langsung. UC-12: `Rate × Berat/Meter` (berarti rate Rp/Kg). Mana yang berlaku? Jika Rp/Kg,
+    nilai contoh lama (150 dan 400 per meter) tidak lagi bisa dipakai.
+15. **RESOLVED 2026-10-19 — berlaku global; satuan tidak ditampilkan karena klien tidak menginformasikan (FR-50).** Pertanyaan semula: **Master Standard Material (UC-03).** Apakah Standar Toleransi, Berat Jenis, dan Coating
+    berlaku global, per Metal Type, atau per material? Satuan tiap nilai (Tebal dan Lebar dalam
+    mm atau m; Berat Jenis g/cm³; Coating dalam kg/m atau lainnya)? Tanpa ini relasi entitas dan
+    formula FR-51 belum bisa dipastikan.
+16. **RESOLVED 2026-10-19 — per Product Category (FR-55).** Pertanyaan semula: **Cakupan Negotiation Allowance.** ERD menaruhnya di Rate Generals (semua produk), sedangkan
+    UC-16 langkah 2 menulis "per Category Product". Global atau per Product Category? Apakah
+    Sales boleh mengubahnya per perhitungan pricelist atau hanya memakai nilai master (UC-10)?
+17. **RESOLVED 2026-10-19 — per Produk × varian BOM; alasan Reject disimpan; Product Catalog disimpan sebagai data (FR-58).** Pertanyaan semula: **Struktur Pricelist dan Product Catalog.** Apakah pricelist per Produk × varian BOM (per
+    Rp/Meter dan Rp/Kg), dan apakah Draft Pricelist perlu menyimpan alasan Reject, versi, dan
+    periode berlaku? Apakah Product Catalog disimpan sebagai data (snapshot harga yang disetujui)
+    atau cukup status "Released" pada pricelist?
+18. **RESOLVED 2026-10-19 — Rate 1/3 Operator = (Rate Direct Labor Operator ÷ 173 jam) × 1/3; Rate Borongan Helper Rp/Meter atau Rp/Pcs, dan Rp/Pcs ÷ Panjang Produk = Rp/Meter (FR-53). **Diubah 2026-10-20: Borongan hanya Rp/Meter, tanpa Rp/Pcs dan tanpa konversi.** Pertanyaan semula: **Arti "1/3 Operator" (UC-07, FR-53).** Kami menyimpannya sebagai
+    parameter porsi operator (nilai 1/3) yang mengalikan Rate Direct Labor Operator. Apakah itu
+    maksudnya (satu operator dibagi tiga mesin/lini), atau sudah nama baku dari rate lain? Satuan
+    Rate Borongan Helper kami asumsikan Rp/jam supaya bisa dijumlahkan dengan rate operator.
+19. **RESOLVED 2026-10-19 — rumus disetujui user; pembulatan sesudah dikali 1/3 (FR-53, FR-56).** `Man Power Cost (Rp/Meter) = (Total Man Hour × Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) × Faktor Indirect Labor`; Total Man Hour hanya mengalikan bagian Operator. Rate 1/3 Operator dibulatkan ke atas ke Rupiah penuh **setelah** dikali 1/3 (tidak ada pembulatan lebih dulu pada Rate Direct Labor). Pertanyaan semula: **Rumus akhir Man Power Cost dengan Borongan Rp/Meter.** Angka acuan uji Man Power baru ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Open questions Extra Margin (2026-10-21, dari BPMN To Be Sales D01)** — belum diputuskan:
+
+20. **Alasan Reject GM wajib?** BPMN hanya menggambar Reject → kembali ke Sales Manager. Diasumsikan wajib dan disimpan
+    (`reject_reason`), seperti Pricelist (FR-58). Benar begitu, atau boleh kosong?
+21. **Bolehkah Sales Manager menarik (membatalkan) pengajuan yang masih Menunggu Approval GM?** BPMN tidak menyebut. Bila
+    boleh, perlu status tambahan (mis. Dibatalkan); sekarang hanya tiga status.
+22. **Satu pengajuan per Product Category atau beberapa kategori sekaligus?** Diasumsikan satu per kategori. Bila banyak
+    kategori sekaligus, perlu tabel detail pengajuan.
+23. **Apakah rate pertama untuk kategori yang belum punya rate juga lewat approval GM?** BPMN: "Perlu Perubahan Margin?"
+    → "Update dan Ajukan Rate Extra Margin baru". Diasumsikan semua pengisian dan perubahan rate lewat approval.
+24. **Apakah GM boleh mengubah nilai yang diajukan saat menyetujui, atau hanya Approve/Reject apa adanya?** Diasumsikan
+    hanya Approve/Reject apa adanya.
+
+**Open questions Notifikasi Bottom Price (2026-10-21, dari permintaan user)** — belum diputuskan; asumsi sementara di FR-68–FR-70:
+
+25. **RESOLVED 2026-10-21 — perubahan sekecil apa pun memicu notifikasi (FR-68).** Pertanyaan semula: **Ambang perubahan.** Perubahan sekecil berapa yang memicu notifikasi (≥ Rp0,01 pada Bottom Price, persentase tertentu,
+    atau berapa pun)? Diasumsikan: berapa pun selisih ≥ Rp0,01 per Rp/Meter (batas pembulatan NFR-11).
+26. **RESOLVED 2026-10-21 — baseline = Bottom Price saat terakhir ditinjau Sales; saat fitur diaktifkan untuk awal (FR-68).** Pertanyaan semula: **Definisi baseline.** Bottom Price pembanding adalah (a) saat terakhir ditinjau Sales, (b) saat terakhir dirilis ke Product
+    Catalog, atau (c) saat Pricelist terakhir disetujui? Diasumsikan (a); untuk fitur baru dimulai, baseline = Bottom Price saat diaktifkan.
+27. **RESOLVED 2026-10-21 — pembanding = Price List pada Product Catalog terakhir dirilis (FR-69).** Pertanyaan semula: **"Harga jual saat ini".** Diasumsikan Price List pada Product Catalog terakhir dirilis; bila produk belum pernah dirilis,
+    Price List baseline. Benar, atau harga pasar/jual disimpan terpisah?
+28. **RESOLVED 2026-10-21 — semua Sales meninjau; kanal hanya dashboard (tanpa email/WhatsApp); tidak ada batas waktu tinjau (FR-70).** Pertanyaan semula: **Siapa menerima dan melalui kanal apa.** Diasumsikan dashboard dengan lencana jumlah; keputusan oleh Sales Manager, Staf Sales
+    hanya melihat. Perlu email atau WhatsApp juga? Apakah GM ikut melihat?
+29. **RESOLVED 2026-10-21 — setiap kali costing dihitung ulang; satu notifikasi per varian BOM (FR-68). Direvisi 2026-10-21: pemicu deteksi = aksi Update Costing (OQ 48).** Pertanyaan semula: **Kapan deteksi dijalankan.** Setiap kali costing dihitung ulang (real time), atau terjadwal (mis. harian)? Bila beberapa
+    perubahan terjadi sebelum ditinjau: satu notifikasi per varian BOM yang diperbarui (diasumsikan) atau satu per kejadian?
+30. **RESOLVED 2026-10-21 — satu keputusan per notifikasi; pengajuan Extra Margin tetap satu per kategori (FR-70).** Pertanyaan semula: **Granularitas keputusan.** Extra Margin berlaku per Product Category (FR-55), notifikasi per Produk × varian BOM. Diasumsikan
+    satu keputusan per notifikasi, dan pengajuan Extra Margin tetap satu per kategori (OQ 22). Perlu keputusan per kategori sekaligus?
+31. **RESOLVED 2026-10-21 — produk/varian BOM baru tidak memicu notifikasi (FR-68).** Pertanyaan semula: **Produk atau varian BOM baru.** Tanpa baseline, apakah tetap memicu notifikasi (Pengajuan Produk Baru ke Costing) atau tidak
+    (diasumsikan tidak)? Bagaimana bila Product Category belum punya rate (OQ 23)?
+32. **RESOLVED 2026-10-21 — cukup keputusan Sales dengan catatan opsional (FR-70).** Pertanyaan semula: **"Tidak Perlu Diubah".** Cukup keputusan Sales Manager dengan catatan opsional (diasumsikan), atau perlu alasan wajib atau
+    persetujuan GM? Apakah notifikasi ditutup otomatis bila Bottom Price kembali ke baseline?
+33. **RESOLVED 2026-10-21 — pengajuan rate Extra Margin hanya oleh Sales Manager (FR-67/UC-12 tetap); hak akses diatur per pengguna di program, tidak perlu dikunci ke pengguna tertentu (FR-70).** Pertanyaan semula: **Konsistensi pengaju Extra Margin (FR-67 vs FR-70).** BPMN To Be Sales D01 menggambar "Update dan Ajukan Rate Extra Margin
+    baru" di lane Sales Manager, sedangkan keputusan user 2026-10-21 menetapkan **semua Sales** meninjau notifikasi Bottom Price
+    (termasuk memilih "Ajukan Rate Extra Margin Baru"). Apakah Staf Sales juga boleh mengajukan rate (FR-67 dan UC-12 diubah
+    dari Sales Manager menjadi Sales), atau Staf Sales hanya dapat memilih "Tidak Perlu Diubah" dan meneruskan ke Sales
+    Manager untuk pengajuan? Saat ini keduanya dapat mengajukan dari dashboard dan FR-67/UC-12 belum diubah.
+34. **RESOLVED 2026-10-21 — dicatat bila costing diperbarui dan hasilnya berubah (Bottom Price/komponen); perubahan Price List karena Extra Margin tidak dicatat (FR-71; tafsiran: OQ 43).** Pertanyaan semula: **Pemicu pencatatan History Costing.** Apakah yang dicatat hanya perubahan yang mengubah Bottom Price (diasumsikan), atau
+    juga perubahan master yang tidak mengubah angka (mis. nama atau status)? Apakah perubahan Price List (bukan Bottom Price)
+    karena Rate Extra Margin juga dicatat di History Costing?
+35. **RESOLVED 2026-10-21 — masa simpan 1 tahun; lewat itu dipindahkan ke backup data (NFR-17; akses backup: OQ 45).** Pertanyaan semula: **Masa simpan.** Berapa lama riwayat disimpan (diasumsikan tanpa batas), dan apakah boleh diarsipkan?
+36. **RESOLVED 2026-10-21 — pengguna yang diberi hak akses (FR-71, FR-72).** Pertanyaan semula: **Siapa boleh melihat.** Diasumsikan Costing, Accounting, Sales, dan Management lihat saja; apakah hak akses dibatasi per
+    peran (mis. Sales hanya melihat Price List, bukan komponen costing)?
+37. **RESOLVED 2026-10-21 — Draft tidak dicatat; History Price List hanya saat Disetujui (FR-72).** Pertanyaan semula: **Pricelist Draft.** Apakah Draft Pricelist (belum diajukan) dicatat di History Price List, atau hanya sejak Diajukan
+    (diasumsikan sejak Diajukan)?
+38. **RESOLVED 2026-10-21 — persetujuan Extra Margin tidak dicatat di History Costing maupun History Price List (FR-71, FR-72); menggantikan asumsi sebelumnya.** Pertanyaan semula: **Perubahan Extra Margin yang disetujui GM.** Apakah dicatat di History Costing (karena memengaruhi Price List) dan/atau
+    di History Price List? Diasumsikan di History Costing sebagai sumber perubahan "Negotiation Allowance".
+39. **RESOLVED 2026-10-21 — dapat diekspor ke Excel (FR-71, FR-72).** Pertanyaan semula: **Ekspor.** Apakah riwayat perlu diekspor ke Excel? Diasumsikan ya (tombol Excel seperti halaman lain, hanya contoh di mockup).
+40. **RESOLVED 2026-10-21 — tidak terpisah dari Activity Log; dicatat lewat write_log (NFR-17; implikasi struktur data: OQ 46).** Pertanyaan semula: **Hubungan dengan Activity Log (`write_log`).** Diasumsikan History Costing dan History Price List adalah catatan bisnis
+    tersendiri (tabel khusus) di samping Activity Log, bukan pengganti. Benar?
+41. **Granularitas History Costing (tetap terbuka; asumsi dipakai: satu baris per Produk × varian BOM per perubahan).** Satu baris per Produk × varian BOM per perubahan (diasumsikan), atau satu baris per
+    perubahan master dengan daftar produk terdampak?
+42. **Format nama produk (tetap terbuka; asumsi dipakai dan sudah diterapkan di mockup).** Diasumsikan "nama produk + varian/Uniq ID" (mis. HARAPAN SPANDEK POLOS ECO 0.25 X 6 M — Type 001.1)
+    di kolom pertama; nomor Pricelist/katalog menjadi kolom sekunder. Benar?
+43. **RESOLVED 2026-10-21 — tombol Update Costing di Simulasi adalah pemicu utama pencatatan History Costing (FR-71).** Pertanyaan semula: **"Update costing terbaru" (History Costing).** Ditafsirkan: setiap kali hasil costing diperbarui karena perubahan master/rate
+    (FR-71). Apakah juga ada **aksi eksplisit** "Update Costing" di Simulasi Costing (tombol yang sudah ada di mockup) yang
+    membuat snapshot riwayat, atau hanya perubahan master/rate yang mengubah angka?
+44. **RESOLVED 2026-10-21 — rilis Product Catalog tidak dicatat; Approval Pricelist menetapkan Pricelist terbaru (FR-72).** Pertanyaan semula: **Rilis ke Product Catalog.** History Price List dicatat hanya saat Pricelist Disetujui. Apakah rilis ke Product Catalog
+    (rilis berulang, FR-58) juga dicatat? Diasumsikan tidak.
+45. **RESOLVED 2026-10-21 — ekspor Excel tidak mencakup backup; backup dapat diakses oleh pengguna yang memiliki hak akses (FR-71, NFR-17; hak yang tepat: OQ 49).** Pertanyaan semula: **Backup data setelah 1 tahun.** Riwayat > 1 tahun dipindahkan ke backup data. Siapa yang boleh mengakses backup dan
+    bagaimana (laporan terpisah, pemulihan ke tabel, atau hanya oleh administrator)? Kapan proses pemindahan terjadwal berjalan
+    (mis. bulanan)? Apakah ekspor Excel juga mencakup backup?
+46. **RESOLVED 2026-10-21 — disetujui: tulis lewat write_log(); tabel khusus hanya bila filter/ekspor terstruktur tidak dapat dipenuhi dari logs (FR-71, FR-72).** Pertanyaan semula: **Sumber data riwayat dan Activity Log.** Pencatatan lewat `write_log()` (tabel `logs`) sudah memenuhi "tidak terpisah dari
+    Activity Log". Apakah halaman History cukup dibangun sebagai tampilan terfilter atas `logs` (modul "History Costing" dan
+    "History Price List"), atau perlu tabel khusus `history_costing` dan `history_pricelist` (kolom terstruktur untuk
+    filter dan ekspor Excel) yang diisi dari event yang sama? Rekomendasi: tetap tulis lewat `write_log()` dan, bila filter/ekspor
+    terstruktur tidak dapat dipenuhi dari `logs`, tambah tabel khusus diisi dari event yang sama. Belum diputuskan.
+47. **RESOLVED 2026-10-21 — hak akses terpisah per halaman (View dan Manage); ekspor Excel memerlukan hak Manage; diatur di hak akses program (NFR-17).** Pertanyaan semula: **Hak akses lihat dan ekspor.** Satu hak akses untuk kedua halaman, atau terpisah per halaman, dan apakah ekspor Excel
+    memerlukan hak akses tersendiri? (Hak akses diatur per pengguna di program, tidak dikunci ke jabatan.)
+48. **RESOLVED 2026-10-21 — notifikasi Bottom Price juga dipicu saat Update Costing ditekan (FR-68); satu pemicu dengan History Costing.** Pertanyaan semula: **Notifikasi Bottom Price dan Update Costing.** Karena Update Costing kini pemicu utama History Costing (OQ 43): apakah Notifikasi
+    Perubahan Bottom Price (FR-68, saat ini otomatis setiap costing dihitung ulang, OQ 29) juga mengikuti aksi Update Costing, atau
+    tetap otomatis? Diasumsikan tetap otomatis seperti sekarang; mohon konfirmasi. Bila Update Costing belum dijalankan setelah
+    master/rate berubah, History Costing belum mencatat perubahan itu.
+49. **RESOLVED 2026-10-21 — hak akses melihat data backup = Manage, sama dengan ekspor Excel (FR-71, NFR-17).** Pertanyaan semula: **Hak akses melihat backup.** Backup data (riwayat > 1 tahun) dapat diakses "oleh yang memiliki akses" (OQ 45): apakah cukup hak View
+    halaman terkait, hak Manage, atau hak khusus "Backup"? Diasumsikan hak Manage (sama dengan ekspor); mohon konfirmasi. Termasuk
+    jadwal dan cara pemindahan ke backup (proses terjadwal), dan cara membuka backup (halaman, laporan, atau pemulihan).
+
+50. **RESOLVED 2026-10-26 — SPK ditolak bila produk tanpa varian BOM atau Hasil Costing varian belum lengkap (FR-74).** Jawaban user: "Sebaiknya ditolak. Karena jika sudah tercatat di Laporan Keuangan, akan repot banyak adjustment data atau input ulang." Pertanyaan semula: **Produk tanpa varian BOM / tanpa Hasil Costing.** Diasumsikan Add SPK menolak produk tanpa varian BOM
+    dan HPP komponen kosong (Rp 0, ditandai) bila Hasil Costing varian belum ada. Mohon konfirmasi atau beri aturan lain.
+51. **RESOLVED 2026-10-26 — varian BOM dipilih per produk pada tiap baris SPK.** Jawaban user: "Betul sesuai asumsi kamu." Pertanyaan semula: **SPK multi-produk.** Diasumsikan varian BOM dipilih **per produk** pada tiap baris SPK. Mohon konfirmasi.
+52. **RESOLVED 2026-10-26 — Hasil Costing yang dipakai = Hasil Costing terakhir yang di-Update Costing (FR-67) saat laporan produksi dibuat, lalu dibekukan (FR-49).** Jawaban user: "betul, sesuai update costing terakhir." Alternatif semula (saat SPK dibuat) tidak dipakai.
+53. **RESOLVED 2026-10-26 — varian boleh diubah selama SPK belum diinput laporan produksinya; sesudahnya terkunci.** Jawaban user: "Diizinkan apabila SPK belum diinput laporan Produksinya." Pertanyaan semula: **Ubah varian setelah SPK dibuat.** Diasumsikan varian boleh diubah selama laporan produksi belum dibuat; sesudahnya terkunci.
+54. **RESOLVED 2026-10-26 — Master Rate lama (`rate.html`) dipensiunkan.** Jawaban user: "Dipensiunkan saja." Pertanyaan semula: **Nasib `rate.html`.** Diasumsikan Master Rate Laporan Produksi tidak dipakai lagi untuk HPP; halaman ditandai usang di mockup.
+55. **RESOLVED 2026-10-26 — SPK dibuat di modul Production Planning (eksternal); `no_uniq_id` di `tr_spk_material_detail` (direvisi dari `varian_type`, 2026-10-26), disalin ke `production_report_items.no_uniq_id`; mockup Add SPK menyesuaikan ERD.** Jawaban user: "Betul, saat ini berbeda modul. Kamu bisa menyesuaikan kembali tampilan mockup nya agar sesuai ERD." Pertanyaan semula: **Kepemilikan kolom varian di SPK.** `tr_spk_material_detail` milik modul eksternal (Production Plan); diasumsikan
+    `no_uniq_id` ditambahkan di sana dan disalin ke `production_report_items.no_uniq_id`. Pada mockup Add SPK dibuat sebagai simulasi.
+
+**Temuan review atas sheet Simulasi Costing** (untuk implementer; sheet di `input/` tidak diedit):
+
+- Baris varian 2 (`Type 001.2`, 0,15 mm): kolom G (`Price Reference Rp/Kg`) menunjuk absolut ke
+  `'Simulasi Program'!$J$28` (harga 0,14 mm: Rp13.165,03) padahal kolom E di baris yang sama
+  benar memakai `I29` (USD 0,725 → Rp12.950,68). Akibatnya Material Cost varian 0,15 ter-lebih
+  Rp308,67/meter (≈1,7%). Implementasi harus mengambil price reference **per material varian**.
+- Konsumables 5%, Scrap 2%, Koordinasi Rp200, dan Negotiation 5% **ditulis literal** dalam rumus
+  (kolom N, O, P, AN) walau nilai itu ada di sel General Rate. Sistem harus membacanya dari
+  master (NFR-12).
+- Sheet **Simulasi ide (copy)per kg** memakai 56.809,5 (rate per jam) langsung sebagai biaya
+  Man Power per meter; sheet Simulasi Program sudah memperbaikinya (× Man Hour = Rp39,45/meter).
+  Jangan dipakai sebagai acuan.
+
 ## NFR — Non-Functional Requirements
 
 Setiap NFR dicatat dengan fit criterion terukur (Volere). Yang belum bisa diberi angka pasti
@@ -372,9 +1172,11 @@ yang sudah resolved di atas (± 0,7%).
   melakukan Posting Jurnal ke GL (FR-24); hanya role yang berwenang dapat memberi Approved
   Toleransi (FR-16) — verifikasi: user di luar role tersebut tidak melihat/bisa memicu aksi itu.
   Detail role/entity dicatat di `docs/rbac-entities.csv` saat modul ini di-breakdown ke UC.
-- **NFR-06 (Hold Coil gate).** Tombol Save pada Laporan Produksi non-aktif selama ada Hold Coil
-  yang belum di-release atau di-claim pada sesi tersebut (FR-17) — verifikasi: mencoba submit
-  dengan Hold Coil aktif ditolak sistem, bukan hanya diperingatkan di UI.
+- **NFR-06 (Hold Coil gate; direvisi 2026-11-09).** Gerbang Hold Coil **pindah dari Save ke Submit**: Submit Laporan Produksi ditolak sistem
+  (bukan hanya diperingatkan di UI) selama ada claim Hold Coil laporan itu yang belum diputuskan Purchasing (FR-17, FR-18, FR-98). Save tidak
+  pernah dikunci oleh Hold Coil. **Atomik:** Save laporan dan pembuatan claim terjadi dalam satu transaksi; bila salah satu gagal (mis. bukti
+  claim belum lengkap) keduanya dibatalkan — verifikasi: menyimpan laporan dengan baris claim tanpa bukti ditolak dan tidak meninggalkan laporan
+  maupun baris claim setengah jadi.
 - **NFR-07 (Integrasi rate biaya & costbook).** (a) Standard rate Man Power, FOH, Bahan
   Pendukung Khusus, Consumables, dan Biaya Koordinasi yang dipakai FR-19/FR-20 diambil real-time
   dari Product Costing, bukan nilai yang disalin/statis. (b) Costbook Material yang dipakai
@@ -387,6 +1189,90 @@ yang sudah resolved di atas (± 0,7%).
   field manapun bertipe "(Select …)"/"(Otomatis muncul …)", data terkait (nama material, berat,
   costbook) tampil tanpa reload halaman — `{TBC}`: ambang waktu respons perlu disepakati dengan
   klien.
+
+### NFR Product Costing — 2026-10-07
+
+- **NFR-09 (Imutabilitas rate pada laporan — mengubah NFR-07a).** Rate Product Costing yang
+  dipakai FR-48 dibekukan pada saat laporan produksi dibuat (FR-49). **NFR-07(a) tidak lagi
+  berlaku** untuk laporan yang sudah ada; "real-time" hanya berlaku untuk laporan **baru**. Fit
+  criterion: setelah Rate Man Power / Rate Bahan Pendukung / Rate FOH / General Rate diubah,
+  `total_hpp_item` dan seluruh kolom `*_cost_*` laporan yang dibuat sebelum perubahan **tidak
+  berubah satu rupiah pun**, dan setiap baris item dapat menunjukkan rate (nilai atau versi) apa
+  yang dipakai (sejak 2026-10-26: Rp/Kg Hasil Costing varian BOM, FR-48/FR-74). NFR-07(b) (Costbook Material) tidak berubah.
+- **NFR-10 (Auditability master costing).** Setiap perubahan pada master Product Costing (Kurs,
+  Price Reference & keputusan pemakaiannya, BOM, Flow Process, Man Power Rate, Rate Bahan
+  Pendukung/FOH, General Rate) merekam user dan timestamp (`Latest Update`, `Updated By`), dan
+  nilai lama tetap dapat ditelusuri. Fit criterion: untuk rate mana pun dapat ditampilkan siapa
+  mengubahnya, kapan, dan nilai sebelumnya.
+- **NFR-11 (Akurasi kalkulasi).** Angka acuan uji adalah **simulasi yang disetujui klien pada 2026-10-20** (data contoh mockup
+  `ui-mockup/pc-data.js`, menggantikan angka lama sheet Simulasi Costing dan angka sementara `{TBC}`). Dengan input yang sama,
+  sistem menghasilkan angka berikut dengan selisih ≤ Rp0,01 per komponen. **Input kunci:** Kurs USD Rp17.863; Berat Jenis 7,85,
+  Toleransi 0, Coating 0, Lebar Coil 1219; Price Reference = USD/Kg Max History Pembelian (Type 001.1: 0,81; Type 001.2: 0,80);
+  Rate 1/3 Operator Rp12.625/jam (Total Direct Labor Operator Rp6.551.982,55/bulan ÷ 173 × 1/3, dibulatkan ke atas);
+  Total Man Hour 0,000694 jam/meter (cycletime 1/24 menit/meter × 1 orang ÷ 60); Rate Borongan Helper Rp25/Meter; Faktor
+  Indirect Labor 1,5; BPK Rp110/Kg; FOH Rp300/Kg; Consumables Rp300/Kg; Koordinasi Rp200/Kg; Scrap 2%; Other Cost hanya Profit 5%;
+  Negotiation Allowance 5%. **Hasil (Rp/Meter):**
+
+  | Komponen | Type 001.1 (0,14 mm) | Type 001.2 (0,15 mm) |
+  |---|---:|---:|
+  | Berat/Meter (kg/m) | 1,3397 | 1,4354 |
+  | Material Cost | 19.383,88 | 20.512,05 |
+  | Man Power Cost | 50,65 | 50,65 |
+  | Bahan Pendukung Khusus / FOH | 147,36 / 401,90 | 157,89 / 430,61 |
+  | Biaya Proses | 599,92 | 639,15 |
+  | Consumables / Scrap / Koordinasi | 401,90 / 387,68 / 267,94 | 430,61 / 410,24 / 287,07 |
+  | Manufacturing Support | 1.057,52 | 1.127,93 |
+  | HPP | 21.041,32 | 22.279,13 |
+  | Other Cost (Profit 5%) | 1.052,07 | 1.113,96 |
+  | Bottom Price | 22.093,39 | 23.393,08 |
+  | Negotiation Allowance (5%) | 1.104,67 | 1.169,65 |
+  | **Price List/Meter** | **23.198,06** | **24.562,74** |
+  | Price List/Kg | 17.316,11 | 17.112,45 |
+
+  Angka ini data contoh yang disetujui klien sebagai acuan uji; bukan rate produksi. Rate 1/3 Operator dibulatkan ke atas ke
+  Rupiah penuh sesudah dikali 1/3 dan komponen lain 2 desimal tanpa pembulatan (FR-53, FR-60). Rumus lama (Rate Man Power
+  Rp56.809,5/jam; Price List `Type 001.1` Rp21.756,15; Material Cost Rp17.641,14) tidak berlaku lagi.
+- **NFR-12 (Tanpa angka tertanam).** Seluruh persentase, Rp/Kg, faktor, dan konstanta (Faktor
+  Indirect Labor, 173 jam, Consumables, Scrap, Koordinasi, Other Cost, Negotiation Allowance)
+  dibaca dari master, tidak ditulis di kode. Fit criterion: mengubah nilai di master mengubah
+  hasil kalkulasi berikutnya tanpa deploy; pencarian di kode tidak menemukan literal 0,05 /
+  0,02 / 200 / 173 / 1,5 sebagai rate bisnis.
+- **NFR-13 (Hak akses master costing).** Hanya role yang ditetapkan klien yang dapat mengubah
+  master Product Costing; role lain hanya melihat. Aktor per master sudah ditetapkan (open
+  question 10: Engineering, Accounting, Purchasing); verifikasi: user di luar role pemilik master
+  tidak dapat menyimpan perubahan. Detail role dicatat di `docs/rbac-entities.csv` saat
+  di-breakdown.
+- **NFR-14 (Traceability costing → laporan).** Setiap baris `production_report_items` dapat
+  menunjuk varian BOM (kolom `no_uniq_id`, kunci bersama `id_produk`) dan set rate yang dipakai menghitung HPP-nya. Fit criterion:
+  dari satu baris item dapat dibuka kembali (lewat `no_uniq_id`, FR-74) seluruh rumus FR-46/FR-48 beserta input yang sama
+  dan hasilnya sama dengan yang tersimpan.
+
+- **NFR-15 (Konsistensi nama ERD dan kode).** Untuk data yang berasal dari database, nama tabel dan kolom di kode, migrasi,
+  dan query harus persis sama dengan ERD (ERD resmi: `docs/diagrams/erd-revisi.drawio` sejak 2026-10-26, keputusan user; `erd.drawio` dibiarkan sebagai arsip dan tidak diperbarui) (user 2026-10-20). Bila berbeda, ERD diperbaiki (jika
+  ringkas atau keliru) atau tabelnya; tidak ada alias diam-diam. Label tampilan di UI boleh berbeda, **kecuali yang diminta user 2026-10-26: nama field ERD harus sama dengan nama pada kolom tampilan program, dengan konvensi label "Nama Bisnis (nama_field)"** (mis. "Produk (id_produk_fg)", "Varian BOM (no_uniq_id)"); keterangan dalam kurung pada label kolom ERD (mis. `wide (lebar, mm)`) bukan bagian nama kolom. Fit criterion: pada
+  walkthrough tiap fitur, setiap kolom yang dipakai dicocokkan dengan ERD dan selisihnya nol. Tabel yang sudah ada di aplikasi
+  (`product_lvl_4`, `new_inventory_4`) digambar ringkas sampai `SHOW CREATE TABLE` dikonfirmasi; pemetaannya di
+  `.artifacts/master_data_product_costing/pemetaan_nama_kolom_erd_20-10-2026.md` (v2: `…_v2.md`). Penunjuk ke produk di tabel baru memakai
+  `code_lv4` dan penunjuk ke Product Category memakai `code_lv2` (user 2026-10-20), mengikuti praktik tabel yang ada (`ms_bom_header.id_produk` = `code_lv4`).
+
+- **NFR-16 (Notifikasi Bottom Price: audit dan tanpa perubahan otomatis; diusulkan 2026-10-21).** Setiap tinjauan notifikasi
+  (FR-70) mencatat peninjau, waktu, status, catatan, dan keterkaitan ke pengajuan Extra Margin, serta ditulis ke log aktivitas
+  dengan Bottom Price lama dan baru. Sistem **tidak boleh** mengubah Rate Negotiation Allowance, Pricelist, atau Product
+  Catalog secara otomatis akibat notifikasi. Fit criterion: setelah notifikasi dibuat, rate aktif dan Pricelist tidak berubah
+  satu rupiah pun sampai Sales Manager mengajukan dan GM menyetujui (FR-67); untuk tiap notifikasi dapat ditampilkan siapa
+  meninjau, kapan, dan keputusannya.
+- **NFR-17 (History Costing dan History Price List: audit; diusulkan 2026-10-21).** Catatan riwayat (FR-71, FR-72) mencatat
+  **siapa, kapan, dan apa** yang berubah, **tidak dapat diubah atau dihapus** oleh pengguna mana pun, dan tidak boleh
+  dibuat ulang dari data terkini (snapshot nilai saat kejadian). Fit criterion: setelah rate diubah sehingga Bottom Price
+  berubah, tepat satu catatan per Produk × varian BOM yang terdampak muncul di History Costing dengan nilai lama dan baru;
+  setiap Pricelist yang disetujui muncul di History Price List; tidak ada fungsi ubah atau hapus riwayat di program.
+  **Retensi, akses, dan Activity Log (dikonfirmasi 2026-10-21):** riwayat disimpan **1 tahun** di tabel/halaman riwayat;
+  lewat 1 tahun **dipindahkan ke backup data** melalui proses terjadwal (tidak dihapus); halaman standar hanya menampilkan
+  12 bulan terakhir. Hak akses **terpisah** untuk History Costing dan History Price List, masing-masing **View** (lihat) dan **Manage**; **ekspor Excel memerlukan hak Manage**
+  dan tidak mencakup backup; backup dapat diakses oleh pengguna dengan hak **Manage** (OQ 45, 47, 49; dikonfirmasi 2026-10-21). Pencatatan lewat
+  `write_log()` sehingga tampil juga di Activity Log (modul "History Costing" dan "History Price List"). Fit criterion:
+  riwayat berumur > 1 tahun tidak tampil di halaman riwayat tetapi dapat dipulihkan dari backup; pengguna tanpa hak akses
+  tanpa hak View tidak dapat membuka halaman dan tanpa hak Manage tidak dapat mengekspor atau membuka backup; setiap catatan riwayat juga terlihat di Activity Log.
 
 ## Status
 
@@ -405,3 +1291,70 @@ FR-01–FR-24 dan NFR-01–NFR-08 yang tidak disebut di atas tetap seperti draft
 diubah). Decompose ke `docs/workbook.xlsx`
 sebaiknya menunggu klarifikasi tiga open question di atas untuk bagian yang mereka pengaruhi (HPP
 Scrap Sisa Coil, dimensi asset); bagian lain sudah siap di-decompose.
+
+**Pembaruan 2026-10-07 (Product Costing).** FR-37–FR-49 dan NFR-09–NFR-14 ditambahkan dari
+`input/ERD Product Costing-Production Report.jpg` dan `input/Rev.1 Ide Costing Kg konversi ke
+Meter.xlsx`; Product Costing kini **in scope** (membalik entri Re-Confirm 2026-09-21) dan NFR-07(a)
+diubah oleh NFR-09. Seluruh 11 open question Product Costing sudah dijawab user 2026-10-07 (kunci rate: Product
+Category; Tebal/Panjang tetap di Master Produk; Berat per Pcs = Berat/Meter varian BOM × Panjang;
+Rate Scrap dari Rate Generals; BPJS manual dan 173 jam parameter; Width 1219; Pricelist HFG
+27.400 Rp/Meter; satuan per baris General Rate). FR-37–FR-47 sudah di-decompose ke
+UC-N05–UC-N14. Rumus per pcs di Laporan Produksi mengikuti mock up sebelumnya (di luar FR-37–FR-49).
+
+**Pembaruan 2026-10-19 (Product Costing Rev.1).** BPMN To Be, Use Case UC-01–UC-19, dan ERD baru
+(`input/2026-10-19-product-costing-rev1/`) menjadi referensi utama. FR-50–FR-58 ditambahkan
+("Revisi Rev.1"); FR-38, FR-40, FR-43, FR-44, FR-45, FR-46 sebagian digantikan menurut peta perubahan di
+sana. Open question 12–17 dijawab user 2026-10-19 (ronde kedua) dan sudah masuk FR-50–FR-58; yang
+**tidak ada open question Product Costing yang masih terbuka** (OQ 18 dan 19 dijawab 2026-10-19);
+angka acuan uji ditetapkan di NFR-11 (simulasi disetujui klien 2026-10-20).
+
+**Pembaruan 2026-10-20.** FR-59–FR-66 (fungsi hasil review mockup) dan NFR-15 (nama kolom = ERD) ditambahkan; NFR-11 memakai angka
+simulasi yang disetujui klien; Lebar produk memakai kolom `wide` (FR-64). Perubahan lain hari itu: Rate Borongan Helper hanya
+Rp/Meter dan Faktor Indirect Labor master global (FR-53).
+
+**Pembaruan 2026-10-21 (BPMN To Be Sales D01).** FR-67 menambah persetujuan GM atas perubahan rate Negotiation Allowance
+(pengaju Sales Manager) dan merevisi FR-55. Persetujuan **diskon Quotation** (Sales/Sales Manager/GM) serta SO, SPM, dan
+Production Plan di BPMN yang sama **di luar scope Product Costing**. Open question baru 20–24 (alasan Reject, tarik pengajuan,
+banyak kategori, rate pertama, GM mengubah nilai) belum diputuskan; asumsi sementara tercantum di FR-67.
+
+**Pembaruan 2026-10-21 (Notifikasi Bottom Price).** Permintaan user: dashboard notifikasi ke Sales bila Bottom Price berubah, agar
+Sales menilai harga jual terhadap harga pasar dengan Rate Extra Margin lama dan memutuskan mengajukan rate baru atau tidak.
+FR-68–FR-70 dan NFR-16 ditambahkan sebagai **usulan**; rinciannya (ambang, baseline, "harga jual saat ini", penerima dan kanal,
+saat deteksi, granularitas keputusan, pengaju) **dikonfirmasi user 2026-10-21** (open question 25–33 terjawab). Entitas ERD
+`bottom_price_notification`, UC-N18, PG-24, dan FEAT-09 mengikuti.
+
+**Pembaruan 2026-10-21 (History Costing dan History Price List).** Permintaan user: perubahan rate yang memengaruhi Bottom Price
+disimpan di History Costing, dan perubahan Pricelist di History Price List; daftar Pricelist dan Product Catalog menampilkan nama
+produk di depan, bukan nomor Pricelist. FR-71–FR-73 dan NFR-17 ditambahkan sebagai **usulan**; rinciannya (pemicu, masa simpan,
+hak lihat, pencatatan Draft dan Extra Margin, ekspor, hubungan dengan Activity Log) **dikonfirmasi user 2026-10-21** (open question
+34–40); granularitas dan format nama (OQ 41, 42) belum dijawab; tafsiran baru tercatat sebagai OQ 43–47. Entitas ERD `history_costing` dan `history_pricelist`, UC-N19, UC-N20, PG-25, PG-26, dan
+FEAT-10 mengikuti.
+
+**Pembaruan 2026-10-21 (jawaban OQ 43–47 History).** Pemicu utama History Costing adalah aksi **Update Costing** (tombol di Simulasi
+Costing), bukan deteksi otomatis pada tiap perubahan master; History Price List tetap hanya saat Pricelist Disetujui, dan rilis Product
+Catalog tidak dicatat. Ekspor Excel tidak mencakup backup. Pencatatan lewat `write_log()` disetujui (tabel khusus hanya bila filter/ekspor
+terstruktur tidak terpenuhi dari `logs`). Hak akses History Costing dan History Price List terpisah (View dan Manage); ekspor Excel
+memerlukan hak Manage. OQ 41 dan 42 tetap terbuka dengan asumsi; OQ 48 (Notifikasi Bottom Price mengikuti Update Costing atau tidak)
+dan OQ 49 (hak akses backup) baru.
+
+**Pembaruan 2026-10-21 (jawaban OQ 48–49).** Notifikasi Bottom Price (FR-68) kini dipicu oleh aksi **Update Costing** yang sama dengan
+History Costing, bukan otomatis pada setiap perubahan master; saat Update Costing dijalankan, hasil costing terbaru dibandingkan dengan
+baseline (Bottom Price saat terakhir ditinjau Sales) dan notifikasi Belum Ditinjau dibuat per varian BOM bila berbeda ≥ Rp0,01. Hak akses
+melihat data backup History = **Manage** (sama dengan ekspor Excel). OQ 48 dan 49 terjawab; yang terbuka tinggal OQ 41 dan 42 (dengan asumsi).
+
+**Pembaruan 2026-10-26 (HPP memakai Hasil Costing).** Permintaan user: komponen biaya HPP (Man Power, FOH, Bahan Pendukung Khusus,
+Consumables, Biaya Koordinasi, Scrap) memakai Rp/Kg dari Hasil Costing varian BOM yang dipakai, bukan dari `rate.html`; karena itu Add SPK
+memilih varian BOM setelah produk. FR-48 direvisi, FR-49/NFR-14 disesuaikan, FR-74 baru; OQ 50–55 diusulkan dengan asumsi.
+
+**Pembaruan 2026-10-26 (jawaban OQ 50–55).** OQ 50, 51, 53, 54, 55 dijawab user: SPK ditolak bila produk tanpa varian BOM atau Hasil Costing belum lengkap; varian per produk; varian dapat diubah sampai laporan produksi diinput; SPK milik modul Production Planning (mockup Add SPK menyesuaikan ERD); `rate.html` dipensiunkan. OQ 52 dijawab menyusul: Hasil Costing terakhir yang di-Update Costing saat laporan dibuat. Tidak ada OQ terbuka untuk fitur ini.
+
+**Pembaruan 2026-10-27 (Claim Material).** Sumber: `input/Claim Process/` (BPMN D003 + workbook Rev.2) dan jawaban user 2026-10-27
+(`input/2026-10-27-claim-material/notes.md`). FR-75–FR-94 ditambahkan (Hold Coil, KW 2 Supplier, Reject Supplier menuju Claim Material;
+Process Decision Kompensasi/Retur, SPK Re-Pack, Surat Jalan Retur, Debit Note, alokasi pada Request Payment, tagihan dan penerimaan uang,
+posting jurnal otomatis dari Master Jurnal Claim); FR-06 disesuaikan (Purchasing, Release otomatis). OQ-C1–C9 dijawab; OQ-C2 (master
+email supplier) ditunda dan Master Jurnal Claim dibuat kemudian. Tabel claim (9 entitas) sudah ada di `erd-revisi.drawio` halaman 1.
+
+**Pembaruan 2026-10-28 (telaah alur mockup Claim).** Keputusan user atas G1–G6: FR-95 (Release coil tersambung ke Add Coil From Hold), FR-96 (daftar baca Gudang
+Slitting), FR-97 (kolom Progres turunan); FR-83/FR-84 direvisi (satu SPK dan satu SJ memuat beberapa claim satu supplier); FR-87 dipertegas (baris Debit Note
+dan Jual Material; Retur dan Lanjut Produksi tidak). OQ-C10 dijawab. Tidak ada pertanyaan terbuka untuk mockup; tersisa OQ-C2 (master email, ditunda) dan Master
+Jurnal Claim (dibuat kemudian).

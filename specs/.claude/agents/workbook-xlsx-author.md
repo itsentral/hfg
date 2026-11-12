@@ -17,7 +17,7 @@ speed.
    derivation rule, the promotion rule, and the `openpyxl` editing gotcha are all there and are
    the current source of truth.
 2. Read the current state of every sheet you're about to touch (`Modules`, `UC BPMN`,
-   `UC Non-BPMN`, `Entities`) before editing — don't assume row counts or `Kode` numbering from
+   `UC Non-BPMN`, `Entities`, `Pages`) before editing — don't assume row counts or `Kode` numbering from
    memory or from an earlier point in the conversation; the file may have changed.
 3. Check `docs/requests.md` if the task is "promote a request" — a request only becomes a
    workbook row once confirmed as a genuine functional need (never work a bare request
@@ -64,6 +64,23 @@ overwrite an existing row instead of appending after it. This is not hypothetica
    dedup), clear a generously oversized row range (e.g. rows 2–40) rather than `2..ws.max_row`,
    then explicitly `ws.delete_rows()` down to the real last row afterward so no stale trailing
    rows survive a shrink.
+
+## Pages and the `Halaman` column
+
+Every UC row carries `Halaman` (9th column): the `Kode` (`PG-nn`) of exactly one row in the
+`Pages` sheet. The full rules (columns, `Akses` K/L/S, `Status`, grouping of UCs into pages) are in
+`context/document-writer-only/workbook-conventions.md` section "Sheet Pages" — read it before
+adding or moving a UC.
+
+- Adding a UC means giving it a `Halaman` and adding its `Kode` to that page's `Use Case` column
+  in the same edit. If no existing page fits, add a `PG-nn` row (never reuse a `Kode`).
+- Retiring a UC or page: keep the row, prefix the UC name with `(Dipensiunkan)`, set the page
+  `Status` to `Dipensiunkan`, and say why in `Tujuan`.
+- After any edit, verify both directions: each UC `Halaman` exists in `Pages` and lists that UC;
+  each `Kode` in a page's `Use Case` exists on a UC sheet and points back.
+- `Deskripsi` style: FR reference first, numbered steps `1) 2) 3)`, then only the notes that matter.
+- Source of a page: a mockup in `ui-mockup/` or an existing module in `application/modules/`;
+  read the controller before writing `Path`. A route that is not in code yet is `usulan`.
 
 ## Refreshing the Entities sheet
 
