@@ -1,0 +1,198 @@
+# Issue Tracker — open work only.
+#
+# This file, `pm/issues/`, and (if the project uses one) the matching issue in
+# an external tracker are views of ONE set. Keep them in sync:
+#
+#   a row here  ⟺  pm/issues/{slug}/  ⟺  an open external issue
+#
+# The one exception is `status: open` — raw backlog with no plan and no capsule.
+# Planning one means creating the capsule and moving it out of `open`.
+#
+# A `status: open` row MAY carry an external issue: an external tracker holds
+# prose, so backlog detail can live there before a capsule exists. **What
+# separates backlog from planned work is the CAPSULE, not the external issue.**
+#
+# On close the row moves to `pm/archive.yaml`, the narrative goes to
+# `pm/log.md`, the external issue closes, and the capsule is DELETED — git
+# history keeps the plan, findable by its `slug`:
+#
+#   git log --all --diff-filter=D -- '*{slug}*'
+#
+# Nothing closed stays in this file. To resolve an ID: look here first; anything
+# not here is closed and lives in `pm/archive.yaml`.
+#
+# Fields
+#   id         — {TYPE}-{NN}, unique and never reused. Prefer a new number over
+#                recycling a closed one; `slug` is the reliable handle anyway.
+#   title      — one line, what a reader needs to recognise it by
+#   type       — feature | fix | task | doc | system | integration
+#   epic       — optional long-running track this belongs to
+#   slug       — capsule directory; the plan is always pm/issues/{slug}/plan.md
+#   external   — optional id in the project's issue tracker, if one is used
+#   source     — where this came from: an intake folder, a workbook Kode, a
+#                review, or a user request with its date
+#   depends_on — satisfied only by `status: done`, here or in pm/archive.yaml.
+#                A `dropped` dependency is NOT satisfied.
+#   blocks     — the inverse, recorded on both rows
+#   uc         — optional workbook Kode(s) this implements, once a workbook row
+#                owns the behaviour
+#   summary    — what is true right now, updated in place as the row moves
+#
+# Add a `track:` field to every row only if this repository holds more than one
+# application or deliverable stream. With one, the field is noise.
+#
+# status
+#   open        backlog — no plan, no capsule
+#   planning    capsule exists, plan being drafted or awaiting confirmation
+#   planned     plan confirmed, work not started
+#   in_progress active work
+#   in_review   finished, awaiting verification or client confirmation
+#   blocked     waiting on a dependency — name it in depends_on
+#
+# `done` and `dropped` are not valid here. They exist only in pm/archive.yaml.
+#
+# Shape of a row:
+#
+#   - id: UC-07
+#     title: Petugas records sample intake at the counter
+#     type: feature
+#     slug: uc-07-sample-intake
+#     status: planning
+#     external: ABC-123
+#     source: docs/workbook.xlsx "UC BPMN" row 7
+#     depends_on: []
+#     summary: >-
+#       One line that stays true as the row moves. Not a plan — the plan is the
+#       capsule.
+
+issues:
+  - id: FEAT-03
+    title: Master data dasar Product Costing (Master Produk, Master Material, Master Standard Material)
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-master-data
+    status: in_review
+    source: UC-01, UC-02, UC-03 di input/Rev.1 Use Case Product Costing.xlsx
+    depends_on: [FEAT-02]
+    blocks: [FEAT-04]
+    summary: >-
+      Kode ditulis 2026-10-20 (modul master_standard_material baru; product_master dan material_master
+      diperluas; php -l bersih) tetapi BELUM diuji di database: migrasi harus dijalankan user di database
+      uji, langkah uji ada di .artifacts/master_data_product_costing/walkthrough_...; D0 (SHOW CREATE
+      TABLE) masih ditunggu. Plan v2 di .artifacts/master_data_product_costing/ (keputusan D1–D7 dijawab 2026-10-20;
+      D0 = hasil SHOW CREATE TABLE dari user, menunggu). Lebar produk = kolom wide yang ada (tanpa
+      ALTER). Mulai dari Master Standard Material (tidak butuh D0); product_master dan material_master
+      diperluas setelah D0.
+  - id: FEAT-04
+    title: BOM per Varian Tebal, Flow Process, dan Kurs / Price Reference
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-bom-flow-price-reference
+    status: in_progress
+    source: UC-04, UC-05, UC-06
+    depends_on: [FEAT-03]
+    blocks: [FEAT-06]
+    summary: >-
+      Dipecah 04a Kurs, 04b Flow Process, 04c Price Reference, 04d BOM varian (plan di
+      .artifacts/bom_flow_kurs_price_reference/). 04b: kode modul flow_process ditulis 2026-10-20
+      (php -l bersih), belum diuji di database; migrasi dijalankan user di database uji. 04a/04c/04d
+      menunggu D0 diperluas dan tabel BOM = ms_bom_header/ms_bom_detail yang sudah ada (keputusan user 2026-10-26); satu header per produk (UNIQUE
+      id_produk tetap), varian = baris ms_bom_detail berkunci id_produk + no_uniq_id (migrasi 003 tidak boleh melepas uk_produk;
+      berat_per_meter harus DECIMAL(14,6)) serta sumber History Pembelian.
+  - id: FEAT-05
+    title: Master rate (Man Power, FOH, Bahan Pendukung, Manufacturing Support, Other Cost, Negotiation Allowance)
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-master-rate
+    status: open
+    source: UC-07, UC-08, UC-09, UC-10
+    depends_on: [FEAT-02]
+    blocks: [FEAT-06, FEAT-08]
+    summary: >-
+      Backlog Tahap 3. Man Power Rate = (Rate 1/3 Operator + Borongan Helper per
+      kategori) × Faktor Indirect; Borongan hanya Rp/Meter; Faktor Indirect Labor = master tersendiri; FOH/Bahan
+      Pendukung Rp/Kg; Negotiation Allowance per Product Category, perubahan rate diajukan Sales
+      Manager dan perlu approval GM (FR-67, UC-12/UC-16, 2026-10-21). Rumus akhir
+      Man Power Cost disetujui (OQ 19).
+  - id: FEAT-06
+    title: Mesin perhitungan Material Cost, Biaya Proses, Manufacturing Support, HPP, Bottom Price
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-costing-engine
+    status: open
+    source: UC-11, UC-12, UC-13, UC-14, UC-15
+    depends_on: [FEAT-04, FEAT-05]
+    blocks: [FEAT-07, FEAT-08]
+    summary: >-
+      Backlog Tahap 4. Setiap komponen dalam Rp/Kg dan Rp/Meter; satu library hitung
+      dipakai bersama Laporan Produksi. Rumus Man Power Cost disetujui (OQ 19).
+  - id: FEAT-07
+    title: Price List, approval Pricelist, dan rilis Product Catalog
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-pricelist-approval
+    status: open
+    source: UC-16, UC-17, UC-18, UC-19
+    depends_on: [FEAT-06]
+    blocks: []
+    summary: >-
+      Backlog Tahap 5. Per Produk × varian BOM; Reject wajib alasan dan kembali
+      ke UC-16; Product Catalog disimpan sebagai data.
+  - id: FEAT-08
+    title: Integrasi rate Product Costing ke HPP Laporan Produksi
+    type: integration
+    epic: product-costing-rev1
+    slug: pc-production-report-integration
+    status: open
+    source: ERD Product Costing-Production Report.jpg; FR-48, FR-49
+    depends_on: [FEAT-05, FEAT-06]
+    blocks: []
+    summary: >-
+      Backlog Tahap 6. Rate dibekukan saat laporan dibuat (FR-49, NFR-09); rumus
+      per pcs mengikuti mock up Laporan Produksi. Revisi 2026-10-26: enam komponen HPP memakai Rp/Kg
+      Hasil Costing varian BOM yang dipilih pada Add SPK (FR-48, FR-74). OQ 50–55 dijawab 2026-10-26: SPK ditolak bila tanpa varian BOM/Hasil Costing lengkap; varian per produk; ubah varian hanya sebelum laporan produksi; rate.html dipensiunkan; OQ 52: Hasil Costing = Update Costing terakhir saat laporan dibuat. Kolom varian = `varian_type` (ERD: `erd-revisi.drawio`); Stok Bebas dan KW 2 mengikuti varian SPK.
+  - id: FEAT-09
+    title: Dashboard notifikasi perubahan Bottom Price untuk Sales
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-bottom-price-notification
+    status: open
+    source: permintaan user 2026-10-21 (input/2026-10-21-bottom-price-change-notification/)
+    depends_on: [FEAT-05, FEAT-06, FEAT-07]
+    blocks: []
+    summary: >-
+      Backlog. Notifikasi ke Sales Manager bila Bottom Price Produk × varian BOM berubah; Sales Manager memutuskan Ajukan Rate
+      Extra Margin Baru (alur FR-67) atau Tidak Perlu Diubah. FR-68–FR-70, NFR-16, UC-N18, PG-24, entitas
+      bottom_price_notification masih usulan; open question 25–32 belum diputuskan.
+  - id: FEAT-10
+    title: History Costing dan History Price List; nama produk di depan pada Pricelist dan Product Catalog
+    type: feature
+    epic: product-costing-rev1
+    slug: pc-history-costing-pricelist
+    status: open
+    source: permintaan user 2026-10-21 (input/2026-10-21-history-costing-pricelist/)
+    depends_on: [FEAT-06, FEAT-07]
+    blocks: []
+    summary: >-
+      Backlog. Perubahan rate/master yang mengubah Bottom Price disimpan di History Costing; kejadian Pricelist di History
+      Price List (hanya baca, audit). Daftar Pricelist dan Product Catalog menampilkan nama produk di depan. FR-71–FR-73, NFR-17,
+      UC-N19, UC-N20, PG-25, PG-26, entitas history_costing/history_pricelist masih usulan; open question 34–40 dijawab user 2026-10-21 (pemicu: costing diperbarui / Pricelist disetujui; retensi 1 tahun lalu backup data; akses per hak akses pengguna; ekspor Excel; lewat Activity Log; Draft dan Extra Margin tidak dicatat); OQ 43–47 dijawab 2026-10-21 (Update Costing = pemicu utama History Costing; rilis katalog tidak dicatat; ekspor tanpa backup; write_log disetujui; hak akses View/Manage terpisah per halaman, ekspor perlu Manage); OQ 41, 42, 48, 49 masih terbuka.
+  - id: FEAT-11
+    title: Claim Material (Kompensasi / Retur) — dari Hold Coil, KW 2 Supplier, Reject Supplier sampai Debit Note dan Penerimaan Uang
+    type: feature
+    epic: claim-material
+    slug: claim-material
+    status: in_progress
+    source: input/Claim Process/ (BPMN D003 + workbook Rev.2); jawaban user 2026-10-27 (input/2026-10-27-claim-material/)
+    depends_on: []
+    blocks: []
+    summary: >-
+      2026-10-27: FR-75–FR-94 di docs/fr-nfr.md; OQ-C1–C5 terjawab (C2 ditunda), OQ-C6 (COA/gl_interface) dan OQ-C7 (kaitan ke
+      pembayaran PO yang ada) terbuka. Mockup claim-*.html di ui-mockup/ (9 halaman). ERD: 10 entitas claim di erd-revisi.drawio
+      halaman 1 (FK mata uang = id_kurs, keputusan user 2026-10-27); workbook: UC-N21–N35, PG-27–35 (tab Material On Hold = UC-N35).
+      OQ-C6/C7/C8 terjawab (FR-93; Alokasi DN dipilih saat Request Payment, baris detail negatif saat pembayaran; ERD 9 entitas claim).
+      Popup Hold & Claim di Laporan Produksi selesai (FR-94); OQ-C9 terjawab. 2026-10-28: Release tersambung ke Laporan Produksi (FR-95), halaman
+      Gudang Slitting (FR-96), kolom Progres (FR-97). G5/G6/OQ-C10 diputuskan 2026-10-28 (SPK gabung per supplier; Report Biaya + Jual Material). Mockup final; Handover ke Dev: rencana CI3 dan task disusun 2026-10-28 (.artifacts/claim_material/plan_claim_material_28-10-2026.md), keputusan D0-D7 menunggu user sebelum kode. Terbuka: OQ-C2 (master email, ditunda), Master Jurnal Claim.
+      2026-10-28: Debit Note tanpa approval, hak akses terbuka di mockup, jurnal tampil di layar (Lihat Jurnal); 9 tabel dibuat user di hfg_dev (SQL di
+      application/modules/*/migrations/); ruang lingkup = desain dan mockup, kode aplikasi oleh programmer kemudian.
+      Belum: Master Jurnal Claim, template email (OQ-C2), kode CI3. Plan di .artifacts/claim_material/.

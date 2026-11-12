@@ -35,6 +35,5 @@ application/config/constants.php
 .artifacts/*
 
 # AI Agent Context & IDE (Kiro)
-AGENTS.md
 *.Identifier
 *:Zone.Identifier

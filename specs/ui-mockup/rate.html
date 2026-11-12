@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master Rate Product Costing — Modul Produksi</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="berry-shell.css" />
+</head>
+<body data-user="Andri P." data-role="Accounting">
+  <!-- ============ TOP BAR ============ -->
+  <!-- Sidebar + top bar: kerangka Berry (berry-shell.js) -->
+  <main class="page">
+    <div class="page__header">
+      <div>
+        <h1>Master Rate Product Costing <span class="badge badge--draft">Dipensiunkan</span></h1>
+        <p class="muted">Arsip rate lama (tidak lagi dipakai HPP; sumber kini Hasil Costing per varian BOM). Man Power, FOH, Bahan Pendukung, Consumables, dan Koordinasi dalam Rp/kg; Scrap sebagai persentase dari value material.</p>
+      </div>
+      <div class="page__header-status">
+        <span class="badge badge--draft" id="saveStatus">Siap diedit</span>
+      </div>
+    </div>
+
+    <p class="note note--warn" id="rateDeprecated"><strong>DIPENSIUNKAN.</strong> Halaman Master Rate ini sudah tidak dipakai dan tidak memengaruhi HPP. Rate HPP kini bersumber dari <strong>Hasil Costing</strong> (Product Costing › Simulasi Costing) per Uniq ID (varian BOM), dalam Rp/Kg. Halaman ini hanya arsip. <a href="pc-simulasi.html">Buka Simulasi Costing →</a></p>
+
+    <section class="card">
+      <div class="card__head">
+        <h2><span class="card__num">1</span> Rate Saat Ini</h2>
+        <p class="card__hint">Ubah nilai lalu Simpan. Nilai ini tidak lagi dipakai pada perhitungan HPP (hanya arsip).</p>
+      </div>
+      <div class="card__body">
+        <div class="table-wrap">
+          <table class="tbl" id="rateTable">
+            <thead>
+              <tr>
+                <th>Komponen Biaya</th>
+                <th class="num" style="width:200px">Rate</th>
+                <th style="width:220px">Satuan</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="note" id="rateNote">Contoh dari konsep: Man Power Rp400/kg, FOH Rp300/kg, Bahan Pendukung Rp500/kg, Consumables Rp200/kg, Koordinasi Rp200/kg, Scrap 2% dari value material.</p>
+      </div>
+    </section>
+
+    <div class="actionbar">
+      <div class="actionbar__note">
+        <span class="muted">Perubahan disimpan ke penyimpanan lokal browser (mockup).</span>
+      </div>
+      <div class="actionbar__btns">
+        <button type="button" class="btn btn--ghost" id="btnReset">Reset ke Default</button>
+        <a class="btn btn--ghost" href="hpp.html">Lihat HPP →</a>
+        <button type="button" class="btn btn--primary" id="btnSave">Simpan Rate</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="berry-shell.js"></script>
+
+  <script src="data.js"></script>
+  <script src="numfmt.js"></script>
+  <script src="rate.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+/* berry-shell.css — sisi halaman (light DOM) dari kerangka tema Berry.
+   Sidebar dan top bar dirender di Shadow DOM (berry-shell.js) supaya CSS Berry/Bootstrap 5
+   tidak bentrok dengan styles.css / pc.css. Berkas ini hanya mengatur ruang isi, kartu judul +
+   breadcrumb, dan lapisan (z-index) agar modal tampil di atas sidebar seperti di aplikasi. */
+@import url("../../assets/berry/fonts/tabler-icons.min.css");   /* @font-face ikon harus di dokumen, bukan di shadow */
+
+body.berry { background: #f4f6f9; }
+
+#berry-host { display: block; }
+
+/* ruang isi = .pc-container Berry: margin kiri selebar sidebar (260px), top = tinggi header (80px) */
+.berry-main { margin-left: 260px; margin-right: 20px; padding-top: 96px; min-height: 100vh; transition: margin-left .2s ease; }
+body.berry-collapsed .berry-main { margin-left: 20px; }
+@media (max-width: 1024px) { .berry-main { margin-left: 20px; } }
+.berry-main > .page { padding-top: 16px; margin-left: 0; }
+
+/* kartu judul + breadcrumb (page header di themes/admin/views/header.php) */
+.berry-pagehead { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: #fff; border-radius: 8px; padding: 14px 20px; box-shadow: 0 1px 2px rgba(15, 23, 42, .05); font-family: "Roboto", system-ui, sans-serif; }
+.berry-pagehead h3 { margin: 0; font-size: 1.25rem; font-weight: 500; color: #343a40; }
+.berry-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 0; list-style: none; margin: 0; padding: 0; font-size: 14px; color: #6c757d; }
+.berry-crumb li + li::before { content: "/"; padding: 0 8px; color: #adb5bd; }
+.berry-crumb a { color: #2196f3; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.berry-crumb li.active { color: #6c757d; }
+/* judul halaman pindah ke kartu judul */
+.berry-main .page__header h1.berry-h1-moved { display: none; }
+
+/* bar aksi tetap di bawah ikut menggeser sesuai sidebar */
+body.berry .actionbar { left: 260px; transition: left .2s ease; }
+body.berry.berry-collapsed .actionbar { left: 0; }
+@media (max-width: 1024px) { body.berry .actionbar { left: 0; } }
+
+/* lapisan: modal/dialog/toast harus di atas sidebar (z-index 1026) dan header (1025) */
+body.berry .modal { z-index: 1100; }
+body.berry .pc-modal { z-index: 1100; }
+body.berry .pc-modal--dlg { z-index: 1200; }
+body.berry .toast { z-index: 1300; }

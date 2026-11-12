@@ -46,7 +46,7 @@ class Asset extends Admin_Controller
             'dataD'      => $dataD,
             'list_cab'   => $this->asset_model->getList('asset_branch'),
             'list_pajak' => $this->asset_model->getList('asset_category_pajak'),
-            'list_dept'  => $this->asset_model->getList('department'),
+            'list_dept'  => $this->asset_model->getList('ms_department'),
             'list_catg'  => $this->asset_model->getList('asset_category'),
             'list_coa'   => $this->asset_model->getList('asset_coa')
         );
@@ -168,7 +168,7 @@ class Asset extends Admin_Controller
                 'value'          => $val_asset,
                 'kdcab'          => $branch,
                 'id_dept'        => $lokasi_asset,
-                'department'     => get_name('department', 'nm_dept', 'id', $lokasi_asset),
+                'department'     => get_name('ms_department', 'nama', 'id', $lokasi_asset),
                 'id_costcenter'  => $cost_center,
                 'cost_center'    => get_name('costcenter', 'nm_costcenter', 'id_costcenter', $cost_center),
                 'nama_user'      => $nama_user,
@@ -250,7 +250,7 @@ class Asset extends Admin_Controller
                 'list_cab'   => $this->asset_model->getList('asset_branch'),
                 'list_coa'   => $this->asset_model->getList('asset_coa'),
                 'list_pajak' => $this->asset_model->getList('asset_category_pajak'),
-                'list_dept'  => $this->asset_model->getList('department'),
+                'list_dept'  => $this->asset_model->getList('ms_department'),
                 'list_catg'  => $this->asset_model->getList('asset_category')
             );
             $this->template->title((!empty($header)) ? 'Edit Asset' : 'Add Asset');
@@ -269,7 +269,7 @@ class Asset extends Admin_Controller
             'list_cab'   => $this->asset_model->getList('asset_branch'),
             'list_coa'   => $this->asset_model->getList('asset_coa'),
             'list_pajak' => $this->asset_model->getList('asset_category_pajak'),
-            'list_dept'  => $this->asset_model->getList('department'),
+            'list_dept'  => $this->asset_model->getList('ms_department'),
             'list_catg'  => $this->asset_model->getList('asset_category')
         );
         $this->template->title('Edit Asset');
@@ -324,7 +324,7 @@ class Asset extends Admin_Controller
         $ArrUpHeader = array(
             'kdcab'         => $branch,
             'id_dept'       => $lokasi_asset_new,
-            'department'    => get_name('department', 'nm_dept', 'id', $lokasi_asset_new),
+            'department'    => get_name('ms_department', 'nama', 'id', $lokasi_asset_new),
             'id_costcenter' => $cost_center_new,
             'cost_center'   => get_name('costcenter', 'nm_costcenter', 'id_costcenter', $cost_center_new),
             'modified_by'   => $username,
@@ -434,12 +434,12 @@ class Asset extends Admin_Controller
             SELECT
                 a.*,
                 b.nm_category,
-                c.nm_dept,
+                c.nama AS nm_dept,
                 d.nm_costcenter
             FROM
                 asset a
                 LEFT JOIN asset_category b ON a.category = b.id
-                LEFT JOIN department c ON a.id_dept = c.id
+                LEFT JOIN ms_department c ON a.id_dept = c.id
                 LEFT JOIN costcenter d ON a.id_costcenter = d.id_costcenter
             WHERE 1=1
                 AND a.deleted_date IS NULL

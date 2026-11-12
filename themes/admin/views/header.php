@@ -42,6 +42,8 @@
        CSS PLUGIN LAMA (sementara dipertahankan)
        ========================= -->
   <link rel="stylesheet" href="<?= base_url('assets/dist/sweetalert.css'); ?>">
+  <link rel="stylesheet" href="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.min.css'); ?>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/select2/select2.min.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/plugins/daterangepicker/daterangepicker.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/jquery-ui-1.12.1/jquery-ui-1.12.1/jquery-ui.min.css'); ?>">
@@ -66,6 +68,60 @@
 
   <!-- Sweet Alert -->
   <script src="<?= base_url('assets/dist/sweetalert.min.js'); ?>"></script>
+  <script src="<?= base_url('assets/plugins/sweetalert/dist/sweetalert2.all.min.js'); ?>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script type="text/javascript">
+    if (typeof Swal === 'undefined' && typeof Sweetalert2 !== 'undefined') {
+      window.Swal = Sweetalert2;
+    }
+    (function() {
+      var _Swal = window.Swal || (typeof Sweetalert2 !== 'undefined' ? Sweetalert2 : null);
+      if (!_Swal) return;
+
+      window.Swal = _Swal;
+
+      // Compatibility wrapper so legacy swal(...) calls don't crash with "Class constructor without 'new'"
+      window.swal = function() {
+        var args = Array.prototype.slice.call(arguments);
+        if (args.length === 0) return _Swal;
+
+        // Pattern 1: swal("Title", "Message", "error")
+        if (typeof args[0] === 'string') {
+          var opts = { title: args[0] };
+          if (typeof args[1] === 'string') opts.text = args[1];
+          if (typeof args[2] === 'string') {
+            opts.icon = (args[2] === 'warning' || args[2] === 'error' || args[2] === 'success' || args[2] === 'info') ? args[2] : 'info';
+          }
+          return _Swal.fire(opts);
+        }
+
+        // Pattern 2: swal({ title: ..., text: ..., type: ... }, callback)
+        if (typeof args[0] === 'object' && args[0] !== null) {
+          var opt = Object.assign({}, args[0]);
+          if (opt.type && !opt.icon) {
+            opt.icon = opt.type;
+          }
+          if (opt.confirmButtonClass && !opt.customClass) {
+            opt.customClass = { confirmButton: opt.confirmButtonClass };
+          }
+          var callback = (typeof args[1] === 'function') ? args[1] : null;
+
+          return _Swal.fire(opt).then(function(result) {
+            if (callback) {
+              callback(result.isConfirmed);
+            }
+            return result;
+          });
+        }
+
+        return _Swal.fire.apply(_Swal, args);
+      };
+
+      if (_Swal.fire) window.swal.fire = _Swal.fire.bind(_Swal);
+      if (_Swal.close) window.swal.close = _Swal.close.bind(_Swal);
+      if (_Swal.mixin) window.swal.mixin = _Swal.mixin.bind(_Swal);
+    })();
+  </script>
 
   <!-- Form Jquery -->
   <script src="<?= base_url('assets/plugins/jqueryform/jquery.form.js'); ?>"></script>
@@ -129,6 +185,79 @@
     .swal2-container {
       z-index: 9999 !important;
     }
+  
+    /* Sidebar Menu Search Bar Styles */
+    .pc-sidebar-search {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      padding: 8px 14px 10px 14px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .pc-sidebar-search .form-control {
+      height: 38px;
+      padding-left: 34px;
+      padding-right: 28px;
+      border-radius: 8px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #293240;
+      transition: all 0.2s ease-in-out;
+      width: 100%;
+    }
+    .pc-sidebar-search .form-control:focus {
+      background-color: #ffffff;
+      border-color: #4680ff;
+      box-shadow: 0 0 0 3px rgba(70, 128, 255, 0.15);
+    }
+    .pc-sidebar-search .pc-search-icon {
+      position: absolute;
+      top: 50%;
+      left: 11px;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #8c98a4;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pc-sidebar-search .pc-search-clear {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #8c98a4;
+      background: transparent;
+      border: none;
+      padding: 0;
+      z-index: 2;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pc-sidebar-search .pc-search-clear:hover {
+      background-color: #e2e8f0;
+      color: #2d3748;
+    }
+    .pc-sidebar-search .pc-search-clear i {
+      font-size: 14px;
+    }
+
+    /* Highlight style in sidebar */
+    mark.pc-search-highlight {
+      background-color: #ffe082 !important;
+      color: #1a1a1a !important;
+      padding: 0 3px !important;
+      border-radius: 3px !important;
+      font-weight: 700 !important;
+    }
   </style>
 </head>
 
@@ -164,6 +293,16 @@
       </div>
 
       <div class="navbar-content">
+        <!-- SIDEBAR MENU SEARCH -->
+        <div class="pc-sidebar-search">
+          <div class="position-relative">
+            <input type="text" class="form-control" id="sidebar-menu-search" placeholder="Cari menu / sub menu... (Ctrl+K)" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn pc-search-clear" id="sidebar-menu-search-clear" style="display:none;" title="Bersihkan pencarian">
+              <i class="ti ti-x"></i>
+            </button>
+          </div>
+        </div>
+
         <?= $this->menu_generator->build_menus(); ?>
       </div>
     </div>
@@ -191,6 +330,7 @@
               <i data-feather="menu"></i>
             </a>
           </li>
+
 
         </ul>
       </div>

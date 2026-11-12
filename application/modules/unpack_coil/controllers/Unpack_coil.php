@@ -491,11 +491,56 @@ class Unpack_coil extends Admin_Controller
                     'to_status'      => 'unpacked',
                     'created_at'     => $this->datetime,
                 ));
+
+                if (strtoupper(trim((string) $rep['kd_gudang'])) === 'PRT' && $id_coil_baru) {
+                    $this->load->helper('coil_kartu_stok');
+                    kartu_stok_record_entry(array(
+                        'id_coil'       => (int) $id_coil_baru,
+                        'no_trs'        => $unpack_no,
+                        'id_material'   => $id_material,
+                        'nm_material'   => $rep['nm_material'],
+                        'no_coil'       => $no_coil_baby,
+                        'kode_internal' => $babycoil_code,
+                        'status'        => 'in',
+                        'dari'          => 'Unpack',
+                        'ke'            => 'prod. 2',
+                        'qty_trans'     => $net_actual,
+                        'qty_awal'      => 0,
+                        'keterangan'    => 'Hasil unpack dari coil ' . $rep['no_coil'],
+                        'created_by'    => $this->id_user,
+                        'created_at'    => $this->datetime,
+                    ));
+                }
             }
 
             // Nonaktifkan SEMUA baris fisik asli grup ini
+            $is_prt_unpack = (strtoupper(trim((string) $rep['kd_gudang'])) === 'PRT');
+            if ($is_prt_unpack) {
+                $this->load->helper('coil_kartu_stok');
+            }
             foreach ($real_coils as $rc) {
                 $this->Unpack_coil_model->mark_induk_unpacked($rc['id'], $unpack_no);
+                if ($is_prt_unpack) {
+                    $last_rc  = kartu_stok_get_last_balance($rc['id']);
+                    $out_qty  = $last_rc['exists'] ? $last_rc['qty_akhir'] : (float) $rc['net_weight_pl'];
+                    if ($out_qty > 0) {
+                        kartu_stok_record_entry(array(
+                            'id_coil'       => (int) $rc['id'],
+                            'no_trs'        => $unpack_no,
+                            'id_material'   => $rc['id_material'],
+                            'nm_material'   => $rc['nm_material'],
+                            'no_coil'       => $rc['no_coil'],
+                            'kode_internal' => $rc['kode_internal'],
+                            'status'        => 'out',
+                            'dari'          => 'prod. 2',
+                            'ke'            => 'Unpack',
+                            'qty_trans'     => $out_qty,
+                            'keterangan'    => 'Dipecah menjadi ' . $roll . ' baby coil (' . $unpack_no . ')',
+                            'created_by'    => $this->id_user,
+                            'created_at'    => $this->datetime,
+                        ));
+                    }
+                }
             }
 
             // ================================================================
