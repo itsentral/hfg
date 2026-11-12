@@ -55,6 +55,8 @@
                                 <th class="text-right">Nett Weight (Kg)</th>
                                 <th class="text-right">Gross Weight (Kg)</th>
                                 <th class="text-right">Length (M)</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center" width="14%">Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -101,12 +103,14 @@
                         <thead class="bg-danger text-white">
                             <tr>
                                 <th width="4%">No</th>
-                                <th>Material Name</th>
+                                <th>Nama Supplier</th>
+                                <th>Nama Material</th>
                                 <th class="text-center">No. Coil</th>
-                                <th class="text-center">Internal Code</th>
-                                <th class="text-right">Nett Weight (Kg)</th>
-                                <th class="text-right">Gross Weight (Kg)</th>
-                                <th class="text-right">Length (M)</th>
+                                <th class="text-center">No. PO</th>
+                                <th class="text-end">Berat (Kg)</th>
+                                <th>Alasan / Problem</th>
+                                <th class="text-center">Status Material</th>
+                                <th class="text-center" width="10%">Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -185,6 +189,66 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kartu Pemakaian Material -->
+<div class="modal fade" id="modal-kartu-pemakaian" tabindex="-1" aria-labelledby="modalKartuPemakaianLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalKartuPemakaianLabel">
+                    <i class="fa fa-history me-1"></i> Kartu Pemakaian Material
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3 p-2 bg-light border rounded small">
+                    <div class="col-md-4">
+                        <span class="text-muted">Material:</span><br>
+                        <strong id="kp-info-material">-</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="text-muted">No. Coil:</span><br>
+                        <strong id="kp-info-nocoil">-</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="text-muted">Kode Internal:</span><br>
+                        <strong id="kp-info-kode">-</strong>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="text-muted">Berat Awal (Net):</span><br>
+                        <strong id="kp-info-net">-</strong>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="table-kartu-pemakaian" class="table table-bordered table-striped table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>no. Trs</th>
+                                <th>Material</th>
+                                <th class="text-center">kode internal</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">dari</th>
+                                <th class="text-center">ke</th>
+                                <th class="text-end">qty trans</th>
+                                <th class="text-end">Qty Awal</th>
+                                <th class="text-end">Qty Akhir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-kartu-pemakaian">
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
@@ -268,6 +332,48 @@
             },
         ];
 
+        // ── Column definitions — Transit / WRH Production 2 (9 columns) ──
+        var colDefTransit = [{
+                data: 0,
+                width: '4%',
+                className: 'text-center',
+                orderable: false
+            },
+            {
+                data: 1
+            },
+            {
+                data: 2,
+                className: 'text-center'
+            },
+            {
+                data: 3,
+                className: 'text-center'
+            },
+            {
+                data: 4,
+                className: 'text-end'
+            },
+            {
+                data: 5,
+                className: 'text-end'
+            },
+            {
+                data: 6,
+                className: 'text-end'
+            },
+            {
+                data: 7,
+                className: 'text-center'
+            },
+            {
+                data: 8,
+                width: '14%',
+                className: 'text-center',
+                orderable: false
+            }
+        ];
+
         // ── Tab Transit (active by default) ──
         var dtTransit = $('#table-stock-transit').DataTable({
             processing: true,
@@ -285,7 +391,7 @@
                 type: 'POST',
                 cache: false
             },
-            columns: colDef7,
+            columns: colDefTransit,
             order: [
                 [1, 'asc']
             ],
@@ -294,6 +400,113 @@
                 zeroRecords: 'No coil data available.',
                 emptyTable: 'No data available.',
             }
+        });
+
+        // ── Modal Kartu Pemakaian Material ──
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatKartuQty(val) {
+            var num = parseFloat(val);
+            if (isNaN(num)) return '0';
+            if (Math.abs(num) < 0.0005) num = 0;
+            return num.toLocaleString('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 3
+            });
+        }
+
+        function openModalKartuPemakaian() {
+            var modalEl = document.getElementById('modal-kartu-pemakaian');
+            if (window.bootstrap && bootstrap.Modal) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            } else {
+                $('#modal-kartu-pemakaian').modal('show');
+            }
+        }
+
+        $(document).on('click', '.btn-kartu-pemakaian', function() {
+            var idCoil = $(this).data('id');
+            if (!idCoil) return;
+
+            $('#kp-info-material').text('-');
+            $('#kp-info-nocoil').text('-');
+            $('#kp-info-kode').text('-');
+            $('#kp-info-net').text('-');
+            $('#tbody-kartu-pemakaian').html(
+                '<tr><td colspan="9" class="text-center text-muted py-4">' +
+                '<i class="fa fa-spinner fa-spin me-1"></i> Memuat kartu pemakaian material...</td></tr>'
+            );
+            openModalKartuPemakaian();
+
+            $.ajax({
+                url: BASE_URL + '/ajax_kartu_pemakaian/' + encodeURIComponent(idCoil),
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    if (!res || parseInt(res.status, 10) !== 1) {
+                        $('#tbody-kartu-pemakaian').html(
+                            '<tr><td colspan="9" class="text-center text-danger py-4">' +
+                            escapeHtml((res && res.message) ? res.message : 'Gagal memuat data.') +
+                            '</td></tr>'
+                        );
+                        return;
+                    }
+
+                    var c = res.coil || {};
+                    $('#kp-info-material').text(c.nm_material || c.id_material || '-');
+                    $('#kp-info-nocoil').text(c.no_coil || '-');
+                    $('#kp-info-kode').text(c.kode_internal || '-');
+                    $('#kp-info-net').text(formatKartuQty(c.net_weight || 0) + ' Kg');
+
+                    var rows = Array.isArray(res.rows) ? res.rows : [];
+                    if (rows.length === 0) {
+                        $('#tbody-kartu-pemakaian').html(
+                            '<tr><td colspan="9" class="text-center text-muted py-4">' +
+                            '<i class="fa fa-info-circle me-1"></i> Belum ada riwayat kartu pemakaian material untuk coil ini.' +
+                            '</td></tr>'
+                        );
+                        return;
+                    }
+
+                    var html = '';
+                    rows.forEach(function(r) {
+                        var st = (r.status || '').toLowerCase();
+                        var stBadge = st === 'in' ?
+                            '<span class="badge bg-success">in</span>' :
+                            '<span class="badge bg-danger">out</span>';
+                        var qtyAkhir = parseFloat(r.qty_akhir || 0);
+                        var akhirClass = qtyAkhir < 0 ? 'text-end fw-bold text-danger' : 'text-end fw-bold';
+
+                        html += '<tr>' +
+                            '<td><code>' + escapeHtml(r.no_trs || '-') + '</code></td>' +
+                            '<td>' + escapeHtml(r.nm_material || c.nm_material || '-') + '</td>' +
+                            '<td class="text-center">' + escapeHtml(r.kode_internal || c.kode_internal || '-') + '</td>' +
+                            '<td class="text-center">' + stBadge + '</td>' +
+                            '<td class="text-center">' + escapeHtml(r.dari || '-') + '</td>' +
+                            '<td class="text-center">' + escapeHtml(r.ke || '-') + '</td>' +
+                            '<td class="text-end">' + formatKartuQty(r.qty_trans) + '</td>' +
+                            '<td class="text-end">' + formatKartuQty(r.qty_awal) + '</td>' +
+                            '<td class="' + akhirClass + '">' + formatKartuQty(qtyAkhir) + '</td>' +
+                            '</tr>';
+                    });
+                    $('#tbody-kartu-pemakaian').html(html);
+                },
+                error: function() {
+                    $('#tbody-kartu-pemakaian').html(
+                        '<tr><td colspan="9" class="text-center text-danger py-4">' +
+                        'Terjadi kesalahan koneksi saat memuat Kartu Pemakaian Material.' +
+                        '</td></tr>'
+                    );
+                }
+            });
         });
 
         // ── Tab WIP (lazy load) ──
@@ -331,6 +544,43 @@
             });
 
         // ── Tab On Hold (lazy load) ──
+        var colDefOnHold = [{
+                data: 0,
+                width: '4%',
+                className: 'text-center'
+            },
+            {
+                data: 1
+            },
+            {
+                data: 2
+            },
+            {
+                data: 3,
+                className: 'text-center'
+            },
+            {
+                data: 4,
+                className: 'text-center'
+            },
+            {
+                data: 5,
+                className: 'text-end'
+            },
+            {
+                data: 6
+            },
+            {
+                data: 7,
+                className: 'text-center'
+            },
+            {
+                data: 8,
+                className: 'text-center',
+                orderable: false
+            }
+        ];
+
         var dtOnHold = null;
         document.getElementById('tab-on-hold-tab')
             .addEventListener('shown.bs.tab', function() {
@@ -351,7 +601,7 @@
                             type: 'POST',
                             cache: false
                         },
-                        columns: colDef7,
+                        columns: colDefOnHold,
                         order: [
                             [1, 'asc']
                         ],
@@ -509,6 +759,15 @@
             };
 
             xhr.send();
+        }
+
+        // ── Auto switch tab dari URL hash (misal #tab-on-hold) ──
+        if (window.location.hash) {
+            var activeTabLink = document.querySelector('a[href="' + window.location.hash + '"]');
+            if (activeTabLink) {
+                var tabTrigger = new bootstrap.Tab(activeTabLink);
+                tabTrigger.show();
+            }
         }
 
     });

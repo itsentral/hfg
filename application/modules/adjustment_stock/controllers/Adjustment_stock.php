@@ -271,7 +271,7 @@ class Adjustment_stock extends Admin_Controller
   public function list_material_stock()
   {
     $gudang    = $this->input->post('gudang');
-    $Q_result  = $this->db->select('a.id_material, b.nama AS nm_material')->order_by('b.nama', 'asc')->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'inner')->get_where('warehouse_stock a', array('a.id_gudang' => $gudang))->result();
+    $Q_result  = $this->db->select('a.id_material, b.nama AS nm_material')->order_by('b.nama', 'asc')->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'inner')->get_where('warehouse_stock_non_material a', array('a.id_gudang' => $gudang))->result();
     $option = "<option value='0'>Select Material</option>";
     foreach ($Q_result as $row) {
       $option .= "<option value='" . $row->id_material . "'>" . strtoupper($row->nm_material) . "</option>";

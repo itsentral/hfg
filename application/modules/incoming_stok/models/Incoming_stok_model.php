@@ -8,9 +8,9 @@ class Incoming_stok_model extends BF_Model
   protected $ENABLE_VIEW;
   protected $ENABLE_DELETE;
 
-  protected $accounting;
-  protected $hris;
-  protected $consultant;
+  // protected $accounting;
+  // protected $hris;
+  // protected $consultant;
 
   public function __construct()
   {
@@ -21,9 +21,9 @@ class Incoming_stok_model extends BF_Model
     $this->ENABLE_VIEW    = has_permission('Incoming_Stok.View');
     $this->ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
 
-    $this->accounting = $this->load->database('accounting', true);
-    $this->hris = $this->load->database('hris', true);
-    $this->consultant = $this->load->database('consultant', true);
+    // $this->accounting = $this->load->database('accounting', true);
+    // $this->hris = $this->load->database('hris', true);
+    // $this->consultant = $this->load->database('consultant', true);
   }
 
   public function generate_id_invoice_jurnal($nomor)
@@ -233,32 +233,20 @@ class Incoming_stok_model extends BF_Model
       if (!empty($get_po)) {
         $arr_jurnal_coa = ['1070-10-8', '1050-30-1', '2010-10-2'];
 
-        $id_company = '';
-        $nm_company = '';
+        $id_company = '1';
+        $nm_company = 'PT HARAPAN FAJAR GEMILANG';
 
-        $get_department = $this->hris->get_where('departments', ['id' => $get_po->id_dept])->row();
-        $get_division = $this->hris->get_where('divisions', ['id' => $get_department->division_id])->row();
+        $get_department = $this->db->get_where('department', ['id' => $get_po->id_dept])->row();
+        $id_div = (!empty($get_department->id_div)) ? $get_department->id_div : '';
+        $get_division = (!empty($id_div)) ? $this->db->get_where('divisi', ['id_div' => $id_div])->row() : null;
 
-        $id_div = (!empty($get_division)) ? $get_division->id : '';
-        $nm_div = (!empty($get_division)) ? $get_division->name : '';
+        $id_div = (!empty($get_division)) ? $get_division->id_div : '';
+        $nm_div = (!empty($get_division)) ? $get_division->nm_div : '';
 
-        if ($get_department->company_id == 'COM003' || $get_department->company_id == 'COM012') {
-          $get_company = $this->consultant->get_where('kons_tr_company', ['id' => '4'])->row();
-
-          $id_company = (!empty($get_company)) ? $get_company->id : '';
-          $nm_company = (!empty($get_company)) ? $get_company->nm_company : '';
-        }
-        if ($get_department->company_id == 'COM006') {
-          $get_company = $this->consultant->get_where('kons_tr_company', ['id' => '4'])->row();
-
-          $id_company = (!empty($get_company)) ? $get_company->id : '';
-          $nm_company = (!empty($get_company)) ? $get_company->nm_company : '';
-        }
-
-        $this->accounting->select('a.no_perkiraan as no_coa, a.nama as nm_coa');
-        $this->accounting->from('coa_master a');
-        $this->accounting->where_in('a.no_perkiraan', $arr_jurnal_coa);
-        $get_coa_jurnal = $this->accounting->get()->result();
+        $this->db->select('a.no_perkiraan as no_coa, a.nama as nm_coa');
+        $this->db->from(DBACC . '.coa_master a');
+        $this->db->where_in('a.no_perkiraan', $arr_jurnal_coa);
+        $get_coa_jurnal = $this->db->get()->result();
 
         $no_jurnal = 0;
         foreach ($get_coa_jurnal as $item_coa) {

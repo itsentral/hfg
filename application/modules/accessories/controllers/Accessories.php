@@ -153,11 +153,36 @@ class Accessories extends Admin_Controller
         'list_coa' => $coa
       ];
 
+      $title = (empty($id)) ? 'Add Barang Stok' : (($tanda == 'view') ? 'Detail Barang Stok' : 'Edit Barang Stok');
+      $icon  = (empty($id)) ? 'fa fa-plus' : (($tanda == 'view') ? 'fa fa-eye' : 'fa fa-edit');
+
       $this->template->set('results', $data);
-      $this->template->title('Add Barang Stok');
-      $this->template->page_icon('fa fa-edit');
+      $this->template->title($title);
+      $this->template->page_icon($icon);
       $this->template->render('add', $data);
     }
+  }
+
+  public function detail($id = null)
+  {
+    if (empty($id)) {
+      $id = $this->input->post('id');
+    }
+    $header         = $this->db->get_where('accessories', array('id' => $id))->result();
+    $satuan         = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'unit'))->result();
+    $satuan_packing = $this->db->get_where('ms_satuan', array('deleted_date' => NULL, 'category' => 'packing'))->result();
+    $category       = $this->db->get_where('accessories_category', array('deleted_date' => NULL))->result();
+    $coa            = $this->accessories_model->all_coa();
+
+    $data = [
+      'header'         => $header,
+      'tanda'          => 'view',
+      'satuan'         => $satuan,
+      'satuan_packing' => $satuan_packing,
+      'category'       => $category,
+      'list_coa'       => $coa
+    ];
+    $this->load->view('detail', $data);
   }
 
   public function hapus()

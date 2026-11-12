@@ -128,6 +128,9 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 success: function(data) {
                     $("#dialog-popup").modal('show');
                     $("#ModalView").html(data);
+                    // Produk baru: nama otomatis; produk yang diedit: nama tersimpan dipertahankan
+                    namaManual = (id !== '');
+                    namaDasar = '';
                 }
             });
         });
@@ -167,20 +170,27 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
 
         // Cascade: level3 → auto-fill nama & code
         $(document).on('change', '#code_lv3', function() {
-            $.ajax({
-                url: base_url + active_controller + 'get_list_level4_name',
-                method: "POST",
-                data: {
-                    code_lv1: $("#code_lv1").val(),
-                    code_lv2: $("#code_lv2").val(),
-                    code_lv3: $("#code_lv3").val()
-                },
-                dataType: 'json',
-                success: function(data) {
-                    $('#nama').val(data.nama);
-                    $('#code').val(data.code);
+            namaManual = false;
+            ambilNamaDasar(true);
+        });
+
+        // Nama Level 4 otomatis = nama dasar (Type + Category + Jenis) + Tebal x Lebar x Panjang M.
+        // Produk yang sudah ada tidak ditimpa sampai level 3 diubah atau "Generate ulang" diklik.
+        $(document).on('keyup change', '#tebal, #wide, #panjang', function() {
+            if (!namaManual) {
+                if (namaDasar === '') {
+                    ambilNamaDasar(false);
+                } else {
+                    buatNamaOtomatis();
                 }
-            });
+            }
+        });
+        $(document).on('input', '#nama', function() {
+            namaManual = true;
+        });
+        $(document).on('click', '#regenerateNama', function() {
+            namaManual = false;
+            ambilNamaDasar(false);
         });
 
         // Update manual code
@@ -376,6 +386,48 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 cache: false
             }
         });
+    }
+
+    // Status nama otomatis (lihat handler #nama, #tebal/#wide/#panjang, #regenerateNama, dan #code_lv3)
+    var namaManual = false;
+    var namaDasar = '';
+
+    // Ambil nama dasar (Type + Category + Jenis) dari server; setCode = isi juga kolom Product Code
+    function ambilNamaDasar(setCode) {
+        if ($('#code_lv3').val() == '0' || $('#code_lv3').val() == null) {
+            return;
+        }
+        $.ajax({
+            url: base_url + active_controller + 'get_list_level4_name',
+            method: "POST",
+            data: {
+                code_lv1: $("#code_lv1").val(),
+                code_lv2: $("#code_lv2").val(),
+                code_lv3: $("#code_lv3").val()
+            },
+            dataType: 'json',
+            success: function(data) {
+                namaDasar = data.nama;
+                if (setCode) {
+                    $('#code').val(data.code);
+                }
+                buatNamaOtomatis();
+            }
+        });
+    }
+
+    function buatNamaOtomatis() {
+        if (namaDasar === '') {
+            return;
+        }
+        var dimensi = [];
+        $.each(['#tebal', '#wide', '#panjang'], function(i, sel) {
+            var nilai = getNum(($(sel).val() || '').split(",").join(""));
+            if (nilai > 0) {
+                dimensi.push(nilai);
+            }
+        });
+        $('#nama').val(namaDasar + (dimensi.length ? ' ' + dimensi.join(' X ') + ' M' : ''));
     }
 
     function get_cub() {

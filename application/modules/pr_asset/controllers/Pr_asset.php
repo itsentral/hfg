@@ -84,4 +84,15 @@ class Pr_asset extends Admin_Controller
         );
         $this->load->view('pr_asset/view_pr', $data);
     }
+
+        public function approval_management()
+    {
+        $this->Pr_asset_model->approval_management();
+    }
+
+    public function approve_pr()
+    {
+        $this->Pr_asset_model->approve_pr();
+    }
 }
+

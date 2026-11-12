@@ -158,9 +158,9 @@ class Spk_material extends Admin_Controller
                 return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Target Qty harus antara 1 - 999.999."]);
             }
 
-            // Check duplicate products
+            // Check duplicate product
             if (in_array($prod['id_produk_fg'], $product_ids)) {
-                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk sudah dipilih di baris lain."]);
+                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk ini sudah dipilih di baris lain."]);
             }
             $product_ids[] = $prod['id_produk_fg'];
 
@@ -196,6 +196,7 @@ class Spk_material extends Admin_Controller
                 'spk_no'        => '', // akan diisi setelah generate/dapat spk_no
                 'urut'          => $i + 1,
                 'id_produk_fg'  => $prod['id_produk_fg'],
+                'no_uniq_id'    => !empty($prod['no_uniq_id']) ? trim($prod['no_uniq_id']) : null,
                 'nm_produk_fg'  => isset($prod['nm_produk_fg']) ? $prod['nm_produk_fg'] : '',
                 'target_qty'    => $t_qty,
                 'berat_per_unit'=> (float) (isset($prod['berat_per_unit']) ? $prod['berat_per_unit'] : 0),
@@ -386,7 +387,7 @@ class Spk_material extends Admin_Controller
     }
 
     // ---------------------------------------------------------------
-    // AJAX: Get Produk Info
+    // AJAX: Get Produk Info (Weight & BOM Variants)
     // ---------------------------------------------------------------
 
     public function get_produk_info($id = null)
@@ -397,8 +398,16 @@ class Spk_material extends Admin_Controller
             return $this->_json(['status' => 0, 'message' => 'ID produk tidak valid.']);
         }
 
-        $weight = $this->Spk_material_model->get_produk_weight($id);
-        return $this->_json(['status' => 1, 'data' => ['weight' => $weight]]);
+        $weight   = $this->Spk_material_model->get_produk_weight($id);
+        $variants = $this->Spk_material_model->get_bom_variants($id);
+
+        return $this->_json([
+            'status' => 1,
+            'data'   => [
+                'weight'   => $weight,
+                'variants' => $variants,
+            ]
+        ]);
     }
 
     // ---------------------------------------------------------------
@@ -418,11 +427,13 @@ class Spk_material extends Admin_Controller
             return $this->_json(['status' => 0, 'message' => 'Target qty harus minimal 1.']);
         }
 
+        $no_uniq_id = trim($this->input->get('no_uniq_id'));
+
         if (!$this->Spk_material_model->has_bom($id_produk)) {
             return $this->_json(['status' => 0, 'message' => 'BOM belum dibuat untuk produk ini.']);
         }
 
-        $materials = $this->Spk_material_model->get_bom_materials($id_produk, $target_qty);
+        $materials = $this->Spk_material_model->get_bom_materials($id_produk, $target_qty, $no_uniq_id ?: null);
         return $this->_json(['status' => 1, 'data' => $materials]);
     }
 

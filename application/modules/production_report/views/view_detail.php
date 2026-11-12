@@ -45,6 +45,14 @@
       <span class="badge <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'bg-warning text-dark' : 'bg-success'; ?> px-3 py-2 fs-6">
         <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'Draft' : 'Submitted (Done)'; ?>
       </span>
+      <?php if (($report['header']['status_draft'] ?? 1) == 0): ?>
+        <a href="<?= site_url('production_report/hpp/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+          <i class="fa fa-calculator me-1"></i> Laporan HPP &amp; Jurnal
+        </a>
+        <a href="<?= site_url('production_report/export_excel/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
+          <i class="fa fa-file-excel me-1"></i> Export Report
+        </a>
+      <?php endif; ?>
       <a href="<?= site_url('production_report'); ?>" class="btn btn-outline-secondary btn-sm">
         <i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar
       </a>
@@ -144,12 +152,15 @@
             <th class="text-end">Berat/Pcs (kg)</th>
             <th class="text-end">Std/Pcs (kg)</th>
             <th class="text-end">% Selisih</th>
+            <th class="text-end">Aktual Berat/m</th>
+            <th class="text-end">Std/m (BOM)</th>
+            <th class="text-end">% Selisih/m</th>
             <th>Keterangan</th>
           </tr>
         </thead>
         <tbody>
           <?php if (empty($report['items'])): ?>
-            <tr><td colspan="9" class="text-center text-muted py-3">Tidak ada data hasil produksi.</td></tr>
+            <tr><td colspan="12" class="text-center text-muted py-3">Tidak ada data hasil produksi.</td></tr>
           <?php else: ?>
             <?php foreach ($report['items'] as $it): ?>
               <?php
@@ -161,6 +172,9 @@
                 $berat_pcs = (float)($it['berat_per_pcs'] ?? 0);
                 $berat_std = (float)($it['berat_standard'] ?? $it['berat_standard_pcs'] ?? 0);
                 $selisih_pct = (float)($it['percentage_selisih'] ?? $it['selisih_persen'] ?? 0);
+                $berat_m_akt = (float)($it['berat_per_meter_aktual'] ?? 0);
+                $berat_m_std = (float)($it['berat_per_meter_standard'] ?? 0);
+                $selisih_m   = (float)($it['percentage_selisih_meter'] ?? 0);
               ?>
               <tr>
                 <td>
@@ -176,6 +190,11 @@
                 <td class="text-end"><?= number_format($berat_std, 2, ',', '.'); ?></td>
                 <td class="text-end <?= abs($selisih_pct) > 0.7 ? 'text-danger fw-bold' : 'text-success'; ?>">
                   <?= number_format($selisih_pct, 2, ',', '.'); ?> %
+                </td>
+                <td class="text-end"><?= $berat_m_akt > 0 ? number_format($berat_m_akt, 4, ',', '.') : '-'; ?></td>
+                <td class="text-end"><?= $berat_m_std > 0 ? number_format($berat_m_std, 4, ',', '.') : '-'; ?></td>
+                <td class="text-end <?= ($berat_m_std > 0 && abs($selisih_m) > 0.7) ? 'text-danger fw-bold' : 'text-success'; ?>">
+                  <?= $berat_m_std > 0 ? number_format($selisih_m, 2, ',', '.') . ' %' : '-'; ?>
                 </td>
                 <td><?= htmlspecialchars($it['keterangan'] ?? '-'); ?></td>
               </tr>
@@ -214,6 +233,64 @@
               <td><?= htmlspecialchars($sc_coil ?: '-'); ?></td>
               <td class="text-end fw-bold"><?= number_format($sc_berat, 2, ',', '.'); ?></td>
               <td><?= htmlspecialchars($sc['keterangan'] ?? '-'); ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <!-- Claim Material Card (FR-94) -->
+  <?php if (!empty($report['claims'])): ?>
+  <div class="pr-card mb-3">
+    <div class="pr-card-header d-flex justify-content-between align-items-center">
+      <h2 class="pr-card-title">Claim Material Yang Diajukan (FR-94)</h2>
+      <span class="badge bg-warning text-dark"><?= count($report['claims']); ?> Claim</span>
+    </div>
+    <div class="p-0 table-responsive">
+      <table class="tbl-custom">
+        <thead>
+          <tr>
+            <th>No. Claim</th>
+            <th>Asal</th>
+            <th>No. Coil PL</th>
+            <th>Nama Material</th>
+            <th>Supplier</th>
+            <th>No. PO</th>
+            <th class="text-end">Berat (kg)</th>
+            <th>Problem</th>
+            <th>Alasan Produksi</th>
+            <th>Bukti Pendukung</th>
+            <th>Status Claim</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($report['claims'] as $cl): ?>
+            <tr>
+              <td><strong><?= htmlspecialchars($cl['no_claim']); ?></strong></td>
+              <td><span class="badge <?= $cl['asal'] === 'Hold Coil' ? 'bg-danger' : ($cl['asal'] === 'KW 2 (Supplier)' ? 'bg-warning text-dark' : 'bg-dark'); ?>"><?= htmlspecialchars($cl['asal']); ?></span></td>
+              <td><?= htmlspecialchars($cl['no_coil_packing_list'] ?: '-'); ?></td>
+              <td><?= htmlspecialchars($cl['id_material'] ?: '-'); ?></td>
+              <td><?= htmlspecialchars($cl['id_suplier'] ?: '-'); ?></td>
+              <td><?= htmlspecialchars($cl['no_po'] ?: '-'); ?></td>
+              <td class="text-end fw-bold font-monospace"><?= number_format((float)$cl['berat_kg'], 2, ',', '.'); ?></td>
+              <td><?= htmlspecialchars($cl['problem'] ?: '-'); ?></td>
+              <td><?= htmlspecialchars($cl['alasan_produksi'] ?: '-'); ?></td>
+              <td>
+                <?php if (!empty($cl['bukti'])): ?>
+                  <?php foreach ($cl['bukti'] as $bk): ?>
+                    <div class="mb-1">
+                      <a href="<?= base_url('uploads/claim_material/' . $bk['file_hash_name']); ?>" target="_blank" class="badge bg-light text-primary border text-decoration-none">
+                        📎 <?= htmlspecialchars($bk['file_original_name']); ?>
+                      </a>
+                    </div>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <span class="text-muted small">-</span>
+                <?php endif; ?>
+              </td>
+              <td><span class="badge bg-info text-dark"><?= htmlspecialchars($cl['status_claim']); ?></span></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

@@ -113,4 +113,32 @@ class Stock_from_warehouse extends Admin_Controller
 
         $this->Stock_from_warehouse_model->get_history_for_export($date_filter, $kd_gudang);
     }
+
+    // ---------------------------------------------------------------
+    // AJAX — Kartu Pemakaian Material per Coil (WRH. Production 2)
+    // ---------------------------------------------------------------
+
+    public function ajax_kartu_pemakaian($id_coil = 0)
+    {
+        $this->auth->restrict($this->viewPermission);
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id_coil = (int) $id_coil;
+        if ($id_coil <= 0) {
+            echo json_encode(['status' => 0, 'message' => 'ID coil tidak valid.']);
+            return;
+        }
+
+        $result = $this->Stock_from_warehouse_model->get_coil_kartu_stok($id_coil);
+        if (!$result) {
+            echo json_encode(['status' => 0, 'message' => 'Data coil tidak ditemukan.']);
+            return;
+        }
+
+        echo json_encode([
+            'status' => 1,
+            'coil'   => $result['coil'],
+            'rows'   => $result['rows'],
+        ]);
+    }
 }

@@ -4,20 +4,20 @@ $ENABLE_MANAGE  = has_permission('PR_Departemen.Manage');
 $ENABLE_VIEW    = has_permission('PR_Departemen.View');
 $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 ?>
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css">
-<form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data" autocomplete='off'>
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title"><?php echo $title; ?></h3>
 
-		</div>
-		<!-- /.box-header -->
-		<div class="box-body table-responsive">
-			<input type='hidden' id='tanda' value='<?= $tanda; ?>'>
-			<table class="table table-bordered table-striped" id="my-grid" width='100%'>
-				<thead>
-					<tr class='bg-blue'>
-						<th class="text-center">#</th>
+<div class="card shadow-sm border-0 mb-4">
+	<div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+		<h5 class="card-title mb-0 fw-bold text-primary">
+			<i class="fa fa-user-check me-2"></i><?= $title; ?>
+		</h5>
+	</div>
+	<div class="card-body">
+		<input type="hidden" id="tanda" value="<?= $tanda; ?>">
+		<div class="table-responsive">
+			<table class="table table-bordered table-striped table-hover align-middle w-100" id="my-grid">
+				<thead class="table-primary text-center">
+					<tr>
+						<th class="text-center" width="4%">#</th>
 						<th class="text-center">No PR</th>
 						<th class="text-center">Departemen</th>
 						<th class="text-center no-sort">Keterangan</th>
@@ -25,39 +25,33 @@ $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 						<th class="text-center no-sort">Created Date</th>
 						<th class="text-center no-sort">Nama Pembuat PR</th>
 						<th class="text-center no-sort">Tgl Dibuat PR</th>
-						<th class="text-center no-sort">Tingkat PR</th>
-						<th class="text-center no-sort">Status</th>
-						<th class="text-center no-sort" width='13%'>Option</th>
+						<th class="text-center no-sort" width="10%">Tingkat PR</th>
+						<th class="text-center no-sort" width="12%">Status</th>
+						<th class="text-center no-sort text-nowrap" width="13%">Option</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
 			</table>
 		</div>
-		<!-- /.box-body -->
 	</div>
-	<!-- /.box -->
-	<!-- modal -->
-	<div class="modal fade" id="ModalView2" style='overflow-y: auto;'>
-		<div class="modal-dialog" style='width:80%; '>
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="head_title2"></h4>
-				</div>
-				<div class="modal-body" id="view2">
-				</div>
-				<div class="modal-footer">
-					<!--<button type="button" class="btn btn-primary">Save</button>-->
-					<button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
-				</div>
+</div>
+
+<!-- Modal View PR -->
+<div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title fw-bold" id="head_title2"><?= $title; ?></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="view2"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
-	<!-- modal -->
-</form>
+</div>
 
-<script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
 <script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
 <script>
 	$(document).ready(function() {
@@ -68,36 +62,38 @@ $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 	});
 
 	function DataTables(tanda = null) {
+		if ($.fn.DataTable.isDataTable('#my-grid')) {
+			$('#my-grid').DataTable().destroy();
+		}
 		var dataTable = $('#my-grid').DataTable({
-			"processing": true,
-			"serverSide": true,
-			"stateSave": true,
-			"bAutoWidth": true,
-			"destroy": true,
-			"responsive": true,
-			"aaSorting": [
+			processing: true,
+			serverSide: true,
+			stateSave: true,
+			destroy: true,
+			responsive: true,
+			aaSorting: [
 				[1, "asc"]
 			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
+			columnDefs: [{
+				targets: 'no-sort',
+				orderable: false,
 			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
+			iDisplayLength: 10,
+			aLengthMenu: [
 				[10, 20, 50, 100, 150],
 				[10, 20, 50, 100, 150]
 			],
-			"ajax": {
-				url: base_url + active_controller + '/server_side_non_rutin_approval_management',
+			ajax: {
+				url: base_url + active_controller + 'server_side_non_rutin_approval_management',
 				type: "post",
 				data: function(d) {
 					d.tanda = tanda
 				},
 				cache: false,
-				error: function() {
+				error: function(xhr, error, code) {
+					console.error("DataTables AJAX error:", error, code);
 					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
+					$("#my-grid tbody").html('<tr><td colspan="11" class="text-center text-muted py-4">No data found in the server</td></tr>');
 					$("#my-grid_processing").css("display", "none");
 				}
 			}

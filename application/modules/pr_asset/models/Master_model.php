@@ -284,13 +284,13 @@ class Master_model extends BF_Model {
 
 	function GetDeptCombo($id=''){
 		$aCombo		= array();
-		$this->db->select('a.id, a.nm_dept');
-		$this->db->from('department a');
+		$this->db->select('a.id, a.nama AS nm_dept');
+		$this->db->from('ms_department a');
 		if($id!=''){
 			$this->db->where('a.id',$id);
 		}
-		$this->db->where('a.deleted','N');
-		$this->db->order_by('a.nm_dept', 'asc');
+		$this->db->where('a.deleted_by', null);
+		$this->db->order_by('a.nama', 'asc');
 		$query = $this->db->get();
 		$results	= $query->result_array();
 		if($results){
@@ -340,10 +340,10 @@ class Master_model extends BF_Model {
 
 	function GetBudgetComboCategory($kategori='',$tahun='',$divisi=''){
 		$aMenu		= array();
-		$this->db->select('a.coa, b.no_perkiraan , b.nama as nama_perkiraan, c.nm_dept');
+		$this->db->select('a.coa, b.no_perkiraan , b.nama as nama_perkiraan, c.nama as nm_dept');
 		$this->db->from('ms_budget a');
 		$this->db->join(DBACC.'.coa_master b','a.coa=b.no_perkiraan');
-		$this->db->join('department c','a.divisi=c.id','left');
+		$this->db->join('ms_department c','a.divisi=c.id','left');
 		if($kategori!='') $this->db->where("a.kategori",$kategori);
 		$this->db->where("a.tahun",$tahun);
 		if($divisi!='') $this->db->where("a.divisi",$divisi);

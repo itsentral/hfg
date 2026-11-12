@@ -18,12 +18,20 @@ $url_search = 'search_import';
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-md-2 mt-3">
+        <div class="col-md-3 mt-3 d-flex align-items-center gap-2">
             <button type="button" class="btn btn-sm btn-primary btn-search-il"
                 data-target="<?= $cls_col ?>"
                 data-select="<?= $id_select ?>"
                 data-url="<?= $url_search ?>">
                 <i class="fa fa-search"></i> Cari
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary btn-reset-il"
+                data-target="<?= $cls_col ?>"
+                data-select="<?= $id_select ?>"
+                data-url="<?= $url_search ?>"
+                id="btn_reset_import"
+                style="display: none;">
+                <i class="fa fa-undo"></i> Reset
             </button>
         </div>
     </div>
@@ -118,6 +126,31 @@ $url_search = 'search_import';
     $(document).ready(function() {
         $('.<?= $cls_table ?>').DataTable();
         $('#<?= $id_select ?>').chosen();
+
+        $(document).on('change', '#<?= $id_select ?>', function() {
+            if ($(this).val()) {
+                $('#btn_reset_import').show();
+            } else {
+                $('#btn_reset_import').hide();
+            }
+        });
+
+        $(document).on('click', '#btn_reset_import', function() {
+            $('#<?= $id_select ?>').val('').trigger('chosen:updated').trigger('change');
+            $(this).hide();
+            $.ajax({
+                type: 'POST',
+                url: siteurl + active_controller + '<?= $url_search ?>',
+                data: {
+                    kode_supplier: ''
+                },
+                cache: false,
+                success: function(result) {
+                    $('.<?= $cls_col ?>').html(result);
+                },
+                error: showAjaxError
+            });
+        });
 
         // Bind handler for request payment
         $(document).off('click', '.btn-req-payment').on('click', '.btn-req-payment', function() {

@@ -120,15 +120,15 @@ class App_pr_stock_model extends BF_Model
         endif;
       }
 
-      $nestedData[]    = "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . $sts . "</span></div>";
-      // $nestedData[]  = "<div align='left'><span class='badge bg-" . $warna . "'>" . $status . "</span></div>";
+      $bs_badge = ($warna == 'green') ? 'bg-success' : (($warna == 'red') ? 'bg-danger' : 'bg-primary');
+      $nestedData[]    = "<div class='text-center'><span class='badge " . $bs_badge . " px-2 py-1'>" . $sts . "</span></div>";
 
       $approve  = "";
-      $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-warning' title='Detail PR' data-role='qtip'><i class='fa fa-eye'></i></a>";
+      $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-info text-white shadow-sm' title='Detail PR'><i class='fa fa-eye'></i></a>";
       if ($this->ENABLE_MANAGE and COUNT($getCheck) > 0) {
-        $approve  = "<a href='" . site_url($this->uri->segment(1)) . '/approval_planning/' . $row['so_number'] . "/" . $tingkat_approval . "' class='btn btn-sm btn-success' title='Approval PR' data-role='qtip'><i class='fa fa-check'></i></a>";
+        $approve  = "<a href='" . site_url($this->uri->segment(1)) . '/approval_planning/' . $row['so_number'] . "/" . $tingkat_approval . "' class='btn btn-sm btn-success shadow-sm' title='Approval PR'><i class='fa fa-check'></i></a>";
       }
-      $nestedData[]  = "<div align='left'>" . $view . " " . $approve . "</div>";
+      $nestedData[]  = "<div class='text-center d-flex gap-1 justify-content-center'>" . $view . " " . $approve . "</div>";
       $data[] = $nestedData;
       $urut1++;
       $urut2++;

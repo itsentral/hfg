@@ -105,8 +105,14 @@ class Accessories_category extends Admin_Controller
         $data = [
           'listData' => $listData
         ];
-        $this->template->set($data);
-        $this->template->render('add');
+
+        if ($this->input->is_ajax_request()) {
+            $this->load->view('add', $data);
+        } else {
+            $this->template->set($data);
+            $this->template->title(empty($id) ? 'Add Category Stok' : 'Edit Category Stok');
+            $this->template->render('add');
+        }
       }
     }
 

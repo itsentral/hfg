@@ -60,6 +60,7 @@
         .doc-header-wrapper {
             position: relative;
             margin-bottom: 20px;
+            min-height: 70px;
         }
 
         .doc-logo {
@@ -71,11 +72,34 @@
             width: auto;
         }
 
+        .doc-qr {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+        }
+
+        .doc-qr img {
+            width: 65px;
+            height: 65px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .doc-qr span {
+            font-size: 8px;
+            font-weight: bold;
+            display: block;
+            margin-top: 2px;
+        }
+
         .doc-title {
             font-size: 18px;
             font-weight: bold;
             text-align: center;
             padding: 14px 0 14px 0;
+            margin: 0 85px;
             border-top: 2px solid #111;
             border-bottom: 2px solid #111;
             letter-spacing: 0.5px;
@@ -422,9 +446,27 @@
         Print / Save PDF
     </button>
 
+    <?php
+    $qr_base64 = '';
+    if (file_exists(APPPATH . 'third_party/phpqrcode/qrlib.php')) {
+        require_once APPPATH . 'third_party/phpqrcode/qrlib.php';
+        ob_start();
+        QRcode::png($spk['spk_no'], null, QR_ECLEVEL_M, 3, 1);
+        $imageData = ob_get_contents();
+        ob_end_clean();
+        $qr_base64 = base64_encode($imageData);
+    }
+    ?>
+
     <div class="doc-header-wrapper">
         <img src="<?php echo base_url('assets/images/logohfg.png'); ?>" alt="Logo" class="doc-logo">
         <div class="doc-title">SPK PRODUKSI & MATERIAL</div>
+        <?php if (!empty($qr_base64)): ?>
+            <div class="doc-qr">
+                <img src="data:image/png;base64,<?= $qr_base64 ?>" alt="QR SPK">
+                <span><?= htmlspecialchars($spk['spk_no']) ?></span>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="info-container">
@@ -471,19 +513,18 @@
 
     <?php if (!empty($details)): ?>
         <?php foreach ($details as $idx => $detail): ?>
-
             <div class="product-group">
 
                 <div class="section-header">
-                    <?php echo ($idx + 1) . '. ' . $detail['nm_produk_fg']; ?>
+                    <?php echo ($idx + 1) . '. ' . htmlspecialchars($detail['nm_produk_fg']); ?>
                 </div>
 
                 <table class="product-info-table">
                     <tr>
-                        <td class="product-info-label">Target Qty</td>
-                        <td class="product-info-value"><strong><?php echo number_format($detail['target_qty']); ?></strong></td>
-                        <td class="product-info-label">Total Weight</td>
-                        <td class="product-info-value"><strong><?php echo number_format($detail['total_weight'], 2); ?> Kg</strong></td>
+                        <td class="product-info-label" width="18%">Target Qty</td>
+                        <td class="product-info-value" width="32%"><strong><?php echo number_format($detail['target_qty']); ?> Pcs</strong></td>
+                        <td class="product-info-label" width="18%">Total Weight</td>
+                        <td class="product-info-value" width="32%"><strong><?php echo number_format($detail['total_weight'], 2); ?> Kg</strong></td>
                     </tr>
                 </table>
             </div>

@@ -6,11 +6,6 @@ $ENABLE_DELETE  = has_permission('Closed_PR.Delete');
 ?>
 
 <div class="card shadow-sm border-0">
-	<div class="card-header">
-		<h5 class="mb-0">Closed Purchase Request</h5>
-	</div>
-	<!-- /.card-header -->
-
 	<div class="card-body">
 		<div class="table-responsive">
 			<table id="example1" class="table table-bordered table-striped" width="100%">

@@ -59,7 +59,7 @@ class Budget_periodik_model extends BF_Model
 	// list data
 	public function GetBudgetRutinGroup($key = '')
 	{
-		$sql = "select a.departement from " . $this->table_name . " a  ";
+		$sql = "select a.departement, count(a.id) as total_item, sum(a.nilai) as total_nilai from " . $this->table_name . " a ";
 		if ($key != '') $sql .= " where a.departement='" . $key . "' ";
 		$sql .= " group by a.departement ";
 		$query = $this->db->query($sql);
@@ -71,9 +71,9 @@ class Budget_periodik_model extends BF_Model
 	}
 	public function GetBudgetRutin($key = '')
 	{
-		$this->db->select('a.*, b.nm_dept, c.nama as nama_perkiraan');
+		$this->db->select('a.*, b.nama as nm_dept, c.nama as nama_perkiraan');
 		$this->db->from($this->table_name . ' a');
-		$this->db->join('department b', 'a.departement=b.id', 'left');
+		$this->db->join('ms_department b', 'a.departement=b.id', 'left');
 		$this->db->join(DBACC . '.coa_master  c', 'a.coa=c.no_perkiraan', 'left');
 		if ($key != '') $this->db->where('a.departement', $key);
 		$this->db->order_by('a.coa asc,a.nama');
@@ -86,9 +86,9 @@ class Budget_periodik_model extends BF_Model
 	}
 	public function GetNewBudgetRutin($divisi)
 	{
-		$this->db->select('a.*, b.nm_dept, c.nama as nama_perkiraan');
+		$this->db->select('a.*, b.nama as nm_dept, c.nama as nama_perkiraan');
 		$this->db->from($this->table_name . ' a');
-		$this->db->join('department b', 'a.departement=b.id', 'left');
+		$this->db->join('ms_department b', 'a.departement=b.id', 'left');
 		$this->db->join(DBACC . '.coa_master c', 'a.coa=c.no_perkiraan', 'left');
 		if ($divisi != '') $this->db->where('a.departement', $divisi);
 		$this->db->order_by('a.coa', 'asc');

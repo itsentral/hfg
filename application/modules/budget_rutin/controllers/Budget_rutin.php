@@ -72,6 +72,35 @@ class Budget_rutin extends Admin_Controller
         $this->template->render('kompilasi');
     }
 
+        public function view($id)
+    {
+        $data  = $this->Budget_rutin_model->find_by(array('code_budget' => $id));
+        if (!$data) {
+            $this->template->set_message("Invalid Budget Stock", 'error');
+            redirect('budget_rutin');
+        }
+
+        $this->db->select('a.jenis_barang as id_jenis, b.nm_category as nm_jenis');
+        $this->db->from('budget_rutin_detail a');
+        $this->db->join('accessories_category b', 'b.id = a.jenis_barang');
+        $this->db->where('a.code_budget', $id);
+        $this->db->group_by('a.jenis_barang');
+        $data_jenis = $this->db->get()->result();
+
+        $data_detail  = $this->Budget_rutin_model->GetBudgetRutinDetail($data->code_budget);
+        $datdepartemen  = $this->All_model->GetWarehouseStok();
+        $datcostcenter  = [];
+        $this->template->set('id', $id);
+        $this->template->set('data', $data);
+        $this->template->set('data_detail', $data_detail);
+        $this->template->set('datcostcenter', $datcostcenter);
+        $this->template->set('datdepartemen', $datdepartemen);
+        $this->template->set('data_jenis', $data_jenis);
+        $this->template->set('is_view', true);
+        $this->template->title('Detail Budget Stock');
+        $this->template->render('budget_rutin_form');
+    }
+
     public function edit($id)
     {
         $data  = $this->Budget_rutin_model->find_by(array('code_budget' => $id));

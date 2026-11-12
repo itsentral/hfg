@@ -59,9 +59,11 @@ class Pengajuan_rutin_model extends BF_Model
 	// list data
 	public function GetPengajuanRutin($where = '')
 	{
-		$this->db->select('a.*');
+		$this->db->select('a.*, IFNULL(SUM(b.nilai), a.nilai_total) as total_nilai');
 		$this->db->from($this->table_name . ' a');
+		$this->db->join('tr_pengajuan_rutin_detail b', 'b.no_doc = a.no_doc', 'left');
 		if ($where != '') $this->db->where($where);
+		$this->db->group_by('a.id');
 		$this->db->order_by('a.no_doc', 'desc');
 		$query = $this->db->get();
 		if ($query->num_rows() != 0) {

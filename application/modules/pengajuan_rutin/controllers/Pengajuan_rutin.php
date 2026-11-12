@@ -21,7 +21,6 @@ class Pengajuan_rutin extends Admin_Controller
 	protected $managePermission = 'Pengajuan_Pembayaran_Rutin.Manage';
 	protected $deletePermission = 'Pengajuan_Pembayaran_Rutin.Delete';
 
-	protected $hris;
 	protected $waktu;
 
 	public function __construct()
@@ -32,8 +31,6 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->page_icon('fa fa-cubes');
 		date_default_timezone_set('Asia/Bangkok');
 		$this->waktu = array("bulan" => "bulan", "tahun" => "tahun");
-
-		$this->hris = $this->load->database('hris', true);
 	}
 
 	public function index()
@@ -51,17 +48,14 @@ class Pengajuan_rutin extends Admin_Controller
 		// $this->db->group_by('a.no_doc');
 		// $data = $this->db->get()->result();
 
-		$this->hris->select('a.id, a.name as nm_dept, b.name as nm_comp');
-		$this->hris->from('departments a');
-		$this->hris->join('companies b', 'b.id = a.company_id', 'left');
-		$get_departments = $this->hris->get()->result();
+		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result();
 
 		$arr_dept = [];
 		foreach ($get_departments as $item) {
 			$arr_dept[$item->id] = [
 				'id' => $item->id,
-				'nm_dept' => $item->nm_dept,
-				'nm_comp' => $item->nm_comp
+				'nm_dept' => $item->nama,
+				'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
 			];
 		}
 
@@ -85,14 +79,10 @@ class Pengajuan_rutin extends Admin_Controller
 		$datdept  = $this->All_model->GetDeptCombo();
 
 		$arr_dept = [];
-
-		$this->hris->select('a.id, a.name as nm_dept, b.name as nm_comp');
-		$this->hris->from('departments a');
-		$this->hris->join('companies b', 'b.id = a.company_id', 'left');
-		$get_dept = $this->hris->get()->result();
+		$get_dept = $this->db->get_where('ms_department', ['deleted_by' => null])->result();
 
 		foreach ($get_dept as $item_dept) {
-			$arr_dept[$item_dept->id] = $item_dept->nm_dept . ' - ' . $item_dept->nm_comp;
+			$arr_dept[$item_dept->id] = $item_dept->nama;
 		}
 
 		$this->template->set('arr_dept', $arr_dept);
@@ -110,6 +100,9 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->title('Input Pengajuan Pembayaran Periodik');
 		$this->template->set('type', 'add');
 		$this->template->set('app', '');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('input_form');
 	}
 
@@ -128,6 +121,9 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->set('app', '');
 		$this->template->set('data_detail', $data_detail);
 		$this->template->title('Edit Pengajuan Pembayaran Rutin');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('input_form');
 	}
 
@@ -146,6 +142,9 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->set('app', $app);
 		$this->template->set('data_detail', $data_detail);
 		$this->template->title('View Pengajuan Pembayaran Rutin');
+		if ($this->input->is_ajax_request()) {
+			$this->template->set_layout(FALSE);
+		}
 		$this->template->render('input_form');
 	}
 
@@ -383,6 +382,112 @@ class Pengajuan_rutin extends Admin_Controller
 		echo json_encode($param);
 	}
 
+	public function get_data_app_list()
+	{
+		$post   = $this->input->post();
+		if (empty($post)) {
+			$post = $this->input->get();
+		}
+		$draw   = isset($post['draw'])   ? (int)$post['draw']   : 1;
+		$length = isset($post['length']) ? (int)$post['length'] : 10;
+		$start  = isset($post['start'])  ? (int)$post['start']  : 0;
+		$search = isset($post['search']['value']) ? trim($post['search']['value']) : '';
+
+		$column_order = [
+			0 => '',
+			1 => 'a.no_doc',
+			2 => 'a.departement',
+			3 => 'a.tanggal_doc',
+			4 => 'total_nilai',
+			5 => 'a.status'
+		];
+
+		// Count total
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
+		$this->db->from('tr_pengajuan_rutin a');
+		$this->db->where('a.status', 0);
+		$this->db->where('a.sts_reject', null);
+		$count_all = (int)$this->db->get()->row()->cnt;
+
+		// Count filtered
+		$this->db->select('COUNT(DISTINCT a.id) as cnt');
+		$this->db->from('tr_pengajuan_rutin a');
+		$this->db->where('a.status', 0);
+		$this->db->where('a.sts_reject', null);
+		if ($search !== '') {
+			$this->db->group_start();
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tanggal_doc', $search);
+			$this->db->group_end();
+		}
+		$count_filtered = (int)$this->db->get()->row()->cnt;
+
+		// Actual rows
+		$this->db->select('a.*, IFNULL(SUM(b.nilai), a.nilai_total) as total_nilai');
+		$this->db->from('tr_pengajuan_rutin a');
+		$this->db->join('tr_pengajuan_rutin_detail b', 'b.no_doc = a.no_doc', 'left');
+		$this->db->where('a.status', 0);
+		$this->db->where('a.sts_reject', null);
+		if ($search !== '') {
+			$this->db->group_start();
+			$this->db->like('a.no_doc', $search);
+			$this->db->or_like('a.tanggal_doc', $search);
+			$this->db->group_end();
+		}
+		$this->db->group_by('a.id');
+
+		if (isset($post['order'][0]['column']) && isset($column_order[$post['order'][0]['column']]) && !empty($column_order[$post['order'][0]['column']])) {
+			$col_idx = (int)$post['order'][0]['column'];
+			$col_dir = strtolower($post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$this->db->order_by($column_order[$col_idx], $col_dir);
+		} else {
+			$this->db->order_by('a.no_doc', 'desc');
+		}
+
+		$this->db->limit($length > 0 ? $length : 10, $start);
+		$rows = $this->db->get()->result();
+
+		$get_dept = $this->db->get_where('ms_department', ['deleted_by' => null])->result();
+		$arr_dept = [];
+		foreach ($get_dept as $d) {
+			$arr_dept[$d->id] = $d->nama;
+		}
+
+		$ENABLE_VIEW   = has_permission('Approval_Pengajuan_Pembayaran_Rutin.View');
+		$ENABLE_MANAGE = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Manage');
+
+		$data = [];
+		$no = $start + 1;
+		foreach ($rows as $record) {
+			$nm_department = isset($arr_dept[$record->departement]) ? $arr_dept[$record->departement] : '-';
+			$action = '<div class="btn-group btn-group-sm" role="group">';
+			if ($ENABLE_VIEW) {
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" title="Lihat Detail" data-id="' . $record->id . '"><i class="fa fa-eye"></i></a> ';
+			}
+			if ($record->status == 0 && $ENABLE_MANAGE) {
+				$action .= '<a class="btn btn-success btn-sm approve" href="javascript:void(0)" title="Persetujuan / Approve" data-id="' . $record->id . '"><i class="fa fa-check"></i></a>';
+			}
+			$action .= '</div>';
+
+			$data[] = [
+				'no'          => $no++,
+				'no_doc'      => '<span class="fw-semibold text-primary">' . htmlspecialchars($record->no_doc) . '</span>',
+				'departemen'  => '<span class="fw-medium text-dark">' . strtoupper(htmlspecialchars($nm_department)) . '</span>',
+				'tanggal_doc' => date('d F Y', strtotime($record->tanggal_doc)),
+				'total_nilai' => '<span class="fw-bold text-end d-block">Rp ' . number_format($record->total_nilai, 0, ',', '.') . '</span>',
+				'status'      => '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval</span>',
+				'action'      => $action,
+			];
+		}
+
+		echo json_encode([
+			'draw'            => $draw,
+			'recordsTotal'    => $count_all,
+			'recordsFiltered' => $count_filtered,
+			'data'            => $data,
+		]);
+	}
+
 	// approve
 	public function approve($id = '')
 	{
@@ -491,26 +596,22 @@ class Pengajuan_rutin extends Admin_Controller
 
 			$no++;
 
-			$this->hris->select('a.id, a.name as nm_dept, b.name as nm_comp');
-			$this->hris->from('departments a');
-			$this->hris->join('companies b', 'b.id = a.company_id', 'left');
-			$this->hris->where('a.id', $item->departement);
-			$get_departments = $this->hris->get()->row();
+			$get_departments = $this->db->get_where('ms_department', ['id' => $item->departement])->row();
 
-			$nm_dept = (!empty($get_departments->nm_dept)) ? $get_departments->nm_dept : '';
+			$nm_dept = (!empty($get_departments->nama)) ? $get_departments->nama : '';
 
-			$nm_comp = (!empty($get_departments->nm_comp)) ? $get_departments->nm_comp : '';
+			$nm_comp = 'PT HARAPAN FAJAR GEMILANG';
 
 			$status = '';
 
 			if ($item->sts_reject == '1') {
-				$status = '<div class="badge bg-red">Reject</div>';
+				$status = '<div class="badge bg-danger">Reject</div>';
 			} else {
 				if ($item->status == '1') {
-					$status = '<div class="badge bg-green">Approved</div>';
+					$status = '<div class="badge bg-success">Approved</div>';
 				} else {
 					if ($item->status == '2') {
-						$status = '<div class="badge bg-blue">Diproses Finance</div>';
+						$status = '<div class="badge bg-primary">Diproses Finance</div>';
 
 						$this->db->select('a.id');
 						$this->db->from('payment_approve a');
@@ -518,10 +619,10 @@ class Pengajuan_rutin extends Admin_Controller
 						$count_payment_periodik = $this->db->get()->num_rows();
 
 						if ($count_payment_periodik > 0) {
-							$status = '<div class="badge bg-green">Paid</div>';
+							$status = '<div class="badge bg-success">Paid</div>';
 						}
 					} else {
-						$status = '<div class="badge bg-yellow">Waiting Approval</div>';
+						$status = '<div class="badge bg-warning">Waiting Approval</div>';
 					}
 				}
 			}

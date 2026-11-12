@@ -3,7 +3,7 @@ $id 		= (!empty($listData[0]->id)) ? $listData[0]->id : '';
 $code_lv4 	= (!empty($listData[0]->code_lv4)) ? $listData[0]->code_lv4 : '';
 $nama 		= (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
 $status_app = (!empty($listData[0]->status_app)) ? $listData[0]->status_app : '';
-$kurs 		= (!empty($listData[0]->kurs)) ? $listData[0]->kurs : '';
+$kurs 		= (!empty($listData[0]->kurs) && (float)$listData[0]->kurs > 0) ? $listData[0]->kurs : (!empty($default_kurs) ? $default_kurs : 17863);
 
 $price_ref 			= (!empty($listData[0]->price_ref)) ? $listData[0]->price_ref : '';
 $price_ref_high 	= (!empty($listData[0]->price_ref_high)) ? $listData[0]->price_ref_high : '';

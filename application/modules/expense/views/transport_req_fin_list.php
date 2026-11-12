@@ -4,129 +4,177 @@ $ENABLE_MANAGE  = has_permission('Pengajuan_Transportasi_Approval.Manage');
 $ENABLE_VIEW    = has_permission('Pengajuan_Transportasi_Approval.View');
 $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
 ?>
-<div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
-<div class="box">
-	<div class="box-body">
-		<div class="table-responsive">
-			<table id="mytabledata" class="table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th width="5">#</th>
-						<th>No</th>
-						<th>Tanggal</th>
-						<th>Nama</th>
-						<th>Status</th>
-						<th width="120">Action</th>
-					</tr>
-				</thead>
-				<tbody>
 
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<!-- /.box-body -->
+<div id="alert_edit" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;"></div>
+
+<div class="card shadow-sm border-0 mb-4" id="card-list">
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center">
+            <div class="avatar avatar-sm bg-light-primary text-primary me-2 rounded-2 d-flex align-items-center justify-content-center p-2">
+                <i class="fa fa-money-check-alt fs-5"></i>
+            </div>
+            <div>
+                <h5 class="card-title mb-0 fw-bold text-dark">Pengecekan Finance Penggantian Transport</h5>
+                <small class="text-muted">Daftar pengajuan transport yang menunggu verifikasi dan persetujuan finance</small>
+            </div>
+        </div>
+        <div>
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">
+                <i class="fa fa-clock me-1"></i>Menunggu Approval Finance
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table id="mytabledata" class="table table-hover table-striped align-middle border w-100">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th width="4%" class="text-center">#</th>
+                        <th class="text-center">No Dokumen</th>
+                        <th class="text-center">Tanggal</th>
+                        <th class="text-center">Nama Karyawan</th>
+                        <th class="text-end">Total Pengajuan</th>
+                        <th class="text-center" width="16%">Status</th>
+                        <th class="text-center no-sort" width="120">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<div id="form-data"></div>
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
-<!-- page script -->
+
+<!-- Dynamic Form Container for View & Edit/Approve -->
+<div id="form-data" style="display: none;"></div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script type="text/javascript">
-	var url_view = siteurl + 'expense/transport_req_view/';
-	var url_approve = siteurl + 'expense/transport_req_approve/';
+    var url_view    = siteurl + 'expense/transport_req_view/';
+    var url_edit    = siteurl + 'expense/transport_req_edit/';
+    var datatables;
 
-	datatables();
+    $(document).ready(function() {
+        initDataTable();
 
-	function data_approve(id) {
-		swal({
-				title: "Anda Yakin?",
-				text: "Data Akan Disetujui!",
-				type: "info",
-				showCancelButton: true,
-				confirmButtonText: "Ya, setuju!",
-				cancelButtonText: "Tidak!",
-				closeOnConfirm: false,
-				closeOnCancel: true
-			},
-			function(isConfirm) {
-				if (isConfirm) {
-					$.ajax({
-						url: url_approve + id + '/1',
-						dataType: "json",
-						type: 'POST',
-						success: function(msg) {
-							if (msg['save'] == '1') {
-								swal({
-									title: "Sukses!",
-									text: "Data Berhasil Di Setujui",
-									type: "success",
-									timer: 1500,
-									showConfirmButton: false
-								});
-								window.location.reload();
-							} else {
-								swal({
-									title: "Gagal!",
-									text: "Data Gagal Di Setujui",
-									type: "error",
-									timer: 1500,
-									showConfirmButton: false
-								});
-							};
-							console.log(msg);
-						},
-						error: function(msg) {
-							swal({
-								title: "Gagal!",
-								text: "Ajax Data Gagal Di Proses",
-								type: "error",
-								timer: 1500,
-								showConfirmButton: false
-							});
-							console.log(msg);
-						}
-					});
-				}
-			});
-	}
+        // SPA Form View Click
+        $(document).on('click', '#mytabledata .view', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            if (id) {
+                data_view(id);
+            } else {
+                window.location.href = $(this).attr('href');
+            }
+        });
 
-	function datatables() {
-		var datatables = $('#mytabledata').dataTable({
-			serverSide: true,
-			processing: true,
-			stateSave: true,
-			paging: true,
-			destroy: true,
-			ajax: {
-				type: 'post',
-				url: siteurl + active_controller + 'get_data_transport_req_fin_list',
-				cache: false,
-				dataType: 'json',
-				data: function(d) {
+        // SPA Form Approve Click
+        $(document).on('click', '#mytabledata .approve', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            if (id) {
+                data_edit(id);
+            } else {
+                window.location.href = $(this).attr('href');
+            }
+        });
+    });
 
-				}
-			},
-			columns: [{
-					data: 'no'
-				},
-				{
-					data: 'no_transport'
-				},
-				{
-					data: 'tanggal'
-				},
-				{
-					data: 'nama'
-				},
-				{
-					data: 'status'
-				},
-				{
-					data: 'action'
-				}
-			]
-		})
-	}
+    function initDataTable() {
+        if ($.fn.DataTable.isDataTable('#mytabledata')) {
+            $('#mytabledata').DataTable().destroy();
+        }
+
+        datatables = $('#mytabledata').DataTable({
+            serverSide: true,
+            processing: true,
+            stateSave: true,
+            paging: true,
+            order: [[1, 'desc']],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Cari no dokumen, nama...",
+                lengthMenu: "_MENU_ data per halaman",
+                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 data",
+                emptyTable: "Tidak ada data pengajuan transport yang menunggu approval",
+                zeroRecords: "Tidak ada data yang cocok",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+            },
+            ajax: {
+                type: 'POST',
+                url: siteurl + active_controller + 'get_data_transport_req_fin_list',
+                cache: false,
+                dataType: 'json',
+                error: function(xhr, status, error) {
+                    console.error("DataTable AJAX error: " + status + ": " + error);
+                }
+            },
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }],
+            columns: [
+                { data: 'no', className: 'text-center' },
+                { data: 'no_transport', className: 'text-center' },
+                { data: 'tanggal', className: 'text-center' },
+                { data: 'nama', className: 'fw-medium' },
+                { data: 'total', className: 'text-end' },
+                { data: 'status', className: 'text-center' },
+                { data: 'action', className: 'text-center', orderable: false, searchable: false }
+            ]
+        });
+    }
+
+    function list_view() {
+        $('#form-data').hide().empty();
+        $('#card-list, .box').fadeIn(200);
+        if (datatables) {
+            datatables.ajax.reload(null, false);
+        }
+    }
+
+    function data_view(id) {
+        if (id != "") {
+            $('#card-list, .box').hide();
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian pengajuan transport...</div></div>');
+            $('#form-data').load(url_view + id + '/_fin', function(response, status, xhr) {
+                if (status == "error") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                    });
+                    list_view();
+                } else {
+                    if (typeof initTransportReqForm === 'function') {
+                        initTransportReqForm();
+                    }
+                }
+            });
+        }
+    }
+
+    function data_edit(id) {
+        if (id != "") {
+            $('#card-list, .box').hide();
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Memuat form verifikasi finance...</div></div>');
+            $('#form-data').load(url_edit + id + '/_fin', function(response, status, xhr) {
+                if (status == "error") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal memuat form verifikasi: " + xhr.status + " " + xhr.statusText
+                    });
+                    list_view();
+                } else {
+                    if (typeof initTransportReqForm === 'function') {
+                        initTransportReqForm();
+                    }
+                }
+            });
+        }
+    }
 </script>
-<script src="<?= base_url('assets/js/basic.js') ?>"></script>

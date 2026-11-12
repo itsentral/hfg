@@ -8,22 +8,40 @@ class Master_forwarding_cost_model extends CI_Model
         $this->table_name = 'master_forwarding_cost';
     }
 
-    public function get_data($id = null)
+    public function get_data($id = null, $tipe = null)
     {
         $this->db->where('is_delete', '0');
         if ($id) {
             $this->db->where('id', $id);
             return $this->db->get($this->table_name)->row();
         }
+        if ($tipe) {
+            $this->db->where('tipe', strtolower($tipe));
+            return $this->db->get($this->table_name)->row();
+        }
+        $this->db->order_by('tipe', 'ASC');
         return $this->db->get($this->table_name)->result();
     }
 
-    public function get_active_cost()
+    public function get_active_cost($tipe = 'import')
     {
         $this->db->where('is_delete', '0');
+        if (!empty($tipe)) {
+            $this->db->where('tipe', strtolower($tipe));
+        }
         $this->db->limit(1);
         $result = $this->db->get($this->table_name)->row();
-        return $result ? $result->value_cost : 0;
+        return $result ? (float) $result->value_cost : 0;
+    }
+
+    public function check_existing_tipe($tipe, $exclude_id = null)
+    {
+        $this->db->where('is_delete', '0');
+        $this->db->where('tipe', strtolower($tipe));
+        if ($exclude_id) {
+            $this->db->where('id !=', $exclude_id);
+        }
+        return $this->db->get($this->table_name)->num_rows() > 0;
     }
 
     public function save_data($data, $id = null)

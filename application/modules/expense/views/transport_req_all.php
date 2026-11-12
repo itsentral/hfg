@@ -1,148 +1,135 @@
 <?php
 $ENABLE_ADD     = has_permission('List_Transportasi.Add');
 $ENABLE_MANAGE  = has_permission('List_Transportasi.Manage');
-$ENABLE_VIEW    = has_permission('List_Transportasi.View');
+$ENABLE_VIEW    = has_permission('List_Transportasi.View') || has_permission('Pengajuan_Transportasi.View') || $this->auth->is_admin();
 $ENABLE_DELETE  = has_permission('List_Transportasi.Delete');
 ?>
-<div id="alert_edit" class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css') ?>">
-<div class="box">
-	<div class="box-body">
+
+<div id="alert_edit" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;"></div>
+
+<!-- Main Card List -->
+<div class="card shadow-sm border-0 mb-4" id="card-list">
+	<div class="card-header bg-transparent py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+		<div class="d-flex align-items-center">
+			<div class="avatar avatar-sm bg-light-primary text-primary me-2 rounded-2 d-flex align-items-center justify-content-center p-2">
+				<i class="fa fa-list-check fs-5"></i>
+			</div>
+			<div>
+				<h5 class="card-title mb-0 fw-bold text-dark">Monitoring Seluruh Pengajuan Transport</h5>
+				<small class="text-muted">Rekapitulasi dan pemantauan status pengajuan penggantian biaya transport seluruh departemen</small>
+			</div>
+		</div>
+		<div class="d-flex gap-2">
+			<a href="<?= base_url('expense/transport_req'); ?>" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm">
+				<i class="fa fa-folder-open"></i>
+				<span>Pengajuan Saya</span>
+			</a>
+		</div>
+	</div>
+	<!-- /.card-header -->
+	<div class="card-body">
 		<div class="table-responsive">
-			<table id="mytabledata" class="table table-bordered table-striped">
-				<thead>
+			<table id="mytabledata" class="table table-hover table-striped align-middle dt-responsive w-100">
+				<thead class="table-light">
 					<tr>
-						<th width="5">#</th>
-						<th>No</th>
+						<th width="40" class="text-center">#</th>
+						<th>No. Dokumen</th>
 						<th>Tanggal</th>
-						<th>Nama</th>
-						<th>Approval Date</th>
-						<th>Total Transport</th>
-						<th>Status</th>
-						<th width="120">Action</th>
+						<th>Nama Karyawan</th>
+						<th>Departemen</th>
+						<th>Tgl Disetujui</th>
+						<th class="text-end">Total Biaya</th>
+						<th class="text-center">Status</th>
+						<th width="110" class="text-center">Aksi</th>
 					</tr>
 				</thead>
 				<tbody>
-
 				</tbody>
 			</table>
 		</div>
-
-		<!-- <h3>Detail Transport</h3>
-		<div class="table-responsive">
-			<table id="mytabledata2" class="table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th width="5">#</th>
-						<th>No Dokumen</th>
-						<th>Tanggal</th>
-						<th>Pemohon</th>
-						<th>Keperluan</th>
-						<th>Tanggal Transaksi</th>
-						<th>Total Transport</th>
-						<th>Status</th>
-						<th>Tanggal ACC</th>
-						<th width="120">Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					if (!empty($data_detail)) {
-						$numb = 0;
-						foreach ($data_detail as $record) {
-							$numb++; ?>
-							<tr>
-								<td><?= $numb; ?></td>
-								<td><?= $record->no_doc ?></td>
-								<td><?= $record->tgl_doc ?></td>
-								<td><?= $record->nmuser ?></td>
-								<td><?= $record->keperluan ?></td>
-								<td><?= $record->tgl_trans ?></td>
-								<td class="text-right"><?= number_format($record->jumlah_expense) ?></td>
-								<td><?= $status[$record->status] ?></td>
-								<td><?= $record->approved_on ?></td>
-								<td>
-									<?php if ($ENABLE_VIEW) : ?>
-										<a class="btn btn-warning btn-sm view" href="<?= base_url('expense/transport_req_view/' . $record->id . '/_all') ?>" title="View"><i class="fa fa-eye"></i></a>
-									<?php endif; ?>
-								</td>
-							</tr>
-					<?php
-						}
-					}  ?>
-				</tbody>
-			</table>
-		</div> -->
-
 	</div>
-	<!-- /.box-body -->
+	<!-- /.card-body -->
 </div>
-<div id="form-data"></div>
-<!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js') ?>"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<!-- page script -->
+
+<!-- Dynamic Form / Detail Container -->
+<div id="form-data" style="display: none;"></div>
+
 <script type="text/javascript">
-	var url_add = siteurl + 'expense/transport_req_create/';
-	var url_edit = siteurl + 'expense/transport_req_edit/';
-	var url_delete = siteurl + 'expense/transport_req_delete/';
 	var url_view = siteurl + 'expense/transport_req_view/';
-	$("#mytabledata2").DataTable({
-		dom: "<'row'<'col-sm-2'B><'col-sm-4'l><'col-sm-6'f>>rtip",
-		buttons: [
-			'excel'
-		]
-	});
+	var datatables;
 
 	$(document).ready(function() {
 		DataTables();
 	});
 
 	function DataTables() {
-		var DataTables = $('#mytabledata').dataTable({
+		if ($.fn.DataTable.isDataTable('#mytabledata')) {
+			$('#mytabledata').DataTable().destroy();
+		}
+
+		datatables = $('#mytabledata').DataTable({
 			serverSide: true,
 			processing: true,
 			stateSave: true,
 			paging: true,
 			destroy: true,
+			language: {
+				search: "_INPUT_",
+				searchPlaceholder: "Cari no dokumen, karyawan, departemen...",
+				lengthMenu: "_MENU_ data per halaman",
+				info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+				infoEmpty: "Menampilkan 0 data",
+				emptyTable: "Tidak ada data pengajuan transport yang ditemukan",
+				zeroRecords: "Tidak ada data yang cocok",
+				processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+			},
 			ajax: {
 				type: 'post',
 				url: siteurl + active_controller + 'get_data_transport_req_all',
 				cache: false,
 				dataType: 'json'
 			},
-			columns: [{
-					data: 'no'
-				},
-				{
-					data: 'no_doc'
-				},
-				{
-					data: 'tanggal'
-				},
-				{
-					data: 'nama'
-				},
-				{
-					data: 'approval_date'
-				},
-				{
-					data: 'total_transport'
-				},
-				{
-					data: 'status'
-				},
-				{
-					data: 'action'
-				}
-			]
+			columns: [
+				{ data: 'no', className: 'text-center' },
+				{ data: 'no_doc', className: 'fw-semibold' },
+				{ data: 'tanggal' },
+				{ data: 'nama', className: 'fw-medium' },
+				{ data: 'department' },
+				{ data: 'approval_date' },
+				{ data: 'total_transport', className: 'text-end' },
+				{ data: 'status', className: 'text-center' },
+				{ data: 'action', className: 'text-center', orderable: false, searchable: false }
+			],
+			order: [[0, 'desc']]
 		});
 	}
+
+	function list_view() {
+		$('#form-data').hide().empty();
+		$('#card-list, .box').fadeIn(200);
+		if (datatables) {
+			datatables.ajax.reload(null, false);
+		}
+	}
+
+	function data_view(id) {
+		if (id != "") {
+			$('#card-list, .box').hide();
+			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat detail pengajuan...</div></div>');
+			$('#form-data').load(url_view + id + '/_all', function(response, status, xhr) {
+				if (status == "error") {
+					swal({
+						title: "Error!",
+						text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText,
+						type: "error"
+					});
+					list_view();
+				} else {
+					if (typeof initTransportReqForm === 'function') {
+						initTransportReqForm();
+					}
+				}
+			});
+		}
+	}
 </script>
-<script src="<?= base_url('assets/js/basic.js') ?>"></script>

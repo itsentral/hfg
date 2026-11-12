@@ -74,6 +74,7 @@ class Budget_coa extends Admin_Controller
 		//        $this->template->set('datadept',$datadept);
 		$this->template->set('type', 'edit');
 		$this->template->set('data', $data);
+		$this->template->set('tahun', $tahun);
 		$this->template->title('Detail Budget');
 		$this->template->render('budget_detail_form');
 	}
@@ -111,6 +112,7 @@ class Budget_coa extends Admin_Controller
 		$this->template->set('datadept', $datadept);
 		$this->template->set('type', 'edit');
 		$this->template->set('data', $data);
+		$this->template->set('tahun', $tahun);
 		$this->template->title('Edit Budget');
 		$this->template->render('budget_form');
 	}
@@ -147,8 +149,8 @@ class Budget_coa extends Admin_Controller
 					$divisi = (!empty($divisi[$x])) ? $divisi[$x] : 0;
 					$kategori = (!empty($kategori[$x])) ? $kategori[$x] : 0;
 					$definisi = (!empty($definisi[$x])) ? $definisi[$x] : 0;
-					$finance_tahunn = (!empty($finance_tahun[$x])) ? $finance_tahun[$x] : 0;
-					$finance_bulann = (!empty($finance_bulan[$x])) ? $finance_bulan[$x] : 0;
+					$finance_tahunn = (!empty($finance_tahun[$x])) ? str_replace(',', '', str_replace('.', '', $finance_tahun[$x])) : 0;
+					$finance_bulann = (!empty($finance_bulan[$x])) ? str_replace(',', '', str_replace('.', '', $finance_bulan[$x])) : 0;
 
 					$data = array(
 						array(
@@ -175,8 +177,8 @@ class Budget_coa extends Admin_Controller
 					$divisi = (!empty($divisi[$x])) ? $divisi[$x] : 0;
 					$kategori = (!empty($kategori[$x])) ? $kategori[$x] : 0;
 					$definisi = (!empty($definisi[$x])) ? $definisi[$x] : 0;
-					$finance_tahunn = (!empty($finance_tahun[$x])) ? $finance_tahun[$x] : 0;
-					$finance_bulann = (!empty($finance_bulan[$x])) ? $finance_bulan[$x] : 0;
+					$finance_tahunn = (!empty($finance_tahun[$x])) ? str_replace(',', '', str_replace('.', '', $finance_tahun[$x])) : 0;
+					$finance_bulann = (!empty($finance_bulan[$x])) ? str_replace(',', '', str_replace('.', '', $finance_bulan[$x])) : 0;
 
 					$data =  array(
 						'tahun' => $tahun,
@@ -217,8 +219,8 @@ class Budget_coa extends Admin_Controller
 				$divisi = (!empty($divisi[$x])) ? $divisi[$x] : 0;
 				$kategori = (!empty($kategori[$x])) ? $kategori[$x] : 0;
 				$definisi = (!empty($definisi[$x])) ? $definisi[$x] : 0;
-				$finance_tahunn = (!empty($finance_tahun[$x])) ? $finance_tahun[$x] : 0;
-				$finance_bulann = (!empty($finance_bulan[$x])) ? $finance_bulan[$x] : 0;
+				$finance_tahunn = (!empty($finance_tahun[$x])) ? str_replace(',', '', str_replace('.', '', $finance_tahun[$x])) : 0;
+				$finance_bulann = (!empty($finance_bulan[$x])) ? str_replace(',', '', str_replace('.', '', $finance_bulan[$x])) : 0;
 
 				$data =  array(
 					'tahun' => $tahun,
@@ -408,9 +410,21 @@ class Budget_coa extends Admin_Controller
 		$dataset	= array('tahun' => $tahun, 'divisi' => $divisi, 'kategori' => $kategori);
 		$datcoa	= $this->Budget_coa_model->GetBudgetCategory($dataset);
 		if (empty($datcoa)) {
-			echo 'Data tidak ditemukan <a href="' . base_url('budget_coa/budget_nr') . '">Kembali</a>';
+			$datadept = $this->All_model->GetDeptCombo();
+			$nm_dept = isset($datadept[$divisi]) ? $datadept[$divisi] : $divisi;
+			echo '<div class="card border-0 shadow-sm p-4 text-center my-3">
+				<div class="py-4">
+					<i class="fa fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+					<h5 class="fw-bold">Data Budget Belum Ditemukan</h5>
+					<p class="text-muted">Belum ada akun perkiraan budget yang terdaftar untuk kombinasi:<br>
+					Tahun: <strong>' . htmlspecialchars($tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars($nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars($kategori) . '</strong></p>
+					<p class="small text-muted">Pastikan akun COA untuk kategori ini sudah dialokasikan ke departemen tersebut pada menu <strong>Master Budget COA</strong>.</p>
+					<button type="button" class="btn btn-outline-secondary px-4 mt-2" onclick="cancel()">
+						<i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar
+					</button>
+				</div>
+			</div>';
 			die();
-			////$this->template->render('list_nr');
 		} else {
 			$datajenis = $this->All_model->GetJenis();
 			$datacoa = $this->All_model->GetCoaCombo();
@@ -448,26 +462,26 @@ class Budget_coa extends Admin_Controller
 						'nilai' => 0,
 						'variabel_coa' => '',
 						'status' => '2',
-						'bulan_1' => $bulan_1[$x],
-						'bulan_2' => $bulan_2[$x],
-						'bulan_3' => $bulan_3[$x],
-						'bulan_4' => $bulan_4[$x],
-						'bulan_5' => $bulan_5[$x],
-						'bulan_6' => $bulan_6[$x],
-						'bulan_7' => $bulan_7[$x],
-						'bulan_8' => $bulan_8[$x],
-						'bulan_9' => $bulan_9[$x],
-						'bulan_10' => $bulan_10[$x],
-						'bulan_11' => $bulan_11[$x],
-						'bulan_12' => $bulan_12[$x],
-						'total' => $total[$x],
+						'bulan_1' => str_replace(',', '', str_replace('.', '', $bulan_1[$x])),
+						'bulan_2' => str_replace(',', '', str_replace('.', '', $bulan_2[$x])),
+						'bulan_3' => str_replace(',', '', str_replace('.', '', $bulan_3[$x])),
+						'bulan_4' => str_replace(',', '', str_replace('.', '', $bulan_4[$x])),
+						'bulan_5' => str_replace(',', '', str_replace('.', '', $bulan_5[$x])),
+						'bulan_6' => str_replace(',', '', str_replace('.', '', $bulan_6[$x])),
+						'bulan_7' => str_replace(',', '', str_replace('.', '', $bulan_7[$x])),
+						'bulan_8' => str_replace(',', '', str_replace('.', '', $bulan_8[$x])),
+						'bulan_9' => str_replace(',', '', str_replace('.', '', $bulan_9[$x])),
+						'bulan_10' => str_replace(',', '', str_replace('.', '', $bulan_10[$x])),
+						'bulan_11' => str_replace(',', '', str_replace('.', '', $bulan_11[$x])),
+						'bulan_12' => str_replace(',', '', str_replace('.', '', $bulan_12[$x])),
+						'total' => str_replace(',', '', str_replace('.', '', $total[$x])),
 						'created_by_dept' => $this->auth->user_id(),
 						'created_on_dept' => date('Y-m-d H:i:s')
 					);
 				} else {
 					$data =  array(
 						'jenis' => $jenis[$x],
-						'nilai' => $nilai[$x],
+						'nilai' => str_replace(',', '', str_replace('.', '', $nilai[$x])),
 						'variabel_coa' => $variabel_coa[$x],
 						'status' => '2',
 						'created_by_dept' => $this->auth->user_id(),
@@ -668,9 +682,23 @@ class Budget_coa extends Admin_Controller
 		$dataset	= array('tahun' => $tahun, 'divisi' => $divisi, 'kategori' => $kategori);
 		$datcoa	= $this->Budget_coa_model->GetBudgetCategory($dataset);
 		if (empty($datcoa)) {
-			echo 'Data tidak ditemukan <a href="' . base_url('budget_coa/budget_nr') . '">Kembali</a>';
+			$datadept = $this->All_model->GetDeptCombo();
+			$nm_dept  = isset($datadept[$divisi]) ? $datadept[$divisi] : $divisi;
+			echo '<div class="card border-0 shadow-sm p-4 text-center my-3">
+				<div class="py-4">
+					<div class="bg-warning bg-opacity-10 text-warning d-inline-flex p-3 rounded-circle mb-3">
+						<i class="fa fa-exclamation-triangle fa-3x"></i>
+					</div>
+					<h5 class="fw-bold text-dark">Data Budget Belum Ditemukan</h5>
+					<p class="text-muted">Belum ada akun perkiraan budget yang terdaftar untuk kombinasi:<br>
+					Tahun: <strong>' . htmlspecialchars($tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars($nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars($kategori) . '</strong></p>
+					<p class="small text-muted mb-4">Pastikan akun COA untuk kategori ini sudah dialokasikan ke departemen tersebut pada menu <strong>Master Budget COA</strong>.</p>
+					<button type="button" class="btn btn-primary px-4 shadow-sm" onclick="cancel()">
+						<i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar
+					</button>
+				</div>
+			</div>';
 			die();
-			////$this->template->render('list_nr');
 		} else {
 			$this->template->set('dataset', $dataset);
 			$this->template->set('data', $datcoa);
@@ -696,22 +724,23 @@ class Budget_coa extends Admin_Controller
 		$this->db->trans_start();
 		if ($type == "edit") {
 			for ($x = 0; $x < count($coa); $x++) {
-				if ($total[$x] > 0) {
+				$cleaned_total = str_replace(',', '', str_replace('.', '', $total[$x]));
+				if ($cleaned_total > 0) {
 					if ($id[$x] != '') {
 						$data =  array(
-							'bulan_1' => $bulan_1[$x],
-							'bulan_2' => $bulan_2[$x],
-							'bulan_3' => $bulan_3[$x],
-							'bulan_4' => $bulan_4[$x],
-							'bulan_5' => $bulan_5[$x],
-							'bulan_6' => $bulan_6[$x],
-							'bulan_7' => $bulan_7[$x],
-							'bulan_8' => $bulan_8[$x],
-							'bulan_9' => $bulan_9[$x],
-							'bulan_10' => $bulan_10[$x],
-							'bulan_11' => $bulan_11[$x],
-							'bulan_12' => $bulan_12[$x],
-							'total' => $total[$x],
+							'bulan_1' => str_replace(',', '', str_replace('.', '', $bulan_1[$x])),
+							'bulan_2' => str_replace(',', '', str_replace('.', '', $bulan_2[$x])),
+							'bulan_3' => str_replace(',', '', str_replace('.', '', $bulan_3[$x])),
+							'bulan_4' => str_replace(',', '', str_replace('.', '', $bulan_4[$x])),
+							'bulan_5' => str_replace(',', '', str_replace('.', '', $bulan_5[$x])),
+							'bulan_6' => str_replace(',', '', str_replace('.', '', $bulan_6[$x])),
+							'bulan_7' => str_replace(',', '', str_replace('.', '', $bulan_7[$x])),
+							'bulan_8' => str_replace(',', '', str_replace('.', '', $bulan_8[$x])),
+							'bulan_9' => str_replace(',', '', str_replace('.', '', $bulan_9[$x])),
+							'bulan_10' => str_replace(',', '', str_replace('.', '', $bulan_10[$x])),
+							'bulan_11' => str_replace(',', '', str_replace('.', '', $bulan_11[$x])),
+							'bulan_12' => str_replace(',', '', str_replace('.', '', $bulan_12[$x])),
+							'total' => $cleaned_total,
 							'status' => '2',
 							'created_by_dept' => $this->auth->user_id(),
 							'created_on_dept' => date('Y-m-d H:i:s')

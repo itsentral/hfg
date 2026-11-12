@@ -607,6 +607,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
     // GLOBAL STATE
     var materialsData = <?= json_encode($materials_data) ?>;
     var FORWARDING_RATE = <?= isset($forwarding_rate) ? $forwarding_rate : 0 ?>;
+    var FORWARDING_RATES = <?= json_encode(isset($forwarding_rates) ? $forwarding_rates : ['import' => $forwarding_rate, 'lokal' => 300]) ?>;
     var poLoadingActive = false;
     var isLokal = false; // Flag untuk PO Lokal
 
@@ -663,6 +664,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
         // ── Lokal/Import PO Mode ──
         function applyLokalMode(totalPoValue) {
             isLokal = true;
+            FORWARDING_RATE = (FORWARDING_RATES && FORWARDING_RATES['lokal'] !== undefined) ? parseFloat(FORWARDING_RATES['lokal']) : 300;
 
             // PIB Exchange Rate = 1 dan disabled
             var $kurs = $('#kurs_pib');
@@ -685,8 +687,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
             // Hide F&C Estimation + Step 2-4
             $('#section_import_only').slideUp(300);
 
-            // Hide kolom BM, Prorate LS, Forwarding, Insurance, Others di tabel PO Data
-            $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-forwarding, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+            // Hide kolom BM, Prorate LS, Insurance, Others di tabel PO Data (Forwarding tetap tampil)
+            $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+            $('#tbl_data_po .col-forwarding').show();
 
             // Reset F&C values to 0
             $('.fc-cost').each(function() {
@@ -714,6 +717,7 @@ $list_po_data = isset($list_po) ? $list_po : [];
 
         function resetLokalMode() {
             isLokal = false;
+            FORWARDING_RATE = (FORWARDING_RATES && FORWARDING_RATES['import'] !== undefined) ? parseFloat(FORWARDING_RATES['import']) : 200;
 
             // Re-enable PIB Exchange Rate dan clear value
             var $kurs = $('#kurs_pib');
@@ -920,6 +924,9 @@ $list_po_data = isset($list_po) ? $list_po : [];
                         calcProrateLS();
                         recalculate();
 
+                        if (res.forwarding_rate !== undefined) {
+                            FORWARDING_RATE = parseFloat(res.forwarding_rate);
+                        }
                         // Handle Lokal/Import mode
                         if (res.loi && res.loi === 'Lokal') {
                             applyLokalMode(res.total_po_value || 0);
@@ -1159,9 +1166,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
             });
             $('#data_po_body').html(html);
 
-            // Jika mode Lokal, sembunyikan kolom biaya pada baris yang baru dirender
+            // Jika mode Lokal, sembunyikan kolom biaya impor pada baris yang baru dirender (Forwarding tetap tampil)
             if (isLokal) {
-                $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-forwarding, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+                $('#tbl_data_po .col-bm, #tbl_data_po .col-ls, #tbl_data_po .col-insurance, #tbl_data_po .col-others').hide();
+                $('#tbl_data_po .col-forwarding').show();
             }
         }
 
@@ -1330,11 +1338,10 @@ $list_po_data = isset($list_po) ? $list_po : [];
                 var pro_ins = (total_kg_bersih > 0) ? insurance * (kg / total_kg_bersih) : 0;
                 var pro_oth = (total_kg_bersih > 0) ? total_others * (kg / total_kg_bersih) : 0;
 
-                // PO Lokal: BM, Prorate LS, Forwarding, Insurance, Others tidak diperhitungkan
+                // PO Lokal: BM, Prorate LS, Insurance, Others tidak diperhitungkan (Forwarding tetap dihitung)
                 if (isLokal) {
                     bm_rp = 0;
                     prorate_ls = 0;
-                    forwarding = 0;
                     pro_ins = 0;
                     pro_oth = 0;
                 }

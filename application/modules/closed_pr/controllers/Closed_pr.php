@@ -74,8 +74,8 @@ class Closed_pr extends Admin_Controller
 	public function view_barang_pr() {
 		$post = $this->input->post();
 
-		$hasil = '';
-		if($post['kategori_pr'] == 'PR Department') {
+		$kategori_pr = $post['kategori_pr'] ?? '';
+		if ($kategori_pr == 'PR Department') {
 			$get_list_barang = $this->db->select('a.nm_barang as nm_barang, a.qty as qty, b.code as unit, b.code as unit_packing, 1 as nilai_konversi')
 			->from('rutin_non_planning_detail a')
 			->join('ms_satuan b', 'b.id = a.satuan', 'left')
@@ -94,11 +94,10 @@ class Closed_pr extends Admin_Controller
 			->where('a.so_number', $post['id_pr'])
 			->get()
 			->result();
-			// print_r($this->db->last_query());
-			// exit;
 		}
 
-		$this->template->set('no_pr', $post['no_pr']);
+		$this->template->set('no_pr', $post['no_pr'] ?? '');
+		$this->template->set('kategori_pr', $kategori_pr);
 		$this->template->set('list_barang', $get_list_barang);
 		$this->template->render('view_barang_pr');
 	}

@@ -1,8 +1,13 @@
 <?php
 
-$sroot 		= $_SERVER['DOCUMENT_ROOT'].'origa_live/';
-include $sroot."/application/libraries/MPDF57/mpdf.php";
-$mpdf=new mPDF('utf-8','A4');
+if (class_exists('mPDF')) {
+    $mpdf = new mPDF('utf-8', 'A4');
+} elseif (class_exists('\\Mpdf\\Mpdf')) {
+    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
+} else {
+    require_once FCPATH . 'vendor/autoload.php';
+    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
+}
 
 set_time_limit(0);
 ini_set('memory_limit','1024M');
@@ -15,7 +20,7 @@ $today = date('l, d F Y [H:i:s]');
 
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
     <tr>
-        <td align='center'><b>PT ORIGA MULIA</b></td>
+        <td align='center'><b>PT HARAPAN FAJAR GEMILANG</b></td>
     </tr>
     <tr>
         <td align='center'><b><h2>OUTGOING BARANG STOK</h2></b></td>

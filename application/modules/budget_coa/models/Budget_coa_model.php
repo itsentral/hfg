@@ -66,7 +66,7 @@ class Budget_coa_model extends BF_Model
 
 	function GetBudget($tahun = '', $all = '', $query = '')
 	{
-		$this->db->select('a.*, b.no_perkiraan , b.nama as nama_perkiraan, c.nm_dept');
+		$this->db->select('a.*, b.no_perkiraan , b.nama as nama_perkiraan, c.nama as nm_dept');
 		if ($tahun != '') {
 			if ($all != '') {
 				$this->db->from('(select * from ' . $this->table_name . ' where tahun=' . $tahun . ' ) a');
@@ -79,7 +79,7 @@ class Budget_coa_model extends BF_Model
 		}
 		//		$this->db->join('ms_coa_category c','a.coa=c.coa','right');
 		$this->db->join(DBACC . '.coa_master b', 'a.coa=b.no_perkiraan', 'right');
-		$this->db->join('department c', 'a.divisi=c.id', 'left');
+		$this->db->join('ms_department c', 'a.divisi=c.id', 'left');
 		if ($query != '') $this->db->where($query);
 		$this->db->where("b.level='5'");
 		$this->db->order_by('b.no_perkiraan', 'asc');
@@ -142,10 +142,10 @@ class Budget_coa_model extends BF_Model
 
 	function GetBudgetCategory($where)
 	{
-		$this->db->select('a.*, b.no_perkiraan , b.nama as nama_perkiraan, c.nm_dept');
+		$this->db->select('a.*, b.no_perkiraan , b.nama as nama_perkiraan, c.nama as nm_dept');
 		$this->db->from($this->table_name . ' a');
 		$this->db->join(DBACC . '.coa_master b', 'a.coa=b.no_perkiraan');
-		$this->db->join('department c', 'a.divisi=c.id', 'left');
+		$this->db->join('ms_department c', 'a.divisi=c.id', 'left');
 		$this->db->where($where);
 		$this->db->order_by('b.no_perkiraan', 'asc');
 		$query = $this->db->get();
@@ -158,12 +158,12 @@ class Budget_coa_model extends BF_Model
 
 	function GetListBudgetDept($kategori)
 	{
-		$this->db->select('a.created_on_dept, a.revisi, a.tahun, a.status, a.kategori, a.divisi, a.total,a.finance_tahun, c.nm_dept');
+		$this->db->select('a.created_on_dept, a.revisi, a.tahun, a.status, a.kategori, a.divisi, a.total,a.finance_tahun, c.nama as nm_dept');
 		$this->db->from($this->table_name . ' a');
-		$this->db->join('department c', 'a.divisi=c.id', 'left');
+		$this->db->join('ms_department c', 'a.divisi=c.id', 'left');
 		$this->db->where('a.status>0');
 		$this->db->where('a.kategori', $kategori);
-		$this->db->group_by('a.tahun ,a.status, a.kategori, a.divisi, c.nm_dept, a.created_on_dept, a.revisi');
+		$this->db->group_by('a.tahun ,a.status, a.kategori, a.divisi, c.nama, a.created_on_dept, a.revisi');
 		$this->db->order_by('a.created_on_dept', 'desc');
 		$query = $this->db->get();
 		//		echo  $this->db->last_query();die();

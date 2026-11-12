@@ -403,6 +403,27 @@
     font-size: 12px;
     font-weight: 600;
   }
+
+  .cl-file-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    margin: 2px;
+  }
+  .cl-del-file {
+    color: #ef4444;
+    cursor: pointer;
+    margin-left: 6px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .cl-del-file:hover {
+    color: #b91c1c;
+  }
 </style>
 
 <div class="container-fluid p-3">
@@ -423,6 +444,7 @@
   <form id="prodForm" novalidate>
     <input type="hidden" name="spk_no" value="<?= htmlspecialchars($spk['spk_no']); ?>">
     <input type="hidden" name="id_tr_spk_detail" value="<?= !empty($spk['primary_spk_detail_id']) ? $spk['primary_spk_detail_id'] : ''; ?>">
+    <input type="hidden" name="report_id" id="reportId" value="<?= !empty($draft['header']['id']) ? $draft['header']['id'] : ''; ?>">
 
     <!-- 1. INFORMASI LAPORAN -->
     <section class="pr-card">
@@ -468,12 +490,12 @@
           </div>
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Helper Name <span class="text-danger">*</span></label>
-            <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper" required>
-              <option value="">-- Pilih Helper --</option>
+            <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Pilih 1 atau Lebih Helper --" required>
               <?php foreach ($employees as $e): ?>
                 <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
+            <div class="form-text small text-muted" style="font-size: 11px;">Bisa pilih lebih dari 1 helper</div>
           </div>
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Setter Name <span class="text-danger">*</span></label>
@@ -644,7 +666,7 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">5</span> Sisa Coil &amp; Hold Coil</h2>
-          <div class="pr-card-hint">Sisa Coil masuk Gudang WIP. Bila terdapat Hold Coil, tombol Save akan dikunci (harus melalui Hold &amp; Claim).</div>
+          <div class="pr-card-hint">Sisa Coil masuk Gudang WIP. Baris Hold Coil otomatis masuk ke seksi Claim Material (FR-98).</div>
         </div>
       </div>
       <div class="pr-card-body">
@@ -703,7 +725,7 @@
             </table>
           </div>
           <div class="alert alert-warning py-2 mt-2 small" id="holdNote" style="display:none">
-            <i class="fa fa-exclamation-triangle me-1"></i> Ada Hold Coil — tombol Save dikunci, gunakan tombol <strong>Hold &amp; Claim</strong>.
+            <i class="fa fa-info-circle me-1"></i> Ada Hold Coil — baris klaim otomatis dibuat di <strong>Card 7. Claim Material</strong>. Anda dapat menyimpan laporan sebagai <strong>Draft</strong>, namun <strong>Submit</strong> dikunci sampai Purchasing memutuskan klaim tersebut (FR-18, FR-98).
           </div>
         </div>
       </div>
@@ -770,11 +792,53 @@
       </div>
     </section>
 
-    <!-- 7. SUMMARY PACKING LIST VS AKTUAL -->
+    <!-- 7. CLAIM MATERIAL / AJUKAN CLAIM (FR-98, FR-94) -->
+    <section class="pr-card" id="cardClaimMaterial">
+      <div class="pr-card-header">
+        <div>
+          <h2 class="pr-card-title"><span class="pr-card-num">7</span> Claim Material / Ajukan Claim <span class="badge bg-light text-secondary border small ms-2" id="claimCountBadge">0 Baris</span></h2>
+          <div class="pr-card-hint">Baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) otomatis terdeteksi dan muncul di sini. Lengkapi Problem, Alasan Produksi, dan upload bukti berkas (maks. 5 MB/berkas).</div>
+        </div>
+      </div>
+      <div class="pr-card-body">
+        <div id="claimContainer">
+          <div class="table-responsive">
+            <table class="tbl-custom" id="tblClaimMaterial">
+              <thead>
+                <tr>
+                  <th style="width:110px">Asal</th>
+                  <th style="width:140px">Baby Coil</th>
+                  <th>Nama Material</th>
+                  <th>Supplier</th>
+                  <th>No. PO</th>
+                  <th>No. Coil PL</th>
+                  <th class="num" style="width:110px">Berat (kg)</th>
+                  <th class="num" style="width:110px">Harga/Kg</th>
+                  <th class="num" style="width:110px">Costbook/Kg</th>
+                  <th class="num" style="width:110px">Price/Unit PO</th>
+                  <th style="width:150px">Problem <span class="text-danger">*</span></th>
+                  <th style="width:180px">Alasan Produksi <span class="text-danger">*</span></th>
+                  <th style="width:230px">Bukti Pendukung <span class="text-danger">*</span> (Maks 5MB)</th>
+                  <th style="width:100px">Status Claim</th>
+                </tr>
+              </thead>
+              <tbody id="claimTbody">
+                <tr><td colspan="14" class="empty text-muted">Tidak ada Hold Coil, KW 2 (Supplier), atau Reject (Supplier) pada laporan ini.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="alert alert-info py-2 mt-2 small">
+          <i class="fa fa-info-circle me-1"></i> <strong>Bukti Dokumen Pendukung Wajib:</strong> Lampirkan minimal 1 berkas per baris claim (foto coil defect, video masalah, atau berita acara QC; maksimal 5 MB per berkas). Berkas akan disimpan bersama tiket claim ke Purchasing.
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. SUMMARY PACKING LIST VS AKTUAL -->
     <section class="pr-card">
       <div class="pr-card-header">
         <div>
-          <h2 class="pr-card-title"><span class="pr-card-num">7</span> Summary — Packing List vs Aktual</h2>
+          <h2 class="pr-card-title"><span class="pr-card-num">8</span> Summary — Packing List vs Aktual</h2>
           <div class="pr-card-hint">Total Net Weight Produksi vs Net Weight Packing List. Toleransi &plusmn; 0.7%.</div>
         </div>
       </div>
@@ -823,11 +887,11 @@
       </div>
     </section>
 
-    <!-- 8. AUDIT KONFIRMASI SELISIH -->
+    <!-- 9. AUDIT KONFIRMASI SELISIH -->
     <section class="pr-card" id="auditCard" style="display:none">
       <div class="pr-card-header bg-light">
         <div>
-          <h2 class="pr-card-title text-danger"><span class="pr-card-num text-danger">8</span> Jejak Konfirmasi Selisih</h2>
+          <h2 class="pr-card-title text-danger"><span class="pr-card-num text-danger">9</span> Jejak Konfirmasi Selisih</h2>
           <div class="pr-card-hint">Daftar konfirmasi selisih di luar toleransi &plusmn; 0,7% beserta identitas dan waktu konfirmasi.</div>
         </div>
       </div>
@@ -851,17 +915,14 @@
     <!-- ACTION BAR -->
     <div class="actionbar">
       <div>
-        <span id="gateMsg" class="text-muted small">Save aktif bila tidak ada Hold Coil.</span>
+        <span id="gateMsg" class="text-muted small">Simpan Draft selalu aktif. Submit dikunci jika terdapat Hold Coil yang menunggu keputusan Purchasing.</span>
       </div>
       <div class="d-flex gap-2">
         <button type="button" class="btn btn-outline-secondary px-3" id="btnDraft">
           <i class="fa fa-save me-1"></i> Save Draft
         </button>
-        <button type="button" class="btn btn-warning px-3" id="btnHoldClaim" disabled>
-          <i class="fa fa-pause-circle me-1"></i> Hold &amp; Claim
-        </button>
         <button type="submit" class="btn btn-primary px-4" id="btnSave">
-          <i class="fa fa-check-circle me-1"></i> Simpan Laporan
+          <i class="fa fa-check-circle me-1"></i> Simpan &amp; Submit Laporan
         </button>
       </div>
     </div>
@@ -907,6 +968,7 @@
   var SPK = <?= json_encode($spk); ?>;
   var SPK_PRODUCTS = <?= json_encode($spk_products); ?>;
   var ALL_PRODUCTS = <?= json_encode($all_products); ?>;
+  var DRAFT_DATA = <?= !empty($draft) ? json_encode($draft) : 'null'; ?>;
   var CURRENT_USER = {
     name: <?= json_encode($this->auth->user_name()); ?>,
     role: "User"
@@ -914,6 +976,8 @@
   var SAVE_URL = "<?= site_url('production_report/save'); ?>";
   var COIL_URL = "<?= site_url('production_report/ajax_get_coils'); ?>";
   var BASE_MODULE_URL = "<?= site_url('production_report'); ?>";
+  var CLAIM_INFO_URL = "<?= site_url('production_report/ajax_get_coil_claim_info'); ?>";
+  var UPLOAD_CLAIM_URL = "<?= site_url('production_report/upload_claim_bukti'); ?>";
   var TOLERANCE = 0.7; // ± 0.7%
 
   var SRC_LABEL = {
@@ -933,6 +997,7 @@
     sisa: [], // { id, coil, berat }
     hold: [], // { id, coil, berat }
     confirmations: [],
+    claimIn: {}, // { [key]: { problem, alasan, bukti: [], coilCode, status } }
     availableCoils: {
       unpack: [],
       wip: [],
@@ -1061,7 +1126,7 @@
     return opts;
   }
 
-  function babyCoilSelectOptions(source, selectedCode) {
+  function babyCoilSelectOptions(source, selectedCode, selectedMaterial) {
     var list = state.availableCoils[source] || [];
     var usedElsewhere = {};
     $.each(state.coils, function(i, c) {
@@ -1071,13 +1136,26 @@
     });
 
     var opts = '<option value="">— Pilih Baby Coil —</option>';
+    var foundSelected = false;
+
     $.each(list, function(i, c) {
       if (!usedElsewhere[c.no_coil]) {
-        var sel = (c.no_coil === selectedCode) ? ' selected' : '';
+        var sel = '';
+        if (c.no_coil === selectedCode) {
+          sel = ' selected';
+          foundSelected = true;
+        }
         var mat = c.nm_material || c.lot_material || 'Coil';
         opts += '<option value="' + c.no_coil + '"' + sel + '>' + c.no_coil + ' · ' + mat + '</option>';
       }
     });
+
+    // Fallback penting jika selectedCode ada tapi belum ada di list (misal saat buka draft / ajax belum selesai)
+    if (selectedCode && !foundSelected) {
+      var label = selectedCode + (selectedMaterial ? ' · ' + selectedMaterial : '');
+      opts += '<option value="' + selectedCode + '" selected>' + label + '</option>';
+    }
+
     return opts;
   }
 
@@ -1147,7 +1225,7 @@
       html += '<tr data-id="' + c.id + '">';
       html += '  <td><span class="src-tag src-tag-' + c.source + '">' + (SRC_LABEL[c.source] || c.source) + '</span></td>';
       html += '  <td><select data-coil-pick="' + c.id + '" class="form-select form-select-sm select2 ' + (chosen ? '' : 'border-primary') + '">' +
-        babyCoilSelectOptions(c.source, c.code) +
+        babyCoilSelectOptions(c.source, c.code, c.material) +
         '</select></td>';
       html += '  <td>' + (chosen ? c.material : '—') + '</td>';
       html += '  <td class="num">' + (c.nett != null ? formatNum(c.nett) : '—') + '</td>';
@@ -1167,7 +1245,21 @@
     } else {
       $('#coilEmpty').closest('tfoot').show();
     }
+
+    // Set nilai pada select sebelum dan sesudah initSelect2
+    $.each(state.coils, function(i, c) {
+      if (c.code) {
+        $('[data-coil-pick="' + c.id + '"]').val(c.code);
+      }
+    });
+
     initSelect2Search('#coilTable');
+
+    $.each(state.coils, function(i, c) {
+      if (c.code) {
+        $('[data-coil-pick="' + c.id + '"]').val(c.code);
+      }
+    });
   }
 
   function pickCoil(id, code) {
@@ -1179,6 +1271,11 @@
       }
     });
     if (!row) return;
+
+    // Jika code sama dengan yang sudah ada dan detail sudah terisi (misal saat restore draft), tidak perlu proses ulang
+    if (code && row.code === code && row.material) {
+      return;
+    }
 
     // Validasi: pastikan coil belum dipilih di baris Add Coil lainnya
     if (code) {
@@ -1353,40 +1450,59 @@
     html += '    ' + delBtn;
     html += '  </div>';
     html += '  <div>';
-    html += '    <div class="method-toggle">';
+    html += '    <div class="method-toggle mb-2">';
     html += '      <label><input type="radio" name="m-' + f.id + '" value="1" ' + (p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Metode 1: Qty + Berat Total</span></label>';
     html += '      <label><input type="radio" name="m-' + f.id + '" value="2" ' + (!p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Metode 2: Qty + Berat/Pcs</span></label>';
     html += '    </div>';
-    html += '    <div class="row g-2 align-items-end">';
+
+    // Baris 1: Input Pokok
+    html += '    <div class="row g-2 align-items-end mb-2">';
     html += '      <div class="col-md-3">';
     html += '        <label class="form-label small fw-semibold mb-1">Baby Coil Terpakai</label>';
     html += '        <select data-fg-coil="' + f.id + '" data-kind="' + f.kind + '" class="form-select form-select-sm select2" style="width:100%">' + coilOptions(f.id, f.kind) + '</select>';
     html += '      </div>';
-    html += '      <div class="col-md-2">';
+    html += '      <div class="col-md-3">';
     html += '        <label class="form-label small fw-semibold mb-1">Qty (pcs)</label>';
     html += '        <input type="number" min="0" step="1" data-fg-qty="' + f.id + '" class="form-control form-control-sm text-end" value="' + (f.qty || '') + '">';
     html += '      </div>';
-    html += '      <div class="col-md-2">';
+    html += '      <div class="col-md-3">';
     html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Berat Total (kg)' : 'Berat/Pcs (kg)') + '</label>';
     html += '        <input type="number" min="0" step="0.01" data-fg-input="' + f.id + '" class="form-control form-control-sm text-end" value="' + (p1 ? (f.total || '') : (f.perPcs || '')) + '">';
     html += '      </div>';
-    html += '      <div class="col-md-2">';
+    html += '      <div class="col-md-3">';
     html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Berat/Pcs (kg)' : 'Berat Total (kg)') + '</label>';
     html += '        <input type="text" class="form-control form-control-sm bg-light text-end" readonly data-fg-derived="' + f.id + '" value="' + (p1 ? formatNum(f.perPcs) : formatNum(f.total)) + '">';
     html += '      </div>';
-    html += '      <div class="col-md-1">';
-    html += '        <label class="form-label small fw-semibold mb-1">Std/Pcs</label>';
-    html += '        <input type="text" class="form-control form-control-sm bg-light text-end" readonly data-fg-std="' + f.id + '" value="' + (f.std ? formatNum(f.std) : '') + '">';
+    html += '    </div>';
+
+    // Baris 2: Sub-Card Metrik Per Pcs & Per Meter (Aktual, Standar BOM, % Selisih)
+    html += '    <div class="p-2 rounded bg-light border row g-2 align-items-center mt-1">';
+    html += '      <div class="col-md-2">';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Std / Pcs</label>';
+    html += '        <input type="text" class="form-control form-control-sm bg-white text-end" readonly data-fg-std="' + f.id + '" value="' + (f.std ? formatNum(f.std) : '-') + '">';
     html += '      </div>';
     html += '      <div class="col-md-2">';
-    html += '        <label class="form-label small fw-semibold mb-1">% Selisih</label>';
-    html += '        <div>';
-    html += '          <span class="selisih-badge ' + (Math.abs(f.selisih) > TOLERANCE ? 'bad' : 'ok') + '" data-fg-selisih="' + f.id + '">';
-    html += '            ' + formatNum(f.selisih) + ' %';
-    html += '          </span>';
-    html += '        </div>';
+    html += '        <label class="form-label small text-muted mb-0 d-block">% Selisih / Pcs</label>';
+    html += '        <div><span class="selisih-badge ' + (Math.abs(f.selisih) > TOLERANCE ? 'bad' : 'ok') + '" data-fg-selisih="' + f.id + '">' + formatNum(f.selisih) + ' %</span></div>';
+    html += '      </div>';
+    html += '      <div class="col-md-2 border-start">';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Panjang (m)</label>';
+    html += '        <input type="text" class="form-control form-control-sm bg-white text-end" readonly data-fg-panjang="' + f.id + '" value="' + (f.panjang ? formatNum(f.panjang) : '-') + '">';
+    html += '      </div>';
+    html += '      <div class="col-md-2">';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Aktual Berat / m</label>';
+    html += '        <input type="text" class="form-control form-control-sm bg-white text-end text-primary fw-bold" readonly data-fg-berat-meter="' + f.id + '" value="' + (f.beratPerMeterAktual ? formatNum(f.beratPerMeterAktual, 4) : '-') + '">';
+    html += '      </div>';
+    html += '      <div class="col-md-2">';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Std / Meter (BOM)</label>';
+    html += '        <input type="text" class="form-control form-control-sm bg-white text-end" readonly data-fg-std-meter="' + f.id + '" value="' + (f.stdPerMeter ? formatNum(f.stdPerMeter, 4) : '-') + '">';
+    html += '      </div>';
+    html += '      <div class="col-md-2">';
+    html += '        <label class="form-label small text-muted mb-0 d-block">% Selisih / Meter</label>';
+    html += '        <div><span class="selisih-badge ' + (Math.abs(f.selisihMeter) > TOLERANCE ? 'bad' : 'ok') + '" data-fg-selisih-meter="' + f.id + '">' + formatNum(f.selisihMeter) + ' %</span></div>';
     html += '      </div>';
     html += '    </div>';
+
     html += '  </div>';
     html += '</div>';
 
@@ -1438,6 +1554,8 @@
     if (f.kind === 'bebas') {
       var p = productById(f.productId);
       f.std = p ? getNum(p.weight) : 0;
+      f.panjang = p ? getNum(p.panjang || p.panjang_produk || p.length) : 0;
+      f.stdPerMeter = p ? getNum(p.std_per_meter) : 0;
     } else {
       var sp = null;
       $.each(SPK_PRODUCTS, function(i, item) {
@@ -1451,6 +1569,8 @@
         f.std = getNum(sp.weight_standard || sp.berat_standar || sp.berat_per_unit);
         f.targetQty = getNum(sp.target_qty);
         f.productName = sp.nm_produk_fg;
+        f.panjang = getNum(sp.panjang || sp.panjang_m || sp.length);
+        f.stdPerMeter = getNum(sp.std_per_meter);
       }
     }
     if (f.method === 1) {
@@ -1459,6 +1579,10 @@
       f.total = f.qty * f.perPcs;
     }
     f.selisih = (f.std > 0) ? ((f.perPcs - f.std) / f.std) * 100 : 0;
+
+    // Perhitungan Metrik Berat per Meter (Aktual, Std BOM, % Selisih)
+    f.beratPerMeterAktual = (f.panjang > 0) ? (f.perPcs / f.panjang) : 0;
+    f.selisihMeter = (f.stdPerMeter > 0) ? ((f.beratPerMeterAktual - f.stdPerMeter) / f.stdPerMeter) * 100 : 0;
   }
 
   function updateFgDerivedView() {
@@ -1466,13 +1590,24 @@
       var $der = $('[data-fg-derived="' + f.id + '"]');
       var $std = $('[data-fg-std="' + f.id + '"]');
       var $sel = $('[data-fg-selisih="' + f.id + '"]');
+      var $panjang = $('[data-fg-panjang="' + f.id + '"]');
+      var $beratMeter = $('[data-fg-berat-meter="' + f.id + '"]');
+      var $stdMeter = $('[data-fg-std-meter="' + f.id + '"]');
+      var $selMeter = $('[data-fg-selisih-meter="' + f.id + '"]');
       var $badge = $('[data-fg-confirm="' + f.id + '"]');
 
       if ($der.length) $der.val(f.method === 1 ? formatNum(f.perPcs) : formatNum(f.total));
-      if ($std.length) $std.val(f.std ? formatNum(f.std) : '');
+      if ($std.length) $std.val(f.std ? formatNum(f.std) : '-');
       if ($sel.length) {
         $sel.text(formatNum(f.selisih) + ' %');
         $sel.removeClass('ok bad').addClass(Math.abs(f.selisih) > TOLERANCE ? 'bad' : 'ok');
+      }
+      if ($panjang.length) $panjang.val(f.panjang ? formatNum(f.panjang) : '-');
+      if ($beratMeter.length) $beratMeter.val(f.beratPerMeterAktual ? formatNum(f.beratPerMeterAktual, 4) : '-');
+      if ($stdMeter.length) $stdMeter.val(f.stdPerMeter ? formatNum(f.stdPerMeter, 4) : '-');
+      if ($selMeter.length) {
+        $selMeter.text(formatNum(f.selisihMeter) + ' %');
+        $selMeter.removeClass('ok bad').addClass(Math.abs(f.selisihMeter) > TOLERANCE ? 'bad' : 'ok');
       }
       if ($badge.length) {
         var isOk = (f.confirmedAt != null && f.confirmedAt === f.selisih && Math.abs(f.selisih) > TOLERANCE);
@@ -1676,17 +1811,17 @@
       $('#tolNote').text('Toleransi ± ' + TOLERANCE + '% terhadap Net Weight Produksi.');
     }
 
-    // Gate: Hold Coil check
+    // Gate: Hold Coil check (FR-18, FR-98)
     var hasHold = (state.hold.length > 0);
-    $('#btnSave').prop('disabled', hasHold);
-    $('#btnHoldClaim').prop('disabled', !hasHold);
     if (hasHold) {
       $('#holdNote').show();
-      $('#gateMsg').text('Ada Hold Coil — Tombol Save dikunci. Gunakan Hold & Claim.');
+      $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> Ada Hold Coil — Simpan sebagai <strong>Draft</strong>. Submit menunggu keputusan Purchasing.</span>');
     } else {
       $('#holdNote').hide();
-      $('#gateMsg').text('Save aktif bila tidak ada Hold Coil.');
+      $('#gateMsg').text('Simpan Draft atau Submit Laporan.');
     }
+
+    renderClaims();
 
     return {
       selisihPct: selisihPct,
@@ -1701,6 +1836,324 @@
       holdTotal: holdTotal
     };
   }
+
+  // ── SECTION 7: CLAIM MATERIAL / AJUKAN CLAIM (FR-98, FR-94) ──
+  var coilMetaCache = {};
+
+  function getCoilClaimMeta(coilCode) {
+    if (!coilCode) return null;
+    if (coilMetaCache[coilCode]) return coilMetaCache[coilCode];
+
+    var found = null;
+    $.each(state.coils, function(i, c) {
+      if (c && c.code === coilCode) {
+        found = c;
+        return false;
+      }
+    });
+
+    coilMetaCache[coilCode] = {
+      id_baby_coil: found ? found.id_warehouse_stock_coil : null,
+      id_material: found ? found.id_material : '',
+      nm_material: found ? found.material : '',
+      no_coil_packing_list: coilCode,
+      no_po: found && found.no_po ? found.no_po : '-',
+      id_suplier: '-',
+      nm_supplier: '-',
+      harga_beli_per_kg: found && found.harga_beli ? found.harga_beli : 0,
+      costbook_per_kg: 0,
+      price_per_unit_po: 0,
+      id_gudang_asal: null,
+      kd_gudang_asal: null
+    };
+
+    $.getJSON(CLAIM_INFO_URL + '?coil_code=' + encodeURIComponent(coilCode), function(res) {
+      if (res && res.status === 1 && res.data) {
+        coilMetaCache[coilCode] = res.data;
+        renderClaims();
+      }
+    });
+
+    return coilMetaCache[coilCode];
+  }
+
+  function claimRows() {
+    var rows = [];
+
+    // 1. Dari Hold Coil (Card 5)
+    $.each(state.hold, function(i, h) {
+      var b = getNum(h.berat);
+      var cCode = h.coil ? String(h.coil).trim() : '';
+      if (cCode && b > 0) {
+        var key = 'Hold Coil:' + cCode;
+        var existing = state.claimIn[key] || {};
+        rows.push({
+          key: key,
+          asal: 'Hold Coil',
+          coilCode: cCode,
+          fixed: true,
+          berat_kg: b,
+          defaultProblem: 'Hold Coil',
+          defaultAlasan: 'Material di-hold pada lini produksi',
+          problem: existing.problem !== undefined ? existing.problem : '',
+          alasan: existing.alasan !== undefined ? existing.alasan : '',
+          bukti: existing.bukti || [],
+          status: existing.status || 'Dibuat saat Save'
+        });
+      }
+    });
+
+    // 2. Dari KW 2 (Supplier) (Card 4)
+    var kw2Group = {};
+    $.each(state.kw2.supplier, function(i, r) {
+      var t = getNum(r.total);
+      var cCode = r.coil ? String(r.coil).trim() : '';
+      if (cCode && t > 0) {
+        if (!kw2Group[cCode]) {
+          kw2Group[cCode] = { berat: 0, kets: [] };
+        }
+        kw2Group[cCode].berat += t;
+        if (r.ket && String(r.ket).trim()) {
+          kw2Group[cCode].kets.push(String(r.ket).trim());
+        }
+      }
+    });
+    $.each(kw2Group, function(cCode, g) {
+      var key = 'KW 2 (Supplier):' + cCode;
+      var existing = state.claimIn[key] || {};
+      var defAlasan = g.kets.length ? g.kets.join('; ') : 'Hasil KW 2 cacat dari supplier';
+      rows.push({
+        key: key,
+        asal: 'KW 2 (Supplier)',
+        coilCode: cCode,
+        fixed: true,
+        berat_kg: g.berat,
+        defaultProblem: 'KW 2',
+        defaultAlasan: defAlasan,
+        problem: existing.problem !== undefined ? existing.problem : 'KW 2',
+        alasan: existing.alasan !== undefined ? existing.alasan : defAlasan,
+        bukti: existing.bukti || [],
+        status: existing.status || 'Dibuat saat Save'
+      });
+    });
+
+    // 3. Dari Reject (Supplier) (Card 6)
+    var rejProd = getNum($('#rejProdSup').val());
+    var rejMat  = getNum($('#rejMatSup').val());
+    var rejKet  = $('#rejKetSup').val() ? $('#rejKetSup').val().trim() : '';
+
+    var activeCoils = $.grep(state.coils, function(c) { return c && c.code; });
+    var autoCoil = activeCoils.length === 1 ? activeCoils[0].code : '';
+
+    if (rejProd > 0) {
+      var key = 'Reject (Supplier):Reject Product';
+      var existing = state.claimIn[key] || {};
+      rows.push({
+        key: key,
+        asal: 'Reject (Supplier)',
+        coilCode: existing.coilCode || autoCoil,
+        fixed: false,
+        berat_kg: rejProd,
+        defaultProblem: 'Reject Product',
+        defaultAlasan: rejKet || 'Reject produk cacat dari supplier',
+        problem: existing.problem !== undefined ? existing.problem : 'Reject Product',
+        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject produk cacat dari supplier'),
+        bukti: existing.bukti || [],
+        status: existing.status || 'Dibuat saat Save'
+      });
+    }
+
+    if (rejMat > 0) {
+      var key = 'Reject (Supplier):Reject Material';
+      var existing = state.claimIn[key] || {};
+      rows.push({
+        key: key,
+        asal: 'Reject (Supplier)',
+        coilCode: existing.coilCode || autoCoil,
+        fixed: false,
+        berat_kg: rejMat,
+        defaultProblem: 'Reject Material',
+        defaultAlasan: rejKet || 'Reject material plat cacat dari supplier',
+        problem: existing.problem !== undefined ? existing.problem : 'Reject Material',
+        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject material plat cacat dari supplier'),
+        bukti: existing.bukti || [],
+        status: existing.status || 'Dibuat saat Save'
+      });
+    }
+
+    return rows;
+  }
+
+  function renderClaims() {
+    var rows = claimRows();
+    $('#claimCountBadge').text(rows.length + ' Baris');
+
+    if (rows.length === 0) {
+      $('#claimTbody').html('<tr><td colspan="14" class="empty text-muted">Tidak ada Hold Coil, KW 2 (Supplier), atau Reject (Supplier) pada laporan ini.</td></tr>');
+      return;
+    }
+
+    var html = '';
+    var activeCoils = $.grep(state.coils, function(c) { return c && c.code; });
+
+    $.each(rows, function(idx, r) {
+      var meta = getCoilClaimMeta(r.coilCode) || {};
+      var lock = (r.status && r.status !== 'Claim Baru' && r.status !== 'Baru' && r.status !== 'Dibuat saat Save');
+
+      html += '<tr data-claim-key="' + r.key + '">';
+      html += '  <td><span class="badge ' + (r.asal === 'Hold Coil' ? 'bg-danger' : (r.asal === 'KW 2 (Supplier)' ? 'bg-warning text-dark' : 'bg-dark')) + '">' + r.asal + '</span></td>';
+
+      // Baby coil selector jika tidak fixed (Reject Supplier)
+      if (r.fixed) {
+        html += '  <td><strong>' + (r.coilCode || '—') + '</strong></td>';
+      } else {
+        html += '  <td>';
+        html += '    <select class="form-select form-select-sm cl-coil-select" data-key="' + r.key + '" ' + (lock ? 'disabled' : '') + '>';
+        html += '      <option value="">-- Pilih Coil --</option>';
+        $.each(activeCoils, function(ci, ac) {
+          html += '    <option value="' + ac.code + '" ' + (ac.code === r.coilCode ? 'selected' : '') + '>' + ac.code + '</option>';
+        });
+        html += '    </select>';
+        html += '  </td>';
+      }
+
+      html += '  <td>' + (meta.nm_material || '—') + '</td>';
+      html += '  <td>' + (meta.nm_supplier || '—') + '</td>';
+      html += '  <td>' + (meta.no_po || '—') + '</td>';
+      html += '  <td>' + (meta.no_coil_packing_list || r.coilCode || '—') + '</td>';
+      html += '  <td class="num font-monospace">' + formatNum(r.berat_kg) + '</td>';
+      html += '  <td class="num font-monospace">' + formatNum(meta.harga_beli_per_kg || 0) + '</td>';
+      html += '  <td class="num font-monospace">' + formatNum(meta.costbook_per_kg || 0) + '</td>';
+      html += '  <td class="num font-monospace">' + formatNum(meta.price_per_unit_po || 0) + '</td>';
+
+      html += '  <td><input type="text" class="form-control form-control-sm cl-in-problem" data-key="' + r.key + '" value="' + (r.problem ? escapeHtml(r.problem) : '') + '" placeholder="mis. Cacat / Karat" ' + (lock ? 'disabled' : '') + '></td>';
+      html += '  <td><textarea class="form-control form-control-sm cl-in-alasan" rows="2" data-key="' + r.key + '" placeholder="Alasan dari produksi..." ' + (lock ? 'disabled' : '') + '>' + (r.alasan ? escapeHtml(r.alasan) : '') + '</textarea></td>';
+
+      // Bukti upload & file chip list
+      html += '  <td>';
+      html += '    <div class="cl-file-list mb-1">';
+      if (r.bukti && r.bukti.length > 0) {
+        $.each(r.bukti, function(bi, b) {
+          var fname = b.file_original_name || b.name || b.file_hash_name || 'File';
+          var fsizeKb = b.file_size ? Math.round(b.file_size / 1024) + ' KB' : '';
+          var furl = b.url ? b.url : (BASE_MODULE_URL + '/../../uploads/claim_material/' + (b.file_hash_name || ''));
+          html += '<span class="cl-file-chip">';
+          html += '  <a href="' + furl + '" target="_blank" class="text-decoration-none text-dark">📎 ' + escapeHtml(fname) + (fsizeKb ? ' <small class="text-muted">(' + fsizeKb + ')</small>' : '') + '</a>';
+          if (!lock) {
+            html += '  <span class="cl-del-file" data-key="' + r.key + '" data-file-idx="' + bi + '" title="Hapus berkas">&times;</span>';
+          }
+          html += '</span>';
+        });
+      } else {
+        html += '      <span class="text-danger small fst-italic">Wajib lampirkan bukti</span>';
+      }
+      html += '    </div>';
+      if (!lock) {
+        html += '    <label class="btn btn-xs btn-outline-primary py-0 px-2 mt-1">';
+        html += '      <i class="fa fa-upload me-1"></i> Upload Bukti';
+        html += '      <input type="file" class="cl-file-input" data-key="' + r.key + '" multiple style="display:none;" accept="image/*,application/pdf,video/*">';
+        html += '    </label>';
+      }
+      html += '  </td>';
+
+      html += '  <td><span class="badge ' + (lock ? 'bg-danger' : 'bg-secondary') + '">' + (r.status || 'Draft') + '</span></td>';
+      html += '</tr>';
+    });
+
+    $('#claimTbody').html(html);
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Event handler input field claim (problem, alasan, coil)
+  $(document).on('input', '.cl-in-problem', function() {
+    var key = $(this).attr('data-key');
+    if (!state.claimIn[key]) state.claimIn[key] = {};
+    state.claimIn[key].problem = $(this).val();
+  });
+
+  $(document).on('input', '.cl-in-alasan', function() {
+    var key = $(this).attr('data-key');
+    if (!state.claimIn[key]) state.claimIn[key] = {};
+    state.claimIn[key].alasan = $(this).val();
+  });
+
+  $(document).on('change', '.cl-coil-select', function() {
+    var key = $(this).attr('data-key');
+    var val = $(this).val();
+    if (!state.claimIn[key]) state.claimIn[key] = {};
+    state.claimIn[key].coilCode = val;
+    renderClaims();
+  });
+
+  // Upload bukti file handler (maks 5MB per berkas sesuai instruksi user)
+  $(document).on('change', '.cl-file-input', function() {
+    var key = $(this).attr('data-key');
+    var files = this.files;
+    if (!files || files.length === 0) return;
+
+    var maxBytes = 5 * 1024 * 1024; // 5 MB
+    var inputElem = this;
+
+    $.each(files, function(i, file) {
+      if (file.size > maxBytes) {
+        Swal.fire('File Terlalu Besar', 'Berkas "' + file.name + '" melebihi batas maksimal 5 MB dan tidak diunggah.', 'warning');
+        return;
+      }
+
+      var fd = new FormData();
+      fd.append('file', file);
+
+      $.ajax({
+        url: UPLOAD_CLAIM_URL,
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(res) {
+          if (res.status === 1) {
+            if (!state.claimIn[key]) state.claimIn[key] = {};
+            if (!state.claimIn[key].bukti) state.claimIn[key].bukti = [];
+            state.claimIn[key].bukti.push({
+              file_original_name: res.file_original_name,
+              file_hash_name: res.file_hash_name,
+              file_size: res.file_size,
+              file_type: res.file_type,
+              url: res.url
+            });
+            renderClaims();
+          } else {
+            Swal.fire('Gagal Upload', res.message || 'Gagal mengunggah berkas', 'error');
+          }
+        },
+        error: function(xhr, status, err) {
+          Swal.fire('Error', 'Terjadi kesalahan saat mengunggah berkas: ' + err, 'error');
+        }
+      });
+    });
+
+    $(inputElem).val('');
+  });
+
+  // Hapus bukti file
+  $(document).on('click', '.cl-del-file', function(e) {
+    e.preventDefault();
+    var key = $(this).attr('data-key');
+    var idx = parseInt($(this).attr('data-file-idx'), 10);
+    if (state.claimIn[key] && state.claimIn[key].bukti) {
+      state.claimIn[key].bukti.splice(idx, 1);
+      renderClaims();
+    }
+  });
 
   // ── SECTION 8: AUDIT KONFIRMASI SELISIH ──
   var modalResolve = null;
@@ -1792,11 +2245,74 @@
   }
 
   // ── SAVE & SUBMIT REPORT ──
-  async function submitReport(isDraft, isHoldClaim) {
+  async function submitReport(isDraft) {
     isDraft = isDraft || 0;
-    isHoldClaim = isHoldClaim || false;
 
     var calcRes = recalc();
+
+    // ── SUBMIT LOCK JIKA ADA HOLD COIL (FR-18, FR-98) ──
+    if (!isDraft && state.hold.length > 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Submit Laporan Dikunci',
+        html: 'Laporan memuat material <strong>Hold Coil</strong> yang menunggu keputusan Purchasing (FR-18, FR-98).<br><br>Silakan simpan laporan ini sebagai <strong>Draft</strong> dengan menekan tombol <strong>Save Draft</strong>.',
+        confirmButtonText: 'Tutup'
+      });
+      return;
+    }
+
+    // ── VALIDASI & PENYUSUNAN CLAIM MATERIAL (FR-94, FR-98) ──
+    var claimList = claimRows();
+    var claimErr = [];
+    var payloadClaims = [];
+
+    if (claimList.length > 0) {
+      $.each(claimList, function(i, r) {
+        var meta = getCoilClaimMeta(r.coilCode) || {};
+        var n = 'Baris ' + (i + 1) + ' (' + r.asal + ')';
+        if (!r.coilCode) {
+          claimErr.push(n + ': Baby coil asal belum dipilih.');
+        }
+        if (!r.problem || !String(r.problem).trim()) {
+          claimErr.push(n + ': Problem wajib diisi.');
+        }
+        if (!r.alasan || !String(r.alasan).trim()) {
+          claimErr.push(n + ': Alasan Produksi wajib diisi.');
+        }
+        if (!r.bukti || r.bukti.length === 0) {
+          claimErr.push(n + ': Bukti dokumen pendukung wajib diunggah minimal 1 berkas.');
+        }
+
+        payloadClaims.push({
+          asal: r.asal,
+          id_baby_coil: meta.id_baby_coil || null,
+          id_material: meta.id_material || '',
+          id_suplier: meta.id_suplier || '-',
+          no_po: meta.no_po || '-',
+          no_coil_packing_list: meta.no_coil_packing_list || r.coilCode,
+          berat_kg: r.berat_kg,
+          harga_beli_per_kg: meta.harga_beli_per_kg || 0,
+          costbook_per_kg: meta.costbook_per_kg || 0,
+          price_per_unit_po: meta.price_per_unit_po || 0,
+          id_gudang_asal: meta.id_gudang_asal || null,
+          kd_gudang_asal: meta.kd_gudang_asal || null,
+          problem: r.problem,
+          alasan_produksi: r.alasan,
+          bukti: r.bukti
+        });
+      });
+
+      if (claimErr.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Isian Claim Material Belum Lengkap',
+          html: '<div class="text-start small"><ul><li>' + claimErr.join('</li><li>') + '</li></ul></div>',
+          confirmButtonText: 'Lengkapi Data'
+        });
+        $('html, body').animate({ scrollTop: $('#cardClaimMaterial').offset().top - 80 }, 300);
+        return;
+      }
+    }
 
     // ── VALIDASI MANDATORY FORM (Jika Bukan Simpan Draft) ──
     if (!isDraft) {
@@ -1818,8 +2334,8 @@
         $('#id_asset_machine').select2('open');
         return;
       }
-      if (!empHelper) {
-        Swal.fire('Validasi Gagal', 'Helper Name wajib dipilih.', 'warning');
+      if (!empHelper || (Array.isArray(empHelper) && empHelper.length === 0)) {
+        Swal.fire('Validasi Gagal', 'Helper Name wajib dipilih minimal 1 orang.', 'warning');
         $('#employee_helper').select2('open');
         return;
       }
@@ -1936,6 +2452,7 @@
 
     // Build Payload
     var payload = {
+      report_id: $('#reportId').val(),
       spk_no: $('input[name="spk_no"]').val(),
       id_tr_spk_detail: $('input[name="id_tr_spk_detail"]').val(),
       tgl_produksi: $('#tglProduksi').val(),
@@ -1969,14 +2486,28 @@
         };
       }),
       items: [],
-      scraps: []
+      scraps: [],
+      claims: payloadClaims
     };
+
+    // Helper untuk mencari Varian BOM SPK (FR-48, FR-74)
+    function getSpkVariantFor(productId) {
+      if (SPK_PRODUCTS && SPK_PRODUCTS.length > 0) {
+        var sp = SPK_PRODUCTS.find(function(x) {
+          return x.id_product_lvl_4 == productId || x.product_lvl_4_id == productId || x.id_produk_fg == productId;
+        });
+        if (sp && sp.no_uniq_id) return sp.no_uniq_id;
+        if (SPK_PRODUCTS[0] && SPK_PRODUCTS[0].no_uniq_id) return SPK_PRODUCTS[0].no_uniq_id;
+      }
+      return 'Type 001.1';
+    }
 
     // Items: FG KW1 & Bebas
     $.each(state.fg, function(i, f) {
       payload.items.push({
         kategori: (f.kind === 'bebas') ? 'stok_bebas' : 'kw_1',
         id_product_lvl_4: f.productId,
+        no_uniq_id: f.no_uniq_id || getSpkVariantFor(f.productId),
         nama_produk: f.productName,
         kode_baby_coil: f.coil,
         metode_input: f.method,
@@ -1986,6 +2517,10 @@
         berat_standard_pcs: f.std,
         selisih_persen: f.selisih,
         size_meter: 0,
+        panjang_meter: f.panjang || 0,
+        berat_per_meter_aktual: f.beratPerMeterAktual || 0,
+        berat_per_meter_standard: f.stdPerMeter || 0,
+        percentage_selisih_meter: f.selisihMeter || 0,
         keterangan: null
       });
     });
@@ -1997,6 +2532,7 @@
       payload.items.push({
         kategori: 'kw_2_internal',
         id_product_lvl_4: r.productId,
+        no_uniq_id: r.no_uniq_id || getSpkVariantFor(r.productId),
         nama_produk: p ? (p.nama + '-KW2-I-' + numStr) : 'KW2-I',
         kode_baby_coil: r.coil || null,
         metode_input: 1,
@@ -2017,6 +2553,7 @@
       payload.items.push({
         kategori: 'kw_2_supplier',
         id_product_lvl_4: r.productId,
+        no_uniq_id: r.no_uniq_id || getSpkVariantFor(r.productId),
         nama_produk: p ? (p.nama + '-KW2-S-' + numStr) : 'KW2-S',
         kode_baby_coil: r.coil || null,
         metode_input: 1,
@@ -2047,13 +2584,23 @@
       keterangan: null
     });
     payload.scraps.push({
-      jenis_scrap: 'reject_internal',
-      berat: getNum($('#rejProdInt').val()) + getNum($('#rejMatInt').val()),
+      jenis_scrap: 'reject_product_internal',
+      berat: getNum($('#rejProdInt').val()),
       keterangan: $('#rejKetInt').val()
     });
     payload.scraps.push({
-      jenis_scrap: 'reject_supplier',
-      berat: getNum($('#rejProdSup').val()) + getNum($('#rejMatSup').val()),
+      jenis_scrap: 'reject_material_internal',
+      berat: getNum($('#rejMatInt').val()),
+      keterangan: $('#rejKetInt').val()
+    });
+    payload.scraps.push({
+      jenis_scrap: 'reject_product_supplier',
+      berat: getNum($('#rejProdSup').val()),
+      keterangan: $('#rejKetSup').val()
+    });
+    payload.scraps.push({
+      jenis_scrap: 'reject_material_supplier',
+      berat: getNum($('#rejMatSup').val()),
       keterangan: $('#rejKetSup').val()
     });
     $.each(state.sisa, function(i, s) {
@@ -2495,18 +3042,210 @@
       submitReport(1);
     });
 
-    $(document).on('click', '#btnHoldClaim', function(e) {
-      e.preventDefault();
-      submitReport(0, true);
-    });
-
     $('#prodForm').on('submit', function(e) {
       e.preventDefault();
       submitReport(0);
     });
 
+
+  // RESTORE DRAFT DATA BILA SEDANG EDIT / LANJUTKAN DRAFT
+  function restoreDraftData() {
+    if (!DRAFT_DATA) return;
+
+    var h = DRAFT_DATA.header || {};
+
+    // 1. Restore Info Header (Card 1)
+    if (h.tgl_produksi) $('#tglProduksi').val(h.tgl_produksi);
+    if (h.id_asset_machine) $('#id_asset_machine').val(h.id_asset_machine).trigger('change.select2');
+    if (h.employee_helper) {
+      var helpers = Array.isArray(h.employee_helper) 
+        ? h.employee_helper 
+        : String(h.employee_helper).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+      $('#employee_helper').val(helpers).trigger('change.select2');
+    }
+    if (h.employee_setter) $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    if (h.start_time) $('#startTime').val(h.start_time.substring(0, 5));
+    if (h.finished_time) $('#finishedTime').val(h.finished_time.substring(0, 5));
+
+    // 2. Restore Materials / Coils (Card 2)
+    if (DRAFT_DATA.materials && DRAFT_DATA.materials.length > 0) {
+      state.coils = [];
+      var sourcesToLoad = {};
+      $.each(DRAFT_DATA.materials, function(i, m) {
+        var src = m.source_warehouse || 'unpack';
+        sourcesToLoad[src] = true;
+        state.coils.push({
+          id: uid(),
+          source: src,
+          id_warehouse_stock_coil: m.id_unpack_baby_coil,
+          code: m.coil_code,
+          material: m.material_name,
+          nett: getNum(m.nett_weight_packing),
+          gross: getNum(m.gross_weight),
+          meter: getNum(m.total_meter),
+          kulit: getNum(m.berat_kulit),
+          clamp: getNum(m.berat_clamp)
+        });
+      });
+      renderCoils();
+      refreshCoilSelectors();
+
+      // Preload pilihan coil dari warehouse di background agar jika user ingin mengganti coil dropdown tetap lengkap
+      $.each(Object.keys(sourcesToLoad), function(idx, src) {
+        loadCoilOptions(src, function() {
+          $.each(state.coils, function(i, c) {
+            if (c.source === src) {
+              var $sel = $('[data-coil-pick="' + c.id + '"]');
+              var currentCode = c.code;
+              $sel.html(babyCoilSelectOptions(c.source, c.code, c.material));
+              if (currentCode) {
+                $sel.val(currentCode);
+              }
+            }
+          });
+          initSelect2Search('#coilTable');
+        });
+      });
+    }
+
+    // 3. Restore Items (Card 3: KW1 & Bebas, Card 4: KW2)
+    if (DRAFT_DATA.items && DRAFT_DATA.items.length > 0) {
+      state.fg = [];
+      state.kw2.internal = [];
+      state.kw2.supplier = [];
+
+      $.each(DRAFT_DATA.items, function(i, it) {
+        var cat = it.category_type;
+        if (cat === 'kw_1' || cat === 'stok_bebas') {
+          state.fg.push({
+            id: uid(),
+            kind: (cat === 'stok_bebas') ? 'bebas' : 'kw1',
+            productId: it.product_lvl_4_id,
+            productName: it.nama_product_custom || '',
+            targetQty: 0,
+            method: 1,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            perPcs: getNum(it.berat_per_pcs),
+            std: getNum(it.berat_standard),
+            selisih: getNum(it.percentage_selisih),
+            panjang: getNum(it.panjang_meter),
+            beratPerMeterAktual: getNum(it.berat_per_meter_aktual),
+            stdPerMeter: getNum(it.berat_per_meter_standard),
+            selisihMeter: getNum(it.percentage_selisih_meter),
+            coil: it.source_material_coil || ''
+          });
+        } else if (cat === 'kw_2_internal') {
+          state.kw2.internal.push({
+            id: uid(),
+            productId: it.product_lvl_4_id,
+            coil: it.source_material_coil || '',
+            size: 0,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            ket: it.keterangan || ''
+          });
+        } else if (cat === 'kw_2_supplier') {
+          state.kw2.supplier.push({
+            id: uid(),
+            productId: it.product_lvl_4_id,
+            coil: it.source_material_coil || '',
+            size: 0,
+            qty: getNum(it.qty),
+            total: getNum(it.berat_total),
+            ket: it.keterangan || ''
+          });
+        }
+      });
+
+      renderFg();
+      renderKw2('internal');
+      renderKw2('supplier');
+    }
+
+    // 4. Restore Scraps, Sisa, and Hold (Card 5 & Card 6)
+    if (DRAFT_DATA.scraps && DRAFT_DATA.scraps.length > 0) {
+      state.sisa = [];
+      state.hold = [];
+
+      $.each(DRAFT_DATA.scraps, function(i, sc) {
+        var st = sc.scrap_type;
+        var b = getNum(sc.berat_total);
+        if (st === 'tong_coil') {
+          $('#scrapTong').val(b);
+        } else if (st === 'wrapping') {
+          $('#scrapWrapping').val(b);
+        } else if (st === 'potongan_pisau') {
+          $('#scrapPisau').val(b);
+        } else if (st === 'reject_product_internal' || st === 'reject_internal') {
+          $('#rejProdInt').val(b);
+          if (sc.keterangan) $('#rejKetInt').val(sc.keterangan);
+        } else if (st === 'reject_material_internal') {
+          $('#rejMatInt').val(b);
+          if (sc.keterangan && !$('#rejKetInt').val()) $('#rejKetInt').val(sc.keterangan);
+        } else if (st === 'reject_product_supplier' || st === 'reject_supplier') {
+          $('#rejProdSup').val(b);
+          if (sc.keterangan) $('#rejKetSup').val(sc.keterangan);
+        } else if (st === 'reject_material_supplier') {
+          $('#rejMatSup').val(b);
+          if (sc.keterangan && !$('#rejKetSup').val()) $('#rejKetSup').val(sc.keterangan);
+        } else if (st === 'sisa_coil') {
+          state.sisa.push({
+            id: uid(),
+            coil: sc.target_coil_code || '',
+            berat: b
+          });
+        } else if (st === 'hold_coil') {
+          state.hold.push({
+            id: uid(),
+            coil: sc.target_coil_code || '',
+            berat: b
+          });
+        }
+      });
+
+      renderLines('sisa');
+      renderLines('hold');
+    }
+
+    // 5. Restore Confirmations
+    if (h.override_confirm_json) {
+      try {
+        state.confirmations = JSON.parse(h.override_confirm_json);
+      } catch (err) {}
+    }
+
+    // 6. Restore Claim Material (Card 7, FR-94, FR-98)
+    if (DRAFT_DATA.claims && DRAFT_DATA.claims.length > 0) {
+      $.each(DRAFT_DATA.claims, function(i, cl) {
+        var key = cl.asal + ':' + (cl.no_coil_packing_list || '');
+        state.claimIn[key] = {
+          coilCode: cl.no_coil_packing_list || '',
+          problem: cl.problem || '',
+          alasan: cl.alasan_produksi || '',
+          bukti: cl.bukti || [],
+          status: cl.status_claim || 'Claim Baru'
+        };
+      });
+    }
+
+    // Ubah badge status di header
+    var pendingHold = $.grep(DRAFT_DATA.claims || [], function(c) {
+      return c.asal === 'Hold Coil' && (!c.decisions || c.decisions.length === 0);
+    });
+    if (pendingHold.length > 0) {
+      $('#docStatus').text('SPK Sedang Di-Hold (' + pendingHold[0].no_claim + ')').removeClass('bg-secondary bg-warning').addClass('bg-danger text-white');
+    } else {
+      $('#docStatus').text('Lanjutkan Draft').removeClass('bg-secondary').addClass('bg-warning text-dark');
+    }
+  }
+
     // INIT DATA
-    initFgFromSpk();
+    if (DRAFT_DATA) {
+      restoreDraftData();
+    } else {
+      initFgFromSpk();
+    }
     recalc();
   });
 </script>

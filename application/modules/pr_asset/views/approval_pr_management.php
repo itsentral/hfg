@@ -1,268 +1,278 @@
 <?php
-$ENABLE_VIEW = has_permission('PR_Asset.View');
-$ENABLE_ADD = has_permission('PR_Asset.Add');
+$ENABLE_VIEW   = has_permission('PR_Asset.View');
+$ENABLE_ADD    = has_permission('PR_Asset.Add');
 $ENABLE_MANAGE = has_permission('PR_Asset.Manage');
 $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 ?>
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-<form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data">
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title"><?php echo $title; ?></h3>
-			<div class="box-tool pull-right">
-				<?php
-				if ($ENABLE_ADD && $tanda == '') {
-					echo '
-						<a href="' . site_url("pr_asset/add_pr") . '" class="btn btn-sm btn-success" id="btn-add">
-							<i class="fa fa-plus"></i> &nbsp;&nbsp;Add PR
-						</a>';
-				}
-				?>
-			</div>
-		</div>
-		<!-- /.box-header -->
-		<div class="box-body">
-			<input type='hidden' id='tanda' value='<?= $tanda; ?>'>
-			<table class="table table-bordered table-striped" id="my-grid" width='100%'>
-				<thead>
-					<tr class='bg-blue'>
-						<th class="text-center" width='5%'>#</th>
-						<th class="text-center" width='10%'>No PR</th>
-						<th class="text-center" width='15%'>Tanggal PR</th>
-						<th class="text-center">Nama Barang</th>
-						<th class="text-center" width='15%'>PR By</th>
-						<th class="text-center" width='15%'>PR Date</th>
-						<th class="text-center no-sort" width='15%'>Status</th>
-						<th class="text-center no-sort" width='7%'>Option</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-		</div>
-		<!-- /.box-body -->
-	</div>
-	<!-- /.box -->
-	<!-- modal -->
-	<div class="modal fade" id="ModalView2" style='overflow-y: auto;'>
-		<div class="modal-dialog" style='width:80%; '>
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="head_title2"></h4>
-				</div>
-				<div class="modal-body" id="view2">
-				</div>
-				<div class="modal-footer">
-					<!--<button type="button" class="btn btn-primary">Save</button>-->
-					<button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- modal -->
-</form>
-<!-- <script src="<?php echo base_url('application/views/Component/general.js'); ?>"></script> -->
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-<style>
-	.chosen-container-active .chosen-single {
-		border: none;
-		box-shadow: none;
-	}
 
-	.chosen-container-single .chosen-single {
-		height: 34px;
-		border: 1px solid #d2d6de;
-		border-radius: 0px;
-		background: none;
-		box-shadow: none;
-		color: #444;
-		line-height: 32px;
-	}
+<div class="container-fluid">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+                <h5 class="card-title fw-bold mb-0 text-primary">
+                    <i class="fa fa-check-square-o me-2"></i><?= isset($title) ? $title : 'Approval PR Asset by Management'; ?>
+                </h5>
+                <small class="text-muted">Persetujuan Purchase Request Asset untuk level Management</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary px-3 py-2 rounded-pill">
+                    <i class="fa fa-shield me-1"></i>Management Review
+                </span>
+                <?php if ($ENABLE_ADD && (!isset($tanda) || $tanda == '')): ?>
+                    <a href="<?= site_url('pr_asset/add_pr'); ?>" class="btn btn-sm btn-success">
+                        <i class="fa fa-plus me-1"></i> Add PR
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
 
-	.chosen-container-single .chosen-single div {
-		top: 5px;
-	}
-</style>
+        <div class="card-body p-4">
+            <input type="hidden" id="tanda" value="<?= isset($tanda) ? htmlspecialchars($tanda) : 'approval_management'; ?>">
+
+            <!-- Status Filter Tabs -->
+            <ul class="nav nav-tabs mb-4" id="prStatusTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold status-tab" data-status="N" type="button">
+                        <i class="fa fa-clock-o me-1 text-warning"></i> Open / Waiting Approval
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold status-tab" data-status="Y" type="button">
+                        <i class="fa fa-check-circle me-1 text-success"></i> Approved
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold status-tab" data-status="D" type="button">
+                        <i class="fa fa-times-circle me-1 text-danger"></i> Rejected
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold status-tab" data-status="ALL" type="button">
+                        <i class="fa fa-list me-1 text-primary"></i> All Status
+                    </button>
+                </li>
+            </ul>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped border align-middle w-100" id="my-grid">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th width="4%">#</th>
+                            <th width="14%">No PR</th>
+                            <th width="12%">Tanggal PR</th>
+                            <th>Nama Barang</th>
+                            <th width="12%">PR By</th>
+                            <th width="12%">PR Date</th>
+                            <th width="14%">Status</th>
+                            <th width="12%" class="no-sort">Option</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal View Detail PR Asset -->
+<div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold" id="head_title2">
+                    <i class="fa fa-info-circle me-2"></i>Detail PR Asset
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="view2">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fa fa-times me-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-	$(document).ready(function() {
-		var tanda = $('#tanda').val();
-		DataTables(tanda);
+    var currentStatus = 'N';
 
-		$(document).on('click', '.look_hide', function() {
-			var idOfParent = $(this).data('id');
-			$('.child-' + idOfParent).toggle('slow');
-		});
-	});
+    $(document).ready(function() {
+        var tanda = $('#tanda').val() || 'approval_management';
+        DataTables(tanda, currentStatus);
 
-	$(document).on('click', '.print_pr', function(e) {
-		e.preventDefault();
-		var Link = base_url + active_controller + 'print_pr_asset/' + $(this).data('no_pr');
-		window.open(Link)
-	});
+        // Status Tabs Click
+        $(document).on('click', '.status-tab', function(e) {
+            e.preventDefault();
+            $('.status-tab').removeClass('active');
+            $(this).addClass('active');
+            currentStatus = $(this).data('status');
+            DataTables(tanda, currentStatus);
+        });
 
-	$(document).on('click', '.detail', function(e) {
-		e.preventDefault();
+        // Expand / Collapse Child Row
+        $(document).on('click', '.look_hide', function(e) {
+            e.preventDefault();
+            var idOfParent = $(this).data('id');
+            $('.child-' + idOfParent).toggle('slow');
+        });
 
-		$("#head_title2").html("<b>DETAIL BUDGET RUTIN [" + $(this).data('code') + "]</b>");
-		$.ajax({
-			type: 'POST',
-			url: base_url + active_controller + 'detail_rutin/' + $(this).data('code'),
-			success: function(data) {
-				$("#ModalView2").modal();
-				$("#view2").html(data);
+        // Modal View Detail PR
+        $(document).on('click', '.view_modal_pr', function(e) {
+            e.preventDefault();
+            var no_pr = $(this).data('no_pr');
+            $('#head_title2').html('<i class="fa fa-file-text-o me-2"></i>Detail PR Asset [' + no_pr + ']');
+            $('#view2').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            
+            var modalEl = document.getElementById('ModalView2');
+            var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
 
-			},
-			error: function() {
-				swal({
-					title: "Error Message !",
-					text: 'Connection Timed Out ...',
-					type: "warning",
-					timer: 5000,
-					showCancelButton: false,
-					showConfirmButton: false,
-					allowOutsideClick: false
-				});
-			}
-		});
-	});
+            $.ajax({
+                type: 'POST',
+                url: base_url + active_controller + 'view_pr/' + encodeURIComponent(no_pr),
+                success: function(data) {
+                    $('#view2').html(data);
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Gagal memuat detail PR Asset. Silakan coba kembali.'
+                    });
+                }
+            });
+        });
 
-	$(document).on('click', '.approve', function() {
-		var nomor = $(this).data('id');
-		var tipe_approve = $(this).data('tipe_approve');
-		var no_pr = $('#no_pr_' + nomor).val().split(",").join("");
-		var action = $('#action_' + nomor).val().split(",").join("");
-		var reason = $('#reason_' + nomor).val();
+        // Print PR
+        $(document).on('click', '.print_pr', function(e) {
+            e.preventDefault();
+            var no_pr = $(this).data('no_pr');
+            var link = base_url + active_controller + 'print_pr_asset/' + encodeURIComponent(no_pr);
+            window.open(link, '_blank');
+        });
 
-		var link_after = '';
-		if (tipe_approve == 'approval_head') {
-			var link_after = base_url + active_controller + 'pr/approval_head';
-		}
-		if (tipe_approve == 'approval_cost_control') {
-			var link_after = base_url + active_controller + 'pr/approval_cost_control';
-		}
-		if (tipe_approve == 'approval_management') {
-			var link_after = base_url + active_controller + 'pr/approval_management';
-		}
+        // Approve / Reject Action
+        $(document).on('click', '.approve', function(e) {
+            e.preventDefault();
+            var nomor = $(this).data('id');
+            var tipe_approve = $(this).data('tipe_approve') || 'approval_management';
+            var no_pr = ($('#no_pr_' + nomor).val() || '').trim();
+            var action = ($('#action_' + nomor).val() || 'Y').trim();
+            var reason = ($('#reason_' + nomor).val() || '').trim();
 
-		if (action == 'N') {
-			if (reason == '') {
-				swal({
-					title: "Error Message!",
-					text: 'Reason action is empty, please input first ...',
-					type: "warning"
-				});
-				return false;
-			}
-		}
+            if (action === 'D' && reason === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Alasan penolakan (Reason Reject) wajib diisi!'
+                });
+                return false;
+            }
 
-		swal({
-				title: "Are you sure?",
-				text: "You will not be able to process again this data!",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn-danger",
-				confirmButtonText: "Yes, Process it!",
-				cancelButtonText: "No, cancel process!",
-				closeOnConfirm: false,
-				closeOnCancel: false
-			},
-			function(isConfirm) {
-				if (isConfirm) {
+            var actionLabel = (action === 'Y') ? 'Approve' : 'Reject';
+            var confirmBtnColor = (action === 'Y') ? '#198754' : '#dc3545';
 
-					$.ajax({
-						url: base_url + active_controller + 'approve_pr',
-						type: "POST",
-						data: {
-							"no_pr": no_pr,
-							"action": action,
-							"reason": reason,
-							"tipe_approve": tipe_approve
-						},
-						cache: false,
-						dataType: 'json',
-						success: function(data) {
-							if (data.status == 1) {
-								swal({
-									title: "Save Success!",
-									text: data.pesan,
-									type: "success",
-									timer: 7000,
-									showCancelButton: false,
-									showConfirmButton: false,
-									allowOutsideClick: false
-								});
-								window.location.href = link_after;
-							} else if (data.status == 0) {
-								swal({
-									title: "Save Failed!",
-									text: data.pesan,
-									type: "warning",
-									timer: 7000,
-									showCancelButton: false,
-									showConfirmButton: false,
-									allowOutsideClick: false
-								});
-							}
-						},
-						error: function() {
-							swal({
-								title: "Error Message !",
-								text: 'An Error Occured During Process. Please try again..',
-								type: "warning",
-								timer: 7000,
-								showCancelButton: false,
-								showConfirmButton: false,
-								allowOutsideClick: false
-							});
-						}
-					});
-				} else {
-					swal("Cancelled", "Data can be process again :)", "error");
-					return false;
-				}
-			});
-	});
+            Swal.fire({
+                title: 'Konfirmasi ' + actionLabel + '?',
+                text: 'Apakah Anda yakin ingin memproses ' + actionLabel + ' untuk No. PR ' + no_pr + '?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmBtnColor,
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Proses!',
+                cancelButtonText: '<i class="fa fa-times me-1"></i> Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Memproses data...',
+                        allowOutsideClick: false,
+                        didOpen: function() {
+                            Swal.showLoading();
+                        }
+                    });
 
+                    $.ajax({
+                        url: base_url + active_controller + 'approve_pr',
+                        type: 'POST',
+                        data: {
+                            no_pr: no_pr,
+                            action: action,
+                            reason: reason,
+                            tipe_approve: tipe_approve
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.status == 1) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: data.pesan,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                DataTables(tanda, currentStatus);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: data.pesan || 'Proses gagal dilakukan.'
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Terjadi kesalahan sistem saat memproses approval. Silakan coba kembali.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
 
-	function DataTables(tanda = null) {
-		var dataTable = $('#my-grid').DataTable({
-			"serverSide": true,
-			"stateSave": true,
-			"bAutoWidth": true,
-			"destroy": true,
-			"processing": true,
-			"responsive": true,
-			"fixedHeader": {
-				"header": true,
-				"footer": true
-			},
-			"aaSorting": [
-				[1, "asc"]
-			],
-			"columnDefs": [{
-				"targets": 'no-sort',
-				"orderable": false,
-			}],
-			"sPaginationType": "simple_numbers",
-			"iDisplayLength": 10,
-			"aLengthMenu": [
-				[10, 20, 50, 100, 150],
-				[10, 20, 50, 100, 150]
-			],
-			"ajax": {
-				url: base_url + active_controller + 'server_side_pr_asset',
-				type: "post",
-				data: function(d) {
-					d.tanda = tanda
-				},
-				cache: false,
-				error: function() {
-					$(".my-grid-error").html("");
-					$("#my-grid").append('<tbody class="my-grid-error"><tr><th colspan="3">No data found in the server</th></tr></tbody>');
-					$("#my-grid_processing").css("display", "none");
-				}
-			}
-		});
-	}
+    function DataTables(tanda, status_filter) {
+        if (!status_filter) status_filter = 'N';
+        if (!tanda) tanda = 'approval_management';
+
+        $('#my-grid').DataTable({
+            serverSide: true,
+            stateSave: true,
+            bAutoWidth: true,
+            destroy: true,
+            processing: true,
+            responsive: true,
+            aaSorting: [[1, 'desc']],
+            columnDefs: [{
+                targets: 'no-sort',
+                orderable: false
+            }],
+            iDisplayLength: 10,
+            aLengthMenu: [
+                [10, 20, 50, 100],
+                [10, 20, 50, 100]
+            ],
+            ajax: {
+                url: base_url + active_controller + 'server_side_pr_asset',
+                type: 'POST',
+                data: function(d) {
+                    d.tanda = tanda;
+                    d.status_filter = status_filter;
+                },
+                cache: false,
+                error: function() {
+                    $('#my-grid').append('<tbody class="my-grid-error"><tr><th colspan="8" class="text-center text-danger py-3">Tidak ada data ditemukan pada server</th></tr></tbody>');
+                }
+            }
+        });
+    }
 </script>

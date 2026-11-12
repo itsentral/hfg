@@ -39,13 +39,27 @@ if ($type == 'expense') {
     $bank_id = $header->bank_id;
     $accnumber = $header->accnumber;
     $accname = $header->accname;
-} elseif ($type == 'direct_payment') {
-    $keterangan = $header->deskripsi;
-    $no_doc = $header->no_doc;
-    $tgl_doc = $header->tgl_doc;
-    $bank_id = $header->bank;
-    $accnumber = $header->bank_number;
-    $accname = $header->bank_account;
+} elseif ($type == 'direct_payment' || $type == 'Cash') {
+    $keterangan = !empty($header->deskripsi) ? $header->deskripsi : ($data_req_payment['keperluan'] ?? '');
+    $no_doc = !empty($header->no_doc) ? $header->no_doc : ($header->no_non_po ?? ($data_req_payment['no_doc'] ?? ''));
+    $tgl_doc = !empty($header->tgl_doc) ? $header->tgl_doc : ($header->created_date ?? ($data_req_payment['tgl_doc'] ?? ''));
+    $bank_id = !empty($header->bank) ? $header->bank : (!empty($data_req_payment['bank_id']) ? $data_req_payment['bank_id'] : ($data_req_payment['bank_name'] ?? ''));
+    $accnumber = !empty($header->bank_number) ? $header->bank_number : ($data_req_payment['accnumber'] ?? '');
+    $accname = !empty($header->bank_account) ? $header->bank_account : ($data_req_payment['accname'] ?? '');
+
+    // Fallback ambil dari rutin_non_planning_header jika kolom bank masih kosong
+    if (empty($bank_id) || empty($accnumber) || empty($accname)) {
+        $ci = &get_instance();
+        $no_pr_ref = !empty($data_req_payment['no_surat']) ? $data_req_payment['no_surat'] : (!empty($header->no_pr) ? $header->no_pr : '');
+        if (!empty($no_pr_ref)) {
+            $pr_dept = $ci->db->get_where('rutin_non_planning_header', ['no_pr' => $no_pr_ref])->row();
+            if (!empty($pr_dept)) {
+                $bank_id = !empty($bank_id) ? $bank_id : $pr_dept->bank_name;
+                $accnumber = !empty($accnumber) ? $accnumber : $pr_dept->bank_account_no;
+                $accname = !empty($accname) ? $accname : $pr_dept->bank_account_name;
+            }
+        }
+    }
 } elseif (in_array($type, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
     $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $type);
     $keterangan = $tipe_label . ' - ' . $header->no_surat . ' - ' . $header->nomor_invoice;
@@ -149,7 +163,7 @@ if ($type == 'expense') {
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-4 col-form-label text-md-end fw-semibold small">Bank Destination</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control bg-light" readonly value="<?= $data_req_payment['bank_id']; ?>">
+                        <input type="text" class="form-control bg-light" readonly value="<?= !empty($bank_id) ? $bank_id : (!empty($data_req_payment['bank_id']) ? $data_req_payment['bank_id'] : ($data_req_payment['bank_name'] ?? '')); ?>">
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
@@ -498,31 +512,30 @@ if ($type == 'expense') {
                                 </tr>
 
                             <?php
-                            // ------------------------- TYPE DIRECT PAYMENT -------------------------
-                            elseif ($type == 'direct_payment') :
-                                $gTotal += $dtl->grand_total;
+                            // ------------------------- TYPE DIRECT PAYMENT & CASH -------------------------
+                            elseif ($type == 'direct_payment' || $type == 'Cash') :
+                                $total_val = !empty($dtl->total_pr) ? $dtl->total_pr : (!empty($dtl->grand_total) ? $dtl->grand_total : ($data_req_payment['jumlah'] ?? 0));
+                                $gTotal += $total_val;
+                                $deskripsi_item = !empty($dtl->deskripsi) ? $dtl->deskripsi : ($data_req_payment['keperluan'] ?? '');
+                                $tgl_item = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : ($dtl->created_date ?? ($data_req_payment['tgl_doc'] ?? ''));
                             ?>
                                 <tr>
                                     <td class="text-center"><?= $n; ?></td>
 
-                                    <td><?= $dtl->deskripsi; ?></td>
-                                    <td class="text-center"><?= $dtl->tgl_doc; ?></td>
-                                    <td class="text-end"><?= number_format($dtl->grand_total, 2) ?></td>
-                                    <td class="text-center fw-bold text-primary"><?= $data_req_payment['currency']; ?></td>
-                                    <td class="text-end fw-bold text-success"><?= number_format($dtl->grand_total, 2) ?></td>
+                                    <td><?= $deskripsi_item; ?></td>
+                                    <td class="text-center"><?= $tgl_item; ?></td>
+                                    <td class="text-end"><?= number_format($total_val, 2) ?></td>
+                                    <td class="text-center fw-bold text-primary"><?= $data_req_payment['currency'] ?? 'IDR'; ?></td>
+                                    <td class="text-end fw-bold text-success"><?= number_format($total_val, 2) ?></td>
                                     <td class="text-center">
-                                        <a href="<?= base_url('assets/expense/' . $data_req_payment['link_doc']); ?>" target="_blank" class="text-primary"><i class="fa fa-download fa-lg"></i></a>
+                                        <?php if (!empty($data_req_payment['link_doc'])) : ?>
+                                            <a href="<?= base_url('assets/expense/' . $data_req_payment['link_doc']); ?>" target="_blank" class="text-primary"><i class="fa fa-download fa-lg"></i></a>
+                                        <?php else : ?>
+                                            -
+                                        <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <?php if ($dtl->sts == '2') : ?>
-                                            <input type="checkbox" checked value="<?= $dtl->id; ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
-                                        <?php elseif ($dtl->sts == '3') : ?>
-                                            <span class="badge bg-warning text-dark">Process</span>
-                                        <?php elseif ($dtl->sts == '4') : ?>
-                                            <span class="badge bg-success">PAID</span>
-                                        <?php else : ?>
-                                            <span class="badge bg-light text-muted">Undefined</span>
-                                        <?php endif; ?>
+                                        <input type="checkbox" checked value="<?= $dtl->id ?? ($data_req_payment['ids'] ?? 0); ?>" name="item[<?= $n; ?>][id]" class="form-check-input check_item">
                                     </td>
                                 </tr>
                             <?php

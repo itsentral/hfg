@@ -522,11 +522,10 @@ $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
                     if (res.status == 1) {
                         $('#modal_close_ros_body').html(buildPreviewHtml(res));
 
-                        // PO Lokal: sembunyikan kolom biaya (BM, LS, Forwarding, Insurance, Others)
+                        // PO Lokal: sembunyikan kolom biaya impor (BM, LS, Insurance, Others)
                         if (res.loi && String(res.loi).toLowerCase() === 'lokal') {
                             $('#modal_close_ros_body .col-bm, ' +
                                 '#modal_close_ros_body .col-ls, ' +
-                                '#modal_close_ros_body .col-forwarding, ' +
                                 '#modal_close_ros_body .col-insurance, ' +
                                 '#modal_close_ros_body .col-others').hide();
                         }

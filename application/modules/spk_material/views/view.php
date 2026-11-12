@@ -123,8 +123,8 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                         <tr>
                             <th class="text-center" width="5%">Urut</th>
                             <th>Nama Produk</th>
-                            <th class="text-center" width="12%">Target Qty</th>
-                            <th class="text-center" width="14%">Total Weight (Kg)</th>
+                            <th class="text-center" width="15%">Target Qty</th>
+                            <th class="text-center" width="20%">Total Weight (Kg)</th>
                         </tr>
                     </thead>
                     <tbody>

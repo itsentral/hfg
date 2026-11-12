@@ -4,34 +4,26 @@
     $ENABLE_VIEW    = has_permission('Inventory_1.View');
     $ENABLE_DELETE  = has_permission('Inventory_1.Delete');
 
-
-    $id  = (!empty($header))?$header[0]->id:'';
-    $code   = (!empty($header))?$header[0]->code:'';
+    $id   = (!empty($header)) ? $header[0]->id : '';
+    $code = (!empty($header)) ? $header[0]->code : '';
 ?>
-<style type="text/css">
-thead input {
-	width: 100%;
-}
-</style>
 
-<div class="box box-primary">
-	<div class="box-body">
-		<form id="data_form" autocomplete="off">
-      <div class="form-group row">
-        <div class="col-md-3">
-          <label for="">Nama Unit</label>
-        </div>
-        <div class="col-md-9">
-          <input type="text" class="form-control" id="code" required name="code" placeholder="Nama Unit" value='<?=$code;?>'>
-          <input type="hidden" class="form-control" id="id" required name="id" placeholder="Nama Unit"  value='<?=$id;?>'>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-md-3"></div>
-        <div class="col-md-9">
-          <button type="button" class="btn btn-primary" name="save" id="save"><i class="fa fa-save"></i> Save</button>
-        </div>
-      </div>
-		</form>
-	</div>
+<div class="card border-0">
+    <div class="card-body p-0">
+        <form id="data_form" autocomplete="off">
+            <input type="hidden" id="id" name="id" value="<?= $id; ?>">
+            <div class="mb-3">
+                <label for="code" class="form-label fw-bold">Nama Unit <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="code" required name="code" placeholder="Nama Unit (e.g. PCS, KG, ROLL)" value="<?= $code; ?>">
+            </div>
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">
+                    <i class="fa fa-times me-1"></i> Batal
+                </button>
+                <button type="button" class="btn btn-primary" name="save" id="save">
+                    <i class="fa fa-save me-1"></i> Simpan
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

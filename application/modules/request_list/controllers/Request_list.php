@@ -66,8 +66,15 @@ class Request_list extends Admin_Controller
         );
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        $rows       = $this->Request_list_model->get_spk_list($search, $start, $length, $order_by, $order_dir);
-        $totalData  = $this->Request_list_model->count_spk_filtered($search);
+        // Filter status tab: waiting (default), released, all
+        $status_filter = $this->input->get_post('status_filter', TRUE);
+        if (!in_array($status_filter, array('waiting', 'released', 'all'))) {
+            $status_filter = 'waiting';
+        }
+
+        $rows       = $this->Request_list_model->get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter);
+        $totalData  = $this->Request_list_model->count_spk_filtered($search, $status_filter);
+        $counts     = $this->Request_list_model->get_status_counts();
 
         $data = array();
         $no   = $start + 1;
@@ -88,7 +95,7 @@ class Request_list extends Admin_Controller
                     $badge_class = 'bg-success';
                     break;
                 case 'Released':
-                    $badge_class = 'bg-secondary';
+                    $badge_class = 'bg-success';
                     break;
                 case 'Cancelled':
                     $badge_class = 'bg-danger';
@@ -98,34 +105,28 @@ class Request_list extends Admin_Controller
                     break;
             }
 
-            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . $display_status . "</span>";
+            $scan_count = (int) (isset($row['scanned_pack_count']) ? $row['scanned_pack_count'] : 0);
+            $scan_info  = $scan_count > 0
+                ? ' <span class="badge bg-light text-primary border border-primary ms-1" title="Jumlah pack sudah di-scan ke PRT">' . $scan_count . ' Pack PRT</span>'
+                : '';
+            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . htmlspecialchars($display_status) . "</span>" . $scan_info;
 
-            // --- ACTION: Dropdown Menu (titik tiga) ---
-            $dropdown_items = array();
+            // --- ACTION: Tombol Inline Langsung di Semua Tab ---
+            $spk_esc = htmlspecialchars($row['spk_no'], ENT_QUOTES, 'UTF-8');
+            $spk_url = rawurlencode($row['spk_no']);
+            $actions = array();
+            $actions[] = '<a href="' . site_url('request_list/view_spk_coil/' . $spk_url) . '" class="btn btn-sm btn-info text-white text-nowrap" title="View Detail">'
+                . '<i class="fa fa-eye me-1"></i> View Detail</a>';
+            $actions[] = '<a href="' . site_url('spk_material/print_pdf/' . $spk_url) . '" target="_blank" class="btn btn-sm btn-secondary text-nowrap" title="Print SPK">'
+                . '<i class="fa fa-print me-1"></i> Print SPK</a>';
 
-            $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('request_list/view_spk_coil/' . $row['spk_no']) . '"><i class="fa fa-eye me-2 text-info"></i> View</a>';
-
-            if (in_array($display_status, ['Material Requested', 'Material On Load'])) {
-                $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('request_list/create_spk_coil/' . $row['spk_no']) . '"><i class="fa fa-cogs me-2 text-warning"></i> Manage Request Coil</a>';
+            if (in_array($display_status, ['Material Requested', 'Material On Load', 'Material Confirmed'], true)) {
+                $actions[] = '<button type="button" class="btn btn-sm btn-success btn-release-spk text-nowrap" data-spk="' . $spk_esc . '" title="Release SPK">'
+                    . '<i class="fa fa-check-circle me-1"></i> Release</button>';
             }
 
-            if ($display_status != 'Material Requested') {
-                $dropdown_items[] = '<a class="dropdown-item btn-print-spk" href="javascript:void(0)" data-spk="' . $row['spk_no'] . '"><i class="fa fa-print me-2 text-secondary"></i> Print SPK Pengambilan</a>';
-            }
-
-            if ($display_status == 'Material On Load') {
-                $dropdown_items[] = '<div class="dropdown-divider"></div>';
-                $dropdown_items[] = '<a class="dropdown-item btn-confirm-spk" href="javascript:void(0)" data-spk="' . $row['spk_no'] . '"><i class="fa fa-check-circle me-2 text-success"></i> Confirm SPK Coil</a>';
-                $dropdown_items[] = '<a class="dropdown-item btn-close-spk" href="javascript:void(0)" data-spk="' . $row['spk_no'] . '"><i class="fa fa-lock me-2 text-dark"></i> Close SPK</a>';
-            }
-
-            $aksi = '<div class="dropdown text-center">'
-                . '<button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown" aria-expanded="false">'
-                . '<i class="fa fa-ellipsis-v"></i>'
-                . '</button>'
-                . '<ul class="dropdown-menu dropdown-menu-end">'
-                . '<li>' . implode('</li><li>', $dropdown_items) . '</li>'
-                . '</ul>'
+            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap" style="min-width: 190px;">'
+                . implode('', $actions)
                 . '</div>';
 
             $data[] = array(
@@ -145,6 +146,7 @@ class Request_list extends Admin_Controller
             'recordsTotal'    => $totalData,
             'recordsFiltered' => $totalData,
             'data'            => $data,
+            'counts'          => $counts,
         ));
     }
 
@@ -156,26 +158,24 @@ class Request_list extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
 
-        if (!$spk_no) {
-            $this->session->set_flashdata('error', 'SPK No tidak valid.');
+        if (empty($spk_no)) {
+            $this->session->set_flashdata('error', 'Nomor SPK tidak ditemukan.');
             redirect('request_list');
+            return;
         }
 
-        // Get SPK details
-        $spk_data = $this->Request_list_model->get_spk_with_details($spk_no);
+        $spk_no = rawurldecode($spk_no);
+        $detail = $this->Request_list_model->get_spk_detail_for_view($spk_no);
 
-        if (!$spk_data) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+        if (!$detail) {
+            $this->session->set_flashdata('error', 'SPK ' . htmlspecialchars($spk_no) . ' tidak ditemukan.');
             redirect('request_list');
+            return;
         }
 
-        // Get saved coils
-        $saved_coils = $this->Request_list_model->get_saved_coils_by_spk($spk_no);
-
-        $data['spk_no']   = $spk_no;
-        $data['header']   = $spk_data['header'];
-        $data['products'] = $spk_data['products'];
-        $data['saved_coils'] = $saved_coils;
+        $data['spk']               = $detail['spk'];
+        $data['details']           = $detail['details'];
+        $data['scan_pack_history'] = $this->Request_list_model->get_spk_scan_pack_history($spk_no);
 
         $this->template->render('view_spk_coil', $data);
     }
@@ -945,60 +945,15 @@ class Request_list extends Admin_Controller
             return $this->_json(array('status' => 0, 'message' => 'SPK Coil sudah dikonfirmasi oleh user lain.'));
         }
 
-        $summary_map = []; // accumulator: key = id_material_kd_gudang
-
         foreach ($coil_details as $coil) {
             // reduce_coil_stock: PURE pindah posisi coil (+ pack + companion pack) ke PRT.
-            // TIDAK mengubah nilai warehouse_stock. Return ARRAY of result per coil
-            // (bisa >1 karena seluruh coil dalam 1 pack ikut dipindah).
-            $reduce_results = $this->Request_list_model->reduce_coil_stock(
+            // TIDAK mengubah nilai warehouse_stock dan TIDAK dicatat ke stock transaction summary
+            // agar tidak merusak buku saldo berjalan di gudang sumber.
+            $this->Request_list_model->reduce_coil_stock(
                 $coil['id_coil'],
                 $request['spk_coil_no'],
                 $this->id_user
             );
-
-            if (empty($reduce_results) || !is_array($reduce_results)) {
-                continue;
-            }
-
-            // Accumulate summary per material + gudang sumber untuk setiap coil yang dipindah
-            foreach ($reduce_results as $reduce_result) {
-                $key = $reduce_result['id_material'] . '_' . $reduce_result['kd_gudang'];
-
-                if (!isset($summary_map[$key])) {
-                    $summary_map[$key] = [
-                        'kode_trans'    => $request['spk_coil_no'],
-                        'id_material'   => $reduce_result['id_material'],
-                        'nm_material'   => $reduce_result['nm_material'],
-                        'id_gudang'     => $reduce_result['id_gudang'],
-                        'kd_gudang'     => $reduce_result['kd_gudang'],
-                        'tanggal'       => date('Y-m-d'),
-                        'jumlah_coil'   => 0,
-                        'qty_awal'      => $reduce_result['qty_awal'],
-                        'qty_transaksi' => 0,
-                        'qty_akhir'     => 0,
-                        'costbook'      => 0,
-                        'total_harga'   => 0,
-                        'saldo_awal'    => $reduce_result['saldo_awal'],
-                        'saldo_akhir'   => 0,
-                        'harga_lama'    => $reduce_result['harga_lama'],
-                        'created_by'    => $this->id_user,
-                        'created_at'    => $this->datetime,
-                    ];
-                }
-
-                $summary_map[$key]['jumlah_coil']++;
-                $summary_map[$key]['qty_transaksi'] += (float) $reduce_result['net_weight'];
-                $summary_map[$key]['total_harga']   += (float) $reduce_result['total_nilai'];
-                $summary_map[$key]['qty_akhir']   = $reduce_result['qty_akhir'];
-                $summary_map[$key]['saldo_akhir'] = $reduce_result['saldo_akhir'];
-                $summary_map[$key]['costbook']    = $reduce_result['costbook'];
-            }
-        }
-
-        // Insert summary sekali per grup material+gudang (setelah loop selesai)
-        foreach ($summary_map as $s) {
-            $this->Request_list_model->insert_transaction_summary($s);
         }
 
         $this->Request_list_model->update_request_status($request_id, array(
@@ -1072,6 +1027,91 @@ class Request_list extends Admin_Controller
         $this->db->trans_commit();
 
         return $this->_json(array('status' => 1, 'message' => 'SPK berhasil di-close. Status: Material Confirmed.'));
+    }
+
+    // ---------------------------------------------------------------
+    // SCAN NO. PACK -> PILIH SPK -> PRT & RELEASE SPK (ALUR BARU)
+    // ---------------------------------------------------------------
+
+    public function check_pack()
+    {
+        $this->auth->restrict($this->managePermission);
+
+        $pack_code = trim((string) $this->input->post('pack_code', TRUE));
+        $res = $this->Request_list_model->check_pack_for_scan($pack_code);
+
+        if (empty($res['status'])) {
+            if ($pack_code !== '') {
+                $this->db->insert('tr_spk_scan_log', array(
+                    'spk_no'      => '-',
+                    'no_coil'     => substr($pack_code, 0, 100),
+                    'scan_time'   => $this->datetime,
+                    'scan_user'   => $this->id_user,
+                    'status_scan' => 'rejected',
+                    'keterangan'  => substr($res['message'], 0, 500),
+                ));
+            }
+            write_log('Request List', 'Scan Pack', 'Scan Pack ditolak (' . $pack_code . '): ' . $res['message'], array('pack_code' => $pack_code), null, 0);
+            return $this->_json(array('status' => 0, 'message' => $res['message']));
+        }
+
+        return $this->_json(array(
+            'status'   => 1,
+            'pack'     => $res['pack'],
+            'coils'    => $res['coils'],
+            'spk_list' => $res['spk_list'],
+        ));
+    }
+
+    public function confirm_scan_pack()
+    {
+        $this->auth->restrict($this->managePermission);
+
+        $pack_code = trim((string) $this->input->post('pack_code', TRUE));
+        $spk_no    = trim((string) $this->input->post('spk_no', TRUE));
+
+        $res = $this->Request_list_model->confirm_scan_pack_to_prt($pack_code, $spk_no, $this->id_user);
+
+        if (empty($res['status'])) {
+            write_log('Request List', 'Scan Pack', 'Konfirmasi Scan Pack gagal (' . $pack_code . ' -> ' . $spk_no . '): ' . $res['message'], array(
+                'pack_code' => $pack_code,
+                'spk_no'    => $spk_no,
+            ), null, 0);
+            return $this->_json(array('status' => 0, 'message' => $res['message']));
+        }
+
+        write_log('Request List', 'Scan Pack', $res['message'], $res['log_payload'], null, 1);
+
+        return $this->_json(array(
+            'status'       => 1,
+            'message'      => $res['message'],
+            'pack_code'    => $res['pack_code'],
+            'spk_no'       => $res['spk_no'],
+            'coil_count'   => $res['coil_count'],
+            'total_weight' => $res['total_weight'],
+        ));
+    }
+
+    public function release_spk()
+    {
+        $this->auth->restrict($this->managePermission);
+
+        $spk_no = trim((string) $this->input->post('spk_no', TRUE));
+        $res = $this->Request_list_model->release_spk($spk_no, $this->id_user);
+
+        if (empty($res['status'])) {
+            write_log('Request List', 'Release SPK', 'Release SPK gagal (' . $spk_no . '): ' . $res['message'], array('spk_no' => $spk_no), null, 0);
+            return $this->_json(array('status' => 0, 'message' => $res['message']));
+        }
+
+        write_log('Request List', 'Release SPK', $res['message'], $res['log_payload'], null, 1);
+
+        return $this->_json(array(
+            'status'  => 1,
+            'message' => $res['message'],
+            'spk_no'  => $spk_no,
+            'counts'  => $res['counts'],
+        ));
     }
 
     // ---------------------------------------------------------------

@@ -135,7 +135,7 @@ class Incoming_stok extends Admin_Controller
             }
 
             $stock_terakhir = 0;
-            $get_stock_terakhir = $this->db->get_where('warehouse_stock', ['id_material' => $valx['id_barang'], 'id_gudang' => $id_gudang])->row();
+            $get_stock_terakhir = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $valx['id_barang'], 'id_gudang' => $id_gudang])->row();
             if (!empty($get_stock_terakhir)) {
               $stock_terakhir = $get_stock_terakhir->qty_stock;
             }
@@ -228,17 +228,17 @@ class Incoming_stok extends Admin_Controller
             $ttl_qty_prod = 0;
             $ttl_qty_pusat = 0;
 
-            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
+            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
             if (!empty($get_ttl_qty_sub)) {
               $ttl_qty_sub = $get_ttl_qty_sub->ttl_qty_sub;
             }
 
-            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
+            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
             if (!empty($get_ttl_qty_prod)) {
               $ttl_qty_prod = $get_ttl_qty_prod->ttl_qty_prod;
             }
 
-            $get_ttl_qty_pusat = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_pusat FROM warehouse_stock WHERE id_material = '" . $valx['id_barang'] . "'  AND id_gudang = '1'")->row();
+            $get_ttl_qty_pusat = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_pusat FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "'  AND id_gudang = '1'")->row();
             if (!empty($get_ttl_qty_pusat)) {
               $ttl_qty_pusat = $get_ttl_qty_pusat->ttl_qty_pusat;
             }
@@ -255,7 +255,7 @@ class Incoming_stok extends Admin_Controller
               'updated_date' => date('Y-m-d H:i:s')
             ]);
 
-            $get_stock_barang = $this->db->get_where('warehouse_stock', ['id_material' => $valx['id_barang'], 'id_gudang' => $id_gudang])->row();
+            $get_stock_barang = $this->db->get_where('warehouse_stock_non_material', ['id_material' => $valx['id_barang'], 'id_gudang' => $id_gudang])->row();
             $stock_barang = 0;
             if (!empty($get_stock_barang)) {
               $stock_barang = ($get_stock_barang->qty_stock);
@@ -342,7 +342,7 @@ class Incoming_stok extends Admin_Controller
           'pesan'    => 'Save berhasil disimpan. Thanks ...',
           'status'  => 1,
         );
-        move_warehouse_stok($ArrStock, NULL, $id_gudang, $kode_trans, null);
+        move_warehouse_stok_non_material($ArrStock, NULL, $id_gudang, $kode_trans, 'plus');
         history("Incoming barang stok : " . $kode_trans);
       }
       echo json_encode($Arr_Data);

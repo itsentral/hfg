@@ -600,10 +600,11 @@ class Pr_material extends Admin_Controller
         $detail = $this->db->query("
         SELECT d.*,
                p.nama                AS material,
+               p.nama                AS product,
                p.weight              AS berat,
                s1.code               AS satuan,
                w.harga_beli          AS harga,
-               w.code_material        AS item       
+               w.code_material       AS item       
         FROM material_planning_base_on_produksi_detail d
         LEFT JOIN new_inventory_4 p ON p.code_lv4 = d.id_material
         LEFT JOIN warehouse_stock w ON w.id_material = d.id_material
@@ -618,11 +619,6 @@ class Pr_material extends Admin_Controller
             'detail'        => $detail,
             'kode'          => $so_number,
         ];
-
-        ob_clean();
-        ob_start();
-        $this->load->view('print_new', $data);
-        $html = ob_get_clean();
 
         $this->load->view('print_new', $data);
     }

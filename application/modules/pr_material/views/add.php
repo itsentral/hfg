@@ -147,20 +147,44 @@
                 },
                 dataType: 'json',
                 success: function(data) {
-                    swal({
-                        title: "Save Success!",
-                        text: data.pesan,
-                        type: "success",
-                        timer: 3000
-                    });
+                    const Toast = (typeof Swal !== 'undefined' && Swal.mixin) ? Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }) : null;
+
+                    if (Toast) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.pesan || 'Save Success!'
+                        });
+                    } else if (typeof swal === 'function') {
+                        swal({
+                            title: "Save Success!",
+                            text: data.pesan,
+                            type: "success",
+                            timer: 2000
+                        });
+                    }
                 },
                 error: function(xhr, status, error) {
-                    swal({
-                        title: "Save Failed!",
-                        text: "A connection error occurred with the server.",
-                        type: "warning",
-                        timer: 4000
-                    });
+                    if (typeof Swal !== 'undefined' && Swal.fire) {
+                        Swal.fire({
+                            title: "Save Failed!",
+                            text: "A connection error occurred with the server.",
+                            icon: "warning",
+                            timer: 4000
+                        });
+                    } else if (typeof swal === 'function') {
+                        swal({
+                            title: "Save Failed!",
+                            text: "A connection error occurred with the server.",
+                            type: "warning",
+                            timer: 4000
+                        });
+                    }
                     console.log('error connection server !', error);
                 }
             });
@@ -169,19 +193,16 @@
         $(document).on('click', '#saveRequest', function() {
             var tingkat_pr = $('.tingkat_pr').val();
 
-            swal({
+            Swal.fire({
                 title: "Are you sure?",
                 text: "Create all Propose Material requests!",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-danger",
+                confirmButtonColor: "#198754",
                 confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            }, function(isConfirm) {
-                if (!isConfirm) {
-                    swal("Cancelled", "Data can be process again :)", "error");
+                cancelButtonText: "No, cancel process!"
+            }).then(function(result) {
+                if (!result.isConfirmed) {
                     return false;
                 }
 
@@ -195,27 +216,29 @@
                     dataType: 'json',
                     success: function(data) {
                         if (data.status == 1) {
-                            swal({
+                            Swal.fire({
                                 title: "Save Success!",
                                 text: data.pesan,
-                                type: "success",
-                                timer: 3000
+                                icon: "success",
+                                timer: 3000,
+                                showConfirmButton: false
+                            }).then(function() {
+                                window.location.href = base_url + active_controller;
                             });
-                            window.location.href = base_url + active_controller;
                         } else {
-                            swal({
+                            Swal.fire({
                                 title: "Save Failed!",
                                 text: data.pesan,
-                                type: "warning",
+                                icon: "warning",
                                 timer: 4000
                             });
                         }
                     },
                     error: function() {
-                        swal({
+                        Swal.fire({
                             title: "Error Message !",
                             text: "An Error Occured During Process. Please try again..",
-                            type: "warning",
+                            icon: "warning",
                             timer: 4000
                         });
                     }
@@ -249,19 +272,16 @@
         });
 
         $(document).on('click', '#autoPropose', function() {
-            swal({
+            Swal.fire({
                 title: "Are you sure?",
                 text: "Set Auto Propose !!!",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-danger",
+                confirmButtonColor: "#198754",
                 confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            }, function(isConfirm) {
-                if (!isConfirm) {
-                    swal("Cancelled", "Data can be process again :)", "error");
+                cancelButtonText: "No, cancel process!"
+            }).then(function(result) {
+                if (!result.isConfirmed) {
                     return false;
                 }
 
@@ -272,27 +292,29 @@
                     dataType: 'json',
                     success: function(data) {
                         if (data.status == 1) {
-                            swal({
+                            Swal.fire({
                                 title: "Save Success!",
                                 text: data.pesan,
-                                type: "success",
-                                timer: 3000
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function() {
+                                window.location.href = base_url + active_controller + 'add';
                             });
-                            window.location.href = base_url + active_controller + 'add';
                         } else {
-                            swal({
+                            Swal.fire({
                                 title: "Save Failed!",
                                 text: data.pesan,
-                                type: "warning",
+                                icon: "warning",
                                 timer: 4000
                             });
                         }
                     },
                     error: function() {
-                        swal({
+                        Swal.fire({
                             title: "Error Message !",
                             text: "An Error Occured During Process. Please try again..",
-                            type: "warning",
+                            icon: "warning",
                             timer: 4000
                         });
                     }
@@ -301,19 +323,16 @@
         });
 
         $(document).on('click', '#autoDelete', function() {
-            swal({
+            Swal.fire({
                 title: "Are you sure?",
                 text: "Clear All Propose Request !!!",
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-danger",
+                confirmButtonColor: "#dc3545",
                 confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            }, function(isConfirm) {
-                if (!isConfirm) {
-                    swal("Cancelled", "Data can be process again :)", "error");
+                cancelButtonText: "No, cancel process!"
+            }).then(function(result) {
+                if (!result.isConfirmed) {
                     return false;
                 }
 
@@ -324,29 +343,30 @@
                     dataType: 'json',
                     success: function(data) {
                         if (data.status == 1) {
-                            swal({
+                            Swal.fire({
                                 title: "Save Success!",
                                 text: data.pesan,
-                                type: "success",
-                                timer: 3000
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function() {
+                                $("input[name^='forecast']").val('0');
+                                window.location.href = base_url + active_controller + 'add';
                             });
-
-                            $("input[name^='forecast']").val('0');
-                            window.location.href = base_url + active_controller + 'add';
                         } else {
-                            swal({
+                            Swal.fire({
                                 title: "Save Failed!",
                                 text: data.pesan,
-                                type: "warning",
+                                icon: "warning",
                                 timer: 4000
                             });
                         }
                     },
                     error: function() {
-                        swal({
+                        Swal.fire({
                             title: "Error Message !",
                             text: "An Error Occured During Process. Please try again..",
-                            type: "warning",
+                            icon: "warning",
                             timer: 4000
                         });
                     }

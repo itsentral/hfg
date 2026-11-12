@@ -499,9 +499,13 @@ class Request_payment_model extends BF_Model
                 $btn_print = ' <a href="' . base_url('expense/expense_print/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
             }
             if ($item->tipe == 'Cash') {
-                $get_check_non_po = $this->db->get_where('tr_pr_non_po', ['id' => $item->id])->row();
-                if (!empty($get_check_non_po) && ($get_check_non_po->jenis_pr == 'pr departemen' || $get_check_non_po->jenis_pr == 'pr asset')) {
-                    $btn_print = '<a href="' . base_url('request_payment/print_cash/' . $item->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
+                $id_non_po = !empty($item->ids) ? $item->ids : $item->id;
+                $get_check_non_po = $this->db->get_where('tr_pr_non_po', ['id' => $id_non_po])->row();
+                if (!$get_check_non_po && !empty($item->no_doc)) {
+                    $get_check_non_po = $this->db->get_where('tr_pr_non_po', ['no_non_po' => $item->no_doc])->row();
+                }
+                if (!empty($get_check_non_po)) {
+                    $btn_print = '<a href="' . base_url('request_payment/print_cash/' . $get_check_non_po->id) . '" target="_blank" class="btn btn-sm btn-info" title="Print"><i class="fa fa-print"></i></a>';
                 }
             }
 

@@ -76,13 +76,23 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 
 								<td class="text-end">
 									<?php if ($ENABLE_MANAGE && $record->status_app == 'Y') : ?>
-										<a class="btn-icon btn-icon-view edit" href="javascript:void(0)" data-id="<?= $record->id ?>" title="Approve">
+										<a class="btn btn-sm btn-success edit me-1" href="javascript:void(0)" data-id="<?= $record->id ?>" title="Approve Price">
 											<i class="fas fa-check-double"></i>
 										</a>
 									<?php endif; ?>
 
+									<?php if ($ENABLE_MANAGE) : ?>
+										<a class="btn btn-sm btn-primary edit" href="javascript:void(0)" data-id="<?= $record->id ?>" title="View / Set Price Reference">
+											<i class="fas fa-pencil-alt"></i>
+										</a>
+									<?php elseif ($ENABLE_VIEW) : ?>
+										<a class="btn btn-sm btn-info edit" href="javascript:void(0)" data-id="<?= $record->id ?>" title="View Price Reference">
+											<i class="fas fa-eye"></i>
+										</a>
+									<?php endif; ?>
+
 									<?php if (!empty($record->upload_file)) : ?>
-										<a class="btn-icon btn-icon-view" href="<?= base_url($record->upload_file); ?>" target="_blank" title="Download">
+										<a class="btn btn-sm btn-outline-secondary ms-1" href="<?= base_url($record->upload_file); ?>" target="_blank" title="Download Evidence">
 											<i class="ti ti-download"></i>
 										</a>
 									<?php endif; ?>

@@ -52,7 +52,7 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 								<td><?= $record->tanggal ?></td>
 								<td class="text-center">
 									<?php 
-										$get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $record->no_doc, 'ids' => $record->ids])->row_array();
+										$get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $record->no_doc])->row_array();
 									?>
 									<?php if ($record->status == '0' || empty($get_sts_payment)) { ?>
 										<?php if($record->status == '9') {

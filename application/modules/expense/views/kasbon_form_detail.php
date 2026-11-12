@@ -1,681 +1,695 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-$dept = '';
-$bank_id = '';
-$accnumber = '';
-$accname = '';
-if (!isset($data->departement)) {
-    $datauser = $this->db->get_where('users', ['id_user' => $this->auth->user_id()])->row();
-    $datadept = $this->db->get_where('employee', ['id' => $datauser->employee_id])->row();
-    if (!empty($datadept)) {
-        $dept = $datauser->department_id;
-        $bank_id = $datadept->bank_id;
-        $accnumber = $datadept->accnumber;
-        $accname = $datadept->accname;
-    }
+$mod = isset($mod) ? $mod : '';
+$stsview = isset($stsview) ? $stsview : 'view';
+
+// Department
+$dept_name = isset($nm_dept) && !empty($nm_dept) ? $nm_dept : '';
+if (empty($dept_name) && !empty($data->departement)) {
+	$get_dept = $this->db->get_where('ms_department', ['id' => $data->departement])->row();
+	if (!empty($get_dept)) {
+		$dept_name = $get_dept->nama;
+	}
 }
 
-$data_user = $this->db->get_where('users', ['id_user' => $this->auth->user_id()])->row();
+// User / Pemohon
+$nama_pemohon = !empty($data->nama) ? $data->nama : $data->created_by;
 
-$metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
+// Status styling
+$status_label = 'Draft / Waiting Approval';
+$status_badge = 'bg-primary text-light';
 
-$val_coa = (isset($data->no_coa) && isset($data->nm_coa)) ? $data->no_coa.' - '.$data->nm_coa : '';
+if ($data->status == '0') {
+	if (isset($data->sts_finance) && $data->sts_finance == '1') {
+		$status_label = 'Waiting Approval Management';
+		$status_badge = 'bg-info text-dark';
+	} else {
+		$status_label = 'Waiting Approval Finance';
+		$status_badge = 'bg-primary text-light';
+	}
+} elseif (in_array($data->status, ['1', '2'])) {
+	$status_label = 'Approved';
+	$status_badge = 'bg-success text-light';
+} elseif ($data->status == '3') {
+	$check_exp = $this->db->get_where('tr_expense_detail', ['id_kasbon' => $data->no_doc, 'status' => 2])->row();
+	if (!empty($check_exp)) {
+		$status_label = 'Closed';
+		$status_badge = 'bg-dark text-light';
+	} else {
+		$status_label = 'Paid';
+		$status_badge = 'bg-success text-light';
+	}
+} elseif ($data->status == '9') {
+	$status_label = 'Rejected';
+	$status_badge = 'bg-danger text-light';
+} elseif ($data->status == '4') {
+	$status_label = 'Kurang';
+	$status_badge = 'bg-warning text-dark';
+}
 
+// COA String
+$val_coa = '-';
+if (!empty($data->no_coa) || !empty($data->nm_coa)) {
+	$val_coa = trim(($data->no_coa ?? '') . ' - ' . ($data->nm_coa ?? ''));
+} elseif (!empty($data->coa)) {
+	$val_coa = $data->coa;
+}
+
+// Alasan reject jika ada
+$reject_msg = '';
+if (!empty($data->st_reject)) {
+	$reject_msg = $data->st_reject;
+} elseif (!empty($data->reject_reason)) {
+	$reject_msg = $data->reject_reason;
+} elseif (!empty($data->reject_reason_finance)) {
+	$reject_msg = $data->reject_reason_finance;
+}
+
+// Terbilang
+$terbilang_nominal = function_exists('ynz_terbilang_format') ? ucwords(trim(ynz_terbilang_format((float)$data->jumlah_kasbon))) . ' Rupiah' : '';
+
+// Siapkan list attachments dari tabel tr_kasbon_files dan legacy doc_file/doc_file_2
+$all_attachments = [];
+if (!empty($list_files)) {
+	foreach ($list_files as $f) {
+		$all_attachments[] = [
+			'file_name' => $f['file_name'],
+			'file_path' => base_url('assets/expense/' . $f['file_name']),
+			'file_size' => isset($f['file_size']) ? $f['file_size'] : 0,
+			'uploaded_at' => isset($f['created_on']) ? $f['created_on'] : null,
+		];
+	}
+}
+if (empty($all_attachments)) {
+	if (!empty($data->doc_file)) {
+		$all_attachments[] = [
+			'file_name' => $data->doc_file,
+			'file_path' => base_url('assets/expense/' . $data->doc_file),
+			'file_size' => 0,
+			'uploaded_at' => $data->created_on ?? null,
+		];
+	}
+	if (!empty($data->doc_file_2)) {
+		$all_attachments[] = [
+			'file_name' => $data->doc_file_2,
+			'file_path' => base_url('assets/expense/' . $data->doc_file_2),
+			'file_size' => 0,
+			'uploaded_at' => $data->created_on ?? null,
+		];
+	}
+}
 ?>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<form action="" id="frm_data" class="form-horizontal" enctype="multipart/form-data">
-    <input type="hidden" id="id" name="id" value="<?php echo set_value('id', isset($data->id) ? $data->id : ''); ?>">
-    <input type="hidden" id="departement" name="departement" value="<?php echo ($data_user->department_id) ?>">
-    <input type="hidden" id="nama" name="nama" value="<?php echo (isset($data->nama) ? $data->nama : $this->auth->user_name()); ?>">
-    <input type="hidden" name="" class="stsview" value="<?= (isset($stsview)) ? $stsview : null ?>">
 
-    <div class="tab-content">
-        <div class="tab-pane active">
-            <div class="box box-primary">
-                <div class="box-body">
-                    <div class="form-group ">
-                        <label class="col-sm-2 control-label">No Dokumen</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
-                        </div>
-                        <label class="col-sm-2 control-label">Tanggal <b class="text-red">*</b></label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" required>
-                        </div>
-                    </div>
-                    <div class="form-group ">
-                        <label class="col-sm-2 control-label">Keperluan</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="keperluan" name="keperluan" value="<?php echo (isset($data->keperluan) ? $data->keperluan : ''); ?>" placeholder="Keperluan" required>
-                        </div>
-                        <label class="col-sm-2 control-label">Nominal Kasbon</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control divide" id="jumlah_kasbon" name="jumlah_kasbon" value="<?php echo (isset($data->jumlah_kasbon) ? $data->jumlah_kasbon : '0'); ?>" placeholder="jumlah_kasbon">
-                        </div>
-                    </div>
-                    <div class="form-group ">
-                        <label class="col-sm-2 control-label">Dokumen 1</label>
-                        <div class="col-sm-4">
-                            <input type="hidden" name="filename" id="filename" value="<?= (isset($data->doc_file) ? $data->doc_file : ''); ?>">
-                            <input type="file" name="doc_file" id="doc_file">
-                            <span class="pull-right">
-                                <?php
-                                if (isset($data->doc_file)) {
-                                    echo ($data->doc_file != '' ? '<a href="' . base_url('assets/expense/' . $data->doc_file) . '" download target="_blank"><i class="fa fa-download"></i></a>' : '');
-                                }
-                                ?>
-                            </span>
-                        </div>
-                        <label class="col-sm-2 control-label">Dokumen 2</label>
-                        <div class="col-sm-4">
-                            <input type="hidden" name="filename2" id="filename2" value="<?= (isset($data->doc_file_2) ? $data->doc_file_2 : ''); ?>">
-                            <input type="file" name="doc_file_2" id="doc_file_2">
-                            <span class="pull-right">
-                                <?php
-                                if (isset($data->doc_file_2)) {
-                                    echo ($data->doc_file_2 != '' ? '<a href="' . base_url('assets/expense/' . $data->doc_file_2) . '" download target="_blank"><i class="fa fa-download"></i></a>' : '');
-                                }
-                                ?>
-                            </span>
-                        </div>
-                    </div>
+<div class="container-fluid p-0">
+	<!-- Top Navigation / Action Bar -->
+	<div class="card border-0 shadow-sm rounded-3 mb-4">
+		<div class="card-body p-3 p-md-4">
+			<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+				<div>
+					<div class="d-flex align-items-center gap-2 mb-1">
+						<span class="badge <?= $status_badge ?> px-3 py-2 rounded-pill fw-medium fs-7">
+							<i class="fa fa-info-circle me-1"></i><?= $status_label ?>
+						</span>
+						<?php if (!empty($data->id_pr)) : ?>
+							<span class="badge bg-light text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium fs-7">
+								<i class="fa fa-link me-1"></i>Tarik dari <?= ucwords($data->tipe_pr ?: 'PR Non PO') ?>
+							</span>
+						<?php else : ?>
+							<span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-medium fs-7">
+								<i class="fa fa-pencil me-1"></i>Input Manual
+							</span>
+						<?php endif; ?>
+					</div>
+					<h3 class="fw-bold mb-1 text-dark">
+						Detail Pengajuan Kasbon <span class="text-primary">#<?= $data->no_doc ?></span>
+					</h3>
+					<p class="text-muted small mb-0">
+						Dibuat pada <?= date('d F Y', strtotime($data->tgl_doc)) ?> &bull; Pemohon: <span class="fw-semibold text-dark"><?= $nama_pemohon ?></span> <?= !empty($dept_name) ? "({$dept_name})" : "" ?>
+					</p>
+				</div>
 
-                    <div class="form-group">
-                        <!-- <label class="col-sm-2 control-label">Metode Pembayaran</label>
-						<div class="col-sm-4">
-							<select name="metode_pembayaran" id="" class="form-control metode_pembayaran" required>
-								<option value="">- Metode Pembayaran -</option>
-								<option value="1" <?= ($metode_pembayaran == 1) ? 'selected' : null ?>>Request Payment</option>
-								<option value="2" <?= ($metode_pembayaran == 2) ? 'selected' : null ?>>Pettycash Finance</option>
-							</select>
-						</div> -->
-                        <label class="col-sm-2 control-label">Keterangan</label>
-                        <div class="col-sm-4">
-                            <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" required><?php echo (isset($data->keterangan) ? $data->keterangan : ''); ?></textarea>
+				<div class="d-flex flex-wrap align-items-center gap-2">
+					<button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="list_view(); return false;">
+						<i class="fa fa-arrow-left me-1"></i> Kembali
+					</button>
+					<a href="<?= base_url('expense/kasbon_print/' . $data->id) ?>" target="_blank" class="btn btn-outline-primary btn-sm px-3">
+						<i class="fa fa-print me-1"></i> Cetak Kasbon
+					</a>
 
-                            <?php
-                            if (isset($data->st_reject)) {
-                                if ($data->st_reject !== '') {
-                                    echo '
-							  <div class="alert alert-danger alert-dismissible">
-								<h4><i class="icon fa fa-ban"></i> Alasan Penolakan!</h4>
-								' . $data->st_reject . '
-							  </div>';
-                                }
-                            }
-                            ?>
-                        </div>
-                        <label class="col-sm-2 control-label">COA</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control form-control-sm" id="nm_coa" name="nm_coa" value="<?= $val_coa ?>" placeholder="COA" readonly>
-                            <input type="hidden" name="nm_coa" value="<?= (isset($data->nm_coa) ? $data->nm_coa : ''); ?>">
-                        </div>
-                    </div>
+					<!-- Approval Action Buttons (Khusus Finance/Management jika di mode approval dan BUKAN view) -->
+					<?php 
+					$stsview_mode = isset($stsview) ? $stsview : '';
+					if ($stsview_mode !== 'view' && $mod == '_fin' && $data->status == 0 && (isset($data->sts_finance) ? $data->sts_finance == 0 : true)) : ?>
+						<button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve(<?= $data->id ?>, 1)">
+							<i class="fa fa-check me-1"></i> Setujui (Finance)
+						</button>
+						<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
+							<i class="fa fa-times me-1"></i> Tolak
+						</button>
+					<?php elseif ($stsview_mode !== 'view' && $mod == '_mgt' && $data->status == 0 && (isset($data->sts_finance) ? $data->sts_finance == 1 : false)) : ?>
+						<button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve(<?= $data->id ?>, 1)">
+							<i class="fa fa-check me-1"></i> Setujui (Management)
+						</button>
+						<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
+							<i class="fa fa-times me-1"></i> Tolak
+						</button>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+	</div>
 
-                    <div class="transfer_ke_cont">
-                        <h4>Transfer ke</h4>
-                        <div class="form-group ">
-                            <label class="col-md-1 control-label">Bank</label>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank">
-                            </div>
-                            <label class="col-md-2 control-label">Nomor Rekening</label>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening">
-                            </div>
-                            <label class="col-md-2 control-label">Nama Rekening</label>
-                            <div class="col-md-3">
-                                <input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening">
-                            </div>
-                        </div>
-                    </div>
+	<!-- Alert Alasan Penolakan jika Status Reject -->
+	<?php if (!empty($reject_msg)) : ?>
+		<div class="alert alert-danger border-0 shadow-sm rounded-3 p-3 mb-4 d-flex align-items-start gap-3">
+			<div class="fs-3 text-danger"><i class="fa fa-ban"></i></div>
+			<div>
+				<h5 class="fw-bold mb-1 text-danger">Pengajuan Kasbon Ditolak!</h5>
+				<p class="mb-0 text-dark"><?= nl2br(htmlspecialchars($reject_msg)) ?></p>
+			</div>
+		</div>
+	<?php endif; ?>
 
-                    <h4>Kasbon PR Non PO</h4>
-                    <div class="form-group">
-                        <div class="col-md-1 control-label">
-                            No. PR
-                        </div>
-                        <div class="col-md-4">
-                            <?php
-                            if (isset($data->id_pr)) {
-                            ?>
-                                <input type="text" name="no_pr" id="search_pr_non_po" class="form-control" placeholder="- No PR -" value="<?= (isset($data->id_pr)) ? $data->id_pr : null ?>">
-                            <?php
-                            } else {
-                            ?>
+	<!-- Grid Info Utama & Nominal -->
+	<div class="row g-4 mb-4">
+		<!-- Kolom Kiri: Informasi Pengajuan & COA -->
+		<div class="col-lg-7">
+			<div class="card border-0 shadow-sm rounded-3 h-100">
+				<div class="card-header bg-transparent border-bottom py-3">
+					<h5 class="card-title fw-bold mb-0 text-dark">
+						<i class="fa fa-file-text-o text-primary me-2"></i>Informasi Kasbon
+					</h5>
+				</div>
+				<div class="card-body p-4">
+					<div class="row g-3">
+						<div class="col-sm-6">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">No. Dokumen</label>
+							<div class="fw-bold text-dark fs-6"><?= $data->no_doc ?></div>
+						</div>
+						<div class="col-sm-6">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Tanggal Dokumen</label>
+							<div class="fw-bold text-dark fs-6"><?= date('d F Y', strtotime($data->tgl_doc)) ?></div>
+						</div>
 
-                                <select name="no_pr" id="search_pr_non_po" class="form-control chosen_select" id="">
-                                    <option value="">- No PR -</option>
-                                    <?php
-                                    foreach ($list_pr_non_po as $item_pr_non_po) {
-                                        echo '<option value="' . $item_pr_non_po['no_pr'] . '">' . $item_pr_non_po['no_pr'] . ' - ' . $item_pr_non_po['keterangan'] . '</option>';
-                                    }
-                                    ?>
-                                </select>
+						<div class="col-sm-6">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Pemohon</label>
+							<div class="fw-semibold text-dark fs-6"><?= $nama_pemohon ?></div>
+						</div>
+						<div class="col-sm-6">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Departemen</label>
+							<div class="fw-semibold text-dark fs-6"><?= !empty($dept_name) ? $dept_name : '-' ?></div>
+						</div>
 
-                            <?php
-                            }
-                            ?>
+						<div class="col-12">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Keperluan</label>
+							<div class="p-3 bg-light rounded-3 text-dark fw-medium border border-light-subtle">
+								<?= nl2br(htmlspecialchars($data->keperluan ?: '-')) ?>
+							</div>
+						</div>
 
-                            <input type="hidden" name="tipe_pr" id="tipe_pr" value="<?= (isset($list_detail_pr_kasbon[0]['tipe_pr'])) ? $list_detail_pr_kasbon[0]['tipe_pr'] : null ?>">
-                            <label for="">*Note: Klik enter jika sudah</label>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">No.</th>
-                                    <th class="text-center">Material Name</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-center">Unit</th>
-                                    <th class="text-center">Harga Satuan</th>
-                                    <th class="text-center">Total</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="list_barang_pr">
-                                <?php
-                                $grand_total_non_pr = 0;
-                                if (isset($list_detail_pr_kasbon)) {
-                                    $no = 1;
-                                    foreach ($list_detail_pr_kasbon as $detail_pr) :
-                                        $readonly = '';
-                                        if (($mod == '_fin' || $mod == '_mgt')) {
-                                            $readonly = 'readonly';
-                                        }
-                                        echo '<tr class="detail_pr_' . $detail_pr['id'] . '">';
-                                        echo '<td class="text-center">' . $no . '</td>';
-                                        echo '<td class="text-center">' . $detail_pr['nm_material'] . '</td>';
-                                        echo '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
-                                        echo '<td class="text-center">' . $detail_pr['satuan'] . '</td>';
-                                        echo '<td class="text-center"><input type="text" name="price_input_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right price_input price_input_' . $detail_pr['id'] . ' autonum" data-no="' . $detail_pr['id'] . '" value="' . $detail_pr['harga'] . '" ' . $readonly . '></td>';
-                                        echo '<td class="text-center"><input type="text" name="grand_total_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right grand_total_' . $detail_pr['id'] . ' autonum" value="' . $detail_pr['total_harga'] . '" ' . $readonly . '></td>';
-                                        echo '<td class="text-center">';
-                                        if (($mod == '_fin' || $mod == '_mgt')) {
-                                        } else {
-                                            if (!isset($stsview) || $stsview == '') {
-                                                echo '<button type="button" class="btn btn-sm btn-danger del_detail" data-no="' . $detail_pr['id'] . '"><i class="fa fa-trash"></i></button>';
-                                            }
-                                        }
-                                        echo '</td>';
-                                        echo '</tr>';
+						<div class="col-12">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Keterangan Tambahan</label>
+							<div class="p-3 bg-light rounded-3 text-dark border border-light-subtle">
+								<?= nl2br(htmlspecialchars($data->keterangan ?: '-')) ?>
+							</div>
+						</div>
 
-                                        $grand_total_non_pr += $detail_pr['total_harga'];
-                                        $no++;
-                                    endforeach;
-                                }
-                                ?>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th class="text-right" colspan="5">Grand Total</th>
-                                    <th class="text-right grand_total_non_pr"><?= number_format($grand_total_non_pr, 2) ?></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <?php
-                            if (isset($data)) {
-                                if (($data->status == 0 || $data->status == 1) && $stsview == '') {
-                                    if (($mod == '_fin' || $mod == '_mgt')) {
-                                        echo '<a class="btn btn-primary btn-sm" href="#" id="approve" onclick="data_approve(' . $data->id . ',' . ($data->status + 1) . ')"><i class="fa fa-check-square-o"></i> Approve</a>';
-                                        echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban">&nbsp;</i> Reject</a>';
-                                        $stsview = 'view';
-                                    } else {
-                                        echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
-                                    }
-                                } else {
-                                    echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
-                                }
-                            } else {
-                                echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
-                            }
-                            ?>
-                            <a class="btn btn-default btn-sm" onclick="window.location=siteurl+'expense/kasbon_list_all<?= $mod ?>';return false;"><i class="fa fa-reply"></i> Batal</a>
-                        </div>
-                    </div>
-                    <?php
-                    if (isset($data)) {
-                        if ($data->doc_file != '') {
-                            if (strpos($data->doc_file, 'pdf', 0) > 1) {
-                                echo '<div class="col-md-12">
-						<iframe src="' . base_url('assets/expense/' . $data->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
-						</iframe>
-                        <a href="' . base_url('assets/expense/' . $data->doc_file) . '" class="btn btn-sm btn-primary" target="_blank">Check PDF</a>
-						<br />' . $data->no_doc . '</div>';
-                            } else {
-                                if (file_exists('assets/expense' . $data->doc_file)) {
-                                    echo '<div class="col-md-12"><a href="' . base_url('assets/expense/' . $data->doc_file) . '" target="_blank"><img src="' . base_url('assets/expense/' . $data->doc_file) . '" class="img-responsive"></a><br />' . $data->no_doc . '</div>';
-                                }
-                            }
-                        }
-                        if ($data->doc_file_2 != '') {
-                            if (strpos($data->doc_file_2, 'pdf', 0) > 1) {
-                                echo '<div class="col-md-12">
-						<iframe src="' . base_url('./assets/expense/' . $data->doc_file_2) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
-						</iframe>
-                        <a href="' . base_url('assets/expense/' . $data->doc_file_2) . '" class="btn btn-sm btn-primary" target="_blank">Check PDF</a>
-						<br />' . $data->no_doc . '</div>';
-                            } else {
-                                if (file_exists('./assets/expense' . $data->doc_file2)) {
-                                    echo '<div class="col-md-12"><a href="' . base_url('assets/expense/' . $data->doc_file_2) . '" target="_blank"><img src="' . base_url('assets/expense/' . $data->doc_file_2) . '" class="img-responsive"></a><br />' . $data->no_doc . '</div>';
-                                }
-                            }
-                        }
-                    }
-                    ?>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
+						<div class="col-12">
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Akun COA</label>
+							<div class="d-flex align-items-center gap-2">
+								<span class="badge bg-secondary-subtle text-secondary-emphasis px-3 py-2 rounded-2 fs-7 fw-semibold border">
+									<i class="fa fa-book me-1"></i><?= htmlspecialchars($val_coa) ?>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-<script src="<?= base_url('assets/js/number-divider.min.js') ?>"></script>
-<script src="<?= base_url('assets/js/autoNumeric.js') ?>"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script type="text/javascript">
-    var url_save = siteurl + 'expense/kasbon_save/';
-    var url_approve = siteurl + 'expense/kasbon_approve/';
+		<!-- Kolom Kanan: Nominal Highlight & Rekening Transfer -->
+		<div class="col-lg-5">
+			<div class="d-flex flex-column gap-4 h-100">
+				<!-- Nominal Box -->
+				<div class="card border-0 shadow-sm rounded-3" style="background: linear-gradient(135deg, #f8faff 0%, #eef4fe 100%); border-left: 5px solid #0d6efd !important;">
+					<div class="card-body p-4">
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<span class="text-uppercase fw-bold text-muted small letter-spacing-1">Nominal Kasbon</span>
+							<span class="badge bg-primary text-light px-2 py-1 rounded">IDR</span>
+						</div>
+						<h2 class="fw-bolder text-primary mb-2">
+							Rp <?= number_format($data->jumlah_kasbon, 0, ',', '.') ?>
+						</h2>
+						<?php if (!empty($terbilang_nominal)) : ?>
+							<p class="text-muted small fst-italic mb-0 border-top pt-2 mt-2">
+								<i class="fa fa-quote-left text-primary opacity-50 me-1"></i><?= $terbilang_nominal ?>
+							</p>
+						<?php endif; ?>
+					</div>
+				</div>
 
-    var mod = '<?= $mod ?>';
-    if (mod !== '') {
-        $('input').attr('readonly', true);
-        $('textarea').attr('readonly', true);
-        $('input[type="file"]').prop('disabled', true);
-    }
+				<!-- Info Transfer Bank -->
+				<div class="card border-0 shadow-sm rounded-3 flex-grow-1">
+					<div class="card-header bg-transparent border-bottom py-3">
+						<h5 class="card-title fw-bold mb-0 text-dark">
+							<i class="fa fa-credit-card text-primary me-2"></i>Informasi Rekening Transfer
+						</h5>
+					</div>
+					<div class="card-body p-4">
+						<div class="d-flex flex-column gap-3">
+							<div class="p-3 bg-light rounded-3 border border-light-subtle">
+								<div class="row align-items-center">
+									<div class="col-4 text-muted small fw-semibold text-uppercase">Nama Bank</div>
+									<div class="col-8 fw-bold text-dark fs-6">
+										<i class="fa fa-university text-secondary me-2"></i><?= $data->bank_id ?: '-' ?>
+									</div>
+								</div>
+							</div>
 
-    $('.divide').divide();
+							<div class="p-3 bg-light rounded-3 border border-light-subtle">
+								<div class="row align-items-center">
+									<div class="col-4 text-muted small fw-semibold text-uppercase">No. Rekening</div>
+									<div class="col-8 fw-bold text-primary fs-6 font-monospace">
+										<?= $data->accnumber ?: '-' ?>
+									</div>
+								</div>
+							</div>
 
-    $('.autonum').autoNumeric('init');
-    $('.chosen_select').select2({
-        width: '100%'
-    });
+							<div class="p-3 bg-light rounded-3 border border-light-subtle">
+								<div class="row align-items-center">
+									<div class="col-4 text-muted small fw-semibold text-uppercase">Atas Nama</div>
+									<div class="col-8 fw-semibold text-dark fs-6">
+										<?= $data->accname ?: '-' ?>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    var stsview = $('.stsview').val();
-    if (stsview == 'view') {
-        $(".stsview").addClass("hidden");
-        $("#frm_data :input").prop("disabled", true);
-    }
+	<!-- Card Referensi PR Non PO (Hanya tampil jika ada data PR) -->
+	<?php if (!empty($data->id_pr) || !empty($list_detail_pr_kasbon)) : ?>
+		<div class="card border-0 shadow-sm rounded-3 mb-4">
+			<div class="card-header bg-transparent border-bottom py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+				<div class="d-flex align-items-center gap-2">
+					<h5 class="card-title fw-bold mb-0 text-dark">
+						<i class="fa fa-list-alt text-primary me-2"></i>Referensi PR Non PO
+					</h5>
+					<span class="badge bg-primary text-light px-3 py-1 rounded-pill">
+						<?= $data->id_pr ?: 'PR' ?>
+					</span>
+				</div>
+				<?php if (!empty($data->tipe_pr)) : ?>
+					<span class="text-muted small">
+						Kategori: <strong class="text-dark"><?= ucwords($data->tipe_pr) ?></strong>
+					</span>
+				<?php endif; ?>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle mb-0">
+						<thead class="table-light text-secondary">
+							<tr>
+								<th class="text-center py-3" style="width: 50px;">No.</th>
+								<th class="py-3">Nama Material / Barang</th>
+								<th class="text-center py-3" style="width: 100px;">Qty</th>
+								<th class="text-center py-3" style="width: 100px;">Satuan</th>
+								<th class="text-end py-3" style="width: 180px;">Harga Satuan (Rp)</th>
+								<th class="text-end py-3 pe-4" style="width: 180px;">Total (Rp)</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$grand_total_pr = 0;
+							if (!empty($list_detail_pr_kasbon)) :
+								$no = 1;
+								foreach ($list_detail_pr_kasbon as $detail_pr) :
+									$total_harga = (float)($detail_pr['total_harga'] ?? ($detail_pr['harga'] * $detail_pr['qty']));
+									$grand_total_pr += $total_harga;
+							?>
+									<tr>
+										<td class="text-center text-muted fw-medium"><?= $no++ ?></td>
+										<td>
+											<span class="fw-semibold text-dark"><?= htmlspecialchars($detail_pr['nm_material']) ?></span>
+										</td>
+										<td class="text-center fw-medium"><?= number_format($detail_pr['qty']) ?></td>
+										<td class="text-center text-muted"><?= htmlspecialchars($detail_pr['satuan'] ?: '-') ?></td>
+										<td class="text-end font-monospace"><?= number_format($detail_pr['harga'], 0, ',', '.') ?></td>
+										<td class="text-end font-monospace fw-bold text-dark pe-4"><?= number_format($total_harga, 0, ',', '.') ?></td>
+									</tr>
+								<?php
+								endforeach;
+							else :
+								?>
+								<tr>
+									<td colspan="6" class="text-center py-4 text-muted">
+										<i class="fa fa-info-circle me-1"></i> Tidak ada rincian item PR tersimpan.
+									</td>
+								</tr>
+							<?php endif; ?>
+						</tbody>
+						<tfoot class="table-light">
+							<tr>
+								<th colspan="5" class="text-end py-3 fw-bold text-dark">Grand Total Referensi PR :</th>
+								<th class="text-end py-3 pe-4 font-monospace fw-bolder fs-6 text-primary">
+									Rp <?= number_format($grand_total_pr, 0, ',', '.') ?>
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	<?php endif; ?>
 
-    $(document).on('change', '.metode_pembayaran', function() {
-        var metode_pembayaran = $(this).val();
+	<!-- Card Berkas Lampiran & History Approval -->
+	<div class="row g-4 mb-4">
+		<!-- Lampiran Berkas -->
+		<div class="col-lg-7">
+			<div class="card border-0 shadow-sm rounded-3 h-100">
+				<div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
+					<h5 class="card-title fw-bold mb-0 text-dark">
+						<i class="fa fa-paperclip text-primary me-2"></i>Berkas Lampiran Pendukung
+					</h5>
+					<span class="badge bg-light text-dark border rounded-pill px-3">
+						<?= count($all_attachments) ?> Berkas
+					</span>
+				</div>
+				<div class="card-body p-4">
+					<?php if (!empty($all_attachments)) : ?>
+						<div class="table-responsive">
+							<table class="table table-hover align-middle mb-0">
+								<thead class="table-light text-secondary">
+									<tr>
+										<th style="width: 40px;">#</th>
+										<th>Nama Berkas</th>
+										<th class="text-center" style="width: 140px;">Aksi</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php
+									$idx = 1;
+									foreach ($all_attachments as $att) :
+										$ext = strtolower(pathinfo($att['file_name'], PATHINFO_EXTENSION));
+										$is_image = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+										$is_pdf = ($ext == 'pdf');
 
-        if (metode_pembayaran == 1) {
-            $('.transfer_ke_cont').show();
+										$icon = 'fa-file-o text-secondary';
+										if ($is_pdf) $icon = 'fa-file-pdf-o text-danger';
+										elseif ($is_image) $icon = 'fa-file-image-o text-success';
+									?>
+										<tr>
+											<td class="text-muted small"><?= $idx++ ?></td>
+											<td>
+												<div class="d-flex align-items-center gap-2">
+													<i class="fa <?= $icon ?> fs-5"></i>
+													<div>
+														<div class="fw-semibold text-dark text-break small"><?= htmlspecialchars($att['file_name']) ?></div>
+														<span class="text-muted" style="font-size: 0.75rem;">
+															<?= strtoupper($ext) ?> &bull; <?= !empty($att['uploaded_at']) ? date('d M Y H:i', strtotime($att['uploaded_at'])) : 'Tersimpan' ?>
+														</span>
+													</div>
+												</div>
+											</td>
+											<td class="text-center">
+												<div class="btn-group btn-group-sm">
+													<?php if ($is_image || $is_pdf) : ?>
+														<button type="button" class="btn btn-outline-primary btn-sm" onclick="previewModalFile('<?= $att['file_path'] ?>', '<?= $is_pdf ? 'pdf' : 'image' ?>', '<?= htmlspecialchars($att['file_name']) ?>')" title="Lihat Preview">
+															<i class="fa fa-eye"></i>
+														</button>
+													<?php endif; ?>
+													<a href="<?= $att['file_path'] ?>" download class="btn btn-outline-secondary btn-sm" title="Download">
+														<i class="fa fa-download"></i>
+													</a>
+												</div>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+					<?php else : ?>
+						<div class="text-center py-4 text-muted">
+							<i class="fa fa-folder-open-o fs-1 opacity-50 mb-2"></i>
+							<p class="mb-0 small">Tidak ada berkas lampiran yang diunggah.</p>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
 
-            $('#bank_id').prop('required', true);
-            $('#accnumber').prop('required', true);
-            $('#accname').prop('required', true);
-        } else {
-            $('.transfer_ke_cont').hide();
+		<!-- History & Log Verifikasi -->
+		<div class="col-lg-5">
+			<div class="card border-0 shadow-sm rounded-3 h-100">
+				<div class="card-header bg-transparent border-bottom py-3">
+					<h5 class="card-title fw-bold mb-0 text-dark">
+						<i class="fa fa-check-circle-o text-primary me-2"></i>Riwayat Persetujuan
+					</h5>
+				</div>
+				<div class="card-body p-4">
+					<div class="position-relative ps-4 border-start border-2 border-primary-subtle d-flex flex-column gap-4 ms-2">
+						<!-- Pemohon -->
+						<div class="position-relative">
+							<span class="position-absolute top-0 start-0 translate-middle p-2 bg-primary rounded-circle" style="left: -17px !important;"></span>
+							<div class="fw-bold text-dark small text-uppercase">1. Pengajuan Dibuat</div>
+							<div class="fw-semibold text-dark"><?= $nama_pemohon ?></div>
+							<div class="text-muted small">
+								<?= !empty($data->created_on) ? date('d F Y, H:i', strtotime($data->created_on)) : '-' ?>
+							</div>
+						</div>
 
-            $('#bank_id').prop('required', false);
-            $('#accnumber').prop('required', false);
-            $('#accname').prop('required', false);
-        }
-    });
+						<!-- Approval Finance -->
+						<div class="position-relative">
+							<?php
+							$fin_approved = (isset($data->sts_finance) && $data->sts_finance == '1');
+							$dot_fin = $fin_approved ? 'bg-success' : ($data->status == '9' ? 'bg-danger' : 'bg-warning');
+							?>
+							<span class="position-absolute top-0 start-0 translate-middle p-2 <?= $dot_fin ?> rounded-circle" style="left: -17px !important;"></span>
+							<div class="fw-bold text-dark small text-uppercase">2. Verifikasi Finance</div>
+							<?php if ($fin_approved) : ?>
+								<div class="fw-semibold text-success"><i class="fa fa-check me-1"></i>Telah Diverifikasi</div>
+								<div class="text-muted small">
+									<?= !empty($data->app_finance_date) ? date('d F Y, H:i', strtotime($data->app_finance_date)) : 'Selesai' ?>
+								</div>
+							<?php elseif ($data->status == '9') : ?>
+								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>
+							<?php else : ?>
+								<div class="fw-semibold text-warning"><i class="fa fa-clock-o me-1"></i>Menunggu Verifikasi Finance</div>
+							<?php endif; ?>
+						</div>
 
+						<!-- Approval Management -->
+						<div class="position-relative">
+							<?php
+							$mgt_approved = in_array($data->status, ['1', '2', '3']);
+							$dot_mgt = $mgt_approved ? 'bg-success' : ($data->status == '9' ? 'bg-danger' : 'bg-secondary');
+							?>
+							<span class="position-absolute top-0 start-0 translate-middle p-2 <?= $dot_mgt ?> rounded-circle" style="left: -17px !important;"></span>
+							<div class="fw-bold text-dark small text-uppercase">3. Persetujuan Management</div>
+							<?php if ($mgt_approved) : ?>
+								<div class="fw-semibold text-success">
+									<i class="fa fa-check me-1"></i>Disetujui oleh <?= $data->approved_by ?: 'Management' ?>
+								</div>
+								<div class="text-muted small">
+									<?= !empty($data->approved_on) ? date('d F Y, H:i', strtotime($data->approved_on)) : '-' ?>
+								</div>
+							<?php elseif ($data->status == '9') : ?>
+								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>
+							<?php else : ?>
+								<div class="fw-semibold text-muted"><i class="fa fa-clock-o me-1"></i>Menunggu Approval Management</div>
+							<?php endif; ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
-    $('#frm_data').on('submit', function(e) {
-        e.preventDefault();
-        var errors = "";
-        if ($("#filename").val() == "") {
-            if ($('#doc_file').get(0).files.length === 0) {
-                errors = "Dokumen 1 harus diupload";
-            }
-        }
+<!-- Modal Preview Berkas -->
+<div class="modal fade" id="modalPreviewFile" tabindex="-1" aria-labelledby="modalPreviewFileTitle" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content border-0 shadow rounded-3">
+			<div class="modal-header border-bottom py-3">
+				<h5 class="modal-title fw-bold text-dark fs-6" id="modalPreviewFileTitle">Preview Berkas</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-0 text-center bg-light" id="modalPreviewFileBody" style="min-height: 400px; max-height: 80vh; overflow-y: auto;">
+				<!-- Content will be injected by JavaScript -->
+			</div>
+			<div class="modal-footer border-top py-2 d-flex justify-content-between">
+				<a href="#" id="modalPreviewFileDownload" download class="btn btn-outline-primary btn-sm">
+					<i class="fa fa-download me-1"></i> Download Berkas
+				</a>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+	</div>
+</div>
 
-        // var metode_pembayaran = $('.metode_pembayaran').val();
+<script>
+	function previewModalFile(fileUrl, fileType, fileName) {
+		$('#modalPreviewFileTitle').text(fileName);
+		$('#modalPreviewFileDownload').attr('href', fileUrl);
 
-        if ($("#jumlah_kasbon").val() == "0") errors = "Jumlah Kasbon tidak boleh kosong";
-        if ($("#keperluan").val() == "") errors = "keperluan tidak boleh kosong";
-        if ($("#tgl_doc").val() == "") errors = "Tanggal Transaksi tidak boleh kosong";
-        // if (metode_pembayaran == "") errors = "Pilih metode pembayaran";
-        // if (metode_pembayaran == 1) {
-        // 	var bank_id = $('#bank_id').val();
-        // 	var accnumber = $('#accnumber').val();
-        // 	var accname = $('#accname').val();
+		var body = $('#modalPreviewFileBody');
+		body.empty();
 
-        // 	if (bank_id == '' || accnumber == '' || accname == '') {
-        // 		errors = "Pastikan data transfer terisi";
-        // 	}
-        // }
+		if (fileType === 'pdf') {
+			body.html('<iframe src="' + fileUrl + '#toolbar=0" style="width: 100%; height: 75vh; border: none;"></iframe>');
+		} else if (fileType === 'image') {
+			body.html('<div class="p-3"><img src="' + fileUrl + '" class="img-fluid rounded shadow-sm" style="max-height: 70vh;"></div>');
+		} else {
+			body.html('<div class="p-5 text-muted"><i class="fa fa-file-o fs-1 mb-3"></i><p>Preview tidak didukung untuk tipe file ini. Silakan unduh berkas untuk membukanya.</p></div>');
+		}
 
-        var price_no_input = 0;
-        $('.price_input').each(function() {
-            var value = parseFloat($(this).val());
-            if (isNaN(value)) {
-                price_no_input += 1;
-            }
-        });
+		$('#modalPreviewFile').modal('show');
+	}
 
-        if (price_no_input > 0) {
-            errors = "Please make sure all material price is filled !";
-        }
-        if (errors == "") {
-            swal({
-                    title: "Anda Yakin?",
-                    text: "Data Akan Disimpan!",
-                    type: "info",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya, simpan!",
-                    cancelButtonText: "Tidak!",
-                    closeOnConfirm: false,
-                    closeOnCancel: true
-                },
-                function(isConfirm) {
-                    if (isConfirm) {
-                        var formdata = new FormData($('#frm_data')[0]);
-                        $.ajax({
-                            url: url_save,
-                            dataType: "json",
-                            type: 'POST',
-                            data: formdata,
-                            processData: false,
-                            contentType: false,
-                            success: function(msg) {
-                                if (msg['save'] == '1') {
-                                    swal({
-                                        title: "Sukses!",
-                                        text: "Data Berhasil Di Simpan",
-                                        type: "success",
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                    window.location = siteurl + 'expense/kasbon';
-                                } else {
-                                    swal({
-                                        title: "Gagal!",
-                                        text: "Data Gagal Di Simpan",
-                                        type: "error",
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                };
+	function list_view() {
+		if ($('#card-list').length && $('#form-data').length) {
+			$('#form-data').hide().empty();
+			$('#card-list, .box').fadeIn(200);
+			if (typeof datatables !== 'undefined' && datatables) {
+				datatables.ajax.reload(null, false);
+			}
+		} else {
+			window.location.href = siteurl + 'expense/kasbon' + '<?= $mod ?>';
+		}
+	}
 
-                            },
-                            error: function(msg) {
-                                swal({
-                                    title: "Gagal!",
-                                    text: "Ajax Data Gagal Di Proses",
-                                    type: "error",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
+	function data_approve(id, next_status) {
+		var mod = '<?= $mod ?>';
+		var url = siteurl + (mod === '_mgt' ? 'expense/kasbon_approve_manage/' : 'expense/kasbon_approve/') + id;
 
-                            }
-                        });
-                    }
-                });
+		Swal.fire({
+			title: "Konfirmasi Approval",
+			text: "Apakah Anda yakin ingin menyetujui pengajuan kasbon ini?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#198754",
+			cancelButtonColor: "#6c757d",
+			confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Setujui!',
+			cancelButtonText: "Batal"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				Swal.fire({
+					title: "Memproses...",
+					text: "Sedang memproses persetujuan kasbon...",
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
 
-            //			data_save();
-        } else {
-            swal({
-                title: 'Error !',
-                text: errors,
-                type: 'error'
-            });
-        }
-    });
+				$.ajax({
+					url: url,
+					dataType: "json",
+					type: 'POST',
+					success: function(msg) {
+						if (msg.save == '1' || msg.save == 1 || msg.status == '1' || msg.status == 1) {
+							Swal.fire({
+								icon: "success",
+								title: "Berhasil Disetujui!",
+								text: msg.msg || "Kasbon berhasil disetujui",
+								timer: 2000,
+								showConfirmButton: false
+							});
+							list_view();
+						} else {
+							Swal.fire({
+								icon: "error",
+								title: "Gagal!",
+								text: msg.msg || "Gagal menyetujui pengajuan kasbon"
+							});
+						}
+					},
+					error: function() {
+						Swal.fire({
+							icon: "error",
+							title: "Error!",
+							text: "Terjadi kesalahan saat memproses approval"
+						});
+					}
+				});
+			}
+		});
+	}
 
-    function number_format(number, decimals, dec_point, thousands_sep) {
-        // Strip all characters but numerical ones.
-        number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
-        var n = !isFinite(+number) ? 0 : +number,
-            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-            s = '',
-            toFixedFix = function(n, prec) {
-                var k = Math.pow(10, prec);
-                return '' + Math.round(n * k) / k;
-            };
-        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-        if (s[0].length > 3) {
-            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-        }
-        if ((s[1] || '').length < prec) {
-            s[1] = s[1] || '';
-            s[1] += new Array(prec - s[1].length + 1).join('0');
-        }
-        return s.join(dec);
-    }
+	function data_reject() {
+		var id = '<?= $data->id ?>';
+		var mod = '<?= $mod ?>';
 
-    $(document).on('change', '#search_pr_non_po', function(e) {
-        // e.preventDefault();
-        const no_pr = $(this).val();
+		Swal.fire({
+			title: "Alasan Penolakan",
+			text: "Silakan masukkan alasan penolakan pengajuan kasbon ini:",
+			input: "textarea",
+			inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+			inputAttributes: {
+				"aria-label": "Alasan penolakan",
+				"rows": 4
+			},
+			showCancelButton: true,
+			confirmButtonColor: "#dc3545",
+			cancelButtonColor: "#6c757d",
+			confirmButtonText: '<i class="fa fa-ban me-1"></i> Tolak Pengajuan',
+			cancelButtonText: "Batal",
+			inputValidator: (value) => {
+				if (!value || !value.trim()) {
+					return "Alasan penolakan wajib diisi!";
+				}
+			}
+		}).then((result) => {
+			if (result.isConfirmed) {
+				var reason = result.value.trim();
+				Swal.fire({
+					title: "Memproses...",
+					text: "Sedang memproses penolakan kasbon...",
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
 
-        // if (e.keyCode == '13') {
-
-        // } else {
-        // 	$('#search_pr_non_po').val(no_pr);
-        // }
-
-        $.ajax({
-            type: "POST",
-            url: siteurl + active_controller + 'get_pr_non_po',
-            data: {
-                'no_pr': no_pr
-            },
-            cache: false,
-            dataType: 'json',
-            success: function(result) {
-                if (result.sts == '1') {
-                    $('.list_barang_pr').html(result.hasil);
-                    $('#tipe_pr').val(result.tipe_pr);
-                    $('.autonum').autoNumeric();
-                    $('.grand_total_non_pr').html(number_format(result.grand_total, 2));
-                } else {
-                    swal({
-                        title: 'Error !',
-                        text: result.pesan,
-                        type: 'error'
-                    });
-                }
-            },
-            error: function(result) {
-                swal({
-                    title: 'Error !',
-                    text: 'Error occured, please try again later !',
-                    type: 'error'
-                });
-            }
-        });
-    });
-
-    $(document).on('click', '.del_detail', function() {
-        var no = $(this).data('no');
-
-        $('.detail_pr_' + no).remove();
-    });
-
-    $(document).on('change', '.price_input', function() {
-        var no = $(this).data('no');
-        var nilai = $(this).val();
-        if (nilai == null || nilai == '') {
-            var nilai = 0;
-        } else {
-            var nilai = nilai.split(',').join('');
-            nilai = parseFloat(nilai);
-        }
-
-        var qty = $('.qty_' + no).val();
-
-        // alert(nilai);
-        // alert(qty);
-
-        var total = parseFloat(nilai * qty);
-
-        $('.grand_total_' + no).autoNumeric('set', total);
-
-        hitung_grand_total_non_pr();
-    })
-
-    function getNum(val) {
-        if (isNaN(val) || val == '') {
-            return 0;
-        }
-        return parseFloat(val);
-    }
-
-    function hitung_grand_total_non_pr() {
-        var grand_total = 0;
-        $('.price_input').each(function() {
-            var value = $(this).val();
-            value = value.replace(/,/g, '');
-            value = parseFloat(value);
-
-            var no = $(this).data('no');
-            var qty = $('.qty_' + no).val();
-
-            grand_total += (value * qty);
-        });
-
-        $('.grand_total_non_pr').html(number_format(grand_total, 2));
-    }
-
-    $(function() {
-        $(".tanggal").datepicker({
-            todayHighlight: true,
-            format: "yyyy-mm-dd",
-            showInputs: true,
-            autoclose: true
-        });
-    });
-
-    function data_approve() {
-        swal({
-                title: "Anda Yakin?",
-                text: "Data Akan Diupdate!",
-                type: "info",
-                showCancelButton: true,
-                confirmButtonText: "Ya, setuju!",
-                cancelButtonText: "Tidak!",
-                closeOnConfirm: false,
-                closeOnCancel: true
-            },
-            function(isConfirm) {
-                if (isConfirm) {
-                    id = $("#id").val();
-                    $.ajax({
-                        url: url_approve + id,
-                        dataType: "json",
-                        type: 'POST',
-                        success: function(msg) {
-                            if (msg['save'] == '1') {
-                                swal({
-                                    title: "Sukses!",
-                                    text: "Data Berhasil Di Update",
-                                    type: "success",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                                window.location = siteurl + 'expense/kasbon<?= $mod ?>';
-                            } else {
-                                swal({
-                                    title: "Gagal!",
-                                    text: "Data Gagal Di Update",
-                                    type: "error",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            };
-
-                        },
-                        error: function(msg) {
-                            swal({
-                                title: "Gagal!",
-                                text: "Ajax Data Gagal Di Proses",
-                                type: "error",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-
-                        }
-                    });
-                }
-            });
-    }
-
-    function data_reject() {
-        swal({
-                title: "Perhatian",
-                text: "Berikan alasan penolakan",
-                type: "input",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                closeOnCancel: true
-            },
-            function(inputValue) {
-                if (inputValue === false) return false;
-                if (inputValue === "") {
-                    swal.showInputError("Tuliskan alasan anda");
-                    return false
-                }
-
-                swal({
-                        title: "Anda Yakin?",
-                        text: "Data Akan Tolak!",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Ya, tolak!",
-                        cancelButtonText: "Tidak!",
-                        closeOnConfirm: false,
-                        closeOnCancel: true
-                    },
-                    function(isConfirm) {
-                        if (isConfirm) {
-                            id = $("#id").val();
-                            $.ajax({
-                                url: base_url + 'expense/reject/',
-                                data: {
-                                    'id': id,
-                                    'reason': inputValue,
-                                    'table': 'tr_kasbon'
-                                },
-                                dataType: "json",
-                                type: 'POST',
-                                success: function(msg) {
-                                    if (msg['save'] == '1') {
-                                        swal({
-                                            title: "Sukses!",
-                                            text: "Data Berhasil Di Tolak",
-                                            type: "success",
-                                            timer: 1500,
-                                            showConfirmButton: false
-                                        });
-                                        window.location = siteurl + 'expense/kasbon<?= $mod ?>'
-                                    } else {
-                                        swal({
-                                            title: "Gagal!",
-                                            text: "Data Gagal Di Tolak",
-                                            type: "error",
-                                            timer: 1500,
-                                            showConfirmButton: false
-                                        });
-                                    };
-                                    console.log(msg);
-                                },
-                                error: function(msg) {
-                                    swal({
-                                        title: "Gagal!",
-                                        text: "Ajax Data Gagal Di Proses",
-                                        type: "error",
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                    console.log(msg);
-                                }
-                            });
-                        }
-                    });
-
-            });
-    }
+				$.ajax({
+					url: siteurl + 'expense/reject/',
+					data: {
+						'id': id,
+						'reason': reason,
+						'table': 'tr_kasbon'
+					},
+					dataType: "json",
+					type: 'POST',
+					success: function(msg) {
+						if (msg.save == '1' || msg.save == 1 || msg.status == '1' || msg.status == 1) {
+							Swal.fire({
+								icon: "success",
+								title: "Berhasil Ditolak!",
+								text: msg.message || msg.msg || "Pengajuan kasbon berhasil ditolak",
+								timer: 2000,
+								showConfirmButton: false
+							});
+							list_view();
+						} else {
+							Swal.fire({
+								icon: "error",
+								title: "Gagal!",
+								text: msg.message || msg.msg || "Gagal menolak pengajuan kasbon"
+							});
+						}
+					},
+					error: function() {
+						Swal.fire({
+							icon: "error",
+							title: "Error!",
+							text: "Terjadi kesalahan saat menolak pengajuan"
+						});
+					}
+				});
+			}
+		});
+	}
 </script>

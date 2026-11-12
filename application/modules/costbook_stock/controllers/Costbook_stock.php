@@ -19,7 +19,7 @@ class Costbook_stock extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library(array('Mpdf', 'upload', 'Image_lib'));
+		$this->load->library(array('upload', 'Image_lib'));
 		$this->load->model('Costbook_stock/Costbook_stock_model');
 		$this->template->title('Costbook Stock Per Item');
 		$this->template->page_icon('fa fa-building-o');
@@ -32,12 +32,14 @@ class Costbook_stock extends Admin_Controller
 
 		$this->db->select('a.id, a.kd_gudang, a.nm_gudang');
 		$this->db->from('warehouse a');
+		$this->db->where_in('a.kd_gudang', array('G-ATK', 'G-ACC'));
 		$get_warehouse = $this->db->get()->result();
 
 		$this->db->select('a.qty_stock, a.id_material, a.nm_material, b.id_stock as kode_produk, c.id AS id_gudang, c.nm_gudang');
-		$this->db->from('warehouse_stock a');
+		$this->db->from('warehouse_stock_non_material a');
 		$this->db->join('accessories b', 'b.id = a.id_material');
 		$this->db->join('warehouse c', 'c.id = a.id_gudang', 'left');
+		$this->db->where_in('c.kd_gudang', array('G-ATK', 'G-ACC'));
 		$get_data = $this->db->get()->result();
 
 		$data = [
@@ -54,10 +56,11 @@ class Costbook_stock extends Admin_Controller
 	{
 		$this->auth->restrict($this->viewPermission);
 
-		$get_warehouse = $this->db->select('a.id, a.nm_gudang')
-		->from('warehouse a')
-		->get()
-		->result();
+		$get_warehouse = $this->db->select('a.id, a.kd_gudang, a.nm_gudang')
+			->from('warehouse a')
+			->where_in('a.kd_gudang', array('G-ATK', 'G-ACC'))
+			->get()
+			->result();
 
 		$data = array('list_warehouse' => $get_warehouse);
 
@@ -73,11 +76,13 @@ class Costbook_stock extends Admin_Controller
 		$tgl_to = $this->input->post('tgl_to');
 
 		$this->db->select('a.qty_stock, a.id_material, a.nm_material, b.id_stock as kode_produk, c.id AS id_gudang, c.nm_gudang');
-		$this->db->from('warehouse_stock a');
+		$this->db->from('warehouse_stock_non_material a');
 		$this->db->join('accessories b', 'b.id = a.id_material');
 		$this->db->join('warehouse c', 'c.id = a.id_gudang', 'left');
 		if ($warehouse !== '' && $warehouse !== null) {
 			$this->db->where('a.id_gudang', $warehouse);
+		} else {
+			$this->db->where_in('c.kd_gudang', array('G-ATK', 'G-ACC'));
 		}
 		if ($tgl_from !== null && $tgl_to !== null && $tgl_from !== '' && $tgl_to !== '') {
 			$this->db->where('(SELECT COUNT(aa.id) FROM tr_cost_book aa WHERE aa.id_material = a.id_material AND (aa.id_gudang_dari = a.id_gudang OR aa.id_gudang_ke = a.id_gudang) AND DATE_FORMAT(aa.created_on, "%Y-%m-%d") BETWEEN "' . $tgl_from . '" AND "' . $tgl_to . '" ORDER BY aa.created_on DESC LIMIT 1) >', 0);
@@ -121,7 +126,8 @@ class Costbook_stock extends Admin_Controller
 
 		
 
-		$data = array('list_data' => $get_data, 'nm_material' => $nm_material);
+		$nm_gudang = get_name('warehouse', 'nm_gudang', 'id', $id_gudang);
+		$data = array('list_data' => $get_data, 'nm_material' => $nm_material, 'nm_gudang' => $nm_gudang);
 
 		$this->template->set('results', $data);
 		$this->template->render('view_per_item');
@@ -141,14 +147,12 @@ class Costbook_stock extends Admin_Controller
 		$this->db->where('DATE_FORMAT(a.tgl, "%m")', sprintf('%02s', $periode_bulan));
 		$this->db->where('DATE_FORMAT(a.tgl, "%Y")', $periode_tahun);
 		$this->db->where('a.jenis_transaksi', 'Saldo Awal');
-		$get_saldo_awal = $this->db->query("SELECT a.value_neraca FROM tr_cost_book a WHERE DATE_FORMAT(a.tgl, '%m') = '".sprintf('%02s', $periode_bulan)."' AND DATE_FORMAT(a.tgl, '%Y') = '".$periode_tahun."' AND a.jenis_transaksi = 'Saldo Awal'")->result();
-		if($warehouse !== '' && $warehouse !== null) {
-			$get_saldo_awal = $this->db->query("SELECT a.value_neraca FROM tr_cost_book a WHERE DATE_FORMAT(a.tgl, '%m') = '".sprintf('%02s', $periode_bulan)."' AND DATE_FORMAT(a.tgl, '%Y') = '".$periode_tahun."' AND (a.id_gudang_dari = '".$warehouse."' OR a.id_gudang_ke = '".$warehouse."') AND a.jenis_transaksi = 'Saldo Awal'")->result();
+		
+		$where_saldo = 'AND (b.kd_gudang IN ("G-ATK", "G-ACC") OR c.kd_gudang IN ("G-ATK", "G-ACC"))';
+		if ($warehouse !== '' && $warehouse !== null) {
+			$where_saldo = 'AND (a.id_gudang_dari = "'.$warehouse.'" OR a.id_gudang_ke = "'.$warehouse.'")';
 		}
-		// if (!$get_saldo_awal) {
-		// 	print_r("SELECT a.value_neraca FROM tr_cost_book a WHERE DATE_FORMAT(a.tgl, '%m') = '".sprintf('%02s', $periode_bulan)."' AND DATE_FORMAT(a.tgl, '%Y') = '".$periode_tahun."' AND a.jenis_transaksi = 'Saldo Awal'");
-		// 	exit;
-		// }
+		$get_saldo_awal = $this->db->query("SELECT a.value_neraca FROM tr_cost_book a LEFT JOIN warehouse b ON b.id = a.id_gudang_dari LEFT JOIN warehouse c ON c.id = a.id_gudang_ke WHERE DATE_FORMAT(a.tgl, '%m') = '".sprintf('%02s', $periode_bulan)."' AND DATE_FORMAT(a.tgl, '%Y') = '".$periode_tahun."' AND a.jenis_transaksi = 'Saldo Awal' ".$where_saldo)->result();
 
 		$this->db->select('a.jenis_transaksi, a.no_transaksi, a.tgl, a.value_transaksi, IF(a.jenis_transaksi LIKE "%Out%", "Out", "In") as tipe_transaksi, b.nm_gudang as nm_gudang_dari, c.nm_gudang as nm_gudang_ke');
 		$this->db->from('tr_cost_book a');
@@ -163,9 +167,14 @@ class Costbook_stock extends Admin_Controller
 			$this->db->where('a.id_gudang_ke', $warehouse);
 			$this->db->or_where('a.id_gudang_dari', $warehouse);
 			$this->db->group_end();
+		} else {
+			$this->db->group_start();
+			$this->db->where_in('b.kd_gudang', array('G-ATK', 'G-ACC'));
+			$this->db->or_where_in('c.kd_gudang', array('G-ATK', 'G-ACC'));
+			$this->db->group_end();
 		}
 
-		$where_warehouse = '';
+		$where_warehouse = 'AND (b.kd_gudang IN ("G-ATK", "G-ACC") OR c.kd_gudang IN ("G-ATK", "G-ACC"))';
 		if ($warehouse !== '' && $warehouse !== null) {
 			$where_warehouse = 'AND (a.id_gudang_dari = "'.$warehouse.'" OR a.id_gudang_ke = "'.$warehouse.'")';
 		}
