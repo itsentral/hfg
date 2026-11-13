@@ -4374,12 +4374,12 @@ class Expense extends Admin_Controller
 			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a> ';
 
 			// View Detail
-			if (has_permission('Approval Expense Management.View')) {
+			if (has_permission('Approval Expense Management.View') || has_permission('Expense_Approval_Management.View')) {
 				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a> ';
 			}
 
 			// Persetujuan / Approval Management
-			if (has_permission('Approval Expense Management.Manage') && $row->status == 0) {
+			if ((has_permission('Approval Expense Management.Manage') || has_permission('Expense_Approval_Management.Manage')) && $row->status == 0) {
 				$action .= '<a class="btn btn-success btn-sm approve" href="javascript:void(0)" data-id="' . $row->id . '" title="Persetujuan / Approval Management"><i class="fa fa-check"></i></a>';
 			}
 			$action .= '</div>';
