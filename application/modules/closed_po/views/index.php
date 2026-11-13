@@ -30,8 +30,8 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 					<th>PO Amount</th>
 					<th>Revision</th>
 					<th>Close Reason</th>
-					<?php if ($ENABLE_MANAGE) : ?>
-						<th>Action</th>
+					<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
+						<th class="text-center">Action</th>
 					<?php endif; ?>
 				</tr>
 			</thead>
@@ -84,13 +84,15 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 							<td class="text-right"><?= number_format($record->total_barang - $record->nilai_disc + $record->total_ppn + $record->taxtotal) ?></td>
 							<td class="text-center"><?= $record->revisi ?></td>
 							<td><?= $record->close_po_desc ?></td>
-							<td style="padding-left:20px">
-								<?php
-								if ($ENABLE_VIEW) {
-									echo '<a href="' . base_url("/closed_po/view_po/" . $record->no_po) . '" class="btn btn-sm btn-info" title="View Detail"><i class="fa fa-list"></i></a>';
-								}
-								?>
-							</td>
+							<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
+								<td class="text-center">
+									<?php
+									if ($ENABLE_VIEW) {
+										echo '<a href="' . base_url("/closed_po/view_po/" . $record->no_po) . '" class="btn btn-sm btn-info" title="View Detail"><i class="fa fa-list"></i></a>';
+									}
+									?>
+								</td>
+							<?php endif; ?>
 
 						</tr>
 				<?php }

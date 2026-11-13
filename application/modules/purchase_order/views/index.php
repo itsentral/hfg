@@ -32,8 +32,8 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 						<th>Harga PO</th>
 						<th>Revisi</th>
 						<th>Reject Reason</th>
-						<?php if ($ENABLE_MANAGE) : ?>
-							<th>Action</th>
+						<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
+							<th class="text-center" width="100">Action</th>
 						<?php endif; ?>
 					</tr>
 				</thead>
@@ -109,20 +109,22 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								<td class="text-right"><?= number_format($record->subtotal, 4, ',', '.') ?></td>
 								<td class="text-center"><?= $record->revisi ?></td>
 								<td><?= $record->reject_reason ?></td>
-								<td>
-									<?php if ($ENABLE_VIEW) : ?>
-										<!-- <a class="btn btn-warning btn-sm" href="<?= base_url('/purchase_order/view_po/' . $record->no_po) ?>" title="View"><i class="fa fa-eye"></i></a> -->
-										<!-- <a class="btn btn-primary btn-sm" href="<?= base_url('/purchase_order/print_po/' . $record->no_po) ?>" target="_blank" title="Print"><i class="fa fa-print"></i></a> -->
-									<?php endif; ?>
+								<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
+									<td class="text-center text-nowrap">
+										<?php if ($ENABLE_VIEW) : ?>
+											<a class="btn btn-warning btn-sm" href="<?= base_url('/purchase_order/view_po/' . $record->no_po) ?>" title="View"><i class="fa fa-eye"></i></a>
+											<a class="btn btn-primary btn-sm" href="<?= base_url('/purchase_order/print_po/' . $record->no_po) ?>" target="_blank" title="Print"><i class="fa fa-print"></i></a>
+										<?php endif; ?>
 
-									<?php if ($ENABLE_MANAGE && $valid_edit > 0) : ?>
-										<a class="btn btn-info btn-sm" href="<?= base_url('/purchase_order/edit/' . $record->no_po) ?>" title="Edit"><i class="fa fa-edit"></i></a>
-									<?php endif; ?>
+										<?php if ($ENABLE_MANAGE && $valid_edit > 0) : ?>
+											<a class="btn btn-info btn-sm" href="<?= base_url('/purchase_order/edit/' . $record->no_po) ?>" title="Edit"><i class="fa fa-edit"></i></a>
+										<?php endif; ?>
 
-									<?php if ($ENABLE_DELETE) : ?>
-										<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" data-no_surat="<?= $record->no_surat ?>" title="Close PO"><i class="fas fa-ban"></i></button>
-									<?php endif; ?>
-								</td>
+										<?php if ($ENABLE_DELETE) : ?>
+											<button type="button" class="btn btn-sm btn-danger close_po_modal" data-no_po="<?= $record->no_po ?>" data-no_surat="<?= $record->no_surat ?>" title="Close PO"><i class="fas fa-ban"></i></button>
+										<?php endif; ?>
+									</td>
+								<?php endif; ?>
 							</tr>
 					<?php }
 					} ?>
