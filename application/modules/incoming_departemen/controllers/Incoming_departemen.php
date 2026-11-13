@@ -257,18 +257,19 @@ class Incoming_departemen extends Admin_Controller
 		$result = $this->db->query($sql)->result_array();
 
 		$arr_list_dept = [];
-		$get_dept_old = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
+		$companyLabel  = get_company_name(true, true);
+		$get_dept_old  = $this->db->get_where('department', ['deleted' => 'N'])->result_array();
 		foreach ($get_dept_old as $item) {
 			$arr_list_dept[$item['id']] = [
 				'id_dept' => $item['id'],
-				'nm_dept' => strtoupper($item['nm_dept']) . ' - PT HARAPAN FAJAR GEMILANG'
+				'nm_dept' => strtoupper($item['nm_dept']) . ' - ' . $companyLabel
 			];
 		}
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
 			$arr_list_dept[$item['id']] = [
 				'id_dept' => $item['id'],
-				'nm_dept' => strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG'
+				'nm_dept' => strtoupper($item['nama']) . ' - ' . $companyLabel
 			];
 		}
 
