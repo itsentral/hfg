@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Katalog Harga Resmi HFG - <?= date('d/m/Y') ?></title>
+    <title>Katalog Harga Resmi <?= html_escape(get_company_code()) ?> - <?= date('d/m/Y') ?></title>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #333; margin: 20px; }
         .header { border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
@@ -33,7 +33,7 @@
         <table style="border:none; width:100%; margin:0;">
             <tr style="border:none;">
                 <td style="border:none; padding:0;">
-                    <h2>PT. HARAPAN FORWARDING GRAHA (HFG)</h2>
+                    <h2><?= html_escape(get_company_name(true, true)) ?> (<?= html_escape(get_company_code()) ?>)</h2>
                     <p><strong>DAFTAR HARGA RESMI PRODUK (PRODUCT CATALOG)</strong></p>
                     <p>Status: RESMI AKTIF | Tanggal Cetak: <?= html_escape($date) ?></p>
                 </td>
@@ -81,7 +81,7 @@
     </table>
 
     <div class="footer">
-        <p>* Harga di atas merupakan harga resmi katalog HFG dan belum termasuk diskon khusus atau penyesuaian negosiasi tambahan yang disetujui General Manager.</p>
+        <p>* Harga di atas merupakan harga resmi katalog <?= html_escape(get_company_code()) ?> dan belum termasuk diskon khusus atau penyesuaian negosiasi tambahan yang disetujui General Manager.</p>
     </div>
 </body>
 </html>

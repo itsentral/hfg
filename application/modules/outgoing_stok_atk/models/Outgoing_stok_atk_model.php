@@ -37,10 +37,11 @@ class Outgoing_stok_atk_model extends BF_Model
     $totalFiltered  = $fetch['totalFiltered'];
     $query      = $fetch['query'];
 
-        $dept_map = [];
+        $dept_map     = [];
+        $companyLabel = get_company_name(true, true);
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
-			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - ' . $companyLabel;
 		}
 
     $data  = array();
@@ -156,10 +157,11 @@ class Outgoing_stok_atk_model extends BF_Model
     $totalFiltered  = $fetch['totalFiltered'];
     $query          = $fetch['query'];
 
-        $dept_map = [];
+        $dept_map     = [];
+        $companyLabel = get_company_name(true, true);
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
-			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - ' . $companyLabel;
 		}
 
     $data  = array();

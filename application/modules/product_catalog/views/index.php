@@ -9,7 +9,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
     <div class="box-header with-border">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h3 class="box-title"><i class="fa fa-book text-primary"></i> Product Catalog Resmi HFG</h3>
+                <h3 class="box-title"><i class="fa fa-book text-primary"></i> Product Catalog Resmi <?= html_escape(get_company_code()) ?></h3>
                 <p class="text-muted mb-0" style="font-size:12px;">Daftar harga katalog resmi hasil rilis Pricelist yang disetujui Management.</p>
             </div>
             <div class="col-md-6 text-right">

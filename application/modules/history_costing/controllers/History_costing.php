@@ -84,7 +84,8 @@ class History_costing extends Admin_Controller
 
         $list = $this->hc_model->get_history($filters);
 
-        $filename = 'History_Costing_HFG_' . date('Ymd_His') . '.csv';
+        $company_code = preg_replace('/[^A-Za-z0-9_-]/', '_', get_company_code());
+        $filename = 'History_Costing_' . $company_code . '_' . date('Ymd_His') . '.csv';
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=' . $filename);

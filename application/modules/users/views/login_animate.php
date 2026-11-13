@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
 
   <title><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set' ?> | Login</title>
-  <link rel="shortcut icon" href="<?= base_url('assets/images/iconhfg.png'); ?>" />
+  <link rel="shortcut icon" href="<?= get_company_logo('icon'); ?>" />
 
   <!-- Berry CSS -->
   <link rel="stylesheet" href="<?= base_url('assets/berry/fonts/tabler-icons.min.css'); ?>" />
@@ -26,7 +26,7 @@
     body {
       margin: 0;
       font-family: "Roboto", Arial, sans-serif;
-      background: url("<?= base_url(); ?>assets/img/wallpaper_harapan.jpg") center / cover fixed no-repeat;
+      background: url("<?= get_company_wallpaper(); ?>") center / cover fixed no-repeat;
       position: relative;
       overflow-x: hidden;
     }
@@ -298,7 +298,7 @@
       <div class="card-body">
 
         <div class="brand-logo">
-          <img src="<?= base_url('assets/images/iconhfg.png '); ?>" alt="Logo">
+          <img src="<?= get_company_logo('icon'); ?>" alt="Logo">
         </div>
 
         <h4 class="company-title mb-3">

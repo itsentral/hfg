@@ -169,7 +169,7 @@
     <!-- logo dan judul -->
     <div style="position: relative; display: flex; align-items: center; margin-bottom: 20px; min-height: 120px;">
         <div style="flex: 0 0 auto;">
-            <img src="<?= base_url('assets/images/logohfg.png') ?>"
+            <img src="<?= get_company_logo('doc') ?>"
                 alt="Logo"
                 style="height: 100px; width: auto;">
         </div>

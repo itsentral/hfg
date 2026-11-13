@@ -59,9 +59,14 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
             <div class="card border-primary mb-3">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
                     <h6 class="mb-0 text-white fw-bold"><i class="fa fa-list me-1"></i> Daftar Varian Tebal (Material)</h6>
-                    <button type="button" class="btn btn-light btn-sm fw-bold" id="btn-add-variant">
-                        <i class="fa fa-plus me-1"></i> Tambah Varian
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" id="btn-recalculate" title="Hitung ulang Berat/Meter untuk semua varian material">
+                            <i class="fa fa-calculator me-1"></i> Recalculate Berat/Meter
+                        </button>
+                        <button type="button" class="btn btn-light btn-sm fw-bold" id="btn-add-variant">
+                            <i class="fa fa-plus me-1"></i> Tambah Varian
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -115,7 +120,7 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                                         <td class="text-end col-width">
                                             <?= number_format(isset($d->width) ? $d->width : 0, 2, '.', '') ?>
                                         </td>
-                                        <td class="text-end fw-bold text-success col-bpm">
+                                        <td class="text-end fw-bold col-bpm <?= ((float)$d->berat_per_meter > 0) ? 'text-success' : 'text-danger' ?>">
                                             <?= number_format($d->berat_per_meter, 4, '.', '') ?>
                                         </td>
                                         <td class="text-center">
@@ -236,8 +241,69 @@ $(document).ready(function() {
         tr.find('.col-width').text(width > 0 ? width.toFixed(2) : '—');
 
         var bpm = calcBPM(thick, width);
-        tr.find('.col-bpm').text(bpm > 0 ? bpm.toFixed(4) : '—');
+        tr.find('.col-bpm').removeClass('text-danger text-muted').addClass('text-success').text(bpm > 0 ? bpm.toFixed(4) : '—');
         tr.find('.inp-bpm').val(bpm.toFixed(6));
+    });
+
+    // Fungsi hitung ulang Berat/Meter untuk semua baris material yang dipilih
+    function recalculateAllBPM(showFeedback) {
+        var count = 0;
+        $('#tbody-variant tr').each(function() {
+            var tr = $(this);
+            var opt = tr.find('.select2-material').find(':selected');
+            var val = opt.val();
+            if (val) {
+                var thick = parseFloat(opt.data('thick')) || 0;
+                var width = parseFloat(opt.data('width')) || 0;
+                var nama  = opt.data('nama') || '';
+                var unit  = opt.data('unit') || '';
+                var nmUnit = opt.data('nm-unit') || '';
+
+                tr.find('.inp-nm-material').val(nama);
+                tr.find('.inp-id-unit').val(unit);
+                tr.find('.inp-nm-unit').val(nmUnit);
+
+                tr.find('.col-thick').text(thick > 0 ? thick.toFixed(3) : '—');
+                tr.find('.col-width').text(width > 0 ? width.toFixed(2) : '—');
+
+                var bpm = calcBPM(thick, width);
+                tr.find('.col-bpm').removeClass('text-danger text-muted').addClass('text-success').text(bpm > 0 ? bpm.toFixed(4) : '—');
+                tr.find('.inp-bpm').val(bpm.toFixed(6));
+                count++;
+            }
+        });
+
+        if (showFeedback) {
+            if (count > 0) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Recalculate Selesai',
+                        text: count + ' varian material berhasil dihitung ulang berat/meter-nya. Silakan klik "Simpan BOM" untuk menyimpan perubahan.',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert(count + ' varian material berhasil dihitung ulang berat/meter-nya. Silakan klik "Simpan BOM" untuk menyimpan.');
+                }
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: 'Belum ada material yang dipilih pada tabel varian.',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Belum ada material yang dipilih pada tabel varian.');
+                }
+            }
+        }
+    }
+
+    // Event tombol Recalculate Berat/Meter
+    $('#btn-recalculate').on('click', function() {
+        recalculateAllBPM(true);
     });
 
     // Tambah Varian Baru

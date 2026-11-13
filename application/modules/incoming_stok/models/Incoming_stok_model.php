@@ -234,7 +234,7 @@ class Incoming_stok_model extends BF_Model
         $arr_jurnal_coa = ['1070-10-8', '1050-30-1', '2010-10-2'];
 
         $id_company = '1';
-        $nm_company = 'PT HARAPAN FAJAR GEMILANG';
+        $nm_company = get_company_name(true, true);
 
         $get_department = $this->db->get_where('department', ['id' => $get_po->id_dept])->row();
         $id_div = (!empty($get_department->id_div)) ? $get_department->id_div : '';

@@ -97,27 +97,60 @@ class Fg_stock_model extends CI_Model
     }
 
     /**
-     * Ambil riwayat kartu stok (ledger) untuk produk tertentu
+     * Ambil ringkasan agregat stok untuk kategori tertentu (atau semua kategori)
      *
-     * @param string      $produk_fg
+     * @param string|null $kategori
+     * @return object
+     */
+    public function get_category_summary($kategori = null)
+    {
+        $this->db->select("
+            COUNT(id) AS total_sku,
+            COALESCE(SUM(qty_stok), 0) AS total_qty,
+            COALESCE(SUM(total_berat), 0) AS total_berat,
+            COALESCE(SUM(total_nilai), 0) AS total_nilai
+        ");
+        $this->db->from('fg_stock');
+        if (!empty($kategori) && $kategori !== 'ALL') {
+            $this->db->where('kategori_stok', $kategori);
+        }
+        return $this->db->get()->row();
+    }
+
+    /**
+     * Ambil riwayat kartu stok (ledger) berdasarkan kategori stok, rentang tanggal, dan produk opsional
+     *
+     * @param string|null $kategori   'KW1', 'KW2', 'TONG_COIL', 'SCRAP', atau 'ALL'
      * @param string|null $tgl_dari   Format Y-m-d
      * @param string|null $tgl_sampai Format Y-m-d
+     * @param string|null $produk_fg  Kode produk spesifik (opsional)
      * @return array
      */
-    public function get_history_ledger($produk_fg, $tgl_dari = null, $tgl_sampai = null)
+    public function get_history_ledger($kategori = null, $tgl_dari = null, $tgl_sampai = null, $produk_fg = null)
     {
-        $this->db->where('produk_fg', $produk_fg);
+        $this->db->select('l.*, COALESCE(NULLIF(s.nm_produk_fg, ""), p4.nama, l.produk_fg) AS nm_produk_fg');
+        $this->db->from('fg_stock_ledger l');
+        $this->db->join('fg_stock s', 's.produk_fg = l.produk_fg', 'left');
+        $this->db->join('product_lvl_4 p4', 'p4.code_lv4 = l.produk_fg', 'left');
+
+        if (!empty($kategori) && $kategori !== 'ALL') {
+            $this->db->where('l.kategori_stok', $kategori);
+        }
+
+        if (!empty($produk_fg)) {
+            $this->db->where('l.produk_fg', $produk_fg);
+        }
 
         if (!empty($tgl_dari)) {
-            $this->db->where('tgl_transaksi >=', $tgl_dari);
+            $this->db->where('l.tgl_transaksi >=', $tgl_dari);
         }
         if (!empty($tgl_sampai)) {
-            $this->db->where('tgl_transaksi <=', $tgl_sampai);
+            $this->db->where('l.tgl_transaksi <=', $tgl_sampai);
         }
 
-        return $this->db->order_by('tgl_transaksi', 'ASC')
-            ->order_by('id', 'ASC')
-            ->get('fg_stock_ledger')->result();
+        return $this->db->order_by('l.tgl_transaksi', 'DESC')
+            ->order_by('l.id', 'DESC')
+            ->get()->result();
     }
 
     /**

@@ -1201,7 +1201,7 @@ class Expense extends Admin_Controller
 				$html .= '<tr>';
 				$html .= '<td class="text-center">' . htmlspecialchars($tgl) . '</td>';
 				$html .= '<td class="text-center fw-semibold text-primary">' . htmlspecialchars($coa_val) . '</td>';
-				$html .= '<td class="text-center text-muted">HFG</td>';
+				$html .= '<td class="text-center text-muted">' . htmlspecialchars(get_company_code()) . '</td>';
 				$html .= '<td>' . htmlspecialchars($clean_acc_name) . '</td>';
 				$html .= '<td>' . htmlspecialchars($desk) . '</td>';
 				$html .= '<td class="text-end font-monospace fw-bold text-success">' . number_format($nom, 0, ',', '.') . '</td>';

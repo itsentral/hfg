@@ -459,7 +459,7 @@
     ?>
 
     <div class="doc-header-wrapper">
-        <img src="<?php echo base_url('assets/images/logohfg.png'); ?>" alt="Logo" class="doc-logo">
+        <img src="<?php echo get_company_logo('doc'); ?>" alt="Logo" class="doc-logo">
         <div class="doc-title">SPK PRODUKSI & MATERIAL</div>
         <?php if (!empty($qr_base64)): ?>
             <div class="doc-qr">
