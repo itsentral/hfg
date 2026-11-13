@@ -32,7 +32,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					<th class="text-center">Request By</th>
 					<th class="text-center">Request Date</th>
 					<th class="text-center">Status</th>
-					<?php if ($ENABLE_MANAGE) : ?>
+					<?php if ($ENABLE_VIEW || $ENABLE_MANAGE) : ?>
 						<th class="text-center" width="13%">Option</th>
 					<?php endif; ?>
 				</tr>
@@ -56,17 +56,26 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<td class="text-center">' . strtoupper($record->project) . '</td>
 							<td class="text-center">' . ucwords(strtolower($nama_user)) . '</td>
 							<td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
-							<td class="text-center"><span class="badge bg-purple">Waiting Approval</span></td>
+							<td class="text-center"><span class="badge bg-purple">Waiting Approval</span></td>';
+
+					if ($ENABLE_VIEW || $ENABLE_MANAGE) {
+						echo '
 							<td class="text-center">
 								';
 
-					if ($ENABLE_MANAGE) {
-						echo '<button type="button" class="btn btn-sm btn-success request" data-so_number="' . $record->so_number . '"><i class="fa fa-check"></i></button>';
+						if ($ENABLE_MANAGE) {
+							echo '<button type="button" class="btn btn-sm btn-success request" data-so_number="' . $record->so_number . '"><i class="fa fa-check"></i></button> ';
+						}
+
+						if ($ENABLE_VIEW) {
+							echo '<button type="button" class="btn btn-sm btn-info view" data-no_pr="' . $record->so_number . '"><i class="fa fa-eye"></i></button>';
+						}
+
+						echo '
+							</td>';
 					}
 
 					echo '
-								<button type="button" class="btn btn-sm btn-info view" data-no_pr="' . $record->so_number . '"><i class="fa fa-eye"></i></button>
-							</td>
 						</tr>
 					';
 

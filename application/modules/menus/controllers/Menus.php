@@ -99,6 +99,28 @@ class Menus extends Admin_Controller
     $max_menu = $this->db->select('MAX(id) AS id_max')->get('menus')->result_array();
     $id_max = $max_menu[0]['id_max'] + 1;
 
+    $status   = $this->input->post('status');
+    $order    = (int) $this->input->post('order');
+    $parent_id = (int) $parent_id;
+
+    // Validasi Nomor Urut (Order) tidak boleh sama dengan menu lain pada parent yang sama
+    $this->db->select('id, title');
+    $this->db->from('menus');
+    $this->db->where('parent_id', $parent_id);
+    $this->db->where('order', $order);
+    $this->db->where('status', 1);
+    if ($type == "edit" && !empty($id)) {
+      $this->db->where('id !=', $id);
+    }
+    $collision = $this->db->get()->row();
+    if ($collision) {
+      echo json_encode([
+        'save' => 0,
+        'msg'  => "Nomor urut {$order} sudah digunakan oleh menu '{$collision->title}' pada level yang sama. Silakan gunakan nomor urut yang berbeda!"
+      ]);
+      exit;
+    }
+
     if ($type != "edit") {
       // $query_id = $this->db->query("SHOW TABLE STATUS LIKE 'permissions' ");
       // $row_id = $query_id->row();
@@ -405,5 +427,79 @@ class Menus extends Admin_Controller
     header('Content-Disposition: attachment;filename="ExportDataMitra' . date('Ymd') . '.xlsx"');
 
     $objWriter->save('php://output');
+  }
+
+  /**
+   * Rekomendasi Urutan (Order) Menu berdasarkan Parent ID
+   * Digunakan oleh AJAX pada menus_form untuk memudahkan user menentukan nomor order
+   */
+  public function get_order_recommendation()
+  {
+    $parent_id  = $this->input->get_post('parent_id');
+    $current_id = $this->input->get_post('menu_id');
+
+    if ($parent_id === null || $parent_id === '') {
+      $parent_id = 0;
+    }
+    $parent_id  = (int) $parent_id;
+    $current_id = (int) $current_id;
+
+    // Ambil semua menu di bawah parent ini yang aktif (status = 1)
+    $this->db->select('id, title, `order`, status');
+    $this->db->from('menus');
+    $this->db->where('parent_id', $parent_id);
+    $this->db->where('status', 1);
+    $this->db->order_by('`order`', 'ASC');
+    $this->db->order_by('id', 'ASC');
+    $query = $this->db->get();
+    $rows  = $query->result_array();
+
+    $siblings      = [];
+    $max_order     = 0;
+    $current_order = null;
+
+    foreach ($rows as $r) {
+      $is_current = ($current_id > 0 && (int)$r['id'] === $current_id);
+      $ord        = (int) $r['order'];
+      if ($is_current) {
+        $current_order = $ord;
+      }
+
+      // Untuk Level 1 (parent_id == 0), abaikan Settings (order 99) agar next order tidak menjadi 100
+      if ($parent_id === 0 && $ord >= 90) {
+        // Jangan dihitung sebagai max_order jika urutan khusus seperti Settings (99)
+      } else {
+        if ($ord > $max_order) {
+          $max_order = $ord;
+        }
+      }
+
+      $siblings[] = [
+        'id'         => (int) $r['id'],
+        'title'      => $r['title'],
+        'order'      => $ord,
+        'is_current' => $is_current
+      ];
+    }
+
+    if ($parent_id === 0) {
+      $next_order = ($max_order > 0) ? ($max_order + 1) : 1;
+      if ($next_order >= 99) {
+        $next_order = 98;
+      }
+    } else {
+      $next_order = ($max_order > 0) ? ($max_order + 1) : 1;
+    }
+
+    echo json_encode([
+      'status'         => 1,
+      'parent_id'      => $parent_id,
+      'next_order'     => $next_order,
+      'max_order'      => $max_order,
+      'current_order'  => $current_order,
+      'total_siblings' => count($siblings),
+      'siblings'       => $siblings
+    ]);
+    exit;
   }
 }

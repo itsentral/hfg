@@ -34,11 +34,13 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 						<th>Bank</th>
 						<th>Nilai Pengajuan</th>
 						<th class="exclass">Tanggal Pembayaran</th>
-						<th class="exclass">Keterangan</th>
-						<th class="exclass">Payment</th>
-						<th class="exclass">Administrasi</th>
-						<th class="exclass">Status</th>
-						<th class="exclass">Dokumen</th>
+						<?php if ($ENABLE_MANAGE) : ?>
+							<th class="exclass">Keterangan</th>
+							<th class="exclass">Payment</th>
+							<th class="exclass">Administrasi</th>
+							<th class="exclass">Status</th>
+							<th class="exclass">Dokumen</th>
+						<?php endif; ?>
 					</tr>
 				</thead>
 				<tbody>
