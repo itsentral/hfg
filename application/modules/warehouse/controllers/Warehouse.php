@@ -100,9 +100,13 @@ class Warehouse extends Admin_Controller
         $kd_gudang = $this->input->post('kd_gudang') ?? '';
 
         $where_gudang = '';
+        $coil_gudang_cond = '';
         if (!empty($kd_gudang)) {
             $kd = $this->db->escape($kd_gudang);
             $where_gudang = " AND wp.kd_gudang = {$kd}";
+            $coil_gudang_cond = " AND wsc.kd_gudang = {$kd}";
+        } else {
+            $coil_gudang_cond = " AND wsc.kd_gudang = wp.kd_gudang";
         }
 
         $sql = "
@@ -110,18 +114,20 @@ class Warehouse extends Admin_Controller
                 wp.id AS id_pack,
                 wp.pack_code,
                 wp.kd_gudang,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(wsc.trade_name,''), '||', IFNULL(wsc.nm_material,'')) SEPARATOR ';;') AS materials_concat,
+                GROUP_CONCAT(DISTINCT IF(wsc.id IS NOT NULL, CONCAT(IFNULL(wsc.trade_name,''), '||', IFNULL(wsc.nm_material,'')), NULL) SEPARATOR ';;') AS materials_concat,
                 COUNT(wsc.id) AS roll_count,
                 SUM(wsc.net_weight) AS total_nw,
                 AVG(wsc.net_weight) AS nw_per_roll,
                 SUM(wsc.gross_weight) AS total_gw,
                 AVG(wsc.gross_weight) AS gw_per_roll
             FROM warehouse_pack wp
-            LEFT JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
+            JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
                 AND (wsc.is_baby_coil = 1 OR (wsc.is_baby_coil = 0 AND wsc.qty_roll <= 1))
+                {$coil_gudang_cond}
             WHERE wp.status = 1
             {$where_gudang}
             GROUP BY wp.id
+            HAVING roll_count > 0
             ORDER BY wp.pack_code ASC
         ";
 

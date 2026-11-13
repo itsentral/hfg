@@ -989,7 +989,9 @@ class Finalize_incoming extends Admin_Controller
         ", [$no_coil])->row();
 
         if (!empty($coil_internal)) {
-            log_message('error', "Incoming coil {$no_coil} ditolak / di-skip karena coil tersebut sudah terdaftar di proses internal (status: {$coil_internal->status_proses}, gudang: {$coil_internal->kd_gudang})");
+            $errMsg = "Incoming coil {$no_coil} ditolak karena coil tersebut sudah terdaftar di proses internal (status: {$coil_internal->status_proses}, gudang: {$coil_internal->kd_gudang}).";
+            log_message('error', $errMsg);
+            throw new Exception($errMsg);
         } elseif (empty($existing_coil)) {
             $this->db->insert('warehouse_stock_coil', [
                 'id_material'    => $id_material,
@@ -1016,7 +1018,9 @@ class Finalize_incoming extends Admin_Controller
                 'created_on'     => date('Y-m-d H:i:s'),
             ]);
         } else {
-            log_message('warning', "Duplicate coil skipped: {$no_coil} for material {$id_material} at gudang {$id_gudang}");
+            $errMsg = "Nomor coil {$no_coil} untuk material {$nm_material} sudah terdaftar di gudang {$kd_gudang}.";
+            log_message('warning', $errMsg);
+            throw new Exception($errMsg);
         }
 
         // ── 8. warehouse_history ──────────────────────────────────────────────
@@ -1328,13 +1332,41 @@ class Finalize_incoming extends Admin_Controller
             exit;
         }
 
+        // ── Pra-validasi nomor coil: pastikan tidak ada nomor coil fisik yang duplikat di sistem ──
+        $duplicate_coils = [];
+        foreach ($coils as $c) {
+            if ((float) $c['berat_bersih'] <= 0) continue;
+            $is_mother_with_baby = ((int) $c['is_baby_coil'] === 0 && (int) $c['qty_roll'] > 1);
+            if ($is_mother_with_baby) continue;
+
+            $check_no_coil = trim($c['no_coil'] ?? '');
+            if (!empty($check_no_coil)) {
+                $exists = $this->db->get_where('warehouse_stock_coil', ['no_coil' => $check_no_coil])->row();
+                if ($exists) {
+                    $duplicate_coils[] = $check_no_coil;
+                }
+            }
+        }
+
+        if (!empty($duplicate_coils)) {
+            $dup_list = implode(', ', array_unique($duplicate_coils));
+            ob_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 0,
+                'pesan'  => "Nomor coil [{$dup_list}] sudah terdaftar di sistem. Mohon gunakan nomor coil yang unik sebelum melakukan Finalize Incoming."
+            ]);
+            exit;
+        }
+
         $this->db->trans_begin();
 
-        $kode_incoming      = $this->Finalize_incoming_model->generate_id_incoming();
-        $total_berat        = 0;
-        $total_nilai_inc    = 0;
-        $details_to_insert  = [];
-        $pack_codes_inserted = []; // Track pack_code yang sudah di-insert ke warehouse_pack
+        try {
+            $kode_incoming      = $this->Finalize_incoming_model->generate_id_incoming();
+            $total_berat        = 0;
+            $total_nilai_inc    = 0;
+            $details_to_insert  = [];
+            $pack_codes_inserted = []; // Track pack_code yang sudah di-insert ke warehouse_pack
 
         // ★ BARU: kumpulkan coil per material (utk alokasi pack) & pack->gudang map
         $coils_by_material_for_alloc = [];
@@ -1610,12 +1642,16 @@ class Finalize_incoming extends Admin_Controller
         ], ['id' => $no_ros]);
 
         if ($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            ob_clean();
-            echo json_encode(['status' => 0, 'pesan' => 'Failed to process finalize!']);
-            return;
+            throw new Exception('Database transaction failed saat menyimpan data incoming.');
         }
         $this->db->trans_commit();
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            ob_clean();
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 0, 'pesan' => 'Proses Finalize Incoming gagal: ' . $e->getMessage()]);
+            return;
+        }
 
         // Generate jurnal
         $jurnal_error = null;

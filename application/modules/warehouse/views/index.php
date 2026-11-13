@@ -187,9 +187,13 @@ $(document).ready(function() {
         var html = '';
         mats.forEach(function(m) {
             var parts = m.split('||');
-            html += '<div style="font-size:13px;"><span class="text-primary me-1">&#9679;</span><b>' + (parts[0]||'') + '</b> <small class="text-muted">(' + (parts[1]||'') + ')</small></div>';
+            var trade = (parts[0] || '').trim();
+            var nm = (parts[1] || '').trim();
+            if (trade !== '' || nm !== '') {
+                html += '<div style="font-size:13px;"><span class="text-primary me-1">&#9679;</span><b>' + trade + '</b> <small class="text-muted">(' + nm + ')</small></div>';
+            }
         });
-        return html;
+        return html || '-';
     }
 
     /* ── Helper: render pack rows ── */

@@ -1142,9 +1142,13 @@ class Warehouse_model extends BF_Model
         $order_by = $col_map[$order_col] ?? 'wp.pack_code';
 
         $where_gudang = '';
+        $coil_gudang_cond = '';
         if (!empty($kd_gudang)) {
             $kd = $this->db->escape($kd_gudang);
             $where_gudang = " AND wp.kd_gudang = {$kd}";
+            $coil_gudang_cond = " AND wsc.kd_gudang = {$kd}";
+        } else {
+            $coil_gudang_cond = " AND wsc.kd_gudang = wp.kd_gudang";
         }
 
         $where_search = '';
@@ -1153,14 +1157,20 @@ class Warehouse_model extends BF_Model
             $where_search = " AND (wp.pack_code LIKE '%{$s}%' OR wsc.nm_material LIKE '%{$s}%' OR wsc.trade_name LIKE '%{$s}%')";
         }
 
-        // Count total packs
+        // Count total packs with active physical coils
         $count_sql = "
-            SELECT COUNT(DISTINCT wp.id) AS cnt
-            FROM warehouse_pack wp
-            LEFT JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id AND wsc.is_baby_coil = 1
-            WHERE wp.status = 1
-            {$where_gudang}
-            {$where_search}
+            SELECT COUNT(*) AS cnt FROM (
+                SELECT wp.id, COUNT(wsc.id) AS roll_count
+                FROM warehouse_pack wp
+                JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
+                    AND (wsc.is_baby_coil = 1 OR (wsc.is_baby_coil = 0 AND wsc.qty_roll <= 1))
+                    {$coil_gudang_cond}
+                WHERE wp.status = 1
+                {$where_gudang}
+                {$where_search}
+                GROUP BY wp.id
+                HAVING roll_count > 0
+            ) t
         ";
         $total_q   = $this->db->query($count_sql)->row();
         $totalData = $total_q ? (int) $total_q->cnt : 0;
@@ -1172,19 +1182,21 @@ class Warehouse_model extends BF_Model
                 wp.id AS id_pack,
                 wp.pack_code,
                 wp.kd_gudang,
-                GROUP_CONCAT(DISTINCT CONCAT(wsc.trade_name, '||', wsc.nm_material) SEPARATOR ';;') AS materials_concat,
+                GROUP_CONCAT(DISTINCT IF(wsc.id IS NOT NULL, CONCAT(IFNULL(wsc.trade_name, ''), '||', IFNULL(wsc.nm_material, '')), NULL) SEPARATOR ';;') AS materials_concat,
                 COUNT(wsc.id) AS roll_count,
                 SUM(wsc.net_weight) AS total_nw,
                 AVG(wsc.net_weight) AS nw_per_roll,
                 SUM(wsc.gross_weight) AS total_gw,
                 AVG(wsc.gross_weight) AS gw_per_roll
             FROM warehouse_pack wp
-            LEFT JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
+            JOIN warehouse_stock_coil wsc ON wsc.id_pack = wp.id
                 AND (wsc.is_baby_coil = 1 OR (wsc.is_baby_coil = 0 AND wsc.qty_roll <= 1))
+                {$coil_gudang_cond}
             WHERE wp.status = 1
             {$where_gudang}
             {$where_search}
             GROUP BY wp.id
+            HAVING roll_count > 0
             ORDER BY {$order_by} {$order_dir}
             LIMIT {$start}, {$length}
         ";
@@ -1200,10 +1212,15 @@ class Warehouse_model extends BF_Model
                 $mats = array_unique(explode(';;', $row['materials_concat']));
                 foreach ($mats as $m) {
                     $parts = explode('||', $m);
-                    $trade = $parts[0] ?? '';
-                    $nm    = $parts[1] ?? '';
-                    $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars($trade) . '</b> <small class="text-muted">(' . htmlspecialchars($nm) . ')</small></div>';
+                    $trade = trim($parts[0] ?? '');
+                    $nm    = trim($parts[1] ?? '');
+                    if ($trade !== '' || $nm !== '') {
+                        $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars($trade) . '</b> <small class="text-muted">(' . htmlspecialchars($nm) . ')</small></div>';
+                    }
                 }
+            }
+            if ($mat_html === '') {
+                $mat_html = '-';
             }
 
             // QR button (content = pack_code)
