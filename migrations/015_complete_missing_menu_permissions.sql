@@ -4,11 +4,12 @@
 -- 1. Mutasi Bank (Menu 444)
 -- 2. Expense Submenu (Menu 279)
 -- 3. Expense Header Folder (Menu 282)
--- 4. Stok Finish Good (Menu 542)
--- 5. Claim Material Folder (Menu 543)
--- 6. Daftar Claim Material (Menu 545)
--- 7. Material Dijual (Gudang Slitting) (Menu 546)
--- 8. Report Biaya Kompensasi (Menu 547)
+-- 4. Kasbon Header Folder (Menu 283)
+-- 5. Stok Finish Good (Menu 542)
+-- 6. Claim Material Folder (Menu 543)
+-- 7. Daftar Claim Material (Menu 545)
+-- 8. Material Dijual (Gudang Slitting) (Menu 546)
+-- 9. Report Biaya Kompensasi (Menu 547)
 -- ========================================================================
 
 -- STEP 1: HAPUS SEMUA DUPLIKAT PERMISSION DI SERVER/DB JIKA ADA
@@ -92,7 +93,31 @@ WHERE `id` = 282;
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 282;
 
--- STEP 5: PERMISSIONS STOK FINISH GOOD (Menu ID: 542)
+-- STEP 5: PERMISSIONS KASBON HEADER MENU (Menu ID: 283)
+INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
+SELECT 'Menu_Kasbon.View', 'View', 283, 'Kasbon', NOW(), 1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Menu_Kasbon.View' AND `id_menu` = 283);
+
+INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
+SELECT 'Menu_Kasbon.Add', 'Add', 283, 'Kasbon', NOW(), 1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Menu_Kasbon.Add' AND `id_menu` = 283);
+
+INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
+SELECT 'Menu_Kasbon.Manage', 'Manage', 283, 'Kasbon', NOW(), 1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Menu_Kasbon.Manage' AND `id_menu` = 283);
+
+INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
+SELECT 'Menu_Kasbon.Delete', 'Delete', 283, 'Kasbon', NOW(), 1
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Menu_Kasbon.Delete' AND `id_menu` = 283);
+
+UPDATE `menus` 
+SET `permission_id` = (SELECT `id_permission` FROM `permissions` WHERE `nm_permission` = 'Menu_Kasbon.View' LIMIT 1)
+WHERE `id` = 283;
+
+INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
+SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 283;
+
+-- STEP 6: PERMISSIONS STOK FINISH GOOD (Menu ID: 542)
 INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
 SELECT 'FG_Stock.Add', 'Add', 542, 'Stok Finish Good', NOW(), 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'FG_Stock.Add' AND `id_menu` = 542);
@@ -108,7 +133,7 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 542;
 
--- STEP 6: PERMISSIONS CLAIM MATERIAL FOLDER (Menu ID: 543)
+-- STEP 7: PERMISSIONS CLAIM MATERIAL FOLDER (Menu ID: 543)
 UPDATE `permissions` 
 SET `nm_permission` = 'Claim_Material.Add', `ket` = 'Add' 
 WHERE `id_permission` = 2054;
@@ -124,7 +149,7 @@ FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 543;
 
--- STEP 7: PERMISSIONS DAFTAR CLAIM MATERIAL (Menu ID: 545)
+-- STEP 8: PERMISSIONS DAFTAR CLAIM MATERIAL (Menu ID: 545)
 INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
 SELECT 'Daftar_Claim_Material.View', 'View', 545, 'Daftar Claim Material', NOW(), 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Daftar_Claim_Material.View' AND `id_menu` = 545);
@@ -148,7 +173,7 @@ WHERE `id` = 545;
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 545;
 
--- STEP 8: PERMISSIONS MATERIAL DIJUAL GUDANG SLITTING (Menu ID: 546)
+-- STEP 9: PERMISSIONS MATERIAL DIJUAL GUDANG SLITTING (Menu ID: 546)
 INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
 SELECT 'Material_Dijual_Slitting.View', 'View', 546, 'Material Dijual (Gudang Slitting)', NOW(), 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Material_Dijual_Slitting.View' AND `id_menu` = 546);
@@ -172,7 +197,7 @@ WHERE `id` = 546;
 INSERT IGNORE INTO `group_permissions` (`id_group`, `id_permission`)
 SELECT 1, `id_permission` FROM `permissions` WHERE `id_menu` = 546;
 
--- STEP 9: PERMISSIONS REPORT BIAYA KOMPENSASI (Menu ID: 547)
+-- STEP 10: PERMISSIONS REPORT BIAYA KOMPENSASI (Menu ID: 547)
 INSERT INTO `permissions` (`nm_permission`, `ket`, `id_menu`, `nm_menu`, `created_on`, `created_by`)
 SELECT 'Report_Biaya_Kompensasi.View', 'View', 547, 'Report Biaya Kompensasi', NOW(), 1
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `permissions` WHERE `nm_permission` = 'Report_Biaya_Kompensasi.View' AND `id_menu` = 547);
