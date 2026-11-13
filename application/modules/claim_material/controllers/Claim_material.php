@@ -21,7 +21,7 @@ class Claim_material extends Admin_Controller
      */
     public function index()
     {
-        if (!has_permission($this->viewPermission) && !has_permission('Daftar_Claim_Material.View')) {
+        if (!has_permission($this->viewPermission) && !has_permission('Daftar_Claim_Material.View') && !has_permission('Daftar_Klaim_Material.View') && !has_permission('Klaim_Material.View')) {
             $this->auth->restrict($this->viewPermission);
         }
         $suppliers = $this->cm_model->get_suppliers_list();
@@ -91,7 +91,7 @@ class Claim_material extends Admin_Controller
      */
     public function send_email()
     {
-        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage')) {
+        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage') && !has_permission('Daftar_Klaim_Material.Manage') && !has_permission('Klaim_Material.Manage')) {
             $this->auth->restrict($this->managePermission);
         }
 
@@ -115,7 +115,7 @@ class Claim_material extends Admin_Controller
      */
     public function save_decision()
     {
-        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage')) {
+        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage') && !has_permission('Daftar_Klaim_Material.Manage') && !has_permission('Klaim_Material.Manage')) {
             $this->auth->restrict($this->managePermission);
         }
 
@@ -198,7 +198,7 @@ class Claim_material extends Admin_Controller
      */
     public function slitting()
     {
-        if (!has_permission($this->viewPermission) && !has_permission('Material_Dijual_Slitting.View')) {
+        if (!has_permission($this->viewPermission) && !has_permission('Material_Dijual_Slitting.View') && !has_permission('Gudang_Slitting.View')) {
             $this->auth->restrict($this->viewPermission);
         }
         $this->template->title('Material Dijual — Gudang Slitting');

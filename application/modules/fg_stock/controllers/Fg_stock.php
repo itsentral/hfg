@@ -21,7 +21,9 @@ class Fg_stock extends Admin_Controller
      */
     public function index()
     {
-        $this->auth->restrict($this->viewPermission);
+        if (!has_permission($this->viewPermission) && !has_permission('Stock_Finish_Good.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $stok_kw1       = $this->stock_model->get_stok_by_kategori('KW1');
         $stok_kw2       = $this->stock_model->get_stok_by_kategori('KW2');
         $stok_tong_coil = $this->stock_model->get_stok_by_kategori('TONG_COIL');
@@ -45,7 +47,9 @@ class Fg_stock extends Admin_Controller
      */
     public function history($kategori_param = null)
     {
-        $this->auth->restrict($this->viewPermission);
+        if (!has_permission($this->viewPermission) && !has_permission('Stock_Finish_Good.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $categories_valid = ['ALL', 'KW1', 'KW2', 'TONG_COIL', 'SCRAP'];
         $kategori         = 'ALL';
         $produk_fg        = null;
