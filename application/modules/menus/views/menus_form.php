@@ -255,6 +255,8 @@
 <script type="text/javascript">
   var currentSiblingsData = [];
   var currentRecommendedOrder = null;
+  var isOrderCollision = false;
+  var collisionMenuTitle = '';
 
   function fetchOrderRecommendation(parentId, isInitialLoad) {
     var menuId = $('#id_hidden').val() || '';
@@ -322,6 +324,10 @@
     $('#order_collision_warn').remove();
 
     if (isNaN(inputVal) || currentSiblingsData.length === 0) {
+      isOrderCollision = false;
+      collisionMenuTitle = '';
+      $('#order').removeClass('is-invalid');
+      $('#submit').prop('disabled', false).removeClass('disabled');
       return;
     }
 
@@ -335,10 +341,19 @@
     }
 
     if (usedBy) {
-      var warnHtml = '<div id="order_collision_warn" class="alert alert-warning py-1 px-2 mt-2 mb-0 small rounded">' +
-        '<i class="ti ti-alert-triangle me-1"></i> Urutan <b>' + inputVal + '</b> saat ini digunakan oleh menu: <b>' + usedBy.title + '</b>.' +
+      isOrderCollision = true;
+      collisionMenuTitle = usedBy.title;
+      $('#order').addClass('is-invalid');
+      $('#submit').prop('disabled', true).addClass('disabled');
+      var warnHtml = '<div id="order_collision_warn" class="alert alert-danger py-1 px-2 mt-2 mb-0 small rounded">' +
+        '<i class="ti ti-circle-x me-1"></i> <b>Tidak dapat disimpan:</b> Nomor urut <b>' + inputVal + '</b> sudah digunakan oleh menu <b>\'' + usedBy.title + '\'</b>. Silakan gunakan nomor urut yang berbeda.' +
         '</div>';
       $('#order_info_container').append(warnHtml);
+    } else {
+      isOrderCollision = false;
+      collisionMenuTitle = '';
+      $('#order').removeClass('is-invalid');
+      $('#submit').prop('disabled', false).removeClass('disabled');
     }
   }
 
@@ -433,6 +448,18 @@
   // Submit AJAX
   $('#frm_menus').on('submit', function(e) {
     e.preventDefault();
+
+    // Validasi tabrakan nomor urut di frontend
+    if (isOrderCollision) {
+      swal({
+        title: "Nomor Urut Sama!",
+        text: "Nomor urut " + $('#order').val() + " sudah digunakan oleh menu '" + collisionMenuTitle + "'. Silakan gunakan nomor urut yang berbeda sebelum menyimpan.",
+        type: "error"
+      });
+      $('#order').focus();
+      return false;
+    }
+
     var formdata = $("#frm_menus").serialize();
 
     $.ajax({
@@ -453,14 +480,23 @@
           window.location.reload();
         } else {
           swal({
-            title: "Gagal!",
-            text: "Data Gagal Di Simpan",
-            type: "error",
-            timer: 1500,
-            showConfirmButton: false
+            title: "Gagal Menyimpan!",
+            text: msg['msg'] || "Data Gagal Di Simpan",
+            type: "error"
           });
         }
       },
+      error: function() {
+        swal({
+          title: "Gagal!",
+          text: "Ajax Data Gagal Di Proses",
+          type: "error",
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  });
       error: function() {
         swal({
           title: "Gagal!",

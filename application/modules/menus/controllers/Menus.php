@@ -99,6 +99,28 @@ class Menus extends Admin_Controller
     $max_menu = $this->db->select('MAX(id) AS id_max')->get('menus')->result_array();
     $id_max = $max_menu[0]['id_max'] + 1;
 
+    $status   = $this->input->post('status');
+    $order    = (int) $this->input->post('order');
+    $parent_id = (int) $parent_id;
+
+    // Validasi Nomor Urut (Order) tidak boleh sama dengan menu lain pada parent yang sama
+    $this->db->select('id, title');
+    $this->db->from('menus');
+    $this->db->where('parent_id', $parent_id);
+    $this->db->where('order', $order);
+    $this->db->where('status', 1);
+    if ($type == "edit" && !empty($id)) {
+      $this->db->where('id !=', $id);
+    }
+    $collision = $this->db->get()->row();
+    if ($collision) {
+      echo json_encode([
+        'save' => 0,
+        'msg'  => "Nomor urut {$order} sudah digunakan oleh menu '{$collision->title}' pada level yang sama. Silakan gunakan nomor urut yang berbeda!"
+      ]);
+      exit;
+    }
+
     if ($type != "edit") {
       // $query_id = $this->db->query("SHOW TABLE STATUS LIKE 'permissions' ");
       // $row_id = $query_id->row();
