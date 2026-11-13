@@ -358,4 +358,165 @@ class Spk_material_model extends BF_Model
         $row = $this->db->select('status')->where('spk_no', $spk_no)->get('tr_spk_material_header')->row();
         return $row ? $row->status : null;
     }
+
+    // ---------------------------------------------------------------
+    // RELEASE SPK & DATATABLES FILTERING
+    // ---------------------------------------------------------------
+
+    /**
+     * Release SPK: ubah status dari belum rilis menjadi 'Released'
+     * Dilakukan di modul spk_material oleh tim Produksi / PPIC
+     *
+     * @param string $spk_no
+     * @param int    $user_id
+     * @return array
+     */
+    public function release_spk($spk_no, $user_id)
+    {
+        $spk_no = trim((string) $spk_no);
+        if ($spk_no === '') {
+            return ['status' => false, 'message' => 'Nomor SPK tidak valid.'];
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $this->db->trans_begin();
+
+        $old = $this->db->query(
+            "SELECT * FROM tr_spk_material_header WHERE spk_no = ? LIMIT 1 FOR UPDATE",
+            [$spk_no]
+        )->row_array();
+
+        if (!$old) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK "' . $spk_no . '" tidak ditemukan.'];
+        }
+
+        if ($old['status'] === 'Released') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' sudah berstatus Released.'];
+        }
+
+        if ($old['status'] === 'Cancelled') {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'SPK ' . $spk_no . ' berstatus Cancelled dan tidak dapat di-release.'];
+        }
+
+        $update_data = [
+            'status'     => 'Released',
+            'updated_by' => (int) $user_id,
+            'updated_at' => $now,
+        ];
+
+        $this->db->where('spk_no', $spk_no)->update('tr_spk_material_header', $update_data);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return ['status' => false, 'message' => 'Gagal mengubah status SPK menjadi Released.'];
+        }
+
+        $this->db->trans_commit();
+
+        return [
+            'status'      => true,
+            'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
+            'log_payload' => [
+                'old' => $old,
+                'new' => array_merge($old, $update_data),
+            ],
+            'counts'      => $this->get_status_counts(),
+        ];
+    }
+
+    /**
+     * Hitung jumlah SPK per tab status: waiting, released, all
+     *
+     * @return array
+     */
+    public function get_status_counts()
+    {
+        $sql = "SELECT
+                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
+                    SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) as released_count,
+                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
+                FROM tr_spk_material_header";
+        $row = $this->db->query($sql)->row_array();
+
+        return [
+            'waiting'  => (int) (isset($row['waiting_count']) ? $row['waiting_count'] : 0),
+            'released' => (int) (isset($row['released_count']) ? $row['released_count'] : 0),
+            'all'      => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
+        ];
+    }
+
+    /**
+     * Get daftar SPK Material dengan filter status tab untuk DataTables server-side
+     *
+     * @param string $search
+     * @param int    $start
+     * @param int    $length
+     * @param string $order_by
+     * @param string $order_dir
+     * @param string $status_filter
+     * @return array
+     */
+    public function get_spk_list_filtered($search, $start, $length, $order_by, $order_dir, $status_filter = 'waiting')
+    {
+        $this->db->select("
+            h.*,
+            (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count
+        ", false);
+        $this->db->from('tr_spk_material_header h');
+
+        if ($status_filter === 'released') {
+            $this->db->where('h.status', 'Released');
+        } elseif ($status_filter === 'all') {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+        } else {
+            // Waiting: belum dirilis
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        }
+
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
+            $this->db->group_end();
+        }
+
+        $this->db->order_by($order_by, $order_dir);
+        $this->db->limit($length, $start);
+
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Count total SPK Material filtered untuk DataTables recordsFiltered
+     *
+     * @param string $search
+     * @param string $status_filter
+     * @return int
+     */
+    public function count_spk_filtered($search, $status_filter = 'waiting')
+    {
+        $this->db->from('tr_spk_material_header h');
+
+        if ($status_filter === 'released') {
+            $this->db->where('h.status', 'Released');
+        } elseif ($status_filter === 'all') {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+        } else {
+            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        }
+
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
+            $this->db->group_end();
+        }
+
+        return $this->db->count_all_results();
+    }
 }

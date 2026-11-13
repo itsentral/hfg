@@ -183,8 +183,11 @@
 
       <!-- Order -->
       <div class="col-md-6">
-        <label class="form-label">
-          Order <span class="text-danger">*</span>
+        <label class="form-label d-flex justify-content-between align-items-center mb-1">
+          <span>Order <span class="text-danger">*</span></span>
+          <span id="order_suggest_badge" class="badge bg-light-primary text-primary" style="cursor: pointer; display: none;" title="Klik untuk menerapkan angka rekomendasi">
+            <i class="ti ti-sparkles me-1"></i> Rekomendasi: <b id="order_suggest_val">1</b>
+          </span>
         </label>
         <div class="input-group">
           <span class="input-group-text">
@@ -198,7 +201,12 @@
             value="<?= set_value('order', isset($data->order) ? $data->order : '') ?>"
             placeholder="order menu"
             required />
+          <button type="button" class="btn btn-outline-primary" id="btn_apply_recommendation" style="display: none;" title="Terapkan nomor rekomendasi">
+            <i class="ti ti-check me-1"></i> Gunakan
+          </button>
         </div>
+        <!-- Helper Info Container -->
+        <div id="order_info_container" class="mt-2"></div>
       </div>
 
       <!-- Permission ID -->
@@ -245,9 +253,165 @@
 
 
 <script type="text/javascript">
+  var currentSiblingsData = [];
+  var currentRecommendedOrder = null;
+  var isOrderCollision = false;
+  var collisionMenuTitle = '';
+
+  function fetchOrderRecommendation(parentId, isInitialLoad) {
+    var menuId = $('#id_hidden').val() || '';
+    var formType = $('#type').val() || '';
+    var isEdit = (menuId !== '' || formType === 'edit');
+
+    if (parentId === '' || parentId === undefined || parentId === null) {
+      parentId = 0;
+    }
+
+    $('#order_info_container').html('<div class="text-muted small py-1"><i class="fa fa-spinner fa-spin me-1 text-primary"></i> Memuat rekomendasi urutan...</div>');
+
+    $.ajax({
+      url: siteurl + "menus/get_order_recommendation",
+      type: "GET",
+      dataType: "json",
+      data: {
+        parent_id: parentId,
+        menu_id: menuId
+      },
+      success: function(res) {
+        if (res && res.status === 1) {
+          currentSiblingsData = res.siblings || [];
+          currentRecommendedOrder = res.next_order;
+
+          // Update badge rekomendasi
+          $('#order_suggest_val').text(res.next_order);
+          $('#order_suggest_badge').fadeIn(200);
+
+          // Jika mode Create (tambah baru) ATAU input order masih kosong: otomatis isi input order
+          var existingVal = $('#order').val();
+          if (!isEdit || existingVal === '' || !isInitialLoad) {
+            if (!isEdit || existingVal === '') {
+              $('#order').val(res.next_order);
+            }
+          }
+
+          // Update status tombol gunakan rekomendasi & cek tabrakan
+          updateApplyButtonState();
+
+          // Render info box
+          renderOrderInfoBox(res, isEdit);
+        }
+      },
+      error: function() {
+        $('#order_info_container').html('');
+        $('#order_suggest_badge').hide();
+        $('#btn_apply_recommendation').hide();
+      }
+    });
+  }
+
+  function updateApplyButtonState() {
+    var inputVal = parseInt($('#order').val(), 10);
+    if (currentRecommendedOrder !== null && !isNaN(inputVal) && inputVal !== currentRecommendedOrder) {
+      $('#btn_apply_recommendation').show();
+    } else {
+      $('#btn_apply_recommendation').hide();
+    }
+    checkOrderCollision();
+  }
+
+  function checkOrderCollision() {
+    var inputVal = parseInt($('#order').val(), 10);
+    $('#order_collision_warn').remove();
+
+    if (isNaN(inputVal) || currentSiblingsData.length === 0) {
+      isOrderCollision = false;
+      collisionMenuTitle = '';
+      $('#order').removeClass('is-invalid');
+      $('#submit').prop('disabled', false).removeClass('disabled');
+      return;
+    }
+
+    var usedBy = null;
+    for (var i = 0; i < currentSiblingsData.length; i++) {
+      var s = currentSiblingsData[i];
+      if (!s.is_current && parseInt(s.order, 10) === inputVal) {
+        usedBy = s;
+        break;
+      }
+    }
+
+    if (usedBy) {
+      isOrderCollision = true;
+      collisionMenuTitle = usedBy.title;
+      $('#order').addClass('is-invalid');
+      $('#submit').prop('disabled', true).addClass('disabled');
+      var warnHtml = '<div id="order_collision_warn" class="alert alert-danger py-1 px-2 mt-2 mb-0 small rounded">' +
+        '<i class="ti ti-circle-x me-1"></i> <b>Tidak dapat disimpan:</b> Nomor urut <b>' + inputVal + '</b> sudah digunakan oleh menu <b>\'' + usedBy.title + '\'</b>. Silakan gunakan nomor urut yang berbeda.' +
+        '</div>';
+      $('#order_info_container').append(warnHtml);
+    } else {
+      isOrderCollision = false;
+      collisionMenuTitle = '';
+      $('#order').removeClass('is-invalid');
+      $('#submit').prop('disabled', false).removeClass('disabled');
+    }
+  }
+
+  function renderOrderInfoBox(data, isEdit) {
+    var html = '';
+    if (data.total_siblings === 0) {
+      html = '<div class="alert alert-light-primary border-primary border-opacity-25 py-2 px-3 mb-0 small rounded">' +
+        '<i class="ti ti-info-circle me-1 text-primary"></i> Belum ada menu di bawah parent ini. Rekomendasi urutan pertama: <b>1</b>.' +
+        '</div>';
+    } else {
+      html = '<div class="p-2 border rounded bg-light small">';
+      html += '<div class="d-flex justify-content-between align-items-center">';
+      html += '<span><i class="ti ti-list-numbers me-1 text-primary"></i> <b>' + data.total_siblings + '</b> menu ada di parent ini</span>';
+      html += '<a href="javascript:void(0)" id="btn_toggle_siblings" class="text-primary text-decoration-none fw-semibold"><i class="ti ti-list-details me-1"></i>Lihat Urutan</a>';
+      html += '</div>';
+
+      // Daftar siblings
+      html += '<div id="siblings_list_box" class="mt-2 pt-2 border-top" style="display: none; max-height: 140px; overflow-y: auto;">';
+      html += '<div class="d-flex flex-wrap gap-1">';
+      for (var i = 0; i < data.siblings.length; i++) {
+        var s = data.siblings[i];
+        var badgeClass = s.is_current ? 'bg-primary text-white shadow-sm' : 'bg-white border text-dark';
+        var currentBadge = s.is_current ? ' <span class="badge bg-light text-primary ms-1">Menu Ini</span>' : '';
+        html += '<span class="badge ' + badgeClass + ' py-1 px-2" title="' + s.title + '">' +
+          '#' + s.order + ' ' + s.title + currentBadge +
+          '</span>';
+      }
+      html += '</div>';
+      html += '</div>';
+
+      html += '<div class="mt-2 pt-1 border-top d-flex justify-content-between align-items-center">';
+      html += '<span class="text-muted">Urutan tertinggi: <b>' + data.max_order + '</b></span>';
+      html += '<span>Rekomendasi berikutnya: <span class="badge bg-success text-white">#' + data.next_order + '</span></span>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    $('#order_info_container').html(html);
+
+    // Toggle list siblings
+    $('#btn_toggle_siblings').on('click', function(e) {
+      e.preventDefault();
+      var $box = $('#siblings_list_box');
+      if ($box.is(':visible')) {
+        $box.slideUp(150);
+        $(this).html('<i class="ti ti-list-details me-1"></i>Lihat Urutan');
+      } else {
+        $box.slideDown(150);
+        $(this).html('<i class="ti ti-chevron-up me-1"></i>Sembunyikan');
+      }
+    });
+
+    checkOrderCollision();
+  }
+
   $(document).ready(function() {
 
-    // Select2 tetap jalan
+    // Select2
     $(".parent_id").select2({
       width: '100%'
     });
@@ -258,11 +422,44 @@
       width: '100%'
     });
 
+    // Event listener Parent ID change
+    $('#parent_id').on('change', function() {
+      fetchOrderRecommendation($(this).val(), false);
+    });
+
+    // Event listener klik tombol gunakan rekomendasi / badge rekomendasi
+    $('#order_suggest_badge, #btn_apply_recommendation').on('click', function() {
+      if (currentRecommendedOrder !== null) {
+        $('#order').val(currentRecommendedOrder).trigger('input');
+        updateApplyButtonState();
+      }
+    });
+
+    // Event listener saat user ketik order secara manual
+    $('#order').on('input change', function() {
+      updateApplyButtonState();
+    });
+
+    // Initial load
+    fetchOrderRecommendation($('#parent_id').val(), true);
+
   });
 
   // Submit AJAX
   $('#frm_menus').on('submit', function(e) {
     e.preventDefault();
+
+    // Validasi tabrakan nomor urut di frontend
+    if (isOrderCollision) {
+      swal({
+        title: "Nomor Urut Sama!",
+        text: "Nomor urut " + $('#order').val() + " sudah digunakan oleh menu '" + collisionMenuTitle + "'. Silakan gunakan nomor urut yang berbeda sebelum menyimpan.",
+        type: "error"
+      });
+      $('#order').focus();
+      return false;
+    }
+
     var formdata = $("#frm_menus").serialize();
 
     $.ajax({
@@ -283,14 +480,23 @@
           window.location.reload();
         } else {
           swal({
-            title: "Gagal!",
-            text: "Data Gagal Di Simpan",
-            type: "error",
-            timer: 1500,
-            showConfirmButton: false
+            title: "Gagal Menyimpan!",
+            text: msg['msg'] || "Data Gagal Di Simpan",
+            type: "error"
           });
         }
       },
+      error: function() {
+        swal({
+          title: "Gagal!",
+          text: "Ajax Data Gagal Di Proses",
+          type: "error",
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  });
       error: function() {
         swal({
           title: "Gagal!",

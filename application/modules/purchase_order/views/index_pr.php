@@ -109,11 +109,11 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 											<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime($record->tgl_so)) : '-'  ?></td>
 											<td class="text-center"><?= $record->nama_user ?></td>
 											<td class="text-center"><?= $status ?></td>
-											<td class="text-center"><?php if ($ENABLE_MANAGE) : ?>
-													<input <?php //echo $disabled
-															?> type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $numb ?>" value="<?php echo $record->so_number ?>" onclick="cekcus('<?php echo $record->nama_user ?>','<?php echo $numb ?>','<?= isset($vso->ppn) ? $vso->ppn : ''; ?>','<?= isset($vso->nm_customer) ? $vso->nm_customer : ''; ?>','<?php echo 'set_choose_do' . $numb ?>')" data-tipe_pr="<?= $record->tipe_pr ?>" <?= $checked ?>>
-												<?php endif; ?>
-											</td>
+											<?php if ($ENABLE_MANAGE) : ?>
+												<td class="text-center">
+													<input type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $numb ?>" value="<?php echo $record->so_number ?>" onclick="cekcus('<?php echo $record->nama_user ?>','<?php echo $numb ?>','<?= isset($vso->ppn) ? $vso->ppn : ''; ?>','<?= isset($vso->nm_customer) ? $vso->nm_customer : ''; ?>','<?php echo 'set_choose_do' . $numb ?>')" data-tipe_pr="<?= $record->tipe_pr ?>" <?= $checked ?>>
+												</td>
+											<?php endif; ?>
 										</tr>
 									<?php
 									}
@@ -143,10 +143,11 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 										<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime($record->tgl_so)) : '-'  ?></td>
 										<td class="text-center"><?= $record->nama_user ?></td>
 										<td class="text-center"><?= $status ?></td>
-										<td class="text-center"><?php if ($ENABLE_MANAGE) : ?>
+										<?php if ($ENABLE_MANAGE) : ?>
+											<td class="text-center">
 												<input type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $numb ?>" value="<?php echo $record->so_number ?>" onclick="cekcus('<?php echo $record->nama_user ?>','<?php echo $numb ?>','<?= isset($vso->ppn) ? $vso->ppn : ''; ?>','<?= isset($vso->nm_customer) ? $vso->nm_customer : ''; ?>','<?php echo 'set_choose_do' . $numb ?>')" data-tipe_pr="<?= $record->tipe_pr ?>" <?= $checked ?>>
-											<?php endif; ?>
-										</td>
+											</td>
+										<?php endif; ?>
 									</tr>
 					<?php
 								}

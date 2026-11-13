@@ -110,7 +110,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-2 mb-3 gap-2">
-                <!-- Nav Tabs Status SPK -->
+                <!-- Nav Tabs Status SPK (Sinkron dengan SPK Material) -->
                 <ul class="nav nav-pills mb-0 order-2 order-md-1 flex-wrap gap-1" id="spk-status-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active py-1 px-2 px-md-3 small fw-semibold" id="tab-waiting" data-status="waiting" type="button" role="tab">
@@ -680,6 +680,11 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         if (isDesktopKeyboardDevice()) {
                             $('#scan-pack-input').focus();
                         }
+                        if (res.counts) {
+                            $('#badge-count-waiting').text(res.counts.waiting || 0);
+                            $('#badge-count-released').text(res.counts.released || 0);
+                            $('#badge-count-all').text(res.counts.all || 0);
+                        }
                         tableRequestList.ajax.reload(null, false);
                         Swal.fire({
                             icon: 'success',
@@ -704,64 +709,6 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                 complete: function() {
                     $btn.prop('disabled', false).html('<i class="fa fa-check-circle me-1"></i> Pindahkan Pack ke PRT');
                 }
-            });
-        });
-
-        // ---------------------------------------------------------------
-        // RELEASE SPK BUTTON PER BARIS SPK (INLINE)
-        // ---------------------------------------------------------------
-        $(document).on('click', '.btn-release-spk', function() {
-            var spkNo = $(this).data('spk');
-            if (!spkNo) return;
-
-            Swal.fire({
-                title: 'Release SPK ' + spkNo + '?',
-                text: 'Setelah berstatus Released, SPK ini dapat dibuat Laporan Produksi.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#198754',
-                confirmButtonText: 'Ya, Release SPK',
-                cancelButtonText: 'Batal'
-            }).then(function(r) {
-                if (!r.isConfirmed) return;
-
-                Swal.fire({
-                    title: 'Merilis SPK...',
-                    allowOutsideClick: false,
-                    didOpen: function() {
-                        Swal.showLoading();
-                    }
-                });
-
-                $.ajax({
-                    url: BASE_URL + '/release_spk',
-                    type: 'POST',
-                    data: {
-                        spk_no: spkNo
-                    },
-                    dataType: 'json',
-                    success: function(res) {
-                        Swal.close();
-                        if (res.status == 1) {
-                            if (res.counts) {
-                                $('#badge-count-waiting').text(res.counts.waiting || 0);
-                                $('#badge-count-released').text(res.counts.released || 0);
-                                $('#badge-count-all').text(res.counts.all || 0);
-                            }
-                            tableRequestList.ajax.reload(null, false);
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'SPK Berhasil Dirilis!',
-                                text: res.message
-                            });
-                        } else {
-                            Swal.fire('Gagal', res.message || 'Gagal merilis SPK.', 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
-                    }
-                });
             });
         });
 

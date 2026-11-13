@@ -35,7 +35,7 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 					<th class="text-center">Request By</th>
 					<th class="text-center">Request Date</th>
 					<th class="text-center">Status</th>
-					<?php if ($ENABLE_MANAGE) : ?>
+					<?php if ($ENABLE_VIEW || $ENABLE_MANAGE) : ?>
 						<th class="text-center" width="13%">Option</th>
 					<?php endif; ?>
 				</tr>
@@ -163,11 +163,14 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
                         <td>' . strtoupper($record->project) . '</td>
                         <td class="text-center">' . ucwords(strtolower($nama_user)) . ucwords(strtolower($record->booking_by_name)) . '</td>
                         <td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
-                        <td class="text-center">' . $status . '</td>
+                        <td class="text-center">' . $status . '</td>';
+
+							if ($ENABLE_VIEW || $ENABLE_MANAGE) {
+								echo '
                         <td class="text-center">
                             ';
 
-							if ($record->pr_asset == '1') {
+								if ($record->pr_asset == '1') {
 								$no_planning = '';
 								$get_planning = $this->db->get_where('asset_planning', ['no_pr' => $record->no_pr])->row();
 								if (!empty($get_planning)) {
@@ -181,7 +184,9 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 
 							echo '
                             <a href="' . $link_print . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-print"></i></a>
-                        </td>
+                        </td>';
+							}
+							echo '
                     </tr>
                 ';
 						}
@@ -204,11 +209,14 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
                     <td>' . strtoupper($record->project) . '</td>
                     <td class="text-center">' . ucwords(strtolower($nama_user)) . ucwords(strtolower($record->booking_by_name)) . '</td>
                     <td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
-                    <td class="text-center">' . $status . '</td>
+                    <td class="text-center">' . $status . '</td>';
+
+						if ($ENABLE_VIEW || $ENABLE_MANAGE) {
+							echo '
                     <td class="text-center">
                         ';
 
-						if ($record->pr_asset == '1') {
+							if ($record->pr_asset == '1') {
 							$no_planning = '';
 							$get_planning = $this->db->get_where('asset_planning', ['no_pr' => $record->no_pr])->row();
 							if (!empty($get_planning)) {
@@ -222,7 +230,9 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 
 						echo '
                         <a href="' . $link_print . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-print"></i></a>
-                    </td>
+                    </td>';
+						}
+						echo '
                 </tr>
             ';
 					}

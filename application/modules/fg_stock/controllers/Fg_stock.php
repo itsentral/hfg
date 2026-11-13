@@ -3,6 +3,11 @@ defined('BASEPATH') || exit('No direct script access allowed');
 
 class Fg_stock extends Admin_Controller
 {
+    protected $viewPermission   = 'FG_Stock.View';
+    protected $addPermission    = 'FG_Stock.Add';
+    protected $managePermission = 'FG_Stock.Manage';
+    protected $deletePermission = 'FG_Stock.Delete';
+
     public function __construct()
     {
         parent::__construct();
@@ -16,6 +21,9 @@ class Fg_stock extends Admin_Controller
      */
     public function index()
     {
+        if (!has_permission($this->viewPermission) && !has_permission('Stock_Finish_Good.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $stok_kw1       = $this->stock_model->get_stok_by_kategori('KW1');
         $stok_kw2       = $this->stock_model->get_stok_by_kategori('KW2');
         $stok_tong_coil = $this->stock_model->get_stok_by_kategori('TONG_COIL');
@@ -39,6 +47,9 @@ class Fg_stock extends Admin_Controller
      */
     public function history($kategori_param = null)
     {
+        if (!has_permission($this->viewPermission) && !has_permission('Stock_Finish_Good.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $categories_valid = ['ALL', 'KW1', 'KW2', 'TONG_COIL', 'SCRAP'];
         $kategori         = 'ALL';
         $produk_fg        = null;

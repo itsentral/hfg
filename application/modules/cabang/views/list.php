@@ -29,7 +29,7 @@
 			<th>Kota</th>
 			<th>Alamat</th>			
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
 			<th width="25">Action</th>
 			<?php endif; ?>
 		</tr>
@@ -53,6 +53,7 @@
 					<label class="label label-danger">Non Aktif</label>
 				<?php } ?>
 			</td>
+			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
 			<td style="padding-left:20px">
 			<?php if($ENABLE_VIEW) : ?>
 				<!--<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('')">
@@ -70,6 +71,7 @@
 				</a>
 			<?php endif; ?>
 			</td>
+			<?php endif; ?>
 		</tr>
 		<?php } }  ?>
 		</tbody>
@@ -83,7 +85,7 @@
 			<th>Kota</th>
 			<th>Alamat</th>			
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
 			<th width="25">Action</th>
 			<?php endif; ?>
 		</tr>

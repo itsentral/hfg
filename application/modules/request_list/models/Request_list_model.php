@@ -39,14 +39,18 @@ class Request_list_model extends BF_Model
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
         } elseif ($status_filter === 'all') {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+            $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed', 'Released'));
         } else {
-            // Waiting / belum dirilis (tombol Release tersedia per baris SPK)
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+            // Waiting: belum dirilis
+            $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed'));
         }
 
         if (!empty($search)) {
+            $this->db->group_start();
             $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
+            $this->db->group_end();
         }
 
         $this->db->order_by($order_by, $order_dir);
@@ -69,20 +73,25 @@ class Request_list_model extends BF_Model
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
         } elseif ($status_filter === 'all') {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
+            $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed', 'Released'));
         } else {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+            // Waiting: belum dirilis
+            $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed'));
         }
 
         if (!empty($search)) {
+            $this->db->group_start();
             $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
+            $this->db->group_end();
         }
 
         return $this->db->count_all_results();
     }
 
     /**
-     * Hitung jumlah SPK per kategori status untuk tab badge
+     * Hitung jumlah SPK per tab status: waiting, released, all (sinkron dengan SPK Material)
      *
      * @return array
      */

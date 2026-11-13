@@ -301,23 +301,16 @@ class Spk_material extends Admin_Controller
         $col_map = [1 => 'h.spk_no', 2 => 'h.tgl_spk', 3 => 'h.shift_names', 4 => 'h.status', 5 => 'detail_count'];
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        $where_search = '';
-        if (!empty($search)) {
-            $s = $this->db->escape_like_str($search);
-            $where_search = " AND (h.spk_no LIKE '%{$s}%' OR h.status LIKE '%{$s}%')";
+        // Filter status tab: waiting (default), released, all
+        $status_filter = $this->input->get_post('status_filter', TRUE);
+        if (!in_array($status_filter, ['waiting', 'released', 'all'])) {
+            $status_filter = 'waiting';
         }
 
-        $base_sql = " FROM tr_spk_material_header h WHERE 1=1 {$where_search}";
-        $total_q = $this->db->query("SELECT COUNT(*) as cnt {$base_sql}")->row();
-        $totalData = $total_q ? (int) $total_q->cnt : 0;
+        $rows      = $this->Spk_material_model->get_spk_list_filtered($search, $start, $length, $order_by, $order_dir, $status_filter);
+        $totalData = $this->Spk_material_model->count_spk_filtered($search, $status_filter);
+        $counts    = $this->Spk_material_model->get_status_counts();
 
-        $sql = "SELECT h.*, (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count
-                FROM tr_spk_material_header h
-                WHERE 1=1 {$where_search}
-                ORDER BY {$order_by} {$order_dir}
-                LIMIT {$start}, {$length}";
-
-        $rows = $this->db->query($sql)->result_array();
         $data = [];
         $no = $start + 1;
 
@@ -325,6 +318,7 @@ class Spk_material extends Admin_Controller
             // Status badge colors
             $status_badges = [
                 'Material Requested' => 'bg-warning text-dark',
+                'Material On Load'   => 'bg-info text-dark',
                 'Material Confirmed' => 'bg-info text-dark',
                 'Released'           => 'bg-success',
                 'Cancelled'          => 'bg-danger'
@@ -333,13 +327,19 @@ class Spk_material extends Admin_Controller
             $status_html = "<span class='badge rounded-pill {$badge_class}'>" . htmlspecialchars($row['status']) . "</span>";
 
             // Action buttons — escape spk_no untuk URL dan display
-            $safe_spk_no = urlencode($row['spk_no']);
-            $display_spk_no = htmlspecialchars($row['spk_no']);
+            $safe_spk_no    = rawurlencode($row['spk_no']);
+            $display_spk_no = htmlspecialchars($row['spk_no'], ENT_QUOTES, 'UTF-8');
 
-            $btn_view = '<a href="'.site_url('spk_material/view/'.$safe_spk_no).'" class="btn btn-sm btn-info" title="View"><i class="fa fa-eye"></i></a>';
-            $btn_pdf = ' <a href="'.site_url('spk_material/print_pdf/'.$safe_spk_no).'" target="_blank" class="btn btn-sm btn-secondary" title="Print PDF"><i class="fa fa-file-pdf"></i></a>';
+            $actions = [];
+            $actions[] = '<a href="'.site_url('spk_material/view/'.$safe_spk_no).'" class="btn btn-sm btn-info text-white text-nowrap" title="View"><i class="fa fa-eye me-1"></i> View</a>';
+            $actions[] = '<a href="'.site_url('spk_material/print_pdf/'.$safe_spk_no).'" target="_blank" class="btn btn-sm btn-secondary text-nowrap" title="Print PDF"><i class="fa fa-print me-1"></i> Print PDF</a>';
 
-            $aksi = $btn_view . $btn_pdf;
+            // Tombol Release untuk SPK yang belum dirilis
+            if ($this->auth->has_permission($this->managePermission) && in_array($row['status'], ['Material Requested', 'Material On Load', 'Material Confirmed'], true)) {
+                $actions[] = '<button type="button" class="btn btn-sm btn-success btn-release-spk text-nowrap" data-spk="'.$display_spk_no.'" title="Release SPK"><i class="fa fa-check-circle me-1"></i> Release</button>';
+            }
+
+            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">' . implode('', $actions) . '</div>';
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
@@ -348,7 +348,7 @@ class Spk_material extends Admin_Controller
                 htmlspecialchars($row['shift_names']),
                 "<div class='text-center'>{$status_html}</div>",
                 "<div class='text-center'>" . (int) $row['detail_count'] . "</div>",
-                "<div class='text-center'>{$aksi}</div>",
+                $aksi,
             ];
             $no++;
         }
@@ -358,7 +358,34 @@ class Spk_material extends Admin_Controller
             'recordsTotal'    => $totalData,
             'recordsFiltered' => $totalData,
             'data'            => $data,
+            'counts'          => $counts,
         ]);
+    }
+
+    // ---------------------------------------------------------------
+    // RELEASE SPK (Pindah dari request_list)
+    // ---------------------------------------------------------------
+
+    public function release_spk()
+    {
+        $this->auth->restrict($this->managePermission);
+
+        $spk_no = trim((string) $this->input->post('spk_no', TRUE));
+        $res = $this->Spk_material_model->release_spk($spk_no, $this->id_user);
+
+        if (empty($res['status'])) {
+            write_log('SPK Material', 'Release SPK', 'Release SPK gagal (' . $spk_no . '): ' . $res['message'], array('spk_no' => $spk_no), null, 0);
+            return $this->_json(array('status' => 0, 'message' => $res['message']));
+        }
+
+        write_log('SPK Material', 'Release SPK', $res['message'], $res['log_payload'], null, 1);
+
+        return $this->_json(array(
+            'status'  => 1,
+            'message' => $res['message'],
+            'spk_no'  => $spk_no,
+            'counts'  => $res['counts'],
+        ));
     }
 
     // ---------------------------------------------------------------
