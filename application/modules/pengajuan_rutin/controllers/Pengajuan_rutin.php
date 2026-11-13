@@ -50,12 +50,13 @@ class Pengajuan_rutin extends Admin_Controller
 
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result();
 
-		$arr_dept = [];
+		$arr_dept     = [];
+		$companyLabel = get_company_name(true, true);
 		foreach ($get_departments as $item) {
 			$arr_dept[$item->id] = [
 				'id' => $item->id,
 				'nm_dept' => $item->nama,
-				'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+				'nm_comp' => $companyLabel
 			];
 		}
 
@@ -600,7 +601,7 @@ class Pengajuan_rutin extends Admin_Controller
 
 			$nm_dept = (!empty($get_departments->nama)) ? $get_departments->nama : '';
 
-			$nm_comp = 'PT HARAPAN FAJAR GEMILANG';
+			$nm_comp = get_company_name(true, true);
 
 			$status = '';
 

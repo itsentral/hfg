@@ -33,35 +33,46 @@ class Fg_stock extends Admin_Controller
     }
 
     /**
-     * Halaman Riwayat Mutasi / Kartu Stok Produk
+     * Halaman Riwayat Mutasi / Kartu Stok Produk Berdasarkan Kategori Stok
      *
-     * @param string|null $produk_fg
+     * @param string|null $kategori_param
      */
-    public function history($produk_fg = null)
+    public function history($kategori_param = null)
     {
-        if (empty($produk_fg)) {
+        $categories_valid = ['ALL', 'KW1', 'KW2', 'TONG_COIL', 'SCRAP'];
+        $kategori         = 'ALL';
+        $produk_fg        = null;
+
+        if (!empty($kategori_param)) {
+            if (in_array(strtoupper($kategori_param), $categories_valid)) {
+                $kategori = strtoupper($kategori_param);
+            } else {
+                $produk_fg = $kategori_param;
+            }
+        }
+
+        if ($this->input->get('kategori')) {
+            $kategori = strtoupper($this->input->get('kategori'));
+        }
+        if ($this->input->get('produk_fg')) {
             $produk_fg = $this->input->get('produk_fg');
         }
 
         $tgl_dari   = $this->input->get('tgl_dari');
         $tgl_sampai = $this->input->get('tgl_sampai');
 
-        $stok_info       = null;
-        $ledger          = [];
-        $produk_dropdown = $this->stock_model->get_product_dropdown();
-
-        if (!empty($produk_fg)) {
-            $stok_info = $this->stock_model->get_stok_by_kode($produk_fg);
-            $ledger    = $this->stock_model->get_history_ledger($produk_fg, $tgl_dari, $tgl_sampai);
-        }
+        $summary_kategori = $this->stock_model->get_category_summary($kategori);
+        $ledger           = $this->stock_model->get_history_ledger($kategori, $tgl_dari, $tgl_sampai, $produk_fg);
+        $produk_dropdown  = $this->stock_model->get_product_dropdown();
 
         $this->template->set([
-            'produk_fg'       => $produk_fg,
-            'tgl_dari'        => $tgl_dari,
-            'tgl_sampai'      => $tgl_sampai,
-            'stok_info'       => $stok_info,
-            'ledger'          => $ledger,
-            'produk_dropdown' => $produk_dropdown,
+            'kategori'         => $kategori,
+            'produk_fg'        => $produk_fg,
+            'tgl_dari'         => $tgl_dari,
+            'tgl_sampai'       => $tgl_sampai,
+            'summary_kategori' => $summary_kategori,
+            'ledger'           => $ledger,
+            'produk_dropdown'  => $produk_dropdown,
         ]);
         $this->template->render('history');
     }
@@ -69,11 +80,11 @@ class Fg_stock extends Admin_Controller
     /**
      * Alias method untuk history agar fleksibel dipanggil kartu_stok
      *
-     * @param string|null $produk_fg
+     * @param string|null $kategori_param
      */
-    public function kartu_stok($produk_fg = null)
+    public function kartu_stok($kategori_param = null)
     {
-        $this->history($produk_fg);
+        $this->history($kategori_param);
     }
 
     /**
@@ -89,7 +100,7 @@ class Fg_stock extends Admin_Controller
 
         // Metadata
         $objPHPExcel->getProperties()
-            ->setCreator("PT. HFG System")
+            ->setCreator('PT. ' . get_company_code() . ' System')
             ->setTitle("Laporan Stok Finish Good")
             ->setSubject("Stok FG & Waste")
             ->setDescription("Rekapitulasi Stok Produk Finish Good, KW 2, Tong Coil, dan Scrap");
@@ -283,29 +294,48 @@ class Fg_stock extends Admin_Controller
     }
 
     /**
-     * Export Excel: Riwayat Kartu Stok (Ledger) Produk Tertentu
+     * Export Excel: Riwayat Kartu Stok (Ledger) Berdasarkan Kategori Stok
      *
-     * @param string|null $produk_fg
+     * @param string|null $kategori_param
      */
-    public function export_excel_history($produk_fg = null)
+    public function export_excel_history($kategori_param = null)
     {
-        if (empty($produk_fg)) {
-            $produk_fg = $this->input->get('produk_fg');
+        $categories_valid = ['ALL', 'KW1', 'KW2', 'TONG_COIL', 'SCRAP'];
+        $kategori         = 'ALL';
+        $produk_fg        = null;
+
+        if (!empty($kategori_param)) {
+            if (in_array(strtoupper($kategori_param), $categories_valid)) {
+                $kategori = strtoupper($kategori_param);
+            } else {
+                $produk_fg = $kategori_param;
+            }
         }
 
-        if (empty($produk_fg)) {
-            $this->session->set_flashdata('error', 'Pilih produk FG yang ingin diexport.');
-            redirect('fg_stock');
+        if ($this->input->get('kategori')) {
+            $kategori = strtoupper($this->input->get('kategori'));
+        }
+        if ($this->input->get('produk_fg')) {
+            $produk_fg = $this->input->get('produk_fg');
         }
 
         $tgl_dari   = $this->input->get('tgl_dari');
         $tgl_sampai = $this->input->get('tgl_sampai');
 
         error_reporting(0);
-        write_log('FG Stock', 'Export Excel', 'Export Excel Kartu Stok FG: ' . $produk_fg, null, null, 1);
+        write_log('FG Stock', 'Export Excel', 'Export Excel Kartu Stok Kategori: ' . $kategori . ($produk_fg ? ' - Produk: ' . $produk_fg : ''), null, null, 1);
 
-        $stok_info = $this->stock_model->get_stok_by_kode($produk_fg);
-        $ledger    = $this->stock_model->get_history_ledger($produk_fg, $tgl_dari, $tgl_sampai);
+        $summary_kategori = $this->stock_model->get_category_summary($kategori);
+        $ledger           = $this->stock_model->get_history_ledger($kategori, $tgl_dari, $tgl_sampai, $produk_fg);
+
+        $cat_names = [
+            'ALL'       => 'Semua Kategori (KW 1, KW 2, Tong Coil, Scrap)',
+            'KW1'       => '1. Finish Good KW 1',
+            'KW2'       => '2. Finish Good KW 2',
+            'TONG_COIL' => '3. Tong Coil',
+            'SCRAP'     => '4. Scrap / Waste'
+        ];
+        $cat_label = isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'Semua Kategori';
 
         $this->load->library('PHPExcel');
         $objPHPExcel = new PHPExcel();
@@ -363,10 +393,10 @@ class Fg_stock extends Admin_Controller
         ];
 
         // Header info
-        $sheet->setCellValue('A1', 'KARTU STOK FINISH GOOD (FG)');
+        $sheet->setCellValue('A1', 'KARTU STOK & RIWAYAT MUTASI FINISH GOOD (FG)');
         $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
-        $sheet->setCellValue('A2', 'Kode Produk: ' . $produk_fg . ' | Nama Produk: ' . ($stok_info ? $stok_info->nm_produk_fg : '-'));
+        $sheet->setCellValue('A2', 'Kategori Stok: ' . $cat_label . ($produk_fg ? ' | Filter Produk: ' . $produk_fg : ''));
         $sheet->setCellValue('A3', 'Periode Mutasi: ' . ($tgl_dari ? date('d-m-Y', strtotime($tgl_dari)) : 'Semua') . ' s/d ' . ($tgl_sampai ? date('d-m-Y', strtotime($tgl_sampai)) : 'Semua') . ' | Dicetak: ' . date('d-m-Y H:i:s'));
 
         // Table Header (Row 5)
@@ -374,26 +404,29 @@ class Fg_stock extends Admin_Controller
         $headers = [
             'A' => 'No',
             'B' => 'Tgl Transaksi',
-            'C' => 'No Referensi',
-            'D' => 'No SPK',
-            'E' => 'Kategori / Tipe',
-            'F' => 'Jenis',
-            'G' => 'Qty IN',
-            'H' => 'Qty OUT',
-            'I' => 'Saldo Qty',
-            'J' => 'Berat IN (kg)',
-            'K' => 'Berat OUT (kg)',
-            'L' => 'Saldo Berat (kg)',
-            'M' => 'Costbook (Rp)',
-            'N' => 'Nilai Transaksi (Rp)',
-            'O' => 'Saldo Nilai (Rp)',
-            'P' => 'Keterangan',
+            'C' => 'Kode Produk',
+            'D' => 'Nama Produk',
+            'E' => 'No Referensi',
+            'F' => 'No SPK',
+            'G' => 'Kategori',
+            'H' => 'Sub Kategori',
+            'I' => 'Jenis',
+            'J' => 'Qty IN',
+            'K' => 'Qty OUT',
+            'L' => 'Saldo Qty',
+            'M' => 'Berat IN (kg)',
+            'N' => 'Berat OUT (kg)',
+            'O' => 'Saldo Berat (kg)',
+            'P' => 'Costbook (Rp)',
+            'Q' => 'Nilai Transaksi (Rp)',
+            'R' => 'Saldo Nilai (Rp)',
+            'S' => 'Keterangan',
         ];
 
         foreach ($headers as $col => $text) {
             $sheet->setCellValue($col . $row, $text);
         }
-        $sheet->getStyle('A' . $row . ':P' . $row)->applyFromArray($styleHeader);
+        $sheet->getStyle('A' . $row . ':S' . $row)->applyFromArray($styleHeader);
         $sheet->getRowDimension($row)->setRowHeight(28);
 
         // Data Rows
@@ -417,65 +450,71 @@ class Fg_stock extends Admin_Controller
 
             $sheet->setCellValueExplicit('A' . $curr_row, $no, PHPExcel_Cell_DataType::TYPE_NUMERIC);
             $sheet->setCellValueExplicit('B' . $curr_row, $item->tgl_transaksi, PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('C' . $curr_row, $item->no_referensi, PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('D' . $curr_row, $item->spk_no ? $item->spk_no : '-', PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('E' . $curr_row, $item->category_type ? $item->category_type : '-', PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('F' . $curr_row, $item->jenis_mutasi, PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('G' . $curr_row, $qty_in > 0 ? $qty_in : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('H' . $curr_row, $qty_out > 0 ? $qty_out : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('I' . $curr_row, (float) $item->qty_saldo, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('J' . $curr_row, $berat_in > 0 ? $berat_in : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('K' . $curr_row, $berat_out > 0 ? $berat_out : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('L' . $curr_row, (float) $item->berat_saldo, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('M' . $curr_row, (float) $item->costbook, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('N' . $curr_row, (float) $item->total_nilai, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('O' . $curr_row, (float) $item->saldo_nilai, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-            $sheet->setCellValueExplicit('P' . $curr_row, $item->keterangan ? $item->keterangan : '-', PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('C' . $curr_row, $item->produk_fg, PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('D' . $curr_row, $item->nm_produk_fg ?: '-', PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('E' . $curr_row, $item->no_referensi, PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('F' . $curr_row, $item->spk_no ? $item->spk_no : '-', PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('G' . $curr_row, $item->kategori_stok ? $item->kategori_stok : ($item->category_type ?: '-'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('H' . $curr_row, $item->sub_kategori ? $item->sub_kategori : '-', PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('I' . $curr_row, $item->jenis_mutasi, PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('J' . $curr_row, $qty_in > 0 ? $qty_in : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('K' . $curr_row, $qty_out > 0 ? $qty_out : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('L' . $curr_row, (float) $item->qty_saldo, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('M' . $curr_row, $berat_in > 0 ? $berat_in : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('N' . $curr_row, $berat_out > 0 ? $berat_out : 0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('O' . $curr_row, (float) $item->berat_saldo, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('P' . $curr_row, (float) $item->costbook, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('Q' . $curr_row, (float) $item->total_nilai, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('R' . $curr_row, (float) $item->saldo_nilai, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit('S' . $curr_row, $item->keterangan ? $item->keterangan : '-', PHPExcel_Cell_DataType::TYPE_STRING);
 
             // Styling & Alignment
-            $sheet->getStyle('A' . $curr_row . ':P' . $curr_row)->applyFromArray($styleData);
+            $sheet->getStyle('A' . $curr_row . ':S' . $curr_row)->applyFromArray($styleData);
             $sheet->getStyle('A' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('B' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('C' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
             $sheet->getStyle('D' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('E' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('F' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('E' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('F' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('G' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('H' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('I' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
             // Number formatting
-            $sheet->getStyle('G' . $curr_row . ':I' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
-            $sheet->getStyle('J' . $curr_row . ':L' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.000');
-            $sheet->getStyle('M' . $curr_row . ':O' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('J' . $curr_row . ':L' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('M' . $curr_row . ':O' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.000');
+            $sheet->getStyle('P' . $curr_row . ':R' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
 
             $curr_row++;
             $no++;
         }
 
         // Summary Row
-        $sheet->mergeCells('A' . $curr_row . ':F' . $curr_row);
+        $sheet->mergeCells('A' . $curr_row . ':I' . $curr_row);
         $sheet->setCellValue('A' . $curr_row, 'TOTAL MUTASI:');
-        $sheet->setCellValueExplicit('G' . $curr_row, $tot_qty_in, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-        $sheet->setCellValueExplicit('H' . $curr_row, $tot_qty_out, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-        $sheet->setCellValue('I' . $curr_row, '');
-        $sheet->setCellValueExplicit('J' . $curr_row, $tot_brt_in, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-        $sheet->setCellValueExplicit('K' . $curr_row, $tot_brt_out, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('J' . $curr_row, $tot_qty_in, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('K' . $curr_row, $tot_qty_out, PHPExcel_Cell_DataType::TYPE_NUMERIC);
         $sheet->setCellValue('L' . $curr_row, '');
-        $sheet->setCellValue('M' . $curr_row, '');
-        $sheet->setCellValue('N' . $curr_row, '');
+        $sheet->setCellValueExplicit('M' . $curr_row, $tot_brt_in, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+        $sheet->setCellValueExplicit('N' . $curr_row, $tot_brt_out, PHPExcel_Cell_DataType::TYPE_NUMERIC);
         $sheet->setCellValue('O' . $curr_row, '');
         $sheet->setCellValue('P' . $curr_row, '');
+        $sheet->setCellValue('Q' . $curr_row, '');
+        $sheet->setCellValue('R' . $curr_row, '');
+        $sheet->setCellValue('S' . $curr_row, '');
 
-        $sheet->getStyle('A' . $curr_row . ':P' . $curr_row)->applyFromArray($styleTotal);
+        $sheet->getStyle('A' . $curr_row . ':S' . $curr_row)->applyFromArray($styleTotal);
         $sheet->getStyle('A' . $curr_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('G' . $curr_row . ':H' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('J' . $curr_row . ':K' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.000');
+        $sheet->getStyle('J' . $curr_row . ':K' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('M' . $curr_row . ':N' . $curr_row)->getNumberFormat()->setFormatCode('#,##0.000');
 
         // Auto width
-        foreach (range('A', 'P') as $colID) {
+        foreach (range('A', 'S') as $colID) {
             $sheet->getColumnDimension($colID)->setAutoSize(true);
         }
 
         // Clean & Output
-        $clean_code = preg_replace('/[^A-Za-z0-9_\-]/', '_', $produk_fg);
+        $clean_code = preg_replace('/[^A-Za-z0-9_\-]/', '_', $kategori);
         $filename   = 'Kartu_Stok_FG_' . $clean_code . '_' . date('Ymd_His') . '.xls';
         $objWriter  = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 

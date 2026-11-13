@@ -312,7 +312,7 @@
 
                 <!-- ── Logo + Judul ── -->
                 <div class="page-header">
-                    <img src="<?= base_url('assets/images/logohfg.png') ?>" alt="Logo">
+                    <img src="<?= get_company_logo('doc') ?>" alt="Logo">
                     <div class="page-header-title">
                         <h4>Packing List</h4>
                         <p>Report of Shipment</p>

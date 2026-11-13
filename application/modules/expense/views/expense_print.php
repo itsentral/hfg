@@ -410,14 +410,19 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 		<table class="header-table">
 			<tr>
 				<td class="company-logo">
-					<img src="<?= base_url('assets/images/iconhfg.png') ?>" alt="Logo Perusahaan" style="width: 60px; height: 60px; object-fit: contain;">
+					<img src="<?= get_company_logo('icon') ?>" alt="Logo Perusahaan" style="width: 60px; height: 60px; object-fit: contain;">
 				</td>
 				<td class="company-info" style="padding-left: 12px;">
-					<h2>PT HARAPAN FAJAR GEMILANG</h2>
+					<h2><?= html_escape(get_company_name(true, true)) ?></h2>
 					<p>
-						Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
-						Cengkareng, Jakarta Barat 11710<br>
-						Indonesia
+						<?php $alamat_pt = get_company_address(); ?>
+						<?php if ($alamat_pt !== ''): ?>
+							<?= nl2br(html_escape($alamat_pt)) ?>
+						<?php else: ?>
+							Jl. Daan Mogot Km. 11 No. 45 Kedaung Kali Angke<br>
+							Cengkareng, Jakarta Barat 11710<br>
+							Indonesia
+						<?php endif; ?>
 					</p>
 				</td>
 				<td class="doc-title-box">

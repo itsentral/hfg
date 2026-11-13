@@ -103,7 +103,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 	});
 
 	function data_add() {
-		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : 'HFG';
+		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : <?= json_encode(get_company_code()) ?>;
 		document.title = companyName + ' | Expense';
 		$('.content-header h1').html('<i class="fa fa-cubes"></i> Expense');
 		$(".box").hide();
@@ -182,7 +182,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 		}
 		$('#modalKasbon').modal('hide');
 
-		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : 'HFG';
+		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : <?= json_encode(get_company_code()) ?>;
 		document.title = companyName + ' | Expense Report';
 		$('.content-header h1').html('<i class="fa fa-ticket"></i> Expense Report');
 		$(".box").hide();
