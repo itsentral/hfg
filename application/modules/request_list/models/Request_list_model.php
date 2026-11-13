@@ -24,7 +24,7 @@ class Request_list_model extends BF_Model
      * @param string $status_filter Filter status tab ('waiting', 'released', 'all')
      * @return array Array of SPK Material rows
      */
-    public function get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter = 'waiting')
+    public function get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter = 'waiting_scan')
     {
         $this->db->select("
             h.*,
@@ -35,18 +35,20 @@ class Request_list_model extends BF_Model
              WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') as scanned_pack_count
         ", false);
         $this->db->from('tr_spk_material_header h');
+        $this->db->where('h.status', 'Released');
 
-        if ($status_filter === 'released') {
-            $this->db->where('h.status', 'Released');
-        } elseif ($status_filter === 'all') {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
-        } else {
-            // Waiting / belum dirilis (tombol Release tersedia per baris SPK)
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        if ($status_filter === 'scanned') {
+            $this->db->where("EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
+        } elseif ($status_filter === 'waiting_scan') {
+            $this->db->where("NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
         }
+        // jika 'all', tidak ada filter scan tambahan (semua Released)
 
         if (!empty($search)) {
+            $this->db->group_start();
             $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->group_end();
         }
 
         $this->db->order_by($order_by, $order_dir);
@@ -56,49 +58,51 @@ class Request_list_model extends BF_Model
     }
 
     /**
-     * Count total SPK Material filtered untuk DataTables recordsFiltered
+     * Count total SPK Material filtered untuk DataTables recordsFiltered di Warehouse
      *
      * @param string $search        Search keyword
-     * @param string $status_filter Filter status tab ('waiting', 'released', 'all')
+     * @param string $status_filter Filter status tab ('waiting_scan', 'scanned', 'all')
      * @return int Total count
      */
-    public function count_spk_filtered($search, $status_filter = 'waiting')
+    public function count_spk_filtered($search, $status_filter = 'waiting_scan')
     {
         $this->db->from('tr_spk_material_header h');
+        $this->db->where('h.status', 'Released');
 
-        if ($status_filter === 'released') {
-            $this->db->where('h.status', 'Released');
-        } elseif ($status_filter === 'all') {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
-        } else {
-            $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed']);
+        if ($status_filter === 'scanned') {
+            $this->db->where("EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
+        } elseif ($status_filter === 'waiting_scan') {
+            $this->db->where("NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
         }
 
         if (!empty($search)) {
+            $this->db->group_start();
             $this->db->like('h.spk_no', $search);
+            $this->db->or_like('h.shift_names', $search);
+            $this->db->group_end();
         }
 
         return $this->db->count_all_results();
     }
 
     /**
-     * Hitung jumlah SPK per kategori status untuk tab badge
+     * Hitung jumlah SPK per tab status gudang untuk tab badge (waiting_scan, scanned, all)
      *
      * @return array
      */
     public function get_status_counts()
     {
         $sql = "SELECT
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
-                    SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) as released_count,
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
-                FROM tr_spk_material_header";
+                    SUM(CASE WHEN h.status = 'Released' AND NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as waiting_scan_count,
+                    SUM(CASE WHEN h.status = 'Released' AND EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as scanned_count,
+                    SUM(CASE WHEN h.status = 'Released' THEN 1 ELSE 0 END) as all_count
+                FROM tr_spk_material_header h";
         $row = $this->db->query($sql)->row_array();
 
         return array(
-            'waiting'  => (int) (isset($row['waiting_count']) ? $row['waiting_count'] : 0),
-            'released' => (int) (isset($row['released_count']) ? $row['released_count'] : 0),
-            'all'      => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
+            'waiting_scan' => (int) (isset($row['waiting_scan_count']) ? $row['waiting_scan_count'] : 0),
+            'scanned'      => (int) (isset($row['scanned_count']) ? $row['scanned_count'] : 0),
+            'all'          => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
         );
     }
 
@@ -124,7 +128,7 @@ class Request_list_model extends BF_Model
                  FROM tr_spk_material_detail d
                  WHERE d.spk_no = h.spk_no) AS produk_summary
             FROM tr_spk_material_header h
-            WHERE h.status != 'Cancelled'
+            WHERE h.status = 'Released'
               AND NOT EXISTS (
                   SELECT 1
                   FROM production_reports pr

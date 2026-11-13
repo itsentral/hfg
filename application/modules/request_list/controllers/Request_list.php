@@ -66,10 +66,10 @@ class Request_list extends Admin_Controller
         );
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        // Filter status tab: waiting (default), released, all
+        // Filter status tab warehouse: waiting_scan (default), scanned, all
         $status_filter = $this->input->get_post('status_filter', TRUE);
-        if (!in_array($status_filter, array('waiting', 'released', 'all'))) {
-            $status_filter = 'waiting';
+        if (!in_array($status_filter, array('waiting_scan', 'scanned', 'all'))) {
+            $status_filter = 'waiting_scan';
         }
 
         $rows       = $this->Request_list_model->get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter);
@@ -119,11 +119,6 @@ class Request_list extends Admin_Controller
                 . '<i class="fa fa-eye me-1"></i> View Detail</a>';
             $actions[] = '<a href="' . site_url('spk_material/print_pdf/' . $spk_url) . '" target="_blank" class="btn btn-sm btn-secondary text-nowrap" title="Print SPK">'
                 . '<i class="fa fa-print me-1"></i> Print SPK</a>';
-
-            if (in_array($display_status, ['Material Requested', 'Material On Load', 'Material Confirmed'], true)) {
-                $actions[] = '<button type="button" class="btn btn-sm btn-success btn-release-spk text-nowrap" data-spk="' . $spk_esc . '" title="Release SPK">'
-                    . '<i class="fa fa-check-circle me-1"></i> Release</button>';
-            }
 
             $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap" style="min-width: 190px;">'
                 . implode('', $actions)
@@ -1089,28 +1084,15 @@ class Request_list extends Admin_Controller
             'spk_no'       => $res['spk_no'],
             'coil_count'   => $res['coil_count'],
             'total_weight' => $res['total_weight'],
+            'counts'       => $this->Request_list_model->get_status_counts(),
         ));
     }
 
     public function release_spk()
     {
-        $this->auth->restrict($this->managePermission);
-
-        $spk_no = trim((string) $this->input->post('spk_no', TRUE));
-        $res = $this->Request_list_model->release_spk($spk_no, $this->id_user);
-
-        if (empty($res['status'])) {
-            write_log('Request List', 'Release SPK', 'Release SPK gagal (' . $spk_no . '): ' . $res['message'], array('spk_no' => $spk_no), null, 0);
-            return $this->_json(array('status' => 0, 'message' => $res['message']));
-        }
-
-        write_log('Request List', 'Release SPK', $res['message'], $res['log_payload'], null, 1);
-
         return $this->_json(array(
-            'status'  => 1,
-            'message' => $res['message'],
-            'spk_no'  => $spk_no,
-            'counts'  => $res['counts'],
+            'status'  => 0,
+            'message' => 'Fungsi Release SPK telah dialihkan ke modul SPK Material (Prod. Planning).'
         ));
     }
 
