@@ -657,7 +657,7 @@ if (isset($data->status)) {
 	var datacoa_global = <?= json_encode($datacoa) ?>;
 
 	$(document).ready(function() {
-		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : 'HFG';
+		var companyName = (document.title.indexOf('|') !== -1) ? document.title.split('|')[0].trim() : <?= json_encode(get_company_code()) ?>;
 		document.title = companyName + ' | Expense';
 		$('.content-header h1').html('<i class="fa fa-cubes"></i> Expense');
 

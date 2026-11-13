@@ -11,8 +11,8 @@
     <?= isset($template['title']) ? ' | ' . $template['title'] : ''; ?>
   </title>
 
-  <!-- Favicon (pakai milikmu) -->
-  <link rel="shortcut icon" href="<?= base_url('assets/images/iconhfg.png'); ?>" />
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="<?= get_company_logo('icon'); ?>" />
 
   <!-- =========================
        BERRY CSS (Bootstrap 5)   
@@ -286,7 +286,7 @@
     <div class="navbar-wrapper">
       <div class="m-header">
         <a href="<?= site_url(); ?>" class="b-brand text-decoration-none">
-          <img src="<?= base_url('assets/images/iconhfg.png'); ?>" alt="logo" style="height:50px; width:auto;">
+          <img src="<?= get_company_logo('icon'); ?>" alt="logo" style="height:50px; width:auto;">
 
           <span class="b-title"><?= isset($idt->nm_perusahaan) ? $idt->nm_perusahaan : 'not-set'; ?></span>
         </a>

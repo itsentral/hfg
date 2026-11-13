@@ -695,7 +695,9 @@
     document.getElementById('emProblem').textContent = c.problem || '-';
 
     document.getElementById('emailTo').value = c.supplier_email || `claim@${(c.nama_supplier || 'supplier').toLowerCase().replace(/[^a-z0-9]/g, '')}.example`;
-    document.getElementById('emailSubject').value = `[CLAIM MATERIAL] Ketidaksesuaian Coil ${c.no_coil_packing_list} - ${c.no_claim} - PT HFG`;
+    const companyCode = <?= json_encode(get_company_code()) ?>;
+    const companyNamePt = <?= json_encode(get_company_name(true, false)) ?>;
+    document.getElementById('emailSubject').value = `[CLAIM MATERIAL] Ketidaksesuaian Coil ${c.no_coil_packing_list} - ${c.no_claim} - PT ${companyCode}`;
     document.getElementById('emailBody').value = `Kepada Yth. Rekan Supplier ${c.nama_supplier},\n\n`
       + `Melalui surat ini kami sampaikan klaim ketidaksesuaian material coil dengan rincian sbb:\n`
       + `- No. Claim : ${c.no_claim}\n`
@@ -706,7 +708,7 @@
       + `- Problem : ${c.problem}\n`
       + `- Alasan Produksi : ${c.alasan_produksi || '-'}\n\n`
       + `Bersama ini kami lampirkan foto dan bukti pendukung dari tim produksi untuk ditindaklanjuti. Mohon kesepakatan penanganan kompensasi atau retur.\n\n`
-      + `Hormat Kami,\nPT Harapan Fajar Gemilang (Purchasing)`;
+      + `Hormat Kami,\n${companyNamePt} (Purchasing)`;
 
     const buktiBox = document.getElementById('emailBuktiList');
     if (c.bukti && c.bukti.length > 0) {

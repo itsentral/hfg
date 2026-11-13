@@ -74,9 +74,9 @@
     <!-- Header -->
     <div class="header">
         <div class="company-info">
-            <h2>PT HFG</h2>
-            <p>Jl. Industri No. 1, Kawasan Industri</p>
-            <p>Telp: (021) 000-0000</p>
+            <h2><?= html_escape('PT ' . get_company_code()) ?></h2>
+            <p><?= nl2br(html_escape(get_company_address('Jl. Industri No. 1, Kawasan Industri'))) ?></p>
+            <p>Telp: <?= html_escape(get_company_phone('(021) 000-0000')) ?></p>
         </div>
         <div class="doc-title">
             <h3>Surat Jalan</h3>

@@ -54,7 +54,7 @@
     <div class="d-flex justify-content-between align-items-center">
       <div>
         <h1 class="h5 fw-bold mb-1">Report Biaya Kompensasi vs Biaya Scrap</h1>
-        <p class="text-muted small mb-0">Beban yang tetap ditanggung HFG setelah kompensasi (Debit Note) dan setelah Jual Material (Biaya Scrap yang diakui) atas material yang di-claim (FR-87).</p>
+        <p class="text-muted small mb-0">Beban yang tetap ditanggung <?= html_escape(get_company_code()) ?> setelah kompensasi (Debit Note) dan setelah Jual Material (Biaya Scrap yang diakui) atas material yang di-claim (FR-87).</p>
       </div>
       <div>
         <a href="<?= site_url('claim_material') ?>" class="btn btn-outline-primary btn-sm">
@@ -79,7 +79,7 @@
             <th class="text-end">Biaya Material (Rp)</th>
             <th class="text-end">Nilai Debit Note (Rp)</th>
             <th class="text-end">Nilai Material KW (Rp)</th>
-            <th class="text-end">Beban Ditanggung HFG (Rp)</th>
+            <th class="text-end">Beban Ditanggung <?= html_escape(get_company_code()) ?> (Rp)</th>
             <th>Akun Beban</th>
           </tr>
         </thead>
@@ -142,7 +142,7 @@
     </div>
 
     <p class="text-muted small mt-3 mb-0">
-      * <b>Beban Ditanggung HFG</b>: untuk Debit Note = Biaya Material &minus; Nilai Kompensasi (tanpa PPN); untuk Jual Material = Biaya Scrap yang diakui (Biaya Material &minus; Material KW). Retur dan Lanjut Produksi tidak ditampilkan karena tidak mengakui kompensasi atau kerugian (keputusan user 2026-10-28, G5). Biaya material = Berat &times; Harga Beli/Kg.
+      * <b>Beban Ditanggung <?= html_escape(get_company_code()) ?></b>: untuk Debit Note = Biaya Material &minus; Nilai Kompensasi (tanpa PPN); untuk Jual Material = Biaya Scrap yang diakui (Biaya Material &minus; Material KW). Retur dan Lanjut Produksi tidak ditampilkan karena tidak mengakui kompensasi atau kerugian (keputusan user 2026-10-28, G5). Biaya material = Berat &times; Harga Beli/Kg.
     </p>
   </div>
 </div>

@@ -359,12 +359,13 @@ class Outgoing_stok_atk extends Admin_Controller
       // $listDepartment = $this->db->order_by('nama', 'ASC')->get_where('ms_department', array('deleted_date' => NULL))->result_array();
 
       $listDepartment = [];
+      $companyLabel   = get_company_name(true, true);
       $get_dept_ms = $this->db->order_by('nama', 'ASC')->get_where('ms_department', ['deleted_by' => null])->result_array();
       foreach ($get_dept_ms as $d) {
         $listDepartment[] = [
           'id' => $d['id'],
           'nama' => strtoupper($d['nama']),
-          'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
+          'nm_comp' => $companyLabel
         ];
       }
 
@@ -470,7 +471,7 @@ class Outgoing_stok_atk extends Admin_Controller
       if (!empty($getData[0]['id_dept'])) {
         $get_dept_ms = $this->db->get_where('ms_department', ['id' => $getData[0]['id_dept']])->row_array();
         if (!empty($get_dept_ms)) {
-          $nm_dept = strtoupper($get_dept_ms['nama']) . ' - PT HARAPAN FAJAR GEMILANG';
+          $nm_dept = strtoupper($get_dept_ms['nama']) . ' - ' . get_company_name(true, true);
         }
       }
 

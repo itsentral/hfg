@@ -102,7 +102,8 @@ class Product_catalog extends Admin_Controller
 
         $items = $this->pc_model->get_catalog_items($category, $catalog_id, $status);
 
-        $filename = 'Product_Catalog_HFG_' . date('Ymd_His') . '.csv';
+        $company_code = preg_replace('/[^A-Za-z0-9_-]/', '_', get_company_code());
+        $filename = 'Product_Catalog_' . $company_code . '_' . date('Ymd_His') . '.csv';
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=' . $filename);

@@ -245,7 +245,7 @@ class Gl_interface extends Admin_Controller
         if ($jenis === 'JV') {
             $nomor = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_posting);
         } else {
-            $nomor = $this->Jurnal_model->get_no_buk('HFG');
+            $nomor = $this->Jurnal_model->get_no_buk(get_company_code());
         }
 
         if (empty($nomor)) {
@@ -428,7 +428,7 @@ class Gl_interface extends Admin_Controller
         // Note: get_Nomor_Jurnal_Sales sudah update counter nomorJC untuk JV
         // Tapi get_no_buk TIDAK update counter, jadi perlu manual untuk BUK
         if ($jenis !== 'JV') {
-            $this->db->query("UPDATE " . DBACC . ".pastibisa_tb_cabang SET nobuk = nobuk + 1 WHERE cabang = 'HFG'");
+            $this->db->query("UPDATE " . DBACC . ".pastibisa_tb_cabang SET nobuk = nobuk + 1 WHERE cabang = ?", [get_company_code()]);
         }
 
         $this->db->update('gl_interface', [

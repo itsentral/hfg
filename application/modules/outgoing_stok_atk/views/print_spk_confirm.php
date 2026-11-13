@@ -20,7 +20,7 @@ $today = date('l, d F Y [H:i:s]');
 
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
     <tr>
-        <td align='center'><b>PT HARAPAN FAJAR GEMILANG</b></td>
+        <td align='center'><b><?= html_escape(get_company_name(true, true)) ?></b></td>
     </tr>
     <tr>
         <td align='center'><b><h2>SURAT PEGELUARAN MATERIAL</h2></b></td>
