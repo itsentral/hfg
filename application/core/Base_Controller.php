@@ -15,7 +15,7 @@ class Base_Controller extends MX_Controller
 
     public $autoload = array(
         'libraries' => array(),
-        'helpers'   => array('application'),
+        'helpers'   => array('application', 'identitas'),
         'models'    => array(),
     );
 

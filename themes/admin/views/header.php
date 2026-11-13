@@ -1,3 +1,9 @@
+<?php
+if (!function_exists('get_company_logo')) {
+    $ci = &get_instance();
+    $ci->load->helper('identitas');
+}
+?>
 <!doctype html>
 <html lang="en">
 
