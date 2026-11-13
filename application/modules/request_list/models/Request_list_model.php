@@ -35,19 +35,20 @@ class Request_list_model extends BF_Model
              WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') as scanned_pack_count
         ", false);
         $this->db->from('tr_spk_material_header h');
-        $this->db->where('h.status', 'Released');
+        $this->db->where('h.status !=', 'Cancelled');
 
         if ($status_filter === 'scanned') {
             $this->db->where("EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
         } elseif ($status_filter === 'waiting_scan') {
             $this->db->where("NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
         }
-        // jika 'all', tidak ada filter scan tambahan (semua Released)
+        // jika 'all', semua SPK aktif (status != 'Cancelled')
 
         if (!empty($search)) {
             $this->db->group_start();
             $this->db->like('h.spk_no', $search);
             $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
             $this->db->group_end();
         }
 
@@ -67,7 +68,7 @@ class Request_list_model extends BF_Model
     public function count_spk_filtered($search, $status_filter = 'waiting_scan')
     {
         $this->db->from('tr_spk_material_header h');
-        $this->db->where('h.status', 'Released');
+        $this->db->where('h.status !=', 'Cancelled');
 
         if ($status_filter === 'scanned') {
             $this->db->where("EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2')", null, false);
@@ -79,6 +80,7 @@ class Request_list_model extends BF_Model
             $this->db->group_start();
             $this->db->like('h.spk_no', $search);
             $this->db->or_like('h.shift_names', $search);
+            $this->db->or_like('h.status', $search);
             $this->db->group_end();
         }
 
@@ -93,9 +95,9 @@ class Request_list_model extends BF_Model
     public function get_status_counts()
     {
         $sql = "SELECT
-                    SUM(CASE WHEN h.status = 'Released' AND NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as waiting_scan_count,
-                    SUM(CASE WHEN h.status = 'Released' AND EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as scanned_count,
-                    SUM(CASE WHEN h.status = 'Released' THEN 1 ELSE 0 END) as all_count
+                    SUM(CASE WHEN h.status != 'Cancelled' AND NOT EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as waiting_scan_count,
+                    SUM(CASE WHEN h.status != 'Cancelled' AND EXISTS (SELECT 1 FROM warehouse_coil_kartu_stok ks WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') THEN 1 ELSE 0 END) as scanned_count,
+                    SUM(CASE WHEN h.status != 'Cancelled' THEN 1 ELSE 0 END) as all_count
                 FROM tr_spk_material_header h";
         $row = $this->db->query($sql)->row_array();
 
@@ -128,7 +130,7 @@ class Request_list_model extends BF_Model
                  FROM tr_spk_material_detail d
                  WHERE d.spk_no = h.spk_no) AS produk_summary
             FROM tr_spk_material_header h
-            WHERE h.status = 'Released'
+            WHERE h.status != 'Cancelled'
               AND NOT EXISTS (
                   SELECT 1
                   FROM production_reports pr
