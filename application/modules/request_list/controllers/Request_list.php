@@ -66,10 +66,10 @@ class Request_list extends Admin_Controller
         );
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        // Filter status tab warehouse: waiting_scan (default), scanned, all
+        // Filter status tab: waiting (default), released, all (sinkron dengan SPK Material)
         $status_filter = $this->input->get_post('status_filter', TRUE);
-        if (!in_array($status_filter, array('waiting_scan', 'scanned', 'all'))) {
-            $status_filter = 'waiting_scan';
+        if (!in_array($status_filter, array('waiting', 'released', 'all'))) {
+            $status_filter = 'waiting';
         }
 
         $rows       = $this->Request_list_model->get_spk_list($search, $start, $length, $order_by, $order_dir, $status_filter);

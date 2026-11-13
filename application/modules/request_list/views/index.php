@@ -110,16 +110,16 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-2 mb-3 gap-2">
-                <!-- Nav Tabs Status Warehouse (Aktivitas Scan Material) -->
+                <!-- Nav Tabs Status SPK (Sinkron dengan SPK Material) -->
                 <ul class="nav nav-pills mb-0 order-2 order-md-1 flex-wrap gap-1" id="spk-status-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active py-1 px-2 px-md-3 small fw-semibold" id="tab-waiting-scan" data-status="waiting_scan" type="button" role="tab">
-                            Menunggu Scan <span class="badge bg-warning text-dark ms-1 rounded-pill" id="badge-count-waiting-scan">0</span>
+                        <button class="nav-link active py-1 px-2 px-md-3 small fw-semibold" id="tab-waiting" data-status="waiting" type="button" role="tab">
+                            Menunggu Rilis <span class="badge bg-warning text-dark ms-1 rounded-pill" id="badge-count-waiting">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-scanned" data-status="scanned" type="button" role="tab">
-                            Sudah Scan <span class="badge bg-success ms-1 rounded-pill" id="badge-count-scanned">0</span>
+                        <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-released" data-status="released" type="button" role="tab">
+                            Released <span class="badge bg-success ms-1 rounded-pill" id="badge-count-released">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -246,7 +246,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
     $(document).ready(function() {
 
         const BASE_URL = siteurl + active_controller;
-        var currentStatusFilter = 'waiting_scan';
+        var currentStatusFilter = 'waiting';
         var scannedPackCode = '';
         var isProcessingScan = false;
 
@@ -439,8 +439,8 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                 },
                 dataSrc: function(json) {
                     if (json.counts) {
-                        $('#badge-count-waiting-scan').text(json.counts.waiting_scan || 0);
-                        $('#badge-count-scanned').text(json.counts.scanned || 0);
+                        $('#badge-count-waiting').text(json.counts.waiting || 0);
+                        $('#badge-count-released').text(json.counts.released || 0);
                         $('#badge-count-all').text(json.counts.all || 0);
                     }
                     return json.data;
@@ -681,8 +681,8 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                             $('#scan-pack-input').focus();
                         }
                         if (res.counts) {
-                            $('#badge-count-waiting-scan').text(res.counts.waiting_scan || 0);
-                            $('#badge-count-scanned').text(res.counts.scanned || 0);
+                            $('#badge-count-waiting').text(res.counts.waiting || 0);
+                            $('#badge-count-released').text(res.counts.released || 0);
                             $('#badge-count-all').text(res.counts.all || 0);
                         }
                         tableRequestList.ajax.reload(null, false);
