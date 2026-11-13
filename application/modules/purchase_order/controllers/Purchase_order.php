@@ -3767,18 +3767,6 @@ class Purchase_order extends Admin_Controller
 
 		$get_po = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
 
-		$getso = $this->Pr_model->get_where_in('so_number', $no_po, 'material_planning_base_on_produksi');
-		// $getitemso = $this->Pr_model->get_where_in('so_number', $getparam, 'material_planning_base_on_produksi_detail');
-
-		// $getitemso = $this->db->select("a.*, (b.qty_stock - b.qty_booking) AS avl_stock, c.code as code, d.id_stock as code1, c.nama as nm_material, d.stock_name as nm_material1, e.propose_purchase");
-		// $getitemso = $this->db->from('dt_trans_po a');
-		// $getitemso = $this->db->join('warehouse_stock b', 'b.id_material = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('new_inventory_4 c', 'c.code_lv4 = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('accessories d', 'd.id = a.idmaterial', 'left');
-		// $getitemso = $this->db->join('material_planning_base_on_produksi_detail e', 'e.id = a.idpr', 'left');
-		// $getitemso = $this->db->where_in('a.no_po', $no_po);
-		// $getitemso = $this->db->group_by('a.id');
-
 		$getitemso = $this->db->query("
 			SELECT 
 				a.id as id,
@@ -3804,7 +3792,11 @@ class Purchase_order extends Admin_Controller
 				e.propose_purchase as propose_purchase,
 				g.code as packing_unit,
 				h.code as packing_unit2,
-				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure
+				IF(i.code IS NOT NULL, i.code, j.code) as unit_measure,
+				c.hscode,
+				hs.kuota_internal,
+				hs.local_code as local_code,
+				c.trade_name as nm_lain
 			FROM
 				dt_trans_po a
 				LEFT JOIN warehouse_stock b ON b.id_material = a.idmaterial
@@ -3815,9 +3807,10 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan h ON h.id = f.id_unit_gudang
 				LEFT JOIN ms_satuan i ON i.id = c.id_unit
 				LEFT JOIN ms_satuan j ON j.id = f.id_unit
+				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
 				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
-				(a.tipe IS NULL OR a.tipe = '')
+				(a.tipe IS NULL OR a.tipe = 'pr material')
 			GROUP BY id
 
 			UNION ALL
@@ -3846,7 +3839,11 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				IF(f.code IS NULL, 'Pcs', f.code) as packing_unit,
 				'' as packing_unit2,
-				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure
+				IF(f.code IS NULL, 'Pcs', f.code) as unit_measure,
+				'' as hscode,         
+    			0 as kuota_internal,
+				'' as local_code,
+				'' as nm_lain
 			FROM
 				dt_trans_po a
 				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
@@ -3881,69 +3878,58 @@ class Purchase_order extends Admin_Controller
 				a.qty as propose_purchase,
 				'Pcs' as packing_unit,
 				'' as packing_unit2,
-				'Pcs' as unit_measure
+				'Pcs' as unit_measure,
+				'' as hscode,         
+    			0 as kuota_internal,
+				'' as local_code,
+				'' as nm_lain
 			FROM
 				dt_trans_po a
-				LEFT JOIN asset_planning e ON e.id = a.idpr
+				LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
 			WHERE
 				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
 				a.tipe = 'pr asset'
-
 			GROUP BY id
 		")->result();
 
-
-		// $getitemso = $this->db->get()->result();
-
-		// print_r($getitemso);
-		// exit;
-
-		$aktif = 'active';
-		$deleted = '0';
-		// $supplier = $data = $this->db->query("SELECT a.* FROM new_supplier as a INNER JOIN dt_trans_pr as b on b.suplier = a.id_suplier INNER JOIN tr_purchase_request as c on b.no_pr = c.no_pr WHERE c.status = '2' GROUP BY b.suplier ")->result();
-
-		// $comp	= $this->db->query("select a.*, b.nominal as nominal_harga FROM ms_compotition as a inner join child_history_lme as b on b.id_compotition=a.id_compotition where a.deleted='0' and b.status='0' ")->result();
 		$customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
 		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
 		$list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
 		$list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
-		// $matauang = $this->db->get_where('matauang')->result();
 		$list_group_top = $this->db->get_where('list_help', ['group_by' => 'top', 'sts' => 'Y'])->result();
-		$list_top = $this->db->get_where('tr_top_po', ['no_po' => $no_po])->result();
+		$term = $this->db->get_where('list_help', ['group_by' => 'top invoice', 'sts' => 'Y'])->result();
+
+		$this->db->select('a.*, b.no_credit, b.issue_date, b.expiry_date, b.value_contract, b.tolerance_plus, b.tolerance_minus, b.type_of_lc, b.valid_usen_until, b.bank_sender, b.bank_receiver, b.latest_shipment, b.no_sales_contract');
+		$this->db->from('tr_top_po a');
+		$this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
+		$this->db->where('a.no_po', $no_po);
+		$list_top = $this->db->get()->result();
 		$num_top = count($list_top);
 
 		$nm_depart = [];
-		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
-		if (!empty($get_nm_depart)) {
-			foreach ($get_nm_depart as $item_depart) {
-				$nm_depart[] = strtoupper($item_depart->nama);
+		if (!empty($get_po->id_dept)) {
+			$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
+			if (!empty($get_nm_depart)) {
+				foreach ($get_nm_depart as $item_depart) {
+					$nm_depart[] = strtoupper($item_depart->nama);
+				}
 			}
 		}
 
-		if (!empty($nm_depart)) {
-			$nm_depart = implode(', ', $nm_depart);
-		} else {
-			$nm_depart = '';
-		}
-
 		$data = [
-			// 'supplier' => $supplier,
-			// 'comp' => $comp,
-			'customers' => $customers,
-			'karyawan' => $karyawan,
-			'mata_uang' => $mata_uang,
-			// 'matauang' => $matauang,
-			// 'param' => $getparam,
-			// 'headerso' => $getso,
-			'get_po' => $get_po,
-			'getitemso' => $getitemso,
-			'list_supplier' => $list_supplier,
+			'customers'       => $customers,
+			'karyawan'        => $karyawan,
+			'mata_uang'       => $mata_uang,
+			'get_po'          => $get_po,
+			'getitemso'       => $getitemso,
+			'list_supplier'   => $list_supplier,
 			'list_department' => $list_department,
-			'nm_depart' => $nm_depart,
-			'list_top' => $list_top,
-			'list_group_top' => $list_group_top,
-			'num_po' => $num_top
+			'nm_depart'       => !empty($nm_depart) ? implode(', ', $nm_depart) : '',
+			'list_top'        => $list_top,
+			'list_group_top'  => $list_group_top,
+			'num_po'          => $num_top,
+			'term'            => $term
 		];
 
 		$this->template->set('results', $data);
