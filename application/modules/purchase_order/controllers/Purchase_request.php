@@ -51,7 +51,7 @@ class Purchase_request extends Admin_Controller
 		$aktif = 'active';
 		$deleted = '0';
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted' . $deleted);
 		$data = [
 			'customers' => $customers,
@@ -70,7 +70,7 @@ class Purchase_request extends Admin_Controller
 		$aktif = 'active';
 		$deleted = '0';
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted' . $deleted);
 		$data = [
 			'customers' => $customers,
@@ -116,7 +116,7 @@ class Purchase_request extends Admin_Controller
 		$deleted = '0';
 		$head = $this->Pr_model->get_data('tr_penawaran', 'no_penawaran', $id);
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted', $deleted);
 		$data = [
 			'customers' => $customers,
@@ -335,11 +335,11 @@ class Purchase_request extends Admin_Controller
 	}
 	function getsales()
 	{
-		$id_customer = $_GET['id_customer'];
+		$id_customer = isset($_GET['id_customer']) ? $_GET['id_customer'] : '';
 		$kategory3	= $this->db->query("SELECT * FROM master_customers WHERE id_customer = '$id_customer' ")->result();
-		$id_karyawan = $kategory3[0]->id_karyawan;
-		$karyawan	= $this->db->query("SELECT * FROM ms_karyawan WHERE id_karyawan = '$id_karyawan' ")->result();
-		$nama_karyawan = $karyawan[0]->nama_karyawan;
+		$id_karyawan = !empty($kategory3) ? $kategory3[0]->id_karyawan : '';
+		$karyawan	= !empty($id_karyawan) ? $this->db->query("SELECT * FROM employee WHERE id = '$id_karyawan' ")->result() : [];
+		$nama_karyawan = !empty($karyawan) ? $karyawan[0]->nm_karyawan : '';
 		echo "	<div class='col-md-8' hidden>
 					<input type='text' class='form-control' id='nama_sales' value='$id_karyawan' required name='nama_sales' readonly placeholder='Sales Marketing'>
 				</div>
