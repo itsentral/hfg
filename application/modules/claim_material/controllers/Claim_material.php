@@ -21,7 +21,9 @@ class Claim_material extends Admin_Controller
      */
     public function index()
     {
-        $this->auth->restrict($this->viewPermission);
+        if (!has_permission($this->viewPermission) && !has_permission('Daftar_Claim_Material.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $suppliers = $this->cm_model->get_suppliers_list();
         $stats     = $this->cm_model->get_summary_stats();
 
@@ -89,7 +91,9 @@ class Claim_material extends Admin_Controller
      */
     public function send_email()
     {
-        $this->auth->restrict($this->managePermission);
+        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage')) {
+            $this->auth->restrict($this->managePermission);
+        }
 
         $claim_id      = (int)$this->input->post('claim_id');
         $email_to      = trim($this->input->post('email_to', true));
@@ -111,7 +115,9 @@ class Claim_material extends Admin_Controller
      */
     public function save_decision()
     {
-        $this->auth->restrict($this->managePermission);
+        if (!has_permission($this->managePermission) && !has_permission('Daftar_Claim_Material.Manage')) {
+            $this->auth->restrict($this->managePermission);
+        }
 
         $claim_ids   = $this->input->post('claim_ids');
         $kesepakatan = trim($this->input->post('kesepakatan', true));
@@ -192,7 +198,9 @@ class Claim_material extends Admin_Controller
      */
     public function slitting()
     {
-        $this->auth->restrict($this->viewPermission);
+        if (!has_permission($this->viewPermission) && !has_permission('Material_Dijual_Slitting.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $this->template->title('Material Dijual — Gudang Slitting');
         $this->template->set('page_header', 'Material Dijual (Gudang Slitting)');
         $this->template->render('slitting');
@@ -215,7 +223,9 @@ class Claim_material extends Admin_Controller
      */
     public function report_biaya()
     {
-        $this->auth->restrict($this->viewPermission);
+        if (!has_permission($this->viewPermission) && !has_permission('Report_Biaya_Kompensasi.View')) {
+            $this->auth->restrict($this->viewPermission);
+        }
         $report_data = $this->cm_model->get_report_biaya();
 
         $this->template->title('Report Biaya Kompensasi vs Biaya Scrap');
