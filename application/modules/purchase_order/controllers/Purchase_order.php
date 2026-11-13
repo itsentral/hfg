@@ -298,7 +298,7 @@ class Purchase_order extends Admin_Controller
 
 		// $comp	= $this->db->query("select a.*, b.nominal as nominal_harga FROM ms_compotition as a inner join child_history_lme as b on b.id_compotition=a.id_compotition where a.deleted='0' and b.status='0' ")->result();
 		$customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
-		// $karyawan = $this->db->get_where('ms_karyawan', ['deleted_by' => null])->result();
+		// $karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
 		$list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
 		$list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
@@ -353,7 +353,7 @@ class Purchase_order extends Admin_Controller
 		WHERE no_po = '$id' ")->result();
 		$supplier = $data = $this->db->query("SELECT a.* FROM master_supplier as a INNER JOIN dt_trans_pr as b on b.suplier = a.id_suplier INNER JOIN tr_purchase_request as c on b.no_pr = c.no_pr WHERE c.status = '2' ")->result();
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted' . $deleted);
 		$matauang = $this->db->get_where('matauang')->result();
 		$data = [
@@ -378,7 +378,7 @@ class Purchase_order extends Admin_Controller
 		$aktif = 'active';
 		$deleted = '0';
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted' . $deleted);
 		$data = [
 			'customers' => $customers,
@@ -468,7 +468,7 @@ class Purchase_order extends Admin_Controller
 		$deleted = '0';
 		$head = $this->Pr_model->get_data('tr_penawaran', 'no_penawaran', $id);
 		$customers = $this->Pr_model->get_data('master_customers', 'deleted', $deleted);
-		$karyawan = $this->Pr_model->get_data('ms_karyawan', 'deleted', $deleted);
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->Pr_model->get_data('mata_uang', 'deleted', $deleted);
 		$data = [
 			'customers' => $customers,
@@ -1211,11 +1211,11 @@ class Purchase_order extends Admin_Controller
 	}
 	function getsales()
 	{
-		$id_customer = $_GET['id_customer'];
+		$id_customer = isset($_GET['id_customer']) ? $_GET['id_customer'] : '';
 		$kategory3	= $this->db->query("SELECT * FROM master_customers WHERE id_customer = '$id_customer' ")->result();
-		$id_karyawan = $kategory3[0]->id_karyawan;
-		$karyawan	= $this->db->query("SELECT * FROM ms_karyawan WHERE id_karyawan = '$id_karyawan' ")->result();
-		$nama_karyawan = $karyawan[0]->nama_karyawan;
+		$id_karyawan = !empty($kategory3) ? $kategory3[0]->id_karyawan : '';
+		$karyawan	= !empty($id_karyawan) ? $this->db->query("SELECT * FROM employee WHERE id = '$id_karyawan' ")->result() : [];
+		$nama_karyawan = !empty($karyawan) ? $karyawan[0]->nm_karyawan : '';
 		echo "	<div class='col-md-8' hidden>
 					<input type='text' class='form-control' id='nama_sales' value='$id_karyawan' required name='nama_sales' readonly placeholder='Sales Marketing'>
 				</div>
@@ -3619,7 +3619,7 @@ class Purchase_order extends Admin_Controller
 
 		// $comp	= $this->db->query("select a.*, b.nominal as nominal_harga FROM ms_compotition as a inner join child_history_lme as b on b.id_compotition=a.id_compotition where a.deleted='0' and b.status='0' ")->result();
 		$customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
-		// $karyawan = $this->db->get_where('ms_karyawan', ['deleted_by' => null])->result();
+		// $karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
 		$list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
 		$list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
@@ -3904,7 +3904,7 @@ class Purchase_order extends Admin_Controller
 
 		// $comp	= $this->db->query("select a.*, b.nominal as nominal_harga FROM ms_compotition as a inner join child_history_lme as b on b.id_compotition=a.id_compotition where a.deleted='0' and b.status='0' ")->result();
 		$customers = $this->db->get_where('customer', ['deleted_by' => null])->result();
-		$karyawan = $this->db->get_where('ms_karyawan', ['deleted_by' => null])->result();
+		$karyawan = $this->db->get_where('employee', ['deleted_by' => null])->result();
 		$mata_uang = $this->db->get_where('mata_uang', ['deleted' => null])->result();
 		$list_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result();
 		$list_department = $this->db->select('id, nama')->get_where('ms_department', ['deleted_by' => null])->result();
