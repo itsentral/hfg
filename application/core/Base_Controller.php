@@ -15,8 +15,7 @@ class Base_Controller extends MX_Controller
 
     public $autoload = array(
         'libraries' => array(),
-        'helper'    => array('application', 'identitas'),
-        'helpers'   => array('application', 'identitas'),
+        'helper'    => array('identitas'),
         'models'    => array(),
     );
 
@@ -24,7 +23,7 @@ class Base_Controller extends MX_Controller
     {
         parent::__construct();
 
-        $this->load->helper(array('application', 'identitas'));
+        $this->load->helper('identitas');
         $this->load->library(array('form_validation','session'));
         $this->form_validation->CI =& $this;
 
