@@ -406,4 +406,78 @@ class Menus extends Admin_Controller
 
     $objWriter->save('php://output');
   }
+
+  /**
+   * Rekomendasi Urutan (Order) Menu berdasarkan Parent ID
+   * Digunakan oleh AJAX pada menus_form untuk memudahkan user menentukan nomor order
+   */
+  public function get_order_recommendation()
+  {
+    $parent_id  = $this->input->get_post('parent_id');
+    $current_id = $this->input->get_post('menu_id');
+
+    if ($parent_id === null || $parent_id === '') {
+      $parent_id = 0;
+    }
+    $parent_id  = (int) $parent_id;
+    $current_id = (int) $current_id;
+
+    // Ambil semua menu di bawah parent ini yang aktif (status = 1)
+    $this->db->select('id, title, `order`, status');
+    $this->db->from('menus');
+    $this->db->where('parent_id', $parent_id);
+    $this->db->where('status', 1);
+    $this->db->order_by('`order`', 'ASC');
+    $this->db->order_by('id', 'ASC');
+    $query = $this->db->get();
+    $rows  = $query->result_array();
+
+    $siblings      = [];
+    $max_order     = 0;
+    $current_order = null;
+
+    foreach ($rows as $r) {
+      $is_current = ($current_id > 0 && (int)$r['id'] === $current_id);
+      $ord        = (int) $r['order'];
+      if ($is_current) {
+        $current_order = $ord;
+      }
+
+      // Untuk Level 1 (parent_id == 0), abaikan Settings (order 99) agar next order tidak menjadi 100
+      if ($parent_id === 0 && $ord >= 90) {
+        // Jangan dihitung sebagai max_order jika urutan khusus seperti Settings (99)
+      } else {
+        if ($ord > $max_order) {
+          $max_order = $ord;
+        }
+      }
+
+      $siblings[] = [
+        'id'         => (int) $r['id'],
+        'title'      => $r['title'],
+        'order'      => $ord,
+        'is_current' => $is_current
+      ];
+    }
+
+    if ($parent_id === 0) {
+      $next_order = ($max_order > 0) ? ($max_order + 1) : 1;
+      if ($next_order >= 99) {
+        $next_order = 98;
+      }
+    } else {
+      $next_order = ($max_order > 0) ? ($max_order + 1) : 1;
+    }
+
+    echo json_encode([
+      'status'         => 1,
+      'parent_id'      => $parent_id,
+      'next_order'     => $next_order,
+      'max_order'      => $max_order,
+      'current_order'  => $current_order,
+      'total_siblings' => count($siblings),
+      'siblings'       => $siblings
+    ]);
+    exit;
+  }
 }
