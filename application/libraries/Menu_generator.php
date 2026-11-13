@@ -169,7 +169,7 @@ class Menu_generator
 					// ============================
 					if (count($submenusub) == 0) {
 						if ($sublink != "#") {
-							if (!in_array($rw->permission_id, $auth) && $this->is_admin == FALSE) {
+							if (!in_array($sub->permission_id, $auth) && $this->is_admin == FALSE) {
 								continue;
 							}
 
