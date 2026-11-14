@@ -211,6 +211,7 @@ class Material_master extends Admin_Controller
         $oldData = $this->db->get_where('new_inventory_4', ['id' => $id])->row_array();
       }
 
+      $syncAffected = [];
       $this->db->trans_start();
       if (empty($id)) {
         $dataProcess['status'] = !empty($status) ? $status : 1;
@@ -219,11 +220,17 @@ class Material_master extends Admin_Controller
       } else {
         $this->db->where('id', $id);
         $this->db->update('new_inventory_4', $dataProcess);
+        // Kaskade sinkronisasi ke Warehouse & BOM
+        $syncAffected = $this->Material_master_model->sync_material_cascade($code_lv4, $dataProcess, $oldData, $this->id_user);
       }
       $this->db->trans_complete();
 
-      // Siapkan payload log (jika update, sertakan data old & new)
-      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)] : $dataProcess;
+      // Siapkan payload log (jika update, sertakan data old & new serta rincian sinkronisasi)
+      $logPayload = (!empty($id) && !empty($oldData)) ? [
+        'old'           => $oldData,
+        'new'           => array_merge($oldData, $dataProcess),
+        'sync_affected' => $syncAffected
+      ] : $dataProcess;
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
@@ -331,24 +338,24 @@ class Material_master extends Admin_Controller
 
     $id = $this->input->post('id');
 
-    // Material yang masih dipakai BOM aktif tidak boleh dihapus (ms_bom_detail.id_material = code_lv4)
-    $material = $this->db->get_where('new_inventory_4', ['id' => $id])->row();
-    if (!empty($material)) {
-      $dipakai_bom = $this->db->from('ms_bom_detail d')
-        ->join('ms_bom_header h', 'h.id = d.id_bom')
-        ->where('d.id_material', $material->code_lv4)
-        ->where('d.is_delete', 0)
-        ->where('h.is_delete', 0)
-        ->count_all_results();
-      if ($dipakai_bom > 0) {
-        write_log('Material Master', 'Delete', 'Hapus material master ditolak karena dipakai BOM: ' . $material->code_lv4, ['id' => $id, 'code_lv4' => $material->code_lv4], null, 0);
-        echo json_encode([
-          'pesan'  => 'Material ' . $material->code_lv4 . ' tidak dapat dihapus karena masih dipakai di BOM.',
-          'status' => 0
-        ]);
-        return;
-      }
+    // Validasi kelayakan hapus bertingkat (BOM, Warehouse Stock, Coil Aktif, PO, Incoming, SPK Request)
+    $validation = $this->Material_master_model->validate_delete($id);
+    if (!$validation['valid']) {
+      $matCode = isset($validation['material']) ? $validation['material']->code_lv4 : ('ID ' . $id);
+      write_log('Material Master', 'Delete', 'Hapus material master ditolak: ' . $validation['pesan'], [
+        'id'      => $id,
+        'details' => $validation['details']
+      ], null, 0);
+      echo json_encode([
+        'pesan'  => $validation['pesan'],
+        'status' => 0
+      ]);
+      return;
     }
+
+    $material = $validation['material'];
+    $code_lv4 = $material->code_lv4;
+    $nama_mat = !empty($material->nama) ? $material->nama : $code_lv4;
 
     $data = [
       'deleted_by'     => $this->id_user,
@@ -361,17 +368,17 @@ class Material_master extends Admin_Controller
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
       $status  = array(
-        'pesan'    => 'Failed process data!',
+        'pesan'    => 'Gagal menghapus data material!',
         'status'  => 0
       );
-      write_log('Material Master', 'Delete', 'Gagal delete material master ID: ' . $id, ['id' => $id], null, 0);
+      write_log('Material Master', 'Delete', 'Gagal delete material master: ' . $code_lv4, ['id' => $id, 'code_lv4' => $code_lv4], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
-        'pesan'    => 'Success process data!',
+        'pesan'    => 'Berhasil menghapus data material ' . $code_lv4 . ' (' . $nama_mat . ')',
         'status'  => 1
       );
-      write_log('Material Master', 'Delete', 'Delete material master ID: ' . $id, ['id' => $id, 'data' => $data], null, 1);
+      write_log('Material Master', 'Delete', 'Delete material master: ' . $code_lv4 . ' (' . $nama_mat . ')', ['id' => $id, 'code_lv4' => $code_lv4, 'data' => $data], null, 1);
     }
     echo json_encode($status);
   }

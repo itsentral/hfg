@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $ENABLE_ADD    = has_permission('Spk_Material.Add');
 $ENABLE_MANAGE = has_permission('Spk_Material.Manage');
 $ENABLE_VIEW   = has_permission('Spk_Material.View');
