@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $ENABLE_ADD    = has_permission('Spk_Material.Add');
 $ENABLE_MANAGE = has_permission('Spk_Material.Manage');
 $ENABLE_VIEW   = has_permission('Spk_Material.View');
@@ -70,6 +70,11 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-closed" data-status="closed" type="button" role="tab">
+                        Closed Produksi <span class="badge bg-dark ms-1 rounded-pill" id="badge-count-closed">0</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
                     <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-all" data-status="all" type="button" role="tab">
                         Semua SPK <span class="badge bg-secondary ms-1 rounded-pill" id="badge-count-all">0</span>
                     </button>
@@ -125,6 +130,7 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                     if (json.counts) {
                         $('#badge-count-waiting').text(json.counts.waiting || 0);
                         $('#badge-count-released').text(json.counts.released || 0);
+                        $('#badge-count-closed').text(json.counts.closed || 0);
                         $('#badge-count-all').text(json.counts.all || 0);
                     }
                     return json.data;
@@ -216,6 +222,7 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                             if (res.counts) {
                                 $('#badge-count-waiting').text(res.counts.waiting || 0);
                                 $('#badge-count-released').text(res.counts.released || 0);
+                                $('#badge-count-closed').text(res.counts.closed || 0);
                                 $('#badge-count-all').text(res.counts.all || 0);
                             }
                             tableSpk.ajax.reload(null, false);

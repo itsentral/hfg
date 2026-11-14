@@ -301,9 +301,9 @@ class Spk_material extends Admin_Controller
         $col_map = [1 => 'h.spk_no', 2 => 'h.tgl_spk', 3 => 'h.shift_names', 4 => 'h.status', 5 => 'detail_count'];
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        // Filter status tab: waiting (default), released, all
+        // Filter status tab: waiting (default), released, closed, all
         $status_filter = $this->input->get_post('status_filter', TRUE);
-        if (!in_array($status_filter, ['waiting', 'released', 'all'])) {
+        if (!in_array($status_filter, ['waiting', 'released', 'closed', 'all'])) {
             $status_filter = 'waiting';
         }
 
@@ -324,7 +324,17 @@ class Spk_material extends Admin_Controller
                 'Cancelled'          => 'bg-danger'
             ];
             $badge_class = isset($status_badges[$row['status']]) ? $status_badges[$row['status']] : 'bg-secondary';
-            $status_html = "<span class='badge rounded-pill {$badge_class}'>" . htmlspecialchars($row['status']) . "</span>";
+
+            $pr_badge = '';
+            if (isset($row['pr_status_draft']) && $row['pr_status_draft'] !== null) {
+                if ((int) $row['pr_status_draft'] === 0) {
+                    $pr_badge = '<div class="mt-1"><span class="badge bg-dark border border-secondary text-white" title="Laporan Produksi Selesai (Final)"><i class="fa fa-check-circle text-success me-1"></i>PR Closed</span></div>';
+                } elseif ((int) $row['pr_status_draft'] === 1) {
+                    $pr_badge = '<div class="mt-1"><span class="badge bg-warning text-dark border border-secondary" title="Laporan Produksi Draft (Sedang Berjalan)"><i class="fa fa-cogs me-1"></i>PR In Progress</span></div>';
+                }
+            }
+
+            $status_html = "<span class='badge rounded-pill {$badge_class}'>" . htmlspecialchars($row['status']) . "</span>" . $pr_badge;
 
             // Action buttons — escape spk_no untuk URL dan display
             $safe_spk_no    = rawurlencode($row['spk_no']);
