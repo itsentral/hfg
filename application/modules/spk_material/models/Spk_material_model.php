@@ -435,15 +435,25 @@ class Spk_material_model extends BF_Model
     public function get_status_counts()
     {
         $sql = "SELECT
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
-                    SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) as released_count,
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
-                FROM tr_spk_material_header";
+                    SUM(CASE WHEN h.status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
+                    SUM(CASE WHEN h.status = 'Released' AND NOT EXISTS (
+                        SELECT 1 FROM production_reports pr
+                        JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                        WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+                    ) THEN 1 ELSE 0 END) as released_count,
+                    SUM(CASE WHEN h.status = 'Released' AND EXISTS (
+                        SELECT 1 FROM production_reports pr
+                        JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                        WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+                    ) THEN 1 ELSE 0 END) as closed_count,
+                    SUM(CASE WHEN h.status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
+                FROM tr_spk_material_header h";
         $row = $this->db->query($sql)->row_array();
 
         return [
             'waiting'  => (int) (isset($row['waiting_count']) ? $row['waiting_count'] : 0),
             'released' => (int) (isset($row['released_count']) ? $row['released_count'] : 0),
+            'closed'   => (int) (isset($row['closed_count']) ? $row['closed_count'] : 0),
             'all'      => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
         ];
     }
@@ -463,12 +473,29 @@ class Spk_material_model extends BF_Model
     {
         $this->db->select("
             h.*,
-            (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count
+            (SELECT COUNT(*) FROM tr_spk_material_detail d WHERE d.spk_no = h.spk_no) as detail_count,
+            (SELECT pr.status_draft
+             FROM production_reports pr
+             JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+             WHERE d2.spk_no = h.spk_no AND pr.created_at >= h.created_at
+             ORDER BY pr.id DESC LIMIT 1) as pr_status_draft
         ", false);
         $this->db->from('tr_spk_material_header h');
 
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
+            $this->db->where("NOT EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
+        } elseif ($status_filter === 'closed') {
+            $this->db->where('h.status', 'Released');
+            $this->db->where("EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
         } elseif ($status_filter === 'all') {
             $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
         } else {
@@ -503,6 +530,18 @@ class Spk_material_model extends BF_Model
 
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
+            $this->db->where("NOT EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
+        } elseif ($status_filter === 'closed') {
+            $this->db->where('h.status', 'Released');
+            $this->db->where("EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
         } elseif ($status_filter === 'all') {
             $this->db->where_in('h.status', ['Material Requested', 'Material On Load', 'Material Confirmed', 'Released']);
         } else {

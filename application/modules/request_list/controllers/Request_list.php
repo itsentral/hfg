@@ -66,9 +66,9 @@ class Request_list extends Admin_Controller
         );
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
 
-        // Filter status tab: waiting (default), released, all (sinkron dengan SPK Material)
+        // Filter status tab: waiting (default), released, closed, all (sinkron dengan SPK Material)
         $status_filter = $this->input->get_post('status_filter', TRUE);
-        if (!in_array($status_filter, array('waiting', 'released', 'all'))) {
+        if (!in_array($status_filter, array('waiting', 'released', 'closed', 'all'))) {
             $status_filter = 'waiting';
         }
 
@@ -109,7 +109,17 @@ class Request_list extends Admin_Controller
             $scan_info  = $scan_count > 0
                 ? ' <span class="badge bg-light text-primary border border-primary ms-1" title="Jumlah pack sudah di-scan ke PRT">' . $scan_count . ' Pack PRT</span>'
                 : '';
-            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . htmlspecialchars($display_status) . "</span>" . $scan_info;
+
+            $pr_badge = '';
+            if (isset($row['pr_status_draft']) && $row['pr_status_draft'] !== null) {
+                if ((int) $row['pr_status_draft'] === 0) {
+                    $pr_badge = '<div class="mt-1"><span class="badge bg-dark border border-secondary text-white" title="Laporan Produksi Selesai (Final)"><i class="fa fa-check-circle text-success me-1"></i>PR Closed</span></div>';
+                } elseif ((int) $row['pr_status_draft'] === 1) {
+                    $pr_badge = '<div class="mt-1"><span class="badge bg-warning text-dark border border-secondary" title="Laporan Produksi Draft (Sedang Berjalan)"><i class="fa fa-cogs me-1"></i>PR In Progress</span></div>';
+                }
+            }
+
+            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . htmlspecialchars($display_status) . "</span>" . $scan_info . $pr_badge;
 
             // --- ACTION: Tombol Inline Langsung di Semua Tab ---
             $spk_esc = htmlspecialchars($row['spk_no'], ENT_QUOTES, 'UTF-8');

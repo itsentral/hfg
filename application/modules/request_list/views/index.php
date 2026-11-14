@@ -123,6 +123,11 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-closed" data-status="closed" type="button" role="tab">
+                            Closed Produksi <span class="badge bg-dark ms-1 rounded-pill" id="badge-count-closed">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-all" data-status="all" type="button" role="tab">
                             Semua SPK <span class="badge bg-secondary ms-1 rounded-pill" id="badge-count-all">0</span>
                         </button>
@@ -441,6 +446,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                     if (json.counts) {
                         $('#badge-count-waiting').text(json.counts.waiting || 0);
                         $('#badge-count-released').text(json.counts.released || 0);
+                        $('#badge-count-closed').text(json.counts.closed || 0);
                         $('#badge-count-all').text(json.counts.all || 0);
                     }
                     return json.data;
@@ -683,6 +689,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         if (res.counts) {
                             $('#badge-count-waiting').text(res.counts.waiting || 0);
                             $('#badge-count-released').text(res.counts.released || 0);
+                            $('#badge-count-closed').text(res.counts.closed || 0);
                             $('#badge-count-all').text(res.counts.all || 0);
                         }
                         tableRequestList.ajax.reload(null, false);

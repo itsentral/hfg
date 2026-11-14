@@ -32,12 +32,29 @@ class Request_list_model extends BF_Model
             (SELECT COUNT(DISTINCT COALESCE(wsc.id_pack, ks.id_coil))
              FROM warehouse_coil_kartu_stok ks
              LEFT JOIN warehouse_stock_coil wsc ON wsc.id = ks.id_coil
-             WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') as scanned_pack_count
+             WHERE ks.no_trs = h.spk_no AND ks.status = 'in' AND ks.ke = 'prod. 2') as scanned_pack_count,
+            (SELECT pr.status_draft
+             FROM production_reports pr
+             JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+             WHERE d2.spk_no = h.spk_no AND pr.created_at >= h.created_at
+             ORDER BY pr.id DESC LIMIT 1) as pr_status_draft
         ", false);
         $this->db->from('tr_spk_material_header h');
 
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
+            $this->db->where("NOT EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
+        } elseif ($status_filter === 'closed') {
+            $this->db->where('h.status', 'Released');
+            $this->db->where("EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
         } elseif ($status_filter === 'all') {
             $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed', 'Released'));
         } else {
@@ -63,7 +80,7 @@ class Request_list_model extends BF_Model
      * Count total SPK Material filtered untuk DataTables recordsFiltered
      *
      * @param string $search        Search keyword
-     * @param string $status_filter Filter status tab ('waiting', 'released', 'all')
+     * @param string $status_filter Filter status tab ('waiting', 'released', 'closed', 'all')
      * @return int Total count
      */
     public function count_spk_filtered($search, $status_filter = 'waiting')
@@ -72,6 +89,18 @@ class Request_list_model extends BF_Model
 
         if ($status_filter === 'released') {
             $this->db->where('h.status', 'Released');
+            $this->db->where("NOT EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
+        } elseif ($status_filter === 'closed') {
+            $this->db->where('h.status', 'Released');
+            $this->db->where("EXISTS (
+                SELECT 1 FROM production_reports pr
+                JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+            )", null, false);
         } elseif ($status_filter === 'all') {
             $this->db->where_in('h.status', array('Material Requested', 'Material On Load', 'Material Confirmed', 'Released'));
         } else {
@@ -91,22 +120,32 @@ class Request_list_model extends BF_Model
     }
 
     /**
-     * Hitung jumlah SPK per tab status: waiting, released, all (sinkron dengan SPK Material)
+     * Hitung jumlah SPK per tab status: waiting, released, closed, all (sinkron dengan SPK Material)
      *
      * @return array
      */
     public function get_status_counts()
     {
         $sql = "SELECT
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
-                    SUM(CASE WHEN status = 'Released' THEN 1 ELSE 0 END) as released_count,
-                    SUM(CASE WHEN status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
-                FROM tr_spk_material_header";
+                    SUM(CASE WHEN h.status IN ('Material Requested', 'Material On Load', 'Material Confirmed') THEN 1 ELSE 0 END) as waiting_count,
+                    SUM(CASE WHEN h.status = 'Released' AND NOT EXISTS (
+                        SELECT 1 FROM production_reports pr
+                        JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                        WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+                    ) THEN 1 ELSE 0 END) as released_count,
+                    SUM(CASE WHEN h.status = 'Released' AND EXISTS (
+                        SELECT 1 FROM production_reports pr
+                        JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
+                        WHERE d2.spk_no = h.spk_no AND pr.status_draft = 0 AND pr.created_at >= h.created_at
+                    ) THEN 1 ELSE 0 END) as closed_count,
+                    SUM(CASE WHEN h.status IN ('Material Requested', 'Material On Load', 'Material Confirmed', 'Released') THEN 1 ELSE 0 END) as all_count
+                FROM tr_spk_material_header h";
         $row = $this->db->query($sql)->row_array();
 
         return array(
             'waiting'  => (int) (isset($row['waiting_count']) ? $row['waiting_count'] : 0),
             'released' => (int) (isset($row['released_count']) ? $row['released_count'] : 0),
+            'closed'   => (int) (isset($row['closed_count']) ? $row['closed_count'] : 0),
             'all'      => (int) (isset($row['all_count']) ? $row['all_count'] : 0),
         );
     }
@@ -140,6 +179,7 @@ class Request_list_model extends BF_Model
                   JOIN tr_spk_material_detail d2 ON d2.id = pr.id_tr_spk_detail
                   WHERE d2.spk_no = h.spk_no
                     AND pr.status_draft = 0
+                    AND pr.created_at >= h.created_at
               )
             ORDER BY h.tgl_spk DESC, h.spk_no DESC
         ";
@@ -279,7 +319,8 @@ class Request_list_model extends BF_Model
             "SELECT pr.id
              FROM production_reports pr
              JOIN tr_spk_material_detail d ON d.id = pr.id_tr_spk_detail
-             WHERE d.spk_no = ? AND pr.status_draft = 0
+             JOIN tr_spk_material_header h ON h.spk_no = d.spk_no
+             WHERE d.spk_no = ? AND pr.status_draft = 0 AND pr.created_at >= h.created_at
              LIMIT 1",
             [$spk_no]
         )->row_array();
