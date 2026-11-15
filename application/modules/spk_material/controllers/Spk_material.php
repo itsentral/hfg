@@ -96,7 +96,7 @@ class Spk_material extends Admin_Controller
             redirect('spk_material');
         }
 
-        $spk = $this->Spk_material_model->get_spk($spk_no);
+        $spk = $this->Spk_material_model->get_spk_for_view($spk_no);
 
         if (!$spk) {
             $this->session->set_flashdata('error', 'SPK tidak ditemukan.');

@@ -806,7 +806,10 @@
                 cancelButtonText: "No",
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     url: siteurl + thisController + 'deleteOriginBm',
                     type: "POST",
@@ -877,7 +880,10 @@
                 confirmButtonText: "Yes",
                 cancelButtonText: "No",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     url: siteurl + thisController + 'deleteOriginBm',
                     type: "POST",
@@ -983,7 +989,10 @@
                 confirmButtonText: "Yes, Save it!",
                 cancelButtonText: "No, cancel!",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 var formData = new FormData($('#data-form')[0]);
                 var baseurl = base_url + active_controller + 'save';
                 $.ajax({
@@ -1045,7 +1054,10 @@
                 confirmButtonText: "Ya, Tambahkan!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     url: siteurl + active_controller + 'update_kuota',
                     type: 'POST',

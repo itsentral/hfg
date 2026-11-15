@@ -959,21 +959,17 @@ class Incoming_check_model extends BF_Model
             'rest_data' => $rest_data
         );
 
-        $this->load->library(array('Mpdf'));
-        $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
-        $mpdf->SetImportUse();
-        $mpdf->RestartDocTemplate();
+        $mpdf = new \Mpdf\Mpdf();
         $today = date('l, d F Y [H:i:s]');
         $show = $this->template->load_view('print_tt_material', $data);
-        $this->mpdf->AddPage('L', 'A4', 'en');
         $footer = 'Printed by : ' . ucfirst(strtolower($this->auth->user_name())) . ', ' . $today . ' / ' . $kode_trans . '';
 
         $mpdf->showWatermarkText = true;
         $mpdf->SetTitle($kode_trans . "/" . date('ymdhis'));
-        $mpdf->AddPage();
+        $mpdf->AddPage('L', 'A4');
         $mpdf->SetFooter($footer);
-        $this->mpdf->WriteHTML($show);
-        $this->mpdf->Output('tanda terima rutin ' . $kode_trans . '/' . date('ymdhis') . '.pdf', 'D');
+        $mpdf->WriteHTML($show);
+        $mpdf->Output('tanda terima rutin ' . $kode_trans . '/' . date('ymdhis') . '.pdf', 'D');
         // $this->template->render('print_tt_material', $data);
     }
 

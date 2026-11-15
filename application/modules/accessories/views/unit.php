@@ -99,7 +99,10 @@
             cancelButtonText: "Batal",
             closeOnConfirm: false
         },
-        function(){
+        function(isConfirm){
+            if (!isConfirm) {
+                return;
+            }
             $.ajax({
                 type:'POST',
                 url: siteurl + 'material/hapus_unit',
@@ -148,7 +151,10 @@
             cancelButtonText: "Batal",
             closeOnConfirm: false
         },
-        function(){
+        function(isConfirm){
+            if (!isConfirm) {
+                return;
+            }
             $.ajax({
                 type:'POST',
                 url: siteurl + 'material/add_unit',

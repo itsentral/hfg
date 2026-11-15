@@ -122,7 +122,10 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
                 cancelButtonText: "No",
                 closeOnConfirm: false
             },
-            function() {
+            function(isConfirm) {
+            if (!isConfirm) {
+                return;
+            }
                 $.ajax({
                     type: 'POST',
                     url: siteurl + active_controller + '/add',
@@ -171,7 +174,10 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
             },
-            function() {
+            function(isConfirm) {
+            if (!isConfirm) {
+                return;
+            }
                 $.ajax({
                     type: 'POST',
                     url: siteurl + active_controller + '/delete',

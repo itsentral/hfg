@@ -200,7 +200,10 @@ foreach ($results['inven'] as $inven){
 		  cancelButtonText: "Batal",
 		  closeOnConfirm: false
 		},
-		function(){
+		function(isConfirm){
+			if (!isConfirm) {
+				return;
+			}
 		  $.ajax({
 			  type:'POST',
 			  url:siteurl+'inventory_2/delDetail',

@@ -139,7 +139,10 @@ $ENABLE_DELETE  = has_permission('Master_coating.Delete');
 				confirmButtonText: "Ya, Simpan!",
 				cancelButtonText: "Batal",
 				closeOnConfirm: false
-			}, function() {
+			}, function(isConfirm) {
+				if (!isConfirm) {
+					return;
+				}
 				$.ajax({
 					type: 'POST',
 					url: base_url + active_controller + 'add',
@@ -187,7 +190,10 @@ $ENABLE_DELETE  = has_permission('Master_coating.Delete');
 				confirmButtonText: "Ya, Hapus!",
 				cancelButtonText: "Batal",
 				closeOnConfirm: false
-			}, function() {
+			}, function(isConfirm) {
+				if (!isConfirm) {
+					return;
+				}
 				$.ajax({
 					type: 'POST',
 					url: base_url + active_controller + 'hapus',

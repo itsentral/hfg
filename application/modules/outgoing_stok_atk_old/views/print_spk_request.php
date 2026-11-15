@@ -2,14 +2,7 @@
 
 
 
-if (class_exists('mPDF')) {
-    $mpdf = new mPDF('utf-8', 'A4');
-} elseif (class_exists('\Mpdf\Mpdf')) {
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-} else {
-    require_once FCPATH . 'vendor/autoload.php';
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-}
+$mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
 
 set_time_limit(0);
 ini_set('memory_limit','1024M');

@@ -301,15 +301,25 @@ class Material_master_model extends CI_Model
         }
 
         // 5. Validasi QC Incoming
-        $incoming_check = $this->db->from('tr_incoming_check_detail')
-            ->where('id_material', $code_lv4)
-            ->where('status_action', 'WAITING')
-            ->count_all_results();
-        if ($incoming_check > 0) {
+        // Status ada di header tr_incoming_check: checked 'N' dan belum dibatalkan (deleted_date kosong) = WAITING CONFIRMATION
+        $incoming_check = $this->db->distinct()
+            ->select('h.kode_trans')
+            ->from('tr_incoming_check_detail d')
+            ->join('tr_incoming_check h', 'h.kode_trans = d.kode_trans')
+            ->where('d.id_material', $code_lv4)
+            ->where('h.checked', 'N')
+            ->where('h.deleted_date IS NULL', null, false)
+            ->get()->result_array();
+        if (!empty($incoming_check)) {
+            $docs = array_column($incoming_check, 'kode_trans');
+            $docList = implode(', ', array_slice($docs, 0, 3));
+            if (count($docs) > 3) {
+                $docList .= ' dan ' . (count($docs) - 3) . ' dokumen lainnya';
+            }
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena sedang dalam proses QC / Incoming penerimaan.',
-                'details' => ['incoming_check' => $incoming_check]
+                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena sedang dalam proses QC / Incoming penerimaan (' . $docList . ').',
+                'details' => ['incoming_check' => $docs]
             ];
         }
 

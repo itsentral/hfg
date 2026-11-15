@@ -1,5 +1,5 @@
 <?php
-require_once APPPATH."/third_party/PHPExcel.php"; 
+require_once APPPATH . "libraries/PHPExcel.php";
   
 class Libexcel extends PHPExcel { 
     public function __construct() { 

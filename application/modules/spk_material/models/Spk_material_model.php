@@ -129,6 +129,24 @@ class Spk_material_model extends BF_Model
     }
 
     /**
+     * Get header SPK untuk halaman view, beserta nama pembuat (created_by_name).
+     * Dipisah dari get_spk() agar snapshot log edit tidak ikut berubah.
+     *
+     * @param string $spk_no Nomor SPK
+     * @return array|null
+     */
+    public function get_spk_for_view($spk_no)
+    {
+        return $this->db
+            ->select('h.*, COALESCE(u.nm_lengkap, u.username, h.created_by) AS created_by_name')
+            ->from('tr_spk_material_header h')
+            ->join('users u', 'u.id_user = h.created_by', 'left')
+            ->where('h.spk_no', $spk_no)
+            ->get()
+            ->row_array();
+    }
+
+    /**
      * Get semua detail baris produk untuk SPK tertentu (beserta ketebalan varian BOM)
      *
      * @param string $spk_no Nomor SPK

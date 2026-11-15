@@ -150,7 +150,10 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 			confirmButtonText: "Yes, Approve!",
 			cancelButtonText: "Cancel",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: siteurl + 'purchase_order/Approved',
@@ -183,7 +186,10 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 			confirmButtonText: "Yes!",
 			cancelButtonText: "Cancel",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: base_url + active_controller + 'process_booking',
