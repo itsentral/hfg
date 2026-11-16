@@ -566,7 +566,7 @@ class Production_report_model extends CI_Model
         $header_data['total_cogm']             = $total_cogm_all;
         $header_data['total_inventory_fg']     = $sum_inv_fg;
         $header_data['total_loss_kw2']         = $sum_loss_kw2;
-        $header_data['total_inventory_scrap']  = $sum_inv_scrap;
+        $header_data['wip_sisa_produksi']      = round($sum_inv_sisa, 2);
         $header_data['total_beban_foh_scrap']  = $sum_foh_scrap;
         $header_data['total_inventory_sisa']   = $sum_inv_sisa;
         $header_data['total_inventory_hold']   = $sum_inv_hold;
