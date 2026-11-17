@@ -596,8 +596,8 @@
         <tfoot>
           <tr>
             <td colspan="5" class="text-end fw-bold">Total Scrap &rarr;</td>
-            <td class="num"><?= rp_format((($h['persediaan_waste'] ?? $h['total_inventory_scrap'] ?? 0)) + ($h['total_beban_foh_scrap'] ?? 0)); ?></td>
-            <td class="num text-success"><?= rp_format($h['persediaan_waste'] ?? $h['total_inventory_scrap'] ?? 0); ?></td>
+            <td class="num"><?= rp_format(($h['total_inventory_scrap'] ?? 0) + ($h['total_beban_foh_scrap'] ?? 0)); ?></td>
+            <td class="num text-success"><?= rp_format($h['total_inventory_scrap'] ?? 0); ?></td>
             <td class="num text-danger"><?= rp_format($h['total_beban_foh_scrap'] ?? 0); ?></td>
           </tr>
         </tfoot>
@@ -639,7 +639,7 @@
             <tfoot>
               <tr>
                 <td colspan="2" class="text-end small">Total WIP:</td>
-                <td class="num text-success"><?= rp_format($h['wip_sisa_produksi'] ?? $h['total_inventory_sisa'] ?? 0); ?></td>
+                <td class="num text-success"><?= rp_format($h['total_inventory_sisa'] ?? 0); ?></td>
               </tr>
             </tfoot>
           </table>
@@ -760,7 +760,7 @@
 
           $inv_scrap = isset($h['persediaan_waste']) ? (float)$h['persediaan_waste'] : (float)($h['total_inventory_scrap'] ?? 0);
           $foh_scrap = isset($h['biaya_scrap_60']) ? (float)$h['biaya_scrap_60'] : (float)($h['total_beban_foh_scrap'] ?? 0);
-          $inv_sisa  = isset($h['wip_sisa_produksi']) ? (float)$h['wip_sisa_produksi'] : (isset($h['journal_inventory_sisa']) ? (float)$h['journal_inventory_sisa'] : (float)($h['total_inventory_sisa'] ?? 0));
+          $inv_sisa  = isset($h['journal_inventory_sisa']) ? (float)$h['journal_inventory_sisa'] : (float)($h['total_inventory_sisa'] ?? 0);
 
           // Coil usage per gudang dari header (fallback kalkulasi materials jika kosong)
           $mat_wip = isset($h['wip_manufactur']) ? (float)$h['wip_manufactur'] : 0;
