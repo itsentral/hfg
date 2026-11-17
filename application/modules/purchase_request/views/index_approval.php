@@ -44,7 +44,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 					$nama_user = '';
 					$get_user = $this->db->get_where('users', ['id_user' => $record->booking_by])->row();
-					if (count($get_user) > 0) {
+					if (!empty($get_user)) {
 						$nama_user = $get_user->nm_lengkap;
 					}
 
@@ -52,10 +52,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						<tr>
 							<td class="text-center">' . $no . '</td>
 							<td class="text-center">' . strtoupper('PRODUCTION PLANNING ' . $record->so_number) . '</td>
-							<td class="text-center">' . strtoupper($record->so_number) . '</td>
-							<td class="text-center">' . strtoupper($record->project) . '</td>
-							<td class="text-center">' . ucwords(strtolower($nama_user)) . '</td>
-							<td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
+							<td class="text-center">' . strtoupper((string) $record->so_number) . '</td>
+							<td class="text-center">' . strtoupper((string) $record->project) . '</td>
+							<td class="text-center">' . ucwords(strtolower((string) $nama_user)) . '</td>
+							<td class="text-center">' . date('d-M-Y', strtotime((string) $record->booking_date)) . '</td>
 							<td class="text-center"><span class="badge bg-purple">Waiting Approval</span></td>';
 
 					if ($ENABLE_VIEW || $ENABLE_MANAGE) {

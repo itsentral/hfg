@@ -8,11 +8,11 @@ $nm_gudang   = (!empty($results['nm_gudang'])) ? $results['nm_gudang'] : '-';
         <div class="row g-2 align-items-center">
             <div class="col-md-6 col-12">
                 <span class="text-muted d-block small">Nama Barang:</span>
-                <span class="fw-bold fs-6 text-dark"><i class="fa fa-box text-primary me-1"></i> <?= strtoupper($nm_material) ?></span>
+                <span class="fw-bold fs-6 text-dark"><i class="fa fa-box text-primary me-1"></i> <?= strtoupper((string) $nm_material) ?></span>
             </div>
             <div class="col-md-6 col-12 text-md-end">
                 <span class="text-muted d-block small">Gudang Penyimpanan:</span>
-                <span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1 fs-6"><i class="fa fa-warehouse text-primary me-1"></i> <?= strtoupper($nm_gudang) ?></span>
+                <span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1 fs-6"><i class="fa fa-warehouse text-primary me-1"></i> <?= strtoupper((string) $nm_gudang) ?></span>
             </div>
         </div>
     </div>
@@ -37,27 +37,27 @@ $nm_gudang   = (!empty($results['nm_gudang'])) ? $results['nm_gudang'] : '-';
             if (!empty($results['list_data'])) :
                 foreach ($results['list_data'] as $item) :
                     $badge = 'secondary';
-                    if (stripos($item->jenis_transaksi, 'Incoming') !== false || stripos($item->jenis_transaksi, 'plus') !== false) {
+                    if (stripos((string) $item->jenis_transaksi, 'Incoming') !== false || stripos((string) $item->jenis_transaksi, 'plus') !== false) {
                         $badge = 'success';
-                    } elseif (stripos($item->jenis_transaksi, 'Outgoing') !== false || stripos($item->jenis_transaksi, 'minus') !== false) {
+                    } elseif (stripos((string) $item->jenis_transaksi, 'Outgoing') !== false || stripos((string) $item->jenis_transaksi, 'minus') !== false) {
                         $badge = 'danger';
-                    } elseif (stripos($item->jenis_transaksi, 'Saldo') !== false) {
+                    } elseif (stripos((string) $item->jenis_transaksi, 'Saldo') !== false) {
                         $badge = 'primary';
                     }
             ?>
                 <tr>
-                    <td class="text-center font-monospace"><?= date('d-M-Y', strtotime($item->tgl)) ?></td>
+                    <td class="text-center font-monospace"><?= date('d-M-Y', strtotime((string) $item->tgl)) ?></td>
                     <td class="text-start">
                         <span class="badge bg-<?= $badge ?> bg-opacity-10 text-<?= $badge ?> border border-<?= $badge ?> border-opacity-25 px-2 py-1">
                             <?= $item->jenis_transaksi ?>
                         </span>
                     </td>
-                    <td class="text-end font-monospace fw-semibold"><?= number_format($item->qty_transaksi, 2) ?></td>
-                    <td class="text-end font-monospace"><?= number_format($item->qty, 2) ?></td>
-                    <td class="text-end font-monospace">Rp <?= number_format($item->nilai_beli, 2) ?></td>
-                    <td class="text-end font-monospace fw-bold text-success">Rp <?= number_format($item->costbook, 2) ?></td>
-                    <td class="text-end font-monospace">Rp <?= number_format($item->value_transaksi, 2) ?></td>
-                    <td class="text-end font-monospace fw-bold text-primary">Rp <?= number_format($item->value_neraca, 2) ?></td>
+                    <td class="text-end font-monospace fw-semibold"><?= number_format((float) $item->qty_transaksi, 2) ?></td>
+                    <td class="text-end font-monospace"><?= number_format((float) $item->qty, 2) ?></td>
+                    <td class="text-end font-monospace">Rp <?= number_format((float) $item->nilai_beli, 2) ?></td>
+                    <td class="text-end font-monospace fw-bold text-success">Rp <?= number_format((float) $item->costbook, 2) ?></td>
+                    <td class="text-end font-monospace">Rp <?= number_format((float) $item->value_transaksi, 2) ?></td>
+                    <td class="text-end font-monospace fw-bold text-primary">Rp <?= number_format((float) $item->value_neraca, 2) ?></td>
                 </tr>
             <?php 
                 endforeach;

@@ -38,7 +38,7 @@
                 foreach($result AS $val => $valx){
                     $No++;
 
-                    $cek_type = substr($no_po,0,3);
+                    $cek_type = substr((string) $no_po,0,3);
 
                     
                     if($cek_type == 'NPO'){
@@ -61,10 +61,10 @@
                             <input type='hidden' name='addInMat[$No][id]' value='".$valx['id']."'>
                             <input type='hidden' name='addInMat[$No][qty_rev]' value='".$qty."'>
                         </td>";
-                        echo "<td>".strtoupper($dept)."</td>";
-                        echo "<td>".strtoupper($valx['nm_barang'])."</td>";
-                        echo "<td align='center'>".number_format($qty)."</td>";
-                        echo "<td align='center'>".strtoupper($satuan)."</td>";
+                        echo "<td>".strtoupper((string) $dept)."</td>";
+                        echo "<td>".strtoupper((string) $valx['nm_barang'])."</td>";
+                        echo "<td align='center'>".number_format((float) $qty)."</td>";
+                        echo "<td align='center'>".strtoupper((string) $satuan)."</td>";
                     echo "	<td>
                                 <select name='addInMat[$No][status]' class='form-control input-md chosen_select'>
                                     <option value='1'>YES</option>

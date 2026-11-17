@@ -88,7 +88,7 @@ class Production_report extends Admin_Controller
         if (!$spk_header) {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'danger',
-                'message' => 'Data SPK ' . htmlspecialchars($spk_no) . ' tidak valid atau tidak ditemukan.'
+                'message' => 'Data SPK ' . htmlspecialchars((string) $spk_no) . ' tidak valid atau tidak ditemukan.'
             ]);
             redirect('production_report');
             return;
@@ -97,7 +97,7 @@ class Production_report extends Admin_Controller
         if ($spk_header['status'] !== 'Released') {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'warning',
-                'message' => 'SPK ' . htmlspecialchars($spk_no) . ' masih berstatus "' . htmlspecialchars($spk_header['status']) . '". Ubah status SPK menjadi Released di modul Request List terlebih dahulu.'
+                'message' => 'SPK ' . htmlspecialchars((string) $spk_no) . ' masih berstatus "' . htmlspecialchars((string) $spk_header['status']) . '". Ubah status SPK menjadi Released di modul Request List terlebih dahulu.'
             ]);
             redirect('production_report');
             return;
@@ -192,7 +192,7 @@ class Production_report extends Admin_Controller
         $this->auth->restrict($this->addPermission);
 
         $json = file_get_contents('php://input');
-        $payload = json_decode($json, true);
+        $payload = json_decode((string) $json, true);
 
         if (empty($payload)) {
             $payload = $this->input->post();

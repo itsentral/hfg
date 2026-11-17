@@ -66,13 +66,13 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 								<td><?= $record->nama ?></td>
 								<td class="exclass"><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
-								<td class="exclass"><?= ucfirst($tipe) ?></td>
+								<td class="exclass"><?= ucfirst((string) $tipe) ?></td>
 								<td>Bank : <?= $record->bank_id ?><br />
 									Nomor : <?= $record->accnumber ?><br />
 									Nama : <?= $record->accname ?><br /></td>
 								<td><?= $record->currency ?></td>
 								<td><?= $record->bank_name ?></td>
-								<td><?= number_format($record->jumlah) ?></td>
+								<td><?= number_format((float) $record->jumlah) ?></td>
 								<td class="exclass"><?= $record->tanggal ?></td>
 								<?php if ($ENABLE_MANAGE) : ?>
 									<td class="exclass">

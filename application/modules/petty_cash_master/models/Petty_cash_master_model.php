@@ -114,7 +114,7 @@ class Petty_cash_master_model extends BF_Model
                 'no'           => $no++,
                 'nama'         => $row->nama,
                 'keterangan'   => $row->keterangan,
-                'total_budget' => number_format($row->total_budget, 0, ',', '.'),
+                'total_budget' => number_format((float) $row->total_budget, 0, ',', '.'),
                 'id'           => $row->id
             ];
         }

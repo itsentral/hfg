@@ -37,7 +37,7 @@ $bank_account  = (!empty($header[0]->bank_account)) ? $header[0]->bank_account :
 		<label class="form-label">Country</label>
 		<select id="id_country" name="id_country" class="form-select select2" onchange="checkCountry()">
 			<?php foreach ($country as $value): $sel = ($value['iso3'] == $id_country) ? 'selected' : ''; ?>
-				<option value="<?= $value['iso3']; ?>" <?= $sel; ?>><?= strtoupper($value['name']) ?></option>
+				<option value="<?= $value['iso3']; ?>" <?= $sel; ?>><?= strtoupper((string) $value['name']) ?></option>
 			<?php endforeach; ?>
 		</select>
 	</div>

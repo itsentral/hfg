@@ -282,8 +282,8 @@ class Expense_model extends BF_Model
 
 	public function Update_budget($coa, $tgl, $nilai, $divisi, $nilai_pr = 0)
 	{
-		$bulan = date("n", strtotime($tgl));
-		$tahun = date("Y", strtotime($tgl));
+		$bulan = date("n", strtotime((string) $tgl));
+		$tahun = date("Y", strtotime((string) $tgl));
 
 		$this->db->select('a.*');
 		$this->db->from('ms_coa_budget a');
@@ -402,12 +402,12 @@ class Expense_model extends BF_Model
 			$hasil[] = [
 				'no' => $no,
 				'id_pengajuan' => $item->no_doc,
-				'tanggal' => date('d F Y', strtotime($item->tgl_doc)),
+				'tanggal' => date('d F Y', strtotime((string) $item->tgl_doc)),
 				'nama' => $item->nama,
 				'departement' => (!empty($item->nm_dept) ? $item->nm_dept : $item->departement),
 				'keperluan' => $item->keperluan,
 				'no_polisi' => $item->nopol,
-				'total' => 'Rp ' . number_format($item->ttl_transport, 0, ',', '.'),
+				'total' => 'Rp ' . number_format((float) $item->ttl_transport, 0, ',', '.'),
 				'status' => $status,
 				'action' => $action
 			];
@@ -479,10 +479,10 @@ class Expense_model extends BF_Model
 
 			$hasil[] = [
 				'no'           => $no,
-				'no_transport' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item->no_doc) . '</span>',
-				'tanggal'      => date('d F Y', strtotime($item->tgl_doc)),
-				'nama'         => htmlspecialchars($nama_karyawan),
-				'total'        => '<span class="fw-bold text-end d-block">Rp ' . number_format($item->jumlah_expense, 0, ',', '.') . '</span>',
+				'no_transport' => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $item->no_doc) . '</span>',
+				'tanggal'      => date('d F Y', strtotime((string) $item->tgl_doc)),
+				'nama'         => htmlspecialchars((string) $nama_karyawan),
+				'total'        => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $item->jumlah_expense, 0, ',', '.') . '</span>',
 				'status'       => $status,
 				'action'       => $action,
 			];
@@ -578,11 +578,11 @@ class Expense_model extends BF_Model
 
 			$hasil[] = [
 				'no' => $no,
-				'no_transport' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item->no_doc) . '</span>',
-				'tanggal' => date('d M Y', strtotime($item->tgl_doc)),
+				'no_transport' => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $item->no_doc) . '</span>',
+				'tanggal' => date('d M Y', strtotime((string) $item->tgl_doc)),
 				'nama' => htmlspecialchars($item->nama ? $item->nama : $item->nmuser),
 				'department' => htmlspecialchars($item->nm_dept ? $item->nm_dept : '-'),
-				'total' => '<span class="fw-bold">Rp ' . number_format($item->jumlah_expense, 0, ',', '.') . '</span>',
+				'total' => '<span class="fw-bold">Rp ' . number_format((float) $item->jumlah_expense, 0, ',', '.') . '</span>',
 				'status' => $status,
 				'action' => $action
 			];
@@ -653,8 +653,8 @@ class Expense_model extends BF_Model
 		foreach ($get_data as $item) {
 			$no++;
 
-			$tgl_doc = ($item->tgl_doc && $item->tgl_doc !== '0000-00-00') ? date('d M Y', strtotime($item->tgl_doc)) : '-';
-			$approval_date = ($item->approved_on !== null && $item->approved_on !== '0000-00-00 00:00:00') ? date('d M Y H:i', strtotime($item->approved_on)) : '-';
+			$tgl_doc = ($item->tgl_doc && $item->tgl_doc !== '0000-00-00') ? date('d M Y', strtotime((string) $item->tgl_doc)) : '-';
+			$approval_date = ($item->approved_on !== null && $item->approved_on !== '0000-00-00 00:00:00') ? date('d M Y H:i', strtotime((string) $item->approved_on)) : '-';
 
 			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Baru</span>';
 			if ($item->status == '1') {
@@ -677,12 +677,12 @@ class Expense_model extends BF_Model
 
 			$hasil[] = [
 				'no'              => $no,
-				'no_doc'          => '<span class="fw-semibold text-primary">' . htmlspecialchars($item->no_doc) . '</span>',
+				'no_doc'          => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $item->no_doc) . '</span>',
 				'tanggal'         => $tgl_doc,
 				'nama'            => htmlspecialchars($item->nama ? $item->nama : $item->created_by),
 				'department'      => htmlspecialchars($item->nm_dept ? $item->nm_dept : '-'),
 				'approval_date'   => $approval_date,
-				'total_transport' => '<span class="fw-bold">Rp ' . number_format($item->jumlah_expense, 0, ',', '.') . '</span>',
+				'total_transport' => '<span class="fw-bold">Rp ' . number_format((float) $item->jumlah_expense, 0, ',', '.') . '</span>',
 				'status'          => $status,
 				'action'          => $action
 			];
@@ -716,7 +716,7 @@ class Expense_model extends BF_Model
 		if (!empty($query->coa)) {
 			$this->db->select('a.no_perkiraan, a.nama');
 			$this->db->from(DBACC . '.coa_master a');
-			$this->db->where_in('a.no_perkiraan', explode(';', $query->coa));
+			$this->db->where_in('a.no_perkiraan', explode(';', (string) $query->coa));
 			$this->db->order_by('a.no_perkiraan', 'asc');
 			$result = $this->db->get()->result_array();
 			return $result;
@@ -749,7 +749,7 @@ class Expense_model extends BF_Model
 		if (!empty($get_kelompok_coa) && !empty($get_kelompok_coa->coa)) {
 			$this->db->select('a.no_perkiraan as no_coa, a.nama as nm_coa');
 			$this->db->from(DBACC . '.coa_master a');
-			$this->db->where_in('a.no_perkiraan', explode(';', $get_kelompok_coa->coa));
+			$this->db->where_in('a.no_perkiraan', explode(';', (string) $get_kelompok_coa->coa));
 			$this->db->order_by('a.no_perkiraan', 'asc');
 			return $this->db->get()->result();
 		} else {

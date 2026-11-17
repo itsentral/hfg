@@ -73,7 +73,7 @@ class Adjustment_stock extends Admin_Controller
       $srcMtr        = "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRA" . $Ym . "%' ";
       $resultMtr    = $this->db->query($srcMtr)->result_array();
       $angkaUrut2    = $resultMtr[0]['maxP'];
-      $urutan2      = (int)substr($angkaUrut2, 7, 4);
+      $urutan2      = (int)substr((string) $angkaUrut2, 7, 4);
       $urutan2++;
       $urut2        = sprintf('%04s', $urutan2);
       $kode_trans    = "TRA" . $Ym . $urut2;
@@ -87,7 +87,7 @@ class Adjustment_stock extends Admin_Controller
         'adjustment_type'   => $adjustment_type,
         'jumlah_mat'         => $qty_oke,
         'id_gudang_dari'     => ($adjustment_type == 'mutasi') ? $id_gudang_dari_m : NULL,
-        'kd_gudang_dari'     => ($adjustment_type == 'mutasi') ? $kd_gudang_dari_m : 'ADJUSTMENT ' . strtoupper($adjustment_type),
+        'kd_gudang_dari'     => ($adjustment_type == 'mutasi') ? $kd_gudang_dari_m : 'ADJUSTMENT ' . strtoupper((string) $adjustment_type),
         'id_gudang_ke'       => ($adjustment_type == 'mutasi') ? $id_gudang_ke_m : $id_gudang_ke,
         'kd_gudang_ke'       => ($adjustment_type == 'mutasi') ? $kd_gudang_ke_m : $kd_gudang_ke,
         'pic'               => ($adjustment_type == 'mutasi') ? $pic_m : $pic,
@@ -176,7 +176,7 @@ class Adjustment_stock extends Admin_Controller
     $gudang    = $this->uri->segment(4);
     $unit    = $this->uri->segment(5);
 
-    $IMP = explode('_', $unit);
+    $IMP = explode('_', (string) $unit);
     // echo $IMP[1];
 
     if ($gudang == '1') {
@@ -195,8 +195,8 @@ class Adjustment_stock extends Admin_Controller
       $sqlSup    = "SELECT satuan_packing, unit FROM ms_material WHERE code_material ='" . $material . "' ";
       $restSup  = $this->db->query($sqlSup)->result();
 
-      $option  = "<option value='" . $restSup[0]->satuan_packing . "_packing'>" . strtoupper($restSup[0]->satuan_packing) . " (Packing)</option>";
-      $option  .= "<option value='" . $restSup[0]->unit . "_unit'>" . strtoupper($restSup[0]->unit) . " (Unit)</option>";
+      $option  = "<option value='" . $restSup[0]->satuan_packing . "_packing'>" . strtoupper((string) $restSup[0]->satuan_packing) . " (Packing)</option>";
+      $option  .= "<option value='" . $restSup[0]->unit . "_unit'>" . strtoupper((string) $restSup[0]->unit) . " (Unit)</option>";
 
       $tanda = "packing";
     }
@@ -207,7 +207,7 @@ class Adjustment_stock extends Admin_Controller
       $sqlSup    = "SELECT unit FROM ms_material WHERE code_material ='" . $material . "' ";
       $restSup  = $this->db->query($sqlSup)->result();
 
-      $option  = "<option value='" . $restSup[0]->unit . "_unit'>" . strtoupper($restSup[0]->unit) . " (Unit)</option>";
+      $option  = "<option value='" . $restSup[0]->unit . "_unit'>" . strtoupper((string) $restSup[0]->unit) . " (Unit)</option>";
 
       $tanda = "unit";
     }
@@ -247,7 +247,7 @@ class Adjustment_stock extends Admin_Controller
     $option = "<option value='0'>" . $Opt . "</option>";
     if ($gudang <> '0') {
       foreach ($Q_result as $row) {
-        $option .= "<option value='" . $row->id . "'>" . strtoupper($row->nm_gudang) . "</option>";
+        $option .= "<option value='" . $row->id . "'>" . strtoupper((string) $row->nm_gudang) . "</option>";
       }
     }
     echo json_encode(array(
@@ -274,7 +274,7 @@ class Adjustment_stock extends Admin_Controller
     $Q_result  = $this->db->select('a.id_material, b.nama AS nm_material')->order_by('b.nama', 'asc')->join('new_inventory_4 b', 'a.id_material=b.code_lv4', 'inner')->get_where('warehouse_stock a', array('a.id_gudang' => $gudang))->result();
     $option = "<option value='0'>Select Material</option>";
     foreach ($Q_result as $row) {
-      $option .= "<option value='" . $row->id_material . "'>" . strtoupper($row->nm_material) . "</option>";
+      $option .= "<option value='" . $row->id_material . "'>" . strtoupper((string) $row->nm_material) . "</option>";
     }
     echo json_encode(array(
       'option' => $option

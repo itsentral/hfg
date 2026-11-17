@@ -50,7 +50,7 @@ class Menu_generator
 		$html = "<ul class='pc-navbar'>";
 
 		// Dashboard
-		$dashActive = (strpos($this->uri, '/dashboard/') !== FALSE || $this->uri == site_url() || $this->uri == site_url('/')) ? "active" : "";
+		$dashActive = (strpos((string) $this->uri, '/dashboard/') !== FALSE || $this->uri == site_url() || $this->uri == site_url('/')) ? "active" : "";
 		$html .= "
         <li class='pc-item {$dashActive}'>
             <a href='" . site_url() . "' class='pc-link'>
@@ -97,7 +97,7 @@ class Menu_generator
 						}
 
 						$active = "";
-						if (strpos($this->uri, '/' . $link . '/') !== FALSE) {
+						if (strpos((string) $this->uri, '/' . $link . '/') !== FALSE) {
 							$active = "active";
 						}
 
@@ -108,7 +108,7 @@ class Menu_generator
                         <li class='pc-item {$active}'>
                             <a href='{$url}' class='pc-link' {$targetAttr}>
                                 <span class='pc-micon'><i class='{$icon}'></i></span>
-                                <span class='pc-mtext'>" . ucwords($title) . "</span>
+                                <span class='pc-mtext'>" . ucwords((string) $title) . "</span>
                             </a>
                         </li>
                     ";
@@ -122,7 +122,7 @@ class Menu_generator
 				// ============================
 				$parentActive = "";
 				foreach ($submenu as $sub) {
-					if (strpos($this->uri, '/' . $sub->link . '/') !== FALSE) {
+					if (strpos((string) $this->uri, '/' . $sub->link . '/') !== FALSE) {
 						$parentActive = "active pc-trigger"; // pc-trigger = submenu terbuka
 						break;
 					}
@@ -132,7 +132,7 @@ class Menu_generator
                 <li class='pc-item pc-hasmenu {$titleID}head {$parentActive}'>
                     <a href='#!' class='pc-link'>
                         <span class='pc-micon'><i class='{$icon}'></i></span>
-                        <span class='pc-mtext'>" . ucwords($title) . "</span>
+                        <span class='pc-mtext'>" . ucwords((string) $title) . "</span>
                         <span class='pc-arrow'><i data-feather='chevron-right'></i></span>
                     </a>
                     <ul class='pc-submenu'>
@@ -174,7 +174,7 @@ class Menu_generator
 							}
 
 							$active = "";
-							if (strpos($this->uri, '/' . $sublink . '/') !== FALSE) {
+							if (strpos((string) $this->uri, '/' . $sublink . '/') !== FALSE) {
 								$active = "active";
 							}
 
@@ -185,7 +185,7 @@ class Menu_generator
                             <li class='pc-item {$active}'>
                                 <a class='pc-link' href='{$url}' {$targetAttr}>
                                     <span class='pc-micon'><i class='{$subicon}'></i></span>
-                                    <span class='pc-mtext'>" . ucwords($subtitle) . "</span>
+                                    <span class='pc-mtext'>" . ucwords((string) $subtitle) . "</span>
                                 </a>
                             </li>
                         ";
@@ -198,7 +198,7 @@ class Menu_generator
 					// ============================
 					$subParentActive = "";
 					foreach ($submenusub as $subsub) {
-						if (strpos($this->uri, '/' . $subsub->link . '/') !== FALSE) {
+						if (strpos((string) $this->uri, '/' . $subsub->link . '/') !== FALSE) {
 							$subParentActive = "active pc-trigger";
 							break;
 						}
@@ -208,7 +208,7 @@ class Menu_generator
                     <li class='pc-item pc-hasmenu {$subParentActive}'>
                         <a href='#!' class='pc-link'>
                             <span class='pc-micon'><i class='{$subicon}'></i></span>
-                            <span class='pc-mtext'>" . ucwords($subtitle) . "</span>
+                            <span class='pc-mtext'>" . ucwords((string) $subtitle) . "</span>
                             <span class='pc-arrow'><i data-feather='chevron-right'></i></span>
                         </a>
                         <ul class='pc-submenu'>
@@ -221,7 +221,7 @@ class Menu_generator
 						$subiconsub  = $subsub->icon ?: "fa fa-circle-o";
 						$subtargetsub = $subsub->target;
 
-						$active = (strpos($this->uri, '/' . $sublinksub . '/') !== FALSE) ? "active" : "";
+						$active = (strpos((string) $this->uri, '/' . $sublinksub . '/') !== FALSE) ? "active" : "";
 
 						$url = ($sublinksub == '#') ? '#!' : site_url($sublinksub);
 						$targetAttr = ($subtargetsub == '_blank') ? "target='_blank'" : "";
@@ -230,7 +230,7 @@ class Menu_generator
                         <li class='pc-item {$active}'>
                             <a class='pc-link' href='{$url}' {$targetAttr}>
                                 <span class='pc-micon'><i class='{$subiconsub}'></i></span>
-                                <span class='pc-mtext'>" . ucwords($subtitlesub) . "</span>
+                                <span class='pc-mtext'>" . ucwords((string) $subtitlesub) . "</span>
                             </a>
                         </li>
                     ";
@@ -310,16 +310,16 @@ class Menu_generator
 								goto end_for;
 							}
 							$active = "";
-							if (strpos($this->uri, '/' . $link . '/') !== FALSE) {
+							if (strpos((string) $this->uri, '/' . $link . '/') !== FALSE) {
 								$active = "active";
 							}
-							$html .= "<li class='{$active}'><a href='" . ($link == '#' ? '#' : site_url($link)) . "' " . ($target == '_blank' ? "target='_blank'" : "") . "><i class='{$icon}'></i> <span>" . ucwords($title) . "</span></a></li>";
+							$html .= "<li class='{$active}'><a href='" . ($link == '#' ? '#' : site_url($link)) . "' " . ($target == '_blank' ? "target='_blank'" : "") . "><i class='{$icon}'></i> <span>" . ucwords((string) $title) . "</span></a></li>";
 						}
 						goto end_for;
 					}
 					$active = "";
 					foreach ($submenu as $sub) {
-						if (strpos($this->uri, '/' . $sub->link . '/') !== FALSE) {
+						if (strpos((string) $this->uri, '/' . $sub->link . '/') !== FALSE) {
 							$active = "active";
 							break;
 						}
@@ -328,7 +328,7 @@ class Menu_generator
             			  <li class='treeview {$active}'>
                       <a href='#'>
                         <i class='" . $icon . "'></i>
-                        <span>" . ucwords($title) . "</span>
+                        <span>" . ucwords((string) $title) . "</span>
                         <span class='pull-right-container'>
 						            	<i class='fa fa-angle-left pull-right'></i>
 						          	</span>
@@ -349,7 +349,7 @@ class Menu_generator
 
 
 						//Check current link
-						if (strpos($this->uri, '/' . $sublink . '/') !== FALSE) {
+						if (strpos((string) $this->uri, '/' . $sublink . '/') !== FALSE) {
 							$active = "active";
 						} else {
 							$active = "";
@@ -357,7 +357,7 @@ class Menu_generator
 						$html .= "
 						<li class='" . $active . "'>
 							<a href='" . ($sublink == '#' ? '#' : site_url($sublink)) . "'" . " " . $subtarget . ">
-								<i class='" . $subicon . "'></i>" . ucwords($subtitle) . "
+								<i class='" . $subicon . "'></i>" . ucwords((string) $subtitle) . "
 							</a>
 						</li>";
 					}

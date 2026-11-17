@@ -32,7 +32,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                     <option value="0">Semua Product Type</option>
                     <?php
                     foreach (get_list_inventory_lv1('product') as $val => $valx) {
-                        echo "<option value='" . htmlspecialchars($valx['code_lv1']) . "'>" . strtoupper(htmlspecialchars($valx['nama'])) . "</option>";
+                        echo "<option value='" . htmlspecialchars((string) $valx['code_lv1']) . "'>" . strtoupper(htmlspecialchars((string) $valx['nama'])) . "</option>";
                     }
                     ?>
                 </select>
@@ -43,7 +43,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                     <option value="0">Semua Costcenter</option>
                     <?php
                     foreach (get_costcenter() as $val => $valx) {
-                        echo "<option value='" . htmlspecialchars($valx['id_costcenter']) . "'>" . strtoupper(htmlspecialchars($valx['nama_costcenter'])) . "</option>";
+                        echo "<option value='" . htmlspecialchars((string) $valx['id_costcenter']) . "'>" . strtoupper(htmlspecialchars((string) $valx['nama_costcenter'])) . "</option>";
                     }
                     ?>
                 </select>

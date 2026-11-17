@@ -61,10 +61,10 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                                 <td class="text-center text-muted small"><?= $numb ?></td>
                                 <td class="small text-nowrap">
                                     <i class="fa fa-calendar-alt text-muted me-1"></i>
-                                    <?= date('d M Y', strtotime($record->tanggal)) ?>
+                                    <?= date('d M Y', strtotime((string) $record->tanggal)) ?>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-dark"><?= strtoupper($record->nm_dept) ?></div>
+                                    <div class="fw-bold text-dark"><?= strtoupper((string) $record->nm_dept) ?></div>
                                     <div class="text-muted small font-monospace"><?= $record->code_budget ?></div>
                                 </td>
                                 <td class="text-center">

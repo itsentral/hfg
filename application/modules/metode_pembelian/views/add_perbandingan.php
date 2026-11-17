@@ -66,7 +66,7 @@ $this->load->view('include/side_menu');
 			</div>
 			<div class='form-group row'>		 	 
 				<div class='col-sm-6'>
-					<textarea id='alamat_<?=$no;?>' class='form-control input-md' name='Header[<?=$no;?>][alamat]' rows='3' placeholder='Supplier Address'><?=strtoupper($alamatSUP);?></textarea>
+					<textarea id='alamat_<?=$no;?>' class='form-control input-md' name='Header[<?=$no;?>][alamat]' rows='3' placeholder='Supplier Address'><?=strtoupper((string) $alamatSUP);?></textarea>
 					<input type='hidden' name='Header[<?=$no;?>][id]' class='form-control input-sm' value='<?=$valx['id'];?>'>
 				</div>
 				<div class='col-sm-1' hidden><label>Kurs</label></div>
@@ -95,27 +95,27 @@ $this->load->view('include/side_menu');
 						$SUM_HARGA = 0;
 						foreach($res AS $val2 => $valx2){ $no2++;
 							echo "<tr>";
-								echo "<td>".strtoupper($valx2['nm_barang'])."</td>";
+								echo "<td>".strtoupper((string) $valx2['nm_barang'])."</td>";
 								echo "<td class='mid' align='right'><input type='text' name='Detail[".$no."][detail][".$no2."][price_ref_sup]' class='form-control text-right input-md autoNumeric2 price_sub_".$no." changeKurs' value='".$valx2['price_ref_sup']."' data-no='".$no."'></td>";
 								echo "<td class='mid' align='center'><input type='text' name='Detail[".$no."][detail][".$no2."][qty]' class='form-control text-right input-md autoNumeric2 qty_pr changeKurs' value='".$valx2['qty']."'  data-no='".$no."'></td>";
 								// echo "<td class='mid qty_pr' align='center'>".number_format($valx2['qty'],2)."</td>";
-								echo "<td class='mid' align='center'><input type='text' name='Detail[".$no."][detail][".$no2."][moq]' class='form-control text-center input-md maskM' value='".number_format($valx2['moq'])."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+								echo "<td class='mid' align='center'><input type='text' name='Detail[".$no."][detail][".$no2."][moq]' class='form-control text-center input-md maskM' value='".number_format((float) $valx2['moq'])."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 								echo "<td class='mid' align='center'>
-										<input type='text' name='Detail[".$no."][detail][".$no2."][lead_time]' class='form-control text-center input-md maskM' value='".number_format($valx2['lead_time'])."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''>
+										<input type='text' name='Detail[".$no."][detail][".$no2."][lead_time]' class='form-control text-center input-md maskM' value='".number_format((float) $valx2['lead_time'])."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''>
 										<input type='hidden' name='Detail[".$no."][detail][".$no2."][id]' class='form-control input-sm' value='".$valx2['id']."'>
-										<input type='hidden' name='Detail[".$no."][detail][".$no2."][price_ref]' class='form-control input-sm' value='".number_format($valx2['price_ref'],2)."'>
+										<input type='hidden' name='Detail[".$no."][detail][".$no2."][price_ref]' class='form-control input-sm' value='".number_format((float) $valx2['price_ref'],2)."'>
 										<input type='hidden' name='Detail[".$no."][detail][".$no2."][tgl_dibutuhkan]' class='form-control input-sm' value='".$valx2['tgl_dibutuhkan']."'>
-										<input type='hidden' name='Detail[".$no."][detail][".$no2."][top]' class='form-control text-left input-sm' value='".strtoupper($valx2['top'])."'>
-										<input type='hidden' name='Detail[".$no."][detail][".$no2."][keterangan]' class='form-control text-left input-sm' value='".strtoupper($valx2['keterangan'])."'>
+										<input type='hidden' name='Detail[".$no."][detail][".$no2."][top]' class='form-control text-left input-sm' value='".strtoupper((string) $valx2['top'])."'>
+										<input type='hidden' name='Detail[".$no."][detail][".$no2."][keterangan]' class='form-control text-left input-sm' value='".strtoupper((string) $valx2['keterangan'])."'>
 										<input type='hidden' name='Detail[".$no."][detail][".$no2."][harga_idr]' class='form-control text-right input-md autoNumeric2 harga_idr' readonly value='".$valx2['harga_idr']."'>
 										</td>";
-								echo "<td class='mid' align='center'>".date('d-M-Y', strtotime($valx2['tgl_dibutuhkan']))."</td>";
+								echo "<td class='mid' align='center'>".date('d-M-Y', strtotime((string) $valx2['tgl_dibutuhkan']))."</td>";
 								echo "<td class='mid' align='right'><input type='text' name='Detail[".$no."][detail][".$no2."][total_harga]' class='form-control text-right input-md autoNumeric2 tot_harga_idr' value='".$valx2['total_harga']."'readonly></td>";
 							echo "</tr>";
 							$SUM_HARGA += $valx2['total_harga'];
 						}
 						echo "<tr>";
-							echo "<td colspan='5'><textarea id='keterangan_".$no."' class='form-control input-md' name='Header[".$no."][keterangan]' rows='2' placeholder='Deskripsi singkat tentang product/jasa dari supplier.'>".strtoupper($keterangan)."</textarea></td>";
+							echo "<td colspan='5'><textarea id='keterangan_".$no."' class='form-control input-md' name='Header[".$no."][keterangan]' rows='2' placeholder='Deskripsi singkat tentang product/jasa dari supplier.'>".strtoupper((string) $keterangan)."</textarea></td>";
 							echo "<td class='text-right text-bold mid'>TOTAL PRICE</td>";
 							echo "<td class='mid' align='right'><input type='text' class='form-control text-right input-md autoNumeric2 sum_harga_idr_".$no."' value='".$SUM_HARGA."' readonly></td>";
 						echo "</tr>";

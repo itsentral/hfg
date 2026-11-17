@@ -20,7 +20,7 @@ $nama     = (!empty($listData[0]->nama)) ? $listData[0]->nama : '';
 			<?php
 			foreach ($listLevel1 as $key => $value) {
 				$selected = ($code_lv1 == $value['code_lv1']) ? 'selected' : '';
-				echo "<option value='" . $value['code_lv1'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
+				echo "<option value='" . $value['code_lv1'] . "' " . $selected . ">" . strtoupper((string) $value['nama']) . "</option>";
 			}
 			?>
 		</select>

@@ -38,7 +38,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 						<?php
 						foreach ($list_cab as $val => $valx) {
 							$sexd	= ($valx['id_branch'] == $kdcab) ? 'selected' : '';
-							echo "<option value='" . $valx['id_branch'] . "' " . $sexd . ">" . strtoupper($valx['nm_alias']) . "</option>";
+							echo "<option value='" . $valx['id_branch'] . "' " . $sexd . ">" . strtoupper((string) $valx['nm_alias']) . "</option>";
 						}
 						?>
 					</select>
@@ -52,7 +52,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 						<?php
 						foreach ($list_pajak as $val => $valx) {
 							$sexd	= ($valx['id'] == $category_pajak) ? 'selected' : '';
-							echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper($valx['nm_category']) . "</option>";
+							echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper((string) $valx['nm_category']) . "</option>";
 						}
 						?>
 					</select>
@@ -66,7 +66,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 						<?php
 						foreach ($list_catg as $val => $valx) {
 							$sexd	= ($valx['id'] == $category) ? 'selected' : '';
-							echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper($valx['nm_category']) . "</option>";
+							echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper((string) $valx['nm_category']) . "</option>";
 						}
 						?>
 					</select>
@@ -102,7 +102,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 						foreach ($list_dept as $val => $valx) {
 							if ($valx['deleted'] == 'N') {
 								$sexd	= ($valx['id'] == $id_dept) ? 'selected' : '';
-								echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper($valx['nm_dept']) . "</option>";
+								echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper((string) $valx['nm_dept']) . "</option>";
 							}
 						}
 						?>
@@ -125,7 +125,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 							foreach ($list_dept as $val => $valx) {
 								// $sexd	= ($valx['nm_dept'] == 'UMUM')?'selected':'';
 								$sexd	= "";
-								echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper($valx['nm_dept']) . "</option>";
+								echo "<option value='" . $valx['id'] . "' " . $sexd . ">" . strtoupper((string) $valx['nm_dept']) . "</option>";
 							}
 							?>
 						</select>

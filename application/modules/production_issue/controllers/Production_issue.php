@@ -195,7 +195,7 @@ class Production_issue extends Admin_Controller
                 $row->tgl_spk,
                 $row->plan_no,
                 $row->nm_produk_fg,
-                number_format($row->target_qty, 2),
+                number_format((float) $row->target_qty, 2),
                 $status_badge,
                 $btn_view . $btn_release . $btn_scan,
             ];

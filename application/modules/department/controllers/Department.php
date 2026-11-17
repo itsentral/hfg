@@ -91,7 +91,7 @@ class Department extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Department', $label, 'Gagal ' . strtolower($label) . ' department: ' . $nama, $logPayload, null, 0);
+        write_log('Department', $label, 'Gagal ' . strtolower((string) $label) . ' department: ' . $nama, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(

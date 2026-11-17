@@ -30,11 +30,11 @@ class Spk_material_model extends BF_Model
 
         $next_counter = 1;
         if ($last) {
-            $parts = explode('-', $last->spk_no);
+            $parts = explode('-', (string) $last->spk_no);
             $next_counter = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($next_counter, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_counter, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -58,11 +58,11 @@ class Spk_material_model extends BF_Model
 
         $next_counter = 1;
         if ($last) {
-            $parts = explode('-', $last->spk_no);
+            $parts = explode('-', (string) $last->spk_no);
             $next_counter = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($next_counter, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_counter, 4, '0', STR_PAD_LEFT);
     }
 
     // ---------------------------------------------------------------

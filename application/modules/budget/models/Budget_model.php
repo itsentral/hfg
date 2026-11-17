@@ -58,7 +58,7 @@ class Budget_model extends BF_Model
                 $color  = 'danger';
             }
 
-            $badge = "<span class='badge bg-" . $color . "'>" . strtoupper($status) . "</span>";
+            $badge = "<span class='badge bg-" . $color . "'>" . strtoupper((string) $status) . "</span>";
 
             $view    = "<a href='" . site_url('budget/view_asset/' . $row['code_plan']) . "' class='btn btn-sm btn-warning' title='View Data'><i class='fa fa-eye'></i></a>";
             $edit    = "";
@@ -84,13 +84,13 @@ class Budget_model extends BF_Model
             $nestedData   = array();
             $nestedData[] = "<div align='center'>" . $nomor . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper($row['coa'] . ' | ' . $row['nama_coa']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_costcenter']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nama_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_costcenter']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nama_asset']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['qty'] . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['budget']) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['budget_pr']) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['budget_po']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['budget']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['budget_pr']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['budget_po']) . "</div>";
             $nestedData[] = "<div align='center'>" . date('F Y', strtotime($row['tahun'] . '-' . sprintf('%02d', $row['bulan']) . '-01')) . "</div>";
             $nestedData[] = "<div align='center'>" . $badge . "</div>";
             $nestedData[] = "<div align='center' class='btn-group'>" . $view . $edit . $delete . $approve . "</div>";

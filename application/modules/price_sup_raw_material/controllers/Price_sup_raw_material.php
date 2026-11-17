@@ -180,7 +180,7 @@ class Price_sup_raw_material extends Admin_Controller
       $Arr_Data  = array(
         'pesan'    => 'Save gagal disimpan ...',
         'status'  => 0,
-        'kurs'    => number_format($nominal_kurs)
+        'kurs'    => number_format((float) $nominal_kurs)
       );
       write_log('Price Sup Raw Material', 'Update Kurs', 'Gagal update kurs material ID: ' . $id, $ArrHeader, null, 0);
     } else {
@@ -188,9 +188,9 @@ class Price_sup_raw_material extends Admin_Controller
       $Arr_Data  = array(
         'pesan'    => 'Kurs berhasil di update ...',
         'status'  => 1,
-        'kurs'    => number_format($nominal_kurs)
+        'kurs'    => number_format((float) $nominal_kurs)
       );
-      write_log('Price Sup Raw Material', 'Update Kurs', 'Update kurs material ID: ' . $id . ' ke ' . number_format($nominal_kurs), $ArrHeader, null, 1);
+      write_log('Price Sup Raw Material', 'Update Kurs', 'Update kurs material ID: ' . $id . ' ke ' . number_format((float) $nominal_kurs), $ArrHeader, null, 1);
     }
 
     echo json_encode($Arr_Data);
@@ -293,7 +293,7 @@ class Price_sup_raw_material extends Admin_Controller
 
         $tgl_create   = $record->price_ref_new_date;
         $max_exp     = $record->price_ref_new_expired;
-        $tgl_expired   = date('Y-m-d', strtotime('+' . $max_exp . ' month', strtotime($tgl_create)));
+        $tgl_expired   = date('Y-m-d', strtotime('+' . $max_exp . ' month', strtotime((string) $tgl_create)));
         $date_now    = date('Y-m-d');
 
         $status = 'Not Set';
@@ -303,8 +303,8 @@ class Price_sup_raw_material extends Admin_Controller
         $expired = '-';
         $expired_new = '-';
         if (!empty($record->price_ref_date)) {
-          $price_ref_date   = date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime($record->price_ref_date)));
-          $expired = date('d-M-Y', strtotime($price_ref_date));
+          $price_ref_date   = date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime((string) $record->price_ref_date)));
+          $expired = date('d-M-Y', strtotime((string) $price_ref_date));
           if ($date_now > $price_ref_date) {
             $status = 'Expired';
             $status_ = 'red';
@@ -314,7 +314,7 @@ class Price_sup_raw_material extends Admin_Controller
           }
         }
         if ($record->status_app == 'Y') {
-          $expired_new = date('d-M-Y', strtotime($tgl_expired));
+          $expired_new = date('d-M-Y', strtotime((string) $tgl_expired));
           $status2 = 'Waiting Approve';
           $status2_ = 'purple';
         }

@@ -361,13 +361,13 @@
                 <td>
                   <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong> <?= ($it['category_type'] === 'stok_bebas') ? '<span class="badge bg-warning text-dark small ms-1">Bebas</span>' : ''; ?>
                   <?php if (!empty($it['no_uniq_id'])): ?>
-                    <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                    <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars((string) $it['no_uniq_id']); ?></span>
                   <?php endif; ?>
                 </td>
                 <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                 <td class="num"><?= kg_format($it['berat_total']); ?></td>
                 <td class="num"><?= kg_format($it['berat_per_pcs']); ?></td>
-                <td class="num fw-bold"><?= number_format($it['qty']); ?></td>
+                <td class="num fw-bold"><?= number_format((float) $it['qty']); ?></td>
                 <td class="num"><?= rp_format($it['costbook_rate']); ?></td>
                 <td class="num"><?= rp_format($it['material_cost_per_pcs']); ?></td>
                 <td class="num"><?= rp_format($it['main_power_cost_per_pcs']); ?></td>
@@ -453,12 +453,12 @@
                   <td>
                     <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong>
                     <?php if (!empty($it['no_uniq_id'])): ?>
-                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars((string) $it['no_uniq_id']); ?></span>
                     <?php endif; ?>
                   </td>
                   <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                   <td class="num"><?= kg_format($it['berat_total']); ?></td>
-                  <td class="num"><?= number_format($it['qty']); ?></td>
+                  <td class="num"><?= number_format((float) $it['qty']); ?></td>
                   <td class="num"><?= rp_format($it['costbook_rate']); ?></td>
                   <td class="num"><?= rp_format($it['material_cost_total']); ?></td>
                   <td class="num"><?= rp_format($it['main_power_cost_total']); ?></td>
@@ -516,12 +516,12 @@
                   <td>
                     <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong>
                     <?php if (!empty($it['no_uniq_id'])): ?>
-                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars($it['no_uniq_id']); ?></span>
+                      <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars((string) $it['no_uniq_id']); ?></span>
                     <?php endif; ?>
                   </td>
                   <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
                   <td class="num"><?= kg_format($it['berat_total']); ?></td>
-                  <td class="num"><?= number_format($it['qty']); ?></td>
+                  <td class="num"><?= number_format((float) $it['qty']); ?></td>
                   <td class="num"><?= rp_format($it['costbook_rate']); ?></td>
                   <td class="num"><?= rp_format($it['material_cost_total']); ?></td>
                   <td class="num"><?= rp_format($it['main_power_cost_total']); ?></td>
@@ -618,7 +618,7 @@
               <?php else: ?>
                 <?php foreach ($sisa_scraps as $s): ?>
                   <tr>
-                    <td><small><?= htmlspecialchars($s['target_coil_code']); ?></small></td>
+                    <td><small><?= htmlspecialchars((string) $s['target_coil_code']); ?></small></td>
                     <td class="num"><?= kg_format($s['berat_total']); ?></td>
                     <td class="num fw-bold text-success"><?= rp_format($s['total_nilai']); ?></td>
                   </tr>
@@ -658,7 +658,7 @@
               <?php else: ?>
                 <?php foreach ($hold_scraps as $s): ?>
                   <tr>
-                    <td><small><?= htmlspecialchars($s['target_coil_code']); ?></small></td>
+                    <td><small><?= htmlspecialchars((string) $s['target_coil_code']); ?></small></td>
                     <td class="num"><?= kg_format($s['berat_total']); ?></td>
                     <td class="num fw-bold text-primary"><?= rp_format($s['total_nilai']); ?></td>
                   </tr>

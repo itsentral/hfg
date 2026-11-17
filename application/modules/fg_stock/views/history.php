@@ -39,10 +39,10 @@
                     <option value="">-- Semua Produk --</option>
                     <?php if (!empty($produk_dropdown)): ?>
                         <?php foreach ($produk_dropdown as $p): ?>
-                            <option value="<?= htmlspecialchars($p->produk_fg) ?>"
-                                data-kategori="<?= htmlspecialchars($p->kategori_stok) ?>"
+                            <option value="<?= htmlspecialchars((string) $p->produk_fg) ?>"
+                                data-kategori="<?= htmlspecialchars((string) $p->kategori_stok) ?>"
                                 <?= ($produk_fg === $p->produk_fg) ? 'selected' : '' ?>>
-                                [<?= htmlspecialchars(isset($p->kategori_stok) ? $p->kategori_stok : 'KW1') ?>] <?= htmlspecialchars($p->produk_fg) ?> — <?= htmlspecialchars($p->nm_produk_fg ? $p->nm_produk_fg : '-') ?>
+                                [<?= htmlspecialchars(isset($p->kategori_stok) ? $p->kategori_stok : 'KW1') ?>] <?= htmlspecialchars((string) $p->produk_fg) ?> — <?= htmlspecialchars($p->nm_produk_fg ? $p->nm_produk_fg : '-') ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -102,12 +102,12 @@
                         echo isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'Semua Kategori';
                     ?>
                     <?php if (!empty($produk_fg)): ?>
-                        <span class="badge bg-secondary fs-6 ms-2">Produk: <?= htmlspecialchars($produk_fg) ?></span>
+                        <span class="badge bg-secondary fs-6 ms-2">Produk: <?= htmlspecialchars((string) $produk_fg) ?></span>
                     <?php endif; ?>
                 </h5>
             </div>
             <div>
-                <a href="<?= base_url('fg_stock/export_excel_history/' . urlencode($kategori) . '?produk_fg=' . urlencode($produk_fg) . '&tgl_dari=' . urlencode($tgl_dari) . '&tgl_sampai=' . urlencode($tgl_sampai)) ?>"
+                <a href="<?= base_url('fg_stock/export_excel_history/' . urlencode((string) $kategori) . '?produk_fg=' . urlencode((string) $produk_fg) . '&tgl_dari=' . urlencode((string) $tgl_dari) . '&tgl_sampai=' . urlencode((string) $tgl_sampai)) ?>"
                     class="btn btn-success btn-sm">
                     <i class="fa fa-file-excel me-1"></i> Export Excel Riwayat
                 </a>
@@ -157,7 +157,7 @@
             <i class="fa fa-history me-1"></i> Riwayat Mutasi Kartu Stok
             <?php if (!empty($tgl_dari) || !empty($tgl_sampai)): ?>
                 <span class="badge bg-secondary ms-2">
-                    Periode: <?= $tgl_dari ? date('d-m-Y', strtotime($tgl_dari)) : 'Awal' ?> s/d <?= $tgl_sampai ? date('d-m-Y', strtotime($tgl_sampai)) : 'Sekarang' ?>
+                    Periode: <?= $tgl_dari ? date('d-m-Y', strtotime((string) $tgl_dari)) : 'Awal' ?> s/d <?= $tgl_sampai ? date('d-m-Y', strtotime((string) $tgl_sampai)) : 'Sekarang' ?>
                 </span>
             <?php endif; ?>
         </h6>
@@ -197,21 +197,21 @@
                         <?php foreach ($ledger as $i => $row): ?>
                             <tr class="<?= $row->jenis_mutasi === 'IN' ? 'table-success bg-opacity-25' : 'table-danger bg-opacity-25' ?>">
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td class="text-center"><?= date('d-m-Y', strtotime($row->tgl_transaksi)) ?></td>
+                                <td class="text-center"><?= date('d-m-Y', strtotime((string) $row->tgl_transaksi)) ?></td>
                                 <td>
-                                    <strong class="text-primary"><?= htmlspecialchars($row->produk_fg) ?></strong>
+                                    <strong class="text-primary"><?= htmlspecialchars((string) $row->produk_fg) ?></strong>
                                     <small class="d-block text-muted"><?= htmlspecialchars($row->nm_produk_fg ? $row->nm_produk_fg : '-') ?></small>
                                 </td>
                                 <td>
-                                    <strong><?= htmlspecialchars($row->no_referensi) ?></strong>
+                                    <strong><?= htmlspecialchars((string) $row->no_referensi) ?></strong>
                                 </td>
                                 <td>
-                                    <?= $row->spk_no ? '<span class="badge bg-light text-dark border">' . htmlspecialchars($row->spk_no) . '</span>' : '-' ?>
+                                    <?= $row->spk_no ? '<span class="badge bg-light text-dark border">' . htmlspecialchars((string) $row->spk_no) . '</span>' : '-' ?>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-secondary"><?= htmlspecialchars($row->kategori_stok ? $row->kategori_stok : ($row->category_type ?: '-')) ?></span>
                                     <?php if (!empty($row->sub_kategori)): ?>
-                                        <small class="d-block text-muted"><?= htmlspecialchars($row->sub_kategori) ?></small>
+                                        <small class="d-block text-muted"><?= htmlspecialchars((string) $row->sub_kategori) ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">

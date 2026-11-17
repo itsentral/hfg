@@ -163,9 +163,9 @@ if (isset($data->status)) {
 						<span class="badge bg-primary px-2 py-1 mb-1">Kasbon Terkait</span>
 						<h6 class="fw-bold mb-0 text-dark">
 							No. Kasbon: <span id="label_no_kasbon" class="text-primary font-monospace"><?= $no_doc_kasbon_val ?: '-' ?></span> &bull; 
-							Nominal Kasbon Diterima: <span class="text-primary font-monospace" id="label_jumlah_kasbon">Rp <?= number_format($total_kasbon_val, 0, ',', '.') ?></span>
+							Nominal Kasbon Diterima: <span class="text-primary font-monospace" id="label_jumlah_kasbon">Rp <?= number_format((float) $total_kasbon_val, 0, ',', '.') ?></span>
 						</h6>
-						<small class="text-muted" id="label_keperluan_kasbon"><?= !empty($kasbon_obj) ? htmlspecialchars($kasbon_obj->keperluan) : '' ?></small>
+						<small class="text-muted" id="label_keperluan_kasbon"><?= !empty($kasbon_obj) ? htmlspecialchars((string) $kasbon_obj->keperluan) : '' ?></small>
 					</div>
 				</div>
 				<?php if (!$is_view): ?>
@@ -360,13 +360,13 @@ if (isset($data->status)) {
 													<input type="hidden" name="has_existing_files_<?= $idd ?>" value="1">
 													<?php foreach ($row_files as $rf):
 														$furl = base_url('assets/expense/' . $rf->doc_file);
-														$is_fpdf = (stripos($rf->doc_file, '.pdf') !== false);
+														$is_fpdf = (stripos((string) $rf->doc_file, '.pdf') !== false);
 													?>
 														<span class="badge bg-light text-dark border file-badge-item d-inline-flex align-items-center justify-content-between p-1 px-2">
-															<a href="<?= $furl ?>" target="_blank" class="text-decoration-none text-truncate" style="max-width:110px;" title="<?= htmlspecialchars($rf->doc_file) ?>">
-																<i class="fa <?= $is_fpdf ? 'fa-file-pdf-o text-danger' : 'fa-file-image-o text-info' ?> me-1"></i> <?= htmlspecialchars($rf->doc_file) ?>
+															<a href="<?= $furl ?>" target="_blank" class="text-decoration-none text-truncate" style="max-width:110px;" title="<?= htmlspecialchars((string) $rf->doc_file) ?>">
+																<i class="fa <?= $is_fpdf ? 'fa-file-pdf-o text-danger' : 'fa-file-image-o text-info' ?> me-1"></i> <?= htmlspecialchars((string) $rf->doc_file) ?>
 															</a>
-															<input type="hidden" name="existing_files_<?= $idd ?>[]" value="<?= htmlspecialchars($rf->id) ?>">
+															<input type="hidden" name="existing_files_<?= $idd ?>[]" value="<?= htmlspecialchars((string) $rf->id) ?>">
 															<?php if (!$is_view): ?>
 																<button type="button" class="btn btn-link btn-sm text-danger p-0 ms-1 remove-existing-detail-file" title="Hapus file ini">
 																	<i class="fa fa-times"></i>
@@ -414,7 +414,7 @@ if (isset($data->status)) {
 										<input type="text" class="form-control form-control-sm tanggal" name="tanggal[]" id="tanggal<?= $idd; ?>" value="<?= date('Y-m-d') ?>">
 									</td>
 									<td>
-										<textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" rows="2"><?= htmlspecialchars($pr_deskripsi) ?></textarea>
+										<textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" rows="2"><?= htmlspecialchars((string) $pr_deskripsi) ?></textarea>
 										<input type='hidden' name='id_expense_detail[]' id='id_expense_detail_<?= $idd ?>' value='<?= $record_pr['id_detail'] ?>' />
 									</td>
 									<td>
@@ -472,7 +472,7 @@ if (isset($data->status)) {
 									<input type="text" class="form-control form-control-sm tanggal" name="tanggal[]" id="tanggal1" value="<?= date('Y-m-d') ?>">
 								</td>
 								<td>
-									<textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_1" rows="2"><?= htmlspecialchars($kasbon_obj->keperluan) ?></textarea>
+									<textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_1" rows="2"><?= htmlspecialchars((string) $kasbon_obj->keperluan) ?></textarea>
 									<input type='hidden' name='id_expense_detail[]' id='id_expense_detail_1' value='' />
 								</td>
 								<td>

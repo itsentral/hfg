@@ -29,16 +29,16 @@
         <?php else: ?>
             <!-- Info plan sudah dipilih -->
             <div class="alert alert-success mb-3">
-                <strong>Plan:</strong> <?= htmlspecialchars($plan->plan_no) ?> —
+                <strong>Plan:</strong> <?= htmlspecialchars((string) $plan->plan_no) ?> —
                 <?= htmlspecialchars($plan->nm_produk_fg ?: $plan->id_produk_fg) ?>
-                | Target: <?= number_format($plan->target_qty, 2) ?> pcs
+                | Target: <?= number_format((float) $plan->target_qty, 2) ?> pcs
             </div>
         <?php endif; ?>
 
         <form id="form-spk" action="<?= base_url('production_issue/save_spk') ?>" method="POST">
-            <input type="hidden" name="plan_no" id="field-plan-no" value="<?= $plan ? htmlspecialchars($plan->plan_no) : '' ?>">
-            <input type="hidden" name="produk_fg" id="field-produk-fg" value="<?= $plan ? htmlspecialchars($plan->id_produk_fg) : '' ?>">
-            <input type="hidden" name="nm_produk_fg" id="field-nm-produk-fg" value="<?= $plan ? htmlspecialchars($plan->nm_produk_fg) : '' ?>">
+            <input type="hidden" name="plan_no" id="field-plan-no" value="<?= $plan ? htmlspecialchars((string) $plan->plan_no) : '' ?>">
+            <input type="hidden" name="produk_fg" id="field-produk-fg" value="<?= $plan ? htmlspecialchars((string) $plan->id_produk_fg) : '' ?>">
+            <input type="hidden" name="nm_produk_fg" id="field-nm-produk-fg" value="<?= $plan ? htmlspecialchars((string) $plan->nm_produk_fg) : '' ?>">
 
             <div class="row mb-3">
                 <div class="col-md-3">
@@ -84,16 +84,16 @@
                                         <tr>
                                             <td class="text-center"><?= $i + 1 ?></td>
                                             <td>
-                                                <?= htmlspecialchars($d->no_coil) ?>
-                                                <input type="hidden" name="coil[<?= $i ?>][no_coil]" value="<?= htmlspecialchars($d->no_coil) ?>">
-                                                <input type="hidden" name="coil[<?= $i ?>][id_material]" value="<?= htmlspecialchars($d->id_material) ?>">
-                                                <input type="hidden" name="coil[<?= $i ?>][nm_material]" value="<?= htmlspecialchars($d->nm_material) ?>">
-                                                <input type="hidden" name="coil[<?= $i ?>][no_ros]" value="<?= htmlspecialchars($d->no_ros) ?>">
+                                                <?= htmlspecialchars((string) $d->no_coil) ?>
+                                                <input type="hidden" name="coil[<?= $i ?>][no_coil]" value="<?= htmlspecialchars((string) $d->no_coil) ?>">
+                                                <input type="hidden" name="coil[<?= $i ?>][id_material]" value="<?= htmlspecialchars((string) $d->id_material) ?>">
+                                                <input type="hidden" name="coil[<?= $i ?>][nm_material]" value="<?= htmlspecialchars((string) $d->nm_material) ?>">
+                                                <input type="hidden" name="coil[<?= $i ?>][no_ros]" value="<?= htmlspecialchars((string) $d->no_ros) ?>">
                                                 <input type="hidden" name="coil[<?= $i ?>][net_weight]" value="<?= $d->net_weight_coil ?>">
                                             </td>
                                             <td><?= htmlspecialchars($d->no_ros ?: '-') ?></td>
                                             <td><?= htmlspecialchars($d->nm_material ?: '-') ?></td>
-                                            <td class="text-end"><?= number_format($d->net_weight_coil, 3) ?></td>
+                                            <td class="text-end"><?= number_format((float) $d->net_weight_coil, 3) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>

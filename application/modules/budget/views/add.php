@@ -3,12 +3,12 @@ $id_dept        = (!empty($header)) ? $header[0]->id_dept : '';
 $id_costcenter  = (!empty($header)) ? $header[0]->id_costcenter : '';
 $coa            = (!empty($header)) ? $header[0]->coa : '';
 $coa_akum        = (!empty($header)) ? $header[0]->coa_akum : '';
-$nama_asset     = (!empty($header)) ? strtoupper($header[0]->nama_asset) : '';
+$nama_asset     = (!empty($header)) ? strtoupper((string) $header[0]->nama_asset) : '';
 $tahun          = (!empty($header)) ? $header[0]->tahun : date('Y');
 $bulan          = (!empty($header)) ? $header[0]->bulan : date('m');
-$budget         = (!empty($header)) ? number_format($header[0]->budget) : '';
-$qty            = (!empty($header)) ? number_format($header[0]->qty) : '';
-$keterangan     = (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
+$budget         = (!empty($header)) ? number_format((float) $header[0]->budget) : '';
+$qty            = (!empty($header)) ? number_format((float) $header[0]->qty) : '';
+$keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan) : '';
 ?>
 
 <div class="card shadow-sm border-0 mb-4">
@@ -31,7 +31,7 @@ $keterangan     = (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
                         <option value="0">Select Department</option>
                         <?php foreach ($list_dept as $valx): ?>
                             <?php $selected = ($valx['id'] == $id_dept) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id'] ?>" <?= $selected ?>><?= strtoupper($valx['nm_dept']) ?></option>
+                            <option value="<?= $valx['id'] ?>" <?= $selected ?>><?= strtoupper((string) $valx['nm_dept']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -42,7 +42,7 @@ $keterangan     = (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
                         <option value="0">Select Cost Center</option>
                         <?php foreach ($list_cost as $valx): ?>
                             <?php $selected = ($valx['id_costcenter'] == $id_costcenter) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id_costcenter'] ?>" <?= $selected ?>><?= strtoupper($valx['nm_costcenter']) ?></option>
+                            <option value="<?= $valx['id_costcenter'] ?>" <?= $selected ?>><?= strtoupper((string) $valx['nm_costcenter']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -53,7 +53,7 @@ $keterangan     = (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
                         <option value="0">Select Post Anggaran</option>
                         <?php foreach ($datacoa as $valx): ?>
                             <?php $selected = ($valx['no_perkiraan'] == $coa) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['no_perkiraan'] ?>" <?= $selected ?>><?= strtoupper($valx['no_perkiraan']) ?> - <?= strtoupper($valx['nama']) ?></option>
+                            <option value="<?= $valx['no_perkiraan'] ?>" <?= $selected ?>><?= strtoupper((string) $valx['no_perkiraan']) ?> - <?= strtoupper((string) $valx['nama']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

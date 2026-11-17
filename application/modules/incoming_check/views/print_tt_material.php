@@ -136,7 +136,7 @@
 			<tr>
 				<td class="mid">Tanggal Terima</td>
 				<td class="mid">:</td>
-				<td class="mid"><?= date('d F Y', strtotime($rest_data[0]['created_date'])); ?></td>
+				<td class="mid"><?= date('d F Y', strtotime((string) $rest_data[0]['created_date'])); ?></td>
 				<td class="mid"></td>
 				<td class="mid"></td>
 				<td class="mid"></td>
@@ -171,10 +171,10 @@
 				echo '<td class="text-center">' . $No . '</td>';
 				echo '<td class="text-center">' . $valx['no_surat'] . '</td>';
 				echo '<td class="text-center">' . $valx['nm_material'] . '</td>';
-				echo '<td class="text-center">' . number_format($valx['qty_order'], 2) . '</td>';
-				echo '<td class="text-center">' . strtoupper($valx['satuan']) . '</td>';
-				echo '<td class="text-center">' . number_format($valx['konversi'], 2) . '</td>';
-				echo '<td class="text-center">' . number_format($packing, 2) . '</td>';
+				echo '<td class="text-center">' . number_format((float) $valx['qty_order'], 2) . '</td>';
+				echo '<td class="text-center">' . strtoupper((string) $valx['satuan']) . '</td>';
+				echo '<td class="text-center">' . number_format((float) $valx['konversi'], 2) . '</td>';
+				echo '<td class="text-center">' . number_format((float) $packing, 2) . '</td>';
 				echo '<td class="text-center">' . $valx['packing'] . '</td>';
 				echo '<td class="text-center">-</td>';
 				echo '<td class="text-center">-</td>';
@@ -190,10 +190,10 @@
 
 					echo '<tr>';
 					echo '<td colspan="8"></td>';
-					echo '<td class="text-center">' . number_format($checked_incoming['qty_ng'], 2) . '</td>';
-					echo '<td class="text-center">' . number_format($checked_incoming['qty_oke'], 2) . '</td>';
-					echo '<td class="text-center">' . number_format($checked_incoming['qty_pack'], 2) . '</td>';
-					echo '<td class="text-center">' . date('d F Y', strtotime($checked_incoming['expired_date'])) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_ng'], 2) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_oke'], 2) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_pack'], 2) . '</td>';
+					echo '<td class="text-center">' . date('d F Y', strtotime((string) $checked_incoming['expired_date'])) . '</td>';
 					echo '<td>' . $checked_incoming['lot_description'] . '</td>';
 					echo '</tr>';
 				endforeach;

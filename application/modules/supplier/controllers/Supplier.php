@@ -79,7 +79,7 @@ class Supplier extends Admin_Controller
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 5, 5);
+				$urutan2		= (int)substr((string) $angkaUrut2, 5, 5);
 				$urutan2++;
 				$urut2			= sprintf('%05s', $urutan2);
 				$kode_supplier	      = "SUP" . $Ym . $urut2;
@@ -135,7 +135,7 @@ class Supplier extends Admin_Controller
 					'pesan'		=> 'Save gagal disimpan ...',
 					'status'	=> 0
 				);
-				write_log('Supplier', $tanda, 'Gagal ' . strtolower($tanda) . ' supplier: ' . $kode_supplier, $logPayload, null, 0);
+				write_log('Supplier', $tanda, 'Gagal ' . strtolower((string) $tanda) . ' supplier: ' . $kode_supplier, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(

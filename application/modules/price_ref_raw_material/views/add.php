@@ -32,13 +32,13 @@ $tgl_expired_new 	= '';
 $tgl_expired_use 	= '';
 
 if ($price_ref_date != 0) {
-	$tgl_expired = date('d-M-Y', strtotime('+' . $price_ref_expired . ' month', strtotime($price_ref_date)));
+	$tgl_expired = date('d-M-Y', strtotime('+' . $price_ref_expired . ' month', strtotime((string) $price_ref_date)));
 }
 if ($price_ref_new_date != 0) {
-	$tgl_expired_new = date('d-M-Y', strtotime('+' . $price_ref_new_expired . ' month', strtotime($price_ref_new_date)));
+	$tgl_expired_new = date('d-M-Y', strtotime('+' . $price_ref_new_expired . ' month', strtotime((string) $price_ref_new_date)));
 }
 if ($price_ref_date_use != 0) {
-	$tgl_expired_use = date('d-M-Y', strtotime('+' . $price_ref_expired_use . ' month', strtotime($price_ref_date_use)));
+	$tgl_expired_use = date('d-M-Y', strtotime('+' . $price_ref_expired_use . ' month', strtotime((string) $price_ref_date_use)));
 }
 
 $note = (!empty($listData[0]->note)) ? $listData[0]->note : '';

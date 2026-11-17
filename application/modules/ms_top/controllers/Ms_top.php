@@ -175,7 +175,7 @@ class Ms_top extends Admin_Controller
 					'pesan'		=> $TandaI . ' data failed. Please try again later ...',
 					'status'	=> 0
 				);
-				write_log('Master TOP', $TandaI, 'Gagal ' . strtolower($TandaI) . ' TOP: ' . $name, $logPayload, null, 0);
+				write_log('Master TOP', $TandaI, 'Gagal ' . strtolower((string) $TandaI) . ' TOP: ' . $name, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(

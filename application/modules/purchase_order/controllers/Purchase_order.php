@@ -412,9 +412,9 @@ class Purchase_order extends Admin_Controller
 		$nomkurs = $kurs[0]->kurs;
 		$nomkurs10 = $kurs10hari[0]->nominal;
 		$nomkurs30 = $kurs30hari[0]->nominal;
-		$k =  number_format($nomkurs, 2);
-		$k10 =  number_format($nomkurs10, 2);
-		$k30 =  number_format($nomkurs30, 2);
+		$k =  number_format((float) $nomkurs, 2);
+		$k10 =  number_format((float) $nomkurs10, 2);
+		$k30 =  number_format((float) $nomkurs30, 2);
 		if ($loi == 'Import') {
 			echo "
 				<table class='col-sm-12' border='1' cellspacing='0'>
@@ -528,7 +528,7 @@ class Purchase_order extends Admin_Controller
 		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header[0]->id_dept) . "')")->result();
 		if (!empty($get_nm_depart)) {
 			foreach ($get_nm_depart as $item_depart) {
-				$nm_depart[] = strtoupper($item_depart->nama);
+				$nm_depart[] = strtoupper((string) $item_depart->nama);
 			}
 		}
 
@@ -751,7 +751,7 @@ class Purchase_order extends Admin_Controller
 
 		$data = [
 			'list_mat' => $LIST,
-			'min_date' => date('d-M-Y', strtotime($datemin[0]->tanggal))
+			'min_date' => date('d-M-Y', strtotime((string) $datemin[0]->tanggal))
 		];
 
 		echo json_encode($data);
@@ -948,7 +948,7 @@ class Purchase_order extends Admin_Controller
 		if ($loi == 'Import') {
 			$total = number_format(round(($alloyprice + $fabcost) / 1000, 3), 2, ".", ",");
 		} else {
-			$total = number_format($hargasatuan, 3, ".", ",");
+			$total = number_format((float) $hargasatuan, 3, ".", ",");
 		}
 		echo "" . $total . "";
 	}
@@ -977,11 +977,11 @@ class Purchase_order extends Admin_Controller
 			$total = $alloyprice + $fabcost;
 			//$th1 = $total*$qty;
 			$th1 = $hargasatuan * $dt_width;
-			$jumlah = number_format($th1, 2, ".", ",");
+			$jumlah = number_format((float) $th1, 2, ".", ",");
 		} else {
 			//$th1 = $hargasatuan*$qty;
 			$th1 = $hargasatuan * $dt_width;
-			$jumlah = number_format($th1, 2, ".", ",");
+			$jumlah = number_format((float) $th1, 2, ".", ",");
 		}
 
 		echo "" . $jumlah . "";
@@ -1050,7 +1050,7 @@ class Purchase_order extends Admin_Controller
 				<label>Kurs</label>
 			</div>
 			<div class='col-md-8'>
-				<input type='text' class='form-control' value='" . number_format($nomkurs_asli, 2) . "' id='nominal_kurs'  required name='nominal_kurs'  placeholder='Nominal Kurs'> 
+				<input type='text' class='form-control' value='" . number_format((float) $nomkurs_asli, 2) . "' id='nominal_kurs'  required name='nominal_kurs'  placeholder='Nominal Kurs'> 
 			</div>
 		</div>
 		";
@@ -1061,7 +1061,7 @@ class Purchase_order extends Admin_Controller
 				<label>Kurs</label>
 			</div>
 			<div class='col-md-8'>
-				<input type='text' class='form-control' value='" . number_format($nomkurs_asli, 2) . "' id='nominal_kurs'  required name='nominal_kurs'  placeholder='Nominal Kurs'>
+				<input type='text' class='form-control' value='" . number_format((float) $nomkurs_asli, 2) . "' id='nominal_kurs'  required name='nominal_kurs'  placeholder='Nominal Kurs'>
 			</div>
 		</div>
 		";
@@ -1487,7 +1487,7 @@ class Purchase_order extends Admin_Controller
 				'loi'				=> $post['loi'],
 				'nominal_kurs'		=> $nominal_kurs,
 				'tanggal'			=> $post['tanggal'],
-				'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
+				'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 				'term'				=> $post['term'],
 				'cif'				=> $post['cif'],
 				'note'				=> $post['note_ket'],
@@ -1522,7 +1522,7 @@ class Purchase_order extends Admin_Controller
 				'loi'				=> $post['loi'],
 				'nominal_kurs'		=> $nominal_kurs,
 				'tanggal'			=> $post['tanggal'],
-				'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
+				'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 				'term'				=> $post['term'],
 				'cif'				=> $post['cif'],
 				'note'				=> $post['note_ket'],
@@ -1557,7 +1557,7 @@ class Purchase_order extends Admin_Controller
 				'loi'				=> $post['loi'],
 				'nominal_kurs'		=> $nominal_kurs,
 				'tanggal'			=> $tgl,
-				'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
+				'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 				'term'				=> $post['term'],
 				'cif'				=> $post['cif'],
 				// 'note'				=> $post['note_ket'],
@@ -1660,10 +1660,10 @@ class Purchase_order extends Admin_Controller
 		// Untuk PR Material
 		$this->db->select('*');
 		$this->db->from('material_planning_base_on_produksi');
-		$this->db->where_in('so_number', explode(',', $post['so_number']));
+		$this->db->where_in('so_number', explode(',', (string) $post['so_number']));
 		$countMat = $this->db->get()->row_array();
-		if (count($countMat) > 0) {
-			$update_material_planning = $this->db->where_in('so_number', explode(',', $post['so_number']))->update('material_planning_base_on_produksi', ['po_number' => $code, 'po_date' => $tgl]);
+		if (!empty($countMat)) {
+			$update_material_planning = $this->db->where_in('so_number', explode(',', (string) $post['so_number']))->update('material_planning_base_on_produksi', ['po_number' => $code, 'po_date' => $tgl]);
 			if (!$update_material_planning) {
 				print_r($this->db->error());
 				exit;
@@ -1673,12 +1673,12 @@ class Purchase_order extends Admin_Controller
 		// Untuk PR Departemen
 		$this->db->select('*');
 		$this->db->from('rutin_non_planning_header');
-		$this->db->where_in('no_pengajuan', explode(',', $post['so_number']));
+		$this->db->where_in('no_pengajuan', explode(',', (string) $post['so_number']));
 		$countDept = $this->db->get()->result_array();
 
 		if (!empty($countDept)) {
 			$update_rutin_non_planning = $this->db
-				->where_in('no_pengajuan', explode(',', $post['so_number']))
+				->where_in('no_pengajuan', explode(',', (string) $post['so_number']))
 				->update('rutin_non_planning_header', [
 					'po_number' => $code,
 					'po_date' => date('Y-m-d')
@@ -1720,7 +1720,7 @@ class Purchase_order extends Admin_Controller
 					$id_top = $this->db->insert_id();
 
 					if ($tipe_bayar === 'lc' && isset($detail_lc[$i])) {
-						$lc = json_decode($detail_lc[$i], true);
+						$lc = json_decode((string) $detail_lc[$i], true);
 
 						$data_lc = [
 							'id_top'            => $id_top,
@@ -1820,7 +1820,7 @@ class Purchase_order extends Admin_Controller
 			'loi'               => $post['loi'],
 			'nominal_kurs'      => $nominal_kurs,
 			'tanggal'           => $tgl,
-			'expect_tanggal'    => date('Y-m-d', strtotime($post['expect_tanggal'])),
+			'expect_tanggal'    => date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 			'term'              => $post['term'],
 			'cif'               => $post['cif'],
 			'no_pr'             => $post['no_pr'],
@@ -1929,7 +1929,7 @@ class Purchase_order extends Admin_Controller
 
 		// 4. Update Status ke Planning Asal (Khusus New/First Time)
 		if (!$is_edit) {
-			$so_numbers = explode(',', $post['so_number']);
+			$so_numbers = explode(',', (string) $post['so_number']);
 
 			if ($po_pr_depart == '1') {
 				// Hanya update tabel Rutin/Departemen
@@ -2005,7 +2005,7 @@ class Purchase_order extends Admin_Controller
 					$id_top = $this->db->insert_id();
 
 					if ($tipe_bayar === 'lc' && isset($detail_lc[$i])) {
-						$lc = json_decode($detail_lc[$i], true);
+						$lc = json_decode((string) $detail_lc[$i], true);
 						$lc['id_top'] = $id_top;
 						$lc['no_po']  = $code;
 						$lc['value_contract'] = str_replace(',', '', $lc['value_contract']);
@@ -2122,7 +2122,7 @@ class Purchase_order extends Admin_Controller
 			'loi'				=> $post['loi'],
 			'nominal_kurs'		=> $nominal_kurs,
 			'tanggal'			=> $post['tanggal'],
-			'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
+			'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 			'term'				=> $post['term'],
 			'cif'				=> $post['cif'],
 			// 'note'				=> $post['note_ket'],
@@ -2223,7 +2223,7 @@ class Purchase_order extends Admin_Controller
 
 					// 3. Logika LC (Letter of Credit) jika tipe bayar adalah LC
 					if ($tipe_bayar === 'lc' && isset($detail_lc[$i])) {
-						$lc = json_decode($detail_lc[$i], true);
+						$lc = json_decode((string) $detail_lc[$i], true);
 
 						if (!empty($lc)) {
 							$data_lc = [
@@ -2298,7 +2298,7 @@ class Purchase_order extends Admin_Controller
 			'loi'				=> $post['loi'],
 			'nominal_kurs'		=> str_replace(',', '', $post['nominal_kurs']),
 			'tanggal'			=> $post['tanggal'],
-			'expect_tanggal'	=> date('Y-m-d', strtotime($post['expect_tanggal'])),
+			'expect_tanggal'	=> date('Y-m-d', strtotime((string) $post['expect_tanggal'])),
 			'term'				=> $post['term'],
 			'cif'				=> $post['cif'],
 			'note'				=> $post['note_ket'],
@@ -2574,7 +2574,7 @@ class Purchase_order extends Admin_Controller
 		// Nama departemen multiple (jika header->id_dept berisi banyak id dipisah koma)
 		$nm_depart = '';
 		if (!empty($header->id_dept)) {
-			$ids = explode(',', $header->id_dept);
+			$ids = explode(',', (string) $header->id_dept);
 			$ids = array_map('trim', $ids);
 			if (!empty($ids)) {
 				$deptNames = $this->db->select('UPPER(nama) AS nama')
@@ -2786,7 +2786,7 @@ class Purchase_order extends Admin_Controller
 		$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $data['header'][0]->id_dept) . "')")->result();
 		if (!empty($get_nm_depart)) {
 			foreach ($get_nm_depart as $item_depart) {
-				$nm_depart[] = strtoupper($item_depart->nama);
+				$nm_depart[] = strtoupper((string) $item_depart->nama);
 			}
 		}
 
@@ -3432,7 +3432,7 @@ class Purchase_order extends Admin_Controller
 			->where_in('id_dt_pr', $id_pr)
 			->get()
 			->result();
-		$expTgl			= date('Y-m-d', strtotime($expect_tanggal));
+		$expTgl			= date('Y-m-d', strtotime((string) $expect_tanggal));
 
 		$minimal	= $result[0]->tanggal;
 		if (!empty($expect_tanggal)) {
@@ -3443,7 +3443,7 @@ class Purchase_order extends Admin_Controller
 			$minimal	= $result[0]->tanggal;
 		}
 		$ArrJson	= array(
-			'minimal' => date('d-M-Y', strtotime($minimal))
+			'minimal' => date('d-M-Y', strtotime((string) $minimal))
 		);
 		echo json_encode($ArrJson);
 	}
@@ -3519,7 +3519,7 @@ class Purchase_order extends Admin_Controller
 	public function proses()
 	{
 		$session = $this->session->userdata('app_session');
-		$getparam = explode(";", $_GET['param']);
+		$getparam = explode(";", (string) $_GET['param']);
 		$this->template->page_icon('fa fa-cart-plus');
 
 		$getso = $this->Pr_model->get_where_in('so_number', $getparam, 'material_planning_base_on_produksi');
@@ -3912,7 +3912,7 @@ class Purchase_order extends Admin_Controller
 			$get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
 			if (!empty($get_nm_depart)) {
 				foreach ($get_nm_depart as $item_depart) {
-					$nm_depart[] = strtoupper($item_depart->nama);
+					$nm_depart[] = strtoupper((string) $item_depart->nama);
 				}
 			}
 		}
@@ -3943,7 +3943,7 @@ class Purchase_order extends Admin_Controller
 
 		$list_top_group = '';
 		foreach ($get_top_group as $item) {
-			$list_top_group .= '<option value="' . $item->id . '">' . strtoupper($item->name) . '</option>';
+			$list_top_group .= '<option value="' . $item->id . '">' . strtoupper((string) $item->name) . '</option>';
 		}
 
 		echo json_encode([

@@ -20,7 +20,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Persentase Progress (%)</label>
-            <input type="number" name="persen_dp" id="" class="form-control form-control-sm persen_dp" step="0.01" value="<?= number_format($data_invoice['persen_dp'], 2) ?>" readonly>
+            <input type="number" name="persen_dp" id="" class="form-control form-control-sm persen_dp" step="0.01" value="<?= number_format((float) $data_invoice['persen_dp'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -32,7 +32,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">DPP</label>
-            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format($data_invoice['total_pembelian'], 2) ?>" readonly>
+            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format((float) $data_invoice['total_pembelian'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -44,19 +44,19 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Nilai PPn</label>
-            <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right auto_num nilai_ppn" value="<?= number_format($nilai_ppn, 2) ?>" readonly>
+            <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right auto_num nilai_ppn" value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Nilai Disc</label>
-            <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right auto_num nilai_disc" value="<?= number_format($nilai_disc, 2) ?>" readonly>
+            <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right auto_num nilai_disc" value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Value Progress</label>
-            <input type="text" name="value_dp" id="" class="form-control form-control-sm text-right value_dp" value="<?= number_format($get_top->nilai) ?>" readonly>
+            <input type="text" name="value_dp" id="" class="form-control form-control-sm text-right value_dp" value="<?= number_format((float) $get_top->nilai) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -79,7 +79,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Kurs</label>
-            <input type="text" name="kurs" id="" class="form-control form-control-sm text-right auto_num" value="<?= number_format($data_invoice['kurs'], 2) ?>" readonly>
+            <input type="text" name="kurs" id="" class="form-control form-control-sm text-right auto_num" value="<?= number_format((float) $data_invoice['kurs'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">

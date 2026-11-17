@@ -53,7 +53,7 @@ class Rate_generals extends Admin_Controller
 
         if ($save) {
             $newData = $this->db->get_where('rate_generals', ['id' => 1])->row_array();
-            $formatted = ($unit === 'pct') ? number_format($val, 2, ',', '.') . ' %' : 'Rp ' . number_format($val, 2, ',', '.') . ' / Kg';
+            $formatted = ($unit === 'pct') ? number_format((float) $val, 2, ',', '.') . ' %' : 'Rp ' . number_format((float) $val, 2, ',', '.') . ' / Kg';
             write_log('General Rate', 'Edit', 'Update General Rate: ' . $label . ' menjadi ' . $formatted, [
                 'old' => $oldData,
                 'new' => $newData,

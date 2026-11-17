@@ -74,7 +74,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                         <select class="form-select select2 select_warehouse">
                             <option value="">-- SEMUA GUDANG --</option>
                             <?php foreach ($results['list_warehouse'] as $item_warehouse) : ?>
-                                <option value="<?= $item_warehouse->id ?>"><?= strtoupper($item_warehouse->nm_gudang) ?></option>
+                                <option value="<?= $item_warehouse->id ?>"><?= strtoupper((string) $item_warehouse->nm_gudang) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -113,17 +113,17 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                                 if (!empty($get_nilai_costbook)) {
                                     $nilai_costbook = $get_nilai_costbook->nilai_costbook;
                                     $value_neraca = $get_nilai_costbook->value_neraca;
-                                    $last_update = date('d-M-Y H:i', strtotime($get_nilai_costbook->created_on));
+                                    $last_update = date('d-M-Y H:i', strtotime((string) $get_nilai_costbook->created_on));
                                 }
                             ?>
                                 <tr>
                                     <td class="text-center"><?= $no ?></td>
                                     <td class="text-center font-monospace fw-semibold text-primary"><?= $item->kode_produk ?></td>
-                                    <td class="text-start fw-bold text-dark"><?= strtoupper($item->nm_material) ?></td>
-                                    <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1"><?= strtoupper($item->nm_gudang) ?></span></td>
-                                    <td class="text-end fw-semibold"><?= number_format($item->qty_stock, 2) ?></td>
-                                    <td class="text-end fw-bold text-success font-monospace">Rp <?= number_format($nilai_costbook, 2) ?></td>
-                                    <td class="text-end fw-bold text-primary font-monospace">Rp <?= number_format($value_neraca, 2) ?></td>
+                                    <td class="text-start fw-bold text-dark"><?= strtoupper((string) $item->nm_material) ?></td>
+                                    <td class="text-center"><span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1"><?= strtoupper((string) $item->nm_gudang) ?></span></td>
+                                    <td class="text-end fw-semibold"><?= number_format((float) $item->qty_stock, 2) ?></td>
+                                    <td class="text-end fw-bold text-success font-monospace">Rp <?= number_format((float) $nilai_costbook, 2) ?></td>
+                                    <td class="text-end fw-bold text-primary font-monospace">Rp <?= number_format((float) $value_neraca, 2) ?></td>
                                     <td class="text-center text-muted font-monospace" style="font-size:0.85rem;"><?= $last_update ?></td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-sm btn-outline-info check_costbook shadow-sm" data-id_material="<?= $item->id_material ?>" data-id_gudang="<?= $item->id_gudang ?>" title="Lihat Riwayat Transaksi Costbook">

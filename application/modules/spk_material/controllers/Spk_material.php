@@ -196,7 +196,7 @@ class Spk_material extends Admin_Controller
                 'spk_no'        => '', // akan diisi setelah generate/dapat spk_no
                 'urut'          => $i + 1,
                 'id_produk_fg'  => $prod['id_produk_fg'],
-                'no_uniq_id'    => !empty($prod['no_uniq_id']) ? trim($prod['no_uniq_id']) : null,
+                'no_uniq_id'    => !empty($prod['no_uniq_id']) ? trim((string) $prod['no_uniq_id']) : null,
                 'nm_produk_fg'  => isset($prod['nm_produk_fg']) ? $prod['nm_produk_fg'] : '',
                 'target_qty'    => $t_qty,
                 'berat_per_unit'=> (float) (isset($prod['berat_per_unit']) ? $prod['berat_per_unit'] : 0),
@@ -296,7 +296,7 @@ class Spk_material extends Admin_Controller
         $order_dir = isset($_REQUEST['order'][0]['dir']) ? $_REQUEST['order'][0]['dir'] : 'desc';
 
         // Whitelist order_dir — prevent SQL injection
-        $order_dir = in_array(strtolower($order_dir), ['asc', 'desc']) ? strtolower($order_dir) : 'desc';
+        $order_dir = in_array(strtolower((string) $order_dir), ['asc', 'desc']) ? strtolower((string) $order_dir) : 'desc';
 
         $col_map = [1 => 'h.spk_no', 2 => 'h.tgl_spk', 3 => 'h.shift_names', 4 => 'h.status', 5 => 'detail_count'];
         $order_by = isset($col_map[$order_col]) ? $col_map[$order_col] : 'h.created_at';
@@ -334,11 +334,11 @@ class Spk_material extends Admin_Controller
                 }
             }
 
-            $status_html = "<span class='badge rounded-pill {$badge_class}'>" . htmlspecialchars($row['status']) . "</span>" . $pr_badge;
+            $status_html = "<span class='badge rounded-pill {$badge_class}'>" . htmlspecialchars((string) $row['status']) . "</span>" . $pr_badge;
 
             // Action buttons — escape spk_no untuk URL dan display
-            $safe_spk_no    = rawurlencode($row['spk_no']);
-            $display_spk_no = htmlspecialchars($row['spk_no'], ENT_QUOTES, 'UTF-8');
+            $safe_spk_no    = rawurlencode((string) $row['spk_no']);
+            $display_spk_no = htmlspecialchars((string) $row['spk_no'], ENT_QUOTES, 'UTF-8');
 
             $actions = [];
             $actions[] = '<a href="'.site_url('spk_material/view/'.$safe_spk_no).'" class="btn btn-sm btn-info text-white text-nowrap" title="View"><i class="fa fa-eye me-1"></i> View</a>';
@@ -354,8 +354,8 @@ class Spk_material extends Admin_Controller
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
                 $display_spk_no,
-                date('d/m/Y', strtotime($row['tgl_spk'])),
-                htmlspecialchars($row['shift_names']),
+                date('d/m/Y', strtotime((string) $row['tgl_spk'])),
+                htmlspecialchars((string) $row['shift_names']),
                 "<div class='text-center'>{$status_html}</div>",
                 "<div class='text-center'>" . (int) $row['detail_count'] . "</div>",
                 $aksi,

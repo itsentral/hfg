@@ -193,11 +193,11 @@ class Unpack_coil_model extends BF_Model
 
         $next = 1;
         if ($last) {
-            $parts = explode('-', $last->unpack_no);
+            $parts = explode('-', (string) $last->unpack_no);
             $next = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next, 4, '0', STR_PAD_LEFT);
     }
 
     // ===============================================================

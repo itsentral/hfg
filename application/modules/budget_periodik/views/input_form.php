@@ -39,7 +39,7 @@ $mode_icon = 'fa-plus';
                         $cur_dept = isset($departement) ? $departement : '0';
                         $dept_label = isset($datdept[$cur_dept]) ? $datdept[$cur_dept] : (isset($all_dept[$cur_dept]) ? $all_dept[$cur_dept] : 'Dept #' . $cur_dept);
                         ?>
-                        <input type="text" class="form-control bg-white fw-bold text-dark" value="<?= strtoupper(htmlspecialchars($dept_label)) ?>" readonly>
+                        <input type="text" class="form-control bg-white fw-bold text-dark" value="<?= strtoupper(htmlspecialchars((string) $dept_label)) ?>" readonly>
                         <input type="hidden" name="departement" id="departement" value="<?= $cur_dept ?>">
                     <?php else : ?>
                         <?= form_dropdown('departement', $datdept, set_value('departement', isset($departement) ? $departement : '0'), array('id' => 'departement', 'class' => 'form-select select2', 'required' => 'required')); ?>
@@ -89,7 +89,7 @@ $mode_icon = 'fa-plus';
                         $all_coa = "";
                         if (!empty($callcoa)) {
                             foreach ($callcoa as $key => $val) {
-                                $all_coa .= "<option value='" . $key . "'>" . htmlspecialchars($val) . "</option>";
+                                $all_coa .= "<option value='" . $key . "'>" . htmlspecialchars((string) $val) . "</option>";
                             }
                         }
 
@@ -98,12 +98,12 @@ $mode_icon = 'fa-plus';
                         $combotgl = "<option value=''>Pilih Tanggal</option>";
                         if (!empty($datcoa)) {
                             foreach ($datcoa as $key => $val) {
-                                $combocoa .= "<option value='" . $key . "'>" . htmlspecialchars($val) . "</option>";
+                                $combocoa .= "<option value='" . $key . "'>" . htmlspecialchars((string) $val) . "</option>";
                             }
                         }
                         if (!empty($waktu)) {
                             foreach ($waktu as $datawaktu) {
-                                $combowaktu .= "<option value='" . $datawaktu . "'>" . ucfirst($datawaktu) . "</option>";
+                                $combowaktu .= "<option value='" . $datawaktu . "'>" . ucfirst((string) $datawaktu) . "</option>";
                             }
                         }
                         for ($tgl = 1; $tgl <= 31; $tgl++) {
@@ -123,8 +123,8 @@ $mode_icon = 'fa-plus';
                                     <td>
                                         <?php if ($is_view) : ?>
                                             <div class="d-flex flex-column">
-                                                <span class="badge bg-secondary-subtle text-dark border px-2 py-1 font-monospace align-self-start mb-1"><?= htmlspecialchars($record->coa) ?></span>
-                                                <span class="small fw-semibold text-dark"><?= isset($datcoa[$record->coa]) ? htmlspecialchars($datcoa[$record->coa]) : htmlspecialchars($record->nama_perkiraan) ?></span>
+                                                <span class="badge bg-secondary-subtle text-dark border px-2 py-1 font-monospace align-self-start mb-1"><?= htmlspecialchars((string) $record->coa) ?></span>
+                                                <span class="small fw-semibold text-dark"><?= isset($datcoa[$record->coa]) ? htmlspecialchars($datcoa[$record->coa]) : htmlspecialchars((string) $record->nama_perkiraan) ?></span>
                                             </div>
                                         <?php else : ?>
                                             <select class="form-select select2" style="width:100%" name="coa[]" id="coa_<?= $idd; ?>" required>
@@ -140,14 +140,14 @@ $mode_icon = 'fa-plus';
                                     </td>
                                     <td>
                                         <?php if ($is_view) : ?>
-                                            <span class="text-dark fw-medium"><?= htmlspecialchars($record->nama); ?></span>
+                                            <span class="text-dark fw-medium"><?= htmlspecialchars((string) $record->nama); ?></span>
                                         <?php else : ?>
-                                            <textarea class="form-control" name="nama[]" id="nama_<?= $idd; ?>" rows="2" style="min-height:55px;font-size:13px;resize:vertical;" placeholder="Nama barang atau jasa"><?= htmlspecialchars($record->nama); ?></textarea>
+                                            <textarea class="form-control" name="nama[]" id="nama_<?= $idd; ?>" rows="2" style="min-height:55px;font-size:13px;resize:vertical;" placeholder="Nama barang atau jasa"><?= htmlspecialchars((string) $record->nama); ?></textarea>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php if ($is_view) : ?>
-                                            <span class="badge bg-secondary-subtle text-dark border"><?= ucfirst($record->tipe) ?></span>
+                                            <span class="badge bg-secondary-subtle text-dark border"><?= ucfirst((string) $record->tipe) ?></span>
                                         <?php else : ?>
                                             <select class="form-select" name="tipe[]" id="tipe_<?= $idd; ?>" onchange="cektipe(<?= $idd; ?>)">
                                                 <?php
@@ -179,7 +179,7 @@ $mode_icon = 'fa-plus';
                                     </td>
                                     <td class="text-end">
                                         <?php if ($is_view) : ?>
-                                            <span class="fw-bold text-dark font-monospace">Rp <?= number_format($record->nilai, 0, ',', '.') ?></span>
+                                            <span class="fw-bold text-dark font-monospace">Rp <?= number_format((float) $record->nilai, 0, ',', '.') ?></span>
                                         <?php else : ?>
                                             <div class="input-group">
                                                 <span class="input-group-text bg-light small">Rp</span>
@@ -189,9 +189,9 @@ $mode_icon = 'fa-plus';
                                     </td>
                                     <td>
                                         <?php if ($is_view) : ?>
-                                            <span class="text-muted small"><?= !empty($record->keterangan) ? htmlspecialchars($record->keterangan) : '-' ?></span>
+                                            <span class="text-muted small"><?= !empty($record->keterangan) ? htmlspecialchars((string) $record->keterangan) : '-' ?></span>
                                         <?php else : ?>
-                                            <input type="text" class="form-control" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars($record->keterangan); ?>" placeholder="Keterangan">
+                                            <input type="text" class="form-control" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Keterangan">
                                         <?php endif; ?>
                                     </td>
                                     <?php if (!$is_view) : ?>
@@ -216,7 +216,7 @@ $mode_icon = 'fa-plus';
                                                 </td>
                                                 <td colspan="3">
                                                     <?php if ($is_view) : ?>
-                                                        <span class="badge bg-primary-subtle text-primary border font-monospace"><?= htmlspecialchars($fields->coa) ?></span>
+                                                        <span class="badge bg-primary-subtle text-primary border font-monospace"><?= htmlspecialchars((string) $fields->coa) ?></span>
                                                     <?php else : ?>
                                                         <select class='form-select select2' style="width:100%" name='coa_alokasi[]' id='coa_alokasi_<?= $idalokasi ?>'>
                                                             <?php
@@ -266,7 +266,7 @@ $mode_icon = 'fa-plus';
                     </div>
                 </div>
                 <div class="fs-4 fw-bold text-success font-monospace" id="total-perkiraan-display">
-                    Rp <?= number_format($total, 0, ',', '.') ?>
+                    Rp <?= number_format((float) $total, 0, ',', '.') ?>
                 </div>
             </div>
         </div>

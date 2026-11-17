@@ -117,7 +117,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                             if (!empty($datdept)) {
                                 foreach ($datdept as $key => $val) {
                                     if (empty($key) || empty($val)) continue;
-                                    echo '<li class="dept-item"><a href="javascript:void(0)" onclick="new_data(\'' . $key . '\')"><i class="fa fa-building text-primary me-2"></i>' . htmlspecialchars($val) . '</a></li>';
+                                    echo '<li class="dept-item"><a href="javascript:void(0)" onclick="new_data(\'' . $key . '\')"><i class="fa fa-building text-primary me-2"></i>' . htmlspecialchars((string) $val) . '</a></li>';
                                 }
                             }
                             ?>
@@ -167,7 +167,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                                             <i class="fa fa-building"></i>
                                         </div>
                                         <div>
-                                            <span class="fw-bold text-dark"><?= strtoupper(htmlspecialchars($dept_name)) ?></span>
+                                            <span class="fw-bold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></span>
                                         </div>
                                     </div>
                                 </td>
@@ -178,7 +178,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                                 </td>
                                 <td class="text-end">
                                     <span class="fw-semibold text-dark font-monospace">
-                                        <?= isset($record->total_nilai) ? 'Rp ' . number_format($record->total_nilai, 0, ',', '.') : '-' ?>
+                                        <?= isset($record->total_nilai) ? 'Rp ' . number_format((float) $record->total_nilai, 0, ',', '.') : '-' ?>
                                     </span>
                                 </td>
                                 <td class="text-center">

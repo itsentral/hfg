@@ -133,12 +133,12 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
                                     echo '<tr>';
                                     echo '<td class="text-center">' . $no . '</td>';
                                     echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
-                                    echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
+                                    echo '<td class="text-center">' . ucfirst((string) $item['unit_satuan']) . '</td>';
                                     echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                    echo '<td class="text-right">' . number_format($item['price_unit']) . '</td>';
+                                    echo '<td class="text-right">' . number_format((float) $item['price_unit']) . '</td>';
                                     echo '<td class="text-right">' . number_format($item['price_unit'] * $kurs_pib) . '</td>';
                                     echo '<td class="text-center">' . $item['qty_po'] . '</td>';
-                                    echo '<td class="text-center">' . number_format($item['qty_packing_list']) . '</td>';
+                                    echo '<td class="text-center">' . number_format((float) $item['qty_packing_list']) . '</td>';
                                     echo '<td class="text-right total_price_' . $item['id_po_detail'] . '">' . number_format(($item['price_unit'] * $kurs_pib) * $item['qty_packing_list']) . '</td>';
                                     echo '</tr>';
 
@@ -152,7 +152,7 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
                             <td colspan="8" align="right">
                                 <b>Grand Total</b>
                             </td>
-                            <td align="right"><?= number_format($ttl_price_detail, 2) ?></td>
+                            <td align="right"><?= number_format((float) $ttl_price_detail, 2) ?></td>
                         </tbody>
                     </table>
 

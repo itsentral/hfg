@@ -15,7 +15,7 @@ $today = date('l, d F Y [H:i:s]');
 $rest_d		= $this->db->get_where('warehouse_adjustment_detail', array('kode_trans' => $kode_trans))->result_array();
 $rest_data 	= $this->db->get_where('warehouse_adjustment', array('kode_trans' => $kode_trans))->result_array();
 
-$TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime($rest_data[0]['tanggal'])) : date('d F Y', strtotime($rest_data[0]['created_date']));
+$TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string) $rest_data[0]['tanggal'])) : date('d F Y', strtotime((string) $rest_data[0]['created_date']));
 ?>
 
 <table class="gridtable2" border='1' width='100%' cellpadding='2'>
@@ -70,18 +70,18 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime($rest_da
 		$No = 0;
 		foreach ($rest_d as $val => $valx) {
 			$No++;
-			$qty_oke 		= number_format($valx['qty_oke']);
-			$keterangan 	= (!empty($valx['keterangan'])) ? ucfirst($valx['keterangan']) : '-';
-			$pemeriksa 	= (!empty($valx['ket_req_pro'])) ? ucfirst($valx['ket_req_pro']) : '-';
+			$qty_oke 		= number_format((float) $valx['qty_oke']);
+			$keterangan 	= (!empty($valx['keterangan'])) ? ucfirst((string) $valx['keterangan']) : '-';
+			$pemeriksa 	= (!empty($valx['ket_req_pro'])) ? ucfirst((string) $valx['ket_req_pro']) : '-';
 			if ($tanda == 'check' and $checked == 'Y') {
-				$qty_oke 		= number_format($valx['check_qty_oke']);
-				$keterangan 	= (!empty($valx['check_keterangan'])) ? ucfirst($valx['check_keterangan']) : '-';
-				$pemeriksa 	= (!empty($valx['ket_req_pro'])) ? ucfirst($valx['ket_req_pro']) : '-';
+				$qty_oke 		= number_format((float) $valx['check_qty_oke']);
+				$keterangan 	= (!empty($valx['check_keterangan'])) ? ucfirst((string) $valx['check_keterangan']) : '-';
+				$pemeriksa 	= (!empty($valx['ket_req_pro'])) ? ucfirst((string) $valx['ket_req_pro']) : '-';
 			}
 
 			echo "<tr>";
 			echo "<td align='center'>" . $No . "</td>";
-			echo "<td>" . strtoupper($valx['nm_material']) . "</td>";
+			echo "<td>" . strtoupper((string) $valx['nm_material']) . "</td>";
 			echo "<td align='center'>" . $qty_oke . "</td>";
 			echo "<td>" . $keterangan . "</td>";
 			echo "<td>" . $pemeriksa . "</td>";

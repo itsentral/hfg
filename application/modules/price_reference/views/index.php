@@ -14,7 +14,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                 </div>
                 <div class="mt-2 mt-md-0">
                     <span class="badge bg-light text-dark border px-3 py-2 fs-6">
-                        <i class="ti ti-currency-dollar text-success me-1"></i>Kurs USD Aktif: <strong>Rp <?= number_format($usd_kurs, 2, ',', '.') ?></strong>
+                        <i class="ti ti-currency-dollar text-success me-1"></i>Kurs USD Aktif: <strong>Rp <?= number_format((float) $usd_kurs, 2, ',', '.') ?></strong>
                     </span>
                 </div>
             </div>
@@ -44,15 +44,15 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                             <tr>
                                 <td class="text-center"><?= $no++ ?></td>
                                 <td class="fw-bold"><?= htmlspecialchars(strtoupper($m->code ?: $m->code_lv4)) ?></td>
-                                <td><?= htmlspecialchars(strtoupper($m->nama)) ?></td>
+                                <td><?= htmlspecialchars(strtoupper((string) $m->nama)) ?></td>
                                 <td class="text-end font-monospace">
-                                    <?= ((float)$m->price_ref_use > 0) ? 'Rp ' . number_format($m->price_ref_use, 2, ',', '.') : '<span class="text-muted">—</span>' ?>
+                                    <?= ((float)$m->price_ref_use > 0) ? 'Rp ' . number_format((float) $m->price_ref_use, 2, ',', '.') : '<span class="text-muted">—</span>' ?>
                                 </td>
                                 <td class="text-end font-monospace">
-                                    <?= ((float)$m->price_ref_use_usd > 0) ? '$ ' . number_format($m->price_ref_use_usd, 4, '.', ',') : '<span class="text-muted">—</span>' ?>
+                                    <?= ((float)$m->price_ref_use_usd > 0) ? '$ ' . number_format((float) $m->price_ref_use_usd, 4, '.', ',') : '<span class="text-muted">—</span>' ?>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-<?= $m->status_badge ?> px-2 py-1"><?= htmlspecialchars($m->status_label) ?></span>
+                                    <span class="badge bg-<?= $m->status_badge ?> px-2 py-1"><?= htmlspecialchars((string) $m->status_label) ?></span>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-info btn-open-modal"
@@ -178,7 +178,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                                 <tr>
                                     <td id="cell_mat_name_calc" class="fw-bold small">-</td>
                                     <td class="text-end font-monospace fw-bold" id="box_max_usd">$ 0.0000</td>
-                                    <td class="text-end font-monospace" id="box_kurs">Rp <?= number_format($usd_kurs, 2, ',', '.') ?></td>
+                                    <td class="text-end font-monospace" id="box_kurs">Rp <?= number_format((float) $usd_kurs, 2, ',', '.') ?></td>
                                     <td class="text-end font-monospace fw-bold text-success bg-success bg-opacity-10 fs-6" id="box_price_idr">Rp 0.00</td>
                                 </tr>
                             </tbody>

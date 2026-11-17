@@ -70,7 +70,7 @@ if (!empty($header)) {
 
 						</tr>
 						<!-- <?php
-								$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
+								$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '';
 								?>
 						<tr>
 							<td>Tgl Dibutuhkan</td>
@@ -113,11 +113,11 @@ if (!empty($header)) {
 										echo "	<td class='text-left'>" . $nm_material . "
 										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
 										</td>";
-										echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-										echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+										echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+										echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 										echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
-										echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
-										echo "<td class='text-center'>" . number_format($value['propose_rev'], 2) . "</td>";
+										echo "<td class='text-right'>" . number_format((float) $propose, 2) . "</td>";
+										echo "<td class='text-center'>" . number_format((float) $value['propose_rev'], 2) . "</td>";
 										echo "<td class='text-left'>" . $value['note'] . "</td>";
 										if ($value['status_app'] == 'N') {
 											echo "<td class='text-center'><span class='badge bg-primary text-bold'>Waiting Process</span></td>";

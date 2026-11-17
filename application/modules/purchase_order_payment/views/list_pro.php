@@ -135,7 +135,7 @@
                     echo '<td class="text-center">' . $no_invoice . '</td>';
                     echo '<td class="text-center">' . $no_payment . '</td>';
                     echo '<td class="text-center">' . $item['nm_supplier'] . '</td>';
-                    echo '<td class="text-center">' . date('d F Y', strtotime($item['tanggal'])) . '</td>';
+                    echo '<td class="text-center">' . date('d F Y', strtotime((string) $item['tanggal'])) . '</td>';
                     echo '<td class="text-center">' . $item['keterangan_top'] . '</td>';
                     echo '<td class="text-center">' . $sts . '</td>';
                     echo '<td style="text-align: center;">' . $view_btn . $req_pay_btn . $list_dp_btn . '</td>';

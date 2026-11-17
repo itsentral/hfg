@@ -83,7 +83,7 @@
                                 <option value="0">-- Pilih Gudang --</option>
                                 <?php foreach ($gudang as $val => $valx) : ?>
                                     <option value="<?= $valx['id']; ?>">
-                                        <?= strtoupper($valx['nm_gudang']); ?>
+                                        <?= strtoupper((string) $valx['nm_gudang']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -108,7 +108,7 @@
                                 <option value="0">-- Pilih Gudang Asal --</option>
                                 <?php foreach ($gudang as $val => $valx) : ?>
                                     <option value="<?= $valx['id']; ?>">
-                                        <?= strtoupper($valx['nm_gudang']); ?>
+                                        <?= strtoupper((string) $valx['nm_gudang']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

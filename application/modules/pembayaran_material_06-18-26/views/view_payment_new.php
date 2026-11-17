@@ -8,12 +8,12 @@ foreach ($results['result_payment'] as $item) {
 	$get_rec_invoice = $this->db->get_where('tr_invoice_po', ['id' => $item->no_doc])->row();
 
 	if (!empty($get_rec_invoice)) {
-		if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+		if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 			$get_no_po = $this->db
 				->select('a.no_ipp')
 				->from('tr_incoming_check a')
-				->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+				->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 				->get()
 				->result();
 
@@ -120,7 +120,7 @@ foreach ($results['result_payment'] as $item) {
 					<td width="15%" style="">Request Payment</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
-						<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="<?= number_format($results['result_header']->payment_bank, 2) ?>" readonly>
+						<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="<?= number_format((float) $results['result_header']->payment_bank, 2) ?>" readonly>
 					</td>
 				</tr>
 				<!-- <tr>
@@ -170,12 +170,12 @@ foreach ($results['result_payment'] as $item) {
 							}
 						}
 						if (!empty($get_rec_invoice)) {
-							if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+							if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 								$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 								$get_no_po = $this->db
 									->select('a.no_ipp')
 									->from('tr_incoming_check a')
-									->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+									->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 									->get()
 									->result();
 
@@ -251,7 +251,7 @@ foreach ($results['result_payment'] as $item) {
 						echo '<td class="text-right">
 					<input type="hidden" class="jumlah_col_' . $item->id . '">
 					<input type="hidden" class="payment_bank_' . $item->id . '" value="' . $item->jumlah . '">
-					' . number_format($item->jumlah, 2) . '
+					' . number_format((float) $item->jumlah, 2) . '
 					</td>';
 						echo '<td>';
 						echo '<select name="dt[' . $no . '][tipe_pph]" class="form-control form-control-sm" disabled>';
@@ -262,9 +262,9 @@ foreach ($results['result_payment'] as $item) {
 						echo '<td>';
 						echo '<input type="hidden" class="nilai_utuh_' . $item->id . '" value="' . $nilai_utuh . '">';
 						echo '<input type="hidden" class="persen_progress_' . $item->id . '" value="' . $persen_progress . '">';
-						echo '<input type="text" class="form-control form-control-sm" name="dt[' . $no . '][nilai_pph]" data-id="' . $item->id . '" value="' . number_format($item->total_pph, 2) . '" readonly>';
+						echo '<input type="text" class="form-control form-control-sm" name="dt[' . $no . '][nilai_pph]" data-id="' . $item->id . '" value="' . number_format((float) $item->total_pph, 2) . '" readonly>';
 						echo '</td>';
-						echo '<td class="text-right"><input type="hidden" name="dt[' . $no . '][nilai_ppn]" class="nilai_ppn_' . $item->id . '" value="' . $nilai_ppn . '">' . number_format($nilai_ppn, 2) . '</td>';
+						echo '<td class="text-right"><input type="hidden" name="dt[' . $no . '][nilai_ppn]" class="nilai_ppn_' . $item->id . '" value="' . $nilai_ppn . '">' . number_format((float) $nilai_ppn, 2) . '</td>';
 						echo '<td class="text-right payment_col_' . $item->id . '">' . number_format($item->jumlah - $nilai_pph + $nilai_ppn, 2) . '</td>';
 						echo '</tr>';
 
@@ -283,32 +283,32 @@ foreach ($results['result_payment'] as $item) {
 						<td colspan="5"></td>
 						<td>Total Payment</td>
 						<td class="text-right">
-							<?= number_format($total_payment, 2) ?>
+							<?= number_format((float) $total_payment, 2) ?>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>Selisih</td>
-						<td class="text-right selisih_col"><?= number_format($total_selisih, 2) ?></td>
+						<td class="text-right selisih_col"><?= number_format((float) $total_selisih, 2) ?></td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>Bank Charge</td>
 						<td>
-							<input type="text" name="bank_charge" id="" class="form-control form-control-sm text-right auto_num bank_charge" value="<?= number_format($results['bank_charge'], 2) ?>" readonly>
+							<input type="text" name="bank_charge" id="" class="form-control form-control-sm text-right auto_num bank_charge" value="<?= number_format((float) $results['bank_charge'], 2) ?>" readonly>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>PPh</td>
 						<td class="text-right total_pph_col">
-							<?= number_format($total_pph, 2) ?>
+							<?= number_format((float) $total_pph, 2) ?>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>PPn</td>
-						<td class="text-right"><?= number_format($total_ppn, 2) ?></td>
+						<td class="text-right"><?= number_format((float) $total_ppn, 2) ?></td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>

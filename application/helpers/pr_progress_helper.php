@@ -120,7 +120,7 @@ if (!function_exists('render_pr_progress_cell')) {
 
             $line_cls = ($cls == 'done') ? 'done' : '';
             $line_html = ($idx < $total_stages) ? '<span class="step-line ' . $line_cls . '"></span>' : '';
-            $dots_html .= '<span class="step-dot ' . $cls . '" data-toggle="tooltip" data-placement="top" title="Tahap ' . $stage_num . ': ' . htmlspecialchars($label) . '"></span>' . $line_html;
+            $dots_html .= '<span class="step-dot ' . $cls . '" data-toggle="tooltip" data-placement="top" title="Tahap ' . $stage_num . ': ' . htmlspecialchars((string) $label) . '"></span>' . $line_html;
         }
 
         // Badge class
@@ -133,9 +133,9 @@ if (!function_exists('render_pr_progress_cell')) {
 
         // Reason or doc meta line
         if ($status == 'reject' && !empty($reason)) {
-            $meta_html = '<div class="reject-reason" title="' . htmlspecialchars($reason) . '">Alasan: ' . htmlspecialchars($reason) . '</div>';
+            $meta_html = '<div class="reject-reason" title="' . htmlspecialchars((string) $reason) . '">Alasan: ' . htmlspecialchars((string) $reason) . '</div>';
         } elseif (!empty($doc_meta)) {
-            $prefix = (!empty($stages_info['method_name']) && stripos($doc_meta, $stages_info['method_name']) === false)
+            $prefix = (!empty($stages_info['method_name']) && stripos((string) $doc_meta, $stages_info['method_name']) === false)
                 ? $stages_info['method_name'] . ' - '
                 : '';
             $meta_html = '<div class="doc-meta">' . $prefix . $doc_meta . '</div>';
@@ -145,8 +145,8 @@ if (!function_exists('render_pr_progress_cell')) {
 
         $html  = '<div class="progress-cell">';
         $html .= '  <div class="steps">' . $dots_html . '</div>';
-        $html .= '  <div class="stage-label">' . htmlspecialchars($current_stage_label) . '</div>';
-        $html .= '  <span class="status-badge ' . $badge_cls . '">' . htmlspecialchars($status_text) . '</span>';
+        $html .= '  <div class="stage-label">' . htmlspecialchars((string) $current_stage_label) . '</div>';
+        $html .= '  <span class="status-badge ' . $badge_cls . '">' . htmlspecialchars((string) $status_text) . '</span>';
         $html .= '  ' . $meta_html;
         $html .= '</div>';
 
@@ -227,8 +227,8 @@ if (!function_exists('evaluate_pr_status')) {
                         $status_text = 'Menunggu Pembuatan Kasbon';
                         $doc_meta = 'Kasbon belum dibuat';
                     } else {
-                        $tgl_kb_created = !empty($item->tgl_proses_kasbon) ? date('d M Y', strtotime($item->tgl_proses_kasbon)) : '';
-                        $tgl_kb_app = !empty($item->tgl_kasbon_approved) ? date('d M Y', strtotime($item->tgl_kasbon_approved)) : $tgl_kb_created;
+                        $tgl_kb_created = !empty($item->tgl_proses_kasbon) ? date('d M Y', strtotime((string) $item->tgl_proses_kasbon)) : '';
+                        $tgl_kb_app = !empty($item->tgl_kasbon_approved) ? date('d M Y', strtotime((string) $item->tgl_kasbon_approved)) : $tgl_kb_created;
 
                         if (($item->kasbon_status ?? null) == '9' || ($item->kasbon_sts_reject ?? null) == '1') {
                             $stage = (($item->kasbon_sts_finance ?? null) == '1') ? 5 : 4;
@@ -265,8 +265,8 @@ if (!function_exists('evaluate_pr_status')) {
                         $status_text = 'Menunggu Request Payment';
                         $doc_meta = 'Belum dibuat request payment';
                     } else {
-                        $tgl_np_created = !empty($item->tgl_proses_non_po) ? date('d M Y', strtotime($item->tgl_proses_non_po)) : '';
-                        $tgl_payment = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime($item->tgl_bayar_dp)) : $tgl_np_created;
+                        $tgl_np_created = !empty($item->tgl_proses_non_po) ? date('d M Y', strtotime((string) $item->tgl_proses_non_po)) : '';
+                        $tgl_payment = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime((string) $item->tgl_bayar_dp)) : $tgl_np_created;
 
                         if (!empty($item->dp_paid) && $item->dp_paid == 1) {
                             $stage = 4;
@@ -334,7 +334,7 @@ if (!function_exists('evaluate_pr_status')) {
                     $doc_meta = 'Belum masuk metode pembelian';
                 } elseif ($method_name == 'Direct Payment') {
                     $no_doc_dp = $item->no_doc_non_po ?? ($item->no_doc_dp ?? null);
-                    $tgl_dp = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime($item->tgl_bayar_dp)) : date('d M Y');
+                    $tgl_dp = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime((string) $item->tgl_bayar_dp)) : date('d M Y');
                     if (!empty($item->dp_paid) && $item->dp_paid == 1) {
                         $stage = 3;
                         $status = 'done';

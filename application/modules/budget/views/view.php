@@ -15,15 +15,15 @@ $h = isset($header[0]) ? $header[0] : (object)array();
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label text-muted mb-0">Code Plan</label>
-                <p class="fw-bold mb-2"><?= isset($h->code_plan) ? strtoupper($h->code_plan) : '-' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->code_plan) ? strtoupper((string) $h->code_plan) : '-' ?></p>
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted mb-0">Department</label>
-                <p class="fw-bold mb-2"><?= isset($h->nm_dept) ? strtoupper($h->nm_dept) : '-' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->nm_dept) ? strtoupper((string) $h->nm_dept) : '-' ?></p>
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted mb-0">Cost Center</label>
-                <p class="fw-bold mb-2"><?= isset($h->nm_costcenter) ? strtoupper($h->nm_costcenter) : '-' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->nm_costcenter) ? strtoupper((string) $h->nm_costcenter) : '-' ?></p>
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted mb-0">Post Anggaran (COA)</label>
@@ -31,7 +31,7 @@ $h = isset($header[0]) ? $header[0] : (object)array();
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted mb-0">Nama Asset</label>
-                <p class="fw-bold mb-2"><?= isset($h->nama_asset) ? strtoupper($h->nama_asset) : '-' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->nama_asset) ? strtoupper((string) $h->nama_asset) : '-' ?></p>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted mb-0">Periode Planning</label>
@@ -39,23 +39,23 @@ $h = isset($header[0]) ? $header[0] : (object)array();
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted mb-0">Qty</label>
-                <p class="fw-bold mb-2"><?= isset($h->qty) ? number_format($h->qty) : '0' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->qty) ? number_format((float) $h->qty) : '0' ?></p>
             </div>
             <div class="col-md-4">
                 <label class="form-label text-muted mb-0">Total Budget</label>
-                <p class="fw-bold mb-2 text-primary fs-5"><?= isset($h->budget) ? 'Rp ' . number_format($h->budget) : '0' ?></p>
+                <p class="fw-bold mb-2 text-primary fs-5"><?= isset($h->budget) ? 'Rp ' . number_format((float) $h->budget) : '0' ?></p>
             </div>
             <div class="col-md-4">
                 <label class="form-label text-muted mb-0">Sisa Budget PR</label>
-                <p class="fw-bold mb-2"><?= isset($h->budget_pr) ? 'Rp ' . number_format($h->budget_pr) : '0' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->budget_pr) ? 'Rp ' . number_format((float) $h->budget_pr) : '0' ?></p>
             </div>
             <div class="col-md-4">
                 <label class="form-label text-muted mb-0">Sisa Budget PO</label>
-                <p class="fw-bold mb-2"><?= isset($h->budget_po) ? 'Rp ' . number_format($h->budget_po) : '0' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->budget_po) ? 'Rp ' . number_format((float) $h->budget_po) : '0' ?></p>
             </div>
             <div class="col-md-12">
                 <label class="form-label text-muted mb-0">Keterangan</label>
-                <p class="fw-bold mb-2"><?= isset($h->keterangan) ? strtoupper($h->keterangan) : '-' ?></p>
+                <p class="fw-bold mb-2"><?= isset($h->keterangan) ? strtoupper((string) $h->keterangan) : '-' ?></p>
             </div>
 
             <div class="col-12">
@@ -72,7 +72,7 @@ $h = isset($header[0]) ? $header[0] : (object)array();
                 }
                 ?>
                 <?php if (!empty($h->reason)): ?>
-                    <p class="mt-2 text-danger"><b>Reason:</b> <?= strtoupper($h->reason) ?></p>
+                    <p class="mt-2 text-danger"><b>Reason:</b> <?= strtoupper((string) $h->reason) ?></p>
                 <?php endif; ?>
             </div>
         </div>

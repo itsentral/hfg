@@ -15,7 +15,7 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 				<select name="product" id="product" class="form-select" onchange="filterData()">
 					<option value="0">All Product Type</option>
 					<?php foreach (get_list_inventory_lv1('product') as $val => $valx) { ?>
-						<option value="<?= $valx['code_lv1'] ?>"><?= strtoupper($valx['nama']) ?></option>
+						<option value="<?= $valx['code_lv1'] ?>"><?= strtoupper((string) $valx['nama']) ?></option>
 					<?php } ?>
 				</select>
 			</div>
@@ -25,7 +25,7 @@ $ENABLE_DELETE = has_permission('Approval_PR_Material.Delete');
 				<select name="costcenter" id="costcenter" class="form-select" onchange="filterData()">
 					<option value="0">All Costcenter</option>
 					<?php foreach (get_costcenter() as $val => $valx) { ?>
-						<option value="<?= $valx['id_costcenter'] ?>"><?= strtoupper($valx['nama_costcenter']) ?></option>
+						<option value="<?= $valx['id_costcenter'] ?>"><?= strtoupper((string) $valx['nama_costcenter']) ?></option>
 					<?php } ?>
 				</select>
 			</div>

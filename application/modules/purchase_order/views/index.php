@@ -91,7 +91,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								<td><?= $record->no_surat ?></td>
 								<td><?= $no_pr ?></td>
 								<td><?= $list_no_incoming[$record->no_po] ?></td>
-								<td><?= date('d-M-Y', strtotime($record->tanggal)) ?></td>
+								<td><?= date('d-M-Y', strtotime((string) $record->tanggal)) ?></td>
 								<td class="text-center">
 									<?php
 									if ($record->status == '1') {
@@ -106,7 +106,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									?>
 								</td>
 								<td><?= $record->nm_supplier ?></td>
-								<td class="text-right"><?= number_format($record->subtotal, 4, ',', '.') ?></td>
+								<td class="text-right"><?= number_format((float) $record->subtotal, 4, ',', '.') ?></td>
 								<td class="text-center"><?= $record->revisi ?></td>
 								<td><?= $record->reject_reason ?></td>
 								<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>

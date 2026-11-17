@@ -86,7 +86,7 @@ class Request_pr_stok_model extends BF_Model
 
         if (!empty($get_stok_data)) {
           $nm_detail = $nm_detail . $get_stok_data->stock_name . '<br>';
-          $qty_detail = $qty_detail . number_format($item->propose_purchase, 2) . ' ' . ucfirst($get_stok_data->code) . '<br>';
+          $qty_detail = $qty_detail . number_format((float) $item->propose_purchase, 2) . ' ' . ucfirst((string) $get_stok_data->code) . '<br>';
         }
       }
 
@@ -110,11 +110,11 @@ class Request_pr_stok_model extends BF_Model
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['no_pr']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($kategori_pr) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['no_pr']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $kategori_pr) . "</div>";
       $nestedData[] = "<div  align='left'>" . $nm_detail . "</div>";
       $nestedData[] = "<div  align='right'>" . $qty_detail . "</div>";
-      $nestedData[] = "<div  align='left'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</div>";
+      $nestedData[] = "<div  align='left'>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>";
 
       $getCheck = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row['so_number'], 'status_app' => 'N'))->result();
 
@@ -271,7 +271,7 @@ class Request_pr_stok_model extends BF_Model
       }
 
       $tgl_now = date('Y-m-d');
-      $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+      $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
 
       $qty_stock    = 0;
       $qty_booking  = 0;
@@ -280,7 +280,7 @@ class Request_pr_stok_model extends BF_Model
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['id_stock'] . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['stock_name'] . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nama_level1']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['nama_level1']) . "</div>";
 
       $konversi = $row['konversi'];
       $qty_pack = 0;
@@ -290,16 +290,16 @@ class Request_pr_stok_model extends BF_Model
 
       $satuan = (!empty($GET_SATUAN[$row['id_unit_gudang']]['code'])) ? $GET_SATUAN[$row['id_unit_gudang']]['code'] : '';
 
-      $nestedData[]  = "<div align='right'>" . number_format($qty_pack, 2) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $qty_pack, 2) . "</div>";
       $nestedData[]  = "<div align='center'>" . $satuan . "</div>";
-      $nestedData[]  = "<div align='center' class='konversi'>" . number_format($konversi, 2) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($qty_stock, 2) . "</div>";
+      $nestedData[]  = "<div align='center' class='konversi'>" . number_format((float) $konversi, 2) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $qty_stock, 2) . "</div>";
 
-      $nestedData[]  = "<div align='right'>" . number_format($row['min_stok'], 2) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($row['max_stok'], 2) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $row['min_stok'], 2) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $row['max_stok'], 2) . "</div>";
 
       $outanding_pr   = 0;
-      $nestedData[]  = "<div align='right'>" . number_format($outanding_pr, 2) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $outanding_pr, 2) . "</div>";
 
       // $kg_per_bulan 	= 0;
       // $reorder 		= ($row['min_stok']/30) * $kg_per_bulan;
@@ -325,7 +325,7 @@ class Request_pr_stok_model extends BF_Model
       $nestedData[]  = " <div align='left'>
 									        <input type='text' name='purchase' id='purchase_" . $nomor . "' data-id_material='" . $row['id'] . "' data-no='" . $nomor . "' class='form-control input-sm text-right maskM changeSave' style='width:100%;' value='" . $purchase2 . "'>
 								        </div>";
-      $nestedData[]  = " <div align='center' class='propose_packing'>" . number_format($purchase_packing, 2) . "</div>
+      $nestedData[]  = " <div align='center' class='propose_packing'>" . number_format((float) $purchase_packing, 2) . "</div>
                           <script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});</script>";
       $nestedData[]  = "<div align='center'>" . $satuan . "</div>";
 
@@ -347,8 +347,8 @@ class Request_pr_stok_model extends BF_Model
   public function query_data_json_reorder_point($category, $like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
   {
     $tanggal  = date('Y-m-d', strtotime('-1 month', strtotime(date('Y-m-d'))));
-    $bulan    = ltrim(date('m', strtotime($tanggal)), '0');
-    $tahun    = date('Y', strtotime($tanggal));
+    $bulan    = ltrim(date('m', strtotime((string) $tanggal)), '0');
+    $tahun    = date('Y', strtotime((string) $tanggal));
 
     $product_where = "";
     if ($category != '0') {
@@ -438,13 +438,13 @@ class Request_pr_stok_model extends BF_Model
       $tgl_now = date('Y-m-d');
       // $tgl_next_month = date('Y-m-'.'20', strtotime('+1 month', strtotime($tgl_now)));
 
-      $tgl_next_month = (!empty($row['tgl_dibutuhkan'])) ? $row['tgl_dibutuhkan'] : date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+      $tgl_next_month = (!empty($row['tgl_dibutuhkan'])) ? $row['tgl_dibutuhkan'] : date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
       $spec_pr = (!empty($row['spec_pr'])) ? $row['spec_pr'] : '';
       $info_pr = (!empty($row['info_pr'])) ? $row['info_pr'] : '';
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='left'>" . $row['stock_name'] . " - <b>(" . $row['no_coa'] . " - " . strtoupper($row['nm_coa']) . ") </b></div>";
+      $nestedData[]  = "<div align='left'>" . $row['stock_name'] . " - <b>(" . $row['no_coa'] . " - " . strtoupper((string) $row['nm_coa']) . ") </b></div>";
 
       $STOCK_WRH    = (!empty($GET_WAREHOUSE_STOCK[$row['id']]['stok'])) ? $GET_WAREHOUSE_STOCK[$row['id']]['stok'] : 0;
       $stock_oke     = (!empty($STOCK_WRH)) ? $STOCK_WRH : 0;
@@ -461,19 +461,19 @@ class Request_pr_stok_model extends BF_Model
       $price_ref = $get_price_ref->price_reference ?? $row['price_ref_use'];
 
       $kebutuhnMonth   = (!empty($GET_KEBUTUHAN_PER_MONTH[$row['id']]['kebutuhan'])) ? $GET_KEBUTUHAN_PER_MONTH[$row['id']]['kebutuhan'] : 0;
-      $nestedData[]  = "<div align='right'>" . number_format($kebutuhnMonth) . "</div>";
-      $nestedData[]  = "<div align='right'>" . number_format($stock_oke) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $kebutuhnMonth) . "</div>";
+      $nestedData[]  = "<div align='right'>" . number_format((float) $stock_oke) . "</div>";
       $nestedData[]  = "<div align='right'>" . number_format(($kebutuhnMonth * 1.5)) . "</div>";
       $purchase = ($kebutuhnMonth) - $stock_oke2;
       $purchase2x = ($purchase < 0) ? 0 : $purchase;
       $purchase2 = (!empty($row['request'])) ? $row['request'] : $purchase2x;
 
-      $purchase_value = ($purchase2 > 0) ? number_format($purchase2, 2) : '';
+      $purchase_value = ($purchase2 > 0) ? number_format((float) $purchase2, 2) : '';
 
       $grand_total_val = ($purchase_value !== '') ? number_format($price_ref * $purchase2) : '';
       $grand_total_val2 = ($purchase_value !== '') ? ($price_ref * $purchase2) : 0;
 
-      $purchase_value_pack = ($row['request_pack'] > 0) ? number_format($row['request_pack'], 2) : '';
+      $purchase_value_pack = ($row['request_pack'] > 0) ? number_format((float) $row['request_pack'], 2) : '';
 
       $unit_satuan   = get_name('ms_satuan', 'code', 'id', $row['id_unit']);
       $unit_sat = ($unit_satuan != '0') ? $unit_satuan : '';
@@ -483,7 +483,7 @@ class Request_pr_stok_model extends BF_Model
 								  </div><script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});</script>";
 
       $nestedData[]  = "<div align='left'>
-									<select id='satuan_" . $nomor . "' class='chosen_select form-control input-md'><option value='" . $row['id_unit'] . "'>" . strtoupper($unit_sat) . "</option></select>	
+									<select id='satuan_" . $nomor . "' class='chosen_select form-control input-md'><option value='" . $row['id_unit'] . "'>" . strtoupper((string) $unit_sat) . "</option></select>	
 									<input type='hidden' name='tanggal_" . $nomor . "' id='tanggal_" . $nomor . "' data-id='" . $row['id'] . "' data-no='" . $nomor . "' class='form-control input-md tgl changeSave' style='width:100%;' readonly value='" . $tgl_next_month . "'></div>";
 
       $unit_packing   = get_name('ms_satuan', 'code', 'id', $row['id_unit_gudang']);
@@ -502,7 +502,7 @@ class Request_pr_stok_model extends BF_Model
 									});
 									</script>";
 
-      $nestedData[] = number_format($row['price_ref_use']);
+      $nestedData[] = number_format((float) $row['price_ref_use']);
       $nestedData[] = '<div align="right">' . $grand_total_val . '</div>';
       $data[] = $nestedData;
       $urut1++;

@@ -25,14 +25,14 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                     $is_approved = ($r->status === 'Approved');
                     $is_rejected = ($r->status === 'Rejected');
 
-                    $prods = array_filter(array_map('trim', explode(',', $r->product_names)));
+                    $prods = array_filter(array_map('trim', explode(',', (string) $r->product_names)));
                     $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
                     $more_count = count($prods) - 1;
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
                         <td>
-                            <strong class="text-dark fs-6"><?= htmlspecialchars(strtoupper($first_prod)) ?></strong>
+                            <strong class="text-dark fs-6"><?= htmlspecialchars(strtoupper((string) $first_prod)) ?></strong>
                             <?php if ($more_count > 0): ?>
                                 <span class="badge bg-secondary ms-1">+<?= $more_count ?> produk</span>
                             <?php endif; ?>
@@ -41,7 +41,7 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-light text-dark border fw-bold"><?= htmlspecialchars($r->no_pricelist) ?></span>
+                            <span class="badge bg-light text-dark border fw-bold"><?= htmlspecialchars((string) $r->no_pricelist) ?></span>
                         </td>
                         <td class="text-center fw-bold">
                             <?= $r->total_items ?> varian
@@ -49,7 +49,7 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                         <td>
                             <?php if (!empty($r->submitted_at)): ?>
                                 <strong><?= htmlspecialchars($r->submitted_by_name ?: 'Sales') ?></strong>
-                                <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($r->submitted_at)) ?></div>
+                                <div class="text-muted small"><?= date('d/m/Y H:i', strtotime((string) $r->submitted_at)) ?></div>
                             <?php else: ?>
                                 <span class="text-muted">&mdash;</span>
                             <?php endif; ?>
@@ -74,14 +74,14 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                         <td>
                             <?php if (!empty($r->decided_at)): ?>
                                 <strong><?= htmlspecialchars($r->decided_by_name ?: 'Management') ?></strong>
-                                <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($r->decided_at)) ?></div>
+                                <div class="text-muted small"><?= date('d/m/Y H:i', strtotime((string) $r->decided_at)) ?></div>
                             <?php else: ?>
                                 <span class="text-muted">&mdash;</span>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if (!empty($r->reject_reason)): ?>
-                                <span class="text-danger small"><i class="fa fa-info-circle me-1"></i> <?= htmlspecialchars($r->reject_reason) ?></span>
+                                <span class="text-danger small"><i class="fa fa-info-circle me-1"></i> <?= htmlspecialchars((string) $r->reject_reason) ?></span>
                             <?php else: ?>
                                 <span class="text-muted">&mdash;</span>
                             <?php endif; ?>

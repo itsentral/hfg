@@ -43,7 +43,7 @@
                                 <?php
                                 foreach ($category as $valx) {
                                     $selected = ($valx['id'] == '8') ? 'selected' : '';
-                                    echo "<option value='" . $valx['id'] . "' " . $selected . " data-nm_category='" . htmlspecialchars(strtoupper($valx['nm_category'])) . "'>" . strtoupper($valx['nm_category']) . "</option>";
+                                    echo "<option value='" . $valx['id'] . "' " . $selected . " data-nm_category='" . htmlspecialchars(strtoupper((string) $valx['nm_category'])) . "'>" . strtoupper((string) $valx['nm_category']) . "</option>";
                                 }
                                 ?>
                             </select>
@@ -65,7 +65,7 @@
                             </label>
                             <?php
                             $tgl_now = date('Y-m-d');
-                            $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+                            $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
                             ?>
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="fa fa-calendar-check-o text-muted"></i></span>

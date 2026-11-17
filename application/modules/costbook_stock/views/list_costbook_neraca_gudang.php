@@ -25,7 +25,7 @@
             ?>
             <tr class="table-primary fw-bold"> 
                 <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> SALDO AWAL</td>
-                <td class="text-end font-monospace text-primary" colspan="3">Rp <?= number_format($saldo_awal, 2) ?></td>
+                <td class="text-end font-monospace text-primary" colspan="3">Rp <?= number_format((float) $saldo_awal, 2) ?></td>
             </tr>
 
             <?php
@@ -55,17 +55,17 @@
                     <td class="text-center"><?= $no ?></td>
                     <td class="text-start fw-bold text-dark"><?= $item->jenis_transaksi ?></td>
                     <td class="text-center font-monospace fw-semibold text-primary"><?= $item->no_transaksi ?></td>
-                    <td class="text-center font-monospace"><?= date('d-M-Y', strtotime($item->tgl)) ?></td>
+                    <td class="text-center font-monospace"><?= date('d-M-Y', strtotime((string) $item->tgl)) ?></td>
                     <td class="text-center">
                         <span class="badge bg-<?= $badge_tipe ?> bg-opacity-10 text-<?= $badge_tipe ?> border border-<?= $badge_tipe ?> border-opacity-25 px-2 py-1">
                             <?= $item->tipe_transaksi ?>
                         </span>
                     </td>
-                    <td class="text-center text-muted"><?= (!empty($item->nm_gudang_dari)) ? strtoupper($item->nm_gudang_dari) : '-' ?></td>
-                    <td class="text-center text-muted"><?= (!empty($item->nm_gudang_ke)) ? strtoupper($item->nm_gudang_ke) : '-' ?></td>
-                    <td class="text-end font-monospace text-success"><?= ($value_in > 0) ? 'Rp ' . number_format($value_in, 2) : '-' ?></td>
-                    <td class="text-end font-monospace text-danger"><?= ($value_out > 0) ? 'Rp ' . number_format($value_out, 2) : '-' ?></td>
-                    <td class="text-end font-monospace fw-bold text-dark">Rp <?= number_format($saldo_awal, 2) ?></td>
+                    <td class="text-center text-muted"><?= (!empty($item->nm_gudang_dari)) ? strtoupper((string) $item->nm_gudang_dari) : '-' ?></td>
+                    <td class="text-center text-muted"><?= (!empty($item->nm_gudang_ke)) ? strtoupper((string) $item->nm_gudang_ke) : '-' ?></td>
+                    <td class="text-end font-monospace text-success"><?= ($value_in > 0) ? 'Rp ' . number_format((float) $value_in, 2) : '-' ?></td>
+                    <td class="text-end font-monospace text-danger"><?= ($value_out > 0) ? 'Rp ' . number_format((float) $value_out, 2) : '-' ?></td>
+                    <td class="text-end font-monospace fw-bold text-dark">Rp <?= number_format((float) $saldo_awal, 2) ?></td>
                 </tr>
             <?php
                         $no++;
@@ -81,9 +81,9 @@
 
             <tr class="table-secondary fw-bold"> 
                 <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> SALDO AKHIR</td>
-                <td class="text-end font-monospace text-success">Rp <?= number_format($ttl_in, 2) ?></td>
-                <td class="text-end font-monospace text-danger">Rp <?= number_format($ttl_out, 2) ?></td>
-                <td class="text-end font-monospace text-primary fs-6">Rp <?= number_format($saldo_awal, 2) ?></td>
+                <td class="text-end font-monospace text-success">Rp <?= number_format((float) $ttl_in, 2) ?></td>
+                <td class="text-end font-monospace text-danger">Rp <?= number_format((float) $ttl_out, 2) ?></td>
+                <td class="text-end font-monospace text-primary fs-6">Rp <?= number_format((float) $saldo_awal, 2) ?></td>
             </tr>
         </tbody>
     </table>

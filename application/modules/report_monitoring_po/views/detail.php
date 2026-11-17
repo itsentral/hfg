@@ -13,7 +13,7 @@
             <div class="row g-2 mt-2">
                 <div class="col-sm-6">
                     <small class="text-muted d-block">Tanggal PO</small>
-                    <span class="fw-semibold text-dark"><?= !empty($header->tanggal) ? date('d F Y', strtotime($header->tanggal)) : '-'; ?></span>
+                    <span class="fw-semibold text-dark"><?= !empty($header->tanggal) ? date('d F Y', strtotime((string) $header->tanggal)) : '-'; ?></span>
                 </div>
                 <div class="col-sm-6">
                     <small class="text-muted d-block">Supplier</small>
@@ -33,17 +33,17 @@
             <div class="row g-2 text-center">
                 <div class="col-4">
                     <small class="text-muted d-block">Total Qty PO</small>
-                    <span class="fw-bold text-dark"><?= number_format($total_qty_po, 2); ?></span>
+                    <span class="fw-bold text-dark"><?= number_format((float) $total_qty_po, 2); ?></span>
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block">Total Diterima</small>
-                    <span class="fw-bold text-success"><?= number_format($total_diterima, 2); ?></span>
+                    <span class="fw-bold text-success"><?= number_format((float) $total_diterima, 2); ?></span>
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block">Sisa Belum Dikirim</small>
-                    <span class="fw-bold <?= ($sisa_qty < 0) ? 'text-danger' : 'text-primary'; ?>"><?= number_format($sisa_qty, 2); ?></span>
+                    <span class="fw-bold <?= ($sisa_qty < 0) ? 'text-danger' : 'text-primary'; ?>"><?= number_format((float) $sisa_qty, 2); ?></span>
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
             </div>
@@ -84,17 +84,17 @@
                         <tr>
                             <td class="text-center text-muted"><?= $no; ?></td>
                             <td>
-                                <span class="fw-semibold text-dark"><?= htmlspecialchars($pm->namamaterial, ENT_QUOTES, 'UTF-8'); ?></span>
+                                <span class="fw-semibold text-dark"><?= htmlspecialchars((string) $pm->namamaterial, ENT_QUOTES, 'UTF-8'); ?></span>
                             </td>
                             <td>
                                 <?php if (!empty($pm->no_pr)) : ?>
-                                    <span class="fw-bold text-dark font-monospace small d-block"><?= htmlspecialchars($pm->no_pr, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span class="fw-bold text-dark font-monospace small d-block"><?= htmlspecialchars((string) $pm->no_pr, ENT_QUOTES, 'UTF-8'); ?></span>
                                     <span class="badge bg-light text-secondary text-uppercase border" style="font-size: 10px;"><?= htmlspecialchars($pm->tipe_pr ?? '-', ENT_QUOTES, 'UTF-8'); ?></span>
                                 <?php else : ?>
                                     <span class="text-muted small">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-end fw-bold text-dark"><?= number_format($pm->qty, 2); ?></td>
+                            <td class="text-end fw-bold text-dark"><?= number_format((float) $pm->qty, 2); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else : ?>
@@ -148,25 +148,25 @@
                             </td>
                             <td>
                                 <span class="fw-medium text-dark">
-                                    <?= htmlspecialchars($row->nm_material, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?= htmlspecialchars((string) $row->nm_material, ENT_QUOTES, 'UTF-8'); ?>
                                 </span>
                             </td>
                             <td>
                                 <span class="badge bg-light-primary text-primary font-monospace fw-bold px-2 py-1">
-                                    <i class="ti ti-receipt me-1"></i><?= htmlspecialchars($row->kode_trans, ENT_QUOTES, 'UTF-8'); ?>
+                                    <i class="ti ti-receipt me-1"></i><?= htmlspecialchars((string) $row->kode_trans, ENT_QUOTES, 'UTF-8'); ?>
                                 </span>
                             </td>
                             <td class="text-center text-muted">
-                                <?= !empty($row->tanggal) ? date('d/m/Y', strtotime($row->tanggal)) : '-'; ?>
+                                <?= !empty($row->tanggal) ? date('d/m/Y', strtotime((string) $row->tanggal)) : '-'; ?>
                             </td>
                             <td class="text-end fw-bold text-success">
-                                +<?= number_format($row->qty_diterima, 2); ?>
+                                +<?= number_format((float) $row->qty_diterima, 2); ?>
                             </td>
                             <td class="text-end fw-bold text-dark">
-                                <?= number_format($row->kumulatif_diterima, 2); ?>
+                                <?= number_format((float) $row->kumulatif_diterima, 2); ?>
                             </td>
                             <td class="text-end fw-bold <?= ($row->sisa_setelah_kedatangan < 0) ? 'text-danger' : (($row->sisa_setelah_kedatangan == 0) ? 'text-muted' : 'text-primary'); ?>">
-                                <?= number_format($row->sisa_setelah_kedatangan, 2); ?>
+                                <?= number_format((float) $row->sisa_setelah_kedatangan, 2); ?>
                                 <?php if ($row->sisa_setelah_kedatangan < 0) : ?>
                                     <span class="badge bg-danger ms-1 text-xs">Over</span>
                                 <?php elseif ($row->sisa_setelah_kedatangan == 0) : ?>
@@ -179,10 +179,10 @@
                 <tfoot class="table-light fw-bold">
                     <tr>
                         <td colspan="5" class="text-end">Total Akhir Diterima:</td>
-                        <td class="text-end text-success"><?= number_format($total_diterima, 2); ?> Kg</td>
-                        <td class="text-end text-dark"><?= number_format($total_diterima, 2); ?> Kg</td>
+                        <td class="text-end text-success"><?= number_format((float) $total_diterima, 2); ?> Kg</td>
+                        <td class="text-end text-dark"><?= number_format((float) $total_diterima, 2); ?> Kg</td>
                         <td class="text-end <?= ($sisa_qty < 0) ? 'text-danger' : 'text-primary'; ?>">
-                            <?= number_format($sisa_qty, 2); ?> Kg
+                            <?= number_format((float) $sisa_qty, 2); ?> Kg
                         </td>
                     </tr>
                 </tfoot>

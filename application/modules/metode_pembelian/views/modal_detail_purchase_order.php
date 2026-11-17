@@ -26,16 +26,16 @@
 					if($no == '1'){
 						echo "<td align='left' rowspan='".$jumlah."'>".$valx['nm_supplier']."</td>";
 					}
-					echo "<td align='left'>".strtoupper($valx['nm_barang'])."</td>";
-					echo "<td align='right'>".number_format($valx['qty_purchase'],2)."</td>";
-					echo "<td align='right'>".number_format($valx['net_price'],2)." <span class='text-primary text-bold'>".strtoupper($valx['currency'])."</span></td>";
-					echo "<td align='right'>".number_format($valx['total_price'],2)."</td>";
+					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";
+					echo "<td align='right'>".number_format((float) $valx['qty_purchase'],2)."</td>";
+					echo "<td align='right'>".number_format((float) $valx['net_price'],2)." <span class='text-primary text-bold'>".strtoupper((string) $valx['currency'])."</span></td>";
+					echo "<td align='right'>".number_format((float) $valx['total_price'],2)."</td>";
 				echo "</tr>";
 			}
 			echo "<tr>";
 				echo "<td align='left' colspan='4'></td>";
 				echo "<td align='right'><b>TOTAL PRICE</b></td>";
-				echo "<td align='right'><b>".number_format($SUM,2)."</b></td>";
+				echo "<td align='right'><b>".number_format((float) $SUM,2)."</b></td>";
 			echo "</tr>";
 			?>
 		</tbody>

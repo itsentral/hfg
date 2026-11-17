@@ -100,7 +100,7 @@ class Pr_material extends Admin_Controller
         $resultIPP  = $this->db->query($qIPP)->row_array();
         $lastNumber = $resultIPP['maxP'];
 
-        $urutan = ($lastNumber) ? (int)substr($lastNumber, strlen($prefix . $Ym), 5) : 0;
+        $urutan = ($lastNumber) ? (int)substr((string) $lastNumber, strlen($prefix . $Ym), 5) : 0;
         $urutan++;
 
         $urutFormatted = sprintf('%05d', $urutan);
@@ -204,7 +204,7 @@ class Pr_material extends Admin_Controller
         $data = $this->input->post();
         $tgl_now = date('Y-m-d');
         $GET_OUTANDING_PR   = get_pr_on_progress();
-        $tgl_next_month     = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+        $tgl_next_month     = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
         $get_materials      = $this->db
             ->select('a.*, b.qty_stock')
             ->join('warehouse_stock b', 'a.code_lv4 = b.code_lv4 AND b.id_gudang = 1', 'left')
@@ -249,7 +249,7 @@ class Pr_material extends Admin_Controller
     {
         $data               = $this->input->post();
         $tgl_now            = date('Y-m-d');
-        $tgl_next_month     = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+        $tgl_next_month     = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
         $get_materials      = $this->db->get_where('new_inventory_4', array('category' => 'material'))->result_array();
 
         foreach ($get_materials as $key => $value) {
@@ -593,7 +593,7 @@ class Pr_material extends Admin_Controller
         ", [$so_number])->row();
 
         if (!$header) {
-            show_error('SO not found: ' . htmlspecialchars($so_number), 404);
+            show_error('SO not found: ' . htmlspecialchars((string) $so_number), 404);
             return;
         }
 
@@ -632,7 +632,7 @@ class Pr_material extends Admin_Controller
         $printby    = $session['id_user'];
 
         $data_url    = base_url();
-        $Split_Beda    = explode('/', $data_url);
+        $Split_Beda    = explode('/', (string) $data_url);
         $Jum_Beda    = count($Split_Beda);
         $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
@@ -715,8 +715,8 @@ class Pr_material extends Admin_Controller
                 $hasil .= "	<td class='text-left'>" . $value['nm_material'] . "
             
             </td>";
-                $hasil .= "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-                $hasil .= "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+                $hasil .= "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+                $hasil .= "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
                 $hasil .= "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
                 if ($value['status_app'] == 'N') {
                     $hasil .= "<td align='center'>";
@@ -726,11 +726,11 @@ class Pr_material extends Admin_Controller
                     $hasil .= "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";
                 }
                 if ($value['status_app'] == 'Y') {
-                    $hasil .= "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+                    $hasil .= "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
                     $hasil .= "<td class='text-center'><span class='badge bg-green text-bold'>Approved</span></td>";
                 }
                 if ($value['status_app'] == 'D') {
-                    $hasil .= "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+                    $hasil .= "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
                     $hasil .= "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
                 }
                 $hasil .= "<td class='text-center'><input type='text' class='form-control notes_" . $value['id'] . "' name='detail[" . $key . "][note]' value='" . $value['note'] . "'></td>";
@@ -823,8 +823,8 @@ class Pr_material extends Admin_Controller
             $hasil .= '<tr>';
             $hasil .= '<td class="text-center">' . $no . '</td>';
             $hasil .= '<td>' . $material_non_pr['nama'] . '</td>';
-            $hasil .= '<td class="text-right">' . number_format($material_non_pr['min_stok'], 2) . '</td>';
-            $hasil .= '<td class="text-right">' . number_format($material_non_pr['max_stok'], 2) . '</td>';
+            $hasil .= '<td class="text-right">' . number_format((float) $material_non_pr['min_stok'], 2) . '</td>';
+            $hasil .= '<td class="text-right">' . number_format((float) $material_non_pr['max_stok'], 2) . '</td>';
             $hasil .= '<td class="text-right">' . number_format(0, 2) . '</td>';
             $hasil .= '<td><input type="text" class="form-control form-control-sm autoNumeric2 nmat_qty_pr_' . $material_non_pr['code_lv4'] . '" data-id_material="' . $material_non_pr['code_lv4'] . '"></td>';
             $hasil .= '<td><input type="text" class="form-control form-control-sm nmat_notes_' . $material_non_pr['code_lv4'] . '" data-id_material="' . $material_non_pr['code_lv4'] . '"></td>';

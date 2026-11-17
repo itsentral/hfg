@@ -127,18 +127,18 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                                 <td class="text-end font-monospace">
                                     <input type="hidden" id="finance_tahun_<?= $i ?>" value="<?= $ref_val ?>">
                                     <span class="badge bg-light text-dark border px-2 py-1">
-                                        <?= number_format($ref_val, 0, ',', '.') ?>
+                                        <?= number_format((float) $ref_val, 0, ',', '.') ?>
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <input type="text" id="total_<?= $i ?>" name="total[]" value="<?= number_format($tot_val, 0, ',', '.') ?>" class="form-control form-control-sm text-end fw-bold font-monospace text-primary bg-light" readonly tabindex="-1">
+                                    <input type="text" id="total_<?= $i ?>" name="total[]" value="<?= number_format((float) $tot_val, 0, ',', '.') ?>" class="form-control form-control-sm text-end fw-bold font-monospace text-primary bg-light" readonly tabindex="-1">
                                 </td>
                                 <?php
                                 for ($bln = 1; $bln <= 12; $bln++) {
                                     $b_val = isset($record->{"bulan_" . $bln}) ? (float)$record->{"bulan_" . $bln} : 0;
                                     $grand_bln[$bln] += $b_val;
                                     echo '<td>';
-                                    echo '<input type="text" class="form-control form-control-sm text-end font-monospace divide col-bulan bulan-' . $bln . '" data-row="' . $i . '" data-month="' . $bln . '" id="bulan_' . $bln . '_' . $i . '" name="bulan_' . $bln . '[]" value="' . number_format($b_val, 0, ',', '.') . '" placeholder="0">';
+                                    echo '<input type="text" class="form-control form-control-sm text-end font-monospace divide col-bulan bulan-' . $bln . '" data-row="' . $i . '" data-month="' . $bln . '" id="bulan_' . $bln . '_' . $i . '" name="bulan_' . $bln . '[]" value="' . number_format((float) $b_val, 0, ',', '.') . '" placeholder="0">';
                                     echo '</td>';
                                 }
                                 ?>
@@ -158,15 +158,15 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                     <tr class="fw-bold text-nowrap">
                         <th colspan="2" class="text-end">TOTAL KESELURUHAN:</th>
                         <th class="text-end font-monospace" id="grand_ref_display">
-                            <?= number_format($grand_ref, 0, ',', '.') ?>
+                            <?= number_format((float) $grand_ref, 0, ',', '.') ?>
                         </th>
                         <th class="text-end font-monospace text-primary bg-primary-subtle" id="grand_tot_display">
-                            <?= number_format($grand_tot, 0, ',', '.') ?>
+                            <?= number_format((float) $grand_tot, 0, ',', '.') ?>
                         </th>
                         <?php
                         for ($bln = 1; $bln <= 12; $bln++) {
                             echo '<th class="text-end font-monospace" id="grand_bln_' . $bln . '_display">';
-                            echo number_format($grand_bln[$bln], 0, ',', '.');
+                            echo number_format((float) $grand_bln[$bln], 0, ',', '.');
                             echo '</th>';
                         }
                         ?>

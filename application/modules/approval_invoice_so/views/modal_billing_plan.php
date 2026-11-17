@@ -16,7 +16,7 @@
     <tr>
         <th>Tanggal SO</th>
         <th class="text-center">:</th>
-        <th class="text-left"><?= date('d-m-Y', strtotime($results->tgl_so)); ?></th>
+        <th class="text-left"><?= date('d-m-Y', strtotime((string) $results->tgl_so)); ?></th>
         <th>Tanggal DO</th>
         <th class="text-center">:</th>
         <th class="text-left"><?= $tanggal_do; ?></th>
@@ -49,12 +49,12 @@
             echo '<td class="text-center">' . $no . '</td>';
             echo '<td class="text-center">' . $item->kode_matbom . '</td>';
             echo '<td class="text-left">' . $item->nama_produk . '</td>';
-            echo '<td class="text-center">' . number_format($item->qty_so) . '</td>';
-            echo '<td class="text-center">' . ucfirst($item->uom) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item->harga_satuan, 2) . '</td>';
+            echo '<td class="text-center">' . number_format((float) $item->qty_so) . '</td>';
+            echo '<td class="text-center">' . ucfirst((string) $item->uom) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item->harga_satuan, 2) . '</td>';
             echo '<td class="text-right">(' . $currency . ') ' . number_format($item->harga_satuan * $item->qty_so, 2) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item->diskon_nilai, 2) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item->total_harga, 2) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item->diskon_nilai, 2) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item->total_harga, 2) . '</td>';
             echo '</tr>';
 
             $total_all += $item->total_harga;
@@ -68,10 +68,10 @@
             echo '<td class="text-left">' . $item_other_cost->keterangan . '</td>';
             echo '<td class="text-center">1</td>';
             echo '<td class="text-center">-</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_cost->total_nilai) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_cost->total_nilai) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_cost->total_nilai) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_cost->total_nilai) . '</td>';
             echo '<td class="text-right">(' . $currency . ') ' . number_format(0) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_cost->total_nilai) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_cost->total_nilai) . '</td>';
             echo '</tr>';
 
             $total_all += $item_other_cost->total_nilai;
@@ -109,11 +109,11 @@
             echo '<td class="text-center">-</td>';
             echo '<td class="text-left">' . $item_other_item->nm_other . '</td>';
             echo '<td class="text-center">1</td>';
-            echo '<td class="text-center">' . ucfirst($uom) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_item->total) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_item->total) . '</td>';
+            echo '<td class="text-center">' . ucfirst((string) $uom) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_item->total) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_item->total) . '</td>';
             echo '<td class="text-right">(' . $currency . ') ' . number_format(0) . '</td>';
-            echo '<td class="text-right">(' . $currency . ') ' . number_format($item_other_item->total) . '</td>';
+            echo '<td class="text-right">(' . $currency . ') ' . number_format((float) $item_other_item->total) . '</td>';
             echo '</tr>';
 
             $total_all += $item_other_item->total;
@@ -127,11 +127,11 @@
         ?>
         <tr>
             <td colspan="8" class="text-right">DPP</td>
-            <td class="text-right"><?= '(' . $currency . ') ' . number_format($total_all, 2) ?></td>
+            <td class="text-right"><?= '(' . $currency . ') ' . number_format((float) $total_all, 2) ?></td>
         </tr>
         <tr>
             <td colspan="8" class="text-right">PPN</td>
-            <td class="text-right"><?= '(' . $currency . ') ' . number_format($ppn, 2) ?></td>
+            <td class="text-right"><?= '(' . $currency . ') ' . number_format((float) $ppn, 2) ?></td>
         </tr>
         <tr>
             <td colspan="8" class="text-right">Grand Total</td>

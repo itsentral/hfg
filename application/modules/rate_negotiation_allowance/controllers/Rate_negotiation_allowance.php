@@ -70,7 +70,7 @@ class Rate_negotiation_allowance extends Admin_Controller
             $cat = $this->rna_model->get_by_code($code_lv2);
             $cat_name = $cat ? $cat->nm_category : $code_lv2;
 
-            write_log('Negotiation Allowance', 'Request', 'Pengajuan perubahan Extra Margin: ' . $cat_name . ' (' . number_format($rate_pct, 2, ',', '.') . '%)', [
+            write_log('Negotiation Allowance', 'Request', 'Pengajuan perubahan Extra Margin: ' . $cat_name . ' (' . number_format((float) $rate_pct, 2, ',', '.') . '%)', [
                 'code_lv2' => $code_lv2,
                 'rate_pct' => $rate_pct,
             ], null, 1);

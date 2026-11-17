@@ -48,7 +48,7 @@ if (!empty($id)) {
                         <?php foreach ($results['category'] as $kel) {
                             $sel = ($kel->id == $id_category) ? 'selected' : '';
                         ?>
-                            <option value="<?= $kel->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($kel->nm_category)) ?></option>
+                            <option value="<?= $kel->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $kel->nm_category)) ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -90,7 +90,7 @@ if (!empty($id)) {
                         <?php foreach ($results['satuan_packing'] as $satuan) {
                             $sel = ($satuan->id == $id_unit_gudang) ? 'selected' : '';
                         ?>
-                            <option value="<?= $satuan->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($satuan->code)) ?></option>
+                            <option value="<?= $satuan->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $satuan->code)) ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -105,7 +105,7 @@ if (!empty($id)) {
                         <?php foreach ($results['satuan'] as $satuan) {
                             $sel = ($satuan->id == $id_unit) ? 'selected' : '';
                         ?>
-                            <option value="<?= $satuan->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($satuan->code)) ?></option>
+                            <option value="<?= $satuan->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $satuan->code)) ?></option>
                         <?php } ?>
                     </select>
                 </div>

@@ -12,20 +12,20 @@
                     <select name="spk_no" class="form-select">
                         <option value="">-- Semua SPK --</option>
                         <?php foreach ($spk_list as $spk): ?>
-                            <option value="<?= htmlspecialchars($spk->spk_no) ?>"
+                            <option value="<?= htmlspecialchars((string) $spk->spk_no) ?>"
                                 <?= ($filter['spk_no'] == $spk->spk_no) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($spk->spk_no) ?> — <?= htmlspecialchars($spk->produk_fg) ?>
+                                <?= htmlspecialchars((string) $spk->spk_no) ?> — <?= htmlspecialchars((string) $spk->produk_fg) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Dari</label>
-                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars($filter['tgl_dari']) ?>">
+                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Sampai</label>
-                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars($filter['tgl_sampai']) ?>">
+                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
@@ -77,9 +77,9 @@
                             ?>
                             <tr class="<?= $row_class ?>">
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><?= htmlspecialchars($row->preweigh_no) ?></td>
-                                <td><?= htmlspecialchars($row->spk_no) ?></td>
-                                <td><?= htmlspecialchars($row->barcode_coil) ?></td>
+                                <td><?= htmlspecialchars((string) $row->preweigh_no) ?></td>
+                                <td><?= htmlspecialchars((string) $row->spk_no) ?></td>
+                                <td><?= htmlspecialchars((string) $row->barcode_coil) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->gross_actual, 3) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->gross_pl, 3) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->net_pl, 3) ?></td>
@@ -97,7 +97,7 @@
                                     ?>
                                     <span class="badge bg-<?= $badge_color ?>"><?= $row->status ?></span>
                                 </td>
-                                <td class="text-center"><?= date('d/m/Y', strtotime($row->created_at)) ?></td>
+                                <td class="text-center"><?= date('d/m/Y', strtotime((string) $row->created_at)) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

@@ -282,8 +282,8 @@ class Metode_pembelian extends Admin_Controller
 					$ArrDetail[$val . $val2]['harga_idr'] 		= str_replace(',', '', $valx2['harga_idr']);
 					$ArrDetail[$val . $val2]['total_harga'] 		= str_replace(',', '', $valx2['total_harga']);
 					$ArrDetail[$val . $val2]['tgl_dibutuhkan'] 	= $valx2['tgl_dibutuhkan'];
-					$ArrDetail[$val . $val2]['top'] 				= strtolower($valx2['top']);
-					$ArrDetail[$val . $val2]['keterangan'] 		= strtolower($valx2['keterangan']);
+					$ArrDetail[$val . $val2]['top'] 				= strtolower((string) $valx2['top']);
+					$ArrDetail[$val . $val2]['keterangan'] 		= strtolower((string) $valx2['keterangan']);
 				}
 			}
 			// print_r($ArrHeader);
@@ -638,15 +638,15 @@ class Metode_pembelian extends Admin_Controller
 			$userName = $data_session['ORI_User']['username'];
 			$dateTime = date('Y-m-d H:i:s');
 
-			$REQ_DATE = (!empty($data['request_date'])) ? date('Y-m-d', strtotime($data['request_date'])) : NULL;
+			$REQ_DATE = (!empty($data['request_date'])) ? date('Y-m-d', strtotime((string) $data['request_date'])) : NULL;
 
 			$ArrHeader = array(
-				'incoterms' 	=> strtolower($data['incoterms']),
+				'incoterms' 	=> strtolower((string) $data['incoterms']),
 				'tgl_dibutuhkan' 	=> $REQ_DATE,
 				'tax' 			=> str_replace(',', '', $data['tax']),
 				'pph' 			=> str_replace(',', '', $data['pph']),
-				'remarks' 		=> strtolower($data['remarks']),
-				'buyer' 		=> strtolower($data['buyer']),
+				'remarks' 		=> strtolower((string) $data['remarks']),
+				'buyer' 		=> strtolower((string) $data['buyer']),
 				'top' 			=> $data['top'],
 				'mata_uang' 	=> $data['current'],
 				'amount_words' 	=> $data['amount_words'],
@@ -674,9 +674,9 @@ class Metode_pembelian extends Admin_Controller
 						$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress']);
 						$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd']);
 						$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr']);
-						$ArrEditPO[$val]['keterangan'] 	= strtolower($valx['keterangan']);
+						$ArrEditPO[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 						$ArrEditPO[$val]['jatuh_tempo'] = $valx['jatuh_tempo'];
-						$ArrEditPO[$val]['syarat'] 		= strtolower($valx['syarat']);
+						$ArrEditPO[$val]['syarat'] 		= strtolower((string) $valx['syarat']);
 						$ArrEditPO[$val]['created_by'] 	= $userName;
 						$ArrEditPO[$val]['created_date'] = $dateTime;
 					}
@@ -790,7 +790,7 @@ class Metode_pembelian extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -833,7 +833,7 @@ class Metode_pembelian extends Admin_Controller
 
 			$detail = $data['detail'];
 			$no_po = $data['no_po'];
-			$tgl_dibutuhkan	= date('Y-m-d', strtotime($data['tanggal_dibutuhkan']));
+			$tgl_dibutuhkan	= date('Y-m-d', strtotime((string) $data['tanggal_dibutuhkan']));
 			$total_po		= str_replace(',', '', $data['total_po']);
 			$discount		= str_replace(',', '', $data['discount']);
 			$net_price		= str_replace(',', '', $data['net_price']);
@@ -1145,8 +1145,8 @@ class Metode_pembelian extends Admin_Controller
 			//auto jurnal
 
 			$tanggal = $data['tgl_terima'];
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$total	= 0;
 			$Nomor_JV = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tanggal);
 			foreach ($det_Jurnaltes1 as $vals) {
@@ -1343,8 +1343,8 @@ class Metode_pembelian extends Admin_Controller
 			//auto jurnal
 
 			$tanggal = $data['tgl_terima'];
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$total	= 0;
 			$Nomor_JV = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tanggal);
 			$det_Jurnaltes1 = array();
@@ -1675,7 +1675,7 @@ class Metode_pembelian extends Admin_Controller
 			$coa_lain       = $data['coa_lain'];
 			$coa_bank       = $data['coa_bank'];
 			$biaya_lain     = str_replace(',', '', $data['biaya_lain']);
-			$ket_lain		= strtolower($data['keterangan_lain']);
+			$ket_lain		= strtolower((string) $data['keterangan_lain']);
 			$selisih     	= str_replace(',', '', $data['selisih']);
 			$total_real     = str_replace(',', '', $data['total_real']);
 
@@ -1689,7 +1689,7 @@ class Metode_pembelian extends Admin_Controller
 					$ArrDetail[$val]['id'] 				= $valx['id'];
 					$ArrDetail[$val]['price_pay_unit'] 	= $harga_satuan;
 					$ArrDetail[$val]['price_pay_total'] = $harga;
-					$ArrDetail[$val]['keterangan_real'] = strtolower($valx['keterangan_real']);
+					$ArrDetail[$val]['keterangan_real'] = strtolower((string) $valx['keterangan_real']);
 				}
 			}
 
@@ -1754,7 +1754,7 @@ class Metode_pembelian extends Admin_Controller
 			$datcoa	= $this->All_model->GetCoaCombo();
 			$data = array(
 				'title'				=> $tanda . ' Non PO',
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'akses_menu'	=> $Arr_Akses,
 				'header'		=> $header,
 				'detail'		=> $detail,
@@ -1947,19 +1947,19 @@ class Metode_pembelian extends Admin_Controller
 			}
 			$arr_mat = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_mat[$val] = strtoupper($valx['nm_barang']);
+				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_qty[$val] = number_format($valx['qty_purchase']);
+				$arr_qty[$val] = number_format((float) $valx['qty_purchase']);
 			}
 			$dt_qty	= implode("<br>", $arr_qty);
 
 			$arr_pur = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_pur[$val] = number_format($valx['net_price'], 2);
+				$arr_pur[$val] = number_format((float) $valx['net_price'], 2);
 			}
 			$dt_pur	= implode("<br>", $arr_pur);
 
@@ -1981,13 +1981,13 @@ class Metode_pembelian extends Admin_Controller
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['total_price'], 2) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['total_price'], 2) . "</div>";
 			$nestedData[]	= "<div align='left'>" . get_name('users', 'nm_lengkap', 'username', $row['created_by']) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['created_date'])) . "</div>";
 			if ($row['status'] == 'COMPLETE') {
 				$warna = 'bg-green';
 				$status = $row['status'];
@@ -2108,7 +2108,7 @@ class Metode_pembelian extends Admin_Controller
 		$srcMtr			= "SELECT MAX(no_po) as maxP FROM tran_po_header WHERE no_po LIKE 'POX" . $Ym . "%' ";
 		$resultMtr		= $this->db->query($srcMtr)->result_array();
 		$angkaUrut2		= $resultMtr[0]['maxP'];
-		$urutan2		= (int)substr($angkaUrut2, 7, 4);
+		$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 		$urutan2++;
 		$urut2			= sprintf('%04s', $urutan2);
 		$no_po			= "POX" . $Ym . $urut2;

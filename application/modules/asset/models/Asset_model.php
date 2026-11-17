@@ -65,19 +65,19 @@ class Asset_model extends BF_Model
 
             $tgl_perolehan = '-';
             if (!empty($row['tgl_perolehan']) && $row['tgl_perolehan'] != '0000-00-00') {
-                $tgl_perolehan = date('d M Y', strtotime($row['tgl_perolehan']));
+                $tgl_perolehan = date('d M Y', strtotime((string) $row['tgl_perolehan']));
             }
 
             $nestedData   = array();
             $nestedData[] = "<div align='center'>" . $nomor . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['kd_asset']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['kd_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_asset']) . "</div>";
             $nestedData[] = "<div align='center'>" . $tgl_perolehan . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['nilai_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['nilai_asset']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['depresiasi'] . " Tahun</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['value']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['value']) . "</div>";
 
             $view   = "<button type='button' class='btn btn-sm btn-warning detail' data-id='" . $row['id'] . "' title='View Data'><i class='fa fa-eye'></i></button>";
             $edit   = "";

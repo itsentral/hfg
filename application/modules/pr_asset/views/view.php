@@ -4,22 +4,22 @@ $id_costcenter     = (!empty($data_asset)) ? $data_asset[0]->id_costcenter : '';
 $coa             = (!empty($data_asset)) ? $data_asset[0]->coa : '';
 $nm_coa             = (!empty($data_asset)) ? $data_asset[0]->nm_coa : '';
 $coa_akum         = (!empty($data_asset)) ? $data_asset[0]->coa_akum : '';
-$nama_asset     = (!empty($data_asset)) ? strtoupper($data_asset[0]->nama_asset) : '';
+$nama_asset     = (!empty($data_asset)) ? strtoupper((string) $data_asset[0]->nama_asset) : '';
 $tahun             = (!empty($data_asset)) ? $data_asset[0]->tahun : date('Y');
 $bulan             = (!empty($data_asset)) ? $data_asset[0]->bulan : date('m');
-$budget         = (!empty($data_asset)) ? number_format($data_asset[0]->budget) : '';
-$qty             = (!empty($data_asset)) ? number_format($data_asset[0]->qty) : '';
-$keterangan     = (!empty($data_asset)) ? strtoupper($data_asset[0]->keterangan) : '';
+$budget         = (!empty($data_asset)) ? number_format((float) $data_asset[0]->budget) : '';
+$qty             = (!empty($data_asset)) ? number_format((float) $data_asset[0]->qty) : '';
+$keterangan     = (!empty($data_asset)) ? strtoupper((string) $data_asset[0]->keterangan) : '';
 $tanda             = (!empty($id)) ? 'Update' : 'Insert';
 $disabled        = (!empty($approve)) ? 'disabled' : '';
 $disabled2        = ($approve == 'view') ? 'disabled' : '';
 
-$rev_nama_asset     = (!empty($data_asset)) ? strtoupper($data_asset[0]->rev_nama_asset) : '';
+$rev_nama_asset     = (!empty($data_asset)) ? strtoupper((string) $data_asset[0]->rev_nama_asset) : '';
 $rev_tahun             = (!empty($data_asset)) ? $data_asset[0]->rev_tahun : date('Y');
 $rev_bulan             = (!empty($data_asset)) ? $data_asset[0]->rev_bulan : date('m');
-$rev_budget         = (!empty($data_asset)) ? number_format($data_asset[0]->rev_budget) : '';
-$rev_qty             = (!empty($data_asset)) ? number_format($data_asset[0]->rev_qty) : '';
-$rev_keterangan     = (!empty($data_asset)) ? strtoupper($data_asset[0]->rev_keterangan) : '';
+$rev_budget         = (!empty($data_asset)) ? number_format((float) $data_asset[0]->rev_budget) : '';
+$rev_qty             = (!empty($data_asset)) ? number_format((float) $data_asset[0]->rev_qty) : '';
+$rev_keterangan     = (!empty($data_asset)) ? strtoupper((string) $data_asset[0]->rev_keterangan) : '';
 
 $no_pr = (!empty($data_asset)) ? $data_asset[0]->no_pr : '';
 ?>

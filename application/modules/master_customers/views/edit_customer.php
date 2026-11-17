@@ -102,7 +102,7 @@ foreach ($results['rate'] as $rate) {
 											<?php foreach ($results['karyawan'] as $karyawan) {
 												$select = $cus->id_karyawan == $karyawan->id ? 'selected' : '';
 											?>
-												<option value="<?= $karyawan->id ?>" <?= $select ?>><?= ucfirst(strtolower($karyawan->nm_karyawan)) ?></option>
+												<option value="<?= $karyawan->id ?>" <?= $select ?>><?= ucfirst(strtolower((string) $karyawan->nm_karyawan)) ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -116,7 +116,7 @@ foreach ($results['rate'] as $rate) {
 											<div class="col-md-12">
 												<label>
 													<input type="checkbox" class="checkbox-control" id="chanel_toko" name="chanel_toko" value="Toko dan User"
-														<?= (strpos($cus->chanel_pemasaran, 'Toko dan User') !== false) ? 'checked' : '' ?>> Toko dan User
+														<?= (strpos((string) $cus->chanel_pemasaran, 'Toko dan User') !== false) ? 'checked' : '' ?>> Toko dan User
 												</label>
 											</div>
 										</div>
@@ -124,15 +124,15 @@ foreach ($results['rate'] as $rate) {
 											<div class="col-md-6">
 												<label>
 													<input type="checkbox" class="checkbox-control" id="chanel_project" name="chanel_project" value="Project"
-														<?= (strpos($cus->chanel_pemasaran, 'Project') !== false) ? 'checked' : '' ?>
+														<?= (strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? 'checked' : '' ?>
 														onclick="togglePersentaseInput()"> Project
 												</label>
 											</div>
 											<div class="col-6">
 												<div class="input-group">
 													<input type="text" class="form-control input-sm divide" name="persentase" id="persentase"
-														value="<?= (strpos($cus->chanel_pemasaran, 'Project') !== false) ? $cus->persentase : '' ?>"
-														<?= (strpos($cus->chanel_pemasaran, 'Project') !== false) ? '' : 'disabled' ?>>
+														value="<?= (strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? $cus->persentase : '' ?>"
+														<?= (strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? '' : 'disabled' ?>>
 													<span class="input-group-addon"><i class="fa fa-percent"></i></span>
 												</div>
 											</div>
@@ -632,9 +632,9 @@ foreach ($results['rate'] as $rate) {
 										<select id="payment_term" name="payment_term" class="form-control select" required <?= $disabled ?>>
 											<option value="">-- Pilih --</option>
 											<?php foreach ($results['payment_terms'] as $terms): ?>
-												<option value="<?= htmlspecialchars($terms->id) ?>"
+												<option value="<?= htmlspecialchars((string) $terms->id) ?>"
 													<?= isset($cus->payment_term) && $cus->payment_term == $terms->id ? 'selected' : '' ?>>
-													<?= htmlspecialchars($terms->name) ?>
+													<?= htmlspecialchars((string) $terms->name) ?>
 												</option>
 											<?php endforeach; ?>
 										</select>
@@ -887,7 +887,7 @@ foreach ($results['rate'] as $rate) {
 			Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
 			Template += '<option value="">--pilih--</option>';
 			Template += '<?php foreach ($results['category'] as $category) { ?>';
-			Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower($category->name_category_customer)) ?></option>';
+			Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower((string) $category->name_category_customer)) ?></option>';
 			Template += '<?php } ?>';
 			Template += '</select>';
 			Template += '</td>';

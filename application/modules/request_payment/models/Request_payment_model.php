@@ -215,10 +215,10 @@ class Request_payment_model extends BF_Model
         $kodeBarang = $generate_id->max_id;
 
         if ($no !== null) {
-            $urutan = (int) substr($kodeBarang, 11, 5);
+            $urutan = (int) substr((string) $kodeBarang, 11, 5);
             $urutan += $no;
         } else {
-            $urutan = (int) substr($kodeBarang, 11, 5);
+            $urutan = (int) substr((string) $kodeBarang, 11, 5);
             $urutan++;
         }
         $tahun = date('m-y');
@@ -231,7 +231,7 @@ class Request_payment_model extends BF_Model
     {
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM payment_approve WHERE id LIKE '%PAY-" . date('m-y') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
-        $urutan = (int) substr($kodeBarang, 10, 5);
+        $urutan = (int) substr((string) $kodeBarang, 10, 5);
         $urutan++;
         $tahun = date('m-y');
         $huruf = "PAY-";
@@ -403,9 +403,9 @@ class Request_payment_model extends BF_Model
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM payment_approve WHERE id LIKE '%BK-" . $kode_bank . "-" . date('my-') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
         if ($kode_bank == null) {
-            $urutan = (int) substr($kodeBarang, 9, 4);
+            $urutan = (int) substr((string) $kodeBarang, 9, 4);
         } else {
-            $urutan = (int) substr($kodeBarang, 16, 4);
+            $urutan = (int) substr((string) $kodeBarang, 16, 4);
         }
         $urutan++;
         $tahun = date('my-');
@@ -420,9 +420,9 @@ class Request_payment_model extends BF_Model
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM payment_approve WHERE id LIKE '%BK-" . $kode_bank . "-" . date('my-') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
         if ($kode_bank == null) {
-            $urutan = (int) substr($kodeBarang, 9, 4);
+            $urutan = (int) substr((string) $kodeBarang, 9, 4);
         } else {
-            $urutan = (int) substr($kodeBarang, 16, 4);
+            $urutan = (int) substr((string) $kodeBarang, 16, 4);
         }
         $urutan++;
 
@@ -513,10 +513,10 @@ class Request_payment_model extends BF_Model
                 'no' => $no,
                 'no_dokumen' => $item->no_surat . ' ' . $btn_print,
                 'request_by' => $item->nama,
-                'tanggal' => date('d F Y', strtotime($item->tgl_doc)),
+                'tanggal' => date('d F Y', strtotime((string) $item->tgl_doc)),
                 'keperluan' => $item->keperluan,
                 'kategori' => $item->tipe,
-                'nilai_pengajuan' => number_format($item->jumlah, 2),
+                'nilai_pengajuan' => number_format((float) $item->jumlah, 2),
                 'tanggal_pembayaran' => $input_tanggal_pembayaran,
                 'action' => $action
             ];
@@ -550,7 +550,7 @@ class Request_payment_model extends BF_Model
         $no = 0;
         $no2 = 1;
         foreach ($get_request_payment as $item) {
-            $no_coa_bank = explode(' - ', $item['bank_name']);
+            $no_coa_bank = explode(' - ', (string) $item['bank_name']);
             $no_coa_bank = $no_coa_bank[0];
 
             $kode_bank = '';

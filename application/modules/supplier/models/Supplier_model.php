@@ -84,19 +84,19 @@ class Supplier_model extends BF_Model
 			$nestedData[] = "<div class='text-center'>{$nomor}</div>";
 
 			// Supplier Name
-			$nestedData[] = "<div class='fw-semibold'>" . strtoupper(strtolower($row['nama'])) . "</div>";
+			$nestedData[] = "<div class='fw-semibold'>" . strtoupper(strtolower((string) $row['nama'])) . "</div>";
 
 			// Country
-			$nestedData[] = "<div>" . strtoupper(strtolower($row['nm_country'])) . "</div>";
+			$nestedData[] = "<div>" . strtoupper(strtolower((string) $row['nm_country'])) . "</div>";
 
 			// Telp
-			$nestedData[] = "<div class='text-nowrap'>" . strtoupper(strtolower($row['telp'])) . "</div>";
+			$nestedData[] = "<div class='text-nowrap'>" . strtoupper(strtolower((string) $row['telp'])) . "</div>";
 
 			// Fax
-			$nestedData[] = "<div class='text-nowrap'>" . strtoupper(strtolower($row['fax'])) . "</div>";
+			$nestedData[] = "<div class='text-nowrap'>" . strtoupper(strtolower((string) $row['fax'])) . "</div>";
 
 			// Email
-			$nestedData[] = "<div class='text-lowercase text-nowrap'>" . strtolower($row['email']) . "</div>";
+			$nestedData[] = "<div class='text-lowercase text-nowrap'>" . strtolower((string) $row['email']) . "</div>";
 
 			// Last By
 			$last_create = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
@@ -104,7 +104,7 @@ class Supplier_model extends BF_Model
 
 			// Last Date
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
-			$nestedData[] = "<div class='text-center text-nowrap'>" . date('d-M-Y H:i', strtotime($last_date)) . "</div>";
+			$nestedData[] = "<div class='text-center text-nowrap'>" . date('d-M-Y H:i', strtotime((string) $last_date)) . "</div>";
 
 			// Actions (right aligned)
 			$edit = "";

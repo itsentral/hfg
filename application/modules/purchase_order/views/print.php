@@ -96,9 +96,9 @@
 			<tr >
 			<td align='center' height='".$tinggi."'>".$detail->namamaterial."</td>
 			<td align='center'>".$detail->width."</td>
-			<td align='center'>".number_format($detail->totalwidth)."</td>
-			<td align='center'>".number_format($detail->hargasatuan,3)."</td>
-			<td align='center'>".number_format($detail->jumlahharga)."<br>".$CIF ."</td>
+			<td align='center'>".number_format((float) $detail->totalwidth)."</td>
+			<td align='center'>".number_format((float) $detail->hargasatuan,3)."</td>
+			<td align='center'>".number_format((float) $detail->jumlahharga)."<br>".$CIF ."</td>
 			<td align='center'>".$detail->description."</td>
 			</tr>";
 			$CIF = "";
@@ -106,10 +106,10 @@
 			echo"	
 			<tr >
 			<td align='center'>".$detail->namamaterial."</td>
-			<td align='center'>".number_format($detail->width)."</td>
-			<td align='center'>".number_format($detail->totalwidth)."</td>
-			<td align='center'>".number_format($detail->hargasatuan,3)."</td>
-			<td align='center'>".number_format($detail->jumlahharga)."<br>".$CIF ."</td>
+			<td align='center'>".number_format((float) $detail->width)."</td>
+			<td align='center'>".number_format((float) $detail->totalwidth)."</td>
+			<td align='center'>".number_format((float) $detail->hargasatuan,3)."</td>
+			<td align='center'>".number_format((float) $detail->jumlahharga)."<br>".$CIF ."</td>
 			<td align='center'>".$detail->description."</td>
 			</tr>";
 			$CIF = "";
@@ -117,10 +117,10 @@
 			} ?>
 			 <tr height="10 cm">
 			<td align="center">Total </td>
-			<td align="center"><?= number_format($detailsum[0]->sumwidth) ?></td>
-			<td align="center"><?= number_format($detailsum[0]->sumtotalwidth) ?></td>
-			<td align="center"><?= number_format($detailsum[0]->sumhargasatuan,3) ?></td>
-			<td align="center"><?= number_format($detailsum[0]->sumjumlahharga) ?></td>
+			<td align="center"><?= number_format((float) $detailsum[0]->sumwidth) ?></td>
+			<td align="center"><?= number_format((float) $detailsum[0]->sumtotalwidth) ?></td>
+			<td align="center"><?= number_format((float) $detailsum[0]->sumhargasatuan,3) ?></td>
+			<td align="center"><?= number_format((float) $detailsum[0]->sumjumlahharga) ?></td>
 			<td align="center"></td>
 			</tr>
 			<tr>

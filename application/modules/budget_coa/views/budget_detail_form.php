@@ -76,7 +76,7 @@ if (!empty($data)) {
                     <div class="text-end">
                         <small class="text-muted d-block">Total Alokasi Setahun</small>
                         <span class="fs-5 fw-bold text-primary font-monospace">
-                            Rp <?= number_format($grand_total, 0, ',', '.') ?>
+                            Rp <?= number_format((float) $grand_total, 0, ',', '.') ?>
                         </span>
                     </div>
                 </div>
@@ -133,13 +133,13 @@ if (!empty($data)) {
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end fw-bold font-monospace text-primary">
-                                    <?= isset($record->total) ? number_format($record->total, 0, ',', '.') : '0' ?>
+                                    <?= isset($record->total) ? number_format((float) $record->total, 0, ',', '.') : '0' ?>
                                 </td>
                                 <?php
                                 for ($bln = 1; $bln <= 12; $bln++) {
                                     $val = isset($record->{"bulan_" . $bln}) ? (float)$record->{"bulan_" . $bln} : 0;
                                     echo '<td class="text-end font-monospace ' . ($val > 0 ? 'text-dark' : 'text-muted') . ' text-nowrap">';
-                                    echo number_format($val, 0, ',', '.');
+                                    echo number_format((float) $val, 0, ',', '.');
                                     echo '</td>';
                                 }
                                 ?>
@@ -159,12 +159,12 @@ if (!empty($data)) {
                     <tr class="fw-bold text-nowrap">
                         <th colspan="4" class="text-end">TOTAL KESELURUHAN:</th>
                         <th class="text-end font-monospace text-primary bg-primary-subtle">
-                            <?= number_format($grand_total, 0, ',', '.') ?>
+                            <?= number_format((float) $grand_total, 0, ',', '.') ?>
                         </th>
                         <?php
                         for ($bln = 1; $bln <= 12; $bln++) {
                             echo '<th class="text-end font-monospace text-dark">';
-                            echo number_format($grand_bulan[$bln], 0, ',', '.');
+                            echo number_format((float) $grand_bulan[$bln], 0, ',', '.');
                             echo '</th>';
                         }
                         ?>

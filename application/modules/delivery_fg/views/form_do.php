@@ -26,7 +26,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                 <div class="col-md-6">
                     <label class="form-label">Customer <span class="text-danger">*</span></label>
                     <input type="text" name="customer" class="form-control"
-                           value="<?= $is_edit ? htmlspecialchars($do->customer) : '' ?>"
+                           value="<?= $is_edit ? htmlspecialchars((string) $do->customer) : '' ?>"
                            placeholder="Nama customer" required>
                 </div>
                 <div class="col-md-3">
@@ -37,7 +37,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                 <div class="col-md-3">
                     <label class="form-label">Keterangan</label>
                     <input type="text" name="keterangan" class="form-control"
-                           value="<?= $is_edit && $do->keterangan ? htmlspecialchars($do->keterangan) : '' ?>"
+                           value="<?= $is_edit && $do->keterangan ? htmlspecialchars((string) $do->keterangan) : '' ?>"
                            placeholder="Opsional">
                 </div>
             </div>
@@ -70,7 +70,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                                             <select name="produk_fg[]" class="form-select produk-select" required onchange="onProdukChange(this)">
                                                 <option value="">-- Pilih Produk --</option>
                                             </select>
-                                            <input type="hidden" name="nm_produk_fg[]" class="nm-produk" value="<?= htmlspecialchars($d->nm_produk_fg) ?>">
+                                            <input type="hidden" name="nm_produk_fg[]" class="nm-produk" value="<?= htmlspecialchars((string) $d->nm_produk_fg) ?>">
                                             <input type="hidden" class="selected-produk" value="<?= $d->produk_fg ?>">
                                         </td>
                                         <td>
@@ -84,7 +84,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                                         </td>
                                         <td>
                                             <input type="text" class="form-control estimasi-input" readonly
-                                                   value="<?= number_format($d->estimasi_berat, 3) ?>">
+                                                   value="<?= number_format((float) $d->estimasi_berat, 3) ?>">
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">

@@ -83,7 +83,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <option value="">Select Religion</option>
                         <?php foreach ($agamax as $v): ?>
                             <option value="<?= $v['name'] ?>" <?= ($v['name'] == $agama ? 'selected' : '') ?>>
-                                <?= strtoupper($v['data1']) ?>
+                                <?= strtoupper((string) $v['data1']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -95,7 +95,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <option value="">Select Gender</option>
                         <?php foreach ($genderx as $v): ?>
                             <option value="<?= $v['name'] ?>" <?= ($v['name'] == $gender ? 'selected' : '') ?>>
-                                <?= strtoupper($v['data1']) ?>
+                                <?= strtoupper((string) $v['data1']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -108,7 +108,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <?php
                         foreach ($departmentx as $val => $valx) {
                             $selected = ($valx['id'] == $department) ? 'selected' : '';
-                            echo "<option value='" . $valx['id'] . "' " . $selected . ">" . strtoupper($valx['nama']) . "</option>";
+                            echo "<option value='" . $valx['id'] . "' " . $selected . ">" . strtoupper((string) $valx['nama']) . "</option>";
                         }
                         ?>
                     </select>
@@ -204,7 +204,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <?php
                         foreach ($bankx as $val => $valx) {
                             $selected = ($valx['code'] == $bank_account) ? 'selected' : '';
-                            echo "<option value='" . $valx['code'] . "' " . $selected . ">" . strtoupper($valx['name']) . "</option>";
+                            echo "<option value='" . $valx['code'] . "' " . $selected . ">" . strtoupper((string) $valx['name']) . "</option>";
                         }
                         ?>
                     </select>
@@ -224,7 +224,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <?php
                         foreach ($sts_karyawanx as $val => $valx) {
                             $selected = ($valx['name'] == $sts_karyawan) ? 'selected' : '';
-                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper($valx['data1']) . "</option>";
+                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper((string) $valx['data1']) . "</option>";
                         }
                         ?>
                     </select>
@@ -237,7 +237,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                         <?php
                         foreach ($statusx as $val => $valx) {
                             $selected = ($valx['name'] == $status) ? 'selected' : '';
-                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper($valx['data1']) . "</option>";
+                            echo "<option value='" . $valx['name'] . "' " . $selected . ">" . strtoupper((string) $valx['data1']) . "</option>";
                         }
                         ?>
                     </select>

@@ -31,7 +31,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 									<select id="id_category_customer" name="id_category_customer" class="form-control select">
 										<option value="">--pilih--</option>
 										<?php foreach ($results['category'] as $category) { ?>
-											<option value="<?= $category->id_category_customer ?>"><?= ucfirst(strtolower($category->name_category_customer)) ?></option>
+											<option value="<?= $category->id_category_customer ?>"><?= ucfirst(strtolower((string) $category->name_category_customer)) ?></option>
 										<?php } ?>
 									</select>
 								</div>
@@ -93,7 +93,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 									<select id="id_karyawan" name="id_karyawan" class="form-control select" required>
 										<option value="">--pilih--</option>
 										<?php foreach ($results['karyawan'] as $karyawan) { ?>
-											<option value="<?= $karyawan->id ?>"><?= ucfirst(strtolower($karyawan->nm_karyawan)) ?></option>
+											<option value="<?= $karyawan->id ?>"><?= ucfirst(strtolower((string) $karyawan->nm_karyawan)) ?></option>
 										<?php } ?>
 									</select>
 								</div>
@@ -557,8 +557,8 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 									<select id="payment_term" name="payment_term" class="form-control select" required>
 										<option value="">-- Pilih --</option>
 										<?php foreach ($results['payment_terms'] as $terms): ?>
-											<option value="<?= htmlspecialchars($terms->id) ?>">
-												<?= htmlspecialchars($terms->name) ?>
+											<option value="<?= htmlspecialchars((string) $terms->id) ?>">
+												<?= htmlspecialchars((string) $terms->name) ?>
 											</option>
 										<?php endforeach; ?>
 									</select>
@@ -813,7 +813,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 			Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
 			Template += '<option value="">--pilih--</option>';
 			Template += '<?php foreach ($results['category'] as $category) { ?>';
-			Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower($category->name_category_customer)) ?></option>';
+			Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower((string) $category->name_category_customer)) ?></option>';
 			Template += '<?php } ?>';
 			Template += '</select>';
 			Template += '</td>';

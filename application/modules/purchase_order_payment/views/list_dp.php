@@ -55,8 +55,8 @@
                         </button>';
                     } else {
                         // Jika sudah receive, tampilkan status ENUM
-                        $status_enum = strtolower($item['status_receive_dp']);
-                        $status_uc   = ucwords($status_enum);
+                        $status_enum = strtolower((string) $item['status_receive_dp']);
+                        $status_uc   = ucwords((string) $status_enum);
 
                         if ($status_enum === 'draft') {
                             $badge = '<span class="badge bg-info text-dark">Draft</span>';
@@ -81,7 +81,7 @@
                         <td class="text-center"><?= $item['nomor_invoice'] ?? '-' ?></td>
                         <td class="text-center"><?= $item['no_payment'] ?? '-' ?></td>
                         <td><?= $item['nm_supplier'] ?></td>
-                        <td class="text-center"><?= date('d F Y', strtotime($item['tanggal'])) ?></td>
+                        <td class="text-center"><?= date('d F Y', strtotime((string) $item['tanggal'])) ?></td>
                         <td><?= $item['keterangan_top'] ?? '-' ?></td>
                         <td class="text-center"><?= $badge ?></td>
                         <td class="text-center"><?= $action_btn ?></td>

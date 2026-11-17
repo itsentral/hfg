@@ -158,7 +158,7 @@ class Product_catalog_model extends CI_Model
         $now = date('Y-m-d H:i:s');
         $year = date('Y');
         $cat_count = $this->db->like('no_catalog', 'CAT-' . $year)->count_all_results('product_catalog_header') + 1;
-        $no_cat = 'CAT-' . $year . '-' . str_pad($cat_count, 4, '0', STR_PAD_LEFT);
+        $no_cat = 'CAT-' . $year . '-' . str_pad((string) $cat_count, 4, '0', STR_PAD_LEFT);
 
         // Arsipkan katalog aktif sebelumnya yang memuat produk serupa jika diinginkan,
         // namun sesuai FR-58 & NFR sistem mencatat setiap rilis sebagai snapshot baru

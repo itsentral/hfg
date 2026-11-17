@@ -96,7 +96,7 @@ class Material_type extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Material Type', $label, 'Gagal ' . strtolower($label) . ' material type: ' . $code, $logPayload, null, 0);
+        write_log('Material Type', $label, 'Gagal ' . strtolower((string) $label) . ' material type: ' . $code, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(

@@ -27,7 +27,7 @@ function get_status_badge($status)
         case 'reject':
             return '<span class="badge bg-danger px-3 py-2 rounded-pill"><i class="fa fa-times-circle me-1"></i>Reject</span>';
         default:
-            return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars($status) . '</span>';
+            return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars((string) $status) . '</span>';
     }
 }
 
@@ -51,7 +51,7 @@ function get_journal_badge($status)
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Master</span>
-                    <h4 class="fw-bold mb-0 text-success mt-1">Rp <?= number_format($budget, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-success mt-1">Rp <?= number_format((float) $budget, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
@@ -65,7 +65,7 @@ function get_journal_badge($status)
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Terpakai</span>
-                    <h4 class="fw-bold mb-0 text-warning mt-1">Rp <?= number_format($budget_terpakai, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-warning mt-1">Rp <?= number_format((float) $budget_terpakai, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;">Realisasi periode berjalan</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-warning" style="width: 48px; height: 48px; font-size: 20px;">
@@ -79,7 +79,7 @@ function get_journal_badge($status)
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Budget Tersedia</span>
-                    <h4 class="fw-bold mb-0 text-primary mt-1">Rp <?= number_format($sisa_budget, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-primary mt-1">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;">Sisa anggaran saat pencatatan</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 48px; height: 48px; font-size: 20px;">
@@ -97,7 +97,7 @@ function get_journal_badge($status)
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-file-text-o me-2"></i>Detail Pencatatan Petty Cash
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars($header->no_pencatatan) ?></span></small>
+            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pencatatan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -116,11 +116,11 @@ function get_journal_badge($status)
         <div class="row g-3 mb-4">
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">No Pencatatan</label>
-                <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars($header->no_pencatatan) ?></div>
+                <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $header->no_pencatatan) ?></div>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">Tanggal Transaksi</label>
-                <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($header->tanggal)) ?></div>
+                <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $header->tanggal)) ?></div>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">Company</label>
@@ -129,16 +129,16 @@ function get_journal_badge($status)
                     $comp = $header->company;
                     $bCls = ($comp === 'STM') ? 'bg-primary' : (($comp === 'VUCA') ? 'bg-info text-dark' : 'bg-success');
                     ?>
-                    <span class="badge <?= $bCls ?> px-2 py-1"><?= htmlspecialchars($comp) ?></span>
+                    <span class="badge <?= $bCls ?> px-2 py-1"><?= htmlspecialchars((string) $comp) ?></span>
                 </div>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">Request By</label>
-                <div class="fw-semibold text-dark"><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars($header->request_by) ?></div>
+                <div class="fw-semibold text-dark"><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars((string) $header->request_by) ?></div>
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted small fw-semibold mb-1">Keterangan / Keperluan</label>
-                <div class="text-dark bg-light p-2 rounded small"><?= !empty($header->keterangan) ? nl2br(htmlspecialchars($header->keterangan)) : '<span class="text-muted">Tidak ada keterangan</span>' ?></div>
+                <div class="text-dark bg-light p-2 rounded small"><?= !empty($header->keterangan) ? nl2br(htmlspecialchars((string) $header->keterangan)) : '<span class="text-muted">Tidak ada keterangan</span>' ?></div>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">Status Pencatatan</label>
@@ -176,20 +176,20 @@ function get_journal_badge($status)
                         foreach ($details as $detail) : ?>
                             <tr>
                                 <td class="text-center fw-semibold text-muted"><?= $no++ ?></td>
-                                <td><?= isset($coa_map[$detail->coa_code]) ? htmlspecialchars($coa_map[$detail->coa_code]) : htmlspecialchars($detail->coa_code) ?></td>
-                                <td class="fw-medium"><?= htmlspecialchars($detail->pengeluaran) ?></td>
-                                <td><?= htmlspecialchars($detail->spesifikasi) ?: '<span class="text-muted">-</span>' ?></td>
+                                <td><?= isset($coa_map[$detail->coa_code]) ? htmlspecialchars($coa_map[$detail->coa_code]) : htmlspecialchars((string) $detail->coa_code) ?></td>
+                                <td class="fw-medium"><?= htmlspecialchars((string) $detail->pengeluaran) ?></td>
+                                <td><?= htmlspecialchars((string) $detail->spesifikasi) ?: '<span class="text-muted">-</span>' ?></td>
                                 <td class="text-center"><?= $detail->jumlah ?></td>
-                                <td class="text-end">Rp <?= number_format($detail->nominal, 0, ',', '.') ?></td>
-                                <td class="text-end fw-semibold">Rp <?= number_format($detail->total, 0, ',', '.') ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $detail->nominal, 0, ',', '.') ?></td>
+                                <td class="text-end fw-semibold">Rp <?= number_format((float) $detail->total, 0, ',', '.') ?></td>
                                 <td>
                                     <?php
                                     $detail_evidences = isset($evidences[$detail->id]) ? $evidences[$detail->id] : [];
                                     if (!empty($detail_evidences)) : ?>
                                         <div class="d-flex flex-wrap gap-1">
                                             <?php foreach ($detail_evidences as $evidence) : ?>
-                                                <a href="<?= base_url('assets/expense_petty_cash/' . $evidence->encrypted_name) ?>" target="_blank" class="badge bg-light text-dark border text-decoration-none p-1 px-2" title="<?= htmlspecialchars($evidence->original_name) ?>">
-                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen($evidence->original_name) > 16 ? substr($evidence->original_name, 0, 16) . '...' : $evidence->original_name) ?>
+                                                <a href="<?= base_url('assets/expense_petty_cash/' . $evidence->encrypted_name) ?>" target="_blank" class="badge bg-light text-dark border text-decoration-none p-1 px-2" title="<?= htmlspecialchars((string) $evidence->original_name) ?>">
+                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen((string) $evidence->original_name) > 16 ? substr((string) $evidence->original_name, 0, 16) . '...' : $evidence->original_name) ?>
                                                 </a>
                                             <?php endforeach; ?>
                                         </div>
@@ -208,17 +208,17 @@ function get_journal_badge($status)
                 <tfoot class="table-light">
                     <tr>
                         <th colspan="6" class="text-end fw-bold py-2">Grand Total Pengeluaran:</th>
-                        <th class="text-end fw-bold text-primary py-2 fs-6">Rp <?= number_format($header->grand_total, 0, ',', '.') ?></th>
+                        <th class="text-end fw-bold text-primary py-2 fs-6">Rp <?= number_format((float) $header->grand_total, 0, ',', '.') ?></th>
                         <th></th>
                     </tr>
                     <tr class="bg-light">
                         <th colspan="6" class="text-end fw-semibold text-muted py-2">Budget Master:</th>
-                        <th class="text-end fw-semibold text-muted py-2">Rp <?= number_format($budget, 0, ',', '.') ?></th>
+                        <th class="text-end fw-semibold text-muted py-2">Rp <?= number_format((float) $budget, 0, ',', '.') ?></th>
                         <th></th>
                     </tr>
                     <tr class="bg-light">
                         <th colspan="6" class="text-end fw-bold py-2">Sisa Budget Tersedia:</th>
-                        <th class="text-end fw-bold text-success py-2">Rp <?= number_format($sisa_budget, 0, ',', '.') ?></th>
+                        <th class="text-end fw-bold text-success py-2">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></th>
                         <th></th>
                     </tr>
                 </tfoot>
@@ -230,7 +230,7 @@ function get_journal_badge($status)
         <!-- Jurnal Section -->
         <?php
         $jurnal_company = $header->company;
-        $jurnal_tanggal = date('d/m/Y', strtotime($header->tanggal));
+        $jurnal_tanggal = date('d/m/Y', strtotime((string) $header->tanggal));
         $jurnal_grand_total = (float)$header->grand_total;
         ?>
         <div class="card border border-light-subtle rounded-3 bg-light shadow-none">
@@ -259,10 +259,10 @@ function get_journal_badge($status)
                                     ?>
                                         <tr>
                                             <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                            <td><?= htmlspecialchars($d->coa_code) ?></td>
-                                            <td><?= htmlspecialchars($coa_nama) ?></td>
+                                            <td><?= htmlspecialchars((string) $d->coa_code) ?></td>
+                                            <td><?= htmlspecialchars((string) $coa_nama) ?></td>
                                             <td class="text-center">STM</td>
-                                            <td class="text-end">Rp <?= number_format($d->total, 0, ',', '.') ?></td>
+                                            <td class="text-end">Rp <?= number_format((float) $d->total, 0, ',', '.') ?></td>
                                             <td class="text-end text-muted">-</td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -272,15 +272,15 @@ function get_journal_badge($status)
                                         <td>Kas Kecil</td>
                                         <td class="text-center">STM</td>
                                         <td class="text-end text-muted">-</td>
-                                        <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                        <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
                                     <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -314,10 +314,10 @@ function get_journal_badge($status)
                                     ?>
                                         <tr>
                                             <td class="text-center"><?= $jurnal_tanggal ?></td>
-                                            <td><?= htmlspecialchars($d->coa_code) ?></td>
-                                            <td><?= htmlspecialchars($coa_nama) ?></td>
+                                            <td><?= htmlspecialchars((string) $d->coa_code) ?></td>
+                                            <td><?= htmlspecialchars((string) $coa_nama) ?></td>
                                             <td class="text-center"><?= $jurnal_company ?></td>
-                                            <td class="text-end">Rp <?= number_format($d->total, 0, ',', '.') ?></td>
+                                            <td class="text-end">Rp <?= number_format((float) $d->total, 0, ',', '.') ?></td>
                                             <td class="text-end text-muted">-</td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -327,15 +327,15 @@ function get_journal_badge($status)
                                         <td>Hutang ke STM</td>
                                         <td class="text-center"><?= $jurnal_company ?></td>
                                         <td class="text-end text-muted">-</td>
-                                        <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                        <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
                                     <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -363,7 +363,7 @@ function get_journal_badge($status)
                                     <td><?= $coa_piutang ?></td>
                                     <td>Piutang <?= $jurnal_company ?></td>
                                     <td class="text-center">STM</td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                     <td class="text-end text-muted">-</td>
                                 </tr>
                                 <tr class="table-warning">
@@ -372,14 +372,14 @@ function get_journal_badge($status)
                                     <td>Kas Kecil</td>
                                     <td class="text-center">STM</td>
                                     <td class="text-end text-muted">-</td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
                                 <tr>
                                     <td colspan="4" class="text-end">Balancing:</td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
-                                    <td class="text-end">Rp <?= number_format($jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
                                 </tr>
                             </tfoot>
                         </table>

@@ -39,7 +39,7 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 			<?php foreach ($listLevel1 as $key => $value) : ?>
 				<option value="<?= $value['code_lv1']; ?>"
 					<?= ($code_lv1 == $value['code_lv1']) ? 'selected' : ''; ?>>
-					<?= strtoupper($value['nama']); ?>
+					<?= strtoupper((string) $value['nama']); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
@@ -57,7 +57,7 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 				<?php foreach ($listLevel2 as $key => $value) : ?>
 					<option value="<?= $value['code_lv2']; ?>"
 						<?= ($code_lv2 == $value['code_lv2']) ? 'selected' : ''; ?>>
-						<?= strtoupper($value['nama']); ?>
+						<?= strtoupper((string) $value['nama']); ?>
 					</option>
 				<?php endforeach; ?>
 			<?php endif; ?>
@@ -76,7 +76,7 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 				<?php foreach ($listLevel3 as $key => $value) : ?>
 					<option value="<?= $value['code_lv3']; ?>"
 						<?= ($code_lv3 == $value['code_lv3']) ? 'selected' : ''; ?>>
-						<?= strtoupper($value['nama']); ?>
+						<?= strtoupper((string) $value['nama']); ?>
 					</option>
 				<?php endforeach; ?>
 			<?php endif; ?>
@@ -161,7 +161,7 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 			<?php foreach ($satuan_packing as $value) : ?>
 				<option value="<?= $value->id; ?>"
 					<?= ($value->id == $id_unit_packing) ? 'selected' : ''; ?>>
-					<?= strtoupper($value->code); ?>
+					<?= strtoupper((string) $value->code); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
@@ -180,7 +180,7 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 			<?php foreach ($satuan as $value) : ?>
 				<option value="<?= $value->id; ?>"
 					<?= ($value->id == $id_unit) ? 'selected' : ''; ?>>
-					<?= strtoupper($value->code); ?>
+					<?= strtoupper((string) $value->code); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>

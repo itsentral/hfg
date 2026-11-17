@@ -108,64 +108,64 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                     <tbody>
                         <tr>
                             <td>Reject Supplier</td>
-                            <td class="text-end"><?= number_format($result->reject_supplier, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->reject_supplier, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr>
                             <td>Waste Potong</td>
-                            <td class="text-end"><?= number_format($result->waste_potong, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->waste_potong, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr>
                             <td>NG Internal</td>
-                            <td class="text-end"><?= number_format($result->ng_internal, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->ng_internal, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr>
                             <td>NG Supplier</td>
-                            <td class="text-end"><?= number_format($result->ng_supplier, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->ng_supplier, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr>
                             <td>Plat BS</td>
-                            <td class="text-end"><?= number_format($result->plat_bs, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->plat_bs, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr class="table-success">
                             <td><strong>FG</strong></td>
-                            <td class="text-end"><strong><?= number_format($result->fg_kg, 3) ?></strong></td>
-                            <td class="text-end"><strong><?= number_format($result->fg_qty, 2) ?></strong></td>
+                            <td class="text-end"><strong><?= number_format((float) $result->fg_kg, 3) ?></strong></td>
+                            <td class="text-end"><strong><?= number_format((float) $result->fg_qty, 2) ?></strong></td>
                         </tr>
                         <tr>
                             <td>KW2 Internal</td>
-                            <td class="text-end"><?= number_format($result->kw2_internal_kg, 3) ?></td>
-                            <td class="text-end"><?= number_format($result->kw2_internal_qty, 2) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->kw2_internal_kg, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->kw2_internal_qty, 2) ?></td>
                         </tr>
                         <tr>
                             <td>KW2 Supplier</td>
-                            <td class="text-end"><?= number_format($result->kw2_supplier_kg, 3) ?></td>
-                            <td class="text-end"><?= number_format($result->kw2_supplier_qty, 2) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->kw2_supplier_kg, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->kw2_supplier_qty, 2) ?></td>
                         </tr>
                         <tr>
                             <td>Tong Coil</td>
-                            <td class="text-end"><?= number_format($result->tong_coil, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $result->tong_coil, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                         <tr>
                             <td>Cover Wrapping</td>
-                            <td class="text-end"><?= number_format($report->berat_cover_wrapping, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $report->berat_cover_wrapping, 3) ?></td>
                             <td class="text-end">—</td>
                         </tr>
                     </tbody>
                     <tfoot class="table-dark">
                         <tr>
                             <td><strong>Total Berat Coil</strong></td>
-                            <td class="text-end"><strong><?= number_format($result->total_berat_coil, 3) ?></strong></td>
+                            <td class="text-end"><strong><?= number_format((float) $result->total_berat_coil, 3) ?></strong></td>
                             <td></td>
                         </tr>
                         <tr>
                             <td><strong>Net Hasil Produksi</strong></td>
-                            <td class="text-end"><strong><?= number_format($result->net_hasil_produksi, 3) ?></strong></td>
+                            <td class="text-end"><strong><?= number_format((float) $result->net_hasil_produksi, 3) ?></strong></td>
                             <td></td>
                         </tr>
                     </tfoot>
@@ -215,7 +215,7 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                         ?>
                         <tr>
                             <td><?= $label ?></td>
-                            <td class="text-end"><?= number_format($pct, 2) ?>%</td>
+                            <td class="text-end"><?= number_format((float) $pct, 2) ?>%</td>
                             <td>
                                 <div class="progress" style="height:12px;">
                                     <div class="progress-bar bg-<?= $yield_colors[$key] ?>"
@@ -240,13 +240,13 @@ $badge_color = isset($status_color[$report->status]) ? $status_color[$report->st
                     <tr>
                         <td width="50%">Berat Satuan Aktual</td>
                         <td class="text-end fw-bold">
-                            <?= $result->fg_qty > 0 ? number_format($result->berat_satuan_fg, 4) . ' kg' : '—' ?>
+                            <?= $result->fg_qty > 0 ? number_format((float) $result->berat_satuan_fg, 4) . ' kg' : '—' ?>
                         </td>
                     </tr>
                     <tr>
                         <td>Berat Standar</td>
                         <td class="text-end">
-                            <?= $berat_standar > 0 ? number_format($berat_standar, 4) . ' kg' : '—' ?>
+                            <?= $berat_standar > 0 ? number_format((float) $berat_standar, 4) . ' kg' : '—' ?>
                         </td>
                     </tr>
                     <?php if ($deviasi): ?>

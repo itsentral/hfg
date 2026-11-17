@@ -258,7 +258,7 @@
           <select class="form-select form-select-sm" id="filterSupplier" style="width: 220px;">
             <option value="">(Semua Supplier)</option>
             <?php if (!empty($suppliers)): foreach ($suppliers as $sup): ?>
-              <option value="<?= htmlspecialchars($sup['id_suplier']) ?>"><?= htmlspecialchars($sup['nama_supplier']) ?></option>
+              <option value="<?= htmlspecialchars((string) $sup['id_suplier']) ?>"><?= htmlspecialchars((string) $sup['nama_supplier']) ?></option>
             <?php endforeach; endif; ?>
           </select>
         </div>

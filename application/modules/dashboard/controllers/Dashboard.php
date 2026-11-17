@@ -139,7 +139,7 @@ class Dashboard extends Admin_Controller
 			$all_approval = 0;
 			foreach ($get_list_all_pr_approval_summary as $all_pr_approval) {
 
-				if (date('m', strtotime($all_pr_approval['max_approval_date'])) == sprintf('%02d', $i)) {
+				if (date('m', strtotime((string) $all_pr_approval['max_approval_date'])) == sprintf('%02d', $i)) {
 					if ($all_pr_approval['aktual'] <= $all_pr_approval['max_approval_date']) {
 						$ontime_approval += 1;
 					} else {
@@ -293,7 +293,7 @@ class Dashboard extends Admin_Controller
 			$all_release = 0;
 			foreach ($get_list_all_po_release_summary as $all_po_release) {
 
-				if (date('m', strtotime($all_po_release['max_approval_date'])) == sprintf('%02d', $i)) {
+				if (date('m', strtotime((string) $all_po_release['max_approval_date'])) == sprintf('%02d', $i)) {
 					if ($all_po_release['aktual'] <= $all_po_release['max_approval_date']) {
 						$ontime_release += 1;
 					} else {
@@ -480,7 +480,7 @@ class Dashboard extends Admin_Controller
 			$all_approval = 0;
 			foreach ($get_list_all_pr_approval_summary as $all_pr_approval) {
 				if (str_replace(' ', '', $all_pr_approval['max_approval_date']) !== "") {
-					if (date('m', strtotime($all_pr_approval['max_approval_date'])) == sprintf('%02d', $i)) {
+					if (date('m', strtotime((string) $all_pr_approval['max_approval_date'])) == sprintf('%02d', $i)) {
 						if ($all_pr_approval['aktual'] <= $all_pr_approval['max_approval_date']) {
 							$ontime_approval += 1;
 						} else {
@@ -701,9 +701,9 @@ class Dashboard extends Admin_Controller
 			foreach ($get_list_all_po_release_summary as $all_po_release) {
 
 				if (str_replace(' ', '', $all_po_release['max_approval_date']) !== '') {
-					if (date('m', strtotime($all_po_release['max_approval_date'])) == sprintf('%02d', $i)) {
+					if (date('m', strtotime((string) $all_po_release['max_approval_date'])) == sprintf('%02d', $i)) {
 						if ($i == '1') {
-							print($all_po_release['no_pr'] . ' - ' . $all_po_release['max_approval_date'] . ' - ' . date('m', strtotime($all_po_release['max_approval_date'])) . ' - ' . $i . "<br>");
+							print($all_po_release['no_pr'] . ' - ' . $all_po_release['max_approval_date'] . ' - ' . date('m', strtotime((string) $all_po_release['max_approval_date'])) . ' - ' . $i . "<br>");
 						}
 						if ($all_po_release['aktual'] <= $all_po_release['max_approval_date']) {
 							$ontime_release += 1;
@@ -740,7 +740,7 @@ class Dashboard extends Admin_Controller
 		$d_Header .= "<select id='noso_" . $id . "' class='chosen_select form-control input-sm inline-blockd chosen_select salesorder' data-type='exis'>";
 		$d_Header .= "<option value='0'>Select Sales order</option>";
 		foreach ($sql_beet as $val => $valx) {
-			$d_Header .= "<option value='" . $valx['no_so'] . "'>" . $valx['no_so'] . "  [" . strtoupper(date('d-M-Y', strtotime($valx['delivery_date']))) . "] / " . strtoupper($valx['name_customer']) . "</option>";
+			$d_Header .= "<option value='" . $valx['no_so'] . "'>" . $valx['no_so'] . "  [" . strtoupper(date('d-M-Y', strtotime((string) $valx['delivery_date']))) . "] / " . strtoupper((string) $valx['name_customer']) . "</option>";
 		}
 		$d_Header .= "</select>";
 		$d_Header .= "</td>";
@@ -774,7 +774,7 @@ class Dashboard extends Admin_Controller
 		$d_Header .= "<select id='noso2_" . $id . "' class='chosen_select form-control input-sm inline-blockd chosen_select salesorder' data-type='doha'>";
 		$d_Header .= "<option value='0'>Select Sales order</option>";
 		foreach ($sql_beet as $val => $valx) {
-			$d_Header .= "<option value='" . $valx['no_so'] . "'>" . $valx['no_so'] . "  [" . strtoupper(date('d-M-Y', strtotime($valx['delivery_date']))) . "] / " . strtoupper($valx['name_customer']) . "</option>";
+			$d_Header .= "<option value='" . $valx['no_so'] . "'>" . $valx['no_so'] . "  [" . strtoupper(date('d-M-Y', strtotime((string) $valx['delivery_date']))) . "] / " . strtoupper((string) $valx['name_customer']) . "</option>";
 		}
 		$d_Header .= "</select>";
 		$d_Header .= "</td>";
@@ -886,11 +886,11 @@ class Dashboard extends Admin_Controller
 
 		// echo $qtyfg1;
 		echo json_encode(array(
-			'order' 		=> number_format($qty_order1),
-			'propose' 	=> number_format($qty_propose1),
-			'fg' 				=> number_format($qtyfg1),
-			'bal' 			=> number_format($qtybal1),
-			'progres' 	=> number_format($progres1, 2) . ' %',
+			'order' 		=> number_format((float) $qty_order1),
+			'propose' 	=> number_format((float) $qty_propose1),
+			'fg' 				=> number_format((float) $qtyfg1),
+			'bal' 			=> number_format((float) $qtybal1),
+			'progres' 	=> number_format((float) $progres1, 2) . ' %',
 			'no_so' 		=> $no_so,
 			'id'				=> $id,
 			'over' 			=> $over1,
@@ -1067,7 +1067,7 @@ class Dashboard extends Admin_Controller
 
 			$hasil .= '<tr>';
 			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . $no_po . '</td>';
-			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . date('d F Y', strtotime($item_po->tanggal)) . '</td>';
+			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . date('d F Y', strtotime((string) $item_po->tanggal)) . '</td>';
 			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . $item_po->no_surat . '</td>';
 			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . $item_po->nm_vendor . '</td>';
 			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . $item_po->matauang . '</td>';
@@ -1077,8 +1077,8 @@ class Dashboard extends Admin_Controller
 			foreach ($get_list_detail as $item_po_detail) {
 				if ($no_po_detail == 1) {
 					$hasil .= '<td class="text-left font_11">' . $item_po_detail->namamaterial . '</td>';
-					$hasil .= '<td class="text-right font_11">' . number_format($item_po_detail->qty) . '</td>';
-					$hasil .= '<td class="text-right font_11">' . number_format($item_po_detail->hargasatuan, 2) . '</td>';
+					$hasil .= '<td class="text-right font_11">' . number_format((float) $item_po_detail->qty) . '</td>';
+					$hasil .= '<td class="text-right font_11">' . number_format((float) $item_po_detail->hargasatuan, 2) . '</td>';
 				}
 				$ttl_qty_po += $item_po_detail->qty;
 				$no_po_detail++;
@@ -1195,7 +1195,7 @@ class Dashboard extends Admin_Controller
 			}
 
 
-			$hasil .= '<td class="text-right font_11" rowspan="' . $no_rowspan . '">' . number_format($item_po->subtotal, 2) . '</td>';
+			$hasil .= '<td class="text-right font_11" rowspan="' . $no_rowspan . '">' . number_format((float) $item_po->subtotal, 2) . '</td>';
 			$hasil .= '<td class="text-center font_11" rowspan="' . $no_rowspan . '">' . $status_incoming . '</td>';
 
 			$list_incoming = '';
@@ -1206,7 +1206,7 @@ class Dashboard extends Admin_Controller
 				->get()
 				->result();
 			foreach ($get_incoming as $item_incoming) {
-				$list_incoming .= '<a href="javascript:void(0);" class="detail_incoming" data-tipe_incoming="material" data-kode_trans="' . $item_incoming->kode_trans . '" data-no_po="' . $item_po->no_po . '">' . $item_incoming->kode_trans . ' - ' . number_format($item_incoming->jumlah_mat) . '</a> <br>';
+				$list_incoming .= '<a href="javascript:void(0);" class="detail_incoming" data-tipe_incoming="material" data-kode_trans="' . $item_incoming->kode_trans . '" data-no_po="' . $item_po->no_po . '">' . $item_incoming->kode_trans . ' - ' . number_format((float) $item_incoming->jumlah_mat) . '</a> <br>';
 			}
 
 			$get_incoming2 = $this->db
@@ -1216,7 +1216,7 @@ class Dashboard extends Admin_Controller
 				->get()
 				->result();
 			foreach ($get_incoming2 as $item_incoming2) {
-				$list_incoming .= '<a href="javascript:void(0);" class="detail_incoming" data-tipe_incoming="stok" data-kode_trans="' . $item_incoming2->kode_trans . '" data-no_po="' . $item_po->no_po . '">' . $item_incoming2->kode_trans . ' - ' . number_format($item_incoming2->jumlah_mat) . '</a> <br>';
+				$list_incoming .= '<a href="javascript:void(0);" class="detail_incoming" data-tipe_incoming="stok" data-kode_trans="' . $item_incoming2->kode_trans . '" data-no_po="' . $item_po->no_po . '">' . $item_incoming2->kode_trans . ' - ' . number_format((float) $item_incoming2->jumlah_mat) . '</a> <br>';
 			}
 
 			$hasil .= '<td class="text-left font_11" rowspan="' . $no_rowspan . '">' . $list_incoming . ' </td>';
@@ -1230,8 +1230,8 @@ class Dashboard extends Admin_Controller
 				if ($no_po_detail > 1) {
 					$hasil .= '<tr>';
 					$hasil .= '<td class="text-left font_11">' . $item_po_detail->namamaterial . '</td>';
-					$hasil .= '<td class="text-right font_11">' . number_format($item_po_detail->qty) . '</td>';
-					$hasil .= '<td class="text-right font_11">' . number_format($item_po_detail->hargasatuan, 2) . '</td>';
+					$hasil .= '<td class="text-right font_11">' . number_format((float) $item_po_detail->qty) . '</td>';
+					$hasil .= '<td class="text-right font_11">' . number_format((float) $item_po_detail->hargasatuan, 2) . '</td>';
 					$hasil .= '</tr>';
 				}
 				$no_po_detail++;
@@ -1299,7 +1299,7 @@ class Dashboard extends Admin_Controller
 		} else {
 			$get_invoice = $this->db->get_where('tr_invoice_po', ['id' => $id])->row_array();
 			$id_po = str_replace(', ', ',', $get_invoice['no_po']);
-			$no_incoming = explode(',', $id_po);
+			$no_incoming = explode(',', (string) $id_po);
 
 			$this->template->set('data_invoice', $get_invoice);
 			$this->template->set('no_incoming', $no_incoming);

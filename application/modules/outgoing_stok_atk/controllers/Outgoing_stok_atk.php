@@ -56,7 +56,7 @@ class Outgoing_stok_atk extends Admin_Controller
       $id_dept        = $data['id_dept'];
       $pic            = $data['pic'];
       $keterangan      = $data['keterangan'];
-      $tanggal        = date('Y-m-d', strtotime($data['tanggal']));
+      $tanggal        = date('Y-m-d', strtotime((string) $data['tanggal']));
 
       if (!empty($data['detail'])) {
         $detail      = $data['detail'];
@@ -95,7 +95,7 @@ class Outgoing_stok_atk extends Admin_Controller
             $ArrInsertDetail[$val]['id_material']   = $valx['id'];
             $ArrInsertDetail[$val]['qty_order']     = $qty_berat;
             $ArrInsertDetail[$val]['qty_oke']       = $qty_berat;
-            $ArrInsertDetail[$val]['keterangan']     = strtolower($valx['ket_request']);
+            $ArrInsertDetail[$val]['keterangan']     = strtolower((string) $valx['ket_request']);
             $ArrInsertDetail[$val]['update_by']     = $this->id_user;
             $ArrInsertDetail[$val]['update_date']   = $this->datetime;
 
@@ -145,7 +145,7 @@ class Outgoing_stok_atk extends Admin_Controller
         $nm_gudang_ke = '';
         $get_nm_gudang_ke = $this->db->get_where('warehouse', ['id' => $get_warehouse->id_gudang_ke])->row();
         if (!empty($get_nm_gudang_ke)) {
-          $nm_gudang_ke = strtoupper($get_nm_gudang_ke->nm_gudang);
+          $nm_gudang_ke = strtoupper((string) $get_nm_gudang_ke->nm_gudang);
         }
 
         $get_warehouse_detail = $this->db->get_where('warehouse_adjustment_detail', ['kode_trans' => $kode_trans])->result();
@@ -211,7 +211,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
 
           $id_costbook = generate_no_costbook();
-          $urutan = (int) substr($id_costbook, 13, 5);
+          $urutan = (int) substr((string) $id_costbook, 13, 5);
           $urutan++;
           $tahun = date('Y-m-');
           $huruf = "CBO-";
@@ -364,7 +364,7 @@ class Outgoing_stok_atk extends Admin_Controller
       foreach ($get_dept_ms as $d) {
         $listDepartment[] = [
           'id' => $d['id'],
-          'nama' => strtoupper($d['nama']),
+          'nama' => strtoupper((string) $d['nama']),
           'nm_comp' => $companyLabel
         ];
       }
@@ -413,7 +413,7 @@ class Outgoing_stok_atk extends Admin_Controller
             $ArrInsertDetail[$val]['id']             = $valx['id'];
             $ArrInsertDetail[$val]['qty_order']     = $qty_berat;
             $ArrInsertDetail[$val]['qty_oke']       = $qty_berat;
-            $ArrInsertDetail[$val]['keterangan']     = strtolower($valx['keterangan']);
+            $ArrInsertDetail[$val]['keterangan']     = strtolower((string) $valx['keterangan']);
             $ArrInsertDetail[$val]['update_by']     = $this->id_user;
             $ArrInsertDetail[$val]['update_date']   = $this->datetime;
           }
@@ -471,7 +471,7 @@ class Outgoing_stok_atk extends Admin_Controller
       if (!empty($getData[0]['id_dept'])) {
         $get_dept_ms = $this->db->get_where('ms_department', ['id' => $getData[0]['id_dept']])->row_array();
         if (!empty($get_dept_ms)) {
-          $nm_dept = strtoupper($get_dept_ms['nama']) . ' - ' . get_company_name(true, true);
+          $nm_dept = strtoupper((string) $get_dept_ms['nama']) . ' - ' . get_company_name(true, true);
         }
       }
 
@@ -497,7 +497,7 @@ class Outgoing_stok_atk extends Admin_Controller
     $printby    = get_name('users', 'nm_lengkap', 'id_user', $this->auth->user_id());
 
     $data_url    = base_url();
-    $Split_Beda    = explode('/', $data_url);
+    $Split_Beda    = explode('/', (string) $data_url);
     $Jum_Beda    = count($Split_Beda);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
@@ -660,7 +660,7 @@ class Outgoing_stok_atk extends Admin_Controller
     $printby    = get_name('users', 'nm_lengkap', 'id_user', $this->auth->user_id());
 
     $data_url    = base_url();
-    $Split_Beda    = explode('/', $data_url);
+    $Split_Beda    = explode('/', (string) $data_url);
     $Jum_Beda    = count($Split_Beda);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 

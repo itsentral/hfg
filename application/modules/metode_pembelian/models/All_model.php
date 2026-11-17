@@ -336,7 +336,7 @@ class All_model extends BF_Model
 		$newcode = '';
 		$data = $this->GetOneData('ms_generate', array('tipe' => $tipe));
 		if ($data !== false) {
-			if (stripos($data->info, 'YEAR', 0) !== false) {
+			if (stripos((string) $data->info, 'YEAR', 0) !== false) {
 				if ($data->kode_2 != date("Y")) {
 					$years = date("Y");
 					$number = 1;
@@ -367,7 +367,7 @@ class All_model extends BF_Model
 		$newcode = '';
 		$data = $this->GetOneData('ms_generate', array('tipe' => $tipe));
 		if ($data !== false) {
-			$nilai = explode(";", $data->info);
+			$nilai = explode(";", (string) $data->info);
 			$tahun = $nilai[0];
 			$bulan = $nilai[1];
 			$nomor = $data->kode_1;
@@ -768,7 +768,7 @@ class All_model extends BF_Model
 		$query = $this->db->get();
 		if ($query->num_rows() != 0) {
 			$datainfo = $query->result();
-			$nodoc = explode(';', $datainfo[0]->info);
+			$nodoc = explode(';', (string) $datainfo[0]->info);
 			$nomorurut = '';
 			if ($inisial == '') $inisial = $datainfo[0]->kode_1;
 			// tahun

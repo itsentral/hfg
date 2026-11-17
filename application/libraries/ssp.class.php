@@ -372,7 +372,7 @@ class SSP {
 		);
 	}
 	
-	static function complexJoin($request, $conn, $table, $primaryKey, $columns, $whereResult = null, $whereAll = null, $qjoin) {
+	static function complexJoin($request, $conn, $table, $primaryKey, $columns, $whereResult, $whereAll, $qjoin) {
 //        var_dump($primaryKey);exit();
         $bindings = array();
         $db = self::db($conn);
@@ -407,14 +407,14 @@ class SSP {
         // Main query to actually get the data
         $pulleddata = self::pluck($columns, 'db');
         foreach ($pulleddata as $key => $data){
-            if (strpos($data, '.') !== false) {
-                $tempdata = explode('.', $data);
+            if (strpos((string) $data, '.') !== false) {
+                $tempdata = explode('.', (string) $data);
                 $pulleddata[$key] = $tempdata[0].'`.`'.$tempdata[1];
             }
         }
        
-        if (strpos($primaryKey, '.') !== false) {
-            $tempdata = explode('.', $primaryKey);
+        if (strpos((string) $primaryKey, '.') !== false) {
+            $tempdata = explode('.', (string) $primaryKey);
             $primaryKey = $tempdata[0].'`.`'.$tempdata[1];
         }
        

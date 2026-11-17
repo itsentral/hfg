@@ -21,7 +21,7 @@ class Master_model  extends BF_Model {
 		return $query->result();
 	}
 	
-	public function getDataOrderBy($table,$where_field='',$where_value='',$field_order){
+	public function getDataOrderBy($table,$where_field,$where_value,$field_order){
 		if($where_field !='' && $where_value!=''){
 			$query = $this->db->order_by($field_order,'ASC')->get_where($table, array($where_field=>$where_value));
 		}else{
@@ -142,7 +142,7 @@ class Master_model  extends BF_Model {
 			$type = 'woven rooving';
 			$kode = 'TYP-0006';
 		}
-		$utype = strtoupper($type);
+		$utype = strtoupper((string) $type);
 		$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category = '".$kode."'")->result_array();
 		$sel = "
 
@@ -156,7 +156,7 @@ class Master_model  extends BF_Model {
 				}else {
 					$selected = '';
 				}
-				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower($valx['nm_material']))."</option>";
+				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower((string) $valx['nm_material']))."</option>";
 			}
 			$sel .= "<option value='MTL-1903000'>NONE MATERIAL</option>";
 		$sel .= "</select>";
@@ -164,7 +164,7 @@ class Master_model  extends BF_Model {
 	}
 
 	public function get_select_detail_OLD($type=NULL,$name=NULL){
-		$utype = strtoupper($type);
+		$utype = strtoupper((string) $type);
 		$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category = '$type'")->result_array();
 		if ($type == 'TYP-001519') {
 			$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category IN ('TYP-0015','TYP-0019')")->result_array();
@@ -179,7 +179,7 @@ class Master_model  extends BF_Model {
 		<select name='$name' id='$type' class='form-control input-sm'>
 			<option value='0'>Select ".$ListCat->category."</option>";
 			foreach($ListMat AS $val => $valx){
-				$sel .= "<option value='".$valx['id_material']."'>".strtoupper(strtolower($valx['nm_material']))."</option>";
+				$sel .= "<option value='".$valx['id_material']."'>".strtoupper(strtolower((string) $valx['nm_material']))."</option>";
 			}
 			$sel .= "<option value='MTL-1903000'>NONE MATERIAL</option>";
 		$sel .= "</select>";
@@ -187,7 +187,7 @@ class Master_model  extends BF_Model {
 	}
 
 	public function get_select_detailOLD($type=NULL,$name=NULL,$cat=NULL){
-		$utype = strtoupper($type);
+		$utype = strtoupper((string) $type);
 		$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category = '$type'")->result_array();
 		if ($type == 'WAX') {
 			$ListMat	= $this->db->query("SELECT * FROM raw_materials WHERE id_category='TYP-0008' OR id_category='TYP-0019' ORDER BY nm_material ASC")->result_array();
@@ -203,7 +203,7 @@ class Master_model  extends BF_Model {
 		<select name='$name' id='$type' class='form-control input-sm'>
 			<option value='0'>Select ".$cat."</option>";
 			foreach($ListMat AS $val => $valx){
-				$sel .= "<option value='".$valx['id_material']."'>".strtoupper(strtolower($valx['nm_material']))."</option>";
+				$sel .= "<option value='".$valx['id_material']."'>".strtoupper(strtolower((string) $valx['nm_material']))."</option>";
 			}
 			$sel .= "<option value='MTL-1903000'>NONE MATERIAL</option>";
 		$sel .= "</select>";
@@ -211,7 +211,7 @@ class Master_model  extends BF_Model {
 	}
 
 	public function get_select_detail($type=NULL,$name=NULL,$cat=NULL,$idm=NULL){
-		$utype = strtoupper($type);
+		$utype = strtoupper((string) $type);
 		$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category = '$type'")->result_array();
 		if ($type == 'WAX') {
 			$ListMat	= $this->db->query("SELECT * FROM raw_materials WHERE id_category='TYP-0008' OR id_category='TYP-0019' ORDER BY nm_material ASC")->result_array();
@@ -242,7 +242,7 @@ class Master_model  extends BF_Model {
 				if ('MTL-1903000' == $idm) {
 					$selected = 'selected';
 				}
-				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower($valx['nm_material']))."</option>";
+				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower((string) $valx['nm_material']))."</option>";
 			}
 			$sel .= "<option value='MTL-1903000' ".$selected.">NONE MATERIAL</option>";
 		$sel .= "</select>";
@@ -250,7 +250,7 @@ class Master_model  extends BF_Model {
 	}
 	
 	public function get_select_detailx($type=NULL,$name=NULL,$cat=NULL,$idm=NULL){
-		$utype = strtoupper($type);
+		$utype = strtoupper((string) $type);
 		$ListMat		= $this->db->query("SELECT * FROM raw_materials WHERE id_category = '$type'")->result_array();
 		if ($type == 'WAX') {
 			$ListMat	= $this->db->query("SELECT * FROM raw_materials WHERE id_category='TYP-0008' OR id_category='TYP-0019' ORDER BY nm_material ASC")->result_array();
@@ -275,7 +275,7 @@ class Master_model  extends BF_Model {
 				if ('MTL-1903000' == $idm) {
 					$selected = 'selected';
 				}
-				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower($valx['nm_material']))."</option>";
+				$sel .= "<option value='".$valx['id_material']."' ".$selected.">".strtoupper(strtolower((string) $valx['nm_material']))."</option>";
 			}
 			$sel .= "<option value='MTL-1903000' ".$selected.">NONE MATERIAL</option>";
 		$sel .= "</select>";

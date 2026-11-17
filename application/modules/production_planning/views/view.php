@@ -28,11 +28,11 @@
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td width="160" class="fw-semibold">No Plan</td>
-                        <td>: <?= htmlspecialchars($plan->plan_no) ?></td>
+                        <td>: <?= htmlspecialchars((string) $plan->plan_no) ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Tanggal Plan</td>
-                        <td>: <?= date('d/m/Y', strtotime($plan->tgl_plan)) ?></td>
+                        <td>: <?= date('d/m/Y', strtotime((string) $plan->tgl_plan)) ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Produk FG</td>
@@ -40,7 +40,7 @@
                     </tr>
                     <tr>
                         <td class="fw-semibold">ID Produk FG</td>
-                        <td>: <?= htmlspecialchars($plan->id_produk_fg) ?></td>
+                        <td>: <?= htmlspecialchars((string) $plan->id_produk_fg) ?></td>
                     </tr>
                 </table>
             </div>
@@ -48,15 +48,15 @@
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td width="160" class="fw-semibold">Target Qty</td>
-                        <td>: <?= number_format($plan->target_qty, 2) ?></td>
+                        <td>: <?= number_format((float) $plan->target_qty, 2) ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Target Berat</td>
-                        <td>: <?= $plan->target_berat ? number_format($plan->target_berat, 3) . ' kg' : '-' ?></td>
+                        <td>: <?= $plan->target_berat ? number_format((float) $plan->target_berat, 3) . ' kg' : '-' ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Due Date</td>
-                        <td>: <?= $plan->due_date ? date('d/m/Y', strtotime($plan->due_date)) : '-' ?></td>
+                        <td>: <?= $plan->due_date ? date('d/m/Y', strtotime((string) $plan->due_date)) : '-' ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Status</td>
@@ -73,7 +73,7 @@
         </div>
         <?php if ($plan->catatan): ?>
             <div class="mt-2">
-                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars($plan->catatan)) ?>
+                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars((string) $plan->catatan)) ?>
             </div>
         <?php endif; ?>
     </div>
@@ -104,17 +104,17 @@
                             <?php $total_net += $d->net_weight_coil; $total_fg += $d->estimasi_fg; ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><?= htmlspecialchars($d->no_coil) ?></td>
+                                <td><?= htmlspecialchars((string) $d->no_coil) ?></td>
                                 <td><?= htmlspecialchars($d->no_ros ?: '-') ?></td>
                                 <td><?= htmlspecialchars($d->nm_material ?: '-') ?></td>
-                                <td class="text-end"><?= number_format($d->net_weight_coil, 3) ?></td>
-                                <td class="text-end"><?= number_format($d->estimasi_fg, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $d->net_weight_coil, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $d->estimasi_fg, 3) ?></td>
                             </tr>
                         <?php endforeach; ?>
                         <tr class="table-light fw-bold">
                             <td colspan="4" class="text-end">Total:</td>
-                            <td class="text-end"><?= number_format($total_net, 3) ?></td>
-                            <td class="text-end"><?= number_format($total_fg, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $total_net, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $total_fg, 3) ?></td>
                         </tr>
                     <?php else: ?>
                         <tr>
@@ -152,11 +152,11 @@
                             ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><?= htmlspecialchars($a->no_coil) ?></td>
+                                <td><?= htmlspecialchars((string) $a->no_coil) ?></td>
                                 <td class="text-center">
-                                    <span class="badge bg-<?= $alloc_color ?>"><?= ucfirst($a->status_alloc) ?></span>
+                                    <span class="badge bg-<?= $alloc_color ?>"><?= ucfirst((string) $a->status_alloc) ?></span>
                                 </td>
-                                <td class="text-center"><?= date('d/m/Y H:i', strtotime($a->created_at)) ?></td>
+                                <td class="text-center"><?= date('d/m/Y H:i', strtotime((string) $a->created_at)) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>

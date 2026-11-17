@@ -79,7 +79,7 @@ class Mata_uang extends Admin_Controller
             return;
         }
 
-        $id        = !empty($post['id_kurs']) ? trim($post['id_kurs']) : null;
+        $id        = !empty($post['id_kurs']) ? trim((string) $post['id_kurs']) : null;
         $negara    = trim($post['negara'] ?? '');
         $kode      = strtoupper(trim($post['kode'] ?? ''));
         $mata_uang = trim($post['mata_uang'] ?? '');
@@ -106,7 +106,7 @@ class Mata_uang extends Admin_Controller
         if ($is_duplicate) {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Negara "' . htmlspecialchars($negara) . '" sudah terdaftar dalam data mata uang! Silakan pilih negara lain.'
+                'pesan'  => 'Negara "' . htmlspecialchars((string) $negara) . '" sudah terdaftar dalam data mata uang! Silakan pilih negara lain.'
             ]);
             return;
         }
@@ -132,7 +132,7 @@ class Mata_uang extends Admin_Controller
                 'pesan'  => 'Data mata uang berhasil disimpan!'
             ]);
         } else {
-            write_log('Master Mata Uang', $field_hist, 'Gagal ' . strtolower($field_hist) . ' mata uang: ' . $kode, $payload, null, 0);
+            write_log('Master Mata Uang', $field_hist, 'Gagal ' . strtolower((string) $field_hist) . ' mata uang: ' . $kode, $payload, null, 0);
             echo json_encode([
                 'status' => 0,
                 'pesan'  => 'Gagal menyimpan data mata uang!'
@@ -195,7 +195,7 @@ class Mata_uang extends Admin_Controller
         if ($new_status) {
             echo json_encode([
                 'status'     => 1,
-                'pesan'      => 'Status berhasil diubah menjadi ' . ucfirst($new_status),
+                'pesan'      => 'Status berhasil diubah menjadi ' . ucfirst((string) $new_status),
                 'new_status' => $new_status
             ]);
         } else {

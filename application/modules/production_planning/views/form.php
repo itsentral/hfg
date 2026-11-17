@@ -46,7 +46,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Catatan</label>
-                    <textarea name="catatan" class="form-control" rows="1"><?= $is_edit ? htmlspecialchars($plan->catatan) : '' ?></textarea>
+                    <textarea name="catatan" class="form-control" rows="1"><?= $is_edit ? htmlspecialchars((string) $plan->catatan) : '' ?></textarea>
                 </div>
             </div>
 
@@ -69,17 +69,17 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                                 <option value="">-- Pilih Produk --</option>
                                 <?php if (!empty($produk_list)): ?>
                                     <?php foreach ($produk_list as $p): ?>
-                                        <option value="<?= htmlspecialchars($p->code_lv4) ?>"
-                                            data-nama="<?= htmlspecialchars($p->nama) ?>"
-                                            data-trade="<?= htmlspecialchars($p->trade_name) ?>"
+                                        <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
+                                            data-nama="<?= htmlspecialchars((string) $p->nama) ?>"
+                                            data-trade="<?= htmlspecialchars((string) $p->trade_name) ?>"
                                             <?= ($is_edit && $plan->id_produk_fg == $p->code_lv4) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                                            <?= htmlspecialchars((string) $p->code_lv4) ?> — <?= htmlspecialchars((string) $p->nama) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                             <input type="hidden" name="nm_produk_fg" class="inp-nm-produk"
-                                value="<?= $is_edit ? htmlspecialchars($plan->nm_produk_fg) : '' ?>">
+                                value="<?= $is_edit ? htmlspecialchars((string) $plan->nm_produk_fg) : '' ?>">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label fw-semibold">Berat / Unit (kg)</label>
@@ -167,10 +167,10 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                 <select name="id_produk_fg" class="form-select select2-produk" required>
                     <option value="">-- Pilih Produk --</option>
                     <?php foreach ($produk_list as $p): ?>
-                        <option value="<?= htmlspecialchars($p->code_lv4) ?>"
-                            data-nama="<?= htmlspecialchars($p->nama) ?>"
-                            data-trade="<?= htmlspecialchars($p->trade_name) ?>">
-                            <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                        <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
+                            data-nama="<?= htmlspecialchars((string) $p->nama) ?>"
+                            data-trade="<?= htmlspecialchars((string) $p->trade_name) ?>">
+                            <?= htmlspecialchars((string) $p->code_lv4) ?> — <?= htmlspecialchars((string) $p->nama) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

@@ -166,21 +166,21 @@ if ($type == 'expense') {
 												<td>Nilai Pengajuan</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['jumlah'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['jumlah'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Nilai PPh</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['total_pph'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Bank Charge</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['admin_bank'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
@@ -255,10 +255,10 @@ if ($type == 'expense') {
 										echo '<td></td>';
 										echo '<td>' . $detail_kasbon_pr->nm_material . '</td>';
 										echo '<td></td>';
-										echo '<td>' . number_format($detail_kasbon_pr->qty) . '</td>';
+										echo '<td>' . number_format((float) $detail_kasbon_pr->qty) . '</td>';
 										echo '<td>' . $data_req_payment['currency'] . '</td>';
-										echo '<td class="text-right">' . number_format($detail_kasbon_pr->total_harga) . '</td>';
-										echo '<td class="text-right">' . number_format($data_req_payment['admin_bank']) . '</td>';
+										echo '<td class="text-right">' . number_format((float) $detail_kasbon_pr->total_harga) . '</td>';
+										echo '<td class="text-right">' . number_format((float) $data_req_payment['admin_bank']) . '</td>';
 										echo '<td></td>';
 										echo '<td></td>';
 										echo '</tr>';
@@ -282,21 +282,21 @@ if ($type == 'expense') {
 													<td>Nilai Pengajuan</td>
 													<td class="text-center" style="min-width: 50px;">:</td>
 													<td class="text-right">
-														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['jumlah']) ?>">
+														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['jumlah']) ?>">
 													</td>
 												</tr>
 												<tr>
 													<td>Nilai PPh</td>
 													<td class="text-center" style="min-width: 50px;">:</td>
 													<td class="text-right">
-														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>">
+														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['total_pph'], 2) ?>">
 													</td>
 												</tr>
 												<tr>
 													<td>Bank Charge</td>
 													<td class="text-center" style="min-width: 50px;">:</td>
 													<td class="text-right">
-														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>">
+														<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['admin_bank'], 2) ?>">
 													</td>
 												</tr>
 												<tr>
@@ -340,21 +340,21 @@ if ($type == 'expense') {
 												<td>Nilai Pengajuan</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($dtl->jumlah_kasbon, 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $dtl->jumlah_kasbon, 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Nilai PPh</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['total_pph'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Bank Charge</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['admin_bank'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
@@ -401,21 +401,21 @@ if ($type == 'expense') {
 												<td>Nilai Pengajuan</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($dtl->total_request, 2) ?>">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $dtl->total_request, 2) ?>">
 												</td>
 											</tr>
 											<tr>
 												<td>Nilai PPh</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['total_pph'], 2) ?>">
 												</td>
 											</tr>
 											<tr>
 												<td>Bank Charge</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>">
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['admin_bank'], 2) ?>">
 												</td>
 											</tr>
 											<tr>
@@ -456,21 +456,21 @@ if ($type == 'expense') {
 												<td>Nilai Pengajuan</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['jumlah'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['jumlah'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Nilai PPh</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['total_pph'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['total_pph'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
 												<td>Bank Charge</td>
 												<td class="text-center" style="min-width: 50px;">:</td>
 												<td class="text-right">
-													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($data_req_payment['admin_bank'], 2) ?>" readonly>
+													<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $data_req_payment['admin_bank'], 2) ?>" readonly>
 												</td>
 											</tr>
 											<tr>
@@ -503,9 +503,9 @@ if ($type == 'expense') {
 									<td><?= $coa . ' - ' . $nm_coa; ?></td>
 									<td><?= $dtl->deskripsi; ?></td>
 									<td><?= $dtl->tgl_doc; ?></td>
-									<td><?= number_format($dtl->grand_total, 2) ?></td>
+									<td><?= number_format((float) $dtl->grand_total, 2) ?></td>
 									<td><?= $data_req_payment['currency']; ?></td>
-									<td class="text-right"><?= number_format($dtl->grand_total, 2) ?></td>
+									<td class="text-right"><?= number_format((float) $dtl->grand_total, 2) ?></td>
 
 									<td class="text-center"><a href="<?= base_url('assets/expense/') . $data_req_payment['link_doc']; ?>" target="_blank"><i class="fa fa-download"></i></a></td>
 									<td>
@@ -529,7 +529,7 @@ if ($type == 'expense') {
 				<tfoot>
 					<tr class="bg-blue">
 						<th colspan="6" class="text-right">Total</th>
-						<th class="text-right"><?= number_format($gTotal, 2); ?></th>
+						<th class="text-right"><?= number_format((float) $gTotal, 2); ?></th>
 						<th colspan="3" class="text-center"></th>
 					</tr>
 				</tfoot>

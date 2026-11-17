@@ -22,11 +22,11 @@
         <!-- Header Info -->
         <div class="info-header">
             <div class="d-flex flex-wrap align-items-center gap-4">
-                <div><span class="info-label">SPK No</span><span class="info-value"><?= htmlspecialchars($spk_no) ?></span></div>
-                <div class="border-start ps-4"><span class="info-label">Tanggal SPK</span><span class="info-value"><?= isset($header['tgl_spk']) ? date('d/m/Y', strtotime($header['tgl_spk'])) : '-' ?></span></div>
+                <div><span class="info-label">SPK No</span><span class="info-value"><?= htmlspecialchars((string) $spk_no) ?></span></div>
+                <div class="border-start ps-4"><span class="info-label">Tanggal SPK</span><span class="info-value"><?= isset($header['tgl_spk']) ? date('d/m/Y', strtotime((string) $header['tgl_spk'])) : '-' ?></span></div>
                 <div class="border-start ps-4"><span class="info-label">Shift</span><span class="info-value"><?= htmlspecialchars($header['shift_names'] ?? '-') ?></span></div>
-                <div class="border-start ps-4"><span class="info-label">Target Qty</span><span class="info-value"><?= isset($header['target_qty']) ? number_format($header['target_qty']) : '-' ?></span></div>
-                <div class="border-start ps-4"><span class="info-label">Total Weight</span><span class="info-value"><?= isset($header['total_weight']) ? number_format($header['total_weight'], 2) . ' Kg' : '-' ?></span></div>
+                <div class="border-start ps-4"><span class="info-label">Target Qty</span><span class="info-value"><?= isset($header['target_qty']) ? number_format((float) $header['target_qty']) : '-' ?></span></div>
+                <div class="border-start ps-4"><span class="info-label">Total Weight</span><span class="info-value"><?= isset($header['total_weight']) ? number_format((float) $header['total_weight'], 2) . ' Kg' : '-' ?></span></div>
             </div>
         </div>
 
@@ -58,10 +58,10 @@
                         <div class="card-body p-3">
                             <?php if (!empty($product['materials'])): ?>
                                 <?php foreach ($product['materials'] as $material): ?>
-                                    <div class="material-section" data-id-material="<?= htmlspecialchars($material['id_material']) ?>">
+                                    <div class="material-section" data-id-material="<?= htmlspecialchars((string) $material['id_material']) ?>">
                                         <div class="section-title d-flex justify-content-between align-items-start">
                                             <div>
-                                                <i class="fa fa-cubes me-1"></i> <?= htmlspecialchars($material['nm_material']) ?>
+                                                <i class="fa fa-cubes me-1"></i> <?= htmlspecialchars((string) $material['nm_material']) ?>
                                                 <small class="text-muted d-block mt-1">(BOM Qty: <?= number_format($material['qty'] ?? 0, 2) ?> <?= htmlspecialchars($material['nm_unit'] ?? '') ?>)</small>
                                             </div>
                                             <div class="text-end">
@@ -76,7 +76,7 @@
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th width="4%" class="text-center">
-                                                            <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars($material['id_material']) ?>" data-target="wip">
+                                                            <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars((string) $material['id_material']) ?>" data-target="wip">
                                                         </th>
                                                         <th>Pack Code</th>
                                                         <th>Kode Internal</th>
@@ -87,7 +87,7 @@
                                                         <th class="text-center" width="10%">Status</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="pack-body-wip-<?= htmlspecialchars($material['id_material']) ?>">
+                                                <tbody id="pack-body-wip-<?= htmlspecialchars((string) $material['id_material']) ?>">
                                                     <tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
                                                 </tbody>
                                             </table>
@@ -100,7 +100,7 @@
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th width="4%" class="text-center">
-                                                            <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars($material['id_material']) ?>" data-target="pro">
+                                                            <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars((string) $material['id_material']) ?>" data-target="pro">
                                                         </th>
                                                         <th>Pack Code</th>
                                                         <th>Kode Internal</th>
@@ -111,7 +111,7 @@
                                                         <th class="text-center" width="10%">Status</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="pack-body-pro-<?= htmlspecialchars($material['id_material']) ?>">
+                                                <tbody id="pack-body-pro-<?= htmlspecialchars((string) $material['id_material']) ?>">
                                                     <tr><td colspan="8" class="text-center py-2"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
                                                 </tbody>
                                             </table>
@@ -197,7 +197,7 @@
 
 <script>
 const BASE_URL = siteurl + active_controller;
-const SPK_NO = '<?= addslashes($spk_no) ?>';
+const SPK_NO = '<?= addslashes((string) $spk_no) ?>';
 
 $(document).ready(function() {
 

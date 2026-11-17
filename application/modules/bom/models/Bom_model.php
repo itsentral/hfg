@@ -125,7 +125,7 @@ class Bom_model extends CI_Model
         $id_bom = !empty($header['id']) ? (int) $header['id'] : null;
 
         if ($id_bom) {
-            $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
+            $first_uniq = 'Type ' . str_pad((string) $id_bom, 3, '0', STR_PAD_LEFT) . '.1';
             $this->db->update('ms_bom_header', [
                 'nm_produk'   => $header['nm_produk'],
                 'varian_type' => $first_uniq,
@@ -136,7 +136,7 @@ class Bom_model extends CI_Model
             $existing = $this->get_bom_by_produk($header['id_produk']);
             if ($existing) {
                 $id_bom = $existing->id;
-                $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
+                $first_uniq = 'Type ' . str_pad((string) $id_bom, 3, '0', STR_PAD_LEFT) . '.1';
                 $this->db->update('ms_bom_header', [
                     'nm_produk'   => $header['nm_produk'],
                     'varian_type' => $first_uniq,
@@ -155,7 +155,7 @@ class Bom_model extends CI_Model
                     'created_at'  => $now,
                 ]);
                 $id_bom = $this->db->insert_id();
-                $first_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.1';
+                $first_uniq = 'Type ' . str_pad((string) $id_bom, 3, '0', STR_PAD_LEFT) . '.1';
                 $this->db->update('ms_bom_header', ['varian_type' => $first_uniq], ['id' => $id_bom]);
             }
         }
@@ -181,7 +181,7 @@ class Bom_model extends CI_Model
             }
 
             // Opsi A: Unik Global kanonikal dari sistem
-            $no_uniq = 'Type ' . str_pad($id_bom, 3, '0', STR_PAD_LEFT) . '.' . ($urut + 1);
+            $no_uniq = 'Type ' . str_pad((string) $id_bom, 3, '0', STR_PAD_LEFT) . '.' . ($urut + 1);
 
             $this->db->insert('ms_bom_detail', [
                 'id_bom'          => $id_bom,

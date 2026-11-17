@@ -11,7 +11,7 @@ $today = date('l, d F Y [H:i:s]');
 $rest_d		= $this->db->get_where('warehouse_adjustment_detail', array('kode_trans' => $kode_trans))->result_array();
 $rest_data 	= $this->db->get_where('warehouse_adjustment', array('kode_trans' => $kode_trans))->result_array();
 
-$TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime($rest_data[0]['tanggal'])) : (isset($rest_data[0]['created_date']) ? date('d F Y', strtotime($rest_data[0]['created_date'])) : date('d F Y'));
+$TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string) $rest_data[0]['tanggal'])) : (isset($rest_data[0]['created_date']) ? date('d F Y', strtotime((string) $rest_data[0]['created_date'])) : date('d F Y'));
 $no_ipp = isset($rest_data[0]['no_ipp']) ? $rest_data[0]['no_ipp'] : '-';
 $pic = isset($rest_data[0]['pic']) ? $rest_data[0]['pic'] : '-';
 $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
@@ -68,13 +68,13 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 		if (!empty($rest_d)) {
 			foreach ($rest_d as $val => $valx) {
 				$No++;
-				$qty_oke 		= number_format($valx['qty_oke'], 2);
-				$keterangan 	= (!empty($valx['keterangan'])) ? ucfirst($valx['keterangan']) : '-';
-				$pemeriksa 	= (!empty($valx['ket_req_po'])) ? ucfirst($valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst($valx['ket_req_pro']) : '-');
+				$qty_oke 		= number_format((float) $valx['qty_oke'], 2);
+				$keterangan 	= (!empty($valx['keterangan'])) ? ucfirst((string) $valx['keterangan']) : '-';
+				$pemeriksa 	= (!empty($valx['ket_req_po'])) ? ucfirst((string) $valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst((string) $valx['ket_req_pro']) : '-');
 				
 				echo "<tr>";
 					echo "<td align='center'>" . $No . "</td>";
-					echo "<td>" . strtoupper($valx['nm_material']) . "</td>";
+					echo "<td>" . strtoupper((string) $valx['nm_material']) . "</td>";
 					echo "<td align='center'>" . $qty_oke . "</td>";
 					echo "<td>" . $keterangan . "</td>";
 					echo "<td>" . $pemeriksa . "</td>";
@@ -163,7 +163,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 
 <?php
 $print_user = !empty($printby) ? $printby : 'admin';
-$footer = "Printed by : " . ucfirst(strtolower($print_user)) . ", " . $today . " / " . $kode_trans;
+$footer = "Printed by : " . ucfirst(strtolower((string) $print_user)) . ", " . $today . " / " . $kode_trans;
 $html = ob_get_contents();
 ob_end_clean();
 $mpdf->SetTitle($kode_trans);

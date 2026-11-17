@@ -113,24 +113,24 @@ class Incoming_asset extends Admin_Controller
 			}
 
 			$TANGGAL = (!empty($row['tanggal'])) ? $row['tanggal'] : $row['created_date'];
-			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'] : $row['created_by'];
+			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'] : $row['created_by'];
 			$print	= "<a href='" . base_url('incoming_asset/print_incoming_assets/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-warning text-white' title='Print'><i class='fa fa-print'></i></a>";
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div class='text-center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div class='text-center fw-bold'>" . $row['kode_trans'] . "</div>";
-			$nestedData[]	= "<div class='text-center'>" . date('d-M-Y', strtotime($TANGGAL)) . "</div>";
+			$nestedData[]	= "<div class='text-center'>" . date('d-M-Y', strtotime((string) $TANGGAL)) . "</div>";
 			$nestedData[]	= "<div class='text-center'>" . $row['no_ipp'] . "</div>";
 			
 			$nm_dept = get_name('ms_department', 'nama', 'id', $row['id_gudang_ke']);
 			if ($nm_dept == '0' || empty($nm_dept)) {
 				$nm_dept = '-';
 			}
-			$nestedData[]	= "<div>" . strtoupper($nm_dept) . "</div>";
-			$nestedData[]	= "<div>" . strtoupper($row['pic']) . "</div>";
-			$nestedData[]	= "<div>" . (!empty($row['note']) ? strtoupper($row['note']) : '-') . "</div>";
-			$nestedData[]	= "<div>" . strtoupper($NM_LENGKAP) . "</div>";
-			$nestedData[]	= "<div class='text-center'>" . date('d-M-Y H:i', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $nm_dept) . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $row['pic']) . "</div>";
+			$nestedData[]	= "<div>" . (!empty($row['note']) ? strtoupper((string) $row['note']) : '-') . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $NM_LENGKAP) . "</div>";
+			$nestedData[]	= "<div class='text-center'>" . date('d-M-Y H:i', strtotime((string) $row['created_date'])) . "</div>";
 			$nestedData[]	= "<div class='text-center'>" . $link . "</div>";
 			$nestedData[]	= "<div class='text-center d-flex justify-content-center gap-1'>
 									<button type='button' class='btn btn-sm btn-info text-white detailAjust' title='View Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>
@@ -187,7 +187,7 @@ class Incoming_asset extends Admin_Controller
 		);
 
 		$order_col = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'created_date';
-		$order_dir = (strtoupper($column_dir) === 'ASC') ? 'ASC' : 'DESC';
+		$order_dir = (strtoupper((string) $column_dir) === 'ASC') ? 'ASC' : 'DESC';
 
 		$sql .= " ORDER BY " . $order_col . " " . $order_dir . " ";
 		$sql .= " LIMIT " . intval($limit_start) . " ," . intval($limit_length) . " ";
@@ -204,11 +204,11 @@ class Incoming_asset extends Admin_Controller
 		$id_dept 		= isset($data['id_dept']) ? $data['id_dept'] : '';
 		$id_costcenter 	= isset($data['id_costcenter']) ? $data['id_costcenter'] : '';
 		$tanggal_trans 	= isset($data['tanggal_trans']) ? $data['tanggal_trans'] : date('Y-m-d');
-		$pic 			= isset($data['pic']) ? strtolower($data['pic']) : '';
-		$note 			= isset($data['note']) ? strtolower($data['note']) : '';
+		$pic 			= isset($data['pic']) ? strtolower((string) $data['pic']) : '';
+		$note 			= isset($data['note']) ? strtolower((string) $data['note']) : '';
 
-		$cek_type = substr($no_po, 0, 3);
-		if ($cek_type == 'POX' || substr($no_po, 0, 2) == 'PO') {
+		$cek_type = substr((string) $no_po, 0, 3);
+		if ($cek_type == 'POX' || substr((string) $no_po, 0, 2) == 'PO') {
 			$result	= $this->db->where('qty_in < qty_po')->like('id_barang', 'PLA')->get_where('tran_po_detail', array('no_po' => $no_po))->result_array();
 		} else {
 			$result	= $this->db->where('qty_in < qty_rev')->get_where('tran_non_po_detail', array('no_non_po' => $no_po))->result_array();
@@ -243,7 +243,7 @@ class Incoming_asset extends Admin_Controller
 		$dateTime		= date('Y-m-d H:i:s');
 		
 		$UserName = $this->auth->user_name() ?: ($data_session['ORI_User']['username'] ?? $this->session->userdata('app_session')['username'] ?? 'admin');
-		$cek_type = substr($no_po, 0, 3);
+		$cek_type = substr((string) $no_po, 0, 3);
 
 		if ($adjustment == 'IN' && !empty($addInMat)) {
 			$histHlp = "Adjustment incoming asset / " . $no_po;
@@ -252,7 +252,7 @@ class Incoming_asset extends Admin_Controller
 			$srcMtr			= "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRS" . $Ym . "%' ";
 			$resultMtr		= $this->db->query($srcMtr)->result_array();
 			$angkaUrut2		= isset($resultMtr[0]['maxP']) ? $resultMtr[0]['maxP'] : '';
-			$urutan2		= (int)substr($angkaUrut2, 7, 4);
+			$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 			$urutan2++;
 			$urut2			= sprintf('%04s', $urutan2);
 			$kode_trans		= "TRS" . $Ym . $urut2;
@@ -268,7 +268,7 @@ class Incoming_asset extends Admin_Controller
 				$SumMat 	+= $qtyIN;
 
 				// update detail purchase
-				if ($cek_type == 'POX' || substr($no_po, 0, 2) == 'PO') {
+				if ($cek_type == 'POX' || substr((string) $no_po, 0, 2) == 'PO') {
 					$result_det	= $this->db->get_where('tran_po_detail', array('id' => $valx['id']))->result_array();
 				} else {
 					$result_det	= $this->db->get_where('tran_non_po_detail', array('id' => $valx['id']))->result_array();
@@ -282,27 +282,27 @@ class Incoming_asset extends Admin_Controller
 				$ArrDeatilAdj[$val]['no_ipp'] 			= $no_po;
 				$ArrDeatilAdj[$val]['kode_trans'] 		= $kode_trans;
 				$ArrDeatilAdj[$val]['id_po_detail'] 	= $valx['id'];
-				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower($valx['nm_barang']);
-				$ArrDeatilAdj[$val]['nm_category'] 		= strtolower($valx['spec']);
+				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower((string) $valx['nm_barang']);
+				$ArrDeatilAdj[$val]['nm_category'] 		= strtolower((string) $valx['spec']);
 				$ArrDeatilAdj[$val]['qty_order'] 		= $qtyOrder;
 				$ArrDeatilAdj[$val]['qty_oke'] 			= $qtyIN;
-				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 				$ArrDeatilAdj[$val]['no_ba'] 		    = null;
-				$ArrDeatilAdj[$val]['ket_req_po'] 		= strtolower($valx['pemeriksa']);
+				$ArrDeatilAdj[$val]['ket_req_po'] 		= strtolower((string) $valx['pemeriksa']);
 				$ArrDeatilAdj[$val]['update_by'] 		= $UserName;
 				$ArrDeatilAdj[$val]['update_date'] 		= $dateTime;
 				$ArrDeatilAdj[$val]['check_qty_oke'] 	= $qtyIN;
-				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower($valx['keterangan']);
+				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower((string) $valx['keterangan']);
 
 				// detail check
 				$ArrDeatilChk[$val]['no_ipp'] 		= $no_po;
 				$ArrDeatilChk[$val]['id_detail'] 	= NULL;
 				$ArrDeatilChk[$val]['kode_trans'] 	= $kode_trans;
-				$ArrDeatilChk[$val]['nm_material'] 	= strtolower($valx['nm_barang']);
-				$ArrDeatilChk[$val]['nm_category'] 	= strtolower($valx['spec']);
+				$ArrDeatilChk[$val]['nm_material'] 	= strtolower((string) $valx['nm_barang']);
+				$ArrDeatilChk[$val]['nm_category'] 	= strtolower((string) $valx['spec']);
 				$ArrDeatilChk[$val]['qty_order'] 	= $qtyOrder;
 				$ArrDeatilChk[$val]['qty_oke'] 		= $qtyIN;
-				$ArrDeatilChk[$val]['keterangan'] 	= strtolower($valx['keterangan']);
+				$ArrDeatilChk[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 				$ArrDeatilChk[$val]['update_by'] 	= $UserName;
 				$ArrDeatilChk[$val]['update_date'] 	= $dateTime;
 
@@ -315,7 +315,7 @@ class Incoming_asset extends Admin_Controller
 				$ArrJurnal[$val]['unit_price'] 		= (!empty($GET_UNITPRICE[0]->unit_price)) ? $GET_UNITPRICE[0]->unit_price : 0;
 				$ArrJurnal[$val]['qty'] 			= $qtyIN;
 				$ArrJurnal[$val]['no_po'] 			= $no_po;
-				$ArrJurnal[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
+				$ArrJurnal[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
 				$ArrJurnal[$val]['id_barang'] 		= (!empty($GET_UNITPRICE[0]->id_barang)) ? $GET_UNITPRICE[0]->id_barang : NULL;
 			}
 
@@ -445,8 +445,8 @@ class Incoming_asset extends Admin_Controller
 			'checked' 		=> isset($result_header[0]->checked) ? $result_header[0]->checked : '',
 			'kode_trans' 	=> isset($result_header[0]->kode_trans) ? $result_header[0]->kode_trans : $kode_trans,
 			'no_po' 		=> isset($result_header[0]->no_ipp) ? $result_header[0]->no_ipp : '',
-			'dated' 		=> isset($result_header[0]->created_date) ? date('ymdhis', strtotime($result_header[0]->created_date)) : '',
-			'resv' 			=> (!empty($result_header[0]->tanggal)) ? date('d F Y', strtotime($result_header[0]->tanggal)) : (isset($result_header[0]->created_date) ? date('d F Y', strtotime($result_header[0]->created_date)) : '')
+			'dated' 		=> isset($result_header[0]->created_date) ? date('ymdhis', strtotime((string) $result_header[0]->created_date)) : '',
+			'resv' 			=> (!empty($result_header[0]->tanggal)) ? date('d F Y', strtotime((string) $result_header[0]->tanggal)) : (isset($result_header[0]->created_date) ? date('d F Y', strtotime((string) $result_header[0]->created_date)) : '')
 		);
 
 		$this->load->view('modal_detail', $data);

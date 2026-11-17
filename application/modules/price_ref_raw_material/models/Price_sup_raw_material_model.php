@@ -22,7 +22,7 @@ class Price_ref_raw_material_model extends CI_Model
         $Query			= "SELECT MAX(".$this->code.") as maxP FROM ".$this->table_name." WHERE ".$this->code." LIKE '".$kode."%' ";
         $resultIPP		= $this->db->query($Query)->result_array();
         $angkaUrut2		= $resultIPP[0]['maxP'];
-        $urutan2		= (int)substr($angkaUrut2, 4, 6);
+        $urutan2		= (int)substr((string) $angkaUrut2, 4, 6);
         $urutan2++;
         $urut2			= sprintf('%06s',$urutan2);
         $kode_id	    = $kode.$urut2;

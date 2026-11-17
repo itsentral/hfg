@@ -45,9 +45,9 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 					?>
 							<tr>
 								<td><?= $numb; ?></td>
-								<td><?= strtoupper($material_type) ?></td>
-								<td><?= strtoupper($material_category) ?></td>
-								<td><?= strtoupper($record->nama) ?></td>
+								<td><?= strtoupper((string) $material_type) ?></td>
+								<td><?= strtoupper((string) $material_category) ?></td>
+								<td><?= strtoupper((string) $record->nama) ?></td>
 								<td>
 									<label class="toggle-switch">
 										<input type="checkbox"

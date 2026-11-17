@@ -1,6 +1,6 @@
 <?php
 header("Content-type: application/vnd-ms-excel");
-header("Content-Disposition: attachment; filename=Excel Payment List (" . date('d F Y', strtotime($tgl_from)) . " - " . date('d F Y', strtotime($tgl_to)) . ") - " . $bank . ".xls");
+header("Content-Disposition: attachment; filename=Excel Payment List (" . date('d F Y', strtotime((string) $tgl_from)) . " - " . date('d F Y', strtotime((string) $tgl_to)) . ") - " . $bank . ".xls");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,7 +49,7 @@ header("Content-Disposition: attachment; filename=Excel Payment List (" . date('
                 echo '<td class="text-left">' . $item->tgl_doc . '</td>';
                 echo '<td class="text-left">' . $item->keperluan . '</td>';
                 echo '<td class="text-left">' . $item->tipe . '</td>';
-                echo '<td class="text-right">' . number_format($item->jumlah) . '</td>';
+                echo '<td class="text-right">' . number_format((float) $item->jumlah) . '</td>';
                 echo '<td class="text-center">' . $diajukan_oleh . '</td>';
                 echo '<td class="text-center">' . $tgl_pengajuan . '</td>';
                 echo '<td class="text-center">' . $dibayar_oleh . '</td>';
@@ -62,7 +62,7 @@ header("Content-Disposition: attachment; filename=Excel Payment List (" . date('
                     }
                     if ($get_request_payment->status == '1' || $get_request_payment->status == '2') {
                         $get_payment_approve = $this->db->get_where('payment_approve', ['no_doc' => $item->no_doc])->row();
-                        if (count($get_payment_approve) > 0) {
+                        if (!empty($get_payment_approve)) {
                             if ($get_payment_approve->status == '2') {
                                 echo '<div class="badge bg-green text-light">Paid</div>';
                             } else {

@@ -1023,9 +1023,9 @@ class BF_Model extends CI_Model
         }
 
         foreach ($this->$event as $method) {
-            if (strpos($method, '(')) {
+            if (strpos((string) $method, '(')) {
                 preg_match('/([a-zA-Z0-9\_\-]+)(\(([a-zA-Z0-9\_\-\., ]+)\))?/', $method, $matches);
-                $this->callback_parameters = explode(',', $matches[3]);
+                $this->callback_parameters = explode(',', (string) $matches[3]);
             }
 
             $data = call_user_func_array([$this, $method], [$data]);

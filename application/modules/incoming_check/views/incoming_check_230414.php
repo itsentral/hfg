@@ -10,7 +10,7 @@ $this->load->view('include/side_menu');
 					<option value='0'>All PO Number</option>
 					<?php
 						foreach($list_po AS $val => $valx){
-							echo "<option value='".$valx['no_po']."'>".strtoupper($valx['no_po'])."</option>";
+							echo "<option value='".$valx['no_po']."'>".strtoupper((string) $valx['no_po'])."</option>";
 						}
 					?>
 				</select>
@@ -18,7 +18,7 @@ $this->load->view('include/side_menu');
 					<option value='0'>All Warehouse</option>
 					<?php
 						foreach($data_gudang AS $val => $valx){
-							echo "<option value='".$valx['kd_gudang']."'>".strtoupper($valx['nm_gudang'])."</option>";
+							echo "<option value='".$valx['kd_gudang']."'>".strtoupper((string) $valx['nm_gudang'])."</option>";
 						}
 					?>
 				</select>

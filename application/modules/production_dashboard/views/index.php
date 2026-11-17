@@ -27,8 +27,8 @@
     <div class="col-md-4 col-lg-3">
         <div class="card text-white bg-success h-100">
             <div class="card-body text-center">
-                <div class="fs-4 fw-bold"><?= number_format($summary['total_stok_qty'], 0) ?> pcs</div>
-                <div class="small"><?= number_format($summary['total_stok_berat'], 0) ?> kg</div>
+                <div class="fs-4 fw-bold"><?= number_format((float) $summary['total_stok_qty'], 0) ?> pcs</div>
+                <div class="small"><?= number_format((float) $summary['total_stok_berat'], 0) ?> kg</div>
                 <div class="small mt-1"><i class="fa fa-boxes"></i> Total Stok FG</div>
             </div>
             <div class="card-footer text-center p-1">

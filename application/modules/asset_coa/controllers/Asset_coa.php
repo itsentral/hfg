@@ -42,7 +42,7 @@ class Asset_coa extends Admin_Controller
             $data        = $this->input->post();
 
             $id          = isset($data['id']) ? $data['id'] : '';
-            $keterangan  = strtoupper($data['keterangan']);
+            $keterangan  = strtoupper((string) $data['keterangan']);
             $coa         = isset($data['coa']) ? $data['coa'] : '';
             $coa_kredit  = isset($data['coa_kredit']) ? $data['coa_kredit'] : '';
             $status      = isset($data['status']) ? $data['status'] : 'Y';

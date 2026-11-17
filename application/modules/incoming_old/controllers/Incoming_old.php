@@ -86,7 +86,7 @@ class Incoming extends Admin_Controller
                 $no_po_display,
                 $row['nm_supplier'],
                 number_format((float) $row['kurs_pib'], 0, ',', '.'),
-                $row['eta_warehouse'] ? date('d-M-Y', strtotime($row['eta_warehouse'])) : '-',
+                $row['eta_warehouse'] ? date('d-M-Y', strtotime((string) $row['eta_warehouse'])) : '-',
                 "<div class='text-center'>{$sts_badge}</div>",
                 "<div class='text-center'>{$btn_incoming}</div>",
             ];
@@ -173,7 +173,7 @@ class Incoming extends Admin_Controller
             $get_no_surat = $this->db
                 ->select('no_surat')
                 ->from('tr_purchase_order')
-                ->where_in('no_po', explode(',', $get_file_incoming->no_ipp))
+                ->where_in('no_po', explode(',', (string) $get_file_incoming->no_ipp))
                 ->get()
                 ->result();
 
@@ -188,7 +188,7 @@ class Incoming extends Admin_Controller
         $data = array(
             'detail_ros'             => $result, // Ini variabel yang akan di-foreach di view terbaru
             'no_surat'               => $no_surat,
-            'tanggal'                => isset($result[0]['tgl_incoming']) ? date('d F Y', strtotime($result[0]['tgl_incoming'])) : '-',
+            'tanggal'                => isset($result[0]['tgl_incoming']) ? date('d F Y', strtotime((string) $result[0]['tgl_incoming'])) : '-',
             'file_incoming_material' => $get_file_incoming->file_incoming_material ?? ''
         );
 
@@ -629,7 +629,7 @@ class Incoming extends Admin_Controller
 
         // Ambil currency dari tr_purchase_order
         $po_data  = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
-        $currency = $po_data ? strtoupper(trim($po_data->matauang)) : 'IDR';
+        $currency = $po_data ? strtoupper(trim((string) $po_data->matauang)) : 'IDR';
 
         // COA DP: IDR = 1104-01-01, USD/lainnya = 1104-01-02
         $coa_dp          = ($currency === 'IDR') ? '1104-01-01' : '1104-01-02';
@@ -812,7 +812,7 @@ class Incoming extends Admin_Controller
                 'nm_material'     => null,
                 'id_gudang'       => $id_gudang_ke,
                 'no_coil'         => null,
-                'keterangan'      => $keterangan . " | Selisih Kurs (Kurs PIB: " . number_format($kurs_pib, 2) . ")",
+                'keterangan'      => $keterangan . " | Selisih Kurs (Kurs PIB: " . number_format((float) $kurs_pib, 2) . ")",
                 'no_reff'         => $no_po,
                 'no_request'      => $kode_trans,
                 'debet'           => ($selisih_kurs < 0) ? $selisih_kurs_abs : 0,
@@ -842,7 +842,7 @@ class Incoming extends Admin_Controller
         }
 
         // Decode memo untuk ambil id_supplier & nama_supplier
-        $memo          = !empty($header['memo']) ? json_decode($header['memo'], true) : [];
+        $memo          = !empty($header['memo']) ? json_decode((string) $header['memo'], true) : [];
         $id_supplier   = $memo['id_supplier']   ?? null;
         $nama_supplier = $memo['nama_supplier'] ?? null;
 

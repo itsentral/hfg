@@ -14,9 +14,9 @@ if (!function_exists('kartu_stok_extract_parent_spk')) {
         if ($clean === '') {
             return '';
         }
-        if (strpos($clean, '/') !== false) {
-            $parts = explode('/', $clean, 2);
-            return trim($parts[0]);
+        if (strpos((string) $clean, '/') !== false) {
+            $parts = explode('/', (string) $clean, 2);
+            return trim((string) $parts[0]);
         }
         return $clean;
     }

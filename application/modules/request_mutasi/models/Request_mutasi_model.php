@@ -146,7 +146,7 @@ class Request_mutasi_model extends BF_Model
             11 => 'K',
             12 => 'L'
         );
-        $bln_now = date('m', strtotime($tgl));
+        $bln_now = date('m', strtotime((string) $tgl));
         $kode_bln = '';
         foreach ($arr_tgl as $k => $v) {
             if ($k == $bln_now) {
@@ -161,7 +161,7 @@ class Request_mutasi_model extends BF_Model
 
         if ($query_cek == 0) {
             $kode = 1;
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'MTS-' . date('ym') . $next_kode;
         } else {
             $query = "SELECT MAX(kd_mutasi) as max_id
@@ -177,10 +177,10 @@ class Request_mutasi_model extends BF_Model
             $row = $query->row_array();
             $thn = date('T');
             $max_id = $row['max_id'];
-            $max_id1 = (int) substr($max_id, -5);
+            $max_id1 = (int) substr((string) $max_id, -5);
             $kode = $max_id1 + 1;
 
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'MTS-' . date('ym') . $next_kode;
         }
         return $fin;
@@ -202,7 +202,7 @@ class Request_mutasi_model extends BF_Model
             11 => 'K',
             12 => 'L'
         );
-        $bln_now = date('m', strtotime($tgl));
+        $bln_now = date('m', strtotime((string) $tgl));
         $kode_bln = '';
         foreach ($arr_tgl as $k => $v) {
             if ($k == $bln_now) {
@@ -217,7 +217,7 @@ class Request_mutasi_model extends BF_Model
 
         if ($query_cek == 0) {
             $kode = 1;
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'KK-' . date('ym') . $next_kode;
         } else {
             $query = "SELECT MAX(kd_mutasi) as max_id
@@ -233,10 +233,10 @@ class Request_mutasi_model extends BF_Model
             $row = $query->row_array();
             $thn = date('T');
             $max_id = $row['max_id'];
-            $max_id1 = (int) substr($max_id, -5);
+            $max_id1 = (int) substr((string) $max_id, -5);
             $kode = $max_id1 + 1;
 
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'KK-' . date('ym') . $next_kode;
         }
         return $fin;
@@ -258,7 +258,7 @@ class Request_mutasi_model extends BF_Model
             11 => 'K',
             12 => 'L'
         );
-        $bln_now = date('m', strtotime($tgl));
+        $bln_now = date('m', strtotime((string) $tgl));
         $kode_bln = '';
         foreach ($arr_tgl as $k => $v) {
             if ($k == $bln_now) {
@@ -275,7 +275,7 @@ class Request_mutasi_model extends BF_Model
 
         if ($query_cek == 0) {
             $kode = 1;
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'KM-' . date('ym') . $next_kode;
         } else {
             $query = "SELECT MAX(kd_mutasi) as max_id
@@ -291,10 +291,10 @@ class Request_mutasi_model extends BF_Model
             $row = $query->row_array();
             $thn = date('T');
             $max_id = $row['max_id'];
-            $max_id1 = (int) substr($max_id, -5);
+            $max_id1 = (int) substr((string) $max_id, -5);
             $kode = $max_id1 + 1;
 
-            $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+            $next_kode = str_pad((string) $kode, 5, "0", STR_PAD_LEFT);
             $fin = 'KM-' . date('ym') . $next_kode;
         }
         return $fin;

@@ -27,7 +27,7 @@
 				<td><?= $record->no_reff ?></td>
 				<td><?= $record->nomor ?></td>
 				<td><?= $record->tanggal ?></td>
-				<td><?= number_format($record->total,2) ?></td>
+				<td><?= number_format((float) $record->total,2) ?></td>
 				<td><?= $record->stspos ?></td>
 				<td>
 				<?php

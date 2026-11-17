@@ -144,18 +144,18 @@ class Incoming_departemen extends Admin_Controller
 			$print	= "&nbsp;<a href='" . base_url('incoming/print_incoming_dept/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-warning' title='Print'><i class='fa fa-print'></i></a>";
 
 			$TANGGAL = (!empty($row['tanggal'])) ? $row['tanggal'] : $row['created_date'];
-			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'] : $row['created_by'];
+			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'] : $row['created_by'];
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div>" . $row['kode_trans'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($TANGGAL)) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $TANGGAL)) . "</div>";
 			$nestedData[]	= "<div>" . $row['no_ipp'] . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['jumlah_mat'] . "</div>";
 			"</div>";
-			$nestedData[]	= "<div>" . strtoupper($row['pic']) . "</div>";
-			$nestedData[]	= "<div>" . strtoupper($NM_LENGKAP) . "</div>";
-			$nestedData[]	= "<div>" . strtoupper($row['nm_supplier']) . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $row['pic']) . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $NM_LENGKAP) . "</div>";
+			$nestedData[]	= "<div>" . strtoupper((string) $row['nm_supplier']) . "</div>";
 			$nestedData[]	= "<div align='center'>
 								<button type='button' class='btn btn-sm btn-primary detailAjust' title='View Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>
 								" . $print . "
@@ -227,8 +227,8 @@ class Incoming_departemen extends Admin_Controller
 
 		$no_po 			= $data['no_po'];
 		$tanggal_trans 	= $data['tanggal_trans'];
-		$pic 			= strtolower($data['pic']);
-		$note 			= strtolower($data['note']);
+		$pic 			= strtolower((string) $data['pic']);
+		$note 			= strtolower((string) $data['note']);
 
 		// print_r($no_po);
 		// exit;
@@ -262,14 +262,14 @@ class Incoming_departemen extends Admin_Controller
 		foreach ($get_dept_old as $item) {
 			$arr_list_dept[$item['id']] = [
 				'id_dept' => $item['id'],
-				'nm_dept' => strtoupper($item['nm_dept']) . ' - ' . $companyLabel
+				'nm_dept' => strtoupper((string) $item['nm_dept']) . ' - ' . $companyLabel
 			];
 		}
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
 			$arr_list_dept[$item['id']] = [
 				'id_dept' => $item['id'],
-				'nm_dept' => strtoupper($item['nama']) . ' - ' . $companyLabel
+				'nm_dept' => strtoupper((string) $item['nama']) . ' - ' . $companyLabel
 			];
 		}
 
@@ -301,7 +301,7 @@ class Incoming_departemen extends Admin_Controller
 		$Ym 			= date('ym');
 		$dateTime		= date('Y-m-d H:i:s');
 		$UserName		= $this->auth->user_id();
-		$cek_type 		= substr($no_po, 0, 3);
+		$cek_type 		= substr((string) $no_po, 0, 3);
 		$totalprice = 0;
 
 		if ($adjustment == 'IN') {
@@ -312,7 +312,7 @@ class Incoming_departemen extends Admin_Controller
 			$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 			$resultMtr		= $this->db->query($srcMtr)->result_array();
 			$angkaUrut2		= $resultMtr[0]['maxP'];
-			$urutan2		= (int)substr($angkaUrut2, 7, 4);
+			$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 			$urutan2++;
 			$urut2			= sprintf('%04s', $urutan2);
 			$kode_trans		= "TRS" . $Ym . $urut2;
@@ -350,28 +350,28 @@ class Incoming_departemen extends Admin_Controller
 				$ArrDeatilAdj[$val]['kode_trans'] 		= $kode_trans;
 				$ArrDeatilAdj[$val]['id_po_detail']     = $valx['id'];
 				$ArrDeatilAdj[$val]['id_material'] 		= ($valx['id']);
-				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower($valx['nm_barang']);
+				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower((string) $valx['nm_barang']);
 				// $ArrDeatilAdj[$val]['nm_category'] 		= strtolower($valx['spec']);
 				$ArrDeatilAdj[$val]['qty_order'] 		= $qtyOrder;
 				$ArrDeatilAdj[$val]['qty_oke'] 			= $qtyIN;
-				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 				$ArrDeatilAdj[$val]['no_ba'] 		    = null;
 				// $ArrDeatilAdj[$val]['ket_req_pro'] 		= strtolower($valx['pemeriksa']);
 				$ArrDeatilAdj[$val]['update_by'] 		= $UserName;
 				$ArrDeatilAdj[$val]['update_date'] 		= $dateTime;
 				$ArrDeatilAdj[$val]['check_qty_oke'] 	= $qtyIN;
-				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower($valx['keterangan']);
+				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower((string) $valx['keterangan']);
 				$ArrDeatilAdj[$val]['tipe_po'] = $valx['tipe_po'];
 
 				//detail adjustmeny
 				$ArrDeatilChk[$val]['no_ipp'] 		= $no_po;
 				$ArrDeatilChk[$val]['id_detail'] 	= NULL;
 				$ArrDeatilChk[$val]['kode_trans'] 	= $kode_trans;
-				$ArrDeatilChk[$val]['nm_material'] 	= strtolower($valx['nm_barang']);
-				$ArrDeatilChk[$val]['nm_category'] 	= strtolower($valx['spec']);
+				$ArrDeatilChk[$val]['nm_material'] 	= strtolower((string) $valx['nm_barang']);
+				$ArrDeatilChk[$val]['nm_category'] 	= strtolower((string) $valx['spec']);
 				$ArrDeatilChk[$val]['qty_order'] 	= $qtyOrder;
 				$ArrDeatilChk[$val]['qty_oke'] 		= $qtyIN;
-				$ArrDeatilChk[$val]['keterangan'] 	= strtolower($valx['keterangan']);
+				$ArrDeatilChk[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 				$ArrDeatilChk[$val]['update_by'] 	= $UserName;
 				$ArrDeatilChk[$val]['update_date'] 	= $dateTime;
 
@@ -553,8 +553,8 @@ class Incoming_departemen extends Admin_Controller
 			'no_po' 	=> isset($result_header[0]->no_ipp) ? $result_header[0]->no_ipp : '',
 			'pic' 		=> isset($result_header[0]->pic) ? $result_header[0]->pic : '',
 			'note' 		=> isset($result_header[0]->note) ? $result_header[0]->note : '',
-			'dated' 	=> (!empty($result_header[0]->created_date)) ? date('ymdhis', strtotime($result_header[0]->created_date)) : '',
-			'resv' 		=> (!empty($result_header[0]->tanggal)) ? date('d F Y', strtotime($result_header[0]->tanggal)) : ((!empty($result_header[0]->created_date)) ? date('d F Y', strtotime($result_header[0]->created_date)) : '')
+			'dated' 	=> (!empty($result_header[0]->created_date)) ? date('ymdhis', strtotime((string) $result_header[0]->created_date)) : '',
+			'resv' 		=> (!empty($result_header[0]->tanggal)) ? date('d F Y', strtotime((string) $result_header[0]->tanggal)) : ((!empty($result_header[0]->created_date)) ? date('d F Y', strtotime((string) $result_header[0]->created_date)) : '')
 		);
 
 		$this->load->view('modal_detail', $data);
@@ -631,20 +631,20 @@ class Incoming_departemen extends Admin_Controller
 			}
 
 			$TANGGAL = (!empty($row['tanggal'])) ? $row['tanggal'] : $row['created_date'];
-			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower($row['created_by'])]['nm_lengkap'] : $row['created_by'];
+			$NM_LENGKAP = (!empty($GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'])) ? $GET_USERNAME[strtolower((string) $row['created_by'])]['nm_lengkap'] : $row['created_by'];
 			$print	= "&nbsp;<a href='" . base_url('incoming/print_incoming_assets/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-warning' title='Print'><i class='fa fa-print'></i></a>";
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['kode_trans'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($TANGGAL)) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $TANGGAL)) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['no_ipp'] . "</div>";
 			// $nestedData[]	= "<div align='left'>".$row['kd_gudang_dari']."</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper(get_name('department', 'nm_dept', 'id', $row['id_gudang_ke'])) . "</div>";
-			$nestedData[]	= "<div align='center'>" . strtoupper($row['pic']) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['note']) . "</div>";
-			$nestedData[]	= "<div align='center'>" . strtoupper($NM_LENGKAP) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . strtoupper((string) $row['pic']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['note']) . "</div>";
+			$nestedData[]	= "<div align='center'>" . strtoupper((string) $NM_LENGKAP) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $link . "</div>";
 			$nestedData[]	= "<div align='center'>
 									<button type='button' class='btn btn-sm btn-primary detailAjust' title='View Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>
@@ -717,10 +717,10 @@ class Incoming_departemen extends Admin_Controller
 		$id_dept 		= $data['id_dept'];
 		$id_costcenter 	= $data['id_costcenter'];
 		$tanggal_trans 	= $data['tanggal_trans'];
-		$pic 			= strtolower($data['pic']);
-		$note 			= strtolower($data['note']);
+		$pic 			= strtolower((string) $data['pic']);
+		$note 			= strtolower((string) $data['note']);
 
-		$cek_type = substr($no_po, 0, 3);
+		$cek_type = substr((string) $no_po, 0, 3);
 		if ($cek_type == 'POX') {
 			$result	= $this->db->where('qty_in < qty_po')->get_where('tran_po_detail', array('no_po' => $no_po))->result_array();
 		} else {
@@ -755,7 +755,7 @@ class Incoming_departemen extends Admin_Controller
 		$Ym 			= date('ym');
 		$dateTime		= date('Y-m-d H:i:s');
 		$UserName		= $data_session['ORI_User']['username'];
-		$cek_type 		= substr($no_po, 0, 3);
+		$cek_type 		= substr((string) $no_po, 0, 3);
 
 		if ($adjustment == 'IN') {
 			$histHlp = "Adjustment incoming asset / " . $no_po;
@@ -765,7 +765,7 @@ class Incoming_departemen extends Admin_Controller
 			$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 			$resultMtr		= $this->db->query($srcMtr)->result_array();
 			$angkaUrut2		= $resultMtr[0]['maxP'];
-			$urutan2		= (int)substr($angkaUrut2, 7, 4);
+			$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 			$urutan2++;
 			$urut2			= sprintf('%04s', $urutan2);
 			$kode_trans		= "TRS" . $Ym . $urut2;
@@ -788,27 +788,27 @@ class Incoming_departemen extends Admin_Controller
 				$ArrDeatilAdj[$val]['no_ipp'] 			= $no_po;
 				$ArrDeatilAdj[$val]['kode_trans'] 		= $kode_trans;
 				$ArrDeatilAdj[$val]['id_po_detail'] 	= $valx['id'];
-				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower($valx['nm_barang']);
-				$ArrDeatilAdj[$val]['nm_category'] 		= strtolower($valx['spec']);
+				$ArrDeatilAdj[$val]['nm_material'] 		= strtolower((string) $valx['nm_barang']);
+				$ArrDeatilAdj[$val]['nm_category'] 		= strtolower((string) $valx['spec']);
 				$ArrDeatilAdj[$val]['qty_order'] 		= $qtyIN;
 				$ArrDeatilAdj[$val]['qty_oke'] 			= $qtyIN;
-				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower($valx['keterangan']);
-				$ArrDeatilAdj[$val]['no_ba'] 		    = strtolower($valx['status']);
+				$ArrDeatilAdj[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
+				$ArrDeatilAdj[$val]['no_ba'] 		    = strtolower((string) $valx['status']);
 				// $ArrDeatilAdj[$val]['ket_req_pro'] 		= strtolower($valx['pemeriksa']);
 				$ArrDeatilAdj[$val]['update_by'] 		= $UserName;
 				$ArrDeatilAdj[$val]['update_date'] 		= $dateTime;
 				$ArrDeatilAdj[$val]['check_qty_oke'] 	= $qtyIN;
-				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower($valx['keterangan']);
+				$ArrDeatilAdj[$val]['check_keterangan'] = strtolower((string) $valx['keterangan']);
 
 				//detail adjustmeny
 				$ArrDeatilChk[$val]['no_ipp'] 		= $no_po;
 				$ArrDeatilChk[$val]['id_detail'] 	= NULL;
 				$ArrDeatilChk[$val]['kode_trans'] 	= $kode_trans;
-				$ArrDeatilChk[$val]['nm_material'] 	= strtolower($valx['nm_barang']);
-				$ArrDeatilChk[$val]['nm_category'] 	= strtolower($valx['spec']);
+				$ArrDeatilChk[$val]['nm_material'] 	= strtolower((string) $valx['nm_barang']);
+				$ArrDeatilChk[$val]['nm_category'] 	= strtolower((string) $valx['spec']);
 				$ArrDeatilChk[$val]['qty_order'] 	= $qtyIN;
 				$ArrDeatilChk[$val]['qty_oke'] 		= $qtyIN;
-				$ArrDeatilChk[$val]['keterangan'] 	= strtolower($valx['keterangan']);
+				$ArrDeatilChk[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 				$ArrDeatilChk[$val]['update_by'] 	= $UserName;
 				$ArrDeatilChk[$val]['update_date'] 	= $dateTime;
 
@@ -821,13 +821,13 @@ class Incoming_departemen extends Admin_Controller
 				$ArrJurnal[$val]['unit_price'] 		= (!empty($GET_UNITPRICE[0]->unit_price)) ? $GET_UNITPRICE[0]->unit_price : 0;
 				$ArrJurnal[$val]['qty'] 			= $qtyIN;
 				$ArrJurnal[$val]['no_po'] 			= $no_po;
-				$ArrJurnal[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
+				$ArrJurnal[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
 				$ArrJurnal[$val]['id_barang'] 		= (!empty($GET_UNITPRICE[0]->id_barang)) ? $GET_UNITPRICE[0]->id_barang : NULL;
 
 				$assetNew = array(
 					'kode_trans' 		=> $kode_trans,
 					'id_barang' 		=> (!empty($GET_UNITPRICE[0]->id_barang)) ? $GET_UNITPRICE[0]->id_barang : NULL,
-					'nama' 		        => strtolower($valx['nm_barang']),
+					'nama' 		        => strtolower((string) $valx['nm_barang']),
 					'nilai_aset' 		=> (!empty($GET_UNITPRICE[0]->unit_price)) ? $GET_UNITPRICE[0]->unit_price : 0,
 					'tanggal' 			=> $tanggal,
 					'created_by' 		=> $UserName,
@@ -928,7 +928,7 @@ class Incoming_departemen extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -947,7 +947,7 @@ class Incoming_departemen extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 

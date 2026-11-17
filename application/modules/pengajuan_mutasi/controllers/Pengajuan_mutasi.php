@@ -91,7 +91,7 @@ class Pengajuan_mutasi extends Admin_Controller
             $data['mutation'] = $mutation;
         }
 
-        $this->template->title(ucfirst($mode) . ' Request Mutation');
+        $this->template->title(ucfirst((string) $mode) . ' Request Mutation');
         $this->template->render('form', $data);
     }
 
@@ -374,7 +374,7 @@ class Pengajuan_mutasi extends Admin_Controller
     {
         $this->auth->restrict($this->managePermission);
         $reject_reason = $this->input->post('reject_reason');
-        if (empty(trim($reject_reason))) {
+        if (empty(trim((string) $reject_reason))) {
             return $this->_json(['status' => 0, 'message' => 'Cancellation reason is required.']);
         }
 

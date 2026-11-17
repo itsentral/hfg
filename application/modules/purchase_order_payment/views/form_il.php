@@ -103,7 +103,7 @@ if ($is_view) {
 
     <div class="col-md-6">
         <label class="form-label fw-semibold">Tipe</label>
-        <input type="text" class="form-control form-control-sm bg-light" value="<?= ucfirst($tipe) ?>" readonly tabindex="-1">
+        <input type="text" class="form-control form-control-sm bg-light" value="<?= ucfirst((string) $tipe) ?>" readonly tabindex="-1">
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Currency</label>
@@ -114,12 +114,12 @@ if ($is_view) {
         <label class="form-label fw-semibold">Sisa Tagihan (<?= $is_view ? $currency : $currency_val ?>)</label>
         <input type="text" name="sisa_nilai" id="sisa_tagihan_display"
             class="form-control form-control-sm text-end bg-light"
-            value="<?= number_format($sisa_tagihan_val, 4) ?>" readonly tabindex="-1">
+            value="<?= number_format((float) $sisa_tagihan_val, 4) ?>" readonly tabindex="-1">
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Total DP Sebelumnya (IDR)</label>
         <input type="text" class="form-control form-control-sm text-end bg-light"
-            value="<?= number_format($total_dp_rupiah_val, 2) ?>" readonly tabindex="-1">
+            value="<?= number_format((float) $total_dp_rupiah_val, 2) ?>" readonly tabindex="-1">
     </div>
 
     <?php $is_local = ($tipe === 'local'); ?>
@@ -134,20 +134,20 @@ if ($is_view) {
                 <label class="form-label fw-semibold">DPP (IDR)</label>
                 <input type="text" id="dpp_local_display"
                     class="form-control form-control-sm text-end bg-light"
-                    value="<?= number_format($dpp_local_val, 2) ?>" readonly tabindex="-1">
+                    value="<?= number_format((float) $dpp_local_val, 2) ?>" readonly tabindex="-1">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">PPn (IDR)</label>
                 <input type="text" id="ppn_local_display"
                     class="form-control form-control-sm text-end bg-light"
-                    value="<?= number_format($ppn_local_val, 2) ?>" readonly tabindex="-1">
+                    value="<?= number_format((float) $ppn_local_val, 2) ?>" readonly tabindex="-1">
             </div>
         <?php endif; ?>
         <div class="col-md-6">
             <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
             <input type="text" id="jumlah_invoice_idr"
                 class="form-control form-control-sm text-end bg-light"
-                value="<?= number_format($jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
+                value="<?= number_format((float) $jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
         </div>
     <?php else: ?>
         <div class="col-md-6">
@@ -156,7 +156,7 @@ if ($is_view) {
             </label>
             <input type="text" name="kurs" id="input_kurs_il"
                 class="form-control form-control-sm text-end <?= !$is_view ? 'auto_num' : '' ?>"
-                value="<?= $kurs > 0 ? number_format($kurs, 2) : '' ?>"
+                value="<?= $kurs > 0 ? number_format((float) $kurs, 2) : '' ?>"
                 placeholder="<?= !$is_view ? 'Masukkan kurs' : '' ?>"
                 <?= $ro ?>>
         </div>
@@ -165,7 +165,7 @@ if ($is_view) {
             <label class="form-label fw-semibold">Jumlah Invoice (IDR)</label>
             <input type="text" id="jumlah_invoice_idr"
                 class="form-control form-control-sm text-end bg-light"
-                value="<?= number_format($jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
+                value="<?= number_format((float) $jumlah_rupiah_val, 2) ?>" readonly tabindex="-1">
         </div>
     <?php endif; ?>
 
@@ -180,7 +180,7 @@ if ($is_view) {
         </label>
         <input type="text" name="invoice_date"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($invoice_date) ? date('d M Y', strtotime($invoice_date)) : '' ?>"
+            value="<?= !empty($invoice_date) ? date('d M Y', strtotime((string) $invoice_date)) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
@@ -188,7 +188,7 @@ if ($is_view) {
         <label class="form-label fw-semibold">Invoice Date</label>
         <input type="text" name="invoice_date_real"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($invoice_date_real) ? date('d M Y', strtotime($invoice_date_real)) : '' ?>"
+            value="<?= !empty($invoice_date_real) ? date('d M Y', strtotime((string) $invoice_date_real)) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?>>
     </div>
@@ -214,7 +214,7 @@ if ($is_view) {
         <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
         <input type="text" name="tanggal_faktur_pajak"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($tgl_faktur_pajak) ? date('d M Y', strtotime($tgl_faktur_pajak)) : '' ?>"
+            value="<?= !empty($tgl_faktur_pajak) ? date('d M Y', strtotime((string) $tgl_faktur_pajak)) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?>>
     </div>

@@ -28,7 +28,7 @@ $details = $m['details'] ?? [];
                             </div>
                             <div class="px-2 flex-fill border-start-custom">
                                 <small class="text-muted d-block text-uppercase font-size-xs fw-bold">Request Date</small>
-                                <span class="text-dark fw-semibold"><?= date('d/m/Y', strtotime($m['mutation_date'])) ?></span>
+                                <span class="text-dark fw-semibold"><?= date('d/m/Y', strtotime((string) $m['mutation_date'])) ?></span>
                             </div>
                             <div class="px-2 flex-fill border-start-custom">
                                 <small class="text-muted d-block text-uppercase font-size-xs fw-bold">Created By</small>

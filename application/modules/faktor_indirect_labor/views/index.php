@@ -50,13 +50,13 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                 <tbody>
                     <tr>
                         <td class="text-end fw-bold fs-5 text-primary">
-                            <?= number_format($faktor->faktor_indirect_labor, 4, '.', '') ?>
+                            <?= number_format((float) $faktor->faktor_indirect_labor, 4, '.', '') ?>
                         </td>
                         <td class="text-muted">
                             &times; (Total Man Hour &times; Rate 1/3 Operator + Rate Borongan Helper Rp/Meter)
                         </td>
                         <td class="text-center text-muted">
-                            <?= !empty($faktor->latest_update) ? date('d/m/Y H:i', strtotime($faktor->latest_update)) : '-' ?>
+                            <?= !empty($faktor->latest_update) ? date('d/m/Y H:i', strtotime((string) $faktor->latest_update)) : '-' ?>
                         </td>
                         <?php if ($ENABLE_MANAGE): ?>
                             <td class="text-center">
@@ -99,15 +99,15 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                         <?php foreach ($simulation as $idx => $s): ?>
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
-                                <td class="fw-bold"><?= htmlspecialchars(strtoupper($s->nama)) ?></td>
+                                <td class="fw-bold"><?= htmlspecialchars(strtoupper((string) $s->nama)) ?></td>
                                 <td class="text-end">
-                                    <?= $s->has_data ? 'Rp ' . number_format($s->subtotal, 2, ',', '.') : '<span class="badge bg-warning text-dark">Data belum lengkap</span>' ?>
+                                    <?= $s->has_data ? 'Rp ' . number_format((float) $s->subtotal, 2, ',', '.') : '<span class="badge bg-warning text-dark">Data belum lengkap</span>' ?>
                                 </td>
                                 <td class="text-end fw-bold text-primary">
-                                    <?= number_format($s->faktor, 2) ?>
+                                    <?= number_format((float) $s->faktor, 2) ?>
                                 </td>
                                 <td class="text-end fw-bold text-success fs-6">
-                                    <?= $s->total_mpc !== null ? 'Rp ' . number_format($s->total_mpc, 2, ',', '.') : '—' ?>
+                                    <?= $s->total_mpc !== null ? 'Rp ' . number_format((float) $s->total_mpc, 2, ',', '.') : '—' ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -136,7 +136,7 @@ $ENABLE_MANAGE = has_permission('Faktor_Indirect_Labor.Manage');
                     <div class="mb-3">
                         <label class="form-label fw-bold">Faktor Indirect Labor <span class="text-danger">*</span></label>
                         <input type="number" step="0.0001" min="0.0001" name="faktor_indirect_labor" class="form-control form-control-lg" required
-                            value="<?= number_format($faktor->faktor_indirect_labor, 4, '.', '') ?>">
+                            value="<?= number_format((float) $faktor->faktor_indirect_labor, 4, '.', '') ?>">
                         <div class="form-text text-muted">Nilai pengali harus lebih besar dari 0 (default: 1.5000).</div>
                     </div>
                 </div>

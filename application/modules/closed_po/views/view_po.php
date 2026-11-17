@@ -80,7 +80,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 									<?php foreach ($results['mata_uang'] as $mata_uang) {
 										$selected = ($results['get_po']->matauang == $mata_uang->kode) ? 'selected' : '';
 									?>
-										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
+										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $mata_uang->kode)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -98,8 +98,8 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 								<select id="term" name="term" class="form-control select2" required>
 									<option value="">-- Pilih --</option>
 									<?php foreach ($results['term'] as $term): ?>
-										<option value="<?= htmlspecialchars($term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
-											<?= htmlspecialchars($term->name) ?>
+										<option value="<?= htmlspecialchars((string) $term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
+											<?= htmlspecialchars((string) $term->name) ?>
 										</option>
 									<?php endforeach; ?>
 								</select>
@@ -117,7 +117,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 									<?php foreach ($results['list_supplier'] as $supplier) {
 										$selected = ($supplier->kode_supplier == $results['get_po']->id_suplier) ? 'selected' : '';
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -182,10 +182,10 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
                                     <td><input type='text' class='form-control input-sm autoNumeric3' value='" . $value->kuota_internal . "' readonly></td>
                                     <td><input type='text' class='form-control text-center input-sm' value='" . $value->propose_purchase  . "' readonly ></td>
                                     <td><input type='text' class='form-control text-center input-sm' value='" . $value->qty . "' readonly></td>
-                                    <td class='text-center'>" . ucfirst($value->unit_measure) . "</td>
-                                    <td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+                                    <td class='text-center'>" . ucfirst((string) $value->unit_measure) . "</td>
+                                    <td class='text-center'>" . ucfirst((string) $value->packing_unit) . ucfirst((string) $value->packing_unit2) . "</td>
                                     <td><input type='text' class='form-control text-right input-sm auto_num_3dec' value='" . $value->hargasatuan . "' readonly></td>
-                                    <td><input type='text' class='form-control input-sm text-right auto_num' value='" . number_format($total, 4, '.', ',') . "' readonly></td>
+                                    <td><input type='text' class='form-control input-sm text-right auto_num' value='" . number_format((float) $total, 4, '.', ',') . "' readonly></td>
                                     <td>
                                         <div class='input-group input-group-sm mb-2'>
                                             <input type='text' class='form-control input-sm auto_num' value='" . $value->persen_disc . "' readonly>
@@ -207,7 +207,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total</b></th>
 								<td colspan="3">
-									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['get_po']->total_include_ppn, 4, '.', ',') ?>">
+									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format((float) $results['get_po']->total_include_ppn, 4, '.', ',') ?>">
 								</td>
 							</tr>
 							<tr class="row-pajak" style="display: <?= ($results['get_po']->show_tax == 'Y') ? 'table-row' : 'none'; ?>;">
@@ -231,7 +231,7 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total Order</b></td>
 								<td colspan="3">
-									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" value="<?= number_format($results['get_po']->subtotal, 4, '.', ',') ?>">
+									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" value="<?= number_format((float) $results['get_po']->subtotal, 4, '.', ',') ?>">
 								</td>
 							</tr>
 						</tfoot>
@@ -266,13 +266,13 @@ $ENABLE_VIEW = has_permission('Purchase_Request.View');
 									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm" disabled>';
 									foreach ($results['list_group_top'] as $item_group_top) {
 										$selected = ($item_group_top->id == $item_top->group_top) ? 'selected' : '';
-										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper((string) $item_group_top->name) . '</option>';
 									}
 									echo '</select>';
 									echo '</td>';
 
-									echo '<td><input type="text" class="form-control form-control-sm auto_num" value="' . number_format($item_top->progress, 2) . '" readonly></td>';
-									echo '<td class="text-right"><input type="text" class="form-control form-control-sm auto_num_4dec" value="' . number_format($item_top->nilai, 4, '.', ',') . '" readonly></td>';
+									echo '<td><input type="text" class="form-control form-control-sm auto_num" value="' . number_format((float) $item_top->progress, 2) . '" readonly></td>';
+									echo '<td class="text-right"><input type="text" class="form-control form-control-sm auto_num_4dec" value="' . number_format((float) $item_top->nilai, 4, '.', ',') . '" readonly></td>';
 									echo '<td><textarea class="form-control form-control-sm" readonly>' . $item_top->keterangan . '</textarea></td>';
 
 									echo '<td>';

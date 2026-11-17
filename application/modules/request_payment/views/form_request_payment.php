@@ -31,12 +31,12 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Nilai Pembayaran</label>
         <input type="text" name="jumlah" class="form-control form-control-sm text-end"
-            value="<?= number_format($jumlah, 2) ?>" readonly>
+            value="<?= number_format((float) $jumlah, 2) ?>" readonly>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Total + PPN</label>
         <input type="text" name="jumlah_total" class="form-control form-control-sm text-end"
-            value="<?= number_format($jumlah_total, 2) ?>" readonly>
+            value="<?= number_format((float) $jumlah_total, 2) ?>" readonly>
     </div>
 
     <div class="col-md-6">
@@ -47,7 +47,7 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Kurs</label>
         <input type="text" name="kurs" class="form-control form-control-sm text-end"
-            value="<?= number_format($data_receive['kurs'], 2) ?>" readonly>
+            value="<?= number_format((float) $data_receive['kurs'], 2) ?>" readonly>
     </div>
 
     <div class="col-md-6">

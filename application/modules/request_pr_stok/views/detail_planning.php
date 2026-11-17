@@ -32,7 +32,7 @@
                         <div>
                             <h6 class="alert-heading fw-bold mb-1">Pengajuan PR Ditolak!</h6>
                             <p class="mb-0 text-dark">
-                                <?= !empty($header[0]['reject_reason3']) ? htmlspecialchars($header[0]['reject_reason3']) : (!empty($header[0]['reject_reason2']) ? htmlspecialchars($header[0]['reject_reason2']) : (!empty($header[0]['reject_reason1']) ? htmlspecialchars($header[0]['reject_reason1']) : 'Pengajuan PR ditolak oleh pihak Management / Approval.')); ?>
+                                <?= !empty($header[0]['reject_reason3']) ? htmlspecialchars((string) $header[0]['reject_reason3']) : (!empty($header[0]['reject_reason2']) ? htmlspecialchars((string) $header[0]['reject_reason2']) : (!empty($header[0]['reject_reason1']) ? htmlspecialchars((string) $header[0]['reject_reason1']) : 'Pengajuan PR ditolak oleh pihak Management / Approval.')); ?>
                             </p>
                         </div>
                     </div>
@@ -58,7 +58,7 @@
                                     </tr>
                                     <tr class="border-bottom">
                                         <th class="bg-light text-muted py-2 px-3">Tgl Dibutuhkan</th>
-                                        <td class="py-2 px-3"><?= !empty($header[0]['tgl_dibutuhkan']) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-' ?></td>
+                                        <td class="py-2 px-3"><?= !empty($header[0]['tgl_dibutuhkan']) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '-' ?></td>
                                     </tr>
                                     <tr>
                                         <th class="bg-light text-muted py-2 px-3">Tingkat Urgensi</th>
@@ -145,8 +145,8 @@
 
                                     $konversi = (!empty($get_stock) && $get_stock->konversi > 0) ? $get_stock->konversi : 1;
                                     $min_order = (!empty($get_stock) && !empty($get_stock->min_order)) ? $get_stock->min_order : 0;
-                                    $satuan_pack = !empty($get_stock->satuan_pack) ? strtoupper($get_stock->satuan_pack) : '-';
-                                    $satuan_unit = !empty($get_stock->satuan) ? strtoupper($get_stock->satuan) : '-';
+                                    $satuan_pack = !empty($get_stock->satuan_pack) ? strtoupper((string) $get_stock->satuan_pack) : '-';
+                                    $satuan_unit = !empty($get_stock->satuan) ? strtoupper((string) $get_stock->satuan) : '-';
 
                                     $subtotal = ($value['price_ref'] ?? 0) * $propose;
                                     $total_all_item += $subtotal;
@@ -156,13 +156,13 @@
                                     echo "<td class='text-start fw-semibold'>" . htmlspecialchars($value['stock_name'] ?? '') . " <span class='text-muted small fw-normal'>(" . htmlspecialchars($value['no_coa'] ?? '-') . " - " . htmlspecialchars(strtoupper($value['nm_coa'] ?? '-')) . ")</span></td>";
                                     echo "<td class='text-end'>" . number_format($value['min_stok'] ?? 0, 2) . "</td>";
                                     echo "<td class='text-end'>" . number_format($value['max_stok'] ?? 0, 2) . "</td>";
-                                    echo "<td class='text-end'>" . number_format($min_order, 2) . "</td>";
+                                    echo "<td class='text-end'>" . number_format((float) $min_order, 2) . "</td>";
                                     echo "<td class='text-end fw-bold text-primary'>" . number_format($propose / $konversi, 2) . "</td>";
                                     echo "<td class='text-center'><span class='badge bg-light text-dark border'>" . $satuan_pack . "</span></td>";
-                                    echo "<td class='text-end fw-bold'>" . number_format($propose, 2) . "</td>";
+                                    echo "<td class='text-end fw-bold'>" . number_format((float) $propose, 2) . "</td>";
                                     echo "<td class='text-center'><span class='badge bg-light text-dark border'>" . $satuan_unit . "</span></td>";
                                     echo "<td class='text-end'>Rp " . number_format($value['price_ref'] ?? 0, 2) . "</td>";
-                                    echo "<td class='text-end fw-bold text-dark'>Rp " . number_format($subtotal, 2) . "</td>";
+                                    echo "<td class='text-end fw-bold text-dark'>Rp " . number_format((float) $subtotal, 2) . "</td>";
 
                                     $status_badge = "<span class='badge bg-secondary'>Draft</span>";
                                     if (($value['status_app'] ?? '') == 'N') {
@@ -184,7 +184,7 @@
                         <tfoot class="table-light">
                             <tr>
                                 <th colspan="10" class="text-end fw-bold py-3 fs-6">Total Nilai Item:</th>
-                                <th class="text-end fw-bold py-3 fs-6 text-success">Rp <?= number_format($total_all_item, 2) ?></th>
+                                <th class="text-end fw-bold py-3 fs-6 text-success">Rp <?= number_format((float) $total_all_item, 2) ?></th>
                                 <th></th>
                             </tr>
                         </tfoot>

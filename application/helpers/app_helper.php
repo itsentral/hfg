@@ -22,7 +22,7 @@ function get_invoice($id = false)
 
 function check_class($item = '', $class_only = false)
 {
-  if (strtolower(get_instance()->router->class) == strtolower($item)) {
+  if (strtolower(get_instance()->router->class) == strtolower((string) $item)) {
     return $class_only ? 'active' : 'class="active"';
   }
 
@@ -106,7 +106,7 @@ function gen_primary($kode_tambahan = '')
   $menit = intval(date('i'));
   $detik = intval(date('s'));
   $temp_ip = ($CI->input->ip_address()) == '::1' ? '127.0.0.1' : $CI->input->ip_address();
-  $temp_ip = explode('.', $temp_ip);
+  $temp_ip = explode('.', (string) $temp_ip);
   $ipval = $temp_ip[0] + $temp_ip[1] + $temp_ip[2] + $temp_ip[3];
 
   $kode_rand = mt_rand(1, 1000) + $ipval;
@@ -228,15 +228,15 @@ if (!function_exists('date_ymd')) {
   function date_ymd($date_from)
   {
     $error = false;
-    if (strlen($date_from) <= 10) {
-      list($dd, $mm, $yyyy) = explode('/', $date_from);
+    if (strlen((string) $date_from) <= 10) {
+      list($dd, $mm, $yyyy) = explode('/', (string) $date_from);
 
       if (!checkdate(intval($mm), intval($dd), intval($yyyy))) {
         $error = true;
       }
     } else {
-      list($dd, $mm, $yyyy) = explode('/', $date_from);
-      list($yyyy, $hhii) = explode(' ', $yyyy);
+      list($dd, $mm, $yyyy) = explode('/', (string) $date_from);
+      list($yyyy, $hhii) = explode(' ', (string) $yyyy);
 
       if (!checkdate($mm, $dd, $yyyy)) {
         $error = true;
@@ -247,7 +247,7 @@ if (!function_exists('date_ymd')) {
       return false;
     }
 
-    if (strlen($date_from) <= 10) {
+    if (strlen((string) $date_from) <= 10) {
       $date_from = DateTime::createFromFormat('d/m/Y', $date_from);
       $date_from = $date_from->format('Y-m-d');
     } else {
@@ -275,7 +275,7 @@ if (!function_exists('simpan_alurkas')) {
 if (!function_exists('buatrp')) {
   function buatrp($angka)
   {
-    $jadi = 'Rp ' . number_format($angka, 0, ',', '.');
+    $jadi = 'Rp ' . number_format((float) $angka, 0, ',', '.');
 
     return $jadi;
   }
@@ -285,7 +285,7 @@ if (!function_exists('formatnomor')) {
   function formatnomor($angka)
   {
     if ($angka) {
-      $jadi = number_format($angka, 0, ',', '.');
+      $jadi = number_format((float) $angka, 0, ',', '.');
 
       return $jadi;
     }
@@ -296,7 +296,7 @@ if (!function_exists('separator')) {
   function separator($angka)
   {
     if ($angka) {
-      $jadi = number_format($angka, 0, '.', '.');
+      $jadi = number_format((float) $angka, 0, '.', '.');
 
       return $jadi;
     }
@@ -345,16 +345,16 @@ if (!function_exists('ynz_terbilang')) {
     }
     switch ($style) {
       case 1:
-        $hasil = strtoupper($hasil);
+        $hasil = strtoupper((string) $hasil);
         break;
       case 2:
-        $hasil = strtolower($hasil);
+        $hasil = strtolower((string) $hasil);
         break;
       case 3:
-        $hasil = ucwords($hasil);
+        $hasil = ucwords((string) $hasil);
         break;
       default:
-        $hasil = ucfirst($hasil);
+        $hasil = ucfirst((string) $hasil);
         break;
     }
 
@@ -1061,9 +1061,9 @@ function get_qty_order_so($product, $costcenter, $date_akhir, $date_awal)
   $max_date   = $CI->db->query($q_max)->result();
 
   $datex      = (!empty($max_date[0]->date_akhir)) ? $max_date[0]->date_akhir : $date_now;
-  $date       = date('Y-m-d', strtotime('+1 days', strtotime($datex)));
+  $date       = date('Y-m-d', strtotime('+1 days', strtotime((string) $datex)));
   if (!empty($date_awal)) {
-    $date       = date('Y-m-d', strtotime($date_awal));
+    $date       = date('Y-m-d', strtotime((string) $date_awal));
   }
 
   $product    = $CI->db->query("SELECT product, SUM(qty_order) AS qty_order, delivery_date FROM sales_order_detail WHERE product='" . $product . "' AND delivery_date BETWEEN '" . $date . "' AND '" . $date_akhir . "' GROUP BY product LIMIT 1 ")->result();
@@ -1357,7 +1357,7 @@ function get_dimensi($product)
   $CI       = &get_instance();
   $sql    = "SELECT a.* FROM ms_inventory_category2 a WHERE  a.id_category2='" . $product . "'";
   $sisa    = $CI->db->query($sql)->result();
-  $total  = (!empty($sisa)) ? number_format($sisa[0]->length) . " x " . number_format($sisa[0]->high) . " x " . number_format($sisa[0]->wide) : '-';
+  $total  = (!empty($sisa)) ? number_format((float) $sisa[0]->length) . " x " . number_format((float) $sisa[0]->high) . " x " . number_format((float) $sisa[0]->wide) : '-';
   return $total;
 }
 
@@ -1377,7 +1377,7 @@ function tgl_indo($tanggal)
     11 => 'November',
     12 => 'Desember'
   );
-  $pecahkan = explode('-', $tanggal);
+  $pecahkan = explode('-', (string) $tanggal);
 
   return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
 }

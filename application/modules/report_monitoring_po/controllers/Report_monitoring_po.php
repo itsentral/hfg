@@ -203,7 +203,7 @@ class Report_monitoring_po extends Admin_Controller
 
             $sheet1->setCellValue('A' . $rowNum1, $no1);
             $sheet1->setCellValue('B' . $rowNum1, $item->no_surat ?? $item->no_po);
-            $sheet1->setCellValue('C' . $rowNum1, !empty($item->tanggal) ? date('d/m/Y', strtotime($item->tanggal)) : '-');
+            $sheet1->setCellValue('C' . $rowNum1, !empty($item->tanggal) ? date('d/m/Y', strtotime((string) $item->tanggal)) : '-');
             $sheet1->setCellValue('D' . $rowNum1, $item->nm_supplier ?? '-');
             $sheet1->setCellValue('E' . $rowNum1, $pr_text);
             $sheet1->setCellValue('F' . $rowNum1, $materials);
@@ -305,7 +305,7 @@ class Report_monitoring_po extends Admin_Controller
                     $sheet2->setCellValue('E' . $rowNum2, $inc->nm_material ?? '-');
                     $sheet2->setCellValue('F' . $rowNum2, $inc->kode_trans);
                     $sheet2->setCellValue('F' . $rowNum2, $inc->kode_trans);
-                    $sheet2->setCellValue('G' . $rowNum2, !empty($inc->tanggal) ? date('d/m/Y', strtotime($inc->tanggal)) : '-');
+                    $sheet2->setCellValue('G' . $rowNum2, !empty($inc->tanggal) ? date('d/m/Y', strtotime((string) $inc->tanggal)) : '-');
                     $sheet2->setCellValue('H' . $rowNum2, (float) $inc->qty_diterima);
                     $sheet2->setCellValue('I' . $rowNum2, (float) $inc->kumulatif_diterima);
                     $sheet2->setCellValue('J' . $rowNum2, (float) $inc->sisa_setelah_kedatangan);

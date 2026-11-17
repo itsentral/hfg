@@ -150,7 +150,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                     $selected = (isset($cus) && $cus->id_karyawan == $karyawan->id) ? 'selected' : '';
                                 ?>
                                     <option value="<?= $karyawan->id ?>" <?= $selected ?>>
-                                        <?= ucfirst(strtolower($karyawan->nm_karyawan)) ?>
+                                        <?= ucfirst(strtolower((string) $karyawan->nm_karyawan)) ?>
                                     </option>
                                 <?php } ?>
                             </select>
@@ -166,7 +166,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="chanel_toko" name="chanel_toko"
                                     value="Toko dan User"
-                                    <?= (isset($cus) && strpos($cus->chanel_pemasaran, 'Toko dan User') !== false) ? 'checked' : '' ?>
+                                    <?= (isset($cus) && strpos((string) $cus->chanel_pemasaran, 'Toko dan User') !== false) ? 'checked' : '' ?>
                                     <?= $disabled ?>>
                                 <label class="form-check-label" for="chanel_toko">Toko dan User</label>
                             </div>
@@ -176,7 +176,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="chanel_project" name="chanel_project"
                                             value="Project"
-                                            <?= (isset($cus) && strpos($cus->chanel_pemasaran, 'Project') !== false) ? 'checked' : '' ?>
+                                            <?= (isset($cus) && strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? 'checked' : '' ?>
                                             onclick="togglePersentaseInput()" <?= $disabled ?>>
                                         <label class="form-check-label" for="chanel_project">Project</label>
                                     </div>
@@ -184,8 +184,8 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                 <div class="col-md-7">
                                     <div class="input-group">
                                         <input type="text" class="form-control divide" name="persentase" id="persentase"
-                                            value="<?= (isset($cus) && strpos($cus->chanel_pemasaran, 'Project') !== false) ? $cus->persentase : '' ?>"
-                                            <?= (isset($cus) && strpos($cus->chanel_pemasaran, 'Project') !== false) ? '' : 'disabled' ?>
+                                            value="<?= (isset($cus) && strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? $cus->persentase : '' ?>"
+                                            <?= (isset($cus) && strpos((string) $cus->chanel_pemasaran, 'Project') !== false) ? '' : 'disabled' ?>
                                             <?= $disabled ?>>
                                         <span class="input-group-text"><i class="fa fa-percent"></i></span>
                                     </div>
@@ -650,7 +650,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                         foreach ($fields as $field) {
                                             $value = isset($pic->$field) ? $pic->$field : '';
                                             $readonlyAttr = ($field === 'position_pic') ? 'readonly' : '';
-                                            echo "<td><input type='text' class='form-control form-control-sm' name='data1[$loop][$field]' value='" . htmlspecialchars($value, ENT_QUOTES) . "' $readonlyAttr $disabled required></td>";
+                                            echo "<td><input type='text' class='form-control form-control-sm' name='data1[$loop][$field]' value='" . htmlspecialchars((string) $value, ENT_QUOTES) . "' $readonlyAttr $disabled required></td>";
                                         }
                                         if (empty($results['mode']) || $results['mode'] !== 'view') {
                                             echo "<td class='text-center'>
@@ -670,7 +670,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                         foreach ($fields as $field) {
                                             $value = ($field === 'position_pic') ? $row['name'] : '';
                                             $readonlyAttr = ($field === 'position_pic') ? 'readonly' : '';
-                                            echo "<td><input type='text' class='form-control form-control-sm' name='data1[$loop][$field]' value='" . htmlspecialchars($value, ENT_QUOTES) . "' $readonlyAttr required></td>";
+                                            echo "<td><input type='text' class='form-control form-control-sm' name='data1[$loop][$field]' value='" . htmlspecialchars((string) $value, ENT_QUOTES) . "' $readonlyAttr required></td>";
                                         }
                                         echo "<td class='text-center'>
                                                 <button type='button' class='btn btn-outline-danger btn-sm' title='Hapus Data' onclick='return DelItem($loop);'>
@@ -725,7 +725,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                             <label class="form-label mb-0">Alamat Bank</label>
                         </div>
                         <div class="col-md-7">
-                            <textarea name="alamat_bank" id="alamat_bank" class="form-control" placeholder="Alamat Bank" <?= $disabled ?>><?= isset($cus->alamat_bank) ? htmlspecialchars($cus->alamat_bank) : '' ?></textarea>
+                            <textarea name="alamat_bank" id="alamat_bank" class="form-control" placeholder="Alamat Bank" <?= $disabled ?>><?= isset($cus->alamat_bank) ? htmlspecialchars((string) $cus->alamat_bank) : '' ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -762,8 +762,8 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                             <select id="payment_term" name="payment_term" class="form-select select" required <?= $disabled ?>>
                                 <option value="">-- Pilih --</option>
                                 <?php foreach ($results['payment_terms'] as $terms): ?>
-                                    <option value="<?= htmlspecialchars($terms->id) ?>" <?= (isset($cus->payment_term) && $cus->payment_term == $terms->id) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($terms->name) ?>
+                                    <option value="<?= htmlspecialchars((string) $terms->id) ?>" <?= (isset($cus->payment_term) && $cus->payment_term == $terms->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars((string) $terms->name) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -774,7 +774,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-5"><label class="form-label mb-0">Nominal DP <span class="text-danger">*</span></label></div>
                         <div class="col-md-7">
                             <input type="text" class="form-control" name="nominal_dp" id="nominal_dp"
-                                value="<?= isset($cus->nominal_dp) ? htmlspecialchars($cus->nominal_dp) : '' ?>" required <?= $disabled ?>>
+                                value="<?= isset($cus->nominal_dp) ? htmlspecialchars((string) $cus->nominal_dp) : '' ?>" required <?= $disabled ?>>
                         </div>
                     </div>
 
@@ -818,7 +818,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                 echo '
                                 <div class="form-check">
                                     <input class="form-check-input hari-checkbox" type="checkbox" id="' . $day . '" name="' . $day . '" value="Y" ' . $checked . ' ' . $disabled . '>
-                                    <label class="form-check-label" for="' . $day . '">' . ucfirst($day) . '</label>
+                                    <label class="form-check-label" for="' . $day . '">' . ucfirst((string) $day) . '</label>
                                 </div>';
                             }
                             echo '</div>';
@@ -834,13 +834,13 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-6">
                             <label class="form-label">Start</label>
                             <input type="time" class="form-control" id="start_recive" name="start_recive"
-                                value="<?= isset($cus->start_recive) ? htmlspecialchars($cus->start_recive) : '' ?>"
+                                value="<?= isset($cus->start_recive) ? htmlspecialchars((string) $cus->start_recive) : '' ?>"
                                 required <?= $disabled ?>>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">End</label>
                             <input type="time" class="form-control" id="end_recive" name="end_recive"
-                                value="<?= isset($cus->end_recive) ? htmlspecialchars($cus->end_recive) : '' ?>"
+                                value="<?= isset($cus->end_recive) ? htmlspecialchars((string) $cus->end_recive) : '' ?>"
                                 required <?= $disabled ?>>
                         </div>
                     </div>
@@ -850,7 +850,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                 <div class="col-lg-6">
                     <div class="fw-semibold mb-2">Alamat Invoice</div>
                     <textarea name="address_invoice" id="address_invoice" class="form-control"
-                        placeholder="Alamat Invoice" <?= $disabled ?>><?= isset($cus->adress_invoice) ? htmlspecialchars($cus->adress_invoice) : '' ?></textarea>
+                        placeholder="Alamat Invoice" <?= $disabled ?>><?= isset($cus->adress_invoice) ? htmlspecialchars((string) $cus->adress_invoice) : '' ?></textarea>
                 </div>
 
                 <!-- =========================
@@ -1002,7 +1002,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
             Template += '<option value="">--pilih--</option>';
             Template += '<?php foreach ($results['category'] as $category) { ?>';
-            Template += '<option value="<?= $category->name_category ?>"><?= ucfirst(strtolower($category->name_category)) ?></option>';
+            Template += '<option value="<?= $category->name_category ?>"><?= ucfirst(strtolower((string) $category->name_category)) ?></option>';
             Template += '<?php } ?>';
             Template += '</select>';
             Template += '</td>';

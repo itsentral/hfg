@@ -19,7 +19,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle-o me-2"></i>Form Realisasi Mutasi Bank
             </h5>
-            <small class="text-muted">Eksekusi pencatatan aktual transfer bank untuk request <span class="fw-bold text-dark"><?= htmlspecialchars($kd_mutasi) ?></span></small>
+            <small class="text-muted">Eksekusi pencatatan aktual transfer bank untuk request <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
         </div>
         <div>
             <a href="<?= site_url('request_mutasi/approval_mutasi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
@@ -30,19 +30,19 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
 
     <div class="card-body p-4">
         <form method="post" id="frm_data">
-            <input type="hidden" name="no_request" id="no_request" value="<?= htmlspecialchars($kd_mutasi) ?>">
-            <input type="hidden" name="tgl_request" id="tgl_request" value="<?= htmlspecialchars($tanggal) ?>">
-            <input type="hidden" name="dari" id="dari" value="<?= htmlspecialchars($dari) ?>">
-            <input type="hidden" name="ke" id="ke" value="<?= htmlspecialchars($ke) ?>">
+            <input type="hidden" name="no_request" id="no_request" value="<?= htmlspecialchars((string) $kd_mutasi) ?>">
+            <input type="hidden" name="tgl_request" id="tgl_request" value="<?= htmlspecialchars((string) $tanggal) ?>">
+            <input type="hidden" name="dari" id="dari" value="<?= htmlspecialchars((string) $dari) ?>">
+            <input type="hidden" name="ke" id="ke" value="<?= htmlspecialchars((string) $ke) ?>">
 
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <label class="form-label text-muted small fw-semibold">No Request</label>
-                    <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars($kd_mutasi) ?></div>
+                    <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $kd_mutasi) ?></div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small fw-semibold">Tanggal Request</label>
-                    <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($tanggal)) ?></div>
+                    <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $tanggal)) ?></div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small fw-semibold">Bank Asal</label>
@@ -67,7 +67,7 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
 
                 <div class="col-md-4">
                     <label for="nilai" class="form-label fw-semibold text-muted small">Nilai Request (Valas/IDR)</label>
-                    <input type="text" name="nilai" class="form-control text-end bg-light fw-bold" id="nilai" value="<?= number_format($nilai, 0, ',', '.') ?>" readonly>
+                    <input type="text" name="nilai" class="form-control text-end bg-light fw-bold" id="nilai" value="<?= number_format((float) $nilai, 0, ',', '.') ?>" readonly>
                 </div>
 
                 <div class="col-md-4">
@@ -79,13 +79,13 @@ $tanggal    = $record ? $record->tgl_request : date('Y-m-d');
                     <label for="rupiah" class="form-label fw-semibold text-muted small">Nilai Aktual IDR <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">Rp</span>
-                        <input type="text" name="rupiah" class="form-control text-end fw-bold text-success divide" id="rupiah" value="<?= number_format($nilai, 0, ',', '.') ?>" required>
+                        <input type="text" name="rupiah" class="form-control text-end fw-bold text-success divide" id="rupiah" value="<?= number_format((float) $nilai, 0, ',', '.') ?>" required>
                     </div>
                 </div>
 
                 <div class="col-md-8">
                     <label for="keterangan" class="form-label fw-semibold text-muted small">Keterangan Tambahan</label>
-                    <textarea name="keterangan" class="form-control" id="keterangan" rows="2"><?= htmlspecialchars($keterangan) ?></textarea>
+                    <textarea name="keterangan" class="form-control" id="keterangan" rows="2"><?= htmlspecialchars((string) $keterangan) ?></textarea>
                 </div>
             </div>
 

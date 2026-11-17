@@ -92,7 +92,7 @@ class New_ros extends Admin_Controller
             $nestedData[] = "<div class='text-left'>{$ros_link}</div>";
             $nestedData[] = "<div class='text-left'>" . ($row['no_surat'] ?: $row['no_po']) . "</div>";
             $nestedData[] = "<div class='text-left'>{$row['nm_supplier']}</div>";
-            $nestedData[] = "<div class='text-end'>" . number_format($row['nilai_po_pib_rp'], 2) . "</div>";
+            $nestedData[] = "<div class='text-end'>" . number_format((float) $row['nilai_po_pib_rp'], 2) . "</div>";
             $nestedData[] = "<div class='text-center'>{$sts}</div>";
             $nestedData[] = "<div class='text-center'>{$action_buttons}</div>";
 
@@ -263,7 +263,7 @@ class New_ros extends Admin_Controller
         $fwd_rates = [];
         $master_fwd_all = $this->db->get_where('master_forwarding_cost', ['is_delete' => '0'])->result_array();
         foreach ($master_fwd_all as $mf) {
-            $fwd_rates[strtolower($mf['tipe'])] = (float) $mf['value_cost'];
+            $fwd_rates[strtolower((string) $mf['tipe'])] = (float) $mf['value_cost'];
         }
         $forwarding_rate = isset($fwd_rates['import']) ? $fwd_rates['import'] : 0;
 
@@ -362,12 +362,12 @@ class New_ros extends Admin_Controller
         // ========================================================================
 
         $po_data = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
-        $loi_type = ($po_data && strtolower($po_data->loi) === 'lokal') ? 'lokal' : 'import';
+        $loi_type = ($po_data && strtolower((string) $po_data->loi) === 'lokal') ? 'lokal' : 'import';
 
         $fwd_rates = [];
         $master_fwd_all = $this->db->get_where('master_forwarding_cost', ['is_delete' => '0'])->result_array();
         foreach ($master_fwd_all as $mf) {
-            $fwd_rates[strtolower($mf['tipe'])] = (float) $mf['value_cost'];
+            $fwd_rates[strtolower((string) $mf['tipe'])] = (float) $mf['value_cost'];
         }
         $forwarding_rate = isset($fwd_rates[$loi_type]) ? $fwd_rates[$loi_type] : (isset($fwd_rates['import']) ? $fwd_rates['import'] : 0);
 
@@ -419,7 +419,7 @@ class New_ros extends Admin_Controller
         // Ambil loi (Lokal/Import) dari PO
         $po_data = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
         $loi = $po_data ? $po_data->loi : 'Import';
-        $loi_type = (strtolower($loi) === 'lokal') ? 'lokal' : 'import';
+        $loi_type = (strtolower((string) $loi) === 'lokal') ? 'lokal' : 'import';
         $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
         $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
 
@@ -469,7 +469,7 @@ class New_ros extends Admin_Controller
 
         // Sertakan info loi (Lokal/Import), forwarding_rate, dan total PO value
         $loi = $po ? $po->loi : 'Import';
-        $loi_type = ($po && strtolower($po->loi) === 'lokal') ? 'lokal' : 'import';
+        $loi_type = ($po && strtolower((string) $po->loi) === 'lokal') ? 'lokal' : 'import';
         $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
         $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
         $total_po_value = array_sum(array_column($result, 'total_value_usd'));
@@ -598,7 +598,7 @@ class New_ros extends Admin_Controller
 
         // ── Tentukan tipe PO: Lokal atau Import ──
         $po_data_save  = $this->db->get_where('tr_purchase_order', ['no_po' => $post['no_po']])->row();
-        $is_lokal_save = ($po_data_save && strtolower($po_data_save->loi) === 'lokal');
+        $is_lokal_save = ($po_data_save && strtolower((string) $po_data_save->loi) === 'lokal');
         $jenis_po      = $is_lokal_save ? 'lokal' : 'import';
 
         // ── Header ──
@@ -861,7 +861,7 @@ class New_ros extends Admin_Controller
                         $no_coil_str = $coil['no_coil'];
                         $last_dash = strrpos($no_coil_str, '-');
                         if ($last_dash !== false) {
-                            $parent_no_coil = substr($no_coil_str, 0, $last_dash);
+                            $parent_no_coil = substr((string) $no_coil_str, 0, $last_dash);
                             if (isset($mother_id_map_save[$parent_no_coil])) {
                                 $parent_coil_id = $mother_id_map_save[$parent_no_coil];
                             }
@@ -979,7 +979,7 @@ class New_ros extends Admin_Controller
     {
         // Format input baru: JSON array of { nm_alias, count }
         $materials_coil_json = $this->input->post('materials_coil');
-        $materials_coil = json_decode($materials_coil_json, true);
+        $materials_coil = json_decode((string) $materials_coil_json, true);
 
         if (empty($materials_coil)) {
             show_error('No material data available.');
@@ -1181,7 +1181,7 @@ class New_ros extends Admin_Controller
             $cellA = strtolower(trim((string) $sheet->getCell('A' . $r)->getValue()));
             $cellB = strtolower(trim((string) $sheet->getCell('B' . $r)->getValue()));
 
-            if (strpos($cellA, 'coil no') !== false) {
+            if (strpos((string) $cellA, 'coil no') !== false) {
                 // Format baru: A=COIL NO, B=Alias, C=Nama Asli, D=NW, E=GW, F=Length, G=BPM, H=Qty Roll, I=Pack
                 $col_coil_no    = 'A';
                 $col_nama_alias = 'B';
@@ -1194,7 +1194,7 @@ class New_ros extends Admin_Controller
                 $col_pack       = 'I';
                 $start_row      = $r + 1;
                 break;
-            } elseif (strpos($cellB, 'coil no') !== false) {
+            } elseif (strpos((string) $cellB, 'coil no') !== false) {
                 // Format lama fallback: B=COIL NO, C=Alias, D=Number, E=NW, F=GW, G=Length, H=BPM, I=Qty Roll, J=Pack
                 $col_coil_no    = 'B';
                 $col_nama_alias = 'C';
@@ -1232,8 +1232,8 @@ class New_ros extends Admin_Controller
             $qty_roll   = $getCellValue($col_qty_roll);
             $pack       = $getCellValue($col_pack);
 
-            if (empty($coil_no) || strtolower($coil_no) == 'total') continue;
-            if (strpos(strtolower($coil_no), 'error') !== false) continue;
+            if (empty($coil_no) || strtolower((string) $coil_no) == 'total') continue;
+            if (strpos(strtolower((string) $coil_no), 'error') !== false) continue;
             // Skip baris kosong (baris pemisah antar material)
             if (empty($nama_alias) && empty($nm_barang)) continue;
 
@@ -1250,7 +1250,7 @@ class New_ros extends Admin_Controller
                 $gw_avg = $gw_val / $qty_roll_val;
 
                 // Mother Coil (record induk)
-                $kode_internal_mother = $inisial . '-' . $coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                $kode_internal_mother = $inisial . '-' . $coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
                 $coils[] = [
                     'no_coil'        => $coil_no,
                     'parent_no_coil' => null,
@@ -1269,8 +1269,8 @@ class New_ros extends Admin_Controller
 
                 // Baby Coils (pecahan)
                 for ($bc = 1; $bc <= $qty_roll_val; $bc++) {
-                    $baby_coil_no  = $coil_no . '-' . str_pad($bc, 2, '0', STR_PAD_LEFT);
-                    $kode_internal = $inisial . '-' . $baby_coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                    $baby_coil_no  = $coil_no . '-' . str_pad((string) $bc, 2, '0', STR_PAD_LEFT);
+                    $kode_internal = $inisial . '-' . $baby_coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
 
                     $coils[] = [
                         'no_coil'        => $baby_coil_no,
@@ -1289,7 +1289,7 @@ class New_ros extends Admin_Controller
                     $counter++;
                 }
             } else {
-                $kode_internal = $inisial . '-' . $coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                $kode_internal = $inisial . '-' . $coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
 
                 $coils[] = [
                     'no_coil'        => $coil_no,
@@ -1386,12 +1386,12 @@ class New_ros extends Admin_Controller
         // Build lookup: nm_alias / nm_barang (lowercase) → material id
         $mat_lookup = [];
         foreach ($materials as $mat) {
-            $key = strtolower(trim($mat['nm_alias']));
+            $key = strtolower(trim((string) $mat['nm_alias']));
             if ($key) $mat_lookup[$key] = $mat['id'];
-            $key2 = strtolower(trim($mat['nm_barang']));
+            $key2 = strtolower(trim((string) $mat['nm_barang']));
             if ($key2 && !isset($mat_lookup[$key2])) $mat_lookup[$key2] = $mat['id'];
             // Juga nm_erp
-            $key3 = strtolower(trim($mat['nm_erp']));
+            $key3 = strtolower(trim((string) $mat['nm_erp']));
             if ($key3 && !isset($mat_lookup[$key3])) $mat_lookup[$key3] = $mat['id'];
         }
 
@@ -1420,7 +1420,7 @@ class New_ros extends Admin_Controller
             $cellA = strtolower(trim((string) $sheet->getCell('A' . $r)->getValue()));
             $cellB = strtolower(trim((string) $sheet->getCell('B' . $r)->getValue()));
 
-            if (strpos($cellA, 'coil no') !== false) {
+            if (strpos((string) $cellA, 'coil no') !== false) {
                 // Format baru: Data mulai dari kolom A
                 $col_coil_no  = 'A';
                 $col_nama_po  = 'B';
@@ -1433,7 +1433,7 @@ class New_ros extends Admin_Controller
                 $col_pack     = 'I';
                 $start_row    = $r + 1;
                 break;
-            } elseif (strpos($cellB, 'coil no') !== false) {
+            } elseif (strpos((string) $cellB, 'coil no') !== false) {
                 // Format lama fallback: Data mulai dari kolom B
                 $col_coil_no  = 'B';
                 $col_nama_po  = 'C';
@@ -1480,8 +1480,8 @@ class New_ros extends Admin_Controller
             $pack        = $getCellValue($col_pack);
 
             // Skip row kosong atau row TOTAL/ERROR
-            if (empty($coil_no) || strtolower($coil_no) == 'total') continue;
-            if (strpos(strtolower($coil_no), 'error') !== false) continue;
+            if (empty($coil_no) || strtolower((string) $coil_no) == 'total') continue;
+            if (strpos(strtolower((string) $coil_no), 'error') !== false) continue;
 
             $nw_val       = (float) str_replace(',', '', (string) $nw);
             $gw_val       = (float) str_replace(',', '', (string) $gw);
@@ -1491,7 +1491,7 @@ class New_ros extends Admin_Controller
             $pack_val     = trim((string) $pack) !== '' ? (int) $pack : null;
 
             // Match material
-            $nm_po_lower = strtolower(trim($nm_po));
+            $nm_po_lower = strtolower(trim((string) $nm_po));
             $id_ros_material = isset($mat_lookup[$nm_po_lower]) ? $mat_lookup[$nm_po_lower] : null;
             $is_matched = $id_ros_material ? 1 : 0;
 
@@ -1501,7 +1501,7 @@ class New_ros extends Admin_Controller
                 $gw_avg = $gw_val / $qty_roll_val;
 
                 // Insert Mother Coil (record induk)
-                $kode_internal_mother = $inisial . '-' . $coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                $kode_internal_mother = $inisial . '-' . $coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
                 $this->db->insert('tr_ros_upload_temp', [
                     'id_ros'          => $id_ros,
                     'session_id'      => $session_id,
@@ -1527,8 +1527,8 @@ class New_ros extends Admin_Controller
 
                 // Insert Baby Coils (pecahan)
                 for ($bc = 1; $bc <= $qty_roll_val; $bc++) {
-                    $baby_coil_no  = $coil_no . '-' . str_pad($bc, 2, '0', STR_PAD_LEFT);
-                    $kode_internal = $inisial . '-' . $baby_coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                    $baby_coil_no  = $coil_no . '-' . str_pad((string) $bc, 2, '0', STR_PAD_LEFT);
+                    $kode_internal = $inisial . '-' . $baby_coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
 
                     $this->db->insert('tr_ros_upload_temp', [
                         'id_ros'          => $id_ros,
@@ -1556,7 +1556,7 @@ class New_ros extends Admin_Controller
                 }
             } else {
                 // Normal coil (qty_roll = 1)
-                $kode_internal = $inisial . '-' . $coil_no . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+                $kode_internal = $inisial . '-' . $coil_no . '-' . str_pad((string) $counter, 3, '0', STR_PAD_LEFT);
 
                 $this->db->insert('tr_ros_upload_temp', [
                     'id_ros'          => $id_ros,
@@ -1860,9 +1860,9 @@ class New_ros extends Admin_Controller
                     }
                     $html .= '<td class="text-center">' . $coil['no_coil'] . '</td>';
                     $html .= '<td class="text-center">' . $coil['kode_internal'] . '</td>';
-                    $html .= '<td class="text-end">' . number_format($coil['berat_bersih'], 2) . '</td>';
-                    $html .= '<td class="text-end">' . number_format($coil['berat_kotor'], 2) . '</td>';
-                    $html .= '<td class="text-end">' . number_format($coil['panjang'], 2) . '</td>';
+                    $html .= '<td class="text-end">' . number_format((float) $coil['berat_bersih'], 2) . '</td>';
+                    $html .= '<td class="text-end">' . number_format((float) $coil['berat_kotor'], 2) . '</td>';
+                    $html .= '<td class="text-end">' . number_format((float) $coil['panjang'], 2) . '</td>';
                     $html .= '<td class="text-center"><input type="checkbox" class="check_item_modal" value="' . $coil['id'] . '"></td>';
                     $html .= '</tr>';
                 }
@@ -1879,7 +1879,7 @@ class New_ros extends Admin_Controller
     // ─── PRINT QR CODE ───────────────────────────────────────────────
     public function print_qr($ids)
     {
-        $array_id = explode('-', $ids);
+        $array_id = explode('-', (string) $ids);
 
         $this->db->select('c.*, m.nm_barang, m.nm_alias, m.nm_erp, h.id as no_ros, h.nm_supplier');
         $this->db->from('tr_ros_material_coil c');
@@ -2215,7 +2215,7 @@ class New_ros extends Admin_Controller
 
         // Tentukan tipe PO: Lokal atau Import
         $po_data  = $this->db->get_where('tr_purchase_order', ['no_po' => $header['no_po']])->row();
-        $is_lokal = ($po_data && strtolower($po_data->loi) === 'lokal');
+        $is_lokal = ($po_data && strtolower((string) $po_data->loi) === 'lokal');
 
         // status_payment: Lokal langsung 'close', Import 'proses_payment' (menunggu pembayaran)
         $status_payment = $is_lokal ? 'close' : 'proses_payment';

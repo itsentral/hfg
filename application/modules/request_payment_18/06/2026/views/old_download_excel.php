@@ -53,10 +53,10 @@ header("Content-Disposition: attachment; filename=Request Payment (" . date('d-m
             echo '<td style="text-align: center;">' . $no . '</td>';
             echo '<td style="text-align: center;">' . $item->no_dokumen . '</td>';
             echo '<td style="text-align: center;">' . $nmuser . '</td>';
-            echo '<td style="text-align: center;">' . date('d F Y', strtotime($item->tanggal)) . '</td>';
+            echo '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item->tanggal)) . '</td>';
             echo '<td style="text-align: left;">' . $item->keperluan . '</td>';
             echo '<td style="text-align: center;">' . $item->kategori . '</td>';
-            echo '<td style="text-align: right;">' . number_format($item->nilai_pengajuan) . '</td>';
+            echo '<td style="text-align: right;">' . number_format((float) $item->nilai_pengajuan) . '</td>';
 
             echo '</tr>';
         }

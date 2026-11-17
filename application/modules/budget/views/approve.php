@@ -1,13 +1,13 @@
 <?php
 $h = isset($header[0]) ? $header[0] : (object)array();
-$nama_asset = isset($h->rev_nama_asset) && !empty($h->rev_nama_asset) ? strtoupper($h->rev_nama_asset) : (isset($h->nama_asset) ? strtoupper($h->nama_asset) : '');
+$nama_asset = isset($h->rev_nama_asset) && !empty($h->rev_nama_asset) ? strtoupper((string) $h->rev_nama_asset) : (isset($h->nama_asset) ? strtoupper((string) $h->nama_asset) : '');
 $tahun      = isset($h->rev_tahun) && !empty($h->rev_tahun) ? $h->rev_tahun : (isset($h->tahun) ? $h->tahun : date('Y'));
 $bulan      = isset($h->rev_bulan) && !empty($h->rev_bulan) ? $h->rev_bulan : (isset($h->bulan) ? $h->bulan : date('m'));
-$budget     = isset($h->rev_budget) && !empty($h->rev_budget) ? number_format($h->rev_budget) : (isset($h->budget) ? number_format($h->budget) : '');
-$budget_pr  = isset($h->budget_pr) ? number_format($h->budget_pr) : $budget;
-$budget_po  = isset($h->budget_po) ? number_format($h->budget_po) : $budget;
-$qty        = isset($h->rev_qty) && !empty($h->rev_qty) ? number_format($h->rev_qty) : (isset($h->qty) ? number_format($h->qty) : '');
-$keterangan = isset($h->rev_keterangan) && !empty($h->rev_keterangan) ? strtoupper($h->rev_keterangan) : (isset($h->keterangan) ? strtoupper($h->keterangan) : '');
+$budget     = isset($h->rev_budget) && !empty($h->rev_budget) ? number_format((float) $h->rev_budget) : (isset($h->budget) ? number_format((float) $h->budget) : '');
+$budget_pr  = isset($h->budget_pr) ? number_format((float) $h->budget_pr) : $budget;
+$budget_po  = isset($h->budget_po) ? number_format((float) $h->budget_po) : $budget;
+$qty        = isset($h->rev_qty) && !empty($h->rev_qty) ? number_format((float) $h->rev_qty) : (isset($h->qty) ? number_format((float) $h->qty) : '');
+$keterangan = isset($h->rev_keterangan) && !empty($h->rev_keterangan) ? strtoupper((string) $h->rev_keterangan) : (isset($h->keterangan) ? strtoupper((string) $h->keterangan) : '');
 ?>
 
 <div class="card shadow-sm border-0 mb-4">

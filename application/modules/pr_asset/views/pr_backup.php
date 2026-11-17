@@ -44,10 +44,10 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 							echo '<tr>';
 							echo '<td class="text-center">'.$no.'</td>';
 							echo '<td class="text-center">'.$row['no_pr'].'</td>';
-							echo '<td class="text-center">'.date('d F Y', strtotime($row['tgl_pr'])).'</td>';
+							echo '<td class="text-center">'.date('d F Y', strtotime((string) $row['tgl_pr'])).'</td>';
 							echo '<td>'.$row['nama_asset'].'</td>';
 							echo '<td class="text-center">'.$row['dibuat_oleh'].'</td>';
-							echo '<td class="text-center">'.date('d F Y', strtotime($row['created_date'])).'</td>';
+							echo '<td class="text-center">'.date('d F Y', strtotime((string) $row['created_date'])).'</td>';
 				
 							if (
 								($row['app_status_1'] == '' || $row['app_status_1'] == null) &&
@@ -102,7 +102,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 								$status = 'Approved';
 								$color = 'green';
 							}
-							echo "<td class='text-center'><span class='badge bg-" . $color . "'>" . strtoupper($status) . "</span></td>";
+							echo "<td class='text-center'><span class='badge bg-" . $color . "'>" . strtoupper((string) $status) . "</span></td>";
 							$view = "<button type='button' class='btn btn-sm btn-primary look_hide' title='Look and Hide' data-id='" . $no . "' data-role='qtip'><i class='fa fa-check'></i></button>";
 							$print			= "&nbsp;<button type='button'class='btn btn-sm btn-info print_pr' title='Print PR' data-no_pr='" . $row['no_pr'] . "'><i class='fa fa-print'></i></button>";
 				
@@ -124,16 +124,16 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 							//detail
 							echo "<td class='prtCh_" . $no . "' align='center'></td>"; //$('.prtCh_".$no."').parent().parent().attr('height','200px');
 							echo "<td align='left'></td>";
-							echo "<td align='right'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</td>";
-							echo "<td align='right'><b>NILAI PR</b></br>" . number_format($row['nilai_pr']) . "</td>";
-							echo "<td align='right'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</td>";
+							echo "<td align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</td>";
+							echo "<td align='right'><b>NILAI PR</b></br>" . number_format((float) $row['nilai_pr']) . "</td>";
+							echo "<td align='right'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</td>";
 							$approve = "<button type='button' class='btn btn-sm btn-success approve' title='Approve' data-id='" . $no . "' data-tipe_approve='" . $tipe_approve . "' data-role='qtip'><i class='fa fa-check'></i></button>";
 				
 							$app_by = '';
 							$app_date = '';
 							if ($row['app_reason_1'] !== '' || $row['app_reason_1'] !== null) {
 								$app_reason = $row['app_reason_1'];
-								$app_date = date('d-M-Y H:i:s', strtotime($row['app_date_1']));
+								$app_date = date('d-M-Y H:i:s', strtotime((string) $row['app_date_1']));
 				
 								$get_create_by = $this->db->get_where('users', ['id_user' => $row['app_by_1']])->row();
 								if(!empty($get_create_by)){
@@ -141,7 +141,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 								}
 							} else if ($row['app_reason_2'] !== '' || $row['app_reason_2'] !== null) {
 								$app_reason = $row['app_reason_2'];
-								$app_date = date('d-M-Y H:i:s', strtotime($row['app_date_2']));
+								$app_date = date('d-M-Y H:i:s', strtotime((string) $row['app_date_2']));
 				
 								$get_create_by = $this->db->get_where('users', ['id_user' => $row['app_by_2']])->row();
 								if(!empty($get_create_by)){
@@ -149,7 +149,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 								}
 							} else if ($row['app_reason_3'] !== '' || $row['app_reason_3'] !== null) {
 								$app_reason = $row['app_reason_3'];
-								$app_date = date('d-M-Y H:i:s', strtotime($row['app_date_3']));
+								$app_date = date('d-M-Y H:i:s', strtotime((string) $row['app_date_3']));
 				
 								$get_create_by = $this->db->get_where('users', ['id_user' => $row['app_by_3']])->row();
 								if(!empty($get_create_by)){
@@ -161,7 +161,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 							$sts_app = "";
 							$sts_by = "";
 							if ($row['app_status_1'] !== '' || $row['app_status_2'] !== '' || $row['app_status_3'] !== '') {
-								$sts_app = "<b>" . $status . " REASON</b><br>" . ucfirst($app_reason);
+								$sts_app = "<b>" . $status . " REASON</b><br>" . ucfirst((string) $app_reason);
 								$sts_by = "<b>" . $status . " BY</b><br>" . ucfirst($app_by . " (" . $app_date . ")");
 							}
 							if (!empty($tanda)) {

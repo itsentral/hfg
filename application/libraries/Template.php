@@ -35,6 +35,7 @@ class Template
 	private $_title_separator = ' | ';
 
 	private $_parser_enabled = TRUE;
+	private $_body = '';
 	private $_parser_body_enabled = TRUE;
 
 	private $_theme_locations = array();
@@ -345,13 +346,13 @@ class Template
 	 */
 	public function set_metadata($name, $content, $type = 'meta')
 	{
-		$name = htmlspecialchars(strip_tags($name));
-		$content = htmlspecialchars(strip_tags($content));
+		$name = htmlspecialchars(strip_tags((string) $name));
+		$content = htmlspecialchars(strip_tags((string) $content));
 
 		// Keywords with no comments? ARG! comment them
-		if ($name == 'keywords' AND ! strpos($content, ','))
+		if ($name == 'keywords' AND ! strpos((string) $content, ','))
 		{
-			$content = preg_replace('/[\s]+/', ', ', trim($content));
+			$content = preg_replace('/[\s]+/', ', ', trim((string) $content));
 		}
 
 		switch($type)
@@ -832,7 +833,7 @@ class Template
             $tmessage = self::$ci->session->flashdata('tmessage');
             if (! empty($tmessage)) {
                 // Split out the message parts
-                $temp_message = explode('::', $tmessage);
+                $temp_message = explode('::', (string) $tmessage);
                 $type = $temp_message[0];
                 $tmessage = $temp_message[1];
 

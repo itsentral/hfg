@@ -137,7 +137,7 @@ public function get_pricelist_by_id($id)
         // 2. Buat atau update Product Catalog (Snapshot harga aktif resmi)
         $year = date('Y');
         $cat_count = $this->db->like('no_catalog', 'CAT-' . $year)->count_all_results('product_catalog_header') + 1;
-        $no_cat = 'CAT-' . $year . '-' . str_pad($cat_count, 4, '0', STR_PAD_LEFT);
+        $no_cat = 'CAT-' . $year . '-' . str_pad((string) $cat_count, 4, '0', STR_PAD_LEFT);
 
         $this->db->insert('product_catalog_header', [
             'id_pricelist_header' => $id,
@@ -215,7 +215,7 @@ public function get_pricelist_by_id($id)
         $now = date('Y-m-d H:i:s');
         return $this->db->where('id', $id)->update('pricelist_header', [
             'status'        => 'Rejected',
-            'reject_reason' => trim($reason),
+            'reject_reason' => trim((string) $reason),
             'decided_by'    => $user_id,
             'decided_at'    => $now,
         ]);

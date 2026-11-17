@@ -168,12 +168,12 @@ class Budget extends Admin_Controller {
     }
 
     public function search_old($coa,$tgl,$dtl='') {
-		$tahun = date("Y",strtotime($tgl));
+		$tahun = date("Y",strtotime((string) $tgl));
         $data = $this->Budget_model->SearchBudget($coa,$tahun);
 		$param=array();
 		if($data!==false){
 			if($dtl==''){
-				$bulan=date("n",strtotime($tgl));
+				$bulan=date("n",strtotime((string) $tgl));
 				$budget=$data->{"bulan_".$bulan};
 				$sisa=($data->{"bulan_".$bulan}-$data->{"terpakai_bulan_".$bulan});
 				$param = array(
@@ -197,13 +197,13 @@ class Budget extends Admin_Controller {
    }
 
     public function search($coa,$tgl,$dtl='') {
-		$tahun = date("Y",strtotime($tgl));
+		$tahun = date("Y",strtotime((string) $tgl));
         $data = $this->Budget_model->SearchBudget($coa,$tahun);
 		$param=array();
 		if($data!==false){
 			if($dtl==''){
 				$bulannow=date("n");
-				$bulan=date("n",strtotime($tgl));
+				$bulan=date("n",strtotime((string) $tgl));
 				$budget=0;
 				$terpakai=0;
 				for($i=1;$i<=$bulannow;$i++){

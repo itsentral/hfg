@@ -113,7 +113,7 @@ class Jurnal_model extends CI_Model
 	function get_Nomor_Jurnal_Pembelian($Cabang = '', $Tgl_Inv = '')
 	{
 		$nocab			= 'A';
-		$bulan_Proses	= date('Y', strtotime($Tgl_Inv));
+		$bulan_Proses	= date('Y', strtotime((string) $Tgl_Inv));
 		$Urut			= 1;
 		$Query_Cab		= "SELECT subcab,nomorJP FROM pastibisa_tb_cabang WHERE nocab='" . $Cabang . "'";
 		$Pros_Cab		= $db2->query($Query_Cab);
@@ -122,9 +122,9 @@ class Jurnal_model extends CI_Model
 			$nocab		= $det_Cab[0]['subcab'];
 			$Urut		= intval($det_Cab[0]['nomorJP']) + 1;
 		}
-		$Format			= $Cabang . '-' . $nocab . '-JP' . date('y', strtotime($Tgl_Inv));
+		$Format			= $Cabang . '-' . $nocab . '-JP' . date('y', strtotime((string) $Tgl_Inv));
 
-		$Nomor_JP		= $Format . str_pad($Urut, 5, "0", STR_PAD_LEFT);
+		$Nomor_JP		= $Format . str_pad((string) $Urut, 5, "0", STR_PAD_LEFT);
 		$Query_Cab = "UPDATE pastibisa_tb_cabang SET nomorJP=nomorJP + 1  WHERE nocab='" . $Cabang . "'";
 		$db2->query($Query_Cab);
 
@@ -137,7 +137,7 @@ class Jurnal_model extends CI_Model
 	{
 		$db2 = $this->load->database('accounting', TRUE);
 		$nocab			= 'A';
-		$bulan_Proses	= date('Y', strtotime($Tgl_Inv));
+		$bulan_Proses	= date('Y', strtotime((string) $Tgl_Inv));
 		$Urut			= 1;
 		$Query_Cab		= "SELECT subcab,nomorJC FROM pastibisa_tb_cabang WHERE nocab='" . $Cabang . "'";
 		$Pros_Cab		= $db2->query($Query_Cab);
@@ -146,9 +146,9 @@ class Jurnal_model extends CI_Model
 			$nocab		= $det_Cab[0]['subcab'];
 			$Urut		= intval($det_Cab[0]['nomorJC']) + 1;
 		}
-		$Format			= $Cabang . '-' . $nocab . 'JV' . date('y', strtotime($Tgl_Inv));
+		$Format			= $Cabang . '-' . $nocab . 'JV' . date('y', strtotime((string) $Tgl_Inv));
 
-		$Nomor_JS		= $Format . str_pad($Urut, 5, "0", STR_PAD_LEFT);
+		$Nomor_JS		= $Format . str_pad((string) $Urut, 5, "0", STR_PAD_LEFT);
 		$Query_Cab = "UPDATE pastibisa_tb_cabang SET nomorJC=(nomorJC + 1),lastupdate='" . date("Y-m-d") . "' WHERE nocab='" . $Cabang . "'";
 		$db2->query($Query_Cab);
 
@@ -160,7 +160,7 @@ class Jurnal_model extends CI_Model
 	{
 		$db2 = $this->load->database('accounting', TRUE);
 		$nocab			= 'A';
-		$bulan_Proses	= date('Y', strtotime($Tgl_Inv));
+		$bulan_Proses	= date('Y', strtotime((string) $Tgl_Inv));
 		$Urut			= 1;
 		$Query_Cab		= "SELECT subcab,nomorJM FROM pastibisa_tb_cabang WHERE nocab='" . $Cabang . "'";
 		$Pros_Cab		= $db2->query($Query_Cab);
@@ -169,9 +169,9 @@ class Jurnal_model extends CI_Model
 			$nocab		= $det_Cab[0]['subcab'];
 			$Urut		= intval($det_Cab[0]['nomorJM']) + 1;
 		}
-		$Format			= $Cabang . '-' . $nocab . '-JM' . date('y', strtotime($Tgl_Inv));
+		$Format			= $Cabang . '-' . $nocab . '-JM' . date('y', strtotime((string) $Tgl_Inv));
 
-		$Nomor_JM		= $Format . str_pad($Urut, 5, "0", STR_PAD_LEFT);
+		$Nomor_JM		= $Format . str_pad((string) $Urut, 5, "0", STR_PAD_LEFT);
 		$Query_Cab = "UPDATE pastibisa_tb_cabang SET nomorJM=nomorJM + 1  WHERE nocab='" . $Cabang . "'";
 		$db2->query($Query_Cab);
 
@@ -183,7 +183,7 @@ class Jurnal_model extends CI_Model
 		$nocab			= 'A';
 		$kdcab			= 'YOG';
 		$prefix			= '';
-		$bulan_Proses	= date('Y', strtotime($Tgl_Inv));
+		$bulan_Proses	= date('Y', strtotime((string) $Tgl_Inv));
 		$Urut			= 1;
 		$Query_Cab		= "SELECT kdcab,subcab FROM pastibisa_tb_cabang WHERE nocab='" . $Cabang . "'";
 		$Pros_Cab		= $db2->query($Query_Cab);
@@ -192,16 +192,16 @@ class Jurnal_model extends CI_Model
 			$nocab		= $det_Cab[0]['subcab'];
 			$kdcab		= $det_Cab[0]['kdcab'];
 		}
-		$Query_Kode		= "SELECT prefik,nobuk FROM konter_bumbuk WHERE kdcab='$kdcab' AND LOWER(kasbank)='" . strtolower($tipe) . "'";
+		$Query_Kode		= "SELECT prefik,nobuk FROM konter_bumbuk WHERE kdcab='$kdcab' AND LOWER(kasbank)='" . strtolower((string) $tipe) . "'";
 		$Pros_Kode		= $db2->query($Query_Kode);
 		$det_Kode		= $Pros_Kode->result_array();
 		if ($det_Kode) {
 			$prefix		= $det_Kode[0]['prefik'];
 			$Urut		= intval($det_Kode[0]['nobuk']) + 1;
 		}
-		$Format			= $Cabang . 'BK' . $nocab . $prefix . date('y', strtotime($Tgl_Inv));
+		$Format			= $Cabang . 'BK' . $nocab . $prefix . date('y', strtotime((string) $Tgl_Inv));
 
-		$Nomor_BUK		= $Format . str_pad($Urut, 5, "0", STR_PAD_LEFT);
+		$Nomor_BUK		= $Format . str_pad((string) $Urut, 5, "0", STR_PAD_LEFT);
 
 		return $Nomor_BUK;
 	}
@@ -209,7 +209,7 @@ class Jurnal_model extends CI_Model
 	function get_Nomor_Jurnal_BUM($Cabang = '', $Tgl_Inv = '')
 	{
 		$nocab			= 'A';
-		$bulan_Proses	= date('Y', strtotime($Tgl_Inv));
+		$bulan_Proses	= date('Y', strtotime((string) $Tgl_Inv));
 		$Urut			= 1;
 		$Query_Cab		= "SELECT subcab,nobum FROM " . DBACC . ".pastibisa_tb_cabang WHERE nocab='" . $Cabang . "'";
 		$Pros_Cab		= $this->db->query($Query_Cab);
@@ -218,9 +218,9 @@ class Jurnal_model extends CI_Model
 			$nocab		= $det_Cab[0]['subcab'];
 			$Urut		= intval($det_Cab[0]['nobum']) + 1;
 		}
-		$Format			= $Cabang . 'BM' . $nocab . date('y', strtotime($Tgl_Inv));
+		$Format			= $Cabang . 'BM' . $nocab . date('y', strtotime((string) $Tgl_Inv));
 
-		$Nomor_BUM		= $Format . str_pad($Urut, 7, "0", STR_PAD_LEFT);
+		$Nomor_BUM		= $Format . str_pad((string) $Urut, 7, "0", STR_PAD_LEFT);
 
 		return $Nomor_BUM;
 	}
@@ -228,13 +228,13 @@ class Jurnal_model extends CI_Model
 	function update_Nomor_Jurnal($Cabang = '', $tipe = 'BUM')
 	{
 		$db2 = $this->load->database('accounting', TRUE);
-		if (strtolower($tipe) == 'bum') {
+		if (strtolower((string) $tipe) == 'bum') {
 			$fields		= "nobum";
-		} else if (strtolower($tipe) == 'jp') {
+		} else if (strtolower((string) $tipe) == 'jp') {
 			$fields		= "noJP";
-		} else if (strtolower($tipe) == 'jm') {
+		} else if (strtolower((string) $tipe) == 'jm') {
 			$fields		= "noJM";
-		} else if (strtolower($tipe) == 'js') {
+		} else if (strtolower((string) $tipe) == 'js') {
 			$fields		= "noJS";
 		}
 
@@ -253,7 +253,7 @@ class Jurnal_model extends CI_Model
 		if ($det_Cab) {
 			$kdcab		= $det_Cab[0]['kdcab'];
 		}
-		$Query_Kode		= "UPDATE konter_bumbuk SET nobuk=nobuk + 1 WHERE kdcab='$kdcab' AND LOWER(kasbank)='" . strtolower($tipe) . "'";
+		$Query_Kode		= "UPDATE konter_bumbuk SET nobuk=nobuk + 1 WHERE kdcab='$kdcab' AND LOWER(kasbank)='" . strtolower((string) $tipe) . "'";
 		$Pros_Kode		= $db2->query($Query_Kode);
 	}
 
@@ -274,8 +274,8 @@ class Jurnal_model extends CI_Model
 	{
 		$Bulan_Now		= date('n');
 		$Tahun_Now		= date('Y');
-		$Bulan_Proses	= date('n', strtotime($tgl_Proses));
-		$Tahun_Proses	= date('Y', strtotime($tgl_Proses));
+		$Bulan_Proses	= date('n', strtotime((string) $tgl_Proses));
+		$Tahun_Proses	= date('Y', strtotime((string) $tgl_Proses));
 		$det_Data		= $db2->get_where('pembayaran_piutang', array('kd_pembayaran' => $kode_Reff, 'no_invoice' => $kode_Inv))->result();
 
 		$Selisih		= (($Tahun_Now - $Tahun_Proses) * 12) + ($Bulan_Now - $Bulan_Proses);

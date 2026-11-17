@@ -75,7 +75,7 @@ if (!function_exists('get_company_name')) {
             $name = 'PT ' . $name;
         }
 
-        return $uppercase ? strtoupper($name) : $name;
+        return $uppercase ? strtoupper((string) $name) : $name;
     }
 }
 
@@ -110,19 +110,19 @@ if (!function_exists('_resolve_identitas_asset_url')) {
                 return $val;
             }
 
-            $clean = ltrim($val, '/');
-            if (strpos($clean, '/') !== false) {
+            $clean = ltrim((string) $val, '/');
+            if (strpos((string) $clean, '/') !== false) {
                 return base_url($clean);
             }
 
             foreach ($candidateDirs as $dir) {
-                $rel = rtrim($dir, '/') . '/' . $clean;
+                $rel = rtrim((string) $dir, '/') . '/' . $clean;
                 if (defined('FCPATH') && file_exists(FCPATH . $rel)) {
                     return base_url($rel);
                 }
             }
 
-            $firstDir = rtrim($candidateDirs[0], '/');
+            $firstDir = rtrim((string) $candidateDirs[0], '/');
             return base_url($firstDir . '/' . $clean);
         }
 

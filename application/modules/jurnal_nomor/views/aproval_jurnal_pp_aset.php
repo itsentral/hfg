@@ -81,8 +81,8 @@ width:90%;
 			<td><?= $record->no_pr ?></td>
 			<td><?= $tglpr->tgl_pr?></td>
 			<td><?= $record->tgl_pp?></td>
-     		<td><?= number_format($record->request_payment)?></td>
-			<td><?= number_format($record->terbayar)?></td>
+     		<td><?= number_format((float) $record->request_payment)?></td>
+			<td><?= number_format((float) $record->terbayar)?></td>
 			<td><?= number_format($record->request_payment-$record->terbayar)?></td>
 		</tr>
 		<?php } 

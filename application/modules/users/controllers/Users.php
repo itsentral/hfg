@@ -81,11 +81,11 @@ class Users extends Front_Controller
         ]);
         $raw = curl_exec($ch);
         $err = curl_error($ch);
-        curl_close($ch);
+        // curl_close($ch); // no-op sejak PHP 8.0, deprecated di PHP 8.5
 
         if ($raw === false) return [false, 'cURL error: ' . $err];
 
-        $res = json_decode($raw, true);
+        $res = json_decode((string) $raw, true);
         if (empty($res['success'])) return [false, 'Gagal: ' . json_encode($res['error-codes'] ?? [])];
 
         if (!empty($expectedAction) && isset($res['action']) && $res['action'] !== $expectedAction) {

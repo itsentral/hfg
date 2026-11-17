@@ -36,7 +36,7 @@
                             $this->db->select('b.nama');
                             $this->db->from('tr_purchase_order a');
                             $this->db->join('new_supplier b', 'b.kode_supplier = a.id_suplier', 'left');
-                            $this->db->where_in('a.no_po', explode(',', $item['no_ipp']));
+                            $this->db->where_in('a.no_po', explode(',', (string) $item['no_ipp']));
                             $this->db->group_by('b.nama');
                             $get_nm_supplier = $this->db->get()->row_array();
 
@@ -50,7 +50,7 @@
                             if (!empty($get_invoice)) {
                                 $id_rec_invoice = $get_invoice->id;
                                 $no_invoice = $get_invoice->invoice_no;
-                                $tgl_invoice = date('d F Y', strtotime($get_invoice->invoice_date));
+                                $tgl_invoice = date('d F Y', strtotime((string) $get_invoice->invoice_date));
                             }
 
                             $complete = 0;
@@ -133,8 +133,8 @@
                                 echo '<td style="text-align: center;">' . $no . '</td>';
                                 echo '<td style="text-align: center;">' . $item['kode_trans'] . '</td>';
                                 echo '<td style="text-align: center;">' . $no_po[$item['kode_trans']] . '</td>';
-                                echo '<td style="text-align: right">' . number_format($total_invoice) . '</td>';
-                                echo '<td style="text-align: center;">' . date('d F Y', strtotime($item['tanggal'])) . '</td>';
+                                echo '<td style="text-align: right">' . number_format((float) $total_invoice) . '</td>';
+                                echo '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item['tanggal'])) . '</td>';
                                 echo '<td style="text-align: center;">' . $nm_supplier . '</td>';
                                 echo '</tr>';
                                 $no++;

@@ -80,7 +80,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     <div class="card border mb-4 shadow-none">
                         <div class="card-header bg-light py-2 border-bottom d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-primary text-white"><?= strtoupper($key->nm_category) ?></span>
+                                <span class="badge bg-primary text-white"><?= strtoupper((string) $key->nm_category) ?></span>
                                 <small class="text-muted">Daftar item barang kategori <?= $key->nm_category ?></small>
                             </div>
                             <?php if (!$is_view) : ?>
@@ -129,7 +129,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                     <div class="card border mb-4 shadow-none">
                         <div class="card-header bg-light py-2 border-bottom d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-primary text-white"><?= strtoupper($item_jenis->nm_jenis) ?></span>
+                                <span class="badge bg-primary text-white"><?= strtoupper((string) $item_jenis->nm_jenis) ?></span>
                                 <small class="text-muted">Daftar item barang kategori <?= $item_jenis->nm_jenis ?></small>
                             </div>
                             <?php if (!$is_view) : ?>
@@ -204,7 +204,7 @@ $code_id = isset($data->code_budget) ? $data->code_budget : '';
                                         <tr class="fw-bold bg-light">
                                             <th colspan="6" class="text-end">Total Subtotal (<?= $item_jenis->nm_jenis ?>):</th>
                                             <th class="text-end font-monospace text-primary bg-primary-subtle tfoot_<?= $item_jenis->id_jenis ?>">
-                                                <?= number_format($total_budget_stock, 0, ',', '.') ?>
+                                                <?= number_format((float) $total_budget_stock, 0, ',', '.') ?>
                                             </th>
                                             <?php if (!$is_view) : ?>
                                                 <th></th>

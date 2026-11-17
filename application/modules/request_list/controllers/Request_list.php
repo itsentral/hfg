@@ -55,7 +55,7 @@ class Request_list extends Admin_Controller
         $order_dir = isset($_REQUEST['order'][0]['dir']) ? $_REQUEST['order'][0]['dir'] : 'desc';
 
         // #1: Whitelist order_dir — prevent SQL injection
-        $order_dir = in_array(strtolower($order_dir), array('asc', 'desc')) ? strtolower($order_dir) : 'desc';
+        $order_dir = in_array(strtolower((string) $order_dir), array('asc', 'desc')) ? strtolower((string) $order_dir) : 'desc';
 
         $col_map = array(
             1 => 'h.spk_no',
@@ -119,11 +119,11 @@ class Request_list extends Admin_Controller
                 }
             }
 
-            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . htmlspecialchars($display_status) . "</span>" . $scan_info . $pr_badge;
+            $status_html = "<span class='badge rounded-pill " . $badge_class . "'>" . htmlspecialchars((string) $display_status) . "</span>" . $scan_info . $pr_badge;
 
             // --- ACTION: Tombol Inline Langsung di Semua Tab ---
-            $spk_esc = htmlspecialchars($row['spk_no'], ENT_QUOTES, 'UTF-8');
-            $spk_url = rawurlencode($row['spk_no']);
+            $spk_esc = htmlspecialchars((string) $row['spk_no'], ENT_QUOTES, 'UTF-8');
+            $spk_url = rawurlencode((string) $row['spk_no']);
             $actions = array();
             $actions[] = '<a href="' . site_url('request_list/view_spk_coil/' . $spk_url) . '" class="btn btn-sm btn-info text-white text-nowrap" title="View Detail">'
                 . '<i class="fa fa-eye me-1"></i> View Detail</a>';
@@ -137,7 +137,7 @@ class Request_list extends Admin_Controller
             $data[] = array(
                 "<div class='text-center'>" . $no . "</div>",
                 $row['spk_no'],
-                date('d/m/Y', strtotime($row['tgl_spk'])),
+                date('d/m/Y', strtotime((string) $row['tgl_spk'])),
                 htmlspecialchars(isset($row['shift_names']) ? $row['shift_names'] : ''),
                 "<div class='text-center'>" . $status_html . "</div>",
                 "<div class='text-center'>" . (isset($row['detail_count']) ? $row['detail_count'] : 0) . "</div>",
@@ -173,7 +173,7 @@ class Request_list extends Admin_Controller
         $detail = $this->Request_list_model->get_spk_detail_for_view($spk_no);
 
         if (!$detail) {
-            $this->session->set_flashdata('error', 'SPK ' . htmlspecialchars($spk_no) . ' tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK ' . htmlspecialchars((string) $spk_no) . ' tidak ditemukan.');
             redirect('request_list');
             return;
         }
@@ -722,17 +722,17 @@ class Request_list extends Admin_Controller
             return $this->_json(array('status' => 0, 'message' => 'Kode QR dan request ID wajib diisi.'));
         }
 
-        $parts = explode('/', $qr_string);
+        $parts = explode('/', (string) $qr_string);
 
-        if (count($parts) < 2 || trim($parts[0]) === '' || trim($parts[1]) === '') {
+        if (count($parts) < 2 || trim((string) $parts[0]) === '' || trim((string) $parts[1]) === '') {
             return $this->_json(array(
                 'status'  => 0,
                 'message' => 'Format kode salah'
             ));
         }
 
-        $kode_internal = trim($parts[0]);
-        $nm_gudang     = trim($parts[1]);
+        $kode_internal = trim((string) $parts[0]);
+        $nm_gudang     = trim((string) $parts[1]);
 
         $coil = $this->Request_list_model->find_coil_by_kode_internal($request_id, $kode_internal, $nm_gudang);
 
@@ -1049,11 +1049,11 @@ class Request_list extends Admin_Controller
             if ($pack_code !== '') {
                 $this->db->insert('tr_spk_scan_log', array(
                     'spk_no'      => '-',
-                    'no_coil'     => substr($pack_code, 0, 100),
+                    'no_coil'     => substr((string) $pack_code, 0, 100),
                     'scan_time'   => $this->datetime,
                     'scan_user'   => $this->id_user,
                     'status_scan' => 'rejected',
-                    'keterangan'  => substr($res['message'], 0, 500),
+                    'keterangan'  => substr((string) $res['message'], 0, 500),
                 ));
             }
             write_log('Request List', 'Scan Pack', 'Scan Pack ditolak (' . $pack_code . '): ' . $res['message'], array('pack_code' => $pack_code), null, 0);

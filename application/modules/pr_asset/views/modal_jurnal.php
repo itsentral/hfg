@@ -221,14 +221,14 @@ if(!empty($ArrJurnal)) {
 							echo "<td align='center'>".$valx['tipe']."</td>";
 							echo "<td align='center'>".$valx['no_perkiraan']."</td>";
 							echo "<td>".$valx['keterangan']."</td>";
-							echo "<td align='right'>".number_format($valx['debet'])."</td>";
-							echo "<td align='right'>".number_format($valx['kredit'])."</td>";
+							echo "<td align='right'>".number_format((float) $valx['debet'])."</td>";
+							echo "<td align='right'>".number_format((float) $valx['kredit'])."</td>";
 						echo "</tr>";
 					}
 					echo "<tr style='background-color:#36cdfb'>";
 						echo "<td colspan='6'><b>TOTAL PENYUSUTAN</b></td>";
-						echo "<td align='right'><b>".number_format($totD)."</b></td>";
-						echo "<td align='right'><b>".number_format($totK)."</b></td>";
+						echo "<td align='right'><b>".number_format((float) $totD)."</b></td>";
+						echo "<td align='right'><b>".number_format((float) $totK)."</b></td>";
 					echo "</tr>";
 				?>
 			</tbody>

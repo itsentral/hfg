@@ -216,7 +216,7 @@ class Warehouse extends Admin_Controller
         $filter_material = $this->input->post('filter_material') ?? '';
 
         $total = $this->Warehouse_model->get_grand_total_stock_value($kd_gudang, $id_gudang, $filter_material);
-        echo json_encode(['total' => number_format($total, 0, ',', '.')]);
+        echo json_encode(['total' => number_format((float) $total, 0, ',', '.')]);
     }
 
     // ── HISTORY MATERIAL ──────────────────────────────────────────────────
@@ -548,7 +548,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:H1');
-        $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper($label_gudang));
+        $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper((string) $label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -662,7 +662,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet2->mergeCells('A1:J1');
-        $sheet2->setCellValue('A1', 'DETAIL COIL — ' . strtoupper($label_gudang));
+        $sheet2->setCellValue('A1', 'DETAIL COIL — ' . strtoupper((string) $label_gudang));
         $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet2->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -845,7 +845,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:I1');
-        $sheet->setCellValue('A1', 'STOCK MATERIAL PER COIL — ' . strtoupper($label_gudang));
+        $sheet->setCellValue('A1', 'STOCK MATERIAL PER COIL — ' . strtoupper((string) $label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1047,7 +1047,7 @@ class Warehouse extends Admin_Controller
             $date_snap
         );
 
-        echo json_encode(['total' => number_format($total, 3, ',', '.')]);
+        echo json_encode(['total' => number_format((float) $total, 3, ',', '.')]);
     }
 
     public function data_side_stock_perday()
@@ -1207,7 +1207,7 @@ class Warehouse extends Admin_Controller
         if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
         if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
-        $label_period = ' | Per Tanggal: ' . date('d/m/Y', strtotime($date_snap));
+        $label_period = ' | Per Tanggal: ' . date('d/m/Y', strtotime((string) $date_snap));
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -1221,7 +1221,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:J1');
-        $sheet->setCellValue('A1', 'STOCK VALUE HISTORY — ' . strtoupper($label_gudang) . $label_period);
+        $sheet->setCellValue('A1', 'STOCK VALUE HISTORY — ' . strtoupper((string) $label_gudang) . $label_period);
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1282,7 +1282,7 @@ class Warehouse extends Admin_Controller
             $qty_stock   = (float) ($d['qty_stock']    ?? 0);
             $jml_coil    = (int)    $d['jumlah_coil'];
             $trade_name  = $d['trade_name'] ?? '';
-            $tgl         = !empty($d['hist_date']) ? date('d/m/Y', strtotime($d['hist_date'])) : '-';
+            $tgl         = !empty($d['hist_date']) ? date('d/m/Y', strtotime((string) $d['hist_date'])) : '-';
             $nm_gudang   = ($d['nm_gudang'] ?? $d['kd_gudang']) ?? '-';
 
             $sheet->setCellValueExplicit('A' . $row, $no + 1,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
@@ -1343,7 +1343,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet2->mergeCells('A1:M1');
-        $sheet2->setCellValue('A1', 'DETAIL COIL HISTORY — ' . strtoupper($label_gudang) . $label_period);
+        $sheet2->setCellValue('A1', 'DETAIL COIL HISTORY — ' . strtoupper((string) $label_gudang) . $label_period);
         $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet2->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1413,7 +1413,7 @@ class Warehouse extends Admin_Controller
             $length       = (float) ($c['length']       ?? 0);
             $costbook     = (float) ($c['harga_beli']   ?? 0);
             $total_value  = $costbook * $net_weight;
-            $tgl          = !empty($c['hist_date']) ? date('d/m/Y', strtotime($c['hist_date'])) : '-';
+            $tgl          = !empty($c['hist_date']) ? date('d/m/Y', strtotime((string) $c['hist_date'])) : '-';
             $status       = $c['status']   ?? '-';
             $nm_gudang    = ($c['nm_gudang'] ?? $c['kd_gudang']) ?? '-';
 

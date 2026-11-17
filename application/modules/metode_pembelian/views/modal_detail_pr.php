@@ -78,9 +78,9 @@
 
 				echo "<tr>";
 					echo "<td align='center'>".$No."</td>";
-					echo "<td>".strtoupper($valx['nama_material'])."</td>";
-                    echo "<td align='center'>".number_format($valx['qty'])."</td>";
-					echo "<td align='center'>".date('d-M-Y',strtotime($valx['tgl_dibutuhkan']))."</td>";
+					echo "<td>".strtoupper((string) $valx['nama_material'])."</td>";
+                    echo "<td align='center'>".number_format((float) $valx['qty'])."</td>";
+					echo "<td align='center'>".date('d-M-Y',strtotime((string) $valx['tgl_dibutuhkan']))."</td>";
 					// echo "<td align='center'>".$sts2."</td>";
 					// echo "<td align='center'><span class='badge' style='background-color: ".$warna2."'>".$sts."</span></td>";
 					// echo "<td></td>";

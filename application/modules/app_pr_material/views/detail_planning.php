@@ -1,7 +1,7 @@
 <?php
-$pembeda = substr($header[0]['so_number'], 0, 1);
-$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime($header[0]['due_date'])) : '-';
-$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-';
+$pembeda = substr((string) $header[0]['so_number'], 0, 1);
+$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime((string) $header[0]['due_date'])) : '-';
+$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '-';
 ?>
 
 <div class="col-md-12">
@@ -78,16 +78,16 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                                     <input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
                                   </td>";
 						if ($pembeda == 'SO') {
-							echo "<td class='text-right'>" . number_format($value['qty_order'], 5) . "</td>";
-							echo "<td class='text-right'>" . number_format($stock_free, 5) . "</td>";
-							echo "<td class='text-right'>" . number_format($use_stock, 5) . "</td>";
-							echo "<td class='text-right'>" . number_format($sisa_free, 5) . "</td>";
+							echo "<td class='text-right'>" . number_format((float) $value['qty_order'], 5) . "</td>";
+							echo "<td class='text-right'>" . number_format((float) $stock_free, 5) . "</td>";
+							echo "<td class='text-right'>" . number_format((float) $use_stock, 5) . "</td>";
+							echo "<td class='text-right'>" . number_format((float) $sisa_free, 5) . "</td>";
 						}
-						echo "<td class='text-right'>" . number_format($value['min_stok'], 2) . "</td>";
-						echo "<td class='text-right'>" . number_format($value['max_stok'], 2) . "</td>";
+						echo "<td class='text-right'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+						echo "<td class='text-right'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 						echo "<td class='text-right'>" . number_format(0, 2) . "</td>";
-						echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
-						echo "<td class='text-center'>" . number_format($value['propose_rev'], 2) . "</td>";
+						echo "<td class='text-right'>" . number_format((float) $propose, 2) . "</td>";
+						echo "<td class='text-center'>" . number_format((float) $value['propose_rev'], 2) . "</td>";
 						echo "<td class='text-left'>" . $value['note'] . "</td>";
 
 						if ($value['status_app'] == 'N') {

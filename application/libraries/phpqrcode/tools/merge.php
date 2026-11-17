@@ -62,7 +62,7 @@
 	$versionDataEx = explode("\n", file_get_contents($versionFile));
 	
     $outputContents = file_get_contents($headerFile);
-    $outputContents .= "\n\n/*\n * Version: ".trim($versionDataEx[0])."\n * Build: ".trim($versionDataEx[1])."\n */\n\n";
+    $outputContents .= "\n\n/*\n * Version: ".trim((string) $versionDataEx[0])."\n * Build: ".trim((string) $versionDataEx[1])."\n */\n\n";
     $outputContents .= $outputCode;
     
     file_put_contents($outputFile, $outputContents);

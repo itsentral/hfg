@@ -6,7 +6,7 @@
 		<label class='label-control col-sm-3'><b>Incoterms</b></label>
 		<div class='col-sm-9'>
 			<?php
-			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','placeholder'=>'Incoterms'), strtoupper($data[0]->incoterms));
+			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','placeholder'=>'Incoterms'), strtoupper((string) $data[0]->incoterms));
 			?>
 		</div>
 	</div>
@@ -14,7 +14,7 @@
 		<label class='label-control col-sm-3'><b>Term Of Payment</b></label>
 		<div class='col-sm-9'>
 			<?php
-			 echo form_input(array('id'=>'top','name'=>'top','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper($data[0]->top));
+			 echo form_input(array('id'=>'top','name'=>'top','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper((string) $data[0]->top));
 			?>
 		</div>
 	</div>
@@ -22,7 +22,7 @@
 		<label class='label-control col-sm-3'><b>Remarks</b></label>
 		<div class='col-sm-9'>
 			<?php
-			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper($data[0]->remarks));
+			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper((string) $data[0]->remarks));
 			?>
 		</div>
 	</div>

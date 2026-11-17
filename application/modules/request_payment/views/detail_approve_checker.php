@@ -229,17 +229,17 @@ if ($type == 'expense') {
                                             <tr>
                                                 <td>Nilai Pengajuan</td>
                                                 <td class="text-center" style="width:10px">:</td>
-                                                <td class="text-end fw-semibold"><?= number_format($data_req_payment['jumlah'], 2) ?></td>
+                                                <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Nilai PPh</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end text-danger"><?= number_format($data_req_payment['total_pph'], 2) ?></td>
+                                                <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Bank Charge</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end"><?= number_format($data_req_payment['admin_bank'], 2) ?></td>
+                                                <td class="text-end"><?= number_format((float) $data_req_payment['admin_bank'], 2) ?></td>
                                             </tr>
                                             <tr class="table-light fw-bold">
                                                 <td>Net Payment</td>
@@ -302,12 +302,12 @@ if ($type == 'expense') {
                                         echo '<td></td><td></td>';
                                         echo '<td class="text-muted small">' . $detail_kasbon_pr->nm_material . '</td>';
                                         echo '<td></td>';
-                                        echo '<td class="text-center">' . number_format($detail_kasbon_pr->qty) . '</td>';
+                                        echo '<td class="text-center">' . number_format((float) $detail_kasbon_pr->qty) . '</td>';
                                         echo '<td class="text-center fw-bold text-primary">' . $data_req_payment['currency'] . '</td>';
                                         echo '<td>
                                                 <table class="table table-nested table-sm mb-0 w-100 small">
-                                                    <tr><td>Harga Material</td><td class="text-center" style="width:10px">:</td><td class="text-end">' . number_format($detail_kasbon_pr->total_harga, 2) . '</td></tr>
-                                                    <tr><td>Bank Charge</td><td class="text-center">:</td><td class="text-end">' . number_format($data_req_payment['admin_bank'], 2) . '</td></tr>
+                                                    <tr><td>Harga Material</td><td class="text-center" style="width:10px">:</td><td class="text-end">' . number_format((float) $detail_kasbon_pr->total_harga, 2) . '</td></tr>
+                                                    <tr><td>Bank Charge</td><td class="text-center">:</td><td class="text-end">' . number_format((float) $data_req_payment['admin_bank'], 2) . '</td></tr>
                                                 </table>
                                               </td>';
                                         echo '<td></td><td></td>';
@@ -329,17 +329,17 @@ if ($type == 'expense') {
                                                 <tr>
                                                     <td>Nilai Pengajuan</td>
                                                     <td class="text-center" style="width:10px">:</td>
-                                                    <td class="text-end fw-semibold"><?= number_format($data_req_payment['jumlah'], 2) ?></td>
+                                                    <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Nilai PPh</td>
                                                     <td class="text-center">:</td>
-                                                    <td class="text-end text-danger"><?= number_format($data_req_payment['total_pph'], 2) ?></td>
+                                                    <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Bank Charge</td>
                                                     <td class="text-center">:</td>
-                                                    <td class="text-end"><?= number_format($data_req_payment['admin_bank'], 2) ?></td>
+                                                    <td class="text-end"><?= number_format((float) $data_req_payment['admin_bank'], 2) ?></td>
                                                 </tr>
                                                 <tr class="table-light fw-bold">
                                                     <td>Net Payment</td>
@@ -382,17 +382,17 @@ if ($type == 'expense') {
                                             <tr>
                                                 <td>Nilai Pengajuan</td>
                                                 <td class="text-center" style="width:10px">:</td>
-                                                <td class="text-end fw-semibold"><?= number_format($dtl->jumlah_kasbon, 2) ?></td>
+                                                <td class="text-end fw-semibold"><?= number_format((float) $dtl->jumlah_kasbon, 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Nilai PPh</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end text-danger"><?= number_format($data_req_payment['total_pph'], 2) ?></td>
+                                                <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Bank Charge</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end"><?= number_format($data_req_payment['admin_bank'], 2) ?></td>
+                                                <td class="text-end"><?= number_format((float) $data_req_payment['admin_bank'], 2) ?></td>
                                             </tr>
                                             <tr class="table-light fw-bold">
                                                 <td>Net Payment</td>
@@ -436,17 +436,17 @@ if ($type == 'expense') {
                                             <tr>
                                                 <td>Nilai Pengajuan</td>
                                                 <td class="text-center" style="width:10px">:</td>
-                                                <td class="text-end fw-semibold"><?= number_format($dtl->total_request, 2) ?></td>
+                                                <td class="text-end fw-semibold"><?= number_format((float) $dtl->total_request, 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Nilai PPh</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end text-danger"><?= number_format($data_req_payment['total_pph'], 2) ?></td>
+                                                <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Bank Charge</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end"><?= number_format($data_req_payment['admin_bank'], 2) ?></td>
+                                                <td class="text-end"><?= number_format((float) $data_req_payment['admin_bank'], 2) ?></td>
                                             </tr>
                                             <tr class="table-light fw-bold">
                                                 <td>Net Payment</td>
@@ -482,17 +482,17 @@ if ($type == 'expense') {
                                             <tr>
                                                 <td>Nilai Pengajuan</td>
                                                 <td class="text-center" style="width:10px">:</td>
-                                                <td class="text-end fw-semibold"><?= number_format($data_req_payment['jumlah'], 2) ?></td>
+                                                <td class="text-end fw-semibold"><?= number_format((float) $data_req_payment['jumlah'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Nilai PPh</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end text-danger"><?= number_format($data_req_payment['total_pph'], 2) ?></td>
+                                                <td class="text-end text-danger"><?= number_format((float) $data_req_payment['total_pph'], 2) ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Bank Charge</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end"><?= number_format($data_req_payment['admin_bank'], 2) ?></td>
+                                                <td class="text-end"><?= number_format((float) $data_req_payment['admin_bank'], 2) ?></td>
                                             </tr>
                                             <tr class="table-light fw-bold">
                                                 <td>Net Payment</td>
@@ -524,9 +524,9 @@ if ($type == 'expense') {
 
                                     <td><?= $deskripsi_item; ?></td>
                                     <td class="text-center"><?= $tgl_item; ?></td>
-                                    <td class="text-end"><?= number_format($total_val, 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $total_val, 2) ?></td>
                                     <td class="text-center fw-bold text-primary"><?= $data_req_payment['currency'] ?? 'IDR'; ?></td>
-                                    <td class="text-end fw-bold text-success"><?= number_format($total_val, 2) ?></td>
+                                    <td class="text-end fw-bold text-success"><?= number_format((float) $total_val, 2) ?></td>
                                     <td class="text-center">
                                         <?php if (!empty($data_req_payment['link_doc'])) : ?>
                                             <a href="<?= base_url('assets/expense/' . $data_req_payment['link_doc']); ?>" target="_blank" class="text-primary"><i class="fa fa-download fa-lg"></i></a>
@@ -580,12 +580,12 @@ if ($type == 'expense') {
                                             <tr>
                                                 <td>Kurs</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end"><?= number_format($kurs_val, 2) ?></td>
+                                                <td class="text-end"><?= number_format((float) $kurs_val, 2) ?></td>
                                             </tr>
                                             <tr class="table-light fw-bold">
                                                 <td>Total (IDR)</td>
                                                 <td class="text-center">:</td>
-                                                <td class="text-end text-success"><?= number_format($nilai_invoice, 2) ?></td>
+                                                <td class="text-end text-success"><?= number_format((float) $nilai_invoice, 2) ?></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -624,7 +624,7 @@ if ($type == 'expense') {
                                             <tr class="fw-bold">
                                                 <td>Total (IDR)</td>
                                                 <td class="text-center" style="width:10px">:</td>
-                                                <td class="text-end text-success"><?= number_format($nilai_ros, 2) ?></td>
+                                                <td class="text-end text-success"><?= number_format((float) $nilai_ros, 2) ?></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -641,7 +641,7 @@ if ($type == 'expense') {
                 <tfoot>
                     <tr class="table-success align-middle">
                         <th colspan="5" class="text-end fw-bold">Grand Total</th>
-                        <th class="text-end fw-bold text-success fs-5"><?= number_format($gTotal, 2); ?></th>
+                        <th class="text-end fw-bold text-success fs-5"><?= number_format((float) $gTotal, 2); ?></th>
                         <th colspan="2" class="text-center"></th>
                     </tr>
                 </tfoot>

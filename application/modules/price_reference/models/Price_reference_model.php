@@ -123,7 +123,7 @@ class Price_reference_model extends CI_Model
                 if ($bln >= 1 && $bln <= 12) {
                     $price = (float)$r->price_unit;
                     // Jika transaksi lokal (IDR) dan ada kurs > 1, konversikan ke ekuivalen USD
-                    if (isset($r->mata_uang) && strtoupper(trim($r->mata_uang)) === 'IDR' && isset($r->kurs) && (float)$r->kurs > 1) {
+                    if (isset($r->mata_uang) && strtoupper(trim((string) $r->mata_uang)) === 'IDR' && isset($r->kurs) && (float)$r->kurs > 1) {
                         $price = round($price / (float)$r->kurs, 6);
                     }
                     if (!isset($history[$bln]) || $price > $history[$bln]) {

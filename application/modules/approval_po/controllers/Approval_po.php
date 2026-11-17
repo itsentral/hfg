@@ -43,7 +43,7 @@ class Approval_po extends Admin_Controller
       $session      = $this->session->userdata('app_session');
 
       $so_number        = $data['so_number'];
-      $tgl_dibutuhkan    = (!empty($data['tgl_dibutuhkan'])) ? date('Y-m-d', strtotime($data['tgl_dibutuhkan'])) : NULL;
+      $tgl_dibutuhkan    = (!empty($data['tgl_dibutuhkan'])) ? date('Y-m-d', strtotime((string) $data['tgl_dibutuhkan'])) : NULL;
       $detail            = $data['detail'];
 
 
@@ -448,7 +448,7 @@ class Approval_po extends Admin_Controller
     $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header_po->id_dept) . "')")->result();
     if (!empty($get_nm_depart)) {
       foreach ($get_nm_depart as $item_depart) {
-        $nm_depart[] = strtoupper($item_depart->nama);
+        $nm_depart[] = strtoupper((string) $item_depart->nama);
       }
     }
 

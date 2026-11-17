@@ -26,7 +26,7 @@ class Report_payment_po_model extends BF_Model
         $this->db->join("new_supplier s", "po.id_suplier = s.kode_supplier", "left");
         $this->db->where_in("ri.status", ['request payment', 'approve checker', 'approve management', 'payment']);
         if (!empty($no_po)) {
-            $this->db->like("ri.no_surat", trim($no_po));
+            $this->db->like("ri.no_surat", trim((string) $no_po));
         }
         $this->db->group_by("ri.no_surat");
         $this->db->order_by("ri.no_surat", "ASC");
@@ -167,14 +167,14 @@ class Report_payment_po_model extends BF_Model
             ];
 
             // DP logic
-            if (strtolower($rec->tipe) == 'dp' || strpos(strtolower($rec->tipe_top), 'dp') !== false || strpos(strtolower($rec->tipe_top), 'uang muka') !== false) {
+            if (strtolower((string) $rec->tipe) == 'dp' || strpos(strtolower((string) $rec->tipe_top), 'dp') !== false || strpos(strtolower((string) $rec->tipe_top), 'uang muka') !== false) {
                 $row['category'] = 'dp';
-            } elseif (strtolower($rec->tipe) == 'import') {
+            } elseif (strtolower((string) $rec->tipe) == 'import') {
                 $row['category'] = 'import';
-            } elseif (strtolower($rec->tipe) == 'local') {
+            } elseif (strtolower((string) $rec->tipe) == 'local') {
                 $row['category'] = 'local';
             } else {
-                $row['category'] = strtolower($rec->tipe);
+                $row['category'] = strtolower((string) $rec->tipe);
             }
 
             // Get payment details

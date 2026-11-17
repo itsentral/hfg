@@ -83,12 +83,12 @@ class App_pr_stock_model extends BF_Model
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='left'>" . strtoupper('PRODUCTION PLANNING ' . $row['so_number']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['so_number']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['no_pr']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['project']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['so_number']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['no_pr']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['project']) . "</div>";
       $nama_user = (!empty($GET_USER[$row['booking_by']]['nama'])) ? $GET_USER[$row['booking_by']]['nama'] : '';
-      $nestedData[]  = "<div class='text-left'>" . ucwords(strtolower($nama_user)) . "</div>";
-      $nestedData[]  = "<div class='text-left'>" . date('d-M-Y', strtotime($row['booking_date'])) . "</div>";
+      $nestedData[]  = "<div class='text-left'>" . ucwords(strtolower((string) $nama_user)) . "</div>";
+      $nestedData[]  = "<div class='text-left'>" . date('d-M-Y', strtotime((string) $row['booking_date'])) . "</div>";
 
 
       $warna = (COUNT($getCheck) > 0) ? 'blue' : 'green';

@@ -63,12 +63,12 @@ class Budget extends Admin_Controller
             $id_costcenter = (!empty($data['id_costcenter'])) ? $data['id_costcenter'] : NULL;
             $coa           = (!empty($data['coa'])) ? $data['coa'] : NULL;
             $coa_akum      = (!empty($data['coa_akum'])) ? $data['coa_akum'] : NULL;
-            $nama_asset    = strtolower($data['nama_asset']);
+            $nama_asset    = strtolower((string) $data['nama_asset']);
             $tahun         = $data['tahun'];
             $bulan         = $data['bulan'];
             $budget        = str_replace(',', '', $data['budget']);
             $qty           = str_replace(',', '', $data['qty']);
-            $keterangan    = strtolower($data['keterangan']);
+            $keterangan    = strtolower((string) $data['keterangan']);
 
             $ym = date('ym');
 
@@ -78,7 +78,7 @@ class Budget extends Admin_Controller
                 $srcMtr     = "SELECT MAX(code_plan) as maxP FROM asset_planning WHERE code_plan LIKE 'PLA" . $ym . "%' ";
                 $resultMtr  = $this->db->query($srcMtr)->result_array();
                 $angkaUrut2 = $resultMtr[0]['maxP'];
-                $urutan2    = (int)substr($angkaUrut2, 7, 3) + 1;
+                $urutan2    = (int)substr((string) $angkaUrut2, 7, 3) + 1;
                 $code_plan  = "PLA" . $ym . sprintf('%03s', $urutan2);
 
                 $ArrHeader = array(
@@ -149,7 +149,7 @@ class Budget extends Admin_Controller
             $tanda = (!empty($header)) ? 'Edit' : 'Add';
             $data  = array(
                 'title'       => $tanda . ' Budget Asset',
-                'action'      => strtolower($tanda),
+                'action'      => strtolower((string) $tanda),
                 'header'      => $header,
                 'datacoa'     => $datacoa,
                 'penyusutan'  => $penyusutan,
@@ -197,15 +197,15 @@ class Budget extends Admin_Controller
             $dateTime     = date('Y-m-d H:i:s');
 
             $code_planx = isset($data['id']) ? $data['id'] : '';
-            $nama_asset = strtolower($data['nama_asset']);
+            $nama_asset = strtolower((string) $data['nama_asset']);
             $tahun      = $data['tahun'];
             $bulan      = $data['bulan'];
             $budget     = str_replace(',', '', $data['budget']);
             $budget_pr  = (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr']) : $budget;
             $budget_po  = (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po']) : $budget;
             $qty        = str_replace(',', '', $data['qty']);
-            $keterangan = strtolower($data['keterangan']);
-            $reason     = (!empty($data['reason'])) ? strtolower($data['reason']) : '';
+            $keterangan = strtolower((string) $data['keterangan']);
+            $reason     = (!empty($data['reason'])) ? strtolower((string) $data['reason']) : '';
             $status     = (!empty($data['status'])) ? $data['status'] : 'Y';
 
             $ArrHeader = array(

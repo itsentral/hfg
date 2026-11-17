@@ -51,7 +51,7 @@
                         <option value="0">-- Pilih Departemen Pemohon --</option>
                         <?php foreach ($listDepartment as $val) : ?>
                             <option value="<?= $val['id']; ?>">
-                                <?= strtoupper($val['nama']) . ' (' . strtoupper($val['nm_comp']) . ')'; ?>
+                                <?= strtoupper((string) $val['nama']) . ' (' . strtoupper((string) $val['nm_comp']) . ')'; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

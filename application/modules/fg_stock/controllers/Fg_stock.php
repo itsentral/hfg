@@ -55,8 +55,8 @@ class Fg_stock extends Admin_Controller
         $produk_fg        = null;
 
         if (!empty($kategori_param)) {
-            if (in_array(strtoupper($kategori_param), $categories_valid)) {
-                $kategori = strtoupper($kategori_param);
+            if (in_array(strtoupper((string) $kategori_param), $categories_valid)) {
+                $kategori = strtoupper((string) $kategori_param);
             } else {
                 $produk_fg = $kategori_param;
             }
@@ -186,7 +186,7 @@ class Fg_stock extends Admin_Controller
             $stok_list = $this->stock_model->get_stok_by_kategori($cat_info['kategori']);
 
             // Title Block
-            $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI STOK: ' . strtoupper($cat_info['sheet_title']));
+            $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI STOK: ' . strtoupper((string) $cat_info['sheet_title']));
             $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
             $sheet->setCellValue('A2', 'Waktu Cetak: ' . date('d-m-Y H:i:s'));
@@ -316,8 +316,8 @@ class Fg_stock extends Admin_Controller
         $produk_fg        = null;
 
         if (!empty($kategori_param)) {
-            if (in_array(strtoupper($kategori_param), $categories_valid)) {
-                $kategori = strtoupper($kategori_param);
+            if (in_array(strtoupper((string) $kategori_param), $categories_valid)) {
+                $kategori = strtoupper((string) $kategori_param);
             } else {
                 $produk_fg = $kategori_param;
             }
@@ -408,7 +408,7 @@ class Fg_stock extends Admin_Controller
         $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
         $sheet->setCellValue('A2', 'Kategori Stok: ' . $cat_label . ($produk_fg ? ' | Filter Produk: ' . $produk_fg : ''));
-        $sheet->setCellValue('A3', 'Periode Mutasi: ' . ($tgl_dari ? date('d-m-Y', strtotime($tgl_dari)) : 'Semua') . ' s/d ' . ($tgl_sampai ? date('d-m-Y', strtotime($tgl_sampai)) : 'Semua') . ' | Dicetak: ' . date('d-m-Y H:i:s'));
+        $sheet->setCellValue('A3', 'Periode Mutasi: ' . ($tgl_dari ? date('d-m-Y', strtotime((string) $tgl_dari)) : 'Semua') . ' s/d ' . ($tgl_sampai ? date('d-m-Y', strtotime((string) $tgl_sampai)) : 'Semua') . ' | Dicetak: ' . date('d-m-Y H:i:s'));
 
         // Table Header (Row 5)
         $row = 5;

@@ -98,7 +98,7 @@ class Product_type extends Admin_Controller
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
-          write_log('Product Type', $label, 'Gagal ' . strtolower($label) . ' product type: ' . $code, $logPayload, null, 0);
+          write_log('Product Type', $label, 'Gagal ' . strtolower((string) $label) . ' product type: ' . $code, $logPayload, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(

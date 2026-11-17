@@ -31,7 +31,7 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
                     <option value="0">ALL CATEGORY</option>
                     <?php
                     foreach ($category as $key => $value) {
-                        echo "<option value='" . $value['id'] . "'>" . strtoupper($value['nm_category']) . "</option>";
+                        echo "<option value='" . $value['id'] . "'>" . strtoupper((string) $value['nm_category']) . "</option>";
                     }
                     ?>
                 </select>

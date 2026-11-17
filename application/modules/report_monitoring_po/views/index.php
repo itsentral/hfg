@@ -95,7 +95,7 @@
                     <?php if (!empty($suppliers)) : ?>
                         <?php foreach ($suppliers as $sup) : ?>
                             <option value="<?= $sup->kode_supplier; ?>">
-                                <?= htmlspecialchars($sup->nama); ?>
+                                <?= htmlspecialchars((string) $sup->nama); ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>

@@ -70,7 +70,7 @@ class Master_tensile extends Admin_Controller
 					'pesan'		=> 'Process Failed !',
 					'status'	=> 0
 				);
-				write_log('Master Tensile', $field_hist, 'Gagal ' . strtolower($field_hist) . ' master tensile: ' . $nama, $logPayload, null, 0);
+				write_log('Master Tensile', $field_hist, 'Gagal ' . strtolower((string) $field_hist) . ' master tensile: ' . $nama, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(

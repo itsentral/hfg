@@ -19,7 +19,7 @@ $this->load->view('include/side_menu');
 					<label class="control-label">Supplier</label>
 					<p><?=$datapoh->nm_supplier?></p><input type="hidden" id="id_supplier" name="id_supplier" value="<?php echo$datapoh->id_supplier; ?>">
 					<label class="control-label">Tipe Payment</label>
-					<p><?=strtoupper($payterm->name) ?><input type="hidden" name="tipe" id="tipe" value="<?=$payterm->data2?>" /></p>
+					<p><?=strtoupper((string) $payterm->name) ?><input type="hidden" name="tipe" id="tipe" value="<?=$payterm->data2?>" /></p>
 					<label class="control-label">Currency</label>
 					<p><?=$datapoh->mata_uang?><input type="hidden" name="curs_header" id="curs_header" value="<?=$datapoh->mata_uang?>" /></p>
 					<label class="control-label">PO</label>
@@ -140,10 +140,10 @@ $this->load->view('include/side_menu');
 						foreach($datapod AS $record){ ?>
 						<tr>
 						<td><?=$record->nm_material?></td>
-						<td><?=number_format($record->qty_purchase,2)?></td>
-						<td><?=number_format($record->net_price,2)?></td>
-						<td><?=number_format($record->total_price,2)?></td>
-						<td><?=number_format($record->qty_in,2)?></td>
+						<td><?=number_format((float) $record->qty_purchase,2)?></td>
+						<td><?=number_format((float) $record->net_price,2)?></td>
+						<td><?=number_format((float) $record->total_price,2)?></td>
+						<td><?=number_format((float) $record->qty_in,2)?></td>
 						<td align=center><?php
 						if($record->status_pay==$data->no_request){
 							echo 'V';
@@ -174,7 +174,7 @@ $this->load->view('include/side_menu');
 							echo "<tr class='header'>";
 								echo "<td align='left'>".$valx->group_top."</td>";
 								echo "<td align='left'>".$valx->progress."</td>";
-								echo "<td align='left'>".number_format($valx->value_idr)."</td>";
+								echo "<td align='left'>".number_format((float) $valx->value_idr)."</td>";
 								echo "<td align='left'>".$valx->keterangan."</td>";
 								echo "<td align='left'>".$valx->jatuh_tempo."</td>";
 								echo "<td align='left'>".$valx->syarat."</td>";

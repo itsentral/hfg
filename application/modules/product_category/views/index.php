@@ -35,9 +35,9 @@ $ENABLE_DELETE  = has_permission('Product_Category.Delete');
                         ?>
                             <tr>
                                 <td><?= $numb; ?></td>
-                                <td><?= strtoupper($product_type); ?></td>
-                                <td><?= strtoupper($record->nama); ?></td>
-                                <td><?= strtoupper($record->code); ?></td>
+                                <td><?= strtoupper((string) $product_type); ?></td>
+                                <td><?= strtoupper((string) $record->nama); ?></td>
+                                <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
                                         <span class="badge bg-success">Aktif</span>

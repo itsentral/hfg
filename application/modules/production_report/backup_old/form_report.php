@@ -56,9 +56,9 @@
                     <label class="form-label fw-semibold">Produk</label>
                     <input type="text" id="info_produk" class="form-control bg-light" readonly
                         placeholder="Otomatis dari SPK"
-                        value="<?= isset($spk) && $spk ? htmlspecialchars($spk->nm_produk_fg) : '' ?>">
+                        value="<?= isset($spk) && $spk ? htmlspecialchars((string) $spk->nm_produk_fg) : '' ?>">
                     <input type="hidden" name="id_produk_fg" id="id_produk_fg"
-                        value="<?= isset($spk) && $spk ? htmlspecialchars($spk->produk_fg) : '' ?>">
+                        value="<?= isset($spk) && $spk ? htmlspecialchars((string) $spk->produk_fg) : '' ?>">
                     <input type="hidden" name="no_coil" id="no_coil"
                         value="<?= isset($spk) && $spk ? htmlspecialchars($spk->no_coil ?? '') : '' ?>">
                 </div>

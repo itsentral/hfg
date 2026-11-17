@@ -58,27 +58,27 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 									<td class="text-center text-muted"><?= $no++ ?></td>
 									<td><?= $badge_tipe ?></td>
 									<td class="value-cost fw-bold text-dark fs-6">
-										Rp <?= number_format($row->value_cost, 0, ',', '.') ?>
+										Rp <?= number_format((float) $row->value_cost, 0, ',', '.') ?>
 									</td>
 									<td><?= htmlspecialchars(!empty($row->remark) ? $row->remark : '-') ?></td>
 									<td>
-										<span class="fw-semibold text-dark"><?= htmlspecialchars($row->create_by) ?></span><br>
+										<span class="fw-semibold text-dark"><?= htmlspecialchars((string) $row->create_by) ?></span><br>
 										<small class="text-muted"><i class="fa fa-clock-o me-1"></i><?= date('d-m-Y H:i:s', strtotime($row->update_date ?? $row->create_date)) ?></small>
 									</td>
 									<td class="text-center">
 										<?php if ($ENABLE_MANAGE): ?>
 											<button type="button" class="btn btn-warning btn-sm btn-edit"
 												data-id="<?= $row->id ?>"
-												data-tipe="<?= htmlspecialchars($tipe_clean) ?>"
+												data-tipe="<?= htmlspecialchars((string) $tipe_clean) ?>"
 												data-value="<?= $row->value_cost ?>"
-												data-remark="<?= htmlspecialchars($row->remark) ?>">
+												data-remark="<?= htmlspecialchars((string) $row->remark) ?>">
 												<i class="fa fa-edit"></i> Edit
 											</button>
 										<?php endif; ?>
 										<?php if ($ENABLE_DELETE): ?>
 											<button type="button" class="btn btn-danger btn-sm btn-delete"
 												data-id="<?= $row->id ?>"
-												data-tipe="<?= htmlspecialchars(ucfirst($tipe_clean)) ?>">
+												data-tipe="<?= htmlspecialchars(ucfirst((string) $tipe_clean)) ?>">
 												<i class="fa fa-trash"></i> Hapus
 											</button>
 										<?php endif; ?>

@@ -70,7 +70,7 @@ class Production_weighing_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(preweigh_no) AS max_no FROM tr_coil_preweigh WHERE preweigh_no LIKE '{$prefix}%'"
         )->row();
-        $last = $row ? (int) substr($row->max_no, -4) : 0;
+        $last = $row ? (int) substr((string) $row->max_no, -4) : 0;
         return $prefix . sprintf('%04d', $last + 1);
     }
 
@@ -225,7 +225,7 @@ class Production_weighing_model extends CI_Model
 
         // Ambil user supervisor/QC dari config param
         $supervisor_ids_raw = get_param('supervisor_user_ids', '');
-        $supervisor_ids     = array_filter(array_map('trim', explode(',', $supervisor_ids_raw)));
+        $supervisor_ids     = array_filter(array_map('trim', explode(',', (string) $supervisor_ids_raw)));
 
         if (!empty($supervisor_ids)) {
             foreach ($supervisor_ids as $uid) {

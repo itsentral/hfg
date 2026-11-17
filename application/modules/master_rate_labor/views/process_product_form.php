@@ -191,61 +191,61 @@
                     <tbody id="tbody-products">
                         <?php if (!empty($products)): ?>
                             <?php foreach ($products as $i => $row): ?>
-                                <tr class="product-row" data-code="<?= htmlspecialchars($row->code_lv4) ?>">
+                                <tr class="product-row" data-code="<?= htmlspecialchars((string) $row->code_lv4) ?>">
                                     <td class="text-center text-muted font-monospace col-sticky-1" style="font-size: 11px;"><?= $i + 1 ?></td>
                                     <td class="product-cell col-sticky-2">
-                                        <div class="product-name text-dark fw-bold"><?= htmlspecialchars($row->nm_produk) ?></div>
-                                        <span class="product-code-badge"><?= htmlspecialchars($row->code_lv4) ?></span>
+                                        <div class="product-name text-dark fw-bold"><?= htmlspecialchars((string) $row->nm_produk) ?></div>
+                                        <span class="product-code-badge"><?= htmlspecialchars((string) $row->code_lv4) ?></span>
                                         <?php if ($row->trade_name): ?>
-                                            <div class="text-muted small italic">(<?= htmlspecialchars($row->trade_name) ?>)</div>
+                                            <div class="text-muted small italic">(<?= htmlspecialchars((string) $row->trade_name) ?>)</div>
                                         <?php endif; ?>
                                     </td>
                                     <!-- Bahan Pendukung Khusus -->
                                     <td>
                                         <input type="number" step="0.01" min="0"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][bahan_pendukung_khusus]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][bahan_pendukung_khusus]"
                                             class="form-control form-control-sm input-yellow val-bahan"
                                             value="<?= (float) $row->bahan_pendukung_khusus ?>">
                                     </td>
                                     <!-- Consumable -->
                                     <td>
                                         <input type="number" step="0.01" min="0"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][consumable]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][consumable]"
                                             class="form-control form-control-sm input-yellow val-consumable"
                                             value="<?= (float) $row->consumable ?>">
                                     </td>
                                     <!-- FOH -->
                                     <td>
                                         <input type="number" step="0.01" min="0"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][foh]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][foh]"
                                             class="form-control form-control-sm input-yellow val-foh"
                                             value="<?= (float) $row->foh ?>">
                                     </td>
                                     <!-- Cycle Time -->
                                     <td>
                                         <input type="number" step="0.01" min="0"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][cycle_time]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][cycle_time]"
                                             class="form-control form-control-sm input-yellow val-cycle-time"
                                             value="<?= (float) $row->cycle_time ?>">
                                     </td>
                                     <!-- MP -->
                                     <td>
                                         <input type="number" step="1" min="0"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][mp]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][mp]"
                                             class="form-control form-control-sm input-yellow val-mp"
                                             value="<?= (int) $row->mp ?>">
                                     </td>
                                     <!-- Total Man Hour -->
                                     <td>
                                         <input type="number" readonly
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][total_man_hour]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][total_man_hour]"
                                             class="form-control form-control-sm input-disabled val-total-man-hour"
                                             value="<?= (float) $row->total_man_hour ?>">
                                     </td>
                                     <!-- Man Hour Rate -->
                                     <td>
                                         <input type="number" readonly
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][man_hour_rate]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][man_hour_rate]"
                                             class="form-control form-control-sm input-disabled val-man-hour-rate"
                                             value="<?= (float) $row->man_hour_rate ?>">
                                     </td>
@@ -257,7 +257,7 @@
                                         ?>
                                         <div class="position-relative d-flex align-items-center">
                                             <input type="number" step="0.0001" readonly
-                                                name="products[<?= htmlspecialchars($row->code_lv4) ?>][kg_pcs]"
+                                                name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][kg_pcs]"
                                                 class="form-control form-control-sm input-disabled val-kg-pcs <?= !$has_weight ? 'border-danger text-danger pe-4' : '' ?>"
                                                 value="<?= $weight_val ?>"
                                                 <?= !$has_weight ? 'title="Weight kosong. Silakan isi weight di Master Product."' : '' ?>>
@@ -276,28 +276,28 @@
                                     <!-- Gaji Direct -->
                                     <td>
                                         <input type="number" readonly
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][gaji_direct]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][gaji_direct]"
                                             class="form-control form-control-sm input-disabled val-gaji-direct"
                                             value="<?= (float) $row->gaji_direct ?>">
                                     </td>
                                     <!-- % Rate Indirect -->
                                     <td>
                                         <input type="number" readonly
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][rate_indirect]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][rate_indirect]"
                                             class="form-control form-control-sm input-disabled val-rate-indirect"
                                             value="<?= (float) $row->rate_indirect ?>">
                                     </td>
                                     <!-- Gaji Indirect -->
                                     <td>
                                         <input type="number" readonly
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][gaji_indirect]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][gaji_indirect]"
                                             class="form-control form-control-sm input-disabled val-gaji-indirect"
                                             value="<?= (float) $row->gaji_indirect ?>">
                                     </td>
                                     <!-- Standard Biaya Gaji (Rounded Only) -->
                                     <td>
                                         <input type="hidden"
-                                            name="products[<?= htmlspecialchars($row->code_lv4) ?>][standard_biaya_gaji]"
+                                            name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][standard_biaya_gaji]"
                                             class="val-standard-biaya-gaji"
                                             value="<?= (float) $row->standard_biaya_gaji ?>">
                                         <input type="number" readonly

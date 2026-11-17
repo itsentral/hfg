@@ -1,8 +1,8 @@
 <?php
 $id_dept 		= (!empty($header)) ? $header[0]->id_dept : '';
 $id_costcenter 	= (!empty($header)) ? $header[0]->id_costcenter : '';
-$budget 		= (!empty($header)) ? number_format($header[0]->budget) : '0';
-$sisa_budget 	= (!empty($header)) ? number_format($header[0]->sisa_budget) : '0';
+$budget 		= (!empty($header)) ? number_format((float) $header[0]->budget) : '0';
+$sisa_budget 	= (!empty($header)) ? number_format((float) $header[0]->sisa_budget) : '0';
 $coa 			= (!empty($header)) ? $header[0]->coa : '';
 $upload_spk 	= (!empty($header)) ? $header[0]->document : '';
 $no_so 			= (!empty($header)) ? $header[0]->no_so : '';
@@ -19,7 +19,7 @@ if (!empty($header) && !empty($header[0]->nm_pembuat)) {
 }
 
 if (!empty($header) && !empty($header[0]->created_date)) {
-	$tgl_dibuat = date('d-M-Y', strtotime($header[0]->created_date));
+	$tgl_dibuat = date('d-M-Y', strtotime((string) $header[0]->created_date));
 } else {
 	$tgl_dibuat = date('d-M-Y');
 }
@@ -42,11 +42,11 @@ $tgl_appre_3 = '';
 if (!empty($header)) {
 	if ($header[0]->app_3 == '1') {
 		$status3 = '<span class="badge bg-success">Approved</span>';
-		$tgl_appre_3 = date('d F Y', strtotime($header[0]->app_3_date));
+		$tgl_appre_3 = date('d F Y', strtotime((string) $header[0]->app_3_date));
 	} else {
 		if ($header[0]->sts_reject3 == '1') {
 			$status3 = '<span class="badge bg-danger">Rejected</span>';
-			$tgl_appre_3 = date('d F Y', strtotime($header[0]->sts_reject3_date));
+			$tgl_appre_3 = date('d F Y', strtotime((string) $header[0]->sts_reject3_date));
 		}
 	}
 }
@@ -100,7 +100,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 										$selected = 'selected';
 									}
 									$nama_dept = $departement->nm_dept ?? ($departement->name ?? '');
-									echo "<option value='" . $departement->id . "' " . $selected . ">" . strtoupper($nama_dept) . "</option>";
+									echo "<option value='" . $departement->id . "' " . $selected . ">" . strtoupper((string) $nama_dept) . "</option>";
 								}
 								?>
 							</select>
@@ -186,7 +186,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 					<div class="row align-items-center">
 						<label class="col-sm-4 col-form-label fw-bold">Nama Pembuat PR</label>
 						<div class="col-sm-8">
-							<input type="text" class="form-control" value="<?= ucwords(strtolower($nm_pembuat)) ?>" readonly>
+							<input type="text" class="form-control" value="<?= ucwords(strtolower((string) $nm_pembuat)) ?>" readonly>
 						</div>
 					</div>
 				</div>
@@ -289,10 +289,10 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 								echo "<tr class='header_" . $nomor . "'>";
 								echo "<td align='center'>" . $nomor . "<input type='hidden' name='detail[" . $nomor . "][id]' value='" . $valx['id'] . "'></td>";
 								echo "<td align='left'>
-									<textarea class='form-control input-md nm_barang_" . $nomor . "' name='detail[" . $nomor . "][nm_barang]' " . $readonly . ">" . strtoupper($valx['nm_barang']) . "</textarea>
+									<textarea class='form-control input-md nm_barang_" . $nomor . "' name='detail[" . $nomor . "][nm_barang]' " . $readonly . ">" . strtoupper((string) $valx['nm_barang']) . "</textarea>
 								</td>";
 								echo "<td align='left'>
-									<textarea class='form-control input-md spec_" . $nomor . "' name='detail[" . $nomor . "][spec]' " . $readonly . ">" . strtoupper($valx['spec']) . "</textarea>
+									<textarea class='form-control input-md spec_" . $nomor . "' name='detail[" . $nomor . "][spec]' " . $readonly . ">" . strtoupper((string) $valx['spec']) . "</textarea>
 								</td>";
 								echo "<td align='left'><input type='text' " . $readonly . " id='qty_" . $nomor . "' name='detail[" . $nomor . "][qty]' class='form-control input-md text-right autoNumeric2 sum_tot qty_" . $nomor . "' value='" . $valx['qty'] . "'></td>";
 								echo "<td align='left'>";
@@ -314,9 +314,9 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 								echo "<td align='left'><input type='text' " . $readonly . " id='harga_" . $nomor . "' name='detail[" . $nomor . "][harga]' class='form-control input-md text-right maskM sum_tot harga_" . $nomor . "' value='" . $valx['harga'] . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 								echo "<td align='left'><input type='text' id='total_harga_" . $nomor . "' name='detail[" . $nomor . "][total_harga]' class='form-control input-md text-right jumlah_all total_harga_" . $nomor . "' value='" . number_format($valx['qty'] * $valx['harga']) . "' readonly></td>";
 								$datepicker_cls = ($is_locked) ? '' : 'datepicker';
-								echo "<td align='left'><input type='text' name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center " . $datepicker_cls . " tgl_dibutuhkan tanggal_" . $nomor . "' readonly value='" . strtoupper($valx['tanggal']) . "' style='padding: 6px 4px; font-size: 13px;'></td>";
+								echo "<td align='left'><input type='text' name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center " . $datepicker_cls . " tgl_dibutuhkan tanggal_" . $nomor . "' readonly value='" . strtoupper((string) $valx['tanggal']) . "' style='padding: 6px 4px; font-size: 13px;'></td>";
 								echo "<td align='left'>
-									<textarea class='form-control input-md keterangan_" . $nomor . "' name='detail[" . $nomor . "][keterangan]' " . $readonly . ">" . strtoupper($valx['keterangan']) . "</textarea>
+									<textarea class='form-control input-md keterangan_" . $nomor . "' name='detail[" . $nomor . "][keterangan]' " . $readonly . ">" . strtoupper((string) $valx['keterangan']) . "</textarea>
 								</td>";
 								if (empty($approve)) {
 									echo "<td align='center'><button type='button' class='btn btn-sm btn-warning edit_detail edit_detail_" . $nomor . "' data-id='" . $valx['id'] . "' data-nomor='" . $nomor . "' style='margin-right: 0.3em;' title='Edit Detail'><i class='fa fa-edit'></i></button><button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-trash'></i></button></td>";
@@ -337,21 +337,21 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			<div class="form-group row g-3 mb-3">
 				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Bank <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_name" id="bank_name" class="form-control input-md" placeholder="Nama Bank (e.g. BCA, Mandiri)" value="<?= htmlspecialchars($bank_name); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_name" id="bank_name" class="form-control input-md" placeholder="Nama Bank (e.g. BCA, Mandiri)" value="<?= htmlspecialchars((string) $bank_name); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 
 			<div class="form-group row g-3 mb-3">
 				<label class="label-control col-sm-2 col-form-label fw-bold"><b>No Rekening <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_account_no" id="bank_account_no" class="form-control input-md" placeholder="No. Rekening" value="<?= htmlspecialchars($bank_account_no); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_account_no" id="bank_account_no" class="form-control input-md" placeholder="No. Rekening" value="<?= htmlspecialchars((string) $bank_account_no); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 
 			<div class="form-group row g-3 mb-3">
 				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Nama Rekening <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_account_name" id="bank_account_name" class="form-control input-md" placeholder="Nama Pemilik Rekening" value="<?= htmlspecialchars($bank_account_name); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_account_name" id="bank_account_name" class="form-control input-md" placeholder="Nama Pemilik Rekening" value="<?= htmlspecialchars((string) $bank_account_name); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 		</div>

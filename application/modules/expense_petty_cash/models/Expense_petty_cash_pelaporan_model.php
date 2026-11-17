@@ -103,11 +103,11 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         // Build filter conditions as a closure
         $apply_filters = function () use ($filters, $search) {
             // Apply company filter
-            if (!empty($filters['company']) && strtolower($filters['company']) !== 'all') {
+            if (!empty($filters['company']) && strtolower((string) $filters['company']) !== 'all') {
                 $this->db->where('a.company', $filters['company']);
             }
             // Apply status filter
-            if (!empty($filters['status']) && strtolower($filters['status']) !== 'all') {
+            if (!empty($filters['status']) && strtolower((string) $filters['status']) !== 'all') {
                 $this->db->where('a.status', $filters['status']);
             }
             // Apply search
@@ -150,7 +150,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
                 'periode_end'       => $row->periode_end,
                 'company'           => $row->company,
                 'jumlah_pencatatan' => intval($row->jumlah_pencatatan),
-                'grand_total'       => number_format($row->grand_total, 0, ',', '.'),
+                'grand_total'       => number_format((float) $row->grand_total, 0, ',', '.'),
                 'status'            => $row->status,
             ];
         }
@@ -429,8 +429,8 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
     public function reject_pelaporan($id, $alasan, $user_id)
     {
         // Validate alasan: trimmed length between 10-500 chars
-        $alasan = trim($alasan);
-        $alasan_length = mb_strlen($alasan);
+        $alasan = trim((string) $alasan);
+        $alasan_length = mb_strlen((string) $alasan);
         if ($alasan_length < 10 || $alasan_length > 500) {
             return false;
         }
@@ -525,14 +525,14 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
 
         $keterangan_list = [];
         foreach ($keterangan_query->result() as $row) {
-            if (!empty(trim($row->keterangan))) {
-                $keterangan_list[] = trim($row->keterangan);
+            if (!empty(trim((string) $row->keterangan))) {
+                $keterangan_list[] = trim((string) $row->keterangan);
             }
         }
         $keterangan_text = implode(', ', $keterangan_list);
 
         // Prepare request payment data
-        $company = strtoupper(trim($pelaporan->company));
+        $company = strtoupper(trim((string) $pelaporan->company));
 
         // Untuk STM: tipe = refill_pettycash, status = 1 (langsung masuk list pembayaran)
         // Untuk lainnya: tipe = refill_pettycash, status = 1 (langsung masuk list pembayaran)
@@ -621,7 +621,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
                 'no_payment_hutang' => $no_payment_hutang,
                 'no_pelaporan'      => $pelaporan->no_pelaporan,
                 'pelaporan_id'      => $pelaporan->id,
-                'company'           => strtoupper(trim($pelaporan->company)),
+                'company'           => strtoupper(trim((string) $pelaporan->company)),
                 'periode_start'     => $pelaporan->periode_start,
                 'periode_end'       => $pelaporan->periode_end,
                 'jumlah_pencatatan' => $jumlah_pencatatan,
@@ -716,7 +716,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         if ($query->num_rows() > 0) {
             $row = $query->row();
             // Extract the numeric part (last 4 characters)
-            $last_number = (int) substr($row->no_pelaporan, -4);
+            $last_number = (int) substr((string) $row->no_pelaporan, -4);
             $next_number = $last_number + 1;
         } else {
             $next_number = 1;
@@ -727,7 +727,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
             return false;
         }
 
-        return $prefix . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_number, 4, '0', STR_PAD_LEFT);
     }
 
     // =========================================================================

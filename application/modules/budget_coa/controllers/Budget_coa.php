@@ -326,12 +326,12 @@ class Budget_coa extends Admin_Controller
 
 	public function search_old($coa, $tgl, $dtl = '')
 	{
-		$tahun = date("Y", strtotime($tgl));
+		$tahun = date("Y", strtotime((string) $tgl));
 		$data = $this->Budget_coa_model->SearchBudget($coa, $tahun);
 		$param = array();
 		if ($data !== false) {
 			if ($dtl == '') {
-				$bulan = date("n", strtotime($tgl));
+				$bulan = date("n", strtotime((string) $tgl));
 				$budget = $data->{"bulan_" . $bulan};
 				$sisa = ($data->{"bulan_" . $bulan} - $data->{"terpakai_bulan_" . $bulan});
 				$param = array(
@@ -356,13 +356,13 @@ class Budget_coa extends Admin_Controller
 
 	public function search($coa, $tgl, $dtl = '')
 	{
-		$tahun = date("Y", strtotime($tgl));
+		$tahun = date("Y", strtotime((string) $tgl));
 		$data = $this->Budget_coa_model->SearchBudget($coa, $tahun);
 		$param = array();
 		if ($data !== false) {
 			if ($dtl == '') {
 				$bulannow = date("n");
-				$bulan = date("n", strtotime($tgl));
+				$bulan = date("n", strtotime((string) $tgl));
 				$budget = 0;
 				$terpakai = 0;
 				for ($i = 1; $i <= $bulannow; $i++) {
@@ -417,7 +417,7 @@ class Budget_coa extends Admin_Controller
 					<i class="fa fa-exclamation-triangle text-warning fa-3x mb-3"></i>
 					<h5 class="fw-bold">Data Budget Belum Ditemukan</h5>
 					<p class="text-muted">Belum ada akun perkiraan budget yang terdaftar untuk kombinasi:<br>
-					Tahun: <strong>' . htmlspecialchars($tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars($nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars($kategori) . '</strong></p>
+					Tahun: <strong>' . htmlspecialchars((string) $tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars((string) $nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars((string) $kategori) . '</strong></p>
 					<p class="small text-muted">Pastikan akun COA untuk kategori ini sudah dialokasikan ke departemen tersebut pada menu <strong>Master Budget COA</strong>.</p>
 					<button type="button" class="btn btn-outline-secondary px-4 mt-2" onclick="cancel()">
 						<i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar
@@ -693,7 +693,7 @@ class Budget_coa extends Admin_Controller
 					</div>
 					<h5 class="fw-bold text-dark">Data Budget Belum Ditemukan</h5>
 					<p class="text-muted">Belum ada akun perkiraan budget yang terdaftar untuk kombinasi:<br>
-					Tahun: <strong>' . htmlspecialchars($tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars($nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars($kategori) . '</strong></p>
+					Tahun: <strong>' . htmlspecialchars((string) $tahun) . '</strong> | Departemen: <strong>' . htmlspecialchars((string) $nm_dept) . '</strong> | Kategori: <strong>' . htmlspecialchars((string) $kategori) . '</strong></p>
 					<p class="small text-muted mb-4">Pastikan akun COA untuk kategori ini sudah dialokasikan ke departemen tersebut pada menu <strong>Master Budget COA</strong>.</p>
 					<button type="button" class="btn btn-primary px-4 shadow-sm" onclick="cancel()">
 						<i class="fa fa-arrow-left me-1"></i> Kembali ke Daftar

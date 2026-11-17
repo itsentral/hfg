@@ -41,7 +41,7 @@ class Outgoing_stok_atk_model extends BF_Model
         $companyLabel = get_company_name(true, true);
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
-			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - ' . $companyLabel;
+			$dept_map[$item['id']] = strtoupper((string) $item['nama']) . ' - ' . $companyLabel;
 		}
 
     $data  = array();
@@ -64,20 +64,20 @@ class Outgoing_stok_atk_model extends BF_Model
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "
                         <input type='hidden' class='id' name='detailx[" . $nomor . "][id]' value='" . $row['id'] . "'>
-                        <input type='hidden' class='nm_material' name='detailx[" . $nomor . "][nm_material]' value='" . strtoupper($row['stock_name']) . "'>
-                        <input type='hidden' class='code_material' name='detailx[" . $nomor . "][code]' value='" . strtoupper($row['id_stock']) . "'>
-                        <input type='hidden' class='packing' name='detailx[" . $nomor . "][unit_packing]' value='" . strtoupper($row['unit_packing']) . "'>
-                        <input type='hidden' class='satuan' name='detailx[" . $nomor . "][unit_satuan]' value='" . strtoupper($row['unit_satuan']) . "'>
+                        <input type='hidden' class='nm_material' name='detailx[" . $nomor . "][nm_material]' value='" . strtoupper((string) $row['stock_name']) . "'>
+                        <input type='hidden' class='code_material' name='detailx[" . $nomor . "][code]' value='" . strtoupper((string) $row['id_stock']) . "'>
+                        <input type='hidden' class='packing' name='detailx[" . $nomor . "][unit_packing]' value='" . strtoupper((string) $row['unit_packing']) . "'>
+                        <input type='hidden' class='satuan' name='detailx[" . $nomor . "][unit_satuan]' value='" . strtoupper((string) $row['unit_satuan']) . "'>
                         <input type='hidden' class='konversi' name='detailx[" . $nomor . "][konversi]' value='" . $row['konversi'] . "'>
-                        <input type='hidden' class='nm_category' name='detailx[" . $nomor . "][nm_category]' value='" . strtoupper($row['nm_category']) . "'>
+                        <input type='hidden' class='nm_category' name='detailx[" . $nomor . "][nm_category]' value='" . strtoupper((string) $row['nm_category']) . "'>
                         <input type='hidden' class='stock_qty' name='detailx[" . $nomor . "][stock_qty]' value='" . $stock . "'>
                       </div>";
 
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['id_stock']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['stock_name']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($stock) . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['unit_satuan']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['id_stock']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['stock_name']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . number_format((float) $stock) . "</div>";
+      $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['unit_satuan']) . "</div>";
       $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][sudah_request]' data-no='" . $nomor . "' class='form-control form-control-sm text-center autoNumeric4 sudah_request'></div>";
       $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][ket_request]' data-no='" . $nomor . "' class='form-control input-sm text-left ket_request'></div>";
       // if($row['konversi'] > 0){
@@ -161,7 +161,7 @@ class Outgoing_stok_atk_model extends BF_Model
         $companyLabel = get_company_name(true, true);
 		$get_departments = $this->db->get_where('ms_department', ['deleted_by' => null])->result_array();
 		foreach ($get_departments as $item) {
-			$dept_map[$item['id']] = strtoupper($item['nama']) . ' - ' . $companyLabel;
+			$dept_map[$item['id']] = strtoupper((string) $item['nama']) . ' - ' . $companyLabel;
 		}
 
     $data  = array();
@@ -184,14 +184,14 @@ class Outgoing_stok_atk_model extends BF_Model
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['kode_trans']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['tanggal'])) . "</div>";
+      $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['kode_trans']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tanggal'])) . "</div>";
       $nestedData[]  = "<div align='left'>" . $nm_department . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['qty_unit']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . number_format((float) $row['qty_unit']) . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['pic'] . "</div>";
       $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+      $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 
       $status = 'Waiting Confirm';
       $warna = 'blue';
