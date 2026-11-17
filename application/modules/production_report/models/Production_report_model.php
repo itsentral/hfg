@@ -139,14 +139,20 @@ class Production_report_model extends CI_Model
             ->get()->result_array();
     }
 
-    public function get_employees()
+    /**
+     * Karyawan aktif. Bila $sub_department diisi ('Helper' / 'Setter', sesuai
+     * field Sub Department / Role di Master Employee), hanya karyawan dengan role itu.
+     */
+    public function get_employees($sub_department = null)
     {
-        return $this->db->select('id, nik, nm_karyawan, position, department')
+        $this->db->select('id, nik, nm_karyawan, position, department, sub_department')
             ->from('employee')
             ->where('status', 'Y')
-            ->where('deleted', 'N')
-            ->order_by('nm_karyawan', 'ASC')
-            ->get()->result_array();
+            ->where('deleted', 'N');
+        if ($sub_department !== null) {
+            $this->db->where('sub_department', $sub_department);
+        }
+        return $this->db->order_by('nm_karyawan', 'ASC')->get()->result_array();
     }
 
     public function get_all_products($limit = 300)
