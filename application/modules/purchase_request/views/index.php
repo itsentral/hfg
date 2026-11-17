@@ -396,7 +396,10 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			},
-			function() {
+			function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 				$.ajax({
 					type: 'POST',
 					url: siteurl + 'purchase_request/approval',

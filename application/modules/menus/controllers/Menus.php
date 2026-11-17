@@ -279,9 +279,7 @@ class Menus extends Admin_Controller
   function print_request($id)
   {
     $id_customer = $id;
-    $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
-    $mpdf->SetImportUse();
-    $mpdf->RestartDocTemplate();
+    $mpdf = new \Mpdf\Mpdf();
 
     $cust_toko      =  $this->Toko_model->tampil_toko($id_customer)->result();
     $cust_setpen    =  $this->Penagihan_model->tampil_tagih($id_customer)->result();
@@ -299,8 +297,8 @@ class Menus extends Admin_Controller
     $this->template->set('cust_pic', $cust_pic);
     $show = $this->template->load_view('print_data', $data);
 
-    $this->mpdf->WriteHTML($show);
-    $this->mpdf->Output();
+    $mpdf->WriteHTML($show);
+    $mpdf->Output();
   }
 
   function downloadExcel()

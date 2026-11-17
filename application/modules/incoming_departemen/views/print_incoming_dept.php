@@ -1,16 +1,7 @@
 <?php
 
 $sroot 		= $_SERVER['DOCUMENT_ROOT'];
-//include $sroot."/application/libraries/MPDF57/mpdf.php";
-// require_once('assets/mpdf/mpdf.php');
-if (class_exists('mPDF')) {
-    $mpdf = new mPDF('utf-8', 'A4');
-} elseif (class_exists('\Mpdf\Mpdf')) {
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-} else {
-    require_once FCPATH . 'vendor/autoload.php';
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-}
+$mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
 // $mpdf=new mPDF('utf-8','A4-L');
 
 set_time_limit(0);

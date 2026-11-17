@@ -182,7 +182,10 @@ $(document).ready(function() {
 			confirmButtonText: "Yes, Delete!",
 			cancelButtonText: "Cancel",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: base_url + controller + '/hapus',

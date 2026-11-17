@@ -147,7 +147,10 @@
                 confirmButtonText: "Ya, Simpan!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'add',
@@ -182,7 +185,10 @@
                 confirmButtonText: "Ya, Hapus!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

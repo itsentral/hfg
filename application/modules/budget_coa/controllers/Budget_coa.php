@@ -560,7 +560,8 @@ class Budget_coa extends Admin_Controller
 			$this->template->set('dataset', $dataset);
 			$this->template->set('data', $datcoa);
 			$dataprint = $this->template->render('budget_print_umum');
-			$this->mpdf->AddPage(
+			$mpdf = new Mpdf();
+			$mpdf->AddPage(
 				'P',
 				'',
 				'',
@@ -573,8 +574,8 @@ class Budget_coa extends Admin_Controller
 				7, // margin header
 				3 // margin footer
 			);
-			$this->mpdf->WriteHTML($dataprint);
-			$this->mpdf->Output();
+			$mpdf->WriteHTML($dataprint);
+			$mpdf->Output();
 		}
 	}
 
@@ -657,7 +658,8 @@ class Budget_coa extends Admin_Controller
 			$this->template->set('dataset', $dataset);
 			$this->template->set('data', $datcoa);
 			$dataprint = $this->template->render('budget_print_category');
-			$this->mpdf->AddPage(
+			$mpdf = new Mpdf();
+			$mpdf->AddPage(
 				'P',
 				'',
 				'',
@@ -670,8 +672,8 @@ class Budget_coa extends Admin_Controller
 				7, // margin header
 				3 // margin footer
 			);
-			$this->mpdf->WriteHTML($dataprint);
-			$this->mpdf->Output();
+			$mpdf->WriteHTML($dataprint);
+			$mpdf->Output();
 		}
 	}
 	function create_budget_category()

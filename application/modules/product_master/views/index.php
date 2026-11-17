@@ -256,7 +256,10 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 confirmButtonText: "Ya, Simpan!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 var form_data = new FormData($('#data_form_master_product')[0]);
                 $.ajax({
                     type: 'POST',
@@ -308,7 +311,10 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 confirmButtonText: "Ya, Hapus!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

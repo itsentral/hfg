@@ -205,7 +205,10 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				cancelButtonText: "Batal",
 				closeOnConfirm: false
 			},
-			function() {
+			function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 				$.ajax({
 					type: 'POST',
 					url: siteurl + 'purchase_request/approval',

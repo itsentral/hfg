@@ -1,9 +1,8 @@
 <?php
 
 $sroot         = $_SERVER['DOCUMENT_ROOT'] . 'origa_live/';
-include $sroot . "application/libraries/MPDF57/mpdf.php";
 include $sroot . "application/libraries/phpqrcode/qrlib.php";
-$mpdf = new mPDF('utf-8', array(42, 23));
+$mpdf = new \Mpdf\Mpdf(['format' => [42, 23]]);
 $mpdf->defaultheaderline = 0;
 
 set_time_limit(0);

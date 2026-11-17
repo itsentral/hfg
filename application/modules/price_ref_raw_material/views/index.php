@@ -248,7 +248,10 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 			confirmButtonText: "Yes",
 			cancelButtonText: "No",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 
 			const formData = new FormData(document.getElementById('data_form'));
 

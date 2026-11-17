@@ -338,7 +338,10 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 			confirmButtonText: "Yes",
 			cancelButtonText: "No",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 
 			var form_data = new FormData($('#data_form')[0]);
 
@@ -454,7 +457,10 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 				cancelButtonText: "No",
 				closeOnConfirm: false
 			},
-			function() {
+			function(isConfirm) {
+				if (!isConfirm) {
+					return;
+				}
 				$.ajax({
 					type: 'POST',
 					url: siteurl + active_controller + '/delete',

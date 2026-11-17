@@ -99,7 +99,7 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                         </tr>
                         <tr>
                             <td class="fw-bold">Created By</td>
-                            <td>: <?= htmlspecialchars($spk['created_by']) ?></td>
+                            <td>: <?= htmlspecialchars(!empty($spk['created_by_name']) ? $spk['created_by_name'] : $spk['created_by']) ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Created At</td>

@@ -166,7 +166,10 @@
                 title: "Are you sure?", text: "Process this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
                 confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'add',
@@ -194,7 +197,10 @@
                 title: "Are you sure?", text: "Delete this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
                 confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

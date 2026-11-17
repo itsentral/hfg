@@ -125,7 +125,10 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock.Delete');
 					cancelButtonText: "Batal",
 					closeOnConfirm: false
 				},
-				function() {
+				function(isConfirm) {
+				if (!isConfirm) {
+					return;
+				}
 					$.ajax({
 						type: 'POST',
 						url: base_url + active_controller + 'process_booking',

@@ -216,7 +216,10 @@ $(document).ready(function() {
             confirmButtonText: "Ya, Rilis Sekarang!",
             cancelButtonText: "Batal",
             closeOnConfirm: false
-        }, function() {
+        }, function(isConfirm) {
+            if (!isConfirm) {
+                return;
+            }
             $.ajax({
                 url: "<?= base_url('product_catalog/release') ?>",
                 type: "POST",

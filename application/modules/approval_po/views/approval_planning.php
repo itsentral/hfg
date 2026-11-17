@@ -249,7 +249,10 @@ $pembeda = substr($header[0]['so_number'],0,1);
 			cancelButtonText: "Batal",
 			closeOnConfirm: false
 			},
-			function(){
+			function(isConfirm){
+				if (!isConfirm) {
+					return;
+				}
 			$.ajax({
 				type:'POST',
 				url: base_url + active_controller + '/process_approval_satuan',

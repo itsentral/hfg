@@ -14,7 +14,7 @@ class Approval_invoice_so extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library(array('Mpdf', 'upload', 'Image_lib'));
+		$this->load->library(array('upload', 'Image_lib'));
 		$this->load->model('Approval_invoice_so/Approval_invoice_so_model');
 		$this->template->title('Billing Plan Produk');
 		$this->template->page_icon('fa fa-building-o');
