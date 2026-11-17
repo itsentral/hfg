@@ -564,13 +564,14 @@ class Production_report_model extends CI_Model
         $total_cogm_all = $total_cogm_material + $total_cogm_mp + $total_cogm_foh + $total_cogm_bahan + $total_cogm_cons + $total_cogm_koor + $total_cogm_scrap;
         $header_data['total_hpp_keseluruhan']  = $total_fg_all;
         $header_data['total_cogm']             = $total_cogm_all;
-        $header_data['total_inventory_fg']     = $sum_inv_fg;
-        $header_data['total_loss_kw2']         = $sum_loss_kw2;
-        $header_data['total_inventory_scrap']  = $sum_inv_scrap;
-        $header_data['total_beban_foh_scrap']  = $sum_foh_scrap;
-        $header_data['total_inventory_sisa']   = $sum_inv_sisa;
-        $header_data['total_inventory_hold']   = $sum_inv_hold;
-        $header_data['selisih_weight_value']   = $selisih_weight_val;
+        $header_data['total_inventory_fg']     = round($sum_inv_fg, 2);
+        $header_data['total_loss_kw2']         = round($sum_loss_kw2, 2);
+        $header_data['total_inventory_scrap']  = round($sum_inv_scrap, 2);
+        $header_data['persediaan_waste']       = round($sum_inv_scrap, 2);
+        $header_data['total_beban_foh_scrap']  = round($sum_foh_scrap, 2);
+        $header_data['total_inventory_sisa']   = round($sum_inv_sisa, 2);
+        $header_data['total_inventory_hold']   = round($sum_inv_hold, 2);
+        $header_data['selisih_weight_value']   = round($selisih_weight_val, 2);
 
         // --- Field Jurnal Siap Pakai untuk Master Jurnal (GL Interface) ---
         // Semua field jurnal di-round seragam ke 2 desimal agar seimbang (Debit = Kredit)

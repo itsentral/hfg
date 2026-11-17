@@ -596,8 +596,8 @@
         <tfoot>
           <tr>
             <td colspan="5" class="text-end fw-bold">Total Scrap &rarr;</td>
-            <td class="num"><?= rp_format(($h['total_inventory_scrap'] ?? 0) + ($h['total_beban_foh_scrap'] ?? 0)); ?></td>
-            <td class="num text-success"><?= rp_format($h['total_inventory_scrap'] ?? 0); ?></td>
+            <td class="num"><?= rp_format((($h['persediaan_waste'] ?? $h['total_inventory_scrap'] ?? 0)) + ($h['total_beban_foh_scrap'] ?? 0)); ?></td>
+            <td class="num text-success"><?= rp_format($h['persediaan_waste'] ?? $h['total_inventory_scrap'] ?? 0); ?></td>
             <td class="num text-danger"><?= rp_format($h['total_beban_foh_scrap'] ?? 0); ?></td>
           </tr>
         </tfoot>
