@@ -328,7 +328,7 @@ class Purchase_request extends Admin_Controller
 		$get_departement = $this->db->get('ms_department')->result();
 		$data = array(
 			'title'				=> $tanda . ' PR Departemen',
-			'action'		=> strtolower($tanda),
+			'action'		=> strtolower((string) $tanda),
 			'header'		=> $header,
 			'detail'		=> $detail,
 			'datacoa'		=> $datacoa,

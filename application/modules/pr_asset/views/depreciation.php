@@ -20,7 +20,7 @@ $this->load->view('include/side_menu');
 					<option value='0'>Select Category</option>
 					<?php
 						foreach($kategori AS $val => $valx){
-							echo "<option value='".$valx['id']."'>".strtoupper($valx['nm_category'])."</option>";
+							echo "<option value='".$valx['id']."'>".strtoupper((string) $valx['nm_category'])."</option>";
 						}
 					?>
 				</select>

@@ -65,7 +65,7 @@
             <td style="width: 15%;"><strong>NO PR</strong></td>
             <td style="width: 35%;">: <?= $no_pr; ?></td>
             <td style="width: 15%;"><strong>Tanggal PR</strong></td>
-            <td style="width: 35%;">: <?= isset($result_header['tgl_pr']) ? date('d F Y', strtotime($result_header['tgl_pr'])) : date('d F Y'); ?></td>
+            <td style="width: 35%;">: <?= isset($result_header['tgl_pr']) ? date('d F Y', strtotime((string) $result_header['tgl_pr'])) : date('d F Y'); ?></td>
         </tr>
     </table>
 
@@ -86,10 +86,10 @@
                 foreach ($result as $row) {
                     echo "<tr>";
                     echo "<td class='text-center'>" . $no++ . "</td>";
-                    echo "<td>" . strtoupper($row['nm_barang']) . "</td>";
-                    echo "<td class='text-center'>" . number_format($row['qty']) . "</td>";
-                    echo "<td class='text-right'>" . number_format($row['nilai_pr']) . "</td>";
-                    echo "<td class='text-center'>" . date('d M Y', strtotime($row['tgl_dibutuhkan'])) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['nm_barang']) . "</td>";
+                    echo "<td class='text-center'>" . number_format((float) $row['qty']) . "</td>";
+                    echo "<td class='text-right'>" . number_format((float) $row['nilai_pr']) . "</td>";
+                    echo "<td class='text-center'>" . date('d M Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</td>";
                     echo "</tr>";
                 }
             } else {

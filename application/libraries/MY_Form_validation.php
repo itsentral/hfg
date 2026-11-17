@@ -27,10 +27,10 @@ class MY_Form_validation extends CI_Form_validation {
     public function unique($value, $params)
     {
         // Allow for more than 1 parameter.
-        $fields = explode(",", $params);
+        $fields = explode(",", (string) $params);
 
         // Extract the table and field from the first parameter.
-        list($table, $field) = explode('.', $fields[0], 2);
+        list($table, $field) = explode('.', (string) $fields[0], 2);
 
         // Setup the db request.
         $this->CI->db->select($field)
@@ -43,7 +43,7 @@ class MY_Form_validation extends CI_Form_validation {
         // eg "select * from users where users.name='test' AND users.id != 4
         if (isset($fields[1])) {
             // Extract the table and field from the second parameter
-            list($where_table, $where_field) = explode('.', $fields[1], 2);
+            list($where_table, $where_field) = explode('.', (string) $fields[1], 2);
 
             // Get the value from the post's $where_field. If the value is set,
             // add "AND NOT EQUAL" where clause.

@@ -101,7 +101,7 @@ class History_pricelist extends Admin_Controller
                 number_format((float)$r->price_list_lama_meter, 2, '.', ''),
                 number_format((float)$r->price_list_baru_meter, 2, '.', ''),
                 number_format((float)$r->price_list_baru_kg, 2, '.', ''),
-                number_format($delta, 2, '.', ''),
+                number_format((float) $delta, 2, '.', ''),
                 number_format((float)$r->bottom_price_meter, 2, '.', ''),
                 number_format((float)$r->rate_negotiation_allowance * 100, 2, '.', ''),
                 $r->event_by_name ? $r->event_by_name : '-',

@@ -125,7 +125,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                                     <!-- Single Nilai Input (Untuk Fix Cost Tahunan & Variable) -->
                                     <div class="input-group input-group-sm <?= ($is_bulanan ? 'd-none' : '') ?>" id="divilai<?= $i ?>" style="max-width: 280px;">
                                         <span class="input-group-text bg-light">Rp / %</span>
-                                        <input type="text" id="nilai<?= $i ?>" name="nilai[]" value="<?= (isset($record->nilai) ? number_format($record->nilai, 0, ',', '.') : 0) ?>" class="form-control form-control-sm text-end font-monospace divide">
+                                        <input type="text" id="nilai<?= $i ?>" name="nilai[]" value="<?= (isset($record->nilai) ? number_format((float) $record->nilai, 0, ',', '.') : 0) ?>" class="form-control form-control-sm text-end font-monospace divide">
                                         <span class="input-group-text bg-light <?= (!$is_variable ? 'd-none' : '') ?>" id="persen<?= $i ?>">%</span>
                                     </div>
 
@@ -143,7 +143,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                                             ?>
                                                 <div class="input-group input-group-sm">
                                                     <span class="input-group-text px-1 py-0 small bg-white text-muted" style="font-size: 11px;"><?= $bulan_labels[$bln] ?></span>
-                                                    <input type="text" class="form-control form-control-sm text-end font-monospace divide col-bulan-item" id="bulan_<?= $bln ?>_<?= $i ?>" name="bulan_<?= $bln ?>[]" value="<?= number_format($b_val, 0, ',', '.') ?>" data-row="<?= $i ?>" onblur="cektotalrow(<?= $i ?>)" placeholder="0">
+                                                    <input type="text" class="form-control form-control-sm text-end font-monospace divide col-bulan-item" id="bulan_<?= $bln ?>_<?= $i ?>" name="bulan_<?= $bln ?>[]" value="<?= number_format((float) $b_val, 0, ',', '.') ?>" data-row="<?= $i ?>" onblur="cektotalrow(<?= $i ?>)" placeholder="0">
                                                 </div>
                                             <?php } ?>
                                         </div>

@@ -142,7 +142,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     <div class="d-flex flex-wrap align-items-center gap-4">
                         <div>
                             <small class="text-muted d-block text-uppercase fw-bold" style="font-size:10px;">SPK No.</small>
-                            <span class="fs-6 fw-bold text-dark"><?= htmlspecialchars($spk_no) ?></span>
+                            <span class="fs-6 fw-bold text-dark"><?= htmlspecialchars((string) $spk_no) ?></span>
                         </div>
                         <div class="border-start ps-4">
                             <small class="text-muted d-block text-uppercase fw-bold" style="font-size:10px;">Status</small>
@@ -150,7 +150,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                             $status_badges = ['Material Requested' => 'bg-warning text-dark', 'Material Confirmed' => 'bg-info text-dark', 'Released' => 'bg-success'];
                             $badge = isset($status_badges[$spk['status']]) ? $status_badges[$spk['status']] : 'bg-secondary';
                             ?>
-                            <span class="badge <?= $badge ?>"><?= htmlspecialchars($spk['status']) ?></span>
+                            <span class="badge <?= $badge ?>"><?= htmlspecialchars((string) $spk['status']) ?></span>
                         </div>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             <form id="formSpk">
                 <input type="hidden" name="mode" value="<?= $mode ?>">
                 <?php if ($is_edit): ?>
-                    <input type="hidden" name="spk_no" value="<?= htmlspecialchars($spk_no) ?>">
+                    <input type="hidden" name="spk_no" value="<?= htmlspecialchars((string) $spk_no) ?>">
                 <?php endif; ?>
 
                 <!-- Header Fields -->
@@ -167,23 +167,23 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     <div class="col-md-3">
                         <label class="form-label">Tanggal SPK <span class="text-danger">*</span></label>
                         <input type="text" id="tgl_spk" name="tgl_spk" class="form-control"
-                            value="<?= htmlspecialchars($tgl_spk) ?>" placeholder="Pilih tanggal" required>
+                            value="<?= htmlspecialchars((string) $tgl_spk) ?>" placeholder="Pilih tanggal" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Due Date</label>
                         <input type="text" id="due_date" name="due_date" class="form-control"
-                            value="<?= htmlspecialchars($due_date) ?>" placeholder="Tanggal batas (opsional)">
+                            value="<?= htmlspecialchars((string) $due_date) ?>" placeholder="Tanggal batas (opsional)">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Shift <span class="text-danger">*</span></label>
                         <select id="header_shift" class="form-select" multiple="multiple"></select>
-                        <input type="hidden" id="shift_ids" name="shift_ids" value="<?= htmlspecialchars($shift_ids) ?>">
-                        <input type="hidden" id="shift_names" name="shift_names" value="<?= htmlspecialchars($shift_names) ?>">
+                        <input type="hidden" id="shift_ids" name="shift_ids" value="<?= htmlspecialchars((string) $shift_ids) ?>">
+                        <input type="hidden" id="shift_names" name="shift_names" value="<?= htmlspecialchars((string) $shift_names) ?>">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Catatan</label>
                         <textarea id="catatan" name="catatan" class="form-control" rows="1"
-                            placeholder="Catatan tambahan (opsional)"><?= htmlspecialchars($catatan) ?></textarea>
+                            placeholder="Catatan tambahan (opsional)"><?= htmlspecialchars((string) $catatan) ?></textarea>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     const BASE_URL = siteurl + active_controller;
     const MODE = '<?= $mode ?>';
     const EXISTING_DETAILS = <?= json_encode($details ?: []) ?>;
-    const EXISTING_SHIFT_IDS = '<?= addslashes($shift_ids) ?>';
+    const EXISTING_SHIFT_IDS = '<?= addslashes((string) $shift_ids) ?>';
 
     let lineCounter = 0;
     let shiftListCache = null;
@@ -622,7 +622,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 products: products
             };
             if (MODE === 'edit') {
-                formData.spk_no = '<?= htmlspecialchars($spk_no) ?>';
+                formData.spk_no = '<?= htmlspecialchars((string) $spk_no) ?>';
             }
 
             $.ajax({

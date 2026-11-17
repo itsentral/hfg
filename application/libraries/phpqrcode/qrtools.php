@@ -44,7 +44,7 @@
             $barcode_array = array();
             
             if (!is_array($mode))
-                $mode = explode(',', $mode);
+                $mode = explode(',', (string) $mode);
                 
             $eccLevel = 'L';
                 

@@ -32,8 +32,8 @@
                         <?php $numb = 0; foreach ($result as $record) : $numb++; ?>
                             <tr>
                                 <td><?= $numb; ?></td>
-                                <td><?= strtoupper($record->nama); ?></td>
-                                <td><?= strtoupper($record->code); ?></td>
+                                <td><?= strtoupper((string) $record->nama); ?></td>
+                                <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
                                         <label class="badge bg-success">Aktif</label>

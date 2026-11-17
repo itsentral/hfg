@@ -39,13 +39,13 @@ class Pengajuan_mutasi_model extends BF_Model
 
         if ($query->num_rows() > 0) {
             $last   = $query->row()->mutation_number;
-            $seq    = (int) substr($last, -3);
+            $seq    = (int) substr((string) $last, -3);
             $next   = $seq + 1;
         } else {
             $next = 1;
         }
 
-        return $prefix . str_pad($next, 3, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
     }
 
     // ---------------------------------------------------------------

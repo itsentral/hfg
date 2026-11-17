@@ -6,7 +6,7 @@
                     <label for="tgl_butuh" class="form-label mb-1"><b>Required Date</b></label>
                     <?php
                     $tgl_now = date('Y-m-d');
-                    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+                    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
                     echo form_input([
                         'id' => 'tgl_butuh',
                         'name' => 'tgl_butuh',

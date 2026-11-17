@@ -22,7 +22,7 @@ $status2     = (!empty($listData[0]->status) && $listData[0]->status == '0') ? '
 			<?php foreach ($listLevel1 as $key => $value) : ?>
 				<option value="<?= $value['code_lv1']; ?>"
 					<?= ($code_lv1 == $value['code_lv1']) ? 'selected' : ''; ?>>
-					<?= strtoupper($value['nama']); ?>
+					<?= strtoupper((string) $value['nama']); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
@@ -40,7 +40,7 @@ $status2     = (!empty($listData[0]->status) && $listData[0]->status == '0') ? '
 				<?php foreach ($listLevel2 as $key => $value) : ?>
 					<option value="<?= $value['code_lv2']; ?>"
 						<?= ($code_lv2 == $value['code_lv2']) ? 'selected' : ''; ?>>
-						<?= strtoupper($value['nama']); ?>
+						<?= strtoupper((string) $value['nama']); ?>
 					</option>
 				<?php endforeach; ?>
 			<?php endif; ?>

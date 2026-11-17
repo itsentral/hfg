@@ -89,9 +89,9 @@ ob_start();
                     <tr >
                         <td>".$detail->namamaterial."</td>
                         <td align='right'>".$detail->width."</td>
-                        <td align='right'>".number_format($detail->totalwidth)."</td>
-                        <td align='right'>".number_format($detail->hargasatuan,3)."</td>
-                        <td align='right'>".number_format($detail->jumlahharga).$CIF ."</td>
+                        <td align='right'>".number_format((float) $detail->totalwidth)."</td>
+                        <td align='right'>".number_format((float) $detail->hargasatuan,3)."</td>
+                        <td align='right'>".number_format((float) $detail->jumlahharga).$CIF ."</td>
                         <td>".$detail->description."</td>
                     </tr>";
                     $CIF = "";
@@ -100,10 +100,10 @@ ob_start();
                     echo"	
                     <tr >
                         <td>".$detail->namamaterial."</td>
-                        <td align='right'>".number_format($detail->width)."</td>
-                        <td align='right'>".number_format($detail->totalwidth)."</td>
-                        <td align='right'>".number_format($detail->hargasatuan,3)."</td>
-                        <td align='right'>".number_format($detail->jumlahharga).$CIF ."</td>
+                        <td align='right'>".number_format((float) $detail->width)."</td>
+                        <td align='right'>".number_format((float) $detail->totalwidth)."</td>
+                        <td align='right'>".number_format((float) $detail->hargasatuan,3)."</td>
+                        <td align='right'>".number_format((float) $detail->jumlahharga).$CIF ."</td>
                         <td>".$detail->description."</td>
                     </tr>";
                     $CIF = "";
@@ -111,10 +111,10 @@ ob_start();
 			} ?>
 			<tr>
                 <td align="center">Total </td>
-                <td align="right"><?= number_format($detailsum[0]->sumwidth) ?></td>
-                <td align="right"><?= number_format($detailsum[0]->sumtotalwidth) ?></td>
-                <td align="right"><?= number_format($detailsum[0]->sumhargasatuan,3) ?></td>
-                <td align="right"><?= number_format($detailsum[0]->sumjumlahharga) ?></td>
+                <td align="right"><?= number_format((float) $detailsum[0]->sumwidth) ?></td>
+                <td align="right"><?= number_format((float) $detailsum[0]->sumtotalwidth) ?></td>
+                <td align="right"><?= number_format((float) $detailsum[0]->sumhargasatuan,3) ?></td>
+                <td align="right"><?= number_format((float) $detailsum[0]->sumjumlahharga) ?></td>
                 <td align="center"></td>
 			</tr>
 			<tr>
@@ -132,9 +132,9 @@ ob_start();
                 <td colspan=2' align="center">Eta Date</td>
 			</tr>
 			<tr>
-                <td colspan='2' align="center"><?= date('d-M-Y', strtotime($header->tanggal)) ?></td>
+                <td colspan='2' align="center"><?= date('d-M-Y', strtotime((string) $header->tanggal)) ?></td>
                 <td colspan='3' align="center">PT Metalsindo Pacific<br>Cikarang, Indonesia</td>
-                <td colspan='2' rowspan='2' align="center"><?= date('d-M-Y', strtotime($header->expect_tanggal)) ?></td>
+                <td colspan='2' rowspan='2' align="center"><?= date('d-M-Y', strtotime((string) $header->expect_tanggal)) ?></td>
 			</tr>
 			<tr>
                 <td colspan='2' align="center">Payment Term</td>

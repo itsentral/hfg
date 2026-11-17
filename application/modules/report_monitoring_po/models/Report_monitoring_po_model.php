@@ -103,16 +103,16 @@ class Report_monitoring_po_model extends CI_Model
             // Pisahkan material list
             $materials_arr = [];
             if (!empty($row->materials_list)) {
-                $materials_arr = explode('||', $row->materials_list);
+                $materials_arr = explode('||', (string) $row->materials_list);
             }
 
             // Pisahkan PR list (No PR & Tipe PR)
             $pr_arr = [];
             $pr_strings = [];
             if (!empty($row->pr_list)) {
-                $pairs = explode('||', $row->pr_list);
+                $pairs = explode('||', (string) $row->pr_list);
                 foreach ($pairs as $p) {
-                    $parts = explode(':::', $p);
+                    $parts = explode(':::', (string) $p);
                     $no_pr   = trim($parts[0] ?? '');
                     $tipe_pr = trim($parts[1] ?? '-');
                     if (!empty($no_pr)) {

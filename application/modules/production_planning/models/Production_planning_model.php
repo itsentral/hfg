@@ -17,7 +17,7 @@ class Production_planning_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(plan_no) AS max_no FROM tr_production_plan WHERE plan_no LIKE '{$prefix}%'"
         )->row();
-        $last = $row ? (int) substr($row->max_no, -4) : 0;
+        $last = $row ? (int) substr((string) $row->max_no, -4) : 0;
         return $prefix . sprintf('%04d', $last + 1);
     }
 
@@ -265,7 +265,7 @@ class Production_planning_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(spk_no) AS max_no FROM tr_spk_production WHERE spk_no LIKE '{$prefix}%'"
         )->row();
-        $last   = ($row && $row->max_no) ? (int) substr($row->max_no, -4) : 0;
+        $last   = ($row && $row->max_no) ? (int) substr((string) $row->max_no, -4) : 0;
         $spk_no = $prefix . sprintf('%04d', $last + 1);
 
         $this->db->insert('tr_spk_production', [

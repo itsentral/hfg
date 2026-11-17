@@ -30,7 +30,7 @@
 							<td></td>
 						</tr>
 						<?php
-						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
+						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '';
 						?>
 						<tr>
 							<td>Tgl Dibutuhkan</td>
@@ -52,11 +52,11 @@
 				</div>
 				<div class="col-md-6">
 					<label for="">Nilai Budget</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($header[0]['nilai_budget']) ?>" readonly>
+					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $header[0]['nilai_budget']) ?>" readonly>
 				</div>
 				<div class="col-md-6">
 					<label for="">Nilai Pengajuan</label>
-					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format($header[0]['nilai_pengajuan']) ?>" readonly>
+					<input type="text" name="" id="" class="form-control form-control-sm text-right" value="<?= number_format((float) $header[0]['nilai_pengajuan']) ?>" readonly>
 				</div>
 				<br><br>
 				<div class="col-md-12">
@@ -100,17 +100,17 @@
 
 								echo "<tr>";
 								echo "<td class='text-center'>" . $key . "</td>";
-								echo "	<td class='text-left'>" . $value['stock_name'] . " - <b>(" . $value['no_coa'] . " - " . strtoupper($value['nm_coa']) . ")</b>
+								echo "	<td class='text-left'>" . $value['stock_name'] . " - <b>(" . $value['no_coa'] . " - " . strtoupper((string) $value['nm_coa']) . ")</b>
 										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
 										</td>";
-								echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-								echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
-								echo "<td class='text-right min_order'>" . number_format($get_stock->min_order, 2) . "</td>";
+								echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+								echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
+								echo "<td class='text-right min_order'>" . number_format((float) $get_stock->min_order, 2) . "</td>";
 								echo "<td class='text-right'>" . number_format($propose / $konversi, 2) . "</td>";
-								echo "<td class='text-center'>" . strtoupper($get_stock->satuan_pack) . "</td>";
-								echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
-								echo "<td class='text-center'>" . strtoupper($get_stock->satuan) . "</td>";
-								echo '<td class="text-right">' . number_format($value['price_ref'], 2) . '</td>';
+								echo "<td class='text-center'>" . strtoupper((string) $get_stock->satuan_pack) . "</td>";
+								echo "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
+								echo "<td class='text-center'>" . strtoupper((string) $get_stock->satuan) . "</td>";
+								echo '<td class="text-right">' . number_format((float) $value['price_ref'], 2) . '</td>';
 								echo '<td class="text-right">' . number_format(($value['price_ref'] * $propose), 2) . '</td>';
 								if ($value['status_app'] == 'N') {
 									echo "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";

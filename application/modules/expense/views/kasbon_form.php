@@ -166,7 +166,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 									echo '<tr class="detail_pr_' . $detail_pr['id_detail'] . '">';
 									echo '<td class="text-center">' . $no . '</td>';
 									echo '<td>' . $detail_pr['nm_material'] . '</td>';
-									echo '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id_detail'] . '" value="' . $detail_pr['qty'] . '"></td>';
+									echo '<td class="text-center">' . number_format((float) $detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id_detail'] . '" value="' . $detail_pr['qty'] . '"></td>';
 									echo '<td class="text-center">' . $detail_pr['satuan'] . '</td>';
 									echo '<td class="text-end"><input type="text" name="price_input_' . $detail_pr['id_detail'] . '" class="form-control form-control-sm text-end price_input price_input_' . $detail_pr['id_detail'] . ' autonum" data-no="' . $detail_pr['id_detail'] . '" value="' . $detail_pr['harga'] . '" ' . $readonly . '></td>';
 									echo '<td class="text-end"><input type="text" name="grand_total_' . $detail_pr['id_detail'] . '" class="form-control form-control-sm text-end grand_total_' . $detail_pr['id_detail'] . ' autonum" value="' . $detail_pr['total_harga'] . '" ' . $readonly . '></td>';
@@ -189,7 +189,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						<tfoot class="table-light">
 							<tr>
 								<th class="text-end fw-bold" colspan="5">Grand Total:</th>
-								<th class="text-end fw-bold text-primary grand_total_non_pr"><?= number_format($grand_total_non_pr, 2) ?></th>
+								<th class="text-end fw-bold text-primary grand_total_non_pr"><?= number_format((float) $grand_total_non_pr, 2) ?></th>
 								<th></th>
 							</tr>
 						</tfoot>

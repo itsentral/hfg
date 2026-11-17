@@ -21,7 +21,7 @@ class Production_issue_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(spk_no) AS max_no FROM tr_spk_production WHERE spk_no LIKE '{$prefix}%'"
         )->row();
-        $last = $row ? (int) substr($row->max_no, -4) : 0;
+        $last = $row ? (int) substr((string) $row->max_no, -4) : 0;
         return $prefix . sprintf('%04d', $last + 1);
     }
 

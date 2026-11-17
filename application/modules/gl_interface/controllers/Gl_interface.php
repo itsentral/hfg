@@ -109,7 +109,7 @@ class Gl_interface extends Admin_Controller
         // Cek duplikat hanya jika sudah pernah punya nomor
         if (!empty($header['nomor'])) {
             $nomor = $header['nomor'];
-            $jenis = strtoupper($header['jenis']);
+            $jenis = strtoupper((string) $header['jenis']);
 
             if ($jenis === 'JV') {
                 $already = $this->db->get_where(DBACC . '.javh', ['nomor' => $nomor])->num_rows();
@@ -174,7 +174,7 @@ class Gl_interface extends Admin_Controller
             }
 
             $nomor = $header['nomor'];
-            $jenis = strtoupper($header['jenis']);
+            $jenis = strtoupper((string) $header['jenis']);
 
             if (!empty($nomor)) {
                 if ($jenis === 'JV') {
@@ -229,9 +229,9 @@ class Gl_interface extends Admin_Controller
     private function _do_post($header)
     {
         $id     = $header['id'];
-        $jenis  = strtoupper($header['jenis']); // JV atau BUK
+        $jenis  = strtoupper((string) $header['jenis']); // JV atau BUK
 
-        $memo          = !empty($header['memo']) ? json_decode($header['memo'], true) : [];
+        $memo          = !empty($header['memo']) ? json_decode((string) $header['memo'], true) : [];
         $id_supplier   = $memo['id_supplier']   ?? null;
         $nama_supplier = $memo['nama_supplier'] ?? null;
 

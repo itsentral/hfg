@@ -87,7 +87,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Neraca_Gudang.Delete');
                         <select class="form-select select2 select_warehouse">
                             <option value="">-- SEMUA GUDANG --</option>
                             <?php foreach ($results['list_warehouse'] as $item_warehouse) : ?>
-                                <option value="<?= $item_warehouse->id ?>"><?= strtoupper($item_warehouse->nm_gudang) ?></option>
+                                <option value="<?= $item_warehouse->id ?>"><?= strtoupper((string) $item_warehouse->nm_gudang) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

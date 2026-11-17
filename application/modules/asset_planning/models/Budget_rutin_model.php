@@ -109,7 +109,7 @@ class Budget_rutin_model extends BF_Model {
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 7, 3);
+				$urutan2		= (int)substr((string) $angkaUrut2, 7, 3);
 				$urutan2++;
 				$urut2			= sprintf('%03s',$urutan2);
 				$code_budget	= "BUD".$ym.$urut2;
@@ -231,7 +231,7 @@ class Budget_rutin_model extends BF_Model {
 				$d_Header .= "<select name='detail[".$id."][satuan]' data-no='".$id."' id='satuan_".$id."' class='chosen_select form-control input-sm'>";
 				$d_Header .= "<option value='0'>Select Satuan</option>";
 				foreach($satuan AS $val => $valx){
-				  $d_Header .= "<option value='".$valx['id_satuan']."'>".strtoupper($valx['kode_satuan'])."</option>";
+				  $d_Header .= "<option value='".$valx['id_satuan']."'>".strtoupper((string) $valx['kode_satuan'])."</option>";
 				}
 				$d_Header .= "</select>";
 			$d_Header .= "</td>";
@@ -263,10 +263,10 @@ class Budget_rutin_model extends BF_Model {
 		$option = '';
 		foreach($satuan AS $val => $valx){
 			$sel = ($valx['id_satuan'] == $spec[0]->satuan)?'selected':'';
-			$option .= "<option value='".$valx['id_satuan']."' ".$sel.">".strtoupper($valx['kode_satuan'])."</option>";
+			$option .= "<option value='".$valx['id_satuan']."' ".$sel.">".strtoupper((string) $valx['kode_satuan'])."</option>";
 		}
 		echo json_encode(array(
-			'spec'	=> strtoupper($spec[0]->spec),
+			'spec'	=> strtoupper((string) $spec[0]->spec),
 			'option' => $option
 		));
 	}
@@ -311,9 +311,9 @@ class Budget_rutin_model extends BF_Model {
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>".$nomor."</div>";
 			$tanggal = (!empty($row['updated_date']))?$row['updated_date']:$row['created_date'];
-			$nestedData[]	= "<div align='center'>".date('d-M-Y', strtotime($tanggal))."</div>";
-			$nestedData[]	= "<div align='left'>".strtoupper($row['nm_dept'])."</div>";
-			$nestedData[]	= "<div align='left'>".strtoupper($row['nm_costcenter'])."</div>";
+			$nestedData[]	= "<div align='center'>".date('d-M-Y', strtotime((string) $tanggal))."</div>";
+			$nestedData[]	= "<div align='left'>".strtoupper((string) $row['nm_dept'])."</div>";
+			$nestedData[]	= "<div align='left'>".strtoupper((string) $row['nm_costcenter'])."</div>";
 			$nestedData[]	= "<div align='center'><span class='badge bg-blue'>".$row['rev']."</span></div>";
 				$edit	= "";
 				$delete	= "";

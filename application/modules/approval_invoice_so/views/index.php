@@ -43,8 +43,8 @@ $ENABLE_DELETE  = has_permission('Approval_Invoice_SO.Delete');
 					echo '<td class="text-center">' . $item->id_penawaran . '</td>';
 					echo '<td class="text-left">' . $item->nm_customer . '</td>';
 					echo '<td class="text-center">' . $item->currency . '</td>';
-					echo '<td class="text-center">' . strtoupper($item->tipe_billing) . '</td>';
-					echo '<td class="text-right">' . number_format($item->nilai_invoice, 2) . '</td>';
+					echo '<td class="text-center">' . strtoupper((string) $item->tipe_billing) . '</td>';
+					echo '<td class="text-right">' . number_format((float) $item->nilai_invoice, 2) . '</td>';
 					if ($ENABLE_MANAGE) {
 						$btn_approve = '<button type="button" class="btn btn-sm btn-success btn_app_invoice" title="Approve Invoice" data-id_invoice="' . $item->id_invoice . '">
 							<i class="fa fa-check"></i>

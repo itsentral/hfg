@@ -48,7 +48,7 @@ $ENABLE_DELETE  = has_permission('Request_Payment_Approval.Delete');
 								<td><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
 								<td><?= $record->tipe ?></td>
-								<td><?= number_format($record->jumlah) ?></td>
+								<td><?= number_format((float) $record->jumlah) ?></td>
 								<td><?= $record->tanggal ?></td>
 								<td class="text-center">
 									<?php 

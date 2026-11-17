@@ -41,8 +41,8 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 
 							// status existing (use)
 							if (!empty($record->price_ref_date_use)) {
-								$price_ref_date = date('Y-m-d', strtotime('+' . $record->price_ref_expired_use . ' month', strtotime($record->price_ref_date_use)));
-								$expired = date('d-M-Y', strtotime($price_ref_date));
+								$price_ref_date = date('Y-m-d', strtotime('+' . $record->price_ref_expired_use . ' month', strtotime((string) $record->price_ref_date_use)));
+								$expired = date('d-M-Y', strtotime((string) $price_ref_date));
 
 								if ($date_now > $price_ref_date) {
 									$status = 'Expired';
@@ -61,10 +61,10 @@ $ENABLE_DELETE  = has_permission('Price_Ref_Raw_Material.Delete');
 					?>
 							<tr>
 								<td class="text-center"><?= $numb; ?></td>
-								<td><?= strtoupper($record->code) ?></td>
-								<td><?= strtoupper($record->nama) ?></td>
-								<td class="text-end"><?= number_format($record->price_ref_use) ?></td>
-								<td class="text-end"><?= number_format($record->price_ref_use_usd, 2) ?></td>
+								<td><?= strtoupper((string) $record->code) ?></td>
+								<td><?= strtoupper((string) $record->nama) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref_use) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref_use_usd, 2) ?></td>
 								<td class="text-center"><?= $expired; ?></td>
 
 								<td>

@@ -364,7 +364,7 @@ class Production_report_model extends CI_Model
         if (!empty($materials)) {
             foreach ($materials as $m) {
                 if (!empty($m['id_unpack_baby_coil'])) $coil_ids[]   = (int)$m['id_unpack_baby_coil'];
-                if (!empty($m['coil_code']))            $coil_codes[] = trim($m['coil_code']);
+                if (!empty($m['coil_code']))            $coil_codes[] = trim((string) $m['coil_code']);
             }
         }
 
@@ -410,7 +410,7 @@ class Production_report_model extends CI_Model
 
             if (!empty($cd['no_coil'])) {
                 $coil_cb_map[$cd['no_coil']]       = $cb;
-                $coil_cb_map[trim($cd['no_coil'])] = $cb;
+                $coil_cb_map[trim((string) $cd['no_coil'])] = $cb;
             }
             $coil_cb_map[(string)$cd['id']] = $cb;
         }
@@ -596,7 +596,7 @@ class Production_report_model extends CI_Model
         $val_mat_unpack_hold = 0;
         if (!empty($materials) && is_array($materials)) {
             foreach ($materials as $m) {
-                $c_code = !empty($m['coil_code']) ? trim($m['coil_code']) : '';
+                $c_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
                 $cb = isset($coil_cb_map[$c_code]) && $coil_cb_map[$c_code] > 0 ? $coil_cb_map[$c_code] : $default_cb;
                 $val = (float)($m['nett_weight_packing'] ?? 0) * $cb;
                 if (!empty($m['source_warehouse']) && $m['source_warehouse'] === 'wip') {
@@ -682,7 +682,7 @@ class Production_report_model extends CI_Model
         if (!empty($existing_report_id)) {
             $ex_rows = $this->db->where('production_report_id', $report_id)->get('claim_material')->result_array();
             foreach ($ex_rows as $er) {
-                $key = $er['asal'] . ':' . trim($er['no_coil_packing_list']);
+                $key = $er['asal'] . ':' . trim((string) $er['no_coil_packing_list']);
                 $existing_claims[$key] = $er;
             }
         }
@@ -691,7 +691,7 @@ class Production_report_model extends CI_Model
         if (!empty($claims) && is_array($claims)) {
             foreach ($claims as $cl) {
                 $asal       = !empty($cl['asal']) ? $cl['asal'] : 'Hold Coil';
-                $no_coil_pl = !empty($cl['no_coil_packing_list']) ? trim($cl['no_coil_packing_list']) : '';
+                $no_coil_pl = !empty($cl['no_coil_packing_list']) ? trim((string) $cl['no_coil_packing_list']) : '';
                 $key        = $asal . ':' . $no_coil_pl;
                 $current_keys[] = $key;
 
@@ -704,8 +704,8 @@ class Production_report_model extends CI_Model
                     'no_po'                => !empty($cl['no_po']) ? $cl['no_po'] : '-',
                     'no_coil_packing_list' => $no_coil_pl,
                     'asal'                 => $asal,
-                    'problem'              => !empty($cl['problem']) ? trim($cl['problem']) : '',
-                    'alasan_produksi'      => !empty($cl['alasan_produksi']) ? trim($cl['alasan_produksi']) : '',
+                    'problem'              => !empty($cl['problem']) ? trim((string) $cl['problem']) : '',
+                    'alasan_produksi'      => !empty($cl['alasan_produksi']) ? trim((string) $cl['alasan_produksi']) : '',
                     'berat_kg'             => !empty($cl['berat_kg']) ? (float)$cl['berat_kg'] : 0,
                     'harga_beli_per_kg'    => !empty($cl['harga_beli_per_kg']) ? (float)$cl['harga_beli_per_kg'] : 0,
                     'costbook_per_kg'      => !empty($cl['costbook_per_kg']) ? (float)$cl['costbook_per_kg'] : 0,
@@ -809,7 +809,7 @@ class Production_report_model extends CI_Model
         }
 
         // 1. Ambil nomor SPK sebagai kode transaksi utama
-        $spk_no = 'PR-' . str_pad($report_id, 4, '0', STR_PAD_LEFT);
+        $spk_no = 'PR-' . str_pad((string) $report_id, 4, '0', STR_PAD_LEFT);
         if (!empty($header_data['id_tr_spk_detail'])) {
             $spk_d = $this->db->select('spk_no')->where('id', $header_data['id_tr_spk_detail'])->get('tr_spk_material_detail')->row();
             if ($spk_d && !empty($spk_d->spk_no)) {
@@ -835,7 +835,7 @@ class Production_report_model extends CI_Model
         $material_groups = [];
 
         foreach ($materials as $m) {
-            $coil_code = !empty($m['coil_code']) ? trim($m['coil_code']) : '';
+            $coil_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
             $coil_id   = !empty($m['id_unpack_baby_coil']) ? (int)$m['id_unpack_baby_coil'] : null;
 
             // Lookup coil info dari warehouse_stock_coil
@@ -1033,7 +1033,7 @@ class Production_report_model extends CI_Model
         }
 
         // 1. Tentukan nomor SPK dan nomor referensi
-        $spk_no = 'PR-' . str_pad($report_id, 4, '0', STR_PAD_LEFT);
+        $spk_no = 'PR-' . str_pad((string) $report_id, 4, '0', STR_PAD_LEFT);
         if (!empty($header_data['id_tr_spk_detail'])) {
             $spk_d = $this->db->select('spk_no')->where('id', $header_data['id_tr_spk_detail'])->get('tr_spk_material_detail')->row();
             if ($spk_d && !empty($spk_d->spk_no)) {
@@ -1089,7 +1089,7 @@ class Production_report_model extends CI_Model
             $base_code = $master_prod && !empty($master_prod['code_lv4']) ? $master_prod['code_lv4'] : ('P4-' . $pid);
             $base_name = !empty($it['nama_product_custom']) ? $it['nama_product_custom'] : ($master_prod ? $master_prod['nama'] : 'Product ' . $base_code);
 
-            $cat = !empty($it['category_type']) ? strtolower($it['category_type']) : 'kw_1';
+            $cat = !empty($it['category_type']) ? strtolower((string) $it['category_type']) : 'kw_1';
 
             // Pembedaan kode & nama produk berdasarkan grade (KW 1 vs KW 2)
             $produk_fg     = $base_code;
@@ -1219,7 +1219,7 @@ class Production_report_model extends CI_Model
             return;
         }
 
-        $spk_no = 'PR-' . str_pad($report_id, 4, '0', STR_PAD_LEFT);
+        $spk_no = 'PR-' . str_pad((string) $report_id, 4, '0', STR_PAD_LEFT);
         if (!empty($header_data['id_tr_spk_detail'])) {
             $spk_d = $this->db->select('spk_no')->where('id', $header_data['id_tr_spk_detail'])->get('tr_spk_material_detail')->row();
             if ($spk_d && !empty($spk_d->spk_no)) {
@@ -1266,7 +1266,7 @@ class Production_report_model extends CI_Model
 
             if (!empty($sc['target_coil_code'])) {
                 $c_row = $this->db->select('id_material, nm_material, harga_beli')
-                    ->where('no_coil', trim($sc['target_coil_code']))
+                    ->where('no_coil', trim((string) $sc['target_coil_code']))
                     ->order_by('id', 'DESC')->limit(1)->get('warehouse_stock_coil')->row_array();
                 if ($c_row) {
                     $curr_mat_id   = $c_row['id_material'];
@@ -1293,7 +1293,7 @@ class Production_report_model extends CI_Model
             } else {
                 $kategori_stok = 'SCRAP';
                 $sub_kategori  = ucwords(str_replace('_', ' ', $scrap_type));
-                $produk_fg     = 'SCRAP-' . strtoupper($scrap_type) . '-' . $curr_mat_id;
+                $produk_fg     = 'SCRAP-' . strtoupper((string) $scrap_type) . '-' . $curr_mat_id;
                 $nm_produk     = 'Scrap ' . $sub_kategori . ' - ' . $curr_mat_name;
                 $qty_unit      = 0;
             }
@@ -1459,7 +1459,7 @@ class Production_report_model extends CI_Model
         }
 
         // 1. Tentukan nomor SPK dan kode transaksi referensi
-        $spk_no = 'PR-' . str_pad($report_id, 4, '0', STR_PAD_LEFT);
+        $spk_no = 'PR-' . str_pad((string) $report_id, 4, '0', STR_PAD_LEFT);
         if (!empty($header_data['id_tr_spk_detail'])) {
             $spk_d = $this->db->select('spk_no')->where('id', $header_data['id_tr_spk_detail'])->get('tr_spk_material_detail')->row();
             if ($spk_d && !empty($spk_d->spk_no)) {
@@ -1493,7 +1493,7 @@ class Production_report_model extends CI_Model
                 continue;
             }
 
-            $coil_code = !empty($sc['target_coil_code']) ? trim($sc['target_coil_code']) : (!empty($sc['kode_baby_coil']) ? trim($sc['kode_baby_coil']) : '');
+            $coil_code = !empty($sc['target_coil_code']) ? trim((string) $sc['target_coil_code']) : (!empty($sc['kode_baby_coil']) ? trim((string) $sc['kode_baby_coil']) : '');
             $berat_kg  = !empty($sc['berat_total']) ? (float)$sc['berat_total'] : (!empty($sc['berat']) ? (float)$sc['berat'] : 0);
 
             if ($berat_kg <= 0 || empty($coil_code)) {
@@ -1502,7 +1502,7 @@ class Production_report_model extends CI_Model
 
             // Lookup coil induk dari warehouse_stock_coil (prioritaskan id_unpack_baby_coil dari material yang dipilih)
             $parent_coil = null;
-            $coil_key    = strtoupper($coil_code);
+            $coil_key    = strtoupper((string) $coil_code);
             if (isset($mat_coil_id_map[$coil_key])) {
                 $parent_coil = $this->db->where('id', $mat_coil_id_map[$coil_key])->get('warehouse_stock_coil')->row_array();
             }
@@ -1768,7 +1768,7 @@ class Production_report_model extends CI_Model
         $alias_map    = [];
 
         foreach ($materials as $m) {
-            $coil_code = !empty($m['coil_code']) ? trim($m['coil_code']) : '';
+            $coil_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
             $coil_id   = !empty($m['id_unpack_baby_coil']) ? (int) $m['id_unpack_baby_coil'] : 0;
 
             $coil = null;
@@ -1940,7 +1940,7 @@ class Production_report_model extends CI_Model
         // Fallback dinamis jika ada item lama yang costbook_rate-nya masih 0
         $coil_cb_map = [];
         foreach ($materials as $m) {
-            $c_code = !empty($m['coil_code']) ? trim($m['coil_code']) : '';
+            $c_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
             $c_id   = !empty($m['id_unpack_baby_coil']) ? (int)$m['id_unpack_baby_coil'] : 0;
             $coil_db = null;
             if ($c_id) {
@@ -1975,7 +1975,7 @@ class Production_report_model extends CI_Model
 
         foreach ($items as &$it) {
             if (empty($it['costbook_rate']) || (float)$it['costbook_rate'] <= 0) {
-                $c_code = !empty($it['source_material_coil']) ? trim($it['source_material_coil']) : '';
+                $c_code = !empty($it['source_material_coil']) ? trim((string) $it['source_material_coil']) : '';
                 $cb = isset($coil_cb_map[$c_code]) && $coil_cb_map[$c_code] > 0 ? $coil_cb_map[$c_code] : $fallback_cb;
                 $it['costbook_rate'] = $cb;
                 if ((empty($it['material_cost_per_pcs']) || (float)$it['material_cost_per_pcs'] <= 0) && $cb > 0) {
@@ -1990,7 +1990,7 @@ class Production_report_model extends CI_Model
 
         foreach ($scraps as &$sc) {
             if (empty($sc['costbook_rate']) || (float)$sc['costbook_rate'] <= 0) {
-                $c_code = !empty($sc['target_coil_code']) ? trim($sc['target_coil_code']) : '';
+                $c_code = !empty($sc['target_coil_code']) ? trim((string) $sc['target_coil_code']) : '';
                 $cb = isset($coil_cb_map[$c_code]) && $coil_cb_map[$c_code] > 0 ? $coil_cb_map[$c_code] : $fallback_cb;
                 $sc['costbook_rate'] = $cb;
                 if ((empty($sc['total_nilai']) || (float)$sc['total_nilai'] <= 0) && $cb > 0) {
@@ -2070,12 +2070,12 @@ class Production_report_model extends CI_Model
             ->row();
         $seq = 1;
         if ($last && !empty($last->no_claim)) {
-            $parts = explode('-', $last->no_claim);
+            $parts = explode('-', (string) $last->no_claim);
             if (isset($parts[2])) {
                 $seq = (int)$parts[2] + 1;
             }
         }
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -2223,9 +2223,9 @@ class Production_report_model extends CI_Model
         $fallback_mat = !empty($coil_ctx['rows'][0]['material']) ? $coil_ctx['rows'][0]['material'] : '-';
 
         foreach ($report['items'] as $it) {
-            $cat         = !empty($it['category_type']) ? strtolower(trim($it['category_type'])) : 'kw_1';
+            $cat         = !empty($it['category_type']) ? strtolower(trim((string) $it['category_type'])) : 'kw_1';
             $pid         = !empty($it['product_lvl_4_id']) ? (int) $it['product_lvl_4_id'] : 0;
-            $uniq        = !empty($it['no_uniq_id']) ? trim($it['no_uniq_id']) : '';
+            $uniq        = !empty($it['no_uniq_id']) ? trim((string) $it['no_uniq_id']) : '';
             $meta        = isset($prod_meta[$pid]) ? $prod_meta[$pid] : null;
             $qty         = (float) ($it['qty'] ?? 0);
             $berat_total = (float) ($it['berat_total'] ?? 0);
@@ -2237,7 +2237,7 @@ class Production_report_model extends CI_Model
             $prod_name = !empty($it['nama_product_custom'])
                 ? $it['nama_product_custom']
                 : (!empty($it['nama_produk']) ? $it['nama_produk'] : ($meta ? $meta['nama'] : '-'));
-            $coil_code = !empty($it['source_material_coil']) ? trim($it['source_material_coil']) : '';
+            $coil_code = !empty($it['source_material_coil']) ? trim((string) $it['source_material_coil']) : '';
             $mat_name  = $this->_resolve_coil_material_name($coil_code, $coil_ctx['material_by_alias'], $fallback_mat);
 
             if ($cat === 'kw_1' || $cat === 'stok_bebas') {
@@ -2339,7 +2339,7 @@ class Production_report_model extends CI_Model
 
         foreach ($materials as $idx => $m) {
             $coil_id   = !empty($m['id_unpack_baby_coil']) ? (int) $m['id_unpack_baby_coil'] : 0;
-            $coil_code = !empty($m['coil_code']) ? trim($m['coil_code']) : '';
+            $coil_code = !empty($m['coil_code']) ? trim((string) $m['coil_code']) : '';
 
             $coil_db = null;
             if ($coil_id > 0) {
@@ -2352,8 +2352,8 @@ class Production_report_model extends CI_Model
                 }
             }
 
-            $mat_name      = !empty($m['material_name']) ? trim($m['material_name']) : (!empty($coil_db['nm_material']) ? trim($coil_db['nm_material']) : '-');
-            $kode_internal = !empty($coil_db['kode_internal']) ? trim($coil_db['kode_internal']) : ($coil_code !== '' ? $coil_code : '-');
+            $mat_name      = !empty($m['material_name']) ? trim((string) $m['material_name']) : (!empty($coil_db['nm_material']) ? trim((string) $coil_db['nm_material']) : '-');
+            $kode_internal = !empty($coil_db['kode_internal']) ? trim((string) $coil_db['kode_internal']) : ($coil_code !== '' ? $coil_code : '-');
             $pl_nett       = (float) ($m['nett_weight_packing'] ?? 0);
             $pl_gross      = (float) ($m['gross_weight'] ?? 0);
             $pl_meter      = (float) ($m['total_meter'] ?? 0);
@@ -2599,7 +2599,7 @@ class Production_report_model extends CI_Model
             foreach ($claims as $cl) {
                 if (($cl['asal'] ?? '') === 'Reject (Supplier)') {
                     $prob = strtolower((string) ($cl['problem'] ?? ''));
-                    if (strpos($prob, 'material') !== false) {
+                    if (strpos((string) $prob, 'material') !== false) {
                         $claim_rej_mat += (float) ($cl['berat_kg'] ?? 0);
                     } else {
                         $claim_rej_prod += (float) ($cl['berat_kg'] ?? 0);
@@ -2609,12 +2609,12 @@ class Production_report_model extends CI_Model
         }
 
         foreach ($scraps as $sc) {
-            $st    = !empty($sc['scrap_type']) ? strtolower(trim($sc['scrap_type'])) : '';
+            $st    = !empty($sc['scrap_type']) ? strtolower(trim((string) $sc['scrap_type'])) : '';
             $berat = (float) ($sc['berat_total'] ?? 0);
             if ($berat <= 0 || $st === '') {
                 continue;
             }
-            $target = !empty($sc['target_coil_code']) ? trim($sc['target_coil_code']) : '';
+            $target = !empty($sc['target_coil_code']) ? trim((string) $sc['target_coil_code']) : '';
 
             if ($st === 'reject_supplier') {
                 if ($claim_rej_mat > 0 || $claim_rej_prod > 0) {

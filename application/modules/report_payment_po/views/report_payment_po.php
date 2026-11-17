@@ -122,10 +122,10 @@
                                     <!-- No. PO klikable membuka Modal Detail -->
                                     <a href="javascript:void(0)"
                                         class="btn-detail-po"
-                                        data-no-po="<?= htmlspecialchars($row->no_po, ENT_QUOTES, 'UTF-8'); ?>"
+                                        data-no-po="<?= htmlspecialchars((string) $row->no_po, ENT_QUOTES, 'UTF-8'); ?>"
                                         title="Klik untuk melihat rincian transaksi pembayaran"
                                         style="text-decoration: underline;">
-                                        <i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars($row->no_po, ENT_QUOTES, 'UTF-8'); ?>
+                                        <i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars((string) $row->no_po, ENT_QUOTES, 'UTF-8'); ?>
                                     </a>
                                 </td>
                                 <td>
@@ -137,13 +137,13 @@
                                     </span>
                                 </td>
                                 <td class="text-end fw-semibold text-dark">
-                                    <?= number_format($row->nilai_po, 2); ?>
+                                    <?= number_format((float) $row->nilai_po, 2); ?>
                                 </td>
                                 <td class="text-end fw-semibold text-success">
-                                    <?= number_format($row->po_terbayar, 2); ?>
+                                    <?= number_format((float) $row->po_terbayar, 2); ?>
                                 </td>
                                 <td class="text-end fw-bold <?= ($row->outstanding_po > 0) ? 'text-danger' : 'text-primary'; ?>">
-                                    <?= number_format($row->outstanding_po, 2); ?>
+                                    <?= number_format((float) $row->outstanding_po, 2); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

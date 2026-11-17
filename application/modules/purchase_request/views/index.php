@@ -159,10 +159,10 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 							}
 
 							echo '
-                        <td class="text-center">' . strtoupper($record->no_pr) . '</td>
-                        <td>' . strtoupper($record->project) . '</td>
-                        <td class="text-center">' . ucwords(strtolower($nama_user)) . ucwords(strtolower($record->booking_by_name)) . '</td>
-                        <td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
+                        <td class="text-center">' . strtoupper((string) $record->no_pr) . '</td>
+                        <td>' . strtoupper((string) $record->project) . '</td>
+                        <td class="text-center">' . ucwords(strtolower((string) $nama_user)) . ucwords(strtolower((string) $record->booking_by_name)) . '</td>
+                        <td class="text-center">' . date('d-M-Y', strtotime((string) $record->booking_date)) . '</td>
                         <td class="text-center">' . $status . '</td>';
 
 							if ($ENABLE_VIEW || $ENABLE_MANAGE) {
@@ -205,10 +205,10 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 						}
 
 						echo '
-                    <td class="text-center">' . strtoupper($record->no_pr) . '</td>
-                    <td>' . strtoupper($record->project) . '</td>
-                    <td class="text-center">' . ucwords(strtolower($nama_user)) . ucwords(strtolower($record->booking_by_name)) . '</td>
-                    <td class="text-center">' . date('d-M-Y', strtotime($record->booking_date)) . '</td>
+                    <td class="text-center">' . strtoupper((string) $record->no_pr) . '</td>
+                    <td>' . strtoupper((string) $record->project) . '</td>
+                    <td class="text-center">' . ucwords(strtolower((string) $nama_user)) . ucwords(strtolower((string) $record->booking_by_name)) . '</td>
+                    <td class="text-center">' . date('d-M-Y', strtotime((string) $record->booking_date)) . '</td>
                     <td class="text-center">' . $status . '</td>';
 
 						if ($ENABLE_VIEW || $ENABLE_MANAGE) {

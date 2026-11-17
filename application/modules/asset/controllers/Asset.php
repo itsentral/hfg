@@ -75,14 +75,14 @@ class Asset extends Admin_Controller
             $Ym            = date('ym');
 
             if (!empty($data['tanggal'])) {
-                $tgl_oleh = date('Y-m-d', strtotime($data['tanggal']));
-                $Year     = date('y', strtotime($data['tanggal']));
-                $Month    = date('m', strtotime($data['tanggal']));
+                $tgl_oleh = date('Y-m-d', strtotime((string) $data['tanggal']));
+                $Year     = date('y', strtotime((string) $data['tanggal']));
+                $Month    = date('m', strtotime((string) $data['tanggal']));
                 $Ym       = $Year . $Month;
             }
 
             if (!empty($data['tanggal_oleh'])) {
-                $tgl_perolehan = date('Y-m-d', strtotime($data['tanggal_oleh']));
+                $tgl_perolehan = date('Y-m-d', strtotime((string) $data['tanggal_oleh']));
             }
 
             $src_category = $this->db->get_where('asset_category', array('id' => $category))->result_array();
@@ -104,7 +104,7 @@ class Asset extends Admin_Controller
             if (empty($id)) {
                 $qAc        = "SELECT max(kd_asset) as maxP FROM asset WHERE kd_asset LIKE 'ORI-" . $Ym . "%' ";
                 $src_ac     = $this->db->query($qAc)->result_array();
-                $max_id     = substr($src_ac[0]['maxP'], -6);
+                $max_id     = substr((string) $src_ac[0]['maxP'], -6);
                 $nil_id     = (int) $max_id + 1;
                 $code_asset = 'ORI-' . $Ym . sprintf('%06s', $nil_id);
                 $tanda2     = $code_asset;
@@ -127,9 +127,9 @@ class Asset extends Admin_Controller
                     'remove_spaces'    => TRUE
                 );
 
-                $tmp = explode('.', $_FILES['foto']['name']);
+                $tmp = explode('.', (string) $_FILES['foto']['name']);
                 $ext = end($tmp);
-                $pic = $code_asset . '.' . strtolower($ext);
+                $pic = $code_asset . '.' . strtolower((string) $ext);
 
                 $this->load->library('upload', $config);
                 $this->upload->initialize($config);
@@ -188,15 +188,15 @@ class Asset extends Admin_Controller
                 $jumlah_bulan = $max_tahun * 12;
 
                 $tgl_perolehan_dep = $tgl_oleh;
-                if (date('d', strtotime($tgl_oleh)) > 15) {
-                    $tgl_perolehan_dep = date('Y-m-d', strtotime('+1 month', strtotime($tgl_oleh)));
+                if (date('d', strtotime((string) $tgl_oleh)) > 15) {
+                    $tgl_perolehan_dep = date('Y-m-d', strtotime('+1 month', strtotime((string) $tgl_oleh)));
                 }
 
-                $nm_cat_name = (!empty($src_category[0]['nm_category'])) ? strtoupper($src_category[0]['nm_category']) : '';
+                $nm_cat_name = (!empty($src_category[0]['nm_category'])) ? strtoupper((string) $src_category[0]['nm_category']) : '';
 
                 for ($i = 1; $i <= $jumlah_bulan; $i++) {
-                    $tahun_dep  = date('Y', strtotime('+' . ($i - 1) . ' month', strtotime($tgl_perolehan_dep)));
-                    $bulan_dep  = sprintf('%02s', date('m', strtotime('+' . ($i - 1) . ' month', strtotime($tgl_perolehan_dep))));
+                    $tahun_dep  = date('Y', strtotime('+' . ($i - 1) . ' month', strtotime((string) $tgl_perolehan_dep)));
+                    $bulan_dep  = sprintf('%02s', date('m', strtotime('+' . ($i - 1) . ' month', strtotime((string) $tgl_perolehan_dep))));
 
                     $detailData[$i]['kd_asset']       = $code_asset;
                     $detailData[$i]['nm_asset']       = $data['nm_asset'];
@@ -408,7 +408,7 @@ class Asset extends Admin_Controller
         if (!empty($Q_result)) {
             foreach ($Q_result as $row) {
                 $selx = ($row->id_costcenter == $cs) ? 'selected' : '';
-                $option .= "<option value='" . $row->id_costcenter . "' " . $selx . ">" . strtoupper($row->nm_costcenter) . "</option>";
+                $option .= "<option value='" . $row->id_costcenter . "' " . $selx . ">" . strtoupper((string) $row->nm_costcenter) . "</option>";
             }
         }
         echo json_encode(array('option' => $option));

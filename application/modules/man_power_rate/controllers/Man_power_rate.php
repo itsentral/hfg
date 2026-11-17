@@ -70,7 +70,7 @@ class Man_power_rate extends Admin_Controller
                 'before' => $old ? (array)$old : null,
                 'after'  => $data,
             ];
-            write_log('Man Power Rate', $action, $action . ' Komponen ' . $nama_komponen . ' (Rp ' . number_format($nilai, 0, ',', '.') . ')', $log, null, 1);
+            write_log('Man Power Rate', $action, $action . ' Komponen ' . $nama_komponen . ' (Rp ' . number_format((float) $nilai, 0, ',', '.') . ')', $log, null, 1);
             $this->session->set_flashdata('success', 'Komponen berhasil disimpan');
         } else {
             write_log('Man Power Rate', 'Save', 'Gagal simpan komponen ' . $nama_komponen, $data, null, 0);

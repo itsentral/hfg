@@ -60,12 +60,12 @@ class App_pr_material_model extends BF_Model
 
             $nestedData = [
                 "<div class='text-center'>{$urut}</div>",
-                "<div class='text-start'>MATERIAL PLANNING " . strtoupper($row['so_number']) . "</div>",
-                "<div class='text-start'>" . strtoupper($row['so_number']) . "</div>",
-                "<div class='text-center'>" . strtoupper($row['no_pr']) . "</div>",
-                "<div class='text-start'>" . strtoupper($row['project']) . "</div>",
-                "<div class='text-start'>" . ucwords(strtolower($nama_user)) . "</div>",
-                "<div class='text-start'>" . date('d-M-Y', strtotime($row['booking_date'])) . "</div>",
+                "<div class='text-start'>MATERIAL PLANNING " . strtoupper((string) $row['so_number']) . "</div>",
+                "<div class='text-start'>" . strtoupper((string) $row['so_number']) . "</div>",
+                "<div class='text-center'>" . strtoupper((string) $row['no_pr']) . "</div>",
+                "<div class='text-start'>" . strtoupper((string) $row['project']) . "</div>",
+                "<div class='text-start'>" . ucwords(strtolower((string) $nama_user)) . "</div>",
+                "<div class='text-start'>" . date('d-M-Y', strtotime((string) $row['booking_date'])) . "</div>",
                 $status,
                 "<div class='text-center'>{$view_btn} {$approve_btn}</div>"
             ];

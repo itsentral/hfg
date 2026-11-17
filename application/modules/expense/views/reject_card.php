@@ -12,7 +12,7 @@ if (isset($data->reject_reason) && !empty($data->reject_reason)) {
 		<div class="fs-3 text-danger"><i class="fa fa-ban"></i></div>
 		<div>
 			<h6 class="fw-bold mb-1 text-danger">Pengajuan Expense Ditolak!</h6>
-			<p class="mb-0 text-dark small"><?= nl2br(htmlspecialchars($reject_msg)) ?></p>
+			<p class="mb-0 text-dark small"><?= nl2br(htmlspecialchars((string) $reject_msg)) ?></p>
 		</div>
 	</div>
 <?php endif; ?>

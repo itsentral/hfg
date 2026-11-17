@@ -43,7 +43,7 @@ class Budget_periodik extends Admin_Controller
 		$q_all = $this->db->select('id, nama')->from('ms_department')->get()->result_array();
 		if ($q_all) {
 			foreach ($q_all as $d) {
-				$all_dept[$d['id']] = strtoupper($d['nama']);
+				$all_dept[$d['id']] = strtoupper((string) $d['nama']);
 			}
 		}
 
@@ -60,7 +60,7 @@ class Budget_periodik extends Admin_Controller
 		$datdept = $this->All_model->GetDeptCombo($key);
 		if (empty($datdept) || !isset($datdept[$key])) {
 			$d = $this->db->get_where('ms_department', ['id' => $key])->row();
-			if ($d) $datdept[$key] = strtoupper($d->nama);
+			if ($d) $datdept[$key] = strtoupper((string) $d->nama);
 		}
 		$this->template->set('datdept', $datdept);
 		$datcoa	= $this->All_model->GetCoaCombo();
@@ -82,7 +82,7 @@ class Budget_periodik extends Admin_Controller
 		$datdept = $this->All_model->GetDeptCombo($key);
 		if (empty($datdept) || !isset($datdept[$key])) {
 			$d = $this->db->get_where('ms_department', ['id' => $key])->row();
-			if ($d) $datdept[$key] = strtoupper($d->nama);
+			if ($d) $datdept[$key] = strtoupper((string) $d->nama);
 		}
 		$this->template->set('datdept', $datdept);
 		$datcoa	= $this->All_model->GetCoaCombo();
@@ -104,7 +104,7 @@ class Budget_periodik extends Admin_Controller
 		$datdept = $this->All_model->GetDeptCombo($key);
 		if (empty($datdept) || !isset($datdept[$key])) {
 			$d = $this->db->get_where('ms_department', ['id' => $key])->row();
-			if ($d) $datdept[$key] = strtoupper($d->nama);
+			if ($d) $datdept[$key] = strtoupper((string) $d->nama);
 		}
 		$this->template->set('datdept', $datdept);
 		$datcoa	= $this->All_model->GetCoaCombo();
@@ -154,11 +154,11 @@ class Budget_periodik extends Admin_Controller
 				$clean_val = str_replace(',', '', str_replace('.', '', $val_raw));
 				$clean_val = is_numeric($clean_val) ? $clean_val : 0;
 
-				$row_nama = isset($nama[$x]) ? trim($nama[$x]) : '';
-				$row_coa  = isset($coa[$x]) ? trim($coa[$x]) : '';
+				$row_nama = isset($nama[$x]) ? trim((string) $nama[$x]) : '';
+				$row_coa  = isset($coa[$x]) ? trim((string) $coa[$x]) : '';
 				$row_tipe = isset($tipe[$x]) ? $tipe[$x] : 'bulan';
-				$row_ket  = isset($keterangan[$x]) ? trim($keterangan[$x]) : '';
-				$row_kode = isset($kode_id[$x]) ? trim($kode_id[$x]) : '';
+				$row_ket  = isset($keterangan[$x]) ? trim((string) $keterangan[$x]) : '';
+				$row_kode = isset($kode_id[$x]) ? trim((string) $kode_id[$x]) : '';
 
 				if (!empty($detail_id[$x])) {
 					$data = array(

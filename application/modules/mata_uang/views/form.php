@@ -35,10 +35,10 @@ $is_edit   = !empty($id_kurs);
                 <span class="input-group-text bg-light text-primary"><i class="ti ti-world"></i></span>
                 <input type="text"
                     class="form-control bg-light text-dark fw-bold"
-                    value="<?= htmlspecialchars($negara, ENT_QUOTES, 'UTF-8'); ?>"
+                    value="<?= htmlspecialchars((string) $negara, ENT_QUOTES, 'UTF-8'); ?>"
                     readonly
                     disabled>
-                <input type="hidden" id="negara" name="negara" value="<?= htmlspecialchars($negara, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" id="negara" name="negara" value="<?= htmlspecialchars((string) $negara, ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="form-text mt-1 text-muted">
                 <i class="ti ti-lock me-1 text-secondary"></i>
@@ -74,7 +74,7 @@ $is_edit   = !empty($id_kurs);
                 required
                 maxlength="10"
                 placeholder="Contoh: USD, IDR"
-                value="<?= htmlspecialchars($kode, ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?= htmlspecialchars((string) $kode, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
         <small class="text-muted">Kode ISO mata uang (biasanya 3 huruf)</small>
     </div>
@@ -92,7 +92,7 @@ $is_edit   = !empty($id_kurs);
                 name="mata_uang"
                 required
                 placeholder="Contoh: Dollar, Rupiah"
-                value="<?= htmlspecialchars($mata_uang, ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?= htmlspecialchars((string) $mata_uang, ENT_QUOTES, 'UTF-8'); ?>">
         </div>
         <small class="text-muted">Nama resmi atau penyebutan mata uang</small>
     </div>

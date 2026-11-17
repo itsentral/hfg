@@ -54,10 +54,10 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
                                 <td class="text-center"><?= $idx + 1 ?></td>
                                 <td class="fw-bold"><?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?></td>
                                 <td class="text-end fw-bold text-success fs-6">
-                                    Rp <?= number_format($r->rate_borongan_helper, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $r->rate_borongan_helper, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-center text-muted">
-                                    <?= !empty($r->latest_update) ? date('d/m/Y H:i', strtotime($r->latest_update)) : '-' ?>
+                                    <?= !empty($r->latest_update) ? date('d/m/Y H:i', strtotime((string) $r->latest_update)) : '-' ?>
                                 </td>
                                 <?php if ($ENABLE_MANAGE): ?>
                                     <td class="text-center">
@@ -103,7 +103,7 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
                         <select name="code_lv2" id="rate_code_lv2" class="form-select">
                             <option value="">-- Pilih Product Category --</option>
                             <?php foreach ($available as $cat): ?>
-                                <option value="<?= htmlspecialchars($cat->code_lv2) ?>"><?= htmlspecialchars(strtoupper($cat->nama)) ?></option>
+                                <option value="<?= htmlspecialchars((string) $cat->code_lv2) ?>"><?= htmlspecialchars(strtoupper((string) $cat->nama)) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

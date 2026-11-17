@@ -47,7 +47,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                         <option value="">-- Semua Batch --</option>
                         <?php if (!empty($batches)): foreach ($batches as $b): ?>
                             <option value="<?= html_escape($b->batch_id) ?>" <?= ($filters['batch_id'] == $b->batch_id) ? 'selected' : '' ?>>
-                                <?= html_escape($b->batch_id) ?> (<?= date('d/m/Y H:i', strtotime($b->changed_at)) ?> - <?= $b->total_items ?> item)
+                                <?= html_escape($b->batch_id) ?> (<?= date('d/m/Y H:i', strtotime((string) $b->changed_at)) ?> - <?= $b->total_items ?> item)
                             </option>
                         <?php endforeach; endif; ?>
                     </select>
@@ -102,8 +102,8 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                             <tr>
                                 <td class="text-center"><?= $no++ ?></td>
                                 <td class="text-center">
-                                    <div class="fw-bold"><?= date('d/m/Y', strtotime($r->changed_at)) ?></div>
-                                    <div class="text-muted" style="font-size:10px;"><?= date('H:i:s', strtotime($r->changed_at)) ?></div>
+                                    <div class="fw-bold"><?= date('d/m/Y', strtotime((string) $r->changed_at)) ?></div>
+                                    <div class="text-muted" style="font-size:10px;"><?= date('H:i:s', strtotime((string) $r->changed_at)) ?></div>
                                     <div class="text-muted" style="font-size:10px;">By: <?= html_escape($r->changed_by_name ? $r->changed_by_name : '-') ?></div>
                                 </td>
                                 <td>
@@ -121,8 +121,8 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                                     Rp <?= number_format((float)$r->bottom_price_baru_meter, 2) ?>
                                 </td>
                                 <td class="text-end fw-semibold <?= ($delta >= 0) ? 'text-danger' : 'text-success' ?>">
-                                    <?= ($delta >= 0) ? '+' : '' ?>Rp <?= number_format($delta, 2) ?>
-                                    <div style="font-size:10px;"><?= ($pct >= 0) ? '+' : '' ?><?= number_format($pct, 2) ?>%</div>
+                                    <?= ($delta >= 0) ? '+' : '' ?>Rp <?= number_format((float) $delta, 2) ?>
+                                    <div style="font-size:10px;"><?= ($pct >= 0) ? '+' : '' ?><?= number_format((float) $pct, 2) ?>%</div>
                                 </td>
                                 <td class="text-end fw-bold text-success bg-success-subtle">
                                     Rp <?= number_format((float)$r->price_list_baru_meter, 2) ?>

@@ -18,7 +18,7 @@
 <tr>
 	<td>Departemen : <?=$data[0]->nm_dept?></td>
 	<td colspan=2></td>
-	<td>Update On : <?=date("d-M-Y",strtotime($data[0]->created_on_dept))?></td>
+	<td>Update On : <?=date("d-M-Y",strtotime((string) $data[0]->created_on_dept))?></td>
 </tr>
 <tr>
 	<td>Tahun : <?=$dataset['tahun']?></td>
@@ -47,7 +47,7 @@
 			<td>'.$record->no_perkiraan.'</td>
 			<td>'.$record->nama_perkiraan.'</td>
 			<td>'.$record->jenis.'</td>
-			<td align=right>'.number_format($record->nilai).'</td>';
+			<td align=right>'.number_format((float) $record->nilai).'</td>';
 			echo '</tr>';
 		}
 	  }

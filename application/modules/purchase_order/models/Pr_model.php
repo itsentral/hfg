@@ -65,25 +65,25 @@ class Pr_model extends BF_Model
 
 	function generate_code($tgl)
 	{
-		$query = $this->db->query("SELECT MAX(no_po) as max_id FROM tr_purchase_order WHERE no_po LIKE '%P" . date('y', strtotime($tgl)) . "%'");
+		$query = $this->db->query("SELECT MAX(no_po) as max_id FROM tr_purchase_order WHERE no_po LIKE '%P" . date('y', strtotime((string) $tgl)) . "%'");
 		$row = $query->row_array();
-		$thn = date('y', strtotime($tgl));
+		$thn = date('y', strtotime((string) $tgl));
 		$max_id = $row['max_id'];
-		$max_id1 = (int) substr($max_id, 3, 5);
+		$max_id1 = (int) substr((string) $max_id, 3, 5);
 		$counter = $max_id1 + 1;
-		$idcust = "P" . $thn . str_pad($counter, 5, "0", STR_PAD_LEFT);
+		$idcust = "P" . $thn . str_pad((string) $counter, 5, "0", STR_PAD_LEFT);
 		return $idcust;
 	}
 	function BuatNomor($tgl)
 	{
-		$bulan = date('m', strtotime($tgl));
-		$tahun = date('Y', strtotime($tgl));
+		$bulan = date('m', strtotime((string) $tgl));
+		$tahun = date('Y', strtotime((string) $tgl));
 		$blnthn = date('Y-m');
 		$query = $this->db->query("SELECT MAX(no_surat) as max_id FROM tr_purchase_order WHERE month(tanggal)='$bulan' and Year(tanggal)='$tahun'");
 		$row = $query->row_array();
 		$thn = date('T');
 		$max_id = $row['max_id'];
-		$max_id1 = (int) substr($max_id, -13, 3);
+		$max_id1 = (int) substr((string) $max_id, -13, 3);
 		$counter = $max_id1 + 1;
 		$idcust = "PO-" . sprintf("%03s", $counter) . "/MP/" . $bulan . "/" . $tahun;
 		return $idcust;

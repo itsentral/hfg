@@ -155,12 +155,12 @@ class Budget_asset_model extends BF_Model
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper($nm_dept . ' - ' . $nm_comp) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama_asset']) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($keterangan) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nama_asset']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $keterangan) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['qty'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget']) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget_pr']) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget_po']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget_pr']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget_po']) . "</div>";
 			$nestedData[]	= "<div align='right'>" . date('F Y', strtotime($row['tahun'] . '-' . $row['bulan'] . '-01')) . "</div>";
 			$color = '';
 			$status = '';
@@ -177,7 +177,7 @@ class Budget_asset_model extends BF_Model
 				$status = 'REJECTED';
 				$color = 'red';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge bg-" . $color . "'>" . strtoupper($status) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge bg-" . $color . "'>" . strtoupper((string) $status) . "</span></div>";
 			$edit		= "";
 			$delete		= "";
 			$approve	= "";
@@ -196,7 +196,7 @@ class Budget_asset_model extends BF_Model
 				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title='Detail Data' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			}
 			$nestedData[]	= "<div align='center'>" . $row['nm_lengkap'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 			$nestedData[]	= "	<div align='left'>
 									" . $view . "
                                     " . $edit . "
@@ -264,12 +264,12 @@ class Budget_asset_model extends BF_Model
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper($nm_dept . ' - ' . $nm_comp) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama_asset']) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($keterangan) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nama_asset']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $keterangan) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['qty'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget']) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget_pr']) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['budget_po']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget_pr']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['budget_po']) . "</div>";
 			$nestedData[]	= "<div align='right'>" . date('F Y', strtotime($row['tahun'] . '-' . $row['bulan'] . '-01')) . "</div>";
 			$color = '';
 			$status = '';
@@ -286,7 +286,7 @@ class Budget_asset_model extends BF_Model
 				$status = 'REJECTED';
 				$color = 'red';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge bg-" . $color . "'>" . strtoupper($status) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge bg-" . $color . "'>" . strtoupper((string) $status) . "</span></div>";
 			$edit		= "";
 			$delete		= "";
 			$approve	= "";
@@ -305,7 +305,7 @@ class Budget_asset_model extends BF_Model
 				$view = "<a href='" . site_url($this->uri->segment(1)) . '/add_asset_manage/' . $row['code_plan'] . "/view' class='btn btn-sm btn-warning' title='Detail Data' data-role='qtip'><i class='fa fa-eye'></i></a>";
 			}
 			$nestedData[]	= "<div align='center'>" . $row['nm_lengkap'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d F Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 			$nestedData[]	= "	<div align='left'>
 									" . $view . "
                                     " . $edit . "

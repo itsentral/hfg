@@ -77,15 +77,15 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                 <td class="text-center"><?= $idx + 1 ?></td>
                                 <td class="fw-bold text-dark"><?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?></td>
                                 <td class="text-end">
-                                    <?= ($act_val !== null) ? number_format($act_val, 2, ',', '.') . ' %' : '<span class="text-muted">—</span>' ?>
+                                    <?= ($act_val !== null) ? number_format((float) $act_val, 2, ',', '.') . ' %' : '<span class="text-muted">—</span>' ?>
                                 </td>
                                 <td class="text-end fw-bold text-primary fs-6">
-                                    <?= number_format($req_val, 2, ',', '.') ?> %
+                                    <?= number_format((float) $req_val, 2, ',', '.') ?> %
                                 </td>
                                 <td class="text-end fw-bold">
                                     <?php if ($diff !== null): ?>
                                         <span class="<?= $diff > 0 ? 'text-success' : ($diff < 0 ? 'text-danger' : 'text-muted') ?>">
-                                            <?= ($diff > 0 ? '+' : '') . number_format($diff, 2, ',', '.') ?> poin %
+                                            <?= ($diff > 0 ? '+' : '') . number_format((float) $diff, 2, ',', '.') ?> poin %
                                         </span>
                                     <?php else: ?>
                                         <span class="text-muted">— (pertama)</span>
@@ -93,7 +93,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                 </td>
                                 <td>
                                     <strong><?= htmlspecialchars($r->submitted_by_name ?: 'Sales') ?></strong>
-                                    <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($r->submitted_at)) ?></div>
+                                    <div class="text-muted small"><?= date('d/m/Y H:i', strtotime((string) $r->submitted_at)) ?></div>
                                 </td>
                                 <td class="text-center">
                                     <?php if ($is_pending): ?>
@@ -113,14 +113,14 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                 <td>
                                     <?php if (!empty($r->decided_at)): ?>
                                         <strong><?= htmlspecialchars($r->decided_by_name ?: 'GM') ?></strong>
-                                        <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($r->decided_at)) ?></div>
+                                        <div class="text-muted small"><?= date('d/m/Y H:i', strtotime((string) $r->decided_at)) ?></div>
                                     <?php else: ?>
                                         <span class="text-muted">—</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!empty($r->reject_reason)): ?>
-                                        <span class="text-danger small"><i class="fa fa-info-circle me-1"></i> <?= htmlspecialchars($r->reject_reason) ?></span>
+                                        <span class="text-danger small"><i class="fa fa-info-circle me-1"></i> <?= htmlspecialchars((string) $r->reject_reason) ?></span>
                                     <?php else: ?>
                                         <span class="text-muted">—</span>
                                     <?php endif; ?>
@@ -130,11 +130,11 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                         <button type="button" class="btn btn-sm btn-primary btn-decide shadow-sm"
                                             data-id="<?= $r->id ?>"
                                             data-category="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
-                                            data-active="<?= ($act_val !== null) ? number_format($act_val, 2, ',', '.') . ' %' : '—' ?>"
-                                            data-req="<?= number_format($req_val, 2, ',', '.') ?> %"
-                                            data-diff="<?= ($diff !== null) ? (($diff > 0 ? '+' : '') . number_format($diff, 2, ',', '.') . ' poin %') : '—' ?>"
+                                            data-active="<?= ($act_val !== null) ? number_format((float) $act_val, 2, ',', '.') . ' %' : '—' ?>"
+                                            data-req="<?= number_format((float) $req_val, 2, ',', '.') ?> %"
+                                            data-diff="<?= ($diff !== null) ? (($diff > 0 ? '+' : '') . number_format((float) $diff, 2, ',', '.') . ' poin %') : '—' ?>"
                                             data-by="<?= htmlspecialchars($r->submitted_by_name ?: 'Sales') ?>"
-                                            data-at="<?= date('d/m/Y H:i', strtotime($r->submitted_at)) ?>"
+                                            data-at="<?= date('d/m/Y H:i', strtotime((string) $r->submitted_at)) ?>"
                                             title="Periksa & Putuskan">
                                             <i class="fa fa-gavel me-1"></i> Keputusan
                                         </button>
@@ -142,14 +142,14 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                         <button type="button" class="btn btn-sm btn-outline-secondary btn-view-decide"
                                             data-id="<?= $r->id ?>"
                                             data-category="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
-                                            data-active="<?= ($act_val !== null) ? number_format($act_val, 2, ',', '.') . ' %' : '—' ?>"
-                                            data-req="<?= number_format($req_val, 2, ',', '.') ?> %"
-                                            data-diff="<?= ($diff !== null) ? (($diff > 0 ? '+' : '') . number_format($diff, 2, ',', '.') . ' poin %') : '—' ?>"
+                                            data-active="<?= ($act_val !== null) ? number_format((float) $act_val, 2, ',', '.') . ' %' : '—' ?>"
+                                            data-req="<?= number_format((float) $req_val, 2, ',', '.') ?> %"
+                                            data-diff="<?= ($diff !== null) ? (($diff > 0 ? '+' : '') . number_format((float) $diff, 2, ',', '.') . ' poin %') : '—' ?>"
                                             data-by="<?= htmlspecialchars($r->submitted_by_name ?: 'Sales') ?>"
-                                            data-at="<?= date('d/m/Y H:i', strtotime($r->submitted_at)) ?>"
+                                            data-at="<?= date('d/m/Y H:i', strtotime((string) $r->submitted_at)) ?>"
                                             data-status="<?= $r->status ?>"
                                             data-decided-by="<?= htmlspecialchars($r->decided_by_name ?: 'GM') ?>"
-                                            data-decided-at="<?= !empty($r->decided_at) ? date('d/m/Y H:i', strtotime($r->decided_at)) : '-' ?>"
+                                            data-decided-at="<?= !empty($r->decided_at) ? date('d/m/Y H:i', strtotime((string) $r->decided_at)) : '-' ?>"
                                             data-reason="<?= htmlspecialchars($r->reject_reason ?: '-') ?>"
                                             title="View Detail">
                                             <i class="fa fa-eye"></i> View

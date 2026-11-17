@@ -238,7 +238,7 @@ class Material_master extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Material Master', $label, 'Gagal ' . strtolower($label) . ' material master: ' . $code_lv4, $logPayload, null, 0);
+        write_log('Material Master', $label, 'Gagal ' . strtolower((string) $label) . ' material master: ' . $code_lv4, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(
@@ -392,7 +392,7 @@ class Material_master extends Admin_Controller
       $option  = "<option value='0'>Select Material Category</option>";
       foreach ($result[$code_lv1] as $val => $valx) {
         $sel = ($id == $valx['code_lv2']) ? 'selected' : '';
-        $option .= "<option value='" . $valx['code_lv2'] . "' " . $sel . ">" . strtoupper($valx['nama']) . "</option>";
+        $option .= "<option value='" . $valx['code_lv2'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";
       }
     } else {
       $option  = "<option value='0'>List Not Found</option>";
@@ -415,7 +415,7 @@ class Material_master extends Admin_Controller
       $option  = "<option value='0'>Select Material Jenis</option>";
       foreach ($result[$code_lv1][$code_lv2] as $val => $valx) {
         $sel = ($id == $valx['code_lv3']) ? 'selected' : '';
-        $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper($valx['nama']) . "</option>";
+        $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";
       }
     } else {
       $option  = "<option value='0'>List Not Found</option>";

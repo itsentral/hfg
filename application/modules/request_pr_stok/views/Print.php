@@ -157,12 +157,12 @@
 		<tr>
 			<td width="45%">Tanggal PR</td>
 			<td style="text-align: center;">:</td>
-			<td><?= date('d F Y', strtotime($header->tgl_so)) ?></td>
+			<td><?= date('d F Y', strtotime((string) $header->tgl_so)) ?></td>
 		</tr>
 		<tr>
 			<td width="45%">Tanggal Dibutuhkan</td>
 			<td style="text-align: center;">:</td>
-			<td><?= date('d F Y', strtotime($header->tgl_dibutuhkan)) ?></td>
+			<td><?= date('d F Y', strtotime((string) $header->tgl_dibutuhkan)) ?></td>
 		</tr>
 	</table>
 
@@ -193,14 +193,14 @@
 				$no++;
 				echo '<tr>';
 				echo '<td style="text-align: center;">' . $no . '</td>';
-				echo '<td style="text-align: left;">' . $row->stock_name . ' - <b>(' . $row->no_coa . ' - ' . strtoupper($row->nm_coa) . ')</b></td>';
+				echo '<td style="text-align: left;">' . $row->stock_name . ' - <b>(' . $row->no_coa . ' - ' . strtoupper((string) $row->nm_coa) . ')</b></td>';
 				echo '<td style="text-align: left;">' . $row->spec . '</td>';
 				echo '<td style="text-align: left;">' . $row->nm_category . '</td>';
 				echo '<td style="text-align: right;">' . number_format(($row->qty_stock / $row->konversi)) . '</td>';
 				echo '<td style="text-align: center;">' . $row->satuan . '</td>';
 				echo '<td style="text-align: right;">' . number_format(($row->qty_kebutuhan / $row->konversi)) . '</td>';
 				echo '<td style="text-align: right;">' . number_format(($row->propose_purchase / $row->konversi)) . '</td>';
-				echo '<td style="text-align: right;">' . number_format($row->price_ref, 2) . '</td>';
+				echo '<td style="text-align: right;">' . number_format((float) $row->price_ref, 2) . '</td>';
 				echo '<td style="text-align: right;">' . number_format(($row->price_ref * $row->propose_purchase), 2) . '</td>';
 				echo '</tr>';
 
@@ -211,7 +211,7 @@
 		<tfooter>
 			<tr>
 				<th style="text-align: center;" colspan="9">Grand Total</th>
-				<th style="text-align: right;"><?= number_format($grand_total, 2) ?></th>
+				<th style="text-align: right;"><?= number_format((float) $grand_total, 2) ?></th>
 			</tr>
 		</tfooter>
 	</table>

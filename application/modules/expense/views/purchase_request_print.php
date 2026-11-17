@@ -54,11 +54,11 @@
 				<td class="border-all" valign=top><?= $record->spec3 ?></td>
 				<td class="border-all" valign=top><?= $record->spec2 ?></td>
 				<td class="border-all" valign=top><?= $record->spec13 ?></td>
-				<td class="border-all" align="center"><?=(($record->stock!='')?number_format($record->stock):'0');?></td>
+				<td class="border-all" align="center"><?=(($record->stock!='')?number_format((float) $record->stock):'0');?></td>
 				<td class="border-all" valign=top><?=$record->satuan;?></td>
 				<td class="border-all" valign=top align="right"><?php echo number_format($record->spec13-$record->stock) ?></td>
-				<td class="border-all" valign=top align="right"><?=number_format($record->material_qty);?></td>
-				<td class="border-all" valign=top align="right"><?=number_format($record->material_price_ref);?></td>
+				<td class="border-all" valign=top align="right"><?=number_format((float) $record->material_qty);?></td>
+				<td class="border-all" valign=top align="right"><?=number_format((float) $record->material_price_ref);?></td>
 				<td class="border-all" valign=top align="right"><?=number_format(($record->material_price_ref*$record->material_qty));?></td>
 			</tr>
 			<?php 
@@ -67,7 +67,7 @@
 		}?>
 		<tr>
 			<td colspan=10></td>
-			<td class="border-all" align="right"><?php echo number_format($total);?></td>
+			<td class="border-all" align="right"><?php echo number_format((float) $total);?></td>
 		</tr>
 		<?php for($i=1;$i<(23-$idd);$i++){ ?>
 		<tr>

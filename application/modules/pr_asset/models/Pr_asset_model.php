@@ -41,11 +41,11 @@ class Pr_asset_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div class='prt_" . $nomor . "' align='center'>" . $nomor . "</div><script type='text/javascript'>$('.prt_" . $nomor . "').parent().parent().attr('id','" . $nomor . "');</script>";
-            $nestedData[] = "<div align='center'>" . strtoupper($row['no_pr']) . "</div>";
-            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime($row['tgl_pr'])) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_barang']) . "</div>";
+            $nestedData[] = "<div align='center'>" . strtoupper((string) $row['no_pr']) . "</div>";
+            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['tgl_pr'])) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_barang']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['created_by'] . "</div>";
-            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime($row['created_date'])) . "</div>";
+            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['created_date'])) . "</div>";
 
             $app_status = isset($row['app_status']) ? $row['app_status'] : 'N';
             if ($app_status == 'Y') {
@@ -73,11 +73,11 @@ class Pr_asset_model extends BF_Model
             $data[]       = $nestedData;
 
             // Detail Row (Expandable underneath)
-            $tgl_butuh = (!empty($row['tgl_butuh'])) ? date('d F Y', strtotime($row['tgl_butuh'])) : ((!empty($row['tgl_dibutuhkan'])) ? date('d F Y', strtotime($row['tgl_dibutuhkan'])) : '-');
+            $tgl_butuh = (!empty($row['tgl_butuh'])) ? date('d F Y', strtotime((string) $row['tgl_butuh'])) : ((!empty($row['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) : '-');
 
             $reason_html = "<div align='center'></div>";
             if (($app_status == 'D' || $app_status == 'R') && !empty($row['app_reason'])) {
-                $reason_html = "<div align='center'><b>REASON</b><br><span class='text-danger'>" . strtoupper($row['app_reason']) . "</span></div>";
+                $reason_html = "<div align='center'><b>REASON</b><br><span class='text-danger'>" . strtoupper((string) $row['app_reason']) . "</span></div>";
             }
 
             if ($tanda == 'approval_management' && ($app_status == 'N' || empty($app_status))) {
@@ -96,8 +96,8 @@ class Pr_asset_model extends BF_Model
                 $nestedData2   = array();
                 $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
                 $nestedData2[] = "<div align='left'></div>";
-                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
-                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
                 $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
                 $nestedData2[] = $act_html;
                 $nestedData2[] = $reason_input;
@@ -106,8 +106,8 @@ class Pr_asset_model extends BF_Model
                 $nestedData2   = array();
                 $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
                 $nestedData2[] = "<div align='left'></div>";
-                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
-                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
+                $nestedData2[] = "<div align='center'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
+                $nestedData2[] = "<div align='left'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
                 $nestedData2[] = "<div align='center'><b>TGL DIBUTUHKAN</b><br>" . $tgl_butuh . "</div>";
                 $nestedData2[] = $reason_html;
                 $nestedData2[] = "<div align='center'></div>";
@@ -211,12 +211,12 @@ class Pr_asset_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div class='prt_" . $nomor . "' align='center'>" . $nomor . "</div><script type='text/javascript'>$('.prt_" . $nomor . "').parent().parent().attr('id','" . $nomor . "');</script>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nama_asset']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_costcenter']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nama_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_costcenter']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['qty'] . "</div>";
-            $nestedData[] = "<div align='center'>" . strtolower($row['created_by']) . "</div>";
-            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime($row['created_date'])) . "</div>";
+            $nestedData[] = "<div align='center'>" . strtolower((string) $row['created_by']) . "</div>";
+            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['created_date'])) . "</div>";
 
             $view = "<button type='button' class='btn btn-sm btn-primary look_hide' title='Expand/Collapse' data-id='" . $nomor . "'><i class='fa fa-plus'></i></button>";
 
@@ -227,10 +227,10 @@ class Pr_asset_model extends BF_Model
             $nestedData2   = array();
             $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
             $nestedData2[] = "<div align='left'></div>";
-            $nestedData2[] = "<div align='right'><b>BUDGET</b><br>" . number_format($row['budget']) . "<br><b>SISA BUDGET PR</b></br>" . number_format($row['budget_pr']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>RENCANA BELI</b><br>" . date('F Y', strtotime($row['tahun'] . '-' . sprintf('%02d', $row['bulan']) . '-01')) . "<br><b>KETERANGAN</b><br>" . strtoupper($row['keterangan']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>REVISI QTY</b><input type='text' id='qty_rev_" . $nomor . "' class='form-control form-control-sm text-center maskM' placeholder='Qty Rev' value='" . number_format($row['qty']) . "'></div>";
-            $nestedData2[] = "<div align='right'><b>NILAI PR</b><input type='text' id='nil_pr_" . $nomor . "' class='form-control form-control-sm text-end maskM' placeholder='Nilai PR' value='" . number_format($row['budget']) . "'></div>";
+            $nestedData2[] = "<div align='right'><b>BUDGET</b><br>" . number_format((float) $row['budget']) . "<br><b>SISA BUDGET PR</b></br>" . number_format((float) $row['budget_pr']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>RENCANA BELI</b><br>" . date('F Y', strtotime($row['tahun'] . '-' . sprintf('%02d', $row['bulan']) . '-01')) . "<br><b>KETERANGAN</b><br>" . strtoupper((string) $row['keterangan']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>REVISI QTY</b><input type='text' id='qty_rev_" . $nomor . "' class='form-control form-control-sm text-center maskM' placeholder='Qty Rev' value='" . number_format((float) $row['qty']) . "'></div>";
+            $nestedData2[] = "<div align='right'><b>NILAI PR</b><input type='text' id='nil_pr_" . $nomor . "' class='form-control form-control-sm text-end maskM' placeholder='Nilai PR' value='" . number_format((float) $row['budget']) . "'></div>";
             $nestedData2[] = "<div align='right'><b>TGL DIBUTUHKAN</b>
                                 <input type='date' id='tgl_butuh_" . $nomor . "' class='form-control form-control-sm text-center'>
                                 <input type='hidden' id='code_plan_" . $nomor . "' value='" . $row['code_plan'] . "'>
@@ -306,7 +306,7 @@ class Pr_asset_model extends BF_Model
         $qIPP        = "SELECT MAX(no_pr) as maxP FROM tran_pr_header WHERE no_pr LIKE 'PRA" . $Ym . "%' ";
         $resultIPP   = $this->db->query($qIPP)->result_array();
         $angkaUrut2  = $resultIPP[0]['maxP'];
-        $urutan2     = (int)substr($angkaUrut2, 5, 4);
+        $urutan2     = (int)substr((string) $angkaUrut2, 5, 4);
         $urutan2++;
         $urut2       = sprintf('%04s', $urutan2);
         $no_pr       = "PRA" . $Ym . $urut2;
@@ -380,7 +380,7 @@ class Pr_asset_model extends BF_Model
         $data   = $this->input->post();
         $no_pr  = $data['no_pr'];
         $action = $data['action'];
-        $reason = isset($data['reason']) ? strtolower($data['reason']) : '';
+        $reason = isset($data['reason']) ? strtolower((string) $data['reason']) : '';
 
         $username = isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin'));
         $dateTime = date('Y-m-d H:i:s');

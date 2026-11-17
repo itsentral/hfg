@@ -36,9 +36,9 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
                         foreach ($result as $record): $numb++; ?>
                             <tr>
                                 <td class="text-center"><?= $numb; ?></td>
-                                <td><?= htmlspecialchars(strtoupper($record->id)) ?></td>
-                                <td><?= htmlspecialchars(strtoupper($record->nm_category)) ?></td>
-                                <td><?= htmlspecialchars(strtoupper($record->description)) ?></td>
+                                <td><?= htmlspecialchars(strtoupper((string) $record->id)) ?></td>
+                                <td><?= htmlspecialchars(strtoupper((string) $record->nm_category)) ?></td>
+                                <td><?= htmlspecialchars(strtoupper((string) $record->description)) ?></td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
                                         <?php if ($ENABLE_MANAGE) : ?>

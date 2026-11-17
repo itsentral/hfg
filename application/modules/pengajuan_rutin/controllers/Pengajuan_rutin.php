@@ -158,8 +158,8 @@ class Pengajuan_rutin extends Admin_Controller
 		$param = array(
 			'save' => 1,
 			'data' => $data,
-			'tahun' => date("Y", strtotime($tanggal)),
-			'bulan' => date("m", strtotime($tanggal)),
+			'tahun' => date("Y", strtotime((string) $tanggal)),
+			'bulan' => date("m", strtotime((string) $tanggal)),
 		);
 		echo json_encode($param);
 	}
@@ -172,7 +172,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$no_doc			= $this->input->post("no_doc");
 		$tanggal_doc	= $this->input->post("tanggal_doc");
 		// $tanggal_doc    = str_replace('/','-',$tanggal_doc);
-		$tanggal_doc    = date('Y-m-d', strtotime($tanggal_doc));
+		$tanggal_doc    = date('Y-m-d', strtotime((string) $tanggal_doc));
 		// print_r($tanggal_doc);
 		// exit;
 
@@ -392,7 +392,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$draw   = isset($post['draw'])   ? (int)$post['draw']   : 1;
 		$length = isset($post['length']) ? (int)$post['length'] : 10;
 		$start  = isset($post['start'])  ? (int)$post['start']  : 0;
-		$search = isset($post['search']['value']) ? trim($post['search']['value']) : '';
+		$search = isset($post['search']['value']) ? trim((string) $post['search']['value']) : '';
 
 		$column_order = [
 			0 => '',
@@ -439,7 +439,7 @@ class Pengajuan_rutin extends Admin_Controller
 
 		if (isset($post['order'][0]['column']) && isset($column_order[$post['order'][0]['column']]) && !empty($column_order[$post['order'][0]['column']])) {
 			$col_idx = (int)$post['order'][0]['column'];
-			$col_dir = strtolower($post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$col_dir = strtolower((string) $post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
 			$this->db->order_by($column_order[$col_idx], $col_dir);
 		} else {
 			$this->db->order_by('a.no_doc', 'desc');
@@ -472,10 +472,10 @@ class Pengajuan_rutin extends Admin_Controller
 
 			$data[] = [
 				'no'          => $no++,
-				'no_doc'      => '<span class="fw-semibold text-primary">' . htmlspecialchars($record->no_doc) . '</span>',
-				'departemen'  => '<span class="fw-medium text-dark">' . strtoupper(htmlspecialchars($nm_department)) . '</span>',
-				'tanggal_doc' => date('d F Y', strtotime($record->tanggal_doc)),
-				'total_nilai' => '<span class="fw-bold text-end d-block">Rp ' . number_format($record->total_nilai, 0, ',', '.') . '</span>',
+				'no_doc'      => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $record->no_doc) . '</span>',
+				'departemen'  => '<span class="fw-medium text-dark">' . strtoupper(htmlspecialchars((string) $nm_department)) . '</span>',
+				'tanggal_doc' => date('d F Y', strtotime((string) $record->tanggal_doc)),
+				'total_nilai' => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $record->total_nilai, 0, ',', '.') . '</span>',
 				'status'      => '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval</span>',
 				'action'      => $action,
 			];
@@ -657,8 +657,8 @@ class Pengajuan_rutin extends Admin_Controller
 				'no' => $no,
 				'department' => strtoupper($nm_dept . ' - ' . $nm_comp),
 				'nomor' => $item->no_doc,
-				'nominal' => number_format($item->nilai_total),
-				'tanggal' => date('d F Y', strtotime($item->tanggal_doc)),
+				'nominal' => number_format((float) $item->nilai_total),
+				'tanggal' => date('d F Y', strtotime((string) $item->tanggal_doc)),
 				'status' => $status,
 				'keterangan_reject' => $keterangan_reject,
 				'action' => $action

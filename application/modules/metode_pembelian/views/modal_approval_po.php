@@ -33,7 +33,7 @@
 		<div class='col-sm-1 text-bold'><label>Nomor PO</label></div>
         <div class='col-sm-5'>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=$no_po;?></div>
         <div class='col-sm-2 text-bold'><label>Tgl Dibutuhkan</label></div>
-        <div class='col-sm-4'>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=date('d F Y', strtotime($result[0]['tgl_butuh']));?></div>
+        <div class='col-sm-4'>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=date('d F Y', strtotime((string) $result[0]['tgl_butuh']));?></div>
 	</div>
     <div class="form-group row">
 		<div class='col-sm-1 text-bold'><label>Customer</label></div>
@@ -62,42 +62,42 @@
                 
                 echo "<tr>";
                     echo "<td class='vmiddle' align='center'>".$no++."</td>";
-                    echo "<td class='vmiddle' align='left'>".strtoupper($nm_material)."</td>";
-                    echo "<td class='vmiddle' align='center'>".number_format($valx['moq'],2)."</td>";
-                    echo "<td class='vmiddle' align='center'>".number_format($valx['lead_time'],2)."</td>";
-                    echo "<td class='vmiddle' align='right'>".number_format($valx['net_price'])."</td>";
-                    echo "<td class='vmiddle' align='right'>".number_format($valx['qty_purchase'])."</td>";
-                    echo "<td class='vmiddle' align='right'>".number_format($valx['total_price'])."</td>";
+                    echo "<td class='vmiddle' align='left'>".strtoupper((string) $nm_material)."</td>";
+                    echo "<td class='vmiddle' align='center'>".number_format((float) $valx['moq'],2)."</td>";
+                    echo "<td class='vmiddle' align='center'>".number_format((float) $valx['lead_time'],2)."</td>";
+                    echo "<td class='vmiddle' align='right'>".number_format((float) $valx['net_price'])."</td>";
+                    echo "<td class='vmiddle' align='right'>".number_format((float) $valx['qty_purchase'])."</td>";
+                    echo "<td class='vmiddle' align='right'>".number_format((float) $valx['total_price'])."</td>";
                echo "</tr>";
             }
             ?>
             <tr>
                 <td class='text-right mid' colspan='6'><b>TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid text-bold'><?=number_format($result[0]['total_po']);?></td>
+                <td class='text-right mid text-bold'><?=number_format((float) $result[0]['total_po']);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>DISCOUNT (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid' text-bold><?=number_format($result[0]['discount'],2);?></td>
+                <td class='text-right mid' text-bold><?=number_format((float) $result[0]['discount'],2);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>NET PRICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid text-bold'><?=number_format($result[0]['net_price2']);?></td>
+                <td class='text-right mid text-bold'><?=number_format((float) $result[0]['net_price2']);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>TAX (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid' text-bold><?=number_format($result[0]['tax'],2);?></td>
+                <td class='text-right mid' text-bold><?=number_format((float) $result[0]['tax'],2);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>NET PRICE + TAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid text-bold'><?=number_format($result[0]['net_plus_tax']);?></td>
+                <td class='text-right mid text-bold'><?=number_format((float) $result[0]['net_plus_tax']);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>DELIVERY COST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid text-bold'><?=number_format($result[0]['delivery_cost']);?></td>
+                <td class='text-right mid text-bold'><?=number_format((float) $result[0]['delivery_cost']);?></td>
             </tr>
             <tr>
                 <td class='text-right mid' colspan='6'><b>GRAND TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-                <td class='text-right mid text-bold'><?=number_format($result[0]['total_price2']);?></td>
+                <td class='text-right mid text-bold'><?=number_format((float) $result[0]['total_price2']);?></td>
             </tr>
         </tbody>
     </table>

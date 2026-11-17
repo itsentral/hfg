@@ -37,14 +37,14 @@
                         <?php $numb = 1; foreach ($data as $record) : ?>
                             <tr>
                                 <td class="text-center text-muted fw-semibold"><?= $numb++; ?></td>
-                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($record->tgl_request)) ?></td>
-                                <td><span class="fw-bold text-primary"><?= htmlspecialchars($record->kd_mutasi) ?></span></td>
-                                <td><?= htmlspecialchars($record->keterangan) ?></td>
+                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $record->tgl_request)) ?></td>
+                                <td><span class="fw-bold text-primary"><?= htmlspecialchars((string) $record->kd_mutasi) ?></span></td>
+                                <td><?= htmlspecialchars((string) $record->keterangan) ?></td>
                                 <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($record->nama_bank_asal ?: $record->bank_asal) ?></td>
                                 <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($record->nama_bank_tujuan ?: $record->bank_tujuan) ?></td>
                                 <td class="text-center"><span class="badge bg-light text-dark border"><?= htmlspecialchars($record->mata_uang ?: 'IDR') ?></span></td>
-                                <td class="text-end fw-semibold">Rp <?= number_format($record->nilai_request, 0, ',', '.') ?></td>
-                                <td><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars($record->created_by) ?></td>
+                                <td class="text-end fw-semibold">Rp <?= number_format((float) $record->nilai_request, 0, ',', '.') ?></td>
+                                <td><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars((string) $record->created_by) ?></td>
                                 <td class="text-center text-nowrap">
                                     <a class="btn btn-primary btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/approval/' . $record->kd_mutasi) ?>" title="Proses Approval">
                                         <i class="fa fa-check-square-o me-1"></i> Review

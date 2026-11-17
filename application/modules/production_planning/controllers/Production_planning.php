@@ -80,7 +80,7 @@ class Production_planning extends Admin_Controller
                 $row->plan_no,
                 $row->tgl_plan,
                 $row->nm_produk_fg,
-                number_format($row->target_qty, 2),
+                number_format((float) $row->target_qty, 2),
                 $status_badge,
                 $btn_view . $btn_edit . $btn_release . $btn_cancel,
             ];

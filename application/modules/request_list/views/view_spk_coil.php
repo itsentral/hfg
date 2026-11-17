@@ -40,21 +40,21 @@ if (!empty($scan_pack_history)) {
                 <table class="table table-borderless table-sm mb-0">
                     <tr>
                         <td width="35%" class="fw-bold">No. SPK</td>
-                        <td>: <span class="badge bg-dark fs-6"><?= htmlspecialchars($spk['spk_no']) ?></span></td>
+                        <td>: <span class="badge bg-dark fs-6"><?= htmlspecialchars((string) $spk['spk_no']) ?></span></td>
                     </tr>
                     <tr>
                         <td class="fw-bold">Tanggal SPK</td>
-                        <td>: <?= date('d M Y', strtotime($spk['tgl_spk'])) ?></td>
+                        <td>: <?= date('d M Y', strtotime((string) $spk['tgl_spk'])) ?></td>
                     </tr>
                     <?php if (!empty($spk['due_date'])): ?>
                         <tr>
                             <td class="fw-bold">Due Date</td>
-                            <td>: <?= date('d M Y', strtotime($spk['due_date'])) ?></td>
+                            <td>: <?= date('d M Y', strtotime((string) $spk['due_date'])) ?></td>
                         </tr>
                     <?php endif; ?>
                     <tr>
                         <td class="fw-bold">Shift</td>
-                        <td>: <?= htmlspecialchars($spk['shift_names']) ?></td>
+                        <td>: <?= htmlspecialchars((string) $spk['shift_names']) ?></td>
                     </tr>
                 </table>
             </div>
@@ -62,7 +62,7 @@ if (!empty($scan_pack_history)) {
                 <table class="table table-borderless table-sm mb-0">
                     <tr>
                         <td width="35%" class="fw-bold">Status</td>
-                        <td>: <span class="badge rounded-pill <?= $badge_class ?>"><?= htmlspecialchars($spk['status']) ?></span></td>
+                        <td>: <span class="badge rounded-pill <?= $badge_class ?>"><?= htmlspecialchars((string) $spk['status']) ?></span></td>
                     </tr>
                     <tr>
                         <td class="fw-bold">Dibuat Oleh</td>
@@ -104,11 +104,11 @@ if (!empty($scan_pack_history)) {
                             <tr>
                                 <td class="text-center"><?= (int) $d['urut'] ?></td>
                                 <td>
-                                    <?= htmlspecialchars($d['nm_produk_fg']) ?>
+                                    <?= htmlspecialchars((string) $d['nm_produk_fg']) ?>
                                     <?php if (!empty($d['thickness']) && (float) $d['thickness'] > 0): ?>
                                         <span class="badge bg-info text-dark ms-1">Varian <?= number_format((float) $d['thickness'], 2) ?> mm</span>
                                     <?php elseif (!empty($d['no_uniq_id'])): ?>
-                                        <span class="badge bg-light text-secondary border ms-1"><?= htmlspecialchars($d['no_uniq_id']) ?></span>
+                                        <span class="badge bg-light text-secondary border ms-1"><?= htmlspecialchars((string) $d['no_uniq_id']) ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end"><?= number_format((int) $d['target_qty'], 0, ',', '.') ?></td>
@@ -120,8 +120,8 @@ if (!empty($scan_pack_history)) {
                 <tfoot class="table-light fw-bold">
                     <tr>
                         <td colspan="2" class="text-end">Total</td>
-                        <td class="text-end"><?= number_format($total_qty, 0, ',', '.') ?> pcs</td>
-                        <td class="text-end"><?= number_format($total_weight, 2, ',', '.') ?> Kg</td>
+                        <td class="text-end"><?= number_format((float) $total_qty, 0, ',', '.') ?> pcs</td>
+                        <td class="text-end"><?= number_format((float) $total_weight, 2, ',', '.') ?> Kg</td>
                     </tr>
                 </tfoot>
             </table>
@@ -169,13 +169,13 @@ if (!empty($scan_pack_history)) {
                                 </td>
                                 <td>
                                     <div class="fw-semibold"><?= htmlspecialchars($h['nm_material'] ?: '-') ?></div>
-                                    <small class="text-muted"><?= htmlspecialchars($h['id_material']) ?></small>
+                                    <small class="text-muted"><?= htmlspecialchars((string) $h['id_material']) ?></small>
                                 </td>
                                 <td><?= htmlspecialchars($h['no_coil'] ?: '-') ?></td>
                                 <td><code><?= htmlspecialchars($h['kode_internal'] ?: '-') ?></code></td>
                                 <td class="text-end fw-semibold"><?= number_format((float) $h['qty_trans'], 2, ',', '.') ?></td>
-                                <td><?= !empty($h['created_at']) ? date('d M Y H:i', strtotime($h['created_at'])) : '-' ?></td>
-                                <td><?= htmlspecialchars($h['scanned_by_name']) ?></td>
+                                <td><?= !empty($h['created_at']) ? date('d M Y H:i', strtotime((string) $h['created_at'])) : '-' ?></td>
+                                <td><?= htmlspecialchars((string) $h['scanned_by_name']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -184,7 +184,7 @@ if (!empty($scan_pack_history)) {
                     <tfoot class="table-light fw-bold">
                         <tr>
                             <td colspan="5" class="text-end">Total Masuk WRH. Production 2</td>
-                            <td class="text-end"><?= number_format($total_scan_qty_kg, 2, ',', '.') ?> Kg</td>
+                            <td class="text-end"><?= number_format((float) $total_scan_qty_kg, 2, ',', '.') ?> Kg</td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
@@ -200,7 +200,7 @@ if (!empty($scan_pack_history)) {
         <span class="text-muted small">
             <i class="fa fa-info-circle me-1"></i> Dokumen SPK dapat dicetak untuk acuan persiapan material &amp; produksi.
         </span>
-        <a href="<?= site_url('spk_material/print_pdf/' . rawurlencode($spk['spk_no'])) ?>" target="_blank" class="btn btn-secondary">
+        <a href="<?= site_url('spk_material/print_pdf/' . rawurlencode((string) $spk['spk_no'])) ?>" target="_blank" class="btn btn-secondary">
             <i class="fa fa-print me-1"></i> Print PDF
         </a>
     </div>

@@ -23,7 +23,7 @@
         <tr>
             <td class="mid" width='18%'>Nomor PO / Kasbon</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?= strtoupper($no_po); ?></td>
+            <td class="mid" width='30%'><?= strtoupper((string) $no_po); ?></td>
             <td class="mid" width='18%'>Gudang Incoming</td>
             <td class="mid" width='2%'>:</td>
             <td class="mid" width='30%'><?= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_ke'])); ?></td>
@@ -71,8 +71,8 @@
             echo "<tr>";
             echo "<td align='center'>" . $No . "</td>";
             echo "<td>" . $nm_material . "</td>";
-            echo "<td align='center'>" . number_format($qty_in, 2) . "</td>";
-            echo "<td align='center'>" . strtoupper($unit) . "</td>";
+            echo "<td align='center'>" . number_format((float) $qty_in, 2) . "</td>";
+            echo "<td align='center'>" . strtoupper((string) $unit) . "</td>";
             echo "<td>" . $value['keterangan'] . "</td>";
             echo "</tr>";
         }

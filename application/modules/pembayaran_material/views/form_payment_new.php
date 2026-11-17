@@ -14,7 +14,7 @@ foreach ($results['result_payment'] as $item_check) {
 		if (empty($get_po_loi)) {
 			$get_po_loi = $this->db->select('loi')->get_where('tr_purchase_order', ['no_surat' => $item_check->no_doc])->row();
 		}
-		if (!empty($get_po_loi) && strtolower(trim($get_po_loi->loi)) === 'import') {
+		if (!empty($get_po_loi) && strtolower(trim((string) $get_po_loi->loi)) === 'import') {
 			$is_import = true;
 		}
 		if ($item_check->tipe === 'invoice_import') {
@@ -31,7 +31,7 @@ foreach ($results['result_payment'] as $item_check) {
 		$get_inv_po = $this->db->get_where('tr_invoice_po', ['id' => $item_check->no_doc])->row();
 		if (!empty($get_inv_po) && !empty($get_inv_po->no_po)) {
 			$no_po_check = $get_inv_po->no_po;
-			if (strpos($no_po_check, 'TRS1') !== false) {
+			if (strpos((string) $no_po_check, 'TRS1') !== false) {
 				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check));
 				$get_ipp = $this->db->select('no_ipp')->where_in('kode_trans', $arr_inc)->get('tr_incoming_check')->row();
 				if (!empty($get_ipp)) {
@@ -39,7 +39,7 @@ foreach ($results['result_payment'] as $item_check) {
 				}
 			}
 			$get_po_loi2 = $this->db->select('loi')->get_where('tr_purchase_order', ['no_po' => $no_po_check])->row();
-			if (!empty($get_po_loi2) && strtolower($get_po_loi2->loi) === 'import') {
+			if (!empty($get_po_loi2) && strtolower((string) $get_po_loi2->loi) === 'import') {
 				$is_import = true;
 			}
 		}
@@ -68,12 +68,12 @@ foreach ($results['result_payment'] as $item) {
 	$get_rec_invoice = $this->db->get_where('tr_invoice_po', ['id' => $item->no_doc])->row();
 
 	if (!empty($get_rec_invoice)) {
-		if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+		if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 			$get_no_po = $this->db
 				->select('a.no_ipp')
 				->from('tr_incoming_check a')
-				->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+				->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 				->get()
 				->result();
 
@@ -328,12 +328,12 @@ foreach ($results['result_payment'] as $item) {
 									}
 								}
 								if (!empty($get_rec_invoice)) {
-									if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+									if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 										$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 										$get_no_po = $this->db
 											->select('a.no_ipp')
 											->from('tr_incoming_check a')
-											->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+											->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 											->get()
 											->result();
 
@@ -430,7 +430,7 @@ foreach ($results['result_payment'] as $item) {
 							echo '<td class="text-right req_payment_col_' . $item->id . '">
 						<input type="hidden" class="jumlah_col_' . $item->id . '">
 						<input type="hidden" class="payment_bank_' . $item->id . '" value="' . $item->jumlah . '">
-						' . number_format($item->jumlah, 2) . '
+						' . number_format((float) $item->jumlah, 2) . '
 						</td>';
 							echo '<td ' . $hide_ppn_pph_style . '>';
 							echo '<select name="dt[' . $no . '][tipe_pph]" class="form-control form-control-sm chosen">';
@@ -448,7 +448,7 @@ foreach ($results['result_payment'] as $item) {
 							echo '<td class="text-center">';
 							echo '<input type="file" name="upload_doc[' . $item->id . ']" class="form-control form-control-sm" title="Opsional">';
 							echo '</td>';
-							echo '<td class="text-right payment_col_' . $item->id . '">' . number_format($tagihan_idr, 2) . '</td>';
+							echo '<td class="text-right payment_col_' . $item->id . '">' . number_format((float) $tagihan_idr, 2) . '</td>';
 
 							echo '</tr>';
 
@@ -469,19 +469,19 @@ foreach ($results['result_payment'] as $item) {
 							<td colspan="<?= $footer_colspan ?>"></td>
 							<td>Subtotal</td>
 							<td class="text-right total_payment_col">
-								<?= number_format($total_payment, 2) ?>
+								<?= number_format((float) $total_payment, 2) ?>
 							</td>
 						</tr>
 						<tr class="ppn_footer_row" <?= $hide_ppn_pph_style ?>>
 							<td colspan="6"></td>
 							<td>PPN</td>
-							<td class="text-right total_ppn_col"><?= number_format($total_ppn, 2) ?></td>
+							<td class="text-right total_ppn_col"><?= number_format((float) $total_ppn, 2) ?></td>
 						</tr>
 						<tr class="pph_footer_row" <?= $hide_ppn_pph_style ?>>
 							<td colspan="6"></td>
 							<td>PPH</td>
 							<td class="text-right total_pph_col">
-								<?= number_format($total_pph, 2) ?>
+								<?= number_format((float) $total_pph, 2) ?>
 							</td>
 						</tr>
 						<tr>

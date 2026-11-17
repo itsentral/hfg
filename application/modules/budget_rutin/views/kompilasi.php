@@ -36,7 +36,7 @@
                             if ($valx['cost_center'] != '0' && !empty($valx['cost_center'])) {
                                 $cc = $valx['cost_center'];
                             }
-                            echo "<th class='text-center'><u>" . strtoupper($valx['nm_dept']) . "</u>" . (!empty($cc) ? "<br><small class='text-muted'>" . $cc . "</small>" : "") . "</th>";
+                            echo "<th class='text-center'><u>" . strtoupper((string) $valx['nm_dept']) . "</u>" . (!empty($cc) ? "<br><small class='text-muted'>" . $cc . "</small>" : "") . "</th>";
                         }
                         ?>
                     </tr>
@@ -47,20 +47,20 @@
                         $val++;
                         echo "<tr>";
                         echo "<td class='text-center text-muted small'>" . $val . "</td>";
-                        echo "<td class='text-nowrap'><span class='badge bg-light text-dark border'>" . strtoupper($valx['jenisbarang']) . "</span></td>";
-                        echo "<td><strong class='text-dark'>" . strtoupper($valx['nama']) . "</strong></td>";
-                        echo "<td class='small text-muted'>" . strtoupper($valx['spec1']) . "</td>";
-                        echo "<td class='small text-muted'>" . strtoupper($valx['spec2']) . "</td>";
+                        echo "<td class='text-nowrap'><span class='badge bg-light text-dark border'>" . strtoupper((string) $valx['jenisbarang']) . "</span></td>";
+                        echo "<td><strong class='text-dark'>" . strtoupper((string) $valx['nama']) . "</strong></td>";
+                        echo "<td class='small text-muted'>" . strtoupper((string) $valx['spec1']) . "</td>";
+                        echo "<td class='small text-muted'>" . strtoupper((string) $valx['spec2']) . "</td>";
                         $total_kebutuhan = 0;
                         foreach ($group_header as $val2 => $valx2) {
                             $get_qty = $this->db->query("SELECT a.kebutuhan_month FROM budget_rutin_detail a LEFT JOIN budget_rutin_header b ON a.code_budget=b.code_budget WHERE a.id_barang='" . $valx['id_barang'] . "' AND b.department='" . $valx2['department'] . "' AND b.costcenter='" . $valx2['costcenter'] . "' ")->result();
                             $total_kebutuhan += (!empty($get_qty)) ? $get_qty[0]->kebutuhan_month : 0;
                         }
-                        echo "<td class='text-center font-monospace fw-bold text-primary bg-primary-subtle'>" . number_format($total_kebutuhan, 0, ',', '.') . "</td>";
-                        echo "<td class='text-center'><span class='badge bg-secondary-subtle text-secondary border'>" . strtoupper($valx['satuan']) . "</span></td>";
+                        echo "<td class='text-center font-monospace fw-bold text-primary bg-primary-subtle'>" . number_format((float) $total_kebutuhan, 0, ',', '.') . "</td>";
+                        echo "<td class='text-center'><span class='badge bg-secondary-subtle text-secondary border'>" . strtoupper((string) $valx['satuan']) . "</span></td>";
                         foreach ($group_header as $val2 => $valx2) {
                             $get_qty = $this->db->query("SELECT a.kebutuhan_month FROM budget_rutin_detail a LEFT JOIN budget_rutin_header b ON a.code_budget=b.code_budget WHERE a.id_barang='" . $valx['id_barang'] . "' AND b.department='" . $valx2['department'] . "' AND b.costcenter='" . $valx2['costcenter'] . "' ")->result();
-                            $qty = (!empty($get_qty) && $get_qty[0]->kebutuhan_month > 0) ? number_format($get_qty[0]->kebutuhan_month, 0, ',', '.') : '-';
+                            $qty = (!empty($get_qty) && $get_qty[0]->kebutuhan_month > 0) ? number_format((float) $get_qty[0]->kebutuhan_month, 0, ',', '.') : '-';
                             echo "<td class='text-center font-monospace'>" . $qty . "</td>";
                         }
                         echo "</tr>";

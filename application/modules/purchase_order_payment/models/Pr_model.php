@@ -67,7 +67,7 @@ class Pr_model extends BF_Model
     {
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM tr_invoice_po WHERE id LIKE '%PI-" . date('Y-m-') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
-        $urutan = (int) substr($kodeBarang, 12, 5);
+        $urutan = (int) substr((string) $kodeBarang, 12, 5);
         $urutan++;
         $tahun = date('Y-m-');
         $huruf = "PI-";

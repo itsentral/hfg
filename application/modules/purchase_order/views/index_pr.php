@@ -106,7 +106,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 										<tr>
 											<td class="text-center"><?= $numb; ?></td>
 											<td class="text-center"><?= $record->no_pr ?></td>
-											<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime($record->tgl_so)) : '-'  ?></td>
+											<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime((string) $record->tgl_so)) : '-'  ?></td>
 											<td class="text-center"><?= $record->nama_user ?></td>
 											<td class="text-center"><?= $status ?></td>
 											<?php if ($ENABLE_MANAGE) : ?>
@@ -140,7 +140,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									<tr>
 										<td class="text-center"><?= $numb; ?></td>
 										<td class="text-center"><?= $record->no_pr ?></td>
-										<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime($record->tgl_so)) : '-'  ?></td>
+										<td class="text-center"><?= !empty($record->tgl_so) ? date('d-M-Y', strtotime((string) $record->tgl_so)) : '-'  ?></td>
 										<td class="text-center"><?= $record->nama_user ?></td>
 										<td class="text-center"><?= $status ?></td>
 										<?php if ($ENABLE_MANAGE) : ?>

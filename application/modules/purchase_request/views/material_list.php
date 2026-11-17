@@ -28,11 +28,11 @@
 			<td><?= $record->spec1 ?></td>
 			<td><?= $record->spec2 ?></td>
 			<td><?= $record->spec3 ?></td>
-			<td><?= number_format($stock) ?></td>
+			<td><?= number_format((float) $stock) ?></td>
 			<td><?= $record->satuan ?></td>
 			<td><?php
 			$qty_suggest=($record->spec13-$record->stock);
-			echo number_format($qty_suggest) ?></td>
+			echo number_format((float) $qty_suggest) ?></td>
 			<td><input type="text" class="form-control divide" value="<?=$qty_suggest;?>"</td>			
 		</tr>
 		<?php } 

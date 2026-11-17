@@ -97,7 +97,7 @@ $tax_on   = ($show_tax !== 'N');
         </label>
         <input type="text" name="kurs" id="input_kurs"
             class="form-control form-control-sm text-end <?= !$is_view ? 'auto_num' : '' ?>"
-            value="<?= $is_view ? number_format($d['kurs'], 2) : ($currency === 'IDR' ? '1' : '') ?>"
+            value="<?= $is_view ? number_format((float) $d['kurs'], 2) : ($currency === 'IDR' ? '1' : '') ?>"
             placeholder="<?= (!$is_view && $currency !== 'IDR') ? 'Wajib diisi' : '' ?>"
             <?= $ro ?>>
     </div>
@@ -122,7 +122,7 @@ $tax_on   = ($show_tax !== 'N');
         </label>
         <input type="text" name="invoice_date"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($d['invoice_date']) ? date('d M Y', strtotime($d['invoice_date'])) : '' ?>"
+            value="<?= !empty($d['invoice_date']) ? date('d M Y', strtotime((string) $d['invoice_date'])) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?> <?= !$is_view ? 'required' : '' ?>>
     </div>
@@ -130,7 +130,7 @@ $tax_on   = ($show_tax !== 'N');
         <label class="form-label fw-semibold">Invoice Date</label>
         <input type="text" name="invoice_date_real"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($d['invoice_date_real']) ? date('d M Y', strtotime($d['invoice_date_real'])) : '' ?>"
+            value="<?= !empty($d['invoice_date_real']) ? date('d M Y', strtotime((string) $d['invoice_date_real'])) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?>>
     </div>
@@ -155,7 +155,7 @@ $tax_on   = ($show_tax !== 'N');
         <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
         <input type="text" name="tanggal_faktur_pajak"
             class="form-control form-control-sm <?= !$is_view ? 'fp-date' : '' ?>"
-            value="<?= !empty($d['tanggal_faktur_pajak']) ? date('d M Y', strtotime($d['tanggal_faktur_pajak'])) : '' ?>"
+            value="<?= !empty($d['tanggal_faktur_pajak']) ? date('d M Y', strtotime((string) $d['tanggal_faktur_pajak'])) : '' ?>"
             placeholder="<?= !$is_view ? 'Pilih tanggal...' : '' ?>"
             <?= $ro ?>>
     </div>
@@ -261,7 +261,7 @@ $tax_on   = ($show_tax !== 'N');
 
             // ── Konstanta dari PHP ──────────────────────────────────────────
             var jumlahPoForeign = <?= (float)$jumlah_po ?>; // grand total PO dalam currency asli
-            var currency = '<?= strtoupper($currency) ?>';
+            var currency = '<?= strtoupper((string) $currency) ?>';
 
             // ── Format angka ribuan ─────────────────────────────────────────
             function formatNumber(num, decimal = 2) {

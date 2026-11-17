@@ -25,8 +25,8 @@ $ENABLE_VIEW   = has_permission('Request_Mutation.View');
                         <td><?= $i + 1 ?></td>
                         <td><strong><?= ($row['mutation_number']) ?></strong></td>
                         <td>
-                            <?= htmlspecialchars($row['create_by']) ?><br>
-                            <small><i><?= date('d/m/Y H:i', strtotime($row['create_date'])) ?></i></small>
+                            <?= htmlspecialchars((string) $row['create_by']) ?><br>
+                            <small><i><?= date('d/m/Y H:i', strtotime((string) $row['create_date'])) ?></i></small>
                         </td>
                         <td><?= ($row['nm_gudang_from']) ?></td>
                         <td><?= ($row['nm_gudang_to']) ?></td>
@@ -40,7 +40,7 @@ $ENABLE_VIEW   = has_permission('Request_Mutation.View');
                                 <div class="d-flex align-items-center gap-1">
                                     <span class="badge bg-danger">Revision</span>
                                     <a href="javascript:void(0)" class="text-info fs-6"
-                                        onclick="showRevisionReason('<?= htmlspecialchars($row['mutation_number']) ?>', '<?= isset($row['reject_reason']) ? htmlspecialchars($row['reject_reason']) : '' ?>')"
+                                        onclick="showRevisionReason('<?= htmlspecialchars((string) $row['mutation_number']) ?>', '<?= isset($row['reject_reason']) ? htmlspecialchars((string) $row['reject_reason']) : '' ?>')"
                                         title="View Revision Notes">
                                         <i class="fa-solid fa-circle-info"></i> 
                                     </a>

@@ -101,7 +101,7 @@ class Product_category extends Admin_Controller
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
-          write_log('Product Category', $label, 'Gagal ' . strtolower($label) . ' product category: ' . $code, $logPayload, null, 0);
+          write_log('Product Category', $label, 'Gagal ' . strtolower((string) $label) . ' product category: ' . $code, $logPayload, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(

@@ -122,7 +122,7 @@ if ($has_data) {
                                     <div class="text-secondary small"><?= $record->nama_perkiraan ?></div>
                                 </td>
                                 <td>
-                                    <span class="text-dark"><?= !empty($record->definisi) ? htmlspecialchars($record->definisi) : '-' ?></span>
+                                    <span class="text-dark"><?= !empty($record->definisi) ? htmlspecialchars((string) $record->definisi) : '-' ?></span>
                                 </td>
                                 <td>
                                     <?php if (!empty($record->nm_dept)) : ?>
@@ -139,7 +139,7 @@ if ($has_data) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="text-dark small"><?= !empty($record->info) ? htmlspecialchars($record->info) : '-' ?></span>
+                                    <span class="text-dark small"><?= !empty($record->info) ? htmlspecialchars((string) $record->info) : '-' ?></span>
                                 </td>
                             </tr>
                     <?php

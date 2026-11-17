@@ -1,7 +1,7 @@
 <?php
 $h = $header;
 $FORWARDING_RATE = isset($forwarding_rate) ? $forwarding_rate : 200;
-$is_lokal = (isset($loi) && strtolower($loi) === 'lokal');
+$is_lokal = (isset($loi) && strtolower((string) $loi) === 'lokal');
 
 // Hitung total others
 $total_others_val = 0;
@@ -93,7 +93,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
             </div>
             <div class="col-md-3">
                 <strong>Tgl. Billing:</strong><br>
-                <?= $h['tgl_billing'] ? date('d-m-Y', strtotime($h['tgl_billing'])) : '-' ?>
+                <?= $h['tgl_billing'] ? date('d-m-Y', strtotime((string) $h['tgl_billing'])) : '-' ?>
             </div>
             <div class="col-md-3">
                 <strong>Doc PIB:</strong><br>
@@ -108,13 +108,13 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         </div>
 
         <div class="row mb-3">
-            <div class="col-md-4"><strong>PO Value (U$):</strong> <?= number_format($h['nilai_po_usd'], 4) ?></div>
-            <div class="col-md-4"><strong>PIB Exchange Rate:</strong> <?= number_format($h['kurs_pib'], 2) ?></div>
-            <div class="col-md-4"><strong>PO PIB Value (Rp):</strong> <?= number_format($h['nilai_po_pib_rp'], 2) ?></div>
+            <div class="col-md-4"><strong>PO Value (U$):</strong> <?= number_format((float) $h['nilai_po_usd'], 4) ?></div>
+            <div class="col-md-4"><strong>PIB Exchange Rate:</strong> <?= number_format((float) $h['kurs_pib'], 2) ?></div>
+            <div class="col-md-4"><strong>PO PIB Value (Rp):</strong> <?= number_format((float) $h['nilai_po_pib_rp'], 2) ?></div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-4"><strong>Total Gross KG PIB:</strong> <?= number_format($h['total_kg_kotor_pib'], 4) ?></div>
-            <div class="col-md-4"><strong>Total Net KG PIB:</strong> <?= number_format($h['total_kg_bersih_pib'], 4) ?></div>
+            <div class="col-md-4"><strong>Total Gross KG PIB:</strong> <?= number_format((float) $h['total_kg_kotor_pib'], 4) ?></div>
+            <div class="col-md-4"><strong>Total Net KG PIB:</strong> <?= number_format((float) $h['total_kg_bersih_pib'], 4) ?></div>
         </div>
 
         <?php if (!$is_lokal) : ?>
@@ -124,35 +124,35 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                 <table class="table table-bordered table-sm">
                     <tr>
                         <td>BM</td>
-                        <td class="text-end"><?= number_format($h['cost_bm'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_bm'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>BM Kite</td>
-                        <td class="text-end"><?= number_format($h['cost_bm_kite'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_bm_kite'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>BMT</td>
-                        <td class="text-end"><?= number_format($h['cost_bmt'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_bmt'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>Excise Duty</td>
-                        <td class="text-end"><?= number_format($h['cost_cukai'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_cukai'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>PPN</td>
-                        <td class="text-end"><?= number_format($h['cost_ppn'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_ppn'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>PPnBM</td>
-                        <td class="text-end"><?= number_format($h['cost_ppnbm'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_ppnbm'], 0) ?></td>
                     </tr>
                     <tr>
                         <td>PPH Import</td>
-                        <td class="text-end"><?= number_format($h['cost_pph_import'], 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $h['cost_pph_import'], 0) ?></td>
                     </tr>
                     <tr class="table-secondary">
                         <td class="fw-bold">TOTAL</td>
-                        <td class="text-end fw-bold"><?= number_format($total_fc, 0) ?></td>
+                        <td class="text-end fw-bold"><?= number_format((float) $total_fc, 0) ?></td>
                     </tr>
                 </table>
             </div>
@@ -167,15 +167,15 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
             </div>
             <div class="col-md-3">
                 <strong>LS Cost:</strong><br>
-                <?= number_format($h['biaya_ls'], 0) ?>
+                <?= number_format((float) $h['biaya_ls'], 0) ?>
             </div>
             <div class="col-md-3">
                 <strong>PPN LS:</strong><br>
-                <?= number_format($h['ppn_ls'], 0) ?>
+                <?= number_format((float) $h['ppn_ls'], 0) ?>
             </div>
             <div class="col-md-3">
                 <strong>PPH LS:</strong><br>
-                <?= number_format($h['pph_ls'], 0) ?>
+                <?= number_format((float) $h['pph_ls'], 0) ?>
             </div>
         </div>
         <div class="row mb-3">
@@ -198,7 +198,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
             </div>
             <div class="col-md-3">
                 <strong>Insurance Value:</strong><br>
-                <?= number_format($h['insurance'], 0) ?>
+                <?= number_format((float) $h['insurance'], 0) ?>
             </div>
         </div>
 
@@ -222,14 +222,14 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                                     <td class="text-center"><?= $idx + 1 ?></td>
                                     <td><?= $ot['no_others'] ?: '-' ?></td>
                                     <td><?= $ot['keterangan'] ?></td>
-                                    <td class="text-end"><?= number_format($ot['nilai'], 0) ?></td>
+                                    <td class="text-end"><?= number_format((float) $ot['nilai'], 0) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr class="table-secondary">
                                 <td colspan="3" class="text-end fw-bold">Total</td>
-                                <td class="text-end fw-bold"><?= number_format($total_others_val, 0) ?></td>
+                                <td class="text-end fw-bold"><?= number_format((float) $total_others_val, 0) ?></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -287,33 +287,33 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                             <td class="text-center"><?= $idx + 1 ?></td>
                             <td><?= $m['nm_barang'] ?></td>
                             <td><?= $m['nm_alias'] ?></td>
-                            <td class="text-end"><?= number_format($m['kg_unit'], 4) ?></td>
-                            <td class="text-end"><?= number_format($m['unit_price_usd'], 6) ?></td>
-                            <td class="text-end"><?= number_format($m['total_value_usd'], 4) ?></td>
-                            <td class="text-end"><?= number_format($m['total_value_rp'], 0) ?></td>
-                            <td class="text-center col-bm"><?= number_format($m['bm_persen'], 0) ?>%</td>
-                            <td class="text-end col-bm"><?= number_format($m['bm_rp'], 0) ?></td>
-                            <td class="text-end col-ls"><?= number_format($m['prorate_ls'], 0) ?></td>
-                            <td class="text-end col-forwarding"><?= number_format($m['forwarding_cost'], 0) ?></td>
-                            <td class="text-end col-insurance"><?= number_format($m['prorate_insurance'], 0) ?></td>
-                            <td class="text-end col-others"><?= number_format($m['prorate_others'], 0) ?></td>
-                            <td class="text-end fw-bold"><?= number_format($m['total_nilai_inventory'], 0) ?></td>
-                            <td class="text-end fw-bold"><?= number_format($m['cost_book'], 0) ?></td>
+                            <td class="text-end"><?= number_format((float) $m['kg_unit'], 4) ?></td>
+                            <td class="text-end"><?= number_format((float) $m['unit_price_usd'], 6) ?></td>
+                            <td class="text-end"><?= number_format((float) $m['total_value_usd'], 4) ?></td>
+                            <td class="text-end"><?= number_format((float) $m['total_value_rp'], 0) ?></td>
+                            <td class="text-center col-bm"><?= number_format((float) $m['bm_persen'], 0) ?>%</td>
+                            <td class="text-end col-bm"><?= number_format((float) $m['bm_rp'], 0) ?></td>
+                            <td class="text-end col-ls"><?= number_format((float) $m['prorate_ls'], 0) ?></td>
+                            <td class="text-end col-forwarding"><?= number_format((float) $m['forwarding_cost'], 0) ?></td>
+                            <td class="text-end col-insurance"><?= number_format((float) $m['prorate_insurance'], 0) ?></td>
+                            <td class="text-end col-others"><?= number_format((float) $m['prorate_others'], 0) ?></td>
+                            <td class="text-end fw-bold"><?= number_format((float) $m['total_nilai_inventory'], 0) ?></td>
+                            <td class="text-end fw-bold"><?= number_format((float) $m['cost_book'], 0) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot>
                     <tr class="summary-row">
                         <td colspan="5" class="text-end">Total PO</td>
-                        <td class="text-end"><?= number_format($sum_usd, 4) ?></td>
-                        <td class="text-end"><?= number_format($sum_rp, 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $sum_usd, 4) ?></td>
+                        <td class="text-end"><?= number_format((float) $sum_rp, 0) ?></td>
                         <td class="col-bm"></td>
-                        <td class="text-end col-bm"><?= number_format($sum_bm, 0) ?></td>
-                        <td class="text-end col-ls"><?= number_format($sum_ls, 0) ?></td>
-                        <td class="text-end col-forwarding"><?= number_format($sum_fwd, 0) ?></td>
-                        <td class="text-end col-insurance"><?= number_format($sum_ins, 0) ?></td>
-                        <td class="text-end col-others"><?= number_format($sum_oth, 0) ?></td>
-                        <td class="text-end"><?= number_format($sum_inv, 0) ?></td>
+                        <td class="text-end col-bm"><?= number_format((float) $sum_bm, 0) ?></td>
+                        <td class="text-end col-ls"><?= number_format((float) $sum_ls, 0) ?></td>
+                        <td class="text-end col-forwarding"><?= number_format((float) $sum_fwd, 0) ?></td>
+                        <td class="text-end col-insurance"><?= number_format((float) $sum_ins, 0) ?></td>
+                        <td class="text-end col-others"><?= number_format((float) $sum_oth, 0) ?></td>
+                        <td class="text-end"><?= number_format((float) $sum_inv, 0) ?></td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -373,9 +373,9 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                                     <?php endif; ?>
                                     <td class="text-center"><?= $coil['no_coil'] ?></td>
                                     <td class="text-center"><?= $coil['kode_internal'] ?></td>
-                                    <td class="text-end"><?= number_format($coil['berat_bersih'], 2) ?></td>
-                                    <td class="text-end"><?= number_format($coil['berat_kotor'],  2) ?></td>
-                                    <td class="text-end"><?= number_format($coil['panjang'],      2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $coil['berat_bersih'], 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $coil['berat_kotor'],  2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $coil['panjang'],      2) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php $no++;
@@ -385,8 +385,8 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                         <tr class="table-secondary">
                             <td colspan="3" class="text-end fw-bold">Total Coil: <?= $total_coil_count ?></td>
                             <td colspan="2"></td>
-                            <td class="text-end fw-bold"><?= number_format($total_nw, 2) ?></td>
-                            <td class="text-end fw-bold"><?= number_format($total_gw, 2) ?></td>
+                            <td class="text-end fw-bold"><?= number_format((float) $total_nw, 2) ?></td>
+                            <td class="text-end fw-bold"><?= number_format((float) $total_gw, 2) ?></td>
                             <td></td>
                         </tr>
                     </tfoot>

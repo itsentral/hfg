@@ -189,7 +189,7 @@ class MockStorageLayer
         $id = $this->autoIncrement++;
         // Simulate VARCHAR(30) truncation behavior
         if (isset($data['target_accounting']) && is_string($data['target_accounting'])) {
-            $data['target_accounting'] = substr($data['target_accounting'], 0, $this->columnMaxLength);
+            $data['target_accounting'] = substr((string) $data['target_accounting'], 0, $this->columnMaxLength);
         }
         $this->records[$id] = $data;
         return $id;
@@ -427,7 +427,7 @@ class PersistenceRoundTripTest
     public function testVarchar30SufficientForAllValidValues(): void
     {
         foreach (self::$VALID_TARGET_ACCOUNTING as $value) {
-            $length = strlen($value);
+            $length = strlen((string) $value);
             assertTrue(
                 $length <= self::$COLUMN_MAX_LENGTH,
                 "Valid value '{$value}' (length {$length}) must fit within VARCHAR(30)"
@@ -437,10 +437,10 @@ class PersistenceRoundTripTest
             $id = $this->simulateSaveRequestMutasi($value);
             $record = $this->storageRequestMutasi->find($id);
             assertEquals(
-                strlen($value),
-                strlen($record['target_accounting']),
+                strlen((string) $value),
+                strlen((string) $record['target_accounting']),
                 "Stored value length should match original for '{$value}' " .
-                    "(expected {$length}, got " . strlen($record['target_accounting']) . ")"
+                    "(expected {$length}, got " . strlen((string) $record['target_accounting']) . ")"
             );
         }
     }
@@ -464,12 +464,12 @@ class PersistenceRoundTripTest
 
             // Verify it's NOT stored as uppercase
             assertTrue(
-                $record['target_accounting'] !== strtoupper($value),
+                $record['target_accounting'] !== strtoupper((string) $value),
                 "Value must NOT be stored as uppercase"
             );
 
             // Verify individual character case preservation
-            for ($i = 0; $i < strlen($value); $i++) {
+            for ($i = 0; $i < strlen((string) $value); $i++) {
                 assertEquals(
                     $value[$i],
                     $record['target_accounting'][$i],
@@ -498,7 +498,7 @@ class PersistenceRoundTripTest
             );
 
             // No trailing whitespace added
-            $lastChar = $record['target_accounting'][strlen($record['target_accounting']) - 1];
+            $lastChar = $record['target_accounting'][strlen((string) $record['target_accounting']) - 1];
             assertTrue(
                 $lastChar !== ' ',
                 "Stored value should not have trailing space for '{$value}'"
@@ -705,7 +705,7 @@ class PersistenceRoundTripTest
                 "Iteration {$i}: target_accounting must not be empty string after valid save"
             );
             assertTrue(
-                strlen($record['target_accounting']) > 0,
+                strlen((string) $record['target_accounting']) > 0,
                 "Iteration {$i}: target_accounting must have length > 0 after valid save"
             );
         }
@@ -780,8 +780,8 @@ class PersistenceRoundTripTest
 
             // Length equality
             assertEquals(
-                strlen($target),
-                strlen($record['target_accounting']),
+                strlen((string) $target),
+                strlen((string) $record['target_accounting']),
                 "Iteration {$i}: String length must be preserved for '{$target}'"
             );
         }

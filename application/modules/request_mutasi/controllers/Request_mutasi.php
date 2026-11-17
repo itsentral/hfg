@@ -96,7 +96,7 @@ class Request_mutasi extends Admin_Controller
         $this->db->trans_begin();
         $data = array(
             'kd_mutasi'         => $kode_mutasi,
-            'tgl_request'       => date('Y-m-d', strtotime($post['tgl_request'])),
+            'tgl_request'       => date('Y-m-d', strtotime((string) $post['tgl_request'])),
             'bank_asal'         => $dari,
             'bank_tujuan'       => $ke,
             'mata_uang'         => $post['matauang'],
@@ -195,7 +195,7 @@ class Request_mutasi extends Admin_Controller
             'kd_mutasi_aktual'  => $kode_aktual,
             'kd_mutasi_request' => $no_request,
             'tgl_request'       => $request->tgl_request,
-            'tgl_mutasi'        => date('Y-m-d', strtotime($tgl)),
+            'tgl_mutasi'        => date('Y-m-d', strtotime((string) $tgl)),
             'bank_asal'         => $dari,
             'bank_tujuan'       => $ke,
             'nama_bank_asal'    => $request->nama_bank_asal,
@@ -237,15 +237,15 @@ class Request_mutasi extends Admin_Controller
 
     private function _generate_kode_aktual($tgl)
     {
-        $prefix = 'MTR-' . date('ym', strtotime($tgl));
+        $prefix = 'MTR-' . date('ym', strtotime((string) $tgl));
 
         $row = $this->db->query(
             "SELECT MAX(kd_mutasi_aktual) AS max_id FROM tr_request_mutasi_aktual WHERE kd_mutasi_aktual LIKE ?",
             [$prefix . '%']
         )->row_array();
 
-        $next = $row && $row['max_id'] ? ((int) substr($row['max_id'], -5) + 1) : 1;
-        return $prefix . str_pad($next, 5, '0', STR_PAD_LEFT);
+        $next = $row && $row['max_id'] ? ((int) substr((string) $row['max_id'], -5) + 1) : 1;
+        return $prefix . str_pad((string) $next, 5, '0', STR_PAD_LEFT);
     }
 
     public function get_coa_by_target()
@@ -273,7 +273,7 @@ class Request_mutasi extends Admin_Controller
     private function _save_jurnal_mutasi_aktual($kode_aktual, $bank_asal, $bank_tujuan, $nilai_idr, $keterangan, $tgl, $mata_uang, $nilai_valas)
     {
         $db_name    = DBACC;
-        $tgl_jurnal = date('Y-m-d', strtotime($tgl));
+        $tgl_jurnal = date('Y-m-d', strtotime((string) $tgl));
         $Nomor_JV   = $this->Jurnal_model->get_Nomor_Jurnal_BUM('101', $tgl_jurnal, $db_name);
 
         // Header jurnal
@@ -478,7 +478,7 @@ class Request_mutasi extends Admin_Controller
         $this->db->trans_begin();
         $data = array(
             'kd_mutasi'         => $kode_mutasi,
-            'tgl_request'       => date('Y-m-d', strtotime($post['tgl_request'])),
+            'tgl_request'       => date('Y-m-d', strtotime((string) $post['tgl_request'])),
             'bank_asal'         => $dari,
             'bank_tujuan'       => $ke,
             'mata_uang'         => $post['matauang'],
@@ -653,7 +653,7 @@ class Request_mutasi extends Admin_Controller
             public function printout($kd_mutasi = '')
     {
         $this->load->helper('app');
-        $kd_mutasi = trim(urldecode($kd_mutasi));
+        $kd_mutasi = trim(urldecode((string) $kd_mutasi));
 
         $this->db->select('a.*, COALESCE(b.mata_uang, a.mata_uang) AS mata_uang, b.mata_uang AS nama_mata_uang');
         $this->db->from('tr_request_mutasi a');
@@ -672,7 +672,7 @@ class Request_mutasi extends Admin_Controller
     public function printout_mutasi($kd_mutasi_aktual = '')
     {
         $this->load->helper('app');
-        $kd_mutasi_aktual = trim(urldecode($kd_mutasi_aktual));
+        $kd_mutasi_aktual = trim(urldecode((string) $kd_mutasi_aktual));
 
         $this->db->select('a.*, COALESCE(b.mata_uang, a.mata_uang) AS mata_uang, b.mata_uang AS nama_mata_uang');
         $this->db->from('tr_request_mutasi_aktual a');
@@ -706,7 +706,7 @@ class Request_mutasi extends Admin_Controller
     public function printout_transaksi($kd_mutasi = '')
     {
         $this->load->helper('app');
-        $kd_mutasi = trim(urldecode($kd_mutasi));
+        $kd_mutasi = trim(urldecode((string) $kd_mutasi));
 
         $this->db->select('a.*, COALESCE(b.mata_uang, a.mata_uang) AS mata_uang, b.mata_uang AS nama_mata_uang');
         $this->db->from('tr_request_mutasi_admin a');
@@ -742,14 +742,14 @@ class Request_mutasi extends Admin_Controller
         $terbilang = '';
         if ($nilai > 0 && function_exists('ynz_terbilang')) {
             $terbilang = ynz_terbilang($nilai);
-            $terbilang = preg_replace('/\s+/', ' ', trim($terbilang));
+            $terbilang = preg_replace('/\s+/', ' ', trim((string) $terbilang));
         }
 
         $mata_uang = 'RUPIAH';
         if (!empty($kode)) {
             $nama_mu = $this->getMataUangByKode($kode);
             if (!empty($nama_mu)) {
-                $mata_uang = strtoupper(trim($nama_mu));
+                $mata_uang = strtoupper(trim((string) $nama_mu));
             }
         }
 
@@ -763,7 +763,7 @@ class Request_mutasi extends Admin_Controller
             return "RUPIAH";
         }
 
-        if (strtoupper($kode) === 'IDR') {
+        if (strtoupper((string) $kode) === 'IDR') {
             return "RUPIAH";
         }
 

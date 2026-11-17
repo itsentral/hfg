@@ -68,10 +68,10 @@ class Master_shift extends Admin_Controller
 			$nestedData[] = "<div class='text-center'>{$nomor}</div>";
 
 			// Nama Shift
-			$nestedData[] = "<div class='fw-semibold'>" . htmlspecialchars($row['nama_shift']) . "</div>";
+			$nestedData[] = "<div class='fw-semibold'>" . htmlspecialchars((string) $row['nama_shift']) . "</div>";
 
 			// Keterangan
-			$ket = !empty($row['keterangan']) ? htmlspecialchars($row['keterangan']) : '-';
+			$ket = !empty($row['keterangan']) ? htmlspecialchars((string) $row['keterangan']) : '-';
 			$nestedData[] = "<div>{$ket}</div>";
 
 			// Last By
@@ -80,7 +80,7 @@ class Master_shift extends Admin_Controller
 
 			// Last Date
 			$last_date = !empty($row['updated_date']) ? $row['updated_date'] : $row['created_date'];
-			$nestedData[] = "<div class='text-center text-nowrap'>" . date('d-M-Y H:i', strtotime($last_date)) . "</div>";
+			$nestedData[] = "<div class='text-center text-nowrap'>" . date('d-M-Y H:i', strtotime((string) $last_date)) . "</div>";
 
 			// Action
 			$edit   = '';

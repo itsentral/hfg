@@ -38,7 +38,7 @@ class Asset_coa_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div class='text-center " . $status . "'>" . $nomor . "</div>";
-            $nestedData[] = "<div class='text-start " . $status . "'>" . strtoupper($row['keterangan']) . "</div>";
+            $nestedData[] = "<div class='text-start " . $status . "'>" . strtoupper((string) $row['keterangan']) . "</div>";
             $nestedData[] = "<div class='text-start " . $status . "'>" . $row['coa'] . "</div>";
             $nestedData[] = "<div class='text-start " . $status . "'>" . $row['coa_kredit'] . "</div>";
 

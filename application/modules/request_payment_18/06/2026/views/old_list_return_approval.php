@@ -27,7 +27,7 @@
                         echo '<tr>';
                         echo '<td class="text-center">' . $no . '</td>';
                         echo '<td class="text-center">' . $item->no_doc . '</td>';
-                        echo '<td class="text-center">' . number_format($item->transfer_jumlah) . '</td>';
+                        echo '<td class="text-center">' . number_format((float) $item->transfer_jumlah) . '</td>';
                         echo '<td class="text-center">' . $status . '</td>';
                         echo '<td class="text-center">
                                 <button type="button" class="btn btn-sm btn-primary approval" data-id="' . $item->id . '"><i class="fa fa-check"></i></button>

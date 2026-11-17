@@ -48,7 +48,7 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 						<select name="coa[]" id="coa" class="form-control select2" multiple placeholder="COA">
 							<?php
 							$arraycoa = array();
-							if (isset($data->coa)) $arraycoa = explode(';', $data->coa);
+							if (isset($data->coa)) $arraycoa = explode(';', (string) $data->coa);
 							foreach ($datacoa as $key => $val) {
 								$selected = '';
 								if (isset($data->coa)) {

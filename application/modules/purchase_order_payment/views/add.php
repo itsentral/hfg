@@ -39,7 +39,7 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Persentase DP (%)</label>
         <input type="number" name="persen_dp" class="form-control form-control-sm persen_dp"
-            step="0.01" value="<?= number_format($get_top->progress, 2) ?>" readonly>
+            step="0.01" value="<?= number_format((float) $get_top->progress, 2) ?>" readonly>
     </div>
 
     <!-- Baris 4: DPP & Value DP -->
@@ -51,19 +51,19 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Value DP</label>
         <input type="text" name="value_dp" class="form-control form-control-sm text-end value_dp"
-            value="<?= number_format($get_top->nilai) ?>" readonly>
+            value="<?= number_format((float) $get_top->nilai) ?>" readonly>
     </div>
 
     <!-- Baris 5: Nilai PPn & Nilai Disc -->
     <div class="col-md-6">
         <label class="form-label fw-semibold">Nilai PPN</label>
         <input type="text" name="nilai_ppn" class="form-control form-control-sm text-end auto_num nilai_ppn"
-            value="<?= number_format($nilai_ppn, 2) ?>" readonly>
+            value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Nilai Disc</label>
         <input type="text" name="nilai_disc" class="form-control form-control-sm text-end auto_num nilai_disc"
-            value="<?= number_format($nilai_disc, 2) ?>" readonly>
+            value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
     </div>
 
     <!-- Baris 6: Currency & Kurs -->

@@ -1809,7 +1809,7 @@ function generateNoTransaksi()
 	$srcMtr			= "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRS" . $Ym . "%' ";
 	$resultMtr		= $CI->db->query($srcMtr)->result_array();
 	$angkaUrut2		= $resultMtr[0]['maxP'];
-	$urutan2		= (int)substr($angkaUrut2, 7, 4);
+	$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 	$urutan2++;
 	$urut2			= sprintf('%04s', $urutan2);
 	$kode_trans		= "TRS" . $Ym . $urut2;
@@ -1822,7 +1822,7 @@ function generate_no_costbook($lebih = null)
 	$CI = &get_instance();
 	$generate_id = $CI->db->query("SELECT MAX(id) AS max_id FROM tr_cost_book WHERE id LIKE '%CBO-" . date('Y-m-') . "%'")->row();
 	$kodeBarang = $generate_id->max_id;
-	$urutan = (int) substr($kodeBarang, 13, 5);
+	$urutan = (int) substr((string) $kodeBarang, 13, 5);
 	$urutan++;
 	if ($lebih !== null) {
 		$urutan++;
@@ -1839,7 +1839,7 @@ function generate_no_costbook_in_dari()
 	$CI = &get_instance();
 	$generate_id = $CI->db->query("SELECT MAX(id) AS max_id FROM tr_cost_book WHERE id LIKE '%CID-" . date('Y-m-') . "%'")->row();
 	$kodeBarang = $generate_id->max_id;
-	$urutan = (int) substr($kodeBarang, 13, 5);
+	$urutan = (int) substr((string) $kodeBarang, 13, 5);
 	$urutan++;
 	$tahun = date('Y-m-');
 	$huruf = "CID-";
@@ -1855,7 +1855,7 @@ function generateNoTransaksiStok()
 	$srcMtr			= "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRM" . $Ym . "%' ";
 	$resultMtr		= $CI->db->query($srcMtr)->result_array();
 	$angkaUrut2		= $resultMtr[0]['maxP'];
-	$urutan2		= (int)substr($angkaUrut2, 7, 4);
+	$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 	$urutan2++;
 	$urut2			= sprintf('%04s', $urutan2);
 	$kode_trans		= "TRM" . $Ym . $urut2;
@@ -1870,7 +1870,7 @@ function generateNoTransaksiLainnya()
 	$srcMtr			= "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRA" . $Ym . "%' ";
 	$resultMtr		= $CI->db->query($srcMtr)->result_array();
 	$angkaUrut2		= $resultMtr[0]['maxP'];
-	$urutan2		= (int)substr($angkaUrut2, 7, 4);
+	$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 	$urutan2++;
 	$urut2			= sprintf('%04s', $urutan2);
 	$kode_trans		= "TRA" . $Ym . $urut2;
@@ -2331,7 +2331,7 @@ function generateNoPR()
 	$qIPP       = "SELECT MAX(no_pr) as maxP FROM material_planning_base_on_produksi WHERE no_pr LIKE 'PR" . $Ym . "%' ";
 	$resultIPP  = $CI->db->query($qIPP)->result_array();
 	$angkaUrut2 = $resultIPP[0]['maxP'];
-	$urutan2    = (int)substr($angkaUrut2, 6, 5);
+	$urutan2    = (int)substr((string) $angkaUrut2, 6, 5);
 	$urutan2++;
 	$urut2      = sprintf('%05s', $urutan2);
 	$no_pr      = "PR" . $Ym . $urut2;
@@ -2722,8 +2722,8 @@ if (!function_exists('number_to_words')) {
 if (!function_exists('rupiah_to_words')) {
 	function rupiah_to_words($amount)
 	{
-		$amount = number_format($amount, 2, '.', '');
-		list($integer, $decimal) = explode('.', $amount);
+		$amount = number_format((float) $amount, 2, '.', '');
+		list($integer, $decimal) = explode('.', (string) $amount);
 
 		$words = number_to_words((int)$integer);
 		$words .= ' ';
@@ -2766,7 +2766,7 @@ function insert_jurnal_department($ArrData, $GudangFrom, $GudangTo, $kode_trans,
 		$ArrDetailNew[$key]['category']     = $category;
 		$ArrDetailNew[$key]['gudang_dari']     = $GudangFrom;
 		$ArrDetailNew[$key]['gudang_ke']     = $GudangTo;
-		$ArrDetailNew[$key]['tanggal']         = date('Y-m-d', strtotime($DATE_JURNAL));
+		$ArrDetailNew[$key]['tanggal']         = date('Y-m-d', strtotime((string) $DATE_JURNAL));
 		$ArrDetailNew[$key]['id_material']     = $value['id_barang'];
 		$ArrDetailNew[$key]['nm_material']     = $value['nm_barang'];
 		$ArrDetailNew[$key]['cost_book']     = $PRICE;
@@ -2813,7 +2813,7 @@ function get_detail_user()
 	$listGetCategory = $CI->db->get('users')->result_array();
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
-		$ArrGetCategory[strtolower($value['username'])]['nm_lengkap'] = strtolower($value['nm_lengkap']);
+		$ArrGetCategory[strtolower((string) $value['username'])]['nm_lengkap'] = strtolower((string) $value['nm_lengkap']);
 	}
 	return $ArrGetCategory;
 }

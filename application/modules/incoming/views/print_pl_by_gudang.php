@@ -269,7 +269,7 @@
     function fmt_date_g($val)
     {
         if (empty($val) || $val === '0000-00-00') return '-';
-        return date('d-M-Y', strtotime($val));
+        return date('d-M-Y', strtotime((string) $val));
     }
 
     /* ── Ambil nilai header ── */
@@ -328,12 +328,12 @@
                             <tr>
                                 <td>No. ROS</td>
                                 <td>:</td>
-                                <td><?= htmlspecialchars($no_ros) ?></td>
+                                <td><?= htmlspecialchars((string) $no_ros) ?></td>
                             </tr>
                             <tr>
                                 <td>No. PO</td>
                                 <td>:</td>
-                                <td><?= htmlspecialchars($no_surat) ?></td>
+                                <td><?= htmlspecialchars((string) $no_surat) ?></td>
                             </tr>
                         </table>
                     </div>
@@ -344,14 +344,14 @@
                             <tr>
                                 <td>Supplier</td>
                                 <td>:</td>
-                                <td><?= htmlspecialchars($nm_supplier) ?></td>
+                                <td><?= htmlspecialchars((string) $nm_supplier) ?></td>
                             </tr>
                             <tr>
                                 <td>Warehouse</td>
                                 <td>:</td>
                                 <td>
                                     <span class="badge-gudang">
-                                        <?= htmlspecialchars($nm_gudang) ?>
+                                        <?= htmlspecialchars((string) $nm_gudang) ?>
                                     </span>
                                 </td>
                             </tr>
@@ -392,7 +392,7 @@
 
                     <div style="margin-bottom: 16px;">
                         <div style="background:#eaf2f8; padding:6px 12px; border-left:4px solid #2980b9; margin-bottom:6px;">
-                            <b>Pack:</b> <span class="badge-ros"><?= htmlspecialchars($pack['pack_code']) ?></span>
+                            <b>Pack:</b> <span class="badge-ros"><?= htmlspecialchars((string) $pack['pack_code']) ?></span>
                         </div>
 
                         <table class="detail-table">
@@ -410,19 +410,19 @@
                                 <?php $no = 1; foreach ($mat_summary as $mat): ?>
                                     <tr>
                                         <td class="text-center"><?= $no++ ?></td>
-                                        <td><?= htmlspecialchars($mat['nm_material']) ?></td>
-                                        <td><?= htmlspecialchars($mat['trade_name']) ?></td>
+                                        <td><?= htmlspecialchars((string) $mat['nm_material']) ?></td>
+                                        <td><?= htmlspecialchars((string) $mat['trade_name']) ?></td>
                                         <td class="text-center"><?= $mat['coil_count'] ?></td>
-                                        <td class="text-end"><?= number_format($mat['total_gw'], 2) ?></td>
-                                        <td class="text-end"><?= number_format($mat['total_nw'], 2) ?></td>
+                                        <td class="text-end"><?= number_format((float) $mat['total_gw'], 2) ?></td>
+                                        <td class="text-end"><?= number_format((float) $mat['total_nw'], 2) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="4" class="text-end">Pack Total</td>
-                                    <td class="text-end"><?= number_format($pack_gw, 2) ?></td>
-                                    <td class="text-end"><?= number_format($pack_nw, 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $pack_gw, 2) ?></td>
+                                    <td class="text-end"><?= number_format((float) $pack_nw, 2) ?></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -431,8 +431,8 @@
 
                 <!-- ── Grand Total per Gudang ── -->
                 <div style="margin-top:12px; padding:8px 12px; background:#ecf0f1; border:1px solid #bdc3c7; font-weight:bold; font-size:13px; display:flex; justify-content:space-between;">
-                    <span>Grand Total — <?= htmlspecialchars($nm_gudang) ?></span>
-                    <span>G.W.: <?= number_format($ttl_kotor, 2) ?> Kg &nbsp;|&nbsp; N.W.: <?= number_format($ttl_bersih, 2) ?> Kg</span>
+                    <span>Grand Total — <?= htmlspecialchars((string) $nm_gudang) ?></span>
+                    <span>G.W.: <?= number_format((float) $ttl_kotor, 2) ?> Kg &nbsp;|&nbsp; N.W.: <?= number_format((float) $ttl_bersih, 2) ?> Kg</span>
                 </div>
 
                 <!-- ── Footer ── -->
@@ -456,7 +456,7 @@
 
     <?php else: ?>
         <div style="text-align:center; padding:60px; color:#999;">
-            There is no coil data that has been assigned to the warehouse for ROS <b><?= htmlspecialchars($no_ros) ?></b>.
+            There is no coil data that has been assigned to the warehouse for ROS <b><?= htmlspecialchars((string) $no_ros) ?></b>.
         </div>
     <?php endif; ?>
 

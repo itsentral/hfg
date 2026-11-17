@@ -249,7 +249,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
         <tr>
             <td class="info-label">No Pelaporan</td>
             <td class="info-separator">:</td>
-            <td><?= htmlspecialchars($pelaporan->header->no_pelaporan) ?></td>
+            <td><?= htmlspecialchars((string) $pelaporan->header->no_pelaporan) ?></td>
         </tr>
         <tr>
             <td class="info-label">Periode</td>
@@ -259,7 +259,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
         <tr>
             <td class="info-label">Company</td>
             <td class="info-separator">:</td>
-            <td><?= htmlspecialchars($pelaporan->header->company) ?></td>
+            <td><?= htmlspecialchars((string) $pelaporan->header->company) ?></td>
         </tr>
     </table>
 
@@ -281,9 +281,9 @@ $grand_total = (int) $pelaporan->header->grand_total;
                 <?php foreach ($pelaporan->pencatatan_list as $item): ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
-                        <td class="text-center"><?= htmlspecialchars($item->no_pencatatan) ?></td>
+                        <td class="text-center"><?= htmlspecialchars((string) $item->no_pencatatan) ?></td>
                         <td class="text-center"><?= format_tanggal_tabel($item->tanggal) ?></td>
-                        <td class="text-left"><?= htmlspecialchars($item->request_by) ?></td>
+                        <td class="text-left"><?= htmlspecialchars((string) $item->request_by) ?></td>
                         <td class="text-left"><?= htmlspecialchars($item->keterangan ?: '-') ?></td>
                         <td class="text-right"><?= number_format((int) $item->grand_total, 0, ',', '.') ?></td>
                     </tr>
@@ -297,7 +297,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
         <tfoot>
             <tr class="total-row">
                 <td colspan="5" class="text-right" style="padding-right: 10px;">Grand Total</td>
-                <td class="text-right"><?= number_format($grand_total, 0, ',', '.') ?></td>
+                <td class="text-right"><?= number_format((float) $grand_total, 0, ',', '.') ?></td>
             </tr>
         </tfoot>
     </table>
@@ -340,7 +340,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
             <?php if (!empty($item->evidence_files)): ?>
                 <div style="margin-bottom: 20px;">
                     <p style="font-weight: bold; font-size: 11px; margin-bottom: 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
-                        <?= htmlspecialchars($item->no_pencatatan) ?> — <?= format_tanggal_tabel($item->tanggal) ?>
+                        <?= htmlspecialchars((string) $item->no_pencatatan) ?> — <?= format_tanggal_tabel($item->tanggal) ?>
                     </p>
                     <?php foreach ($item->evidence_files as $file): ?>
                         <?php
@@ -350,10 +350,10 @@ $grand_total = (int) $pelaporan->header->grand_total;
                         ?>
                         <div class="evidence-item" style="margin-bottom: 15px;">
                             <p style="font-size: 10px; color: #555; margin-bottom: 5px;">
-                                <strong><?= htmlspecialchars($file->original_name) ?></strong>
+                                <strong><?= htmlspecialchars((string) $file->original_name) ?></strong>
                             </p>
                             <?php if ($is_image): ?>
-                                <img src="<?= $file_url ?>" alt="<?= htmlspecialchars($file->original_name) ?>">
+                                <img src="<?= $file_url ?>" alt="<?= htmlspecialchars((string) $file->original_name) ?>">
                             <?php elseif ($is_pdf): ?>
                                 <div class="pdf-pages-container" id="pdf-container-<?= $file->id ?>"></div>
                                 <script>
@@ -369,7 +369,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
                                 </script>
                             <?php else: ?>
                                 <a href="<?= $file_url ?>" target="_blank" style="font-size: 10px; color: #337ab7; text-decoration: underline;">
-                                    📎 <?= htmlspecialchars($file->original_name) ?> (Download)
+                                    📎 <?= htmlspecialchars((string) $file->original_name) ?> (Download)
                                 </a>
                             <?php endif; ?>
                         </div>

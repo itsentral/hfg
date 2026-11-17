@@ -11,7 +11,7 @@
                 <select id="filter-supplier" class="form-select">
                     <option value="">-- Semua Supplier --</option>
                     <?php foreach ($supplier_list as $sup): ?>
-                        <option value="<?= $sup->id_supplier ?>"><?= htmlspecialchars($sup->nm_supplier) ?></option>
+                        <option value="<?= $sup->id_supplier ?>"><?= htmlspecialchars((string) $sup->nm_supplier) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

@@ -19,40 +19,40 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Receive Invoice Date</label>
         <input type="text" class="form-control form-control-sm"
-            value="<?= date('d F Y', strtotime($data['invoice_date'])) ?>" readonly>
+            value="<?= date('d F Y', strtotime((string) $data['invoice_date'])) ?>" readonly>
     </div>
 
     <div class="col-md-6">
         <label class="form-label fw-semibold">Invoice Date</label>
         <input type="text" class="form-control form-control-sm"
-            value="<?= !empty($data['invoice_date_real']) ? date('d F Y', strtotime($data['invoice_date_real'])) : '-' ?>" readonly>
+            value="<?= !empty($data['invoice_date_real']) ? date('d F Y', strtotime((string) $data['invoice_date_real'])) : '-' ?>" readonly>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Persentase DP (%)</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['persen_dp'], 2) ?>" readonly>
+            value="<?= number_format((float) $data['persen_dp'], 2) ?>" readonly>
     </div>
 
     <div class="col-md-6">
         <label class="form-label fw-semibold">DPP</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['dpp'], 4) ?>" readonly>
+            value="<?= number_format((float) $data['dpp'], 4) ?>" readonly>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Value DP</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['value_dp'], 4) ?>" readonly>
+            value="<?= number_format((float) $data['value_dp'], 4) ?>" readonly>
     </div>
 
     <div class="col-md-6">
         <label class="form-label fw-semibold">Nilai PPN</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['nilai_ppn'], 2) ?>" readonly>
+            value="<?= number_format((float) $data['nilai_ppn'], 2) ?>" readonly>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Nilai Disc</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['nilai_disc'], 2) ?>" readonly>
+            value="<?= number_format((float) $data['nilai_disc'], 2) ?>" readonly>
     </div>
 
     <div class="col-md-6">
@@ -63,7 +63,7 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Kurs</label>
         <input type="text" class="form-control form-control-sm text-end"
-            value="<?= number_format($data['kurs'], 2) ?>" readonly>
+            value="<?= number_format((float) $data['kurs'], 2) ?>" readonly>
     </div>
 
     <div class="col-md-6">
@@ -74,7 +74,7 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
         <input type="text" class="form-control form-control-sm"
-            value="<?= !empty($data['tanggal_faktur_pajak']) ? date('d F Y', strtotime($data['tanggal_faktur_pajak'])) : '-' ?>" readonly>
+            value="<?= !empty($data['tanggal_faktur_pajak']) ? date('d F Y', strtotime((string) $data['tanggal_faktur_pajak'])) : '-' ?>" readonly>
     </div>
 
     <?php if (!empty($data['file_invoice'])): ?>

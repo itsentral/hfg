@@ -29,7 +29,7 @@ $status_label = [
                     <tr>
                         <td><?= $i + 1 ?></td>
                         <td><strong><?= ($row['mutation_number']) ?></strong></td>
-                        <td><?= date('d/m/Y', strtotime($row['mutation_date'])) ?></td>
+                        <td><?= date('d/m/Y', strtotime((string) $row['mutation_date'])) ?></td>
                         <td><?= ($row['nm_gudang_from']) ?></td>
                         <td><?= ($row['nm_gudang_to']) ?></td>
                         <td><?= ($row['description'] ?? '-') ?></td>

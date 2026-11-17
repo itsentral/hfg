@@ -362,9 +362,9 @@ class Cabang extends Admin_Controller {
         $no = 1;
         $counter = 4;
         foreach ($data as $row):
-            $tanggallahir = date('d-m-Y',strtotime($row->tanggallahir));
+            $tanggallahir = date('d-m-Y',strtotime((string) $row->tanggallahir));
             $ex->setCellValue('A'.$counter, $no++);
-            $ex->setCellValue('B'.$counter, strtoupper($row->nama_mitra));
+            $ex->setCellValue('B'.$counter, strtoupper((string) $row->nama_mitra));
             $ex->setCellValue('C'.$counter, $row->nim);
             $ex->setCellValue('D'.$counter, $row->tempatlahir);
             $ex->setCellValue('E'.$counter, $tanggallahir);

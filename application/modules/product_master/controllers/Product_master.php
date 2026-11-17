@@ -99,12 +99,12 @@ class Product_master extends Admin_Controller
 
       $nestedData   = array();
       $nestedData[]  = "<div align='left'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['code_lv4']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($product_type) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($product_category) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($product_jenis) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nama']) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['code']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['code_lv4']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $product_type) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $product_category) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $product_jenis) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['code']) . "</div>";
 
       if ($row['status'] == '1') {
         $Label = "<label class='label label-success'>Aktif</label>";
@@ -346,7 +346,7 @@ class Product_master extends Admin_Controller
           'pesan'  => 'Failed process data!',
           'status' => 0,
         ];
-        write_log('Product Master', $label, 'Gagal ' . strtolower($label) . ' product master: ' . $code_lv4, $logPayload, null, 0);
+        write_log('Product Master', $label, 'Gagal ' . strtolower((string) $label) . ' product master: ' . $code_lv4, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $result = [
@@ -436,7 +436,7 @@ class Product_master extends Admin_Controller
       $option  = "<option value='0'>Select Product Category</option>";
       foreach ($result[$code_lv1] as $val => $valx) {
         $sel = ($id == $valx['code_lv2']) ? 'selected' : '';
-        $option .= "<option value='" . $valx['code_lv2'] . "' " . $sel . ">" . strtoupper($valx['nama']) . "</option>";
+        $option .= "<option value='" . $valx['code_lv2'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";
       }
     } else {
       $option  = "<option value='0'>List Not Found</option>";
@@ -459,7 +459,7 @@ class Product_master extends Admin_Controller
       $option  = "<option value='0'>Select Product Jenis</option>";
       foreach ($result[$code_lv1][$code_lv2] as $val => $valx) {
         $sel = ($id == $valx['code_lv3']) ? 'selected' : '';
-        $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper($valx['nama']) . "</option>";
+        $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";
       }
     } else {
       $option  = "<option value='0'>List Not Found</option>";

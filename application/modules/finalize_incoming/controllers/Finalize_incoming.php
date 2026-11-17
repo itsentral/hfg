@@ -125,7 +125,7 @@ class Finalize_incoming extends Admin_Controller
                 $row['id'],
                 $no_po_display,
                 $row['nm_supplier'],
-                "<div class='text-center'>" . ($row['submitted_date'] ? date('d/m/Y H:i', strtotime($row['submitted_date'])) : '-') . "</div>",
+                "<div class='text-center'>" . ($row['submitted_date'] ? date('d/m/Y H:i', strtotime((string) $row['submitted_date'])) : '-') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars($row['submitted_by_name'] ?? '-') . "</div>",
                 "<div class='text-center'><span class='badge rounded-pill bg-info text-dark'>Submitted</span></div>",
                 "<div class='text-center'>{$aksi}</div>",
@@ -237,7 +237,7 @@ class Finalize_incoming extends Admin_Controller
                 $row['id_ros'],
                 $row['no_po_display'],
                 $row['nm_supplier'] ?? '-',
-                "<div class='text-center'>" . ($row['tgl_finalize'] ? date('d/m/Y', strtotime($row['tgl_finalize'])) : '-') . "</div>",
+                "<div class='text-center'>" . ($row['tgl_finalize'] ? date('d/m/Y', strtotime((string) $row['tgl_finalize'])) : '-') . "</div>",
                 $row['kode_incoming'],
                 "<div class='text-center'>{$sts_badge}</div>",
                 "<div class='text-center'>{$aksi}</div>",
@@ -1040,7 +1040,7 @@ class Finalize_incoming extends Admin_Controller
             'ket'             => 'QC Incoming Coil Check'
                 . ' (Coil: ' . $no_coil
                 . ', PO: '   . $no_po
-                . ', Kurs: ' . number_format($kurs_pib, 0, ',', '.') . ')',
+                . ', Kurs: ' . number_format((float) $kurs_pib, 0, ',', '.') . ')',
             'no_coil'         => $no_coil,
             'harga_beli'      => $price_unit_idr,       // hapus (int) round()
             'total_harga'     => $nilai_baru,            // hapus (int) round()
@@ -1193,7 +1193,7 @@ class Finalize_incoming extends Admin_Controller
         }
 
         // Decode QC data dari modal finalize
-        $qc_data = json_decode($qc_json, true);
+        $qc_data = json_decode((string) $qc_json, true);
         $qc_map  = [];
         if (!empty($qc_data) && is_array($qc_data)) {
             foreach ($qc_data as $qc) {
@@ -1292,7 +1292,7 @@ class Finalize_incoming extends Admin_Controller
 
         // Validasi template jurnal — harus sudah dikonfigurasi sebelum proses
         $po_row   = $this->db->get_where('tr_purchase_order', ['no_po' => $ros_header->no_po])->row();
-        $is_lokal = ($po_row && strtolower($po_row->loi) === 'lokal');
+        $is_lokal = ($po_row && strtolower((string) $po_row->loi) === 'lokal');
         $action_key = $is_lokal ? 'finalize_lokal' : 'finalize_import';
         $tipe_label = $is_lokal ? 'Lokal' : 'Import';
 
@@ -1429,7 +1429,7 @@ class Finalize_incoming extends Admin_Controller
                 'total_nilai_inventory'  => (float) $c['total_nilai_inventory'],
             ];
             if (!empty($c['id_ros_pack'])) {
-                $pack_gudang_map[$c['id_ros_pack']] = strtoupper(trim($c['kd_gudang_ke']));
+                $pack_gudang_map[$c['id_ros_pack']] = strtoupper(trim((string) $c['kd_gudang_ke']));
             }
 
             // Insert warehouse_pack (sekali per pack_code unik)
@@ -1479,7 +1479,7 @@ class Finalize_incoming extends Admin_Controller
                     ? (float) $c['po_hargasatuan']
                     : (float) ($c['unit_price_usd'] ?? 0);
 
-                $mata_uang = !empty($po_row->matauang) ? strtoupper(trim($po_row->matauang)) : 'USD';
+                $mata_uang = !empty($po_row->matauang) ? strtoupper(trim((string) $po_row->matauang)) : 'USD';
                 $kurs_val  = 1.0000;
                 if ($mata_uang !== 'IDR') {
                     $kurs_val = (float) ($ros_header->kurs_pib ?? 0);
@@ -1498,7 +1498,7 @@ class Finalize_incoming extends Admin_Controller
                     'price_unit'        => $price_unit,
                     'mata_uang'         => $mata_uang,
                     'kurs'              => $kurs_val,
-                    'period_month'      => (string) (int) date('n', strtotime($tanggal)),
+                    'period_month'      => (string) (int) date('n', strtotime((string) $tanggal)),
                     'created_at'        => date('Y-m-d H:i:s'),
                     'created_by'        => $this->auth->user_id(),
                 ]);
@@ -1835,7 +1835,7 @@ class Finalize_incoming extends Admin_Controller
             $value_inc_sli = 0;
             foreach ($details as $d) {
                 if ($d['status_qc'] !== 'OK') continue;
-                $kd = strtoupper(trim($d['kd_gudang_ke']));
+                $kd = strtoupper(trim((string) $d['kd_gudang_ke']));
                 if ($kd === 'SLI') {
                     $value_inc_sli += (float) $d['price_per_coil'];
                 } else {
@@ -1861,7 +1861,7 @@ class Finalize_incoming extends Admin_Controller
 
         // Tentukan tipe PO: Lokal atau Import
         $po_row   = $this->db->get_where('tr_purchase_order', ['no_po' => $no_po])->row();
-        $is_lokal = ($po_row && strtolower($po_row->loi) === 'lokal');
+        $is_lokal = ($po_row && strtolower((string) $po_row->loi) === 'lokal');
 
         $action_key = $is_lokal ? 'finalize_lokal' : 'finalize_import';
         $mapping = $this->db->get_where('ms_jurnal_mapping', [

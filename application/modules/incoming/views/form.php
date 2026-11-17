@@ -71,7 +71,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                         <div class="col-md-8">
                             <?php if (!empty($file_incoming_material)): ?>
                                 <div class="d-flex flex-column gap-1 pt-2">
-                                    <?php foreach (explode('|', $file_incoming_material) as $f):
+                                    <?php foreach (explode('|', (string) $file_incoming_material) as $f):
                                         if (file_exists($f)): ?>
                                             <a href="<?= base_url($f) ?>" target="_blank">
                                                 <i class="fa fa-download"></i> <?= basename($f) ?>
@@ -209,7 +209,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 <div class="col-md-4"><label class="col-form-label">No. PO</label></div>
                                 <div class="col-md-8">
                                     <p class="form-control-plaintext fw-semibold" id="no-po-display">
-                                        <?= htmlspecialchars($no_po_display) ?>
+                                        <?= htmlspecialchars((string) $no_po_display) ?>
                                     </p>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 <div class="col-md-4"><label class="col-form-label">No. ROS</label></div>
                                 <div class="col-md-8">
                                     <p class="form-control-plaintext fw-semibold">
-                                        <?= htmlspecialchars($no_ros_display) ?>
+                                        <?= htmlspecialchars((string) $no_ros_display) ?>
                                     </p>
                                 </div>
                             </div>
@@ -229,7 +229,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 <div class="col-md-4"><label class="col-form-label">Incoming Date</label></div>
                                 <div class="col-md-8">
                                     <input type="text" name="tanggal" id="tgl-incoming" class="form-control"
-                                        value="<?= htmlspecialchars($tgl_default) ?>" placeholder="Select date" autocomplete="off" readonly>
+                                        value="<?= htmlspecialchars((string) $tgl_default) ?>" placeholder="Select date" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="form-group row mb-3">
@@ -245,7 +245,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                             <div class="d-flex align-items-center gap-2 mb-1">
                                                 <i class="fa fa-file-alt text-primary"></i>
                                                 <a href="<?= base_url($existing_hash) ?>" target="_blank" class="small">
-                                                    <?= htmlspecialchars($existing_original) ?>
+                                                    <?= htmlspecialchars((string) $existing_original) ?>
                                                 </a>
                                                 <span class="badge bg-secondary">Saved</span>
                                             </div>
@@ -268,8 +268,8 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                             </button>
                                         </div>
 
-                                        <input type="hidden" name="existing_file_original" value="<?= htmlspecialchars($existing_original) ?>">
-                                        <input type="hidden" name="existing_file_hash" value="<?= htmlspecialchars($existing_hash) ?>">
+                                        <input type="hidden" name="existing_file_original" value="<?= htmlspecialchars((string) $existing_original) ?>">
+                                        <input type="hidden" name="existing_file_hash" value="<?= htmlspecialchars((string) $existing_hash) ?>">
                                         <small class="text-muted">Allowed: PDF/JPG/PNG. Max 2MB.</small>
                                     </div>
                                 </div>
@@ -288,9 +288,9 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                     <input class="form-check-input check-all-gudang" type="checkbox"
                                         id="checkall-gudang-<?= $gd['id'] ?>"
                                         data-gudang-id="<?= $gd['id'] ?>"
-                                        data-gudang-kd="<?= htmlspecialchars($gd['kd_gudang']) ?>">
+                                        data-gudang-kd="<?= htmlspecialchars((string) $gd['kd_gudang']) ?>">
                                     <label class="form-check-label" for="checkall-gudang-<?= $gd['id'] ?>">
-                                        <?= htmlspecialchars($gd['nm_gudang']) ?> (<?= htmlspecialchars($gd['kd_gudang']) ?>)
+                                        <?= htmlspecialchars((string) $gd['nm_gudang']) ?> (<?= htmlspecialchars((string) $gd['kd_gudang']) ?>)
                                     </label>
                                 </div>
                             <?php endforeach; ?>
@@ -318,7 +318,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                     <th class="text-center" style="vertical-align:middle;" width="5%">Detail</th>
                                     <?php foreach ($list_gudang as $gd): ?>
                                         <th class="text-center" style="vertical-align:middle; background-color:#c8e6c9 !important; color:#000;" width="10%">
-                                            <?= htmlspecialchars($gd['nm_gudang']) ?><br><small>(<?= htmlspecialchars($gd['kd_gudang']) ?>)</small>
+                                            <?= htmlspecialchars((string) $gd['nm_gudang']) ?><br><small>(<?= htmlspecialchars((string) $gd['kd_gudang']) ?>)</small>
                                         </th>
                                     <?php endforeach; ?>
                                 </tr>
@@ -553,7 +553,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
 
             /* ── Auto-load coil saat halaman dibuka ── */
             <?php if (!empty($no_ros_default) && !empty($ros_data)): ?>
-                loadCoilTable('<?= addslashes($ros_data->id) ?>');
+                loadCoilTable('<?= addslashes((string) $ros_data->id) ?>');
             <?php endif; ?>
 
             /* ── Checkbox gudang: hanya boleh pilih 1 per pack (mutual exclusive) ── */

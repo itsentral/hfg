@@ -36,8 +36,8 @@ $nmuser = (!empty($data_pr->nm_pic)) ? $data_pr->nm_pic : '';
         </tr>
         <tr>
             <td nowrap colspan=2>No Dokumen : <?= $data_pr->no_non_po ?></td>
-            <td nowrap colspan=2>Total : <?= number_format($data_pr->total_pr) ?></td>
-            <td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime($v_req_payment->tanggal)) ?></td>
+            <td nowrap colspan=2>Total : <?= number_format((float) $data_pr->total_pr) ?></td>
+            <td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime((string) $v_req_payment->tanggal)) ?></td>
         </tr>
         <tr>
             <th colspan=6><br /></th>
@@ -86,7 +86,7 @@ $nmuser = (!empty($data_pr->nm_pic)) ? $data_pr->nm_pic : '';
     if (isset($doc_pr)) {
         //	echo '<div class="pagebreak"> </div>';
         if ($doc_pr->doc_file != '') {
-            if (strpos($doc_pr->doc_file, 'pdf', 0) > 1) {
+            if (strpos((string) $doc_pr->doc_file, 'pdf', 0) > 1) {
                 echo '<div class="col-md-12">
 			<iframe src="' . base_url($doc_pr->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 					 <a href="' . base_url($doc_pr->doc_file) . '">Download PDF</a>

@@ -35,7 +35,7 @@ $ENABLE_DELETE  = has_permission('Master_Department.Delete');
 						foreach ($result as $record) : $numb++; ?>
 							<tr>
 								<td><?= $numb; ?></td>
-								<td><?= strtoupper($record->nama) ?></td>
+								<td><?= strtoupper((string) $record->nama) ?></td>
 								<td>
 									<label class="toggle-switch">
 										<input type="checkbox"

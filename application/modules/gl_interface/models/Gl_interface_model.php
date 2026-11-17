@@ -48,7 +48,7 @@ class Gl_interface_model extends CI_Model
                 ->row();
             $row['total_debet']  = $totals ? (float) $totals->total_debet : 0;
             $row['total_kredit'] = $totals ? (float) $totals->total_kredit : 0;
-            $row['memo_decoded'] = !empty($row['memo']) ? json_decode($row['memo'], true) : [];
+            $row['memo_decoded'] = !empty($row['memo']) ? json_decode((string) $row['memo'], true) : [];
         }
         unset($row);
 
@@ -130,8 +130,8 @@ class Gl_interface_model extends CI_Model
         $this->db->insert('gl_interface', [
             'nomor'           => $nomor_jv,
             'tgl'             => $tgl_now,
-            'bulan'           => date('m', strtotime($tgl_now)),
-            'tahun'           => date('Y', strtotime($tgl_now)),
+            'bulan'           => date('m', strtotime((string) $tgl_now)),
+            'tahun'           => date('Y', strtotime((string) $tgl_now)),
             'kdcab'           => '101',
             'jenis'           => $header->tipe,
             'keterangan'      => $header->keterangan_header,
@@ -209,7 +209,7 @@ class Gl_interface_model extends CI_Model
 
         if (!isset($map[$tipe])) {
             log_message('error', "_generate_nomor_jv_generic: tipe '$tipe' tidak dikenali");
-            return '101-A' . strtoupper($tipe) . date('ym') . '0001';
+            return '101-A' . strtoupper((string) $tipe) . date('ym') . '0001';
         }
 
         $prefix        = $map[$tipe]['prefix'];

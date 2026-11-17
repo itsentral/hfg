@@ -64,9 +64,9 @@ class Accessories extends Admin_Controller
       $id_category  = $data['id_category'];
       $id_stock     = $data['id_stock'];
       $stock_name   = $data['stock_name'];
-      $trade_name   = trim(strtoupper($data['trade_name']));
-      $brand        = trim(strtolower($data['brand']));
-      $spec         = trim(strtolower($data['spec']));
+      $trade_name   = trim(strtoupper((string) $data['trade_name']));
+      $brand        = trim(strtolower((string) $data['brand']));
+      $spec         = trim(strtolower((string) $data['spec']));
       $id_unit_gudang = $data['id_unit_gudang'];
       $konversi         = str_replace(',', '', $data['konversi']);
       $id_unit          = $data['id_unit'];

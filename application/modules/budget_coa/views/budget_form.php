@@ -123,16 +123,16 @@ if (!empty($data)) {
                                     ?>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control form-control-sm" id="definisi_<?= $i ?>" name="definisi[]" value="<?= (isset($record->definisi) ? htmlspecialchars($record->definisi) : '') ?>" placeholder="Definisi anggaran">
+                                    <input type="text" class="form-control form-control-sm" id="definisi_<?= $i ?>" name="definisi[]" value="<?= (isset($record->definisi) ? htmlspecialchars((string) $record->definisi) : '') ?>" placeholder="Definisi anggaran">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control form-control-sm" id="info_<?= $i ?>" name="info[]" value="<?= (isset($record->info) ? htmlspecialchars($record->info) : '') ?>" placeholder="Formulasi budget">
+                                    <input type="text" class="form-control form-control-sm" id="info_<?= $i ?>" name="info[]" value="<?= (isset($record->info) ? htmlspecialchars((string) $record->info) : '') ?>" placeholder="Formulasi budget">
                                 </td>
                                 <td>
                                     <input type="hidden" id="finance_bulan<?= $i ?>" name="finance_bulan[]" value="<?= (isset($record->finance_bulan) ? $record->finance_bulan : 0) ?>">
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text bg-light">Rp</span>
-                                        <input type="text" class="form-control form-control-sm text-end fw-semibold font-monospace divide" id="finance_tahun<?= $i ?>" name="finance_tahun[]" value="<?= (isset($record->finance_tahun) ? number_format($record->finance_tahun, 0, ',', '.') : 0) ?>" placeholder="0">
+                                        <input type="text" class="form-control form-control-sm text-end fw-semibold font-monospace divide" id="finance_tahun<?= $i ?>" name="finance_tahun[]" value="<?= (isset($record->finance_tahun) ? number_format((float) $record->finance_tahun, 0, ',', '.') : 0) ?>" placeholder="0">
                                     </div>
                                 </td>
                             </tr>

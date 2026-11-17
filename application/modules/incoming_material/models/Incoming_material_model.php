@@ -99,9 +99,9 @@ class Incoming_material_model extends BF_Model
             $nestedData[]    = "<div>" . $no_surat . " | " . $row['kode_trans'] . "</div>";
             $nestedData[]    = "<div>" . $no_pr . "</div>";
             $nestedData[]    = "<div>" . $row['nama_supplier'] . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['sum_material'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['sum_material'], 2) . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
-            $nestedData[]    = "<div align='left'>" . date('d-M-Y', strtotime($row['incoming_date'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . date('d-M-Y', strtotime((string) $row['incoming_date'])) . "</div>";
             $plus    = "";
 
             $print    = "&nbsp;<a href='" . base_url('warehouse/print_incoming/' . $row['no_po']) . "' target='_blank' class='btn btn-sm btn-warning' title='Print Incoming'><i class='fa fa-print'></i></a>";
@@ -218,7 +218,7 @@ class Incoming_material_model extends BF_Model
         $get_no_surat = $this->db
             ->select('no_surat')
             ->from('tr_purchase_order')
-            ->where_in('no_po', explode(',', $get_file_incoming->no_ipp))
+            ->where_in('no_po', explode(',', (string) $get_file_incoming->no_ipp))
             ->get()
             ->result();
 
@@ -236,7 +236,7 @@ class Incoming_material_model extends BF_Model
             'no_surat' => $no_surat,
             // 'qty_spk'     => $result_header[0]->qty_spk,
             // 'no_ros'     => $result_header[0]->no_ros,
-            'tanggal'     => date('d F Y', strtotime($result[0]['tgl_incoming'])),
+            'tanggal'     => date('d F Y', strtotime((string) $result[0]['tgl_incoming'])),
             // 'id_milik'     => get_name('materialion_detail', 'id_milik', 'no_spk', $result_header[0]->no_spk),
             // 'dated'     => date('ymdhis', strtotime($result_header[0]->created_date)),
             // 'resv'         => date('d F Y', strtotime($result_header[0]->created_date)),

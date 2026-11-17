@@ -93,7 +93,7 @@ class Expense extends Admin_Controller
 		foreach ($get_detail_pr_stok_material as $item) {
 			$list_pr_non_po[] = [
 				'no_pr' => $item['no_pr'],
-				'keterangan' => strtoupper($item['category'])
+				'keterangan' => strtoupper((string) $item['category'])
 			];
 		}
 
@@ -122,7 +122,7 @@ class Expense extends Admin_Controller
 		foreach ($get_pr_asset as $item) {
 			$list_pr_non_po[] = [
 				'no_pr' => $item['no_pr'],
-				'keterangan' => strtoupper($item['nama_asset'])
+				'keterangan' => strtoupper((string) $item['nama_asset'])
 			];
 		}
 
@@ -254,7 +254,7 @@ class Expense extends Admin_Controller
 
 		if ($id !== "") {
 			$data = array(
-				'tgl_doc' => date('Y-m-d', strtotime($tgl_doc)),
+				'tgl_doc' => date('Y-m-d', strtotime((string) $tgl_doc)),
 				'departement' => $departement,
 				'keperluan' => $keperluan,
 				'project' => $project,
@@ -462,7 +462,7 @@ class Expense extends Admin_Controller
 			$no_doc = $this->All_model->GetAutoGenerate('format_kasbon');
 			$data =  array(
 				'no_doc' => $no_doc,
-				'tgl_doc' => date('Y-m-d', strtotime($tgl_doc)),
+				'tgl_doc' => date('Y-m-d', strtotime((string) $tgl_doc)),
 				'departement' => $departement,
 				'keperluan' => $keperluan,
 				'keterangan' => $keterangan,
@@ -1093,7 +1093,7 @@ class Expense extends Admin_Controller
 		$data_pc 		= $this->All_model->GetPettyCashCombo();
 		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
 		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
-		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
+		$coa_array 		= !empty($coa_field) ? explode(';', (string) $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		$this->template->set('data_pc', $data_pc);
@@ -1123,7 +1123,7 @@ class Expense extends Admin_Controller
 		$data_pc 		= $this->All_model->GetPettyCashCombo();
 		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
 		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
-		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
+		$coa_array 		= !empty($coa_field) ? explode(';', (string) $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		$kasbon = null;
@@ -1195,16 +1195,16 @@ class Expense extends Admin_Controller
 				$total_debit += $nom;
 
 				$acc_name = isset($all_coa[$coa_val]) ? $all_coa[$coa_val] : $coa_val;
-				$nm_parts = explode(' - ', $acc_name, 2);
+				$nm_parts = explode(' - ', (string) $acc_name, 2);
 				$clean_acc_name = isset($nm_parts[1]) ? $nm_parts[1] : $acc_name;
 
 				$html .= '<tr>';
-				$html .= '<td class="text-center">' . htmlspecialchars($tgl) . '</td>';
-				$html .= '<td class="text-center fw-semibold text-primary">' . htmlspecialchars($coa_val) . '</td>';
+				$html .= '<td class="text-center">' . htmlspecialchars((string) $tgl) . '</td>';
+				$html .= '<td class="text-center fw-semibold text-primary">' . htmlspecialchars((string) $coa_val) . '</td>';
 				$html .= '<td class="text-center text-muted">' . htmlspecialchars(get_company_code()) . '</td>';
-				$html .= '<td>' . htmlspecialchars($clean_acc_name) . '</td>';
-				$html .= '<td>' . htmlspecialchars($desk) . '</td>';
-				$html .= '<td class="text-end font-monospace fw-bold text-success">' . number_format($nom, 0, ',', '.') . '</td>';
+				$html .= '<td>' . htmlspecialchars((string) $clean_acc_name) . '</td>';
+				$html .= '<td>' . htmlspecialchars((string) $desk) . '</td>';
+				$html .= '<td class="text-end font-monospace fw-bold text-success">' . number_format((float) $nom, 0, ',', '.') . '</td>';
 				$html .= '</tr>';
 			}
 		}
@@ -1216,8 +1216,8 @@ class Expense extends Admin_Controller
 		echo json_encode([
 			'status' => 1,
 			'hasil' => $html,
-			'ttl_debit' => number_format($total_debit, 0, ',', '.'),
-			'ttl_kredit' => number_format($total_debit, 0, ',', '.')
+			'ttl_debit' => number_format((float) $total_debit, 0, ',', '.'),
+			'ttl_kredit' => number_format((float) $total_debit, 0, ',', '.')
 		]);
 	}
 
@@ -1230,7 +1230,7 @@ class Expense extends Admin_Controller
 		$data_pc 		= $this->All_model->GetPettyCashCombo();
 		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
 		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
-		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
+		$coa_array 		= !empty($coa_field) ? explode(';', (string) $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		$this->template->set('option_coa', $option_coa);
@@ -1262,7 +1262,7 @@ class Expense extends Admin_Controller
 		$get_exp_kasbon = $this->db->select('id_kasbon')->get_where('tr_expense_detail', ['no_doc' => $data->no_doc, 'id_kasbon <>' => ''])->result_array();
 		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
 		$coa_field 		= !empty($data_coa) ? $data_coa->coa : '';
-		$coa_array 		= explode(';', $coa_field);
+		$coa_array 		= explode(';', (string) $coa_field);
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 
 		// Nama Departemen
@@ -1387,7 +1387,7 @@ class Expense extends Admin_Controller
 		$get_exp_kasbon = $this->db->select('id_kasbon')->get_where('tr_expense_detail', ['no_doc' => $data->no_doc, 'id_kasbon <>' => ''])->result_array();
 		$data_coa 		= $this->Expense_model->GetDataWithJenis('Expense');
 		$coa_field 		= !empty($data_coa) && !empty($data_coa->coa) ? $data_coa->coa : '';
-		$coa_array 		= !empty($coa_field) ? explode(';', $coa_field) : [];
+		$coa_array 		= !empty($coa_field) ? explode(';', (string) $coa_field) : [];
 		$option_coa 	= $this->All_model->GetListCoa($coa_array);
 		$this->template->set('option_coa', $option_coa);
 		$this->template->set('data_budget', $data_budget);
@@ -1625,7 +1625,7 @@ class Expense extends Admin_Controller
 									'harga' => $harga[$keys],
 									'total_harga' => ($qty[$keys] * $harga[$keys]),
 									'expense' => $expense[$keys],
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1647,7 +1647,7 @@ class Expense extends Admin_Controller
 									'harga' => $harga[$keys],
 									'total_harga' => ($qty[$keys] * $harga[$keys]),
 									'expense' => $expense[$keys],
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1662,7 +1662,7 @@ class Expense extends Admin_Controller
 								$this->db->insert('tr_pengembalian_expense', [
 									'no_doc' => $post['pengembalian_expense_' . $detail_id[$keys]],
 									'transfer_coa_bank' => $coa[$keys],
-									'transfer_tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'transfer_tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'transfer_jumlah' => $expense[$keys],
 									'jalur_pettycash' => 1,
 									'id_expense_pettycash' => $no_doc,
@@ -1682,7 +1682,7 @@ class Expense extends Admin_Controller
 									'kasbon' => $kasbon[$keys],
 									'expense' => $expense[$keys],
 									'status' => 1,
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1728,7 +1728,7 @@ class Expense extends Admin_Controller
 									'harga' => $harga[$keys],
 									'total_harga' => ($qty[$keys] * $harga[$keys]),
 									'expense' => $expense[$keys],
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1752,7 +1752,7 @@ class Expense extends Admin_Controller
 									'harga' => $harga[$keys],
 									'total_harga' => ($qty[$keys] * $harga[$keys]),
 									'expense' => $expense[$keys],
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1769,7 +1769,7 @@ class Expense extends Admin_Controller
 								$this->db->insert('tr_pengembalian_expense', [
 									'no_doc' => $post['pengembalian_expense_' . $detail_id[$keys]],
 									'transfer_coa_bank' => $coa[$keys],
-									'transfer_tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'transfer_tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'transfer_jumlah' => $expense[$keys],
 									'jalur_pettycash' => 1,
 									'id_expense_pettycash' => $no_doc,
@@ -1788,7 +1788,7 @@ class Expense extends Admin_Controller
 									'total_harga' => ($qty[$keys] * $harga[$keys]),
 									'kasbon' => $kasbon[$keys],
 									'expense' => $expense[$keys],
-									'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+									'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 									'keterangan' => $keterangan[$keys],
 									'coa' => $coa[$keys],
 									'doc_file' => $filenames,
@@ -1866,7 +1866,7 @@ class Expense extends Admin_Controller
 
 			$data =  array(
 				'no_doc' 				=> $no_doc,
-				'tgl_doc' 				=> date('Y-m-d', strtotime($tgl_doc)),
+				'tgl_doc' 				=> date('Y-m-d', strtotime((string) $tgl_doc)),
 				'departement' 			=> $departement,
 				'nama' 					=> $nama,
 				'informasi' 			=> $informasi,
@@ -1930,7 +1930,7 @@ class Expense extends Admin_Controller
 								'harga' => $harga[$keys],
 								'total_harga' => ($qty[$keys] * $harga[$keys]),
 								'expense' => $expense[$keys],
-								'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+								'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 								'keterangan' => $keterangan[$keys],
 								'coa' => $coa[$keys],
 								'created_by' => $this->auth->user_name(),
@@ -1952,7 +1952,7 @@ class Expense extends Admin_Controller
 								'harga' => $harga[$keys],
 								'total_harga' => ($qty[$keys] * $harga[$keys]),
 								'expense' => $expense[$keys],
-								'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+								'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 								'keterangan' => $keterangan[$keys],
 								'doc_file' => $filenames,
 								'coa' => $coa[$keys],
@@ -1971,7 +1971,7 @@ class Expense extends Admin_Controller
 							$insert_log_kembalian = $this->db->insert('tr_pengembalian_expense', [
 								'no_doc' => $post['pengembalian_expense_' . $detail_id[$keys]],
 								'transfer_coa_bank' => $coa[$keys],
-								'transfer_tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+								'transfer_tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 								'transfer_jumlah' => $expense[$keys],
 								'jalur_pettycash' => 1,
 								'id_expense_pettycash' => $no_doc,
@@ -1993,7 +1993,7 @@ class Expense extends Admin_Controller
 								'total_harga' => ($qty[$keys] * $harga[$keys]),
 								'kasbon' => (isset($kasbon[$keys]) ? $kasbon[$keys] : 0),
 								'expense' => (isset($expense[$keys]) ? $expense[$keys] : 0),
-								'tanggal' => date('Y-m-d', strtotime($tanggal[$keys])),
+								'tanggal' => date('Y-m-d', strtotime((string) $tanggal[$keys])),
 								'deskripsi' => $deskripsi[$keys],
 								'keterangan' => $keterangan[$keys],
 								'status'	=> 1,
@@ -2069,12 +2069,12 @@ class Expense extends Admin_Controller
 
 		$tanggal	= $this->input->post("tgl_doc");
 		$coa	= $this->input->post("coa");
-		$tahun = date("Y", strtotime($tanggal));
+		$tahun = date("Y", strtotime((string) $tanggal));
 		$data = $this->Expense_model->GetBudget($coa, $tahun);
 		$param = array();
 		if ($data !== false) {
 			if ($dtl == '') {
-				$bulan = date("n", strtotime($tanggal));
+				$bulan = date("n", strtotime((string) $tanggal));
 				$budget = 0;
 				$terpakai = 0;
 				for ($i = 1; $i <= $bulan; $i++) {
@@ -2514,7 +2514,7 @@ class Expense extends Admin_Controller
 	}
 
 	// transport fin approve
-	public function transport_req_approve($id = '', $status)
+	public function transport_req_approve($id, $status)
 	{
 		$result = false;
 		if ($id != "") {
@@ -3145,7 +3145,7 @@ class Expense extends Admin_Controller
 					$hasil .= '<tr class="detail_pr_' . $detail_pr['id'] . '">';
 					$hasil .= '<td class="text-center">' . $no . '</td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['material_name'] . '</td>';
-					$hasil .= '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
+					$hasil .= '<td class="text-center">' . number_format((float) $detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['unit'] . '</td>';
 					$hasil .= '<td class="text-center"><input type="text" name="price_input_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right price_input price_input_' . $detail_pr['id'] . ' autonum" data-no="' . $detail_pr['id'] . '" value="' . $price_ref . '"></td>';
 					$hasil .= '<td class="text-center"><input type="text" name="grand_total_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right grand_total_' . $detail_pr['id'] . ' autonum" value="' . ($price_ref * $detail_pr['qty']) . '"></td>';
@@ -3166,7 +3166,7 @@ class Expense extends Admin_Controller
 					$hasil .= '<tr class="detail_pr_' . $detail_pr['id'] . '">';
 					$hasil .= '<td class="text-center">' . $no . '</td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['material_name'] . '</td>';
-					$hasil .= '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
+					$hasil .= '<td class="text-center">' . number_format((float) $detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['unit'] . '</td>';
 					$hasil .= '<td class="text-center"><input type="text" name="price_input_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right price_input price_input_' . $detail_pr['id'] . ' autonum" data-no="' . $detail_pr['id'] . '" value="' . $detail_pr['price'] . '"></td>';
 					$hasil .= '<td class="text-center"><input type="text" name="grand_total_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right grand_total_' . $detail_pr['id'] . ' autonum" value="' . $detail_pr['total_price'] . '"></td>';
@@ -3187,7 +3187,7 @@ class Expense extends Admin_Controller
 					$hasil .= '<tr class="detail_pr_' . $detail_pr['id'] . '">';
 					$hasil .= '<td class="text-center">' . $no . '</td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['material_name'] . '</td>';
-					$hasil .= '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
+					$hasil .= '<td class="text-center">' . number_format((float) $detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id'] . '" value="' . $detail_pr['qty'] . '"></td>';
 					$hasil .= '<td class="text-center">' . $detail_pr['unit'] . '</td>';
 					$hasil .= '<td class="text-center"><input type="text" name="price_input_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right price_input price_input_' . $detail_pr['id'] . ' autonum" data-no="' . $detail_pr['id'] . '" value="' . $detail_pr['price'] . '"></td>';
 					$hasil .= '<td class="text-center"><input type="text" name="grand_total_' . $detail_pr['id'] . '" class="form-control form-control-sm text-right grand_total_' . $detail_pr['id'] . ' autonum" value="' . $detail_pr['total_price'] . '"></td>';
@@ -3306,7 +3306,7 @@ class Expense extends Admin_Controller
 			$hasil .= '<td class="text-center">' . $item->created_by . '</td>';
 			$hasil .= '<td class="text-left">' . $item->no_doc . '</td>';
 			$hasil .= '<td class="text-left">' . $item->keperluan . '</td>';
-			$hasil .= '<td class="text-center">' . number_format($item->jumlah_kasbon) . '</td>';
+			$hasil .= '<td class="text-center">' . number_format((float) $item->jumlah_kasbon) . '</td>';
 			$hasil .= '<td class="text-center">
 									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Bayar</button>
 								</td>';
@@ -3363,7 +3363,7 @@ class Expense extends Admin_Controller
 			$hasil .= '<td class="text-center">' . $item->created_by . '</td>';
 			$hasil .= '<td class="text-left">' . $item->no_doc . '</td>';
 			$hasil .= '<td class="text-left">' . $item->informasi . '</td>';
-			$hasil .= '<td class="text-center">' . number_format($item->jumlah) . '</td>';
+			$hasil .= '<td class="text-center">' . number_format((float) $item->jumlah) . '</td>';
 			$hasil .= '<td class="text-center">
 									<button type="button" class="btn btn-sm btn-success add_ganti_expense" data-no_doc="' . $item->no_doc . '">Bayar</button>
 								</td>';
@@ -3778,10 +3778,10 @@ class Expense extends Admin_Controller
 
 			$hasil[] = [
 				'no' => $no,
-				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item['no_doc']) . '</span>',
-				'tanggal' => date('d F Y', strtotime($item['tgl_doc'])),
-				'nama' => htmlspecialchars($nmuser),
-				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format($item['jumlah_kasbon'], 0, ',', '.') . '</span>',
+				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $item['no_doc']) . '</span>',
+				'tanggal' => date('d F Y', strtotime((string) $item['tgl_doc'])),
+				'nama' => htmlspecialchars((string) $nmuser),
+				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $item['jumlah_kasbon'], 0, ',', '.') . '</span>',
 				'status' => $sts,
 				'action' => $action,
 			];
@@ -3919,10 +3919,10 @@ class Expense extends Admin_Controller
 
 			$hasil[] = [
 				'no' => $no,
-				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars($item['no_doc']) . '</span>',
-				'tanggal' => date('d F Y', strtotime($item['tgl_doc'])),
-				'nama' => htmlspecialchars($nmuser),
-				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format($item['jumlah_kasbon'], 0, ',', '.') . '</span>',
+				'no_kasbon' => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $item['no_doc']) . '</span>',
+				'tanggal' => date('d F Y', strtotime((string) $item['tgl_doc'])),
+				'nama' => htmlspecialchars((string) $nmuser),
+				'total' => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $item['jumlah_kasbon'], 0, ',', '.') . '</span>',
 				'status' => $sts,
 				'action' => $action,
 			];
@@ -4182,7 +4182,7 @@ class Expense extends Admin_Controller
 				'nama' => !empty($item['nmuser']) ? $item['nmuser'] : $item['nama'],
 				'approval' => $item['nmapproval'],
 				'keterangan' => $item['informasi'],
-				'nominal' => number_format($item['jumlah']),
+				'nominal' => number_format((float) $item['jumlah']),
 				'status' => $status,
 				'action' => $action
 			];
@@ -4293,7 +4293,7 @@ class Expense extends Admin_Controller
 		$draw   = isset($post['draw'])   ? (int) $post['draw']   : 1;
 		$length = isset($post['length']) ? (int) $post['length'] : 10;
 		$start  = isset($post['start'])  ? (int) $post['start']  : 0;
-		$search = isset($post['search']['value']) ? trim($post['search']['value']) : '';
+		$search = isset($post['search']['value']) ? trim((string) $post['search']['value']) : '';
 
 		$status_label = array(
 			"0" => "Baru",
@@ -4357,7 +4357,7 @@ class Expense extends Admin_Controller
 
 		if (isset($post['order'][0]['column']) && isset($column_order[$post['order'][0]['column']]) && !empty($column_order[$post['order'][0]['column']])) {
 			$col_idx = (int) $post['order'][0]['column'];
-			$col_dir = strtolower($post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$col_dir = strtolower((string) $post['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
 			$this->db->order_by($column_order[$col_idx], $col_dir);
 		} else {
 			$this->db->order_by('a.id', 'DESC');
@@ -4388,11 +4388,11 @@ class Expense extends Admin_Controller
 
 			$data[] = array(
 				'no'        => $no++,
-				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars($row->no_doc) . '</span>',
-				'tgl_doc'   => date('d F Y', strtotime($row->tgl_doc)),
+				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $row->no_doc) . '</span>',
+				'tgl_doc'   => date('d F Y', strtotime((string) $row->tgl_doc)),
 				'nmuser'    => '<span class="fw-medium text-dark">' . htmlspecialchars($row->nmuser ?? '-') . '</span>',
 				'informasi' => htmlspecialchars($row->informasi ?? '-'),
-				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format($row->nominal, 0, ',', '.') . '</span>',
+				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $row->nominal, 0, ',', '.') . '</span>',
 				'status'    => $badge_status,
 				'action'    => $action,
 			);
@@ -4415,7 +4415,7 @@ class Expense extends Admin_Controller
 		$draw    = isset($request['draw'])   ? (int) $request['draw']   : 1;
 		$length  = isset($request['length']) ? (int) $request['length'] : 10;
 		$start   = isset($request['start'])  ? (int) $request['start']  : 0;
-		$search  = isset($request['search']['value']) ? trim($request['search']['value']) : '';
+		$search  = isset($request['search']['value']) ? trim((string) $request['search']['value']) : '';
 
 		$status_label = array(
 			"0" => "Baru",
@@ -4478,7 +4478,7 @@ class Expense extends Admin_Controller
 		$this->db->group_by('a.id');
 		if (isset($request['order'][0]['column']) && isset($column_order[$request['order'][0]['column']]) && !empty($column_order[$request['order'][0]['column']])) {
 			$col_idx = (int) $request['order'][0]['column'];
-			$col_dir = strtolower($request['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
+			$col_dir = strtolower((string) $request['order'][0]['dir']) === 'asc' ? 'ASC' : 'DESC';
 			$this->db->order_by($column_order[$col_idx], $col_dir);
 		} else {
 			$this->db->order_by('a.id', 'DESC');
@@ -4508,11 +4508,11 @@ class Expense extends Admin_Controller
 
 			$data[] = array(
 				'no'        => $no++,
-				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars($row->no_doc) . '</span>',
-				'tgl_doc'   => date('d F Y', strtotime($row->tgl_doc)),
+				'no_doc'    => '<span class="fw-semibold text-primary">' . htmlspecialchars((string) $row->no_doc) . '</span>',
+				'tgl_doc'   => date('d F Y', strtotime((string) $row->tgl_doc)),
 				'nmuser'    => '<span class="fw-medium text-dark">' . htmlspecialchars($row->nmuser ?? '-') . '</span>',
 				'informasi' => htmlspecialchars($row->informasi ?? '-'),
-				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format($row->nominal, 0, ',', '.') . '</span>',
+				'nominal'   => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $row->nominal, 0, ',', '.') . '</span>',
 				'status'    => $badge_status,
 				'action'    => $action,
 			);

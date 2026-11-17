@@ -36,11 +36,11 @@ class Approval_pr_asset_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div class='prt_" . $nomor . "' align='center'>" . $nomor . "</div><script type='text/javascript'>$('.prt_" . $nomor . "').parent().parent().attr('id','" . $nomor . "');</script>";
-            $nestedData[] = "<div align='center'>" . strtoupper($row['no_pr']) . "</div>";
-            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime($row['tgl_pr'])) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_barang']) . "</div>";
+            $nestedData[] = "<div align='center'>" . strtoupper((string) $row['no_pr']) . "</div>";
+            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['tgl_pr'])) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_barang']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['created_by'] . "</div>";
-            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime($row['created_date'])) . "</div>";
+            $nestedData[] = "<div align='center'>" . date('d M Y', strtotime((string) $row['created_date'])) . "</div>";
 
             $nestedData[] = "<div align='center'><span class='badge bg-warning'>WAITING APPROVAL</span></div>";
 
@@ -53,9 +53,9 @@ class Approval_pr_asset_model extends BF_Model
             $nestedData2   = array();
             $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
             $nestedData2[] = "<div align='left'></div>";
-            $nestedData2[] = "<div align='right'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>NILAI PR</b><br>" . number_format($row['nilai_pr']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>TGL DIBUTUHKAN</b><br>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</div>";
+            $nestedData2[] = "<div align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>TGL DIBUTUHKAN</b><br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>";
 
             $nestedData2[] = "<div align='right'><b>ACTION</b><br>
                                 <select id='action_" . $nomor . "' class='form-select form-select-sm'>
@@ -128,7 +128,7 @@ class Approval_pr_asset_model extends BF_Model
         $data   = $this->input->post();
         $no_pr  = $data['no_pr'];
         $action = $data['action'];
-        $reason = strtolower($data['reason']);
+        $reason = strtolower((string) $data['reason']);
 
         $ArrUpdate = array(
             'app_status' => $action,

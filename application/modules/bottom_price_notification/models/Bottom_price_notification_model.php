@@ -62,7 +62,7 @@ class Bottom_price_notification_model extends CI_Model
             'status'      => 'Tidak Perlu Diubah',
             'reviewed_by' => $user_id,
             'reviewed_at' => date('Y-m-d H:i:s'),
-            'catatan'     => trim($catatan),
+            'catatan'     => trim((string) $catatan),
         ]);
     }
 

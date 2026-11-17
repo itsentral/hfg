@@ -83,11 +83,11 @@ class Bom extends Admin_Controller
             $btn_edit = '<a href="' . base_url('bom/edit/' . $row->id) . '" class="btn btn-sm btn-warning ms-1" title="Edit"><i class="fa fa-edit"></i></a>';
             $btn_del  = '<button class="btn btn-sm btn-danger ms-1 btn-delete-bom" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
 
-            $tgl = !empty($row->latest_act) ? date('d/m/Y H:i', strtotime($row->latest_act)) : '-';
+            $tgl = !empty($row->latest_act) ? date('d/m/Y H:i', strtotime((string) $row->latest_act)) : '-';
 
             $data[] = [
                 $i + 1 + (int) $_REQUEST['start'],
-                htmlspecialchars($row->id_produk),
+                htmlspecialchars((string) $row->id_produk),
                 htmlspecialchars($row->nm_produk ?: '-'),
                 '<span class="badge bg-primary fs-6">' . (int) $row->jumlah_varian . ' varian</span>',
                 $tgl,
@@ -158,7 +158,7 @@ class Bom extends Admin_Controller
                     $this->session->set_flashdata('error', 'Berat/Meter material ' . $d['id_material'] . ' harus berupa angka 0 atau lebih (maksimal 99.999.999).');
                     redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                 }
-                $uniq = !empty($d['no_uniq_id']) ? trim($d['no_uniq_id']) : '';
+                $uniq = !empty($d['no_uniq_id']) ? trim((string) $d['no_uniq_id']) : '';
                 if (!empty($uniq)) {
                     if (in_array($uniq, $uniq_set)) {
                         $this->session->set_flashdata('error', "No. Uniq ID (Varian BOM) '{$uniq}' tidak boleh duplikat pada produk yang sama.");

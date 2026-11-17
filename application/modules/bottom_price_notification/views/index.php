@@ -82,24 +82,24 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
                                 <td class="text-muted small">
-                                    <?= date('d/m/Y H:i', strtotime($r->detected_at)) ?>
+                                    <?= date('d/m/Y H:i', strtotime((string) $r->detected_at)) ?>
                                 </td>
                                 <td><?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?></td>
                                 <td>
                                     <strong class="text-dark"><?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?></strong>
-                                    <div class="text-muted small">Uniq ID: <span class="badge bg-light text-dark border"><?= htmlspecialchars($r->no_uniq_id) ?></span></div>
+                                    <div class="text-muted small">Uniq ID: <span class="badge bg-light text-dark border"><?= htmlspecialchars((string) $r->no_uniq_id) ?></span></div>
                                 </td>
                                 <td class="text-end">
-                                    Rp <?= number_format($lama, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $lama, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-end fw-bold text-primary">
-                                    Rp <?= number_format($baru, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $baru, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-end fw-bold">
                                     <span class="<?= $diff > 0 ? 'text-danger' : 'text-success' ?>">
-                                        <?= ($diff > 0 ? '+' : '') . number_format($diff, 2, ',', '.') ?>
+                                        <?= ($diff > 0 ? '+' : '') . number_format((float) $diff, 2, ',', '.') ?>
                                     </span>
-                                    <div class="text-muted small">(<?= ($diff > 0 ? '+' : '') . number_format($pct_diff, 1) ?>%)</div>
+                                    <div class="text-muted small">(<?= ($diff > 0 ? '+' : '') . number_format((float) $pct_diff, 1) ?>%)</div>
                                 </td>
                                 <td class="text-center">
                                     <?php if ($is_pending): ?>
@@ -118,8 +118,8 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                 </td>
                                 <td class="small">
                                     <?php if (!empty($r->reviewer_name)): ?>
-                                        <strong><?= htmlspecialchars($r->reviewer_name) ?></strong>
-                                        <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($r->reviewed_at)) ?></div>
+                                        <strong><?= htmlspecialchars((string) $r->reviewer_name) ?></strong>
+                                        <div class="text-muted small"><?= date('d/m/Y H:i', strtotime((string) $r->reviewed_at)) ?></div>
                                     <?php else: ?>
                                         <span class="text-muted">&mdash;</span>
                                     <?php endif; ?>
@@ -134,8 +134,8 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                                     data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
                                                     data-cat="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
                                                     data-active="<?= (float)($r->rate_negotiation_allowance * 100) ?>"
-                                                    data-bottom-lama="<?= number_format($lama, 2, ',', '.') ?>"
-                                                    data-bottom-baru="<?= number_format($baru, 2, ',', '.') ?>"
+                                                    data-bottom-lama="<?= number_format((float) $lama, 2, ',', '.') ?>"
+                                                    data-bottom-baru="<?= number_format((float) $baru, 2, ',', '.') ?>"
                                                     title="Ajukan Revisi Extra Margin ke GM"
                                                     style="width: 80px;">
                                                     <i class="fa fa-paper-plane me-1"></i> Ajukan

@@ -259,11 +259,11 @@
         <tr>
             <td>Tanggal Mutasi</td>
             <td>:</td>
-            <td><?= date('d F Y', strtotime($data->tgl_mutasi)) ?></td>
+            <td><?= date('d F Y', strtotime((string) $data->tgl_mutasi)) ?></td>
             <td></td>
             <td style="font-weight:bold;">Tanggal Request</td>
             <td>:</td>
-            <td><?= date('d F Y', strtotime($data->tgl_request)) ?></td>
+            <td><?= date('d F Y', strtotime((string) $data->tgl_request)) ?></td>
         </tr>
         <tr>
             <td>Mata Uang</td>
@@ -272,7 +272,7 @@
             <td></td>
             <td style="font-weight:bold;">Kurs</td>
             <td>:</td>
-            <td><?= number_format($data->kurs, 2) ?></td>
+            <td><?= number_format((float) $data->kurs, 2) ?></td>
         </tr>
         <tr>
             <td>Keterangan</td>
@@ -299,21 +299,21 @@
                 <td><?= $data->keterangan ?></td>
                 <td><?= $data->nama_bank_asal ?><br><small style="color:#555;"><?= $data->bank_asal ?></small></td>
                 <td><?= $data->nama_bank_tujuan ?><br><small style="color:#555;"><?= $data->bank_tujuan ?></small></td>
-                <td class="text-right"><?= number_format($data->nilai_request, 2) ?></td>
-                <td class="text-right"><strong><?= number_format($data->nilai_aktual, 2) ?></strong></td>
+                <td class="text-right"><?= number_format((float) $data->nilai_request, 2) ?></td>
+                <td class="text-right"><strong><?= number_format((float) $data->nilai_aktual, 2) ?></strong></td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="5" class="text-right bold">Total Mutasi</td>
-                <td class="text-right bold"><?= number_format($data->nilai_aktual, 2) ?></td>
+                <td class="text-right bold"><?= number_format((float) $data->nilai_aktual, 2) ?></td>
             </tr>
         </tfoot>
     </table>
 
     <!-- ===== TERBILANG ===== -->
     <div class="terbilang-box">
-        Terbilang: <strong><?= (!empty($data->terbilang)) ? ucfirst($data->terbilang) : (function_exists('ynz_terbilang') ? ynz_terbilang((float)($data->nilai_aktual ?? 0)) . ' ' . strtoupper($data->mata_uang ?? 'IDR') : '') ?></strong>
+        Terbilang: <strong><?= (!empty($data->terbilang)) ? ucfirst((string) $data->terbilang) : (function_exists('ynz_terbilang') ? ynz_terbilang((float)($data->nilai_aktual ?? 0)) . ' ' . strtoupper($data->mata_uang ?? 'IDR') : '') ?></strong>
     </div>
 
     <!-- ===== JURNAL REFERENSI ===== -->
@@ -342,7 +342,7 @@
         <tr>
             <td class="text-center">
                 ( <strong><?= $data->created_by ?></strong> )<br>
-                <small><?= date('d/m/Y', strtotime($data->created_on)) ?></small>
+                <small><?= date('d/m/Y', strtotime((string) $data->created_on)) ?></small>
             </td>
             <td class="text-center">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</td>
             <td class="text-center">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</td>

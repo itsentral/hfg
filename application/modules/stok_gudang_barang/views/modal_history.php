@@ -45,28 +45,28 @@
                     $no = 0;
                     foreach ($data as $val => $valx) :
                         $no++;
-                        $dari = strtoupper($valx['kd_gudang_dari']);
-                        $ke   = strtoupper($valx['kd_gudang_ke']);
+                        $dari = strtoupper((string) $valx['kd_gudang_dari']);
+                        $ke   = strtoupper((string) $valx['kd_gudang_ke']);
                         $username = get_name('users', 'nm_lengkap', 'id_user', $valx['update_by']);
                         $qty_trans = (float)$valx['jumlah_mat'];
                 ?>
                         <tr>
                             <td class="text-center text-muted fw-semibold"><?= $no; ?></td>
                             <td class="text-center text-muted font-monospace" style="font-size: 0.85rem;">
-                                <?= date('d M Y H:i', strtotime($valx['update_date'])); ?>
+                                <?= date('d M Y H:i', strtotime((string) $valx['update_date'])); ?>
                             </td>
-                            <td class="fw-semibold text-dark"><?= !empty($username) ? strtoupper($username) : '-'; ?></td>
+                            <td class="fw-semibold text-dark"><?= !empty($username) ? strtoupper((string) $username) : '-'; ?></td>
                             <td><span class="badge bg-light text-dark border"><?= !empty($dari) ? $dari : '-'; ?></span></td>
                             <td><span class="badge bg-light text-dark border"><?= !empty($ke) ? $ke : '-'; ?></span></td>
                             <td class="text-end fw-bold <?= ($qty_trans >= 0) ? 'text-primary' : 'text-danger'; ?>">
-                                <?= number_format($qty_trans, 2); ?>
+                                <?= number_format((float) $qty_trans, 2); ?>
                             </td>
-                            <td class="text-end text-muted font-monospace"><?= number_format($valx['qty_stock_awal'], 2); ?></td>
-                            <td class="text-end fw-bold text-success font-monospace"><?= number_format($valx['qty_stock_akhir'], 2); ?></td>
+                            <td class="text-end text-muted font-monospace"><?= number_format((float) $valx['qty_stock_awal'], 2); ?></td>
+                            <td class="text-end fw-bold text-success font-monospace"><?= number_format((float) $valx['qty_stock_akhir'], 2); ?></td>
                             <td class="text-center text-primary font-monospace fw-semibold" style="font-size: 0.85rem;">
                                 <?= !empty($valx['no_ipp']) ? $valx['no_ipp'] : '-'; ?>
                             </td>
-                            <td class="text-muted" style="font-size: 0.85rem;"><?= !empty($valx['ket']) ? strtolower($valx['ket']) : '-'; ?></td>
+                            <td class="text-muted" style="font-size: 0.85rem;"><?= !empty($valx['ket']) ? strtolower((string) $valx['ket']) : '-'; ?></td>
                         </tr>
                     <?php
                     endforeach;

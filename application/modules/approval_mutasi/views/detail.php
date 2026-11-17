@@ -37,7 +37,7 @@ $st = $status_map[$m['status']] ?? ['-', 'secondary'];
                         <div class="px-2 flex-fill border-start-custom">
                             <small class="text-muted d-block text-uppercase font-size-xs fw-bold">Request Date</small>
                             <span class="text-dark fw-semibold">
-                                <?= date('d/m/Y', strtotime($m['mutation_date'])) ?>
+                                <?= date('d/m/Y', strtotime((string) $m['mutation_date'])) ?>
                             </span>
                         </div>
 
@@ -109,7 +109,7 @@ $st = $status_map[$m['status']] ?? ['-', 'secondary'];
                 <i class="fa-solid fa-circle-check fs-5"></i>
                 <div>
                     <strong>Approved by:</strong> <?= $m['approved_by'] ?>
-                    <span class="ms-3"><strong>Date:</strong> <?= date('d/m/Y H:i', strtotime($m['approved_date'])) ?></span>
+                    <span class="ms-3"><strong>Date:</strong> <?= date('d/m/Y H:i', strtotime((string) $m['approved_date'])) ?></span>
                 </div>
             </div>
         <?php endif; ?>
@@ -162,17 +162,17 @@ $st = $status_map[$m['status']] ?? ['-', 'secondary'];
                         foreach ($pack_groups as $pg): ?>
                             <tr>
                                 <td class="text-center"><?= $no++ ?></td>
-                                <td class="text-center"><span class="badge bg-primary"><?= htmlspecialchars($pg['pack_code']) ?></span></td>
+                                <td class="text-center"><span class="badge bg-primary"><?= htmlspecialchars((string) $pg['pack_code']) ?></span></td>
                                 <td>
                                     <?php foreach ($pg['materials'] as $mat): ?>
-                                        <div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b><?= htmlspecialchars($mat) ?></b></div>
+                                        <div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b><?= htmlspecialchars((string) $mat) ?></b></div>
                                     <?php endforeach; ?>
                                 </td>
                                 <td class="text-center"><?= $pg['roll_count'] ?></td>
-                                <td class="text-end"><?= number_format($pg['total_nw'], 2, ',', '.') ?></td>
-                                <td class="text-end"><?= number_format($pg['total_gw'], 2, ',', '.') ?></td>
+                                <td class="text-end"><?= number_format((float) $pg['total_nw'], 2, ',', '.') ?></td>
+                                <td class="text-end"><?= number_format((float) $pg['total_gw'], 2, ',', '.') ?></td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-info btn-detail-pack" data-coils='<?= htmlspecialchars(json_encode($pg['coils'])) ?>' data-pack="<?= htmlspecialchars($pg['pack_code']) ?>">
+                                    <button type="button" class="btn btn-sm btn-outline-info btn-detail-pack" data-coils='<?= htmlspecialchars(json_encode($pg['coils'])) ?>' data-pack="<?= htmlspecialchars((string) $pg['pack_code']) ?>">
                                         <i class="fa fa-eye"></i>
                                     </button>
                                 </td>
@@ -200,8 +200,8 @@ $st = $status_map[$m['status']] ?? ['-', 'secondary'];
                             echo $totalRoll;
                             ?>
                         </td>
-                        <td class="text-end"><?= number_format($totalNW, 2, ',', '.') ?></td>
-                        <td class="text-end"><?= number_format($totalGW, 2, ',', '.') ?></td>
+                        <td class="text-end"><?= number_format((float) $totalNW, 2, ',', '.') ?></td>
+                        <td class="text-end"><?= number_format((float) $totalGW, 2, ',', '.') ?></td>
                         <td></td>
                     </tr>
                 </tfoot>

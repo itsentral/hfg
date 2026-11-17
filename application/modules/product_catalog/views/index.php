@@ -13,11 +13,11 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                 <p class="text-muted mb-0" style="font-size:12px;">Daftar harga katalog resmi hasil rilis Pricelist yang disetujui Management.</p>
             </div>
             <div class="col-md-6 text-right">
-                <a href="<?= base_url('product_catalog/print_catalog?category=' . urlencode($filter_cat) . '&catalog_id=' . $filter_cid . '&status=' . $filter_stat) ?>" target="_blank" class="btn btn-default btn-sm">
+                <a href="<?= base_url('product_catalog/print_catalog?category=' . urlencode((string) $filter_cat) . '&catalog_id=' . $filter_cid . '&status=' . $filter_stat) ?>" target="_blank" class="btn btn-default btn-sm">
                     <i class="fa fa-print"></i> Cetak Katalog
                 </a>
                 <?php if ($ENABLE_MANAGE): ?>
-                    <a href="<?= base_url('product_catalog/export_excel?category=' . urlencode($filter_cat) . '&catalog_id=' . $filter_cid . '&status=' . $filter_stat) ?>" class="btn btn-success btn-sm">
+                    <a href="<?= base_url('product_catalog/export_excel?category=' . urlencode((string) $filter_cat) . '&catalog_id=' . $filter_cid . '&status=' . $filter_stat) ?>" class="btn btn-success btn-sm">
                         <i class="fa fa-file-excel-o"></i> Ekspor Excel (CSV)
                     </a>
                     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-release-catalog">
@@ -49,7 +49,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                     <option value="">-- Semua Rilis --</option>
                     <?php if (!empty($headers)): foreach ($headers as $h): ?>
                         <option value="<?= $h->id ?>" <?= ($filter_cid == $h->id) ? 'selected' : '' ?>>
-                            <?= html_escape($h->no_catalog) ?> (<?= date('d/m/Y', strtotime($h->released_at)) ?> - <?= $h->total_items ?> item)
+                            <?= html_escape($h->no_catalog) ?> (<?= date('d/m/Y', strtotime((string) $h->released_at)) ?> - <?= $h->total_items ?> item)
                         </option>
                     <?php endforeach; endif; ?>
                 </select>
@@ -121,7 +121,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                                 <span class="label <?= ($item->catalog_status == 'Active') ? 'label-success' : 'label-default' ?>" style="font-size:10px;">
                                     <?= html_escape($item->no_catalog) ?>
                                 </span>
-                                <div class="text-muted" style="font-size:9px;"><?= date('d/m/Y', strtotime($item->released_at)) ?></div>
+                                <div class="text-muted" style="font-size:9px;"><?= date('d/m/Y', strtotime((string) $item->released_at)) ?></div>
                             </td>
                         </tr>
                     <?php endforeach; endif; ?>
@@ -159,7 +159,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                                 <tr>
                                     <td class="text-center"><?= $n++ ?></td>
                                     <td><strong><?= html_escape($apl->no_pricelist) ?></strong></td>
-                                    <td><?= $apl->decided_at ? date('d/m/Y H:i', strtotime($apl->decided_at)) : '-' ?></td>
+                                    <td><?= $apl->decided_at ? date('d/m/Y H:i', strtotime((string) $apl->decided_at)) : '-' ?></td>
                                     <td><?= html_escape($apl->decided_by_name ? $apl->decided_by_name : '-') ?></td>
                                     <td class="text-center"><span class="badge bg-green"><?= $apl->total_items ?> item</span></td>
                                     <td class="text-center">

@@ -22,7 +22,7 @@ class Incoming_model extends BF_Model
         $row = $query->row();
 
         if ($row && $row->max_id != null) {
-            $urutan = (int) substr($row->max_id, -6);
+            $urutan = (int) substr((string) $row->max_id, -6);
         } else {
             $urutan = 0;
         }
@@ -114,9 +114,9 @@ class Incoming_model extends BF_Model
             $nestedData[]    = "<div>" . $no_surat . " | " . $row['kode_trans'] . "</div>";
             $nestedData[]    = "<div>" . $no_pr . "</div>";
             $nestedData[]    = "<div>" . $row['nama_supplier'] . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['sum_material'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['sum_material'], 2) . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
-            $nestedData[]    = "<div align='left'>" . date('d-M-Y', strtotime($row['incoming_date'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . date('d-M-Y', strtotime((string) $row['incoming_date'])) . "</div>";
 
             $nestedData[]    = "<div align='center'>
 									<button type='button' class='btn btn-sm btn-primary detailIncoming' title='View Incoming' data-kode_trans='" . $row['kode_trans'] . "' ><i class='fa fa-eye'></i></button>

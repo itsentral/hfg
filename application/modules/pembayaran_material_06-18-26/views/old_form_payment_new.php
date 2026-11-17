@@ -16,12 +16,12 @@ foreach ($results['result_payment'] as $item) {
 	$get_rec_invoice = $this->db->get_where('tr_invoice_po', ['id' => $item->no_doc])->row();
 
 	if (!empty($get_rec_invoice)) {
-		if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+		if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 			$get_no_po = $this->db
 				->select('a.no_ipp')
 				->from('tr_incoming_check a')
-				->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+				->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 				->get()
 				->result();
 
@@ -193,12 +193,12 @@ foreach ($results['result_payment'] as $item) {
 							}
 						}
 						if (!empty($get_rec_invoice)) {
-							if (strpos($get_rec_invoice->no_po, 'TRS1') !== false) {
+							if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
 								$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
 								$get_no_po = $this->db
 									->select('a.no_ipp')
 									->from('tr_incoming_check a')
-									->where_in('a.kode_trans', explode(',', $arr_no_incoming))
+									->where_in('a.kode_trans', explode(',', (string) $arr_no_incoming))
 									->get()
 									->result();
 
@@ -287,7 +287,7 @@ foreach ($results['result_payment'] as $item) {
 						echo '<td class="text-right">
 					<input type="hidden" class="jumlah_col_' . $item->id . '">
 					<input type="hidden" class="payment_bank_' . $item->id . '" value="' . $item->jumlah . '">
-					' . number_format($item->jumlah, 2) . '
+					' . number_format((float) $item->jumlah, 2) . '
 					</td>';
 						echo '<td>';
 						echo '<select name="dt[' . $no . '][tipe_pph]" class="form-control form-control-sm chosen">';
@@ -321,7 +321,7 @@ foreach ($results['result_payment'] as $item) {
 						<td colspan="5"></td>
 						<td>Total Payment</td>
 						<td class="text-right">
-							<?= number_format($total_payment, 2) ?>
+							<?= number_format((float) $total_payment, 2) ?>
 						</td>
 					</tr>
 					<tr>
@@ -340,18 +340,18 @@ foreach ($results['result_payment'] as $item) {
 						<td colspan="5"></td>
 						<td>PPh</td>
 						<td class="text-right total_pph_col">
-							<?= number_format($total_pph, 2) ?>
+							<?= number_format((float) $total_pph, 2) ?>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>PPn</td>
-						<td class="text-right total_ppn_col"><?= number_format($total_ppn, 2) ?></td>
+						<td class="text-right total_ppn_col"><?= number_format((float) $total_ppn, 2) ?></td>
 					</tr>
 					<tr>
 						<td colspan="5"></td>
 						<td>Kontrol</td>
-						<td class="text-right kontrol_col"><?= number_format($kontrol, 2) ?></td>
+						<td class="text-right kontrol_col"><?= number_format((float) $kontrol, 2) ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -459,7 +459,7 @@ foreach ($results['result_payment'] as $item) {
 								echo '</td>';
 
 								echo '<td class="text-right">';
-								echo number_format($item->jumlah);
+								echo number_format((float) $item->jumlah);
 								echo '<input type="hidden" name="jurnal_refill_pettycash[' . $no_jurnal_refill_pettycash . '][debit]" value="' . $item->jumlah . '">';
 								echo '</td>';
 
@@ -478,8 +478,8 @@ foreach ($results['result_payment'] as $item) {
 					<tfoot class="bg-primary">
 						<tr>
 							<th colspan="6" class="text-center">Balancing</th>
-							<th class="text-right ttl_debit_refill"><?= number_format($ttl_debit_jurnal_refill) ?></th>
-							<th class="text-right ttl_kredit_refill"><?= number_format($ttl_kredit_jurnal_refill) ?></th>
+							<th class="text-right ttl_debit_refill"><?= number_format((float) $ttl_debit_jurnal_refill) ?></th>
+							<th class="text-right ttl_kredit_refill"><?= number_format((float) $ttl_kredit_jurnal_refill) ?></th>
 						</tr>
 					</tfoot>
 				</table>

@@ -80,7 +80,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 											<td><?= $numb; ?></td>
 											<td><?= $customer->id_customer ?></td>
 											<td class="fw-semibold"><?= $customer->name_customer ?></td>
-											<td><?= ucfirst($customer->nama_karyawan) ?></td>
+											<td><?= ucfirst((string) $customer->nama_karyawan) ?></td>
 
 											<td hidden>
 												<?php

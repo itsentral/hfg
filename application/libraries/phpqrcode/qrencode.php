@@ -251,7 +251,7 @@
             $input = new QRinput($version, $level);
             if($input == NULL) return NULL;
 
-            $ret = $input->append($input, QR_MODE_8, strlen($string), str_split($string));
+            $ret = $input->append($input, QR_MODE_8, strlen((string) $string), str_split($string));
             if($ret < 0) {
                 unset($input);
                 return NULL;

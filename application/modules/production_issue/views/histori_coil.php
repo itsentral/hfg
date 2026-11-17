@@ -28,7 +28,7 @@
         <?php if ($no_coil): ?>
             <div class="alert alert-info py-2 mb-3">
                 <i class="fa fa-barcode"></i>
-                Menampilkan histori untuk coil: <strong><?= htmlspecialchars($no_coil) ?></strong>
+                Menampilkan histori untuk coil: <strong><?= htmlspecialchars((string) $no_coil) ?></strong>
             </div>
 
             <?php if (!empty($history)): ?>
@@ -53,16 +53,16 @@
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div>
                                                 <strong class="text-primary">
-                                                    <?= htmlspecialchars($h->from_gudang) ?>
+                                                    <?= htmlspecialchars((string) $h->from_gudang) ?>
                                                     <i class="fa fa-arrow-right mx-1"></i>
-                                                    <?= htmlspecialchars($h->to_gudang) ?>
+                                                    <?= htmlspecialchars((string) $h->to_gudang) ?>
                                                 </strong>
                                                 <div class="text-muted small mt-1">
                                                     SPK: <a href="<?= base_url('production_issue/view/' . $h->spk_no) ?>">
-                                                        <?= htmlspecialchars($h->spk_no) ?>
+                                                        <?= htmlspecialchars((string) $h->spk_no) ?>
                                                     </a>
                                                     <?php if ($h->nm_produk_fg): ?>
-                                                        — <?= htmlspecialchars($h->nm_produk_fg) ?>
+                                                        — <?= htmlspecialchars((string) $h->nm_produk_fg) ?>
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="text-muted small">
@@ -71,10 +71,10 @@
                                             </div>
                                             <div class="text-end">
                                                 <div class="text-muted small">
-                                                    <?= date('d/m/Y', strtotime($h->move_time)) ?>
+                                                    <?= date('d/m/Y', strtotime((string) $h->move_time)) ?>
                                                 </div>
                                                 <div class="fw-bold">
-                                                    <?= date('H:i:s', strtotime($h->move_time)) ?>
+                                                    <?= date('H:i:s', strtotime((string) $h->move_time)) ?>
                                                 </div>
                                                 <?php
                                                 $status_map = [
@@ -136,14 +136,14 @@
                                             <td class="text-center"><?= $i + 1 ?></td>
                                             <td>
                                                 <a href="<?= base_url('production_issue/view/' . $h->spk_no) ?>">
-                                                    <?= htmlspecialchars($h->spk_no) ?>
+                                                    <?= htmlspecialchars((string) $h->spk_no) ?>
                                                 </a>
                                             </td>
                                             <td><?= htmlspecialchars($h->nm_produk_fg ?: '-') ?></td>
-                                            <td><?= htmlspecialchars($h->from_gudang) ?></td>
-                                            <td><?= htmlspecialchars($h->to_gudang) ?></td>
+                                            <td><?= htmlspecialchars((string) $h->from_gudang) ?></td>
+                                            <td><?= htmlspecialchars((string) $h->to_gudang) ?></td>
                                             <td class="text-center">
-                                                <?= date('d/m/Y H:i:s', strtotime($h->move_time)) ?>
+                                                <?= date('d/m/Y H:i:s', strtotime((string) $h->move_time)) ?>
                                             </td>
                                             <td><?= htmlspecialchars($h->nama_user ?: 'User #' . $h->move_user) ?></td>
                                             <td class="text-center">
@@ -162,7 +162,7 @@
             <?php else: ?>
                 <div class="alert alert-warning">
                     <i class="fa fa-exclamation-triangle"></i>
-                    Tidak ada riwayat mutasi untuk coil <strong><?= htmlspecialchars($no_coil) ?></strong>.
+                    Tidak ada riwayat mutasi untuk coil <strong><?= htmlspecialchars((string) $no_coil) ?></strong>.
                 </div>
             <?php endif; ?>
 

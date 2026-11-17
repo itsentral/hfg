@@ -40,16 +40,16 @@ header("Content-Disposition: attachment; filename=Data_Asset_" . date('Ymd_His')
                 foreach ($data as $row) {
                     echo "<tr>";
                     echo "<td class='text-center'>" . $no++ . "</td>";
-                    echo "<td>" . strtoupper($row['kd_asset']) . "</td>";
-                    echo "<td>" . strtoupper($row['nm_asset']) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['kd_asset']) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['nm_asset']) . "</td>";
                     echo "<td class='text-center'>" . $row['tgl_perolehan'] . "</td>";
-                    echo "<td>" . strtoupper($row['nm_category']) . "</td>";
-                    echo "<td>" . strtoupper($row['nm_dept']) . "</td>";
-                    echo "<td>" . strtoupper($row['nm_costcenter']) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['nm_category']) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['nm_dept']) . "</td>";
+                    echo "<td>" . strtoupper((string) $row['nm_costcenter']) . "</td>";
                     echo "<td class='text-center'>" . $row['penyusutan'] . "</td>";
-                    echo "<td class='text-right'>" . number_format($row['nilai_asset'], 2) . "</td>";
+                    echo "<td class='text-right'>" . number_format((float) $row['nilai_asset'], 2) . "</td>";
                     echo "<td class='text-center'>" . $row['depresiasi'] . " Tahun</td>";
-                    echo "<td class='text-right'>" . number_format($row['value'], 2) . "</td>";
+                    echo "<td class='text-right'>" . number_format((float) $row['value'], 2) . "</td>";
                     echo "</tr>";
                 }
             } else {

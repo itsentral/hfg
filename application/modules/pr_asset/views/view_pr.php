@@ -1,8 +1,8 @@
 <?php
 $no_pr      = isset($no_pr) ? $no_pr : '';
-$tgl_pr     = isset($result_header['tgl_pr']) ? date('d M Y', strtotime($result_header['tgl_pr'])) : '-';
+$tgl_pr     = isset($result_header['tgl_pr']) ? date('d M Y', strtotime((string) $result_header['tgl_pr'])) : '-';
 $created_by = isset($result_header['created_by']) ? $result_header['created_by'] : '-';
-$created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtotime($result_header['created_date'])) : '-';
+$created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtotime((string) $result_header['created_date'])) : '-';
 ?>
 <div class="card border-0 shadow-none">
     <div class="card-body p-2">
@@ -26,7 +26,7 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
                     <tr>
                         <th width="35%">Created By</th>
                         <td width="5%">:</td>
-                        <td><?= strtoupper($created_by) ?></td>
+                        <td><?= strtoupper((string) $created_by) ?></td>
                     </tr>
                     <tr>
                         <th>Created Date</th>
@@ -68,15 +68,15 @@ $created_date = isset($result_header['created_date']) ? date('d M Y H:i', strtot
 
                             echo "<tr>";
                             echo "<td class='text-center'>" . $no++ . "</td>";
-                            echo "<td>" . strtoupper($row['nm_barang']) . "</td>";
-                            echo "<td class='text-center'>" . number_format($row['qty']) . "</td>";
-                            echo "<td class='text-end'>" . number_format($row['nilai_pr']) . "</td>";
-                            echo "<td class='text-center'>" . (!empty($row['tgl_dibutuhkan']) ? date('d M Y', strtotime($row['tgl_dibutuhkan'])) : (!empty($row['tgl_butuh']) ? date('d M Y', strtotime($row['tgl_butuh'])) : '-')) . "</td>";
+                            echo "<td>" . strtoupper((string) $row['nm_barang']) . "</td>";
+                            echo "<td class='text-center'>" . number_format((float) $row['qty']) . "</td>";
+                            echo "<td class='text-end'>" . number_format((float) $row['nilai_pr']) . "</td>";
+                            echo "<td class='text-center'>" . (!empty($row['tgl_dibutuhkan']) ? date('d M Y', strtotime((string) $row['tgl_dibutuhkan'])) : (!empty($row['tgl_butuh']) ? date('d M Y', strtotime((string) $row['tgl_butuh'])) : '-')) . "</td>";
                             echo "<td class='text-center'><span class='badge bg-" . $color . "'>" . $status . "</span></td>";
                             echo "</tr>";
 
                             if (!empty($row['app_reason'])) {
-                                echo "<tr><td colspan='6' class='text-danger bg-light'><small><b>Reason:</b> " . htmlspecialchars($row['app_reason']) . "</small></td></tr>";
+                                echo "<tr><td colspan='6' class='text-danger bg-light'><small><b>Reason:</b> " . htmlspecialchars((string) $row['app_reason']) . "</small></td></tr>";
                             }
                         }
                     } else {

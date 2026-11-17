@@ -12,7 +12,7 @@
 				<label for="tgl_butuh"><b>Tanggal Dibutuhkan</b></label>
 				<?php
 				$tgl_now = date('Y-m-d');
-				$tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+				$tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
 				echo form_input(array('id' => 'tgl_butuh', 'name' => 'tgl_butuh', 'class' => 'form-control input-md text-center tgl changeSaveDate', 'readonly' => 'readonly', 'placeholder' => 'Tanggal Dibutuhkan'), $tgl_next_month);
 				?>
 			</div>
@@ -26,7 +26,7 @@
 						<?php
 						foreach ($category as $val => $valx) {
 							$selected = ($valx['id'] == '8') ? 'selected' : '';
-							echo "<option value='" . $valx['id'] . "' " . $selected . ">" . strtoupper($valx['nm_category']) . "</option>";
+							echo "<option value='" . $valx['id'] . "' " . $selected . ">" . strtoupper((string) $valx['nm_category']) . "</option>";
 						}
 						?>
 					</select>

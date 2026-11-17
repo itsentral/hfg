@@ -91,7 +91,7 @@ class Accessories_model extends BF_Model
 			$nestedData[] = "<div>" . htmlspecialchars(strtolower((string)$nm_user)) . "</div>";
 
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
-			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime($last_date)) : '-';
+			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime((string) $last_date)) : '-';
 			$nestedData[] = "<div class='text-center'>" . $formatted_date . "</div>";
 
 			$view = "<a href='" . site_url('accessories/add/' . $row['id'] . '/view') . "' class='btn btn-sm btn-info text-white' title='Detail Data'><i class='fa fa-eye'></i></a>";
@@ -169,7 +169,7 @@ class Accessories_model extends BF_Model
 		);
 
 		$order_col = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
-		$order_dir = (strtolower($column_dir) === 'desc') ? 'DESC' : 'ASC';
+		$order_dir = (strtolower((string) $column_dir) === 'desc') ? 'DESC' : 'ASC';
 
 		$sql = "SELECT
 					a.*,
@@ -220,7 +220,7 @@ class Accessories_model extends BF_Model
 			$nestedData[] = "<div>" . htmlspecialchars(strtolower((string)$nm_user)) . "</div>";
 
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
-			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime($last_date)) : '-';
+			$formatted_date = !empty($last_date) ? date('d-M-Y H:i', strtotime((string) $last_date)) : '-';
 			$nestedData[] = "<div class='text-center'>" . $formatted_date . "</div>";
 
 			$edit   = "<button type='button' data-id='" . $row['id'] . "' class='btn btn-sm btn-primary edit' title='Edit Data'><i class='fa fa-edit'></i></button>";
@@ -265,7 +265,7 @@ class Accessories_model extends BF_Model
 		);
 
 		$order_col = isset($columns_order_by[$column_order]) ? $columns_order_by[$column_order] : 'a.id';
-		$order_dir = (strtolower($column_dir) === 'desc') ? 'DESC' : 'ASC';
+		$order_dir = (strtolower((string) $column_dir) === 'desc') ? 'DESC' : 'ASC';
 
 		$sql = "SELECT a.* " . $sql_base . "
 				ORDER BY " . $order_col . " " . $order_dir . "

@@ -39,8 +39,8 @@
 
                             echo '<tr>';
                             echo '<td class="text-center text-muted fw-semibold">' . $no . '</td>';
-                            echo '<td class="text-center fw-bold text-primary">' . htmlspecialchars($item->no_doc) . '</td>';
-                            echo '<td class="text-end fw-semibold">Rp ' . number_format($item->transfer_jumlah, 0, ',', '.') . '</td>';
+                            echo '<td class="text-center fw-bold text-primary">' . htmlspecialchars((string) $item->no_doc) . '</td>';
+                            echo '<td class="text-end fw-semibold">Rp ' . number_format((float) $item->transfer_jumlah, 0, ',', '.') . '</td>';
                             echo '<td class="text-center">' . $status . '</td>';
                             echo '<td class="text-center text-nowrap">
                                     <div class="btn-group btn-group-sm" role="group">

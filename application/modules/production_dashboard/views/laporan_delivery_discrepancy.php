@@ -9,11 +9,11 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label">Tanggal Delivery Dari</label>
-                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars($filter['tgl_dari']) ?>">
+                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Tanggal Delivery Sampai</label>
-                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars($filter['tgl_sampai']) ?>">
+                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
@@ -73,11 +73,11 @@
                                 <td class="text-center"><?= $i + 1 ?></td>
                                 <td>
                                     <a href="<?= base_url('delivery_fg/view/' . $row->do_no) ?>">
-                                        <?= htmlspecialchars($row->do_no) ?>
+                                        <?= htmlspecialchars((string) $row->do_no) ?>
                                     </a>
                                 </td>
-                                <td><?= htmlspecialchars($row->customer) ?></td>
-                                <td class="text-center"><?= date('d/m/Y', strtotime($row->tgl_delivery)) ?></td>
+                                <td><?= htmlspecialchars((string) $row->customer) ?></td>
+                                <td class="text-center"><?= date('d/m/Y', strtotime((string) $row->tgl_delivery)) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->total_estimasi_berat, 3) ?></td>
                                 <td class="text-end"><?= $row->berat_aktual !== null ? number_format((float) $row->berat_aktual, 3) : '-' ?></td>
                                 <td class="text-end <?= ((float) $row->selisih_kg < 0) ? 'text-danger' : 'text-success' ?>">
@@ -87,7 +87,7 @@
                                     <?= $row->selisih_pct !== null ? number_format($selisih_pct * 100, 2) . '%' : '-' ?>
                                 </td>
                                 <td class="text-center">
-                                    <?= $row->tgl_timbang ? date('d/m/Y H:i', strtotime($row->tgl_timbang)) : '-' ?>
+                                    <?= $row->tgl_timbang ? date('d/m/Y H:i', strtotime((string) $row->tgl_timbang)) : '-' ?>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-<?= $badge_color ?>"><?= $row->status ?></span>

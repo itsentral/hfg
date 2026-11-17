@@ -9,7 +9,7 @@
                     <option value="0">Select An Supplier</option>
                     <?php
                         foreach($supList AS $val => $valx){
-                            echo "<option value='".$valx['id_supplier']."'>".strtoupper($valx['nm_supplier'])."</option>";
+                            echo "<option value='".$valx['id_supplier']."'>".strtoupper((string) $valx['nm_supplier'])."</option>";
                         }
                     ?>
                 </select>

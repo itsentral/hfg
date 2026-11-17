@@ -98,11 +98,11 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                     <?php
                                     if (!empty($list_dept)) {
                                         foreach ($list_dept as $item_dept) {
-                                            echo "<option value='" . $item_dept['id'] . "'>" . strtoupper($item_dept['nm_dept']) . "</option>";
+                                            echo "<option value='" . $item_dept['id'] . "'>" . strtoupper((string) $item_dept['nm_dept']) . "</option>";
                                         }
                                     } elseif (function_exists('get_list_dept')) {
                                         foreach (get_list_dept() as $val => $valx) {
-                                            echo "<option value='" . $valx['id'] . "'>" . strtoupper($valx['nm_dept']) . "</option>";
+                                            echo "<option value='" . $valx['id'] . "'>" . strtoupper((string) $valx['nm_dept']) . "</option>";
                                         }
                                     }
                                     ?>
@@ -115,11 +115,11 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                     <?php
                                     if (!empty($list_costcenter)) {
                                         foreach ($list_costcenter as $item_cc) {
-                                            echo "<option value='" . $item_cc['id_costcenter'] . "'>" . strtoupper($item_cc['nm_costcenter']) . "</option>";
+                                            echo "<option value='" . $item_cc['id_costcenter'] . "'>" . strtoupper((string) $item_cc['nm_costcenter']) . "</option>";
                                         }
                                     } elseif (function_exists('get_list_costcenter')) {
                                         foreach (get_list_costcenter() as $val => $valx) {
-                                            echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper($valx['nm_costcenter']) . "</option>";
+                                            echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper((string) $valx['nm_costcenter']) . "</option>";
                                         }
                                     }
                                     ?>
@@ -173,7 +173,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                     <?php
                                     if (!empty($list_po)) {
                                         foreach ($list_po as $val => $valx) {
-                                            echo "<option value='" . $valx['no_ipp'] . "'>" . strtoupper($valx['no_ipp']) . "</option>";
+                                            echo "<option value='" . $valx['no_ipp'] . "'>" . strtoupper((string) $valx['no_ipp']) . "</option>";
                                         }
                                     }
                                     ?>
@@ -186,7 +186,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                     if (!empty($data_gudang)) {
                                         foreach ($data_gudang as $val => $valx) {
                                             $dept_lbl = !empty($valx['kd_gudang_ke']) ? $valx['kd_gudang_ke'] : $valx['id_gudang_ke'];
-                                            echo "<option value='" . $valx['id_gudang_ke'] . "'>" . strtoupper($dept_lbl) . "</option>";
+                                            echo "<option value='" . $valx['id_gudang_ke'] . "'>" . strtoupper((string) $dept_lbl) . "</option>";
                                         }
                                     }
                                     ?>

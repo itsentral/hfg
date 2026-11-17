@@ -182,7 +182,7 @@ class Pembayaran_material extends Admin_Controller
 	public function form_payment_new()
 	{
 
-		$id_payment = explode(';', $_GET['id_payment']);
+		$id_payment = explode(';', (string) $_GET['id_payment']);
 
 		$check_transpoty_driver = $this->Pembayaran_material_model->check_transport_payment($id_payment);
 
@@ -406,8 +406,8 @@ class Pembayaran_material extends Admin_Controller
 				}
 			}
 			$tanggal = $payment_date;
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$Nomor_JV = $this->Jurnal_model->get_no_buk('101', $tanggal);
 			foreach ($id_req as $keys) {
 				$this->All_model->DataUpdate('purchase_order_request_payment', array('status' => '2', 'payment_date' => $payment_date, 'no_payment' => $no_payment), array('id' => $keys));
@@ -1024,9 +1024,9 @@ class Pembayaran_material extends Admin_Controller
 		try {
 			// id_payment dari form = ID request_payment (bisa lebih dari 1, dipisah koma)
 			$id_req_arr = [];
-			$raw_ids = explode(',', $post['id_payment']);
+			$raw_ids = explode(',', (string) $post['id_payment']);
 			foreach ($raw_ids as $rid) {
-				$rid = trim($rid);
+				$rid = trim((string) $rid);
 				if (!empty($rid) && is_numeric($rid)) {
 					$id_req_arr[] = $rid;
 				}
@@ -1333,9 +1333,9 @@ class Pembayaran_material extends Admin_Controller
 		try {
 			// id_payment dari form = ID request_payment (bisa lebih dari 1, dipisah koma)
 			$id_req_arr = [];
-			$raw_ids = explode(',', $post['id_payment']);
+			$raw_ids = explode(',', (string) $post['id_payment']);
 			foreach ($raw_ids as $rid) {
-				$rid = trim($rid);
+				$rid = trim((string) $rid);
 				if (!empty($rid) && is_numeric($rid)) {
 					$id_req_arr[] = $rid;
 				}
@@ -1592,9 +1592,9 @@ class Pembayaran_material extends Admin_Controller
 		try {
 			// id_payment dari form = ID request_payment (bisa lebih dari 1, dipisah koma)
 			$id_req_arr = [];
-			$raw_ids = explode(',', $post['id_payment']);
+			$raw_ids = explode(',', (string) $post['id_payment']);
 			foreach ($raw_ids as $rid) {
-				$rid = trim($rid);
+				$rid = trim((string) $rid);
 				if (!empty($rid) && is_numeric($rid)) {
 					$id_req_arr[] = $rid;
 				}
@@ -2129,9 +2129,9 @@ class Pembayaran_material extends Admin_Controller
 		try {
 			// id_payment dari form = ID request_payment (bisa lebih dari 1, dipisah koma)
 			$id_req_arr = [];
-			$raw_ids = explode(',', $post['id_payment']);
+			$raw_ids = explode(',', (string) $post['id_payment']);
 			foreach ($raw_ids as $rid) {
-				$rid = trim($rid);
+				$rid = trim((string) $rid);
 				if (!empty($rid) && is_numeric($rid)) {
 					$id_req_arr[] = $rid;
 				}
@@ -2488,8 +2488,8 @@ class Pembayaran_material extends Admin_Controller
 			$nomor_jurnal = $jenis_jurnal . $no_payment . rand(100, 999);
 
 			$tanggal = $payment_date;
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$Nomor_JV = $this->Jurnal_model->get_no_buk('101', $tanggal);
 
 			$dataheader =  array(
@@ -2797,8 +2797,8 @@ class Pembayaran_material extends Admin_Controller
 
 			//auto jurnal
 			$tanggal = $payment_date;
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$Nomor_JV = $this->Jurnal_model->get_no_buk('101', $tanggal);
 			$total = 0;
 			foreach ($det_Jurnaltes1 as $vals) {
@@ -2982,7 +2982,7 @@ class Pembayaran_material extends Admin_Controller
 				throw new Exception($this->db->error($insert_payment_paid));
 			}
 
-			$this->db->where_in('id', explode(',', $post['id_payment']));
+			$this->db->where_in('id', explode(',', (string) $post['id_payment']));
 			$update_payment1 = $this->db->update('payment_approve', [
 				'id_payment' => $id_payment_paid,
 				'tgl_bayar' => $post['tgl_bayar'],
@@ -3181,8 +3181,8 @@ class Pembayaran_material extends Admin_Controller
 
 			//auto jurnal
 			$tanggal = $payment_date;
-			$Bln	= substr($tanggal, 5, 2);
-			$Thn	= substr($tanggal, 0, 4);
+			$Bln	= substr((string) $tanggal, 5, 2);
+			$Thn	= substr((string) $tanggal, 0, 4);
 			$Nomor_JV = $this->Jurnal_model->get_no_buk('101', $tanggal);
 			$total = 0;
 			foreach ($det_Jurnaltes1 as $vals) {

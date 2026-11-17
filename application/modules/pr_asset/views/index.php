@@ -22,7 +22,7 @@ $this->load->view('include/side_menu');
 						<option value='0'>All Category</option>
 						<?php
 						foreach ($kategori as $val => $valx) {
-							echo "<option value='" . $valx['id'] . "'>" . strtoupper($valx['nm_category']) . "</option>";
+							echo "<option value='" . $valx['id'] . "'>" . strtoupper((string) $valx['nm_category']) . "</option>";
 						}
 						?>
 						</select>

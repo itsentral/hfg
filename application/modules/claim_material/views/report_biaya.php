@@ -100,20 +100,20 @@
             <tr>
               <td>
                 <span class="badge <?= $r['jenis'] === 'Debit Note' ? 'badge-dn' : 'badge-jual' ?>">
-                  <?= htmlspecialchars($r['jenis']) ?>
+                  <?= htmlspecialchars((string) $r['jenis']) ?>
                 </span>
               </td>
-              <td><code><?= htmlspecialchars($r['no_claim']) ?></code></td>
-              <td><strong><?= htmlspecialchars($r['nama_supplier']) ?></strong></td>
-              <td><?= htmlspecialchars($r['nama_material']) ?></td>
-              <td><code><?= htmlspecialchars($r['no_coil_packing_list']) ?></code></td>
-              <td><span class="badge bg-light text-dark border"><?= htmlspecialchars($r['asal']) ?></span></td>
-              <td class="text-end fw-semibold"><?= number_format($r['berat_kg'], 2, ',', '.') ?></td>
-              <td class="text-end"><?= number_format($r['biaya_material'], 2, ',', '.') ?></td>
-              <td class="text-end"><?= $r['nilai_kompensasi'] !== null ? number_format($r['nilai_kompensasi'], 2, ',', '.') : '-' ?></td>
-              <td class="text-end"><?= $r['nilai_material_kw'] !== null ? number_format($r['nilai_material_kw'], 2, ',', '.') : '-' ?></td>
-              <td class="text-end fw-bold text-danger"><?= number_format($r['beban_ditanggung_hfg'], 2, ',', '.') ?></td>
-              <td><span class="badge bg-secondary"><?= htmlspecialchars($r['akun_beban']) ?></span></td>
+              <td><code><?= htmlspecialchars((string) $r['no_claim']) ?></code></td>
+              <td><strong><?= htmlspecialchars((string) $r['nama_supplier']) ?></strong></td>
+              <td><?= htmlspecialchars((string) $r['nama_material']) ?></td>
+              <td><code><?= htmlspecialchars((string) $r['no_coil_packing_list']) ?></code></td>
+              <td><span class="badge bg-light text-dark border"><?= htmlspecialchars((string) $r['asal']) ?></span></td>
+              <td class="text-end fw-semibold"><?= number_format((float) $r['berat_kg'], 2, ',', '.') ?></td>
+              <td class="text-end"><?= number_format((float) $r['biaya_material'], 2, ',', '.') ?></td>
+              <td class="text-end"><?= $r['nilai_kompensasi'] !== null ? number_format((float) $r['nilai_kompensasi'], 2, ',', '.') : '-' ?></td>
+              <td class="text-end"><?= $r['nilai_material_kw'] !== null ? number_format((float) $r['nilai_material_kw'], 2, ',', '.') : '-' ?></td>
+              <td class="text-end fw-bold text-danger"><?= number_format((float) $r['beban_ditanggung_hfg'], 2, ',', '.') ?></td>
+              <td><span class="badge bg-secondary"><?= htmlspecialchars((string) $r['akun_beban']) ?></span></td>
             </tr>
           <?php
               endforeach;
@@ -130,10 +130,10 @@
         <tfoot>
           <tr>
             <td colspan="7" class="text-end">Total:</td>
-            <td class="text-end">Rp <?= number_format($tot_biaya, 2, ',', '.') ?></td>
-            <td class="text-end">Rp <?= number_format($tot_dn, 2, ',', '.') ?></td>
-            <td class="text-end">Rp <?= number_format($tot_kw, 2, ',', '.') ?></td>
-            <td class="text-end text-danger">Rp <?= number_format($tot_beban, 2, ',', '.') ?></td>
+            <td class="text-end">Rp <?= number_format((float) $tot_biaya, 2, ',', '.') ?></td>
+            <td class="text-end">Rp <?= number_format((float) $tot_dn, 2, ',', '.') ?></td>
+            <td class="text-end">Rp <?= number_format((float) $tot_kw, 2, ',', '.') ?></td>
+            <td class="text-end text-danger">Rp <?= number_format((float) $tot_beban, 2, ',', '.') ?></td>
             <td></td>
           </tr>
         </tfoot>

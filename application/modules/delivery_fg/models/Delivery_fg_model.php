@@ -31,11 +31,11 @@ class Delivery_fg_model extends CI_Model
 
         $seq = 1;
         if ($last) {
-            $parts = explode('-', $last->do_no);
+            $parts = explode('-', (string) $last->do_no);
             $seq   = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -641,7 +641,7 @@ class Delivery_fg_model extends CI_Model
             return;
         }
 
-        $manager_ids = array_filter(array_map('trim', explode(',', $manager_ids_raw)));
+        $manager_ids = array_filter(array_map('trim', explode(',', (string) $manager_ids_raw)));
         if (empty($manager_ids)) {
             return;
         }

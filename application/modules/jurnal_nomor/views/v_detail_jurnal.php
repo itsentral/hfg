@@ -15,7 +15,7 @@ if ($data_perkiraan) {
 	<input type="hidden" id="po_no" name="po_no" value="<?= $po_no ?>" class="form-control" readonly />
 	<input type="hidden" id="total_po" name="total_po" value="<?= $total_po ?>" class="form-control" readonly />
 	<input type="hidden" id="vendor_id" name="vendor_id" value="<?= $id_vendor ?>" class="form-control" readonly />
-	<input type="text" id="vendor_nm" name="vendor_nm" value="<?= stripslashes($nama_vendor) ?>" class="form-control" readonly />
+	<input type="text" id="vendor_nm" name="vendor_nm" value="<?= stripslashes((string) $nama_vendor) ?>" class="form-control" readonly />
 	<input type="text" id="no_surat" name="no_surat" value="<?= $no_surat ?>" class="form-control" readonly />
 
 
@@ -66,11 +66,11 @@ if ($data_perkiraan) {
 											$sum_debet	+= $row->debet;
 											$sum_kredit	+= $row->kredit;
 
-											$format_debet = number_format($row->debet, 0, ',', '.');
-											$format_kredit = number_format($row->kredit, 0, ',', '.');
+											$format_debet = number_format((float) $row->debet, 0, ',', '.');
+											$format_kredit = number_format((float) $row->kredit, 0, ',', '.');
 
-											$format_sumdebet = number_format($sum_debet, 0, ',', '.');
-											$format_sumkredit = number_format($sum_kredit, 0, ',', '.');
+											$format_sumdebet = number_format((float) $sum_debet, 0, ',', '.');
+											$format_sumkredit = number_format((float) $sum_kredit, 0, ',', '.');
 
 											if ($debet == 0 and $kredit == 0) {
 									?>
@@ -86,7 +86,7 @@ if ($data_perkiraan) {
 															<?php
 															$No_Coa = $row->no_perkiraan;
 															foreach ($Arr_Coa as $key => $row2) {
-																$coa_pisah	= explode('^', $key);
+																$coa_pisah	= explode('^', (string) $key);
 																$nokir		= $coa_pisah[0];
 
 																if ($nokir == $No_Coa) {

@@ -25,17 +25,17 @@
             <div class="row g-2 text-center">
                 <div class="col-4">
                     <small class="text-muted d-block">Nilai PO</small>
-                    <span class="fw-bold text-dark"><?= number_format($nilai_po, 2); ?></span>
+                    <span class="fw-bold text-dark"><?= number_format((float) $nilai_po, 2); ?></span>
                     <small class="text-xs text-muted d-block"><?= htmlspecialchars($header->currency ?? 'IDR'); ?></small>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block">PO Terbayar</small>
-                    <span class="fw-bold text-success"><?= number_format($po_terbayar, 2); ?></span>
+                    <span class="fw-bold text-success"><?= number_format((float) $po_terbayar, 2); ?></span>
                     <small class="text-xs text-muted d-block"><?= htmlspecialchars($header->currency ?? 'IDR'); ?></small>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block">Outstanding</small>
-                    <span class="fw-bold <?= ($outstanding_po > 0) ? 'text-danger' : 'text-primary'; ?>"><?= number_format($outstanding_po, 2); ?></span>
+                    <span class="fw-bold <?= ($outstanding_po > 0) ? 'text-danger' : 'text-primary'; ?>"><?= number_format((float) $outstanding_po, 2); ?></span>
                     <small class="text-xs text-muted d-block"><?= htmlspecialchars($header->currency ?? 'IDR'); ?></small>
                 </div>
             </div>
@@ -102,8 +102,8 @@
                             $category_label = 'Pelunasan (After Incoming)';
                             $category_badge = '<span class="badge bg-success bg-opacity-25 text-dark fw-semibold">Pelunasan (After Incoming)</span>';
                         } else {
-                            $category_label = ucfirst($item['category']);
-                            $category_badge = '<span class="badge bg-secondary bg-opacity-25 text-dark fw-semibold">' . htmlspecialchars($category_label) . '</span>';
+                            $category_label = ucfirst((string) $item['category']);
+                            $category_badge = '<span class="badge bg-secondary bg-opacity-25 text-dark fw-semibold">' . htmlspecialchars((string) $category_label) . '</span>';
                         }
 
                         $selisih_kurs_receive_1 = abs($item['selisih_kurs_receive_1']);
@@ -113,26 +113,26 @@
                         <tr>
                             <?php if ($is_first) : ?>
                                 <td rowspan="<?= $row_count; ?>" class="text-center fw-bold bg-white align-middle">
-                                    <span class="badge bg-light-primary text-primary font-monospace px-2 py-1"><?= htmlspecialchars($item['no_po']); ?></span>
+                                    <span class="badge bg-light-primary text-primary font-monospace px-2 py-1"><?= htmlspecialchars((string) $item['no_po']); ?></span>
                                 </td>
                             <?php endif; ?>
                             <td><?= $category_badge; ?></td>
-                            <td class="text-end fw-semibold"><?= number_format($item['value_po'], 2); ?></td>
+                            <td class="text-end fw-semibold"><?= number_format((float) $item['value_po'], 2); ?></td>
                             <td><?= htmlspecialchars($item['tipe_top'] ?? '-'); ?></td>
                             <td class="text-end"><?= $item['value_pct']; ?></td>
-                            <td class="text-end"><?= number_format($item['total_material'], 2); ?></td>
-                            <td class="text-end"><?= number_format($item['unbill'], 2); ?></td>
-                            <td class="text-end"><?= number_format($selisih_kurs_receive_1, 2); ?></td>
-                            <td class="text-end fw-semibold text-primary"><?= number_format($item['receive_invoice_value'], 2); ?></td>
-                            <td class="text-end"><?= number_format($item['receive_kurs'], 2); ?></td>
-                            <td class="text-end"><?= number_format($item['value_receive_idr'], 2); ?></td>
-                            <td class="text-end"><?= number_format($selisih_kurs_receive_2, 2); ?></td>
-                            <td class="text-end fw-bold text-success"><?= number_format($item['invoice_pay'], 2); ?></td>
-                            <td class="text-end"><?= number_format($item['kurs_pay'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['total_material'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['unbill'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $selisih_kurs_receive_1, 2); ?></td>
+                            <td class="text-end fw-semibold text-primary"><?= number_format((float) $item['receive_invoice_value'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['receive_kurs'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['value_receive_idr'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $selisih_kurs_receive_2, 2); ?></td>
+                            <td class="text-end fw-bold text-success"><?= number_format((float) $item['invoice_pay'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['kurs_pay'], 2); ?></td>
                             <td class="text-center font-monospace small"><?= htmlspecialchars($item['currency_pay'] ?? '-'); ?></td>
-                            <td class="text-end fw-semibold"><?= number_format($item['payment_idr'], 2); ?></td>
-                            <td class="text-end"><?= number_format($item['admin_bank'], 2); ?></td>
-                            <td class="text-end <?= ($selisih_kurs_admin == 0) ? 'text-muted' : 'text-danger fw-semibold'; ?>"><?= number_format($selisih_kurs_admin, 2); ?></td>
+                            <td class="text-end fw-semibold"><?= number_format((float) $item['payment_idr'], 2); ?></td>
+                            <td class="text-end"><?= number_format((float) $item['admin_bank'], 2); ?></td>
+                            <td class="text-end <?= ($selisih_kurs_admin == 0) ? 'text-muted' : 'text-danger fw-semibold'; ?>"><?= number_format((float) $selisih_kurs_admin, 2); ?></td>
                         </tr>
                         <?php $is_first = false; ?>
                     <?php endforeach; ?>

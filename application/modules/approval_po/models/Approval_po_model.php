@@ -87,7 +87,7 @@ class Approval_po_model extends BF_Model
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
       $nestedData[]  = "<div align='center'>" . $row['no_surat'] . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d F Y', strtotime($row['tanggal'])) . "</div>";
+      $nestedData[]  = "<div align='center'>" . date('d F Y', strtotime((string) $row['tanggal'])) . "</div>";
       $nestedData[]  = "<div align='center'>" . $row['nm_lengkap'] . "</div>";
       $nestedData[]  = "<div align='center'>" . $row['dibuat_tgl'] . "</div>";
       // $nestedData[]  = "<div align='center'>

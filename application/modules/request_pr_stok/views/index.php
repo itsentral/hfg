@@ -374,8 +374,8 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                         $get_stok_data = $this->db->get()->row();
 
                                         if (!empty($get_stok_data)) {
-                                            $nm_detail .= '<div class="item-line">' . htmlspecialchars($get_stok_data->stock_name) . '</div>';
-                                            $qty_detail .= '<div class="qty-line">' . number_format($item->propose_purchase, 2) . ' ' . ucfirst($get_stok_data->code) . '</div>';
+                                            $nm_detail .= '<div class="item-line">' . htmlspecialchars((string) $get_stok_data->stock_name) . '</div>';
+                                            $qty_detail .= '<div class="qty-line">' . number_format((float) $item->propose_purchase, 2) . ' ' . ucfirst((string) $get_stok_data->code) . '</div>';
                                         }
                                     }
 
@@ -395,11 +395,11 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 
                                     echo '<tr>';
                                     echo '<td class="text-center">' . $no . '</td>';
-                                    echo '<td><span class="no-pr">' . strtoupper($row->no_pr) . '</span></td>';
-                                    echo '<td><span class="kat">' . strtoupper($kategori_text) . '</span></td>';
+                                    echo '<td><span class="no-pr">' . strtoupper((string) $row->no_pr) . '</span></td>';
+                                    echo '<td><span class="kat">' . strtoupper((string) $kategori_text) . '</span></td>';
                                     echo '<td>' . (!empty($nm_detail) ? $nm_detail : '-') . '</td>';
                                     echo '<td>' . (!empty($qty_detail) ? $qty_detail : '-') . '</td>';
-                                    echo '<td class="text-center">' . (!empty($row->tgl_dibutuhkan) ? date('d M Y', strtotime($row->tgl_dibutuhkan)) : '-') . '</td>';
+                                    echo '<td class="text-center">' . (!empty($row->tgl_dibutuhkan) ? date('d M Y', strtotime((string) $row->tgl_dibutuhkan)) : '-') . '</td>';
                                     echo '<td class="text-center pic">' . htmlspecialchars($row->request_by ?? '-') . '</td>';
                                     echo '<td class="text-center">' . htmlspecialchars($row->request_date ?? '-') . '</td>';
                                     echo '<td class="progress-cell">' . render_pr_progress_cell('stock', $row) . '</td>';

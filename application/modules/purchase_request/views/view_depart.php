@@ -23,7 +23,7 @@ $disabled3        = 'readonly';
                     if ($departement->id == $header[0]->id_dept) {
                         $selected = 'selected';
                     }
-                    echo "<option value='" . $departement->id . "' " . $selected . ">" . strtoupper($departement->nama) . "</option>";
+                    echo "<option value='" . $departement->id . "' " . $selected . ">" . strtoupper((string) $departement->nama) . "</option>";
                 }
                 ?>
             </select>
@@ -104,8 +104,8 @@ $disabled3        = 'readonly';
 
                     echo "<tr class='header_" . $nomor . "'>";
                     echo "<td align='center'>" . $nomor . "<input type='hidden' name='detail[" . $nomor . "][id]' value='" . $valx['id'] . "'></td>";
-                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][nm_barang]' class='form-control input-md' value='" . strtoupper($valx['nm_barang']) . "'></td>";
-                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][spec]' class='form-control input-md' value='" . strtoupper($valx['spec']) . "'></td>";
+                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][nm_barang]' class='form-control input-md' value='" . strtoupper((string) $valx['nm_barang']) . "'></td>";
+                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][spec]' class='form-control input-md' value='" . strtoupper((string) $valx['spec']) . "'></td>";
                     echo "<td align='left'><input type='text' " . $disabled2 . " id='qty_" . $nomor . "' name='detail[" . $nomor . "][qty]' class='form-control input-md text-right autoNumeric2 sum_tot' value='" . $valx['qty'] . "'></td>";
                     echo "<td align='left'>
 									<select name='detail[" . $nomor . "][satuan]' class='form-control wajib' " . $disabled2 . " required>";
@@ -116,10 +116,10 @@ $disabled3        = 'readonly';
                     }
                     echo "	</select>
 									</td>";
-                    echo "<td align='left'><input type='text' " . $disabled2 . " id='harga_" . $nomor . "' name='detail[" . $nomor . "][harga]' class='form-control input-md text-right maskM sum_tot' value='" . number_format($valx['harga']) . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+                    echo "<td align='left'><input type='text' " . $disabled2 . " id='harga_" . $nomor . "' name='detail[" . $nomor . "][harga]' class='form-control input-md text-right maskM sum_tot' value='" . number_format((float) $valx['harga']) . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
                     echo "<td align='left'><input type='text' " . $disabled2 . " id='total_harga_" . $nomor . "' name='detail[" . $nomor . "][total_harga]' class='form-control input-md text-right maskM jumlah_all' value='" . number_format($valx['qty'] * $valx['harga']) . "' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
-                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly value='" . strtoupper($valx['tanggal']) . "'></td>";
-                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][keterangan]' class='form-control input-md' value='" . strtoupper($valx['keterangan']) . "'></td>";
+                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][tanggal]' class='form-control input-md text-center datepicker tgl_dibutuhkan' readonly value='" . strtoupper((string) $valx['tanggal']) . "'></td>";
+                    echo "<td align='left'><input type='text' " . $disabled3 . " name='detail[" . $nomor . "][keterangan]' class='form-control input-md' value='" . strtoupper((string) $valx['keterangan']) . "'></td>";
                     echo "<td align='center'>" . $status . "</td>";
                     echo "</tr>";
                 }

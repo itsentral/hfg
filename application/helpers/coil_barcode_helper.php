@@ -30,12 +30,12 @@ if (!function_exists('coil_barcode_parse')) {
             ];
         }
 
-        $barcode_string = trim($barcode_string);
+        $barcode_string = trim((string) $barcode_string);
 
         // Format: bagian dipisahkan oleh '-', minimal 3 bagian
         // Kode coil bisa mengandung '-' (misal C-240001), jadi split dari kanan
         // Asumsi: 2 bagian terakhir adalah nomor_heat dan kode_supplier
-        $parts = explode('-', $barcode_string);
+        $parts = explode('-', (string) $barcode_string);
 
         if (count($parts) < 3) {
             return [
@@ -89,9 +89,9 @@ if (!function_exists('coil_barcode_format')) {
             ];
         }
 
-        $kode_coil     = isset($coil_identity['kode_coil']) ? trim($coil_identity['kode_coil']) : '';
-        $nomor_heat    = isset($coil_identity['nomor_heat']) ? trim($coil_identity['nomor_heat']) : '';
-        $kode_supplier = isset($coil_identity['kode_supplier']) ? trim($coil_identity['kode_supplier']) : '';
+        $kode_coil     = isset($coil_identity['kode_coil']) ? trim((string) $coil_identity['kode_coil']) : '';
+        $nomor_heat    = isset($coil_identity['nomor_heat']) ? trim((string) $coil_identity['nomor_heat']) : '';
+        $kode_supplier = isset($coil_identity['kode_supplier']) ? trim((string) $coil_identity['kode_supplier']) : '';
 
         if (empty($kode_coil) || empty($nomor_heat) || empty($kode_supplier)) {
             return [

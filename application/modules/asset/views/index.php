@@ -21,7 +21,7 @@
                 <select id="kategory" name="kategory" class="form-select form-select-sm">
                     <option value="0">All Category</option>
                     <?php foreach ($kategori as $valx): ?>
-                        <option value="<?= $valx['id'] ?>"><?= strtoupper($valx['nm_category']) ?></option>
+                        <option value="<?= $valx['id'] ?>"><?= strtoupper((string) $valx['nm_category']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

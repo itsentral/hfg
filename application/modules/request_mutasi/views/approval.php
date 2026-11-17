@@ -17,7 +17,7 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle me-2"></i>Review Approval Request Mutasi
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars($kd_mutasi) ?></span></small>
+            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('request_mutasi/approval_mutasi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
@@ -28,39 +28,39 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
 
     <div class="card-body p-4">
         <form method="post" id="frm_data">
-            <input type="hidden" name="no_request" id="no_request" value="<?= htmlspecialchars($kd_mutasi) ?>">
+            <input type="hidden" name="no_request" id="no_request" value="<?= htmlspecialchars((string) $kd_mutasi) ?>">
 
             <!-- Summary Info -->
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
                         <span class="text-muted small fw-semibold text-uppercase">No Request</span>
-                        <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($kd_mutasi) ?></h5>
+                        <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars((string) $kd_mutasi) ?></h5>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
                         <span class="text-muted small fw-semibold text-uppercase">Tanggal Pengajuan</span>
-                        <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($tanggal)) ?></h6>
+                        <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $tanggal)) ?></h6>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
                         <span class="text-muted small fw-semibold text-uppercase">Mata Uang</span>
-                        <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars($matauang) ?></h6>
+                        <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars((string) $matauang) ?></h6>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
                         <span class="text-muted small fw-semibold text-uppercase">Nilai Pengajuan</span>
-                        <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format($nilai, 0, ',', '.') ?></h5>
+                        <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format((float) $nilai, 0, ',', '.') ?></h5>
                     </div>
                 </div>
             </div>
 
             <div class="card border border-light-subtle rounded-3 bg-light p-3 mb-4">
                 <h6 class="fw-bold text-dark mb-2"><i class="fa fa-info-circle me-1 text-primary"></i>Keterangan / Keperluan:</h6>
-                <p class="mb-0 text-dark"><?= nl2br(htmlspecialchars($keterangan)) ?></p>
+                <p class="mb-0 text-dark"><?= nl2br(htmlspecialchars((string) $keterangan)) ?></p>
             </div>
 
             <div class="table-responsive mb-4">
@@ -75,10 +75,10 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-center fw-medium"><?= date('d/m/Y', strtotime($tanggal)) ?></td>
-                            <td><i class="fa fa-bank me-1 text-muted"></i><strong><?= htmlspecialchars($dari) ?></strong> - <?= htmlspecialchars($darinama) ?></td>
-                            <td><i class="fa fa-bank me-1 text-muted"></i><strong><?= htmlspecialchars($ke) ?></strong> - <?= htmlspecialchars($kenama) ?></td>
-                            <td class="text-end fw-bold text-success fs-6">Rp <?= number_format($nilai, 0, ',', '.') ?></td>
+                            <td class="text-center fw-medium"><?= date('d/m/Y', strtotime((string) $tanggal)) ?></td>
+                            <td><i class="fa fa-bank me-1 text-muted"></i><strong><?= htmlspecialchars((string) $dari) ?></strong> - <?= htmlspecialchars((string) $darinama) ?></td>
+                            <td><i class="fa fa-bank me-1 text-muted"></i><strong><?= htmlspecialchars((string) $ke) ?></strong> - <?= htmlspecialchars((string) $kenama) ?></td>
+                            <td class="text-end fw-bold text-success fs-6">Rp <?= number_format((float) $nilai, 0, ',', '.') ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -116,7 +116,7 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="frm-reject">
-                <input type="hidden" name="no_request" value="<?= htmlspecialchars($kd_mutasi) ?>">
+                <input type="hidden" name="no_request" value="<?= htmlspecialchars((string) $kd_mutasi) ?>">
                 <div class="modal-body p-4">
                     <label for="alasan" class="form-label fw-semibold text-muted small">Alasan Penolakan <span class="text-danger">*</span></label>
                     <textarea class="form-control" name="alasan" id="alasan" rows="4" placeholder="Tuliskan alasan penolakan secara jelas..." required></textarea>
@@ -140,7 +140,7 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
         $(document).on('click', '.approve', function() {
             Swal.fire({
                 title: "Setujui Request Mutasi?",
-                text: "Pengajuan mutasi <?= htmlspecialchars($kd_mutasi) ?> akan disetujui untuk proses realisasi.",
+                text: "Pengajuan mutasi <?= htmlspecialchars((string) $kd_mutasi) ?> akan disetujui untuk proses realisasi.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#198754",

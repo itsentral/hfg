@@ -1,7 +1,7 @@
 <?php
 $ENABLE_MANAGE = has_permission('Gl_interface.Manage');
 $is_pending    = ($header['status'] === 'pending' || $header['status'] === 'error');
-$memo          = !empty($header['memo']) ? json_decode($header['memo'], true) : [];
+$memo          = !empty($header['memo']) ? json_decode((string) $header['memo'], true) : [];
 
 $total_debet       = 0;
 $total_kredit      = 0;
@@ -67,26 +67,26 @@ $is_balance = (round($total_debet) === round($total_kredit));
     <!-- HEADER INFO -->
     <div class="card shadow-sm mb-3 summary-card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fa fa-file-text-o me-2"></i> GL Interface Detail — <?= !empty($header['nomor']) ? htmlspecialchars($header['nomor']) : '<span class="text-muted">Number not yet generated</span>' ?></h5>
-            <span class="badge badge-status badge-<?= $header['status'] ?>"><?= strtoupper($header['status']) ?></span>
+            <h5 class="mb-0"><i class="fa fa-file-text-o me-2"></i> GL Interface Detail — <?= !empty($header['nomor']) ? htmlspecialchars((string) $header['nomor']) : '<span class="text-muted">Number not yet generated</span>' ?></h5>
+            <span class="badge badge-status badge-<?= $header['status'] ?>"><?= strtoupper((string) $header['status']) ?></span>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3 mb-2">
                     <span class="info-label">Number</span><br>
-                    <?= !empty($header['nomor']) ? htmlspecialchars($header['nomor']) : '<span class="text-warning"><i class="fa fa-clock-o"></i> Will be generated upon posting</span>' ?>
+                    <?= !empty($header['nomor']) ? htmlspecialchars((string) $header['nomor']) : '<span class="text-warning"><i class="fa fa-clock-o"></i> Will be generated upon posting</span>' ?>
                 </div>
                 <div class="col-md-2 mb-2">
                     <span class="info-label">Date</span><br>
-                    <?= htmlspecialchars($header['tgl']) ?>
+                    <?= htmlspecialchars((string) $header['tgl']) ?>
                 </div>
                 <div class="col-md-2 mb-2">
                     <span class="info-label">Type</span><br>
-                    <?= htmlspecialchars($header['jenis']) ?>
+                    <?= htmlspecialchars((string) $header['jenis']) ?>
                 </div>
                 <div class="col-md-2 mb-2">
                     <span class="info-label">Transaction Type</span><br>
-                    <?= ucfirst(htmlspecialchars($header['jenis_transaksi'])) ?>
+                    <?= ucfirst(htmlspecialchars((string) $header['jenis_transaksi'])) ?>
                 </div>
                 <div class="col-md-3 mb-2">
                     <span class="info-label">User</span><br>
@@ -96,31 +96,31 @@ $is_balance = (round($total_debet) === round($total_kredit));
             <div class="row mt-2">
                 <div class="col-md-6 mb-2">
                     <span class="info-label">Description</span><br>
-                    <?= htmlspecialchars($header['keterangan']) ?>
+                    <?= htmlspecialchars((string) $header['keterangan']) ?>
                 </div>
                 <?php if (!empty($memo['nama_supplier'])): ?>
                     <div class="col-md-3 mb-2">
                         <span class="info-label">Supplier</span><br>
-                        <?= htmlspecialchars($memo['nama_supplier']) ?>
+                        <?= htmlspecialchars((string) $memo['nama_supplier']) ?>
                     </div>
                 <?php endif; ?>
                 <?php if (!empty($memo['no_reff'])): ?>
                     <div class="col-md-3 mb-2">
                         <span class="info-label">No Reff</span><br>
-                        <?= htmlspecialchars($memo['no_reff']) ?>
+                        <?= htmlspecialchars((string) $memo['no_reff']) ?>
                     </div>
                 <?php endif; ?>
             </div>
 
             <?php if (!empty($header['error_msg'])): ?>
                 <div class="alert alert-danger mt-2 mb-0">
-                    <i class="fa fa-exclamation-triangle"></i> <strong>Error:</strong> <?= htmlspecialchars($header['error_msg']) ?>
+                    <i class="fa fa-exclamation-triangle"></i> <strong>Error:</strong> <?= htmlspecialchars((string) $header['error_msg']) ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($header['status'] === 'posted' && !empty($header['posted_at'])): ?>
                 <div class="alert alert-success mt-2 mb-0">
-                    <i class="fa fa-check-circle"></i> Posted on: <?= htmlspecialchars($header['posted_at']) ?>
+                    <i class="fa fa-check-circle"></i> Posted on: <?= htmlspecialchars((string) $header['posted_at']) ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -152,12 +152,12 @@ $is_balance = (round($total_debet) === round($total_kredit));
                         foreach ($details as $d): ?>
                             <tr>
                                 <td><?= $no++ ?></td>
-                                <td style="white-space: nowrap;"><?= htmlspecialchars($d['no_perkiraan']) ?></td>
+                                <td style="white-space: nowrap;"><?= htmlspecialchars((string) $d['no_perkiraan']) ?></td>
                                 <td><?= htmlspecialchars($d['nama_coa'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($d['keterangan'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($d['no_reff'] ?? '-') ?></td>
-                                <td class="text-end"><?= number_format($d['debet'], 2, '.', ',') ?></td>
-                                <td class="text-end"><?= number_format($d['kredit'], 2, '.', ',') ?></td>
+                                <td class="text-end"><?= number_format((float) $d['debet'], 2, '.', ',') ?></td>
+                                <td class="text-end"><?= number_format((float) $d['kredit'], 2, '.', ',') ?></td>
                                 <td class="text-end"><?= number_format($d['debet_kurs'] ?? 0, 2, '.', ',') ?></td>
                                 <td class="text-end"><?= number_format($d['kredit_kurs'] ?? 0, 2, '.', ',') ?></td>
                             </tr>
@@ -166,10 +166,10 @@ $is_balance = (round($total_debet) === round($total_kredit));
                     <tfoot>
                         <tr class="fw-bold table-light">
                             <td colspan="5" class="text-end">TOTAL</td>
-                            <td class="text-end"><?= number_format($total_debet, 2, '.', ',') ?></td>
-                            <td class="text-end"><?= number_format($total_kredit, 2, '.', ',') ?></td>
-                            <td class="text-end"><?= number_format($total_debet_kurs, 2, '.', ',') ?></td>
-                            <td class="text-end"><?= number_format($total_kredit_kurs, 2, '.', ',') ?></td>
+                            <td class="text-end"><?= number_format((float) $total_debet, 2, '.', ',') ?></td>
+                            <td class="text-end"><?= number_format((float) $total_kredit, 2, '.', ',') ?></td>
+                            <td class="text-end"><?= number_format((float) $total_debet_kurs, 2, '.', ',') ?></td>
+                            <td class="text-end"><?= number_format((float) $total_kredit_kurs, 2, '.', ',') ?></td>
                         </tr>
                         <?php if (!$is_balance): ?>
                             <tr class="text-danger">
@@ -211,7 +211,7 @@ $is_balance = (round($total_debet) === round($total_kredit));
             var btn = $(this);
             Swal.fire({
                 title: 'Post to Accounting?',
-                html: 'Number: <strong><?= htmlspecialchars($header['nomor']) ?></strong><br>Make sure the journal data is correct before posting.',
+                html: 'Number: <strong><?= htmlspecialchars((string) $header['nomor']) ?></strong><br>Make sure the journal data is correct before posting.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',

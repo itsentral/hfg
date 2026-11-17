@@ -271,11 +271,11 @@ if (!class_exists('QRcode', false)) {
     	 * @return  If the optional split_length  parameter is specified, the returned array will be broken down into chunks with each being split_length  in length, otherwise each chunk will be one character in length. FALSE is returned if split_length is less than 1. If the split_length length exceeds the length of string , the entire string is returned as the first (and only) array element.
     	 */
 		function str_split($string, $split_length=1) {
-			if ((strlen($string) > $split_length) OR (!$split_length)) {
+			if ((strlen((string) $string) > $split_length) OR (!$split_length)) {
 				do {
-					$c = strlen($string);
-					$parts[] = substr($string, 0, $split_length);
-					$string = substr($string, $split_length);
+					$c = strlen((string) $string);
+					$parts[] = substr((string) $string, 0, $split_length);
+					$string = substr((string) $string, $split_length);
 				} while ($string !== false);
 			} else {
 				$parts = array($string);
@@ -1273,7 +1273,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return boolean true of false
 		 */
 		 protected function isdigitat($str, $pos) {
-			if ($pos >= strlen($str)) {
+			if ($pos >= strlen((string) $str)) {
 				return false;
 			}
 			return ((ord($str[$pos]) >= ord('0'))&&(ord($str[$pos]) <= ord('9')));
@@ -1286,7 +1286,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return boolean true of false
 		 */
 		 protected function isalnumat($str, $pos) {
-			if ($pos >= strlen($str)) {
+			if ($pos >= strlen((string) $str)) {
 				return false;
 			}
 			return ($this->lookAnTable(ord($str[$pos])) >= 0);
@@ -1298,7 +1298,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return int mode
 		 */
 		 protected function identifyMode($pos) {
-			if ($pos >= strlen($this->dataStr)) {
+			if ($pos >= strlen((string) $this->dataStr)) {
 				return QR_MODE_NL;
 			}
 			$c = $this->dataStr[$pos];
@@ -1307,7 +1307,7 @@ if (!class_exists('QRcode', false)) {
 			} elseif ($this->isalnumat($this->dataStr, $pos)) {
 				return QR_MODE_AN;
 			} elseif ($this->hint == QR_MODE_KJ) {
-				if ($pos+1 < strlen($this->dataStr)) {
+				if ($pos+1 < strlen((string) $this->dataStr)) {
 					$d = $this->dataStr[$pos+1];
 					$word = (ord($c) << 8) | ord($d);
 					if (($word >= 0x8140 && $word <= 0x9ffc) OR ($word >= 0xe040 && $word <= 0xebbf)) {
@@ -1410,7 +1410,7 @@ if (!class_exists('QRcode', false)) {
 			$la = $this->lengthIndicator(QR_MODE_AN, $this->version);
 			$ln = $this->lengthIndicator(QR_MODE_NM, $this->version);
 			$p = 1;
-			$dataStrLen = strlen($this->dataStr);
+			$dataStrLen = strlen((string) $this->dataStr);
 			while($p < $dataStrLen) {
 				$mode = $this->identifyMode($p);
 				if ($mode == QR_MODE_KJ) {
@@ -1455,7 +1455,7 @@ if (!class_exists('QRcode', false)) {
 		 * splitString
 		 */
 		 protected function splitString() {
-			while (strlen($this->dataStr) > 0) {
+			while (strlen((string) $this->dataStr) > 0) {
 				if ($this->dataStr == '') {
 					return 0;
 				}
@@ -1488,7 +1488,7 @@ if (!class_exists('QRcode', false)) {
 				if ($length < 0) {
 					return -1;
 				}
-				$this->dataStr = substr($this->dataStr, $length);
+				$this->dataStr = substr((string) $this->dataStr, $length);
 			}
 		}
 
@@ -1496,10 +1496,10 @@ if (!class_exists('QRcode', false)) {
 		 * toUpper
 		 */
 		 protected function toUpper() {
-			$stringLen = strlen($this->dataStr);
+			$stringLen = strlen((string) $this->dataStr);
 			$p = 0;
 			while ($p < $stringLen) {
-				$mode = $this->identifyMode(substr($this->dataStr, $p), $this->hint);
+				$mode = $this->identifyMode(substr((string) $this->dataStr, $p), $this->hint);
 				if ($mode == QR_MODE_KJ) {
 					$p += 2;
 				} else {
@@ -2277,7 +2277,7 @@ if (!class_exists('QRcode', false)) {
 		 * @return array srctab
 		 */
 		 protected function qrstrset($srctab, $x, $y, $repl, $replLen=false) {
-			$srctab[$y] = substr_replace($srctab[$y], ($replLen !== false)?substr($repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen($repl));
+			$srctab[$y] = substr_replace($srctab[$y], ($replLen !== false)?substr((string) $repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen((string) $repl));
 			return $srctab;
 		}
 

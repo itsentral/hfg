@@ -104,7 +104,7 @@ class Product_jenis extends Admin_Controller
             'pesan'		=>'Failed process data!',
             'status'	=> 0
           );
-          write_log('Product Jenis', $label, 'Gagal ' . strtolower($label) . ' product jenis: ' . $code, $logPayload, null, 0);
+          write_log('Product Jenis', $label, 'Gagal ' . strtolower((string) $label) . ' product jenis: ' . $code, $logPayload, null, 0);
         } else {
           $this->db->trans_commit();
           $status	= array(
@@ -166,7 +166,7 @@ class Product_jenis extends Admin_Controller
         $option	= "<option value='0'>Select Product Category</option>";
         foreach($result[$code_lv1] AS $val => $valx){
           $sel = ($id == $valx['code_lv2'])?'selected':'';
-          $option .= "<option value='".$valx['code_lv2']."' ".$sel.">".strtoupper($valx['nama'])."</option>";
+          $option .= "<option value='".$valx['code_lv2']."' ".$sel.">".strtoupper((string) $valx['nama'])."</option>";
         }
       }
       else{

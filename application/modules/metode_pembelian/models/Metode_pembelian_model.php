@@ -48,8 +48,8 @@ class Metode_pembelian_model extends BF_Model
 
 			$nestedData[]	= "<div class='prt_" . $nomor . "' align='center'>" . $nomor . "</div><script type='text/javascript'>$('.prt_" . $nomor . "').parent().parent().attr('id','" . $nomor . "');</script></div>";
 			$nestedData[]	= "<div align='center'>" . $row['no_pr_group'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tgl_pr'])) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
 			if ($row['category'] == 'asset') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'rutin') {
@@ -70,7 +70,7 @@ class Metode_pembelian_model extends BF_Model
 			}
 
 			if (!empty($row['jenis_pembelian'])) {
-				$sts2 = "<br><span class='badge' style='background-color: " . $warna . ";'>PURCHASING " . strtoupper($row['jenis_pembelian']) . "</span>";
+				$sts2 = "<br><span class='badge' style='background-color: " . $warna . ";'>PURCHASING " . strtoupper((string) $row['jenis_pembelian']) . "</span>";
 			}
 
 			$jns_pm = "";
@@ -78,7 +78,7 @@ class Metode_pembelian_model extends BF_Model
 			$warna2 = 'blue';
 			if (!empty($row['no_rfq'])) {
 				if ($row['jenis_pembelian'] == 'po') {
-					$jns_pm = "<br><b>NO RFQ</b><br>" . strtoupper($row['no_rfq']);
+					$jns_pm = "<br><b>NO RFQ</b><br>" . strtoupper((string) $row['no_rfq']);
 
 					$get_sts = $this->db->query("SELECT sts_ajuan FROM tran_rfq_header WHERE no_rfq='" . $row['no_rfq'] . "' LIMIT 1")->result();
 
@@ -86,7 +86,7 @@ class Metode_pembelian_model extends BF_Model
 					$warna2 = color_status_purchase($get_sts[0]->sts_ajuan)['color'];
 				}
 				if ($row['jenis_pembelian'] == 'non po') {
-					$jns_pm = "<br><b>NO NON-PO</b><br>" . strtoupper($row['no_rfq']);
+					$jns_pm = "<br><b>NO NON-PO</b><br>" . strtoupper((string) $row['no_rfq']);
 
 					$get_sts = $this->db->query("SELECT app_status FROM tran_non_po_detail WHERE no_non_po='" . $row['no_rfq'] . "' LIMIT 1")->result();
 					$stsx = "APV";
@@ -98,8 +98,8 @@ class Metode_pembelian_model extends BF_Model
 				}
 			}
 
-			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nm_barang']) . "</div>";
+			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nm_barang']) . "</div>";
 			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna2 . "'>" . $sts . "</span>" . $sts2 . "</div>";
 			$nestedData[]	= "<div align='center'>
 								<button type='button' class='btn btn-sm btn-primary look_hide' title='Look and Hide' data-id='" . $nomor . "'><i class='fa fa-eye'></i></button>
@@ -107,17 +107,17 @@ class Metode_pembelian_model extends BF_Model
 			$data[] = $nestedData;
 
 			$app_reason = (!empty($row['app_reason'])) ? $row['app_reason'] : 'tidak ada';
-			$sts_app = "<b>REASON</b><br>" . ucfirst($app_reason);
-			$sts_by = "<b>CREATED BY</b><br>" . ucfirst($row['app_by'] . " (" . date('d-M-Y H:i:s', strtotime($row['app_date'])) . ")");
+			$sts_app = "<b>REASON</b><br>" . ucfirst((string) $app_reason);
+			$sts_by = "<b>CREATED BY</b><br>" . ucfirst($row['app_by'] . " (" . date('d-M-Y H:i:s', strtotime((string) $row['app_date'])) . ")");
 
 
 			$nestedData2 	= array();
 			$nestedData2[]	= "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>"; //$('.prtCh_".$nomor."').parent().parent().attr('height','200px');
 			$nestedData2[]	= "<div align='left'></div>";
 			$nestedData2[]	= "<div align='left'></div>";
-			$nestedData2[]	= "<div align='right'><b>QTY BARANG</b><br>" . number_format($row['qty']) . "</div>";
-			$nestedData2[]	= "<div align='right'><b>NILAI PR</b></br>" . number_format($row['nilai_pr']) . "</div>";
-			$nestedData2[]	= "<div align='left'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . $jns_pm . "</div>";
+			$nestedData2[]	= "<div align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
+			$nestedData2[]	= "<div align='right'><b>NILAI PR</b></br>" . number_format((float) $row['nilai_pr']) . "</div>";
+			$nestedData2[]	= "<div align='left'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . $jns_pm . "</div>";
 			$nestedData2[]	= "<div align='left'>" . $sts_by . "<br>" . $sts_app . "</div>";
 			$nestedData2[]	= "<div align='left'></div>";
 			$data[] = $nestedData2;
@@ -216,8 +216,8 @@ class Metode_pembelian_model extends BF_Model
 
 			$nestedData[]	= "<div class='prt_" . $nomor . "' align='center'>" . $nomor . "</div><script type='text/javascript'>$('.prt_" . $nomor . "').parent().parent().attr('id','" . $nomor . "');</script></div>";
 			$nestedData[]	= "<div align='center'>" . $row['no_pr'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['departemen']) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tgl_pr'])) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['departemen']) . "</div>";
 			if ($row['category'] == 'pr material') {
 				$warna = '#a9179e';
 			} elseif ($row['category'] == 'pr stok') {
@@ -237,9 +237,9 @@ class Metode_pembelian_model extends BF_Model
 				$category = 'departemen';
 			}
 
-			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
-			$nestedData[]	= "<div align='center'>" . strtoupper($row['by_name']) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['tgl_buat'])) . "</div>";
+			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
+			$nestedData[]	= "<div align='center'>" . strtoupper((string) $row['by_name']) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['tgl_buat'])) . "</div>";
 			$nestedData[]	= "<div align='center'>
 								<button type='button' class='btn btn-sm btn-primary detail_pr' title='Detail' data-no_pr_group='" . $row['no_pr'] . "' data-tipe_pr='" . $row['category'] . "'><i class='fa fa-eye'></i></button>
 								</div>";
@@ -491,8 +491,8 @@ class Metode_pembelian_model extends BF_Model
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
 				$arr_mat[$val] = $valx['nm_barang'];
-				$arr_qty[$val] = number_format($valx['qty']);
-				$arr_tgl[$val] = date('d-M-Y', strtotime($valx['tgl_dibutuhkan']));
+				$arr_qty[$val] = number_format((float) $valx['qty']);
+				$arr_tgl[$val] = date('d-M-Y', strtotime((string) $valx['tgl_dibutuhkan']));
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 			$dt_qty	= implode("<br>", $arr_qty);
@@ -517,13 +517,13 @@ class Metode_pembelian_model extends BF_Model
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($dt_mat) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $dt_mat) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $dt_qty . "</div>";
 			$nestedData[]	= "<div align='center'>" . $dt_tgl . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['updated_by'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . date('d-M-Y H:i:s', strtotime($row['updated_date'])) . "</div>";
+			$nestedData[]	= "<div align='right'>" . date('d-M-Y H:i:s', strtotime((string) $row['updated_date'])) . "</div>";
 
 			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . color_status_purchase($row['sts_ajuan'])['color'] . "'>" . color_status_purchase($row['sts_ajuan'])['status'] . "</span></div>";
 			$create	= "";
@@ -693,7 +693,7 @@ class Metode_pembelian_model extends BF_Model
 				$warna = '#1bb885';
 			}
 
-			$category_label = strtoupper($row['category']);
+			$category_label = strtoupper((string) $row['category']);
 
 			// Kolom yang pakai rowspan (hanya di baris pertama per PR)
 			$col_checkbox    = "<div align='center'>
@@ -702,11 +702,11 @@ class Metode_pembelian_model extends BF_Model
                             <input type='hidden' name='category_{$row['no_pr']}' value='{$row['category']}'>
                         </div>";
 			$col_no_pr       = "<div align='center'>{$row['no_pr']}</div>";
-			$col_tgl_pr      = "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_pr'])) . "</div>";
+			$col_tgl_pr      = "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tgl_pr'])) . "</div>";
 			$col_category    = "<div align='center'><span class='badge' style='background-color:{$warna};'>{$category_label}</span></div>";
-			$col_dibutuhkan  = "<div align='center'>" . date('d F Y', strtotime($row['tgl_pr'])) . "</div>";
-			$col_request_by  = "<div align='center'>" . strtoupper($row['request_by']) . "</div>";
-			$col_request_date = "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['request_date'])) . "</div>";
+			$col_dibutuhkan  = "<div align='center'>" . date('d F Y', strtotime((string) $row['tgl_pr'])) . "</div>";
+			$col_request_by  = "<div align='center'>" . strtoupper((string) $row['request_by']) . "</div>";
+			$col_request_date = "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['request_date'])) . "</div>";
 
 			foreach ($get_list_barang as $key => $barang) {
 				$nestedData = array();
@@ -726,7 +726,7 @@ class Metode_pembelian_model extends BF_Model
 				// Kolom per item (tidak pakai rowspan)
 				$nestedData[] = "<div style='padding:4px 6px;'>" . $barang['nm_barang'] . "</div>";
 				$nestedData[] = "<div style='padding:4px 6px;'>" . $barang['nm_lain'] . "</div>";
-				$nestedData[] = "<div style='padding:4px 6px; text-align:right; font-weight:bold;'>" . number_format($barang['qty']) . "</div>";
+				$nestedData[] = "<div style='padding:4px 6px; text-align:right; font-weight:bold;'>" . number_format((float) $barang['qty']) . "</div>";
 
 				if ($key == 0) {
 					$nestedData[] = "rowspan|{$total_item}|" . $col_category;
@@ -1204,9 +1204,9 @@ class Metode_pembelian_model extends BF_Model
 			$data	= $this->input->post();
 
 			$ArrHeader = array(
-				'incoterms' 	=> strtolower($data['incoterms']),
-				'top' 			=> strtolower($data['top']),
-				'remarks' 		=> strtolower($data['remarks']),
+				'incoterms' 	=> strtolower((string) $data['incoterms']),
+				'top' 			=> strtolower((string) $data['top']),
+				'remarks' 		=> strtolower((string) $data['remarks']),
 				'updated_print_by' 	=> $data_session['ORI_User']['username'],
 				'updated_print_date' 	=> date('Y-m-d H:i:s')
 			);
@@ -1282,7 +1282,7 @@ class Metode_pembelian_model extends BF_Model
 				$ArrData1[] = $vaA['id_supplier'];
 			}
 			$ArrData1 		= implode(",", $ArrData1);
-			$ArrSupChecked 	= explode(",", $ArrData1);
+			$ArrSupChecked 	= explode(",", (string) $ArrData1);
 		}
 
 		$data = array(
@@ -1447,7 +1447,7 @@ class Metode_pembelian_model extends BF_Model
 		include $sroot . "/application/views/Print/print_rfq_ast_rtn.php";
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 		// $okeH  			= $this->session->userdata("ses_username");
@@ -1579,9 +1579,9 @@ class Metode_pembelian_model extends BF_Model
 			foreach ($list_material as $val => $valx) {
 				$arr_mat[$val] = $valx['nm_barang'];
 				$arr_pr[$val] = $valx['no_pr'];
-				$arr_qty[$val] = number_format($valx['qty'], 2);
-				$arr_price[$val] = number_format($valx['price_ref']);
-				$arr_tgl[$val] = date('d-M-Y', strtotime($valx['tgl_dibutuhkan']));
+				$arr_qty[$val] = number_format((float) $valx['qty'], 2);
+				$arr_price[$val] = number_format((float) $valx['price_ref']);
+				$arr_tgl[$val] = date('d-M-Y', strtotime((string) $valx['tgl_dibutuhkan']));
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 			$dt_qty	= implode("<br>", $arr_qty);
@@ -1609,7 +1609,7 @@ class Metode_pembelian_model extends BF_Model
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
@@ -1617,7 +1617,7 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
 			$nestedData[]	= "<div align='center'>" . $dt_tgl . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['updated_by'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . date('d-M-Y H:i:s', strtotime($row['updated_date'])) . "</div>";
+			$nestedData[]	= "<div align='right'>" . date('d-M-Y H:i:s', strtotime((string) $row['updated_date'])) . "</div>";
 
 			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . color_status_purchase($row['sts_ajuan'])['color'] . "'>" . color_status_purchase($row['sts_ajuan'])['status'] . "</span></div>";
 			$create	= "";
@@ -1875,19 +1875,19 @@ class Metode_pembelian_model extends BF_Model
 			$list_material		= $this->db->query("SELECT nm_barang, qty, price_ref, price_ref_sup FROM tran_rfq_detail WHERE no_rfq='" . $row['no_rfq'] . "' AND deleted='N' GROUP BY id_barang")->result_array();
 			$arr_mat = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_mat[$val] = strtoupper($valx['nm_barang']);
+				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_qty[$val] = number_format($valx['qty']);
+				$arr_qty[$val] = number_format((float) $valx['qty']);
 			}
 			$dt_qty	= implode("<br>", $arr_qty);
 
 			$arr_price = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_price[$val] = number_format($valx['price_ref']);
+				$arr_price[$val] = number_format((float) $valx['price_ref']);
 			}
 			$dt_price	= implode("<br>", $arr_price);
 
@@ -1909,13 +1909,13 @@ class Metode_pembelian_model extends BF_Model
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_price . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['created_by'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . date('d F Y', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='right'>" . date('d F Y', strtotime((string) $row['created_date'])) . "</div>";
 
 			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . color_status_purchase($row['sts_ajuan'])['color'] . "'>" . color_status_purchase($row['sts_ajuan'])['status'] . "</span></div>";
 			$ajukan	= "";
@@ -2035,7 +2035,7 @@ class Metode_pembelian_model extends BF_Model
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -2094,19 +2094,19 @@ class Metode_pembelian_model extends BF_Model
 			$list_material		= $this->db->query("SELECT nm_barang, qty, price_ref, price_ref_sup FROM tran_rfq_detail WHERE no_rfq='" . $row['no_rfq'] . "' AND deleted='N' GROUP BY id_barang")->result_array();
 			$arr_mat = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_mat[$val] = strtoupper($valx['nm_barang']);
+				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_qty[$val] = number_format($valx['qty']);
+				$arr_qty[$val] = number_format((float) $valx['qty']);
 			}
 			$dt_qty	= implode("<br>", $arr_qty);
 
 			$arr_price = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_price[$val] = number_format($valx['price_ref']);
+				$arr_price[$val] = number_format((float) $valx['price_ref']);
 			}
 			$dt_price	= implode("<br>", $arr_price);
 
@@ -2128,13 +2128,13 @@ class Metode_pembelian_model extends BF_Model
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_price . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['created_by'] . "</div>";
-			$nestedData[]	= "<div align='right'>" . date('d F Y', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='right'>" . date('d F Y', strtotime((string) $row['created_date'])) . "</div>";
 
 			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . color_status_purchase($row['sts_ajuan'])['color'] . "'>" . color_status_purchase($row['sts_ajuan'])['status'] . "</span></div>";
 			$ajukan	= "";
@@ -2324,19 +2324,19 @@ class Metode_pembelian_model extends BF_Model
 
 			$arr_mat = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_mat[$val] = strtoupper($valx['nm_barang']);
+				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_qty[$val] = number_format($valx['qty_purchase'], 2);
+				$arr_qty[$val] = number_format((float) $valx['qty_purchase'], 2);
 			}
 			$dt_qty	= implode("<br>", $arr_qty);
 
 			$arr_pur = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_pur[$val] = number_format($valx['net_price'], 2);
+				$arr_pur[$val] = number_format((float) $valx['net_price'], 2);
 			}
 			$dt_pur	= implode("<br>", $arr_pur);
 
@@ -2360,13 +2360,13 @@ class Metode_pembelian_model extends BF_Model
 				$category = 'departemen';
 			}
 			$status_po = $row['status_po'];
-			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='left'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 			$nestedData[]	= "<div align='left'>" . $dt_sup . "</div>";
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['total_price'], 2) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['total_price'], 2) . "</div>";
 			$nestedData[]	= "<div align='left'>" . get_name('users', 'nm_lengkap', 'username', $row['created_by']) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['created_date'])) . "</div>";
 			if ($row['status'] == 'COMPLETE') {
 				$warna = 'bg-green';
 				$status = $row['status'];
@@ -2512,7 +2512,7 @@ class Metode_pembelian_model extends BF_Model
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -2532,7 +2532,7 @@ class Metode_pembelian_model extends BF_Model
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -2558,7 +2558,7 @@ class Metode_pembelian_model extends BF_Model
 		$d_Header .= "<select name='detail_po[" . $id . "][group_top]' class='form-control text-left chosen_select' value='" . $id . "'>";
 		$d_Header .= "<option value='0'>Select Group TOP</option>";
 		foreach ($payment as $val => $valx) {
-			$d_Header .= "<option value='" . $valx['name'] . "'>" . strtoupper($valx['name']) . "</option>";
+			$d_Header .= "<option value='" . $valx['name'] . "'>" . strtoupper((string) $valx['name']) . "</option>";
 		}
 		$d_Header .= "</select>";
 		$d_Header .= "<input type='hidden' name='detail_po[" . $id . "][term]' class='form-control text-center input-md' value='" . $id . "'>";
@@ -2613,7 +2613,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2PR		= (int)substr($angkaUrut2, 6, 4);
+		$urutan2PR		= (int)substr((string) $angkaUrut2, 6, 4);
 
 		//Urutab PR GROUP
 		$Ym = date('ym');
@@ -2621,7 +2621,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPPX		= $this->db->query($qIPPX)->num_rows();
 		$resultIPPX		= $this->db->query($qIPPX)->result_array();
 		$angkaUrut2X	= $resultIPPX[0]['maxP'];
-		$urutan2X		= (int)substr($angkaUrut2X, 6, 4);
+		$urutan2X		= (int)substr((string) $angkaUrut2X, 6, 4);
 		$urutan2X++;
 		$urut2X			= sprintf('%04s', $urutan2X);
 		$no_pr_group	= "PR" . $Ym . $urut2X;
@@ -2631,7 +2631,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 		$resultMtr		= $this->db->query($srcMtr)->result_array();
 		$angkaUrut2		= $resultMtr[0]['maxP'];
-		$urutan2		= (int)substr($angkaUrut2, 8, 4);
+		$urutan2		= (int)substr((string) $angkaUrut2, 8, 4);
 		$urutan2++;
 		$urut2			= sprintf('%04s', $urutan2);
 		$no_rfq			= "RFQX" . $Ym . $urut2;
@@ -2770,7 +2770,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2PR		= (int)substr($angkaUrut2, 6, 4);
+		$urutan2PR		= (int)substr((string) $angkaUrut2, 6, 4);
 
 		//Urutab PR GROUP
 		$Ym = date('ym');
@@ -2778,7 +2778,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPPX		= $this->db->query($qIPPX)->num_rows();
 		$resultIPPX		= $this->db->query($qIPPX)->result_array();
 		$angkaUrut2X	= $resultIPPX[0]['maxP'];
-		$urutan2X		= (int)substr($angkaUrut2X, 6, 4);
+		$urutan2X		= (int)substr((string) $angkaUrut2X, 6, 4);
 		$urutan2X++;
 		$urut2X			= sprintf('%04s', $urutan2X);
 		$no_pr_group			= "PR" . $Ym . $urut2X;
@@ -2929,7 +2929,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2PR		= (int)substr($angkaUrut2, 6, 4);
+		$urutan2PR		= (int)substr((string) $angkaUrut2, 6, 4);
 
 		//Urutab PR GROUP
 		$Ym = date('ym');
@@ -2937,7 +2937,7 @@ class Metode_pembelian_model extends BF_Model
 		$numrowIPPX		= $this->db->query($qIPPX)->num_rows();
 		$resultIPPX		= $this->db->query($qIPPX)->result_array();
 		$angkaUrut2X	= $resultIPPX[0]['maxP'];
-		$urutan2X		= (int)substr($angkaUrut2X, 6, 4);
+		$urutan2X		= (int)substr((string) $angkaUrut2X, 6, 4);
 		$urutan2X++;
 		$urut2X			= sprintf('%04s', $urutan2X);
 		$no_pr_group			= "PR" . $Ym . $urut2X;
@@ -3161,10 +3161,10 @@ class Metode_pembelian_model extends BF_Model
 			if ($category == 'non rutin') {
 				$category = 'departemen';
 			}
-			$nestedData[]	= "<div align='center'>" . strtoupper($row['no_non_po']) . "</div>";
-			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper($category) . "</span></div>";
+			$nestedData[]	= "<div align='center'>" . strtoupper((string) $row['no_non_po']) . "</div>";
+			$nestedData[]	= "<div align='center'><span class='badge' style='background-color: " . $warna . ";'>" . strtoupper((string) $category) . "</span></div>";
 
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nm_dept']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
 
 			$list_barang	= $this->db->get_where('tran_non_po_detail', array('no_non_po' => $row['no_non_po']))->result_array();
 			$arr_nmbarang = array();
@@ -3172,10 +3172,10 @@ class Metode_pembelian_model extends BF_Model
 			$arr_tanggal = array();
 			foreach ($list_barang as $val => $valx) {
 				$get_satuan = $this->db->get_where('raw_pieces', array('id_satuan' => $valx['satuan']))->result();
-				$nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->kode_satuan) : '';
-				$arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-				$arr_qty[$val] = "&bull; " . number_format($valx['qty']) . ' ' . $nm_satuan;
-				$tgl_dibutuhkan = ($valx['tgl_dibutuhkan'] <> '0000-00-00') ? date('d-M-Y', strtotime($valx['tgl_dibutuhkan'])) : 'not set';
+				$nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->kode_satuan) : '';
+				$arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+				$arr_qty[$val] = "&bull; " . number_format((float) $valx['qty']) . ' ' . $nm_satuan;
+				$tgl_dibutuhkan = ($valx['tgl_dibutuhkan'] <> '0000-00-00') ? date('d-M-Y', strtotime((string) $valx['tgl_dibutuhkan'])) : 'not set';
 				$arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
 			}
 			$dt_nama_barang	= implode("<br>", $arr_nmbarang);
@@ -3319,8 +3319,8 @@ class Metode_pembelian_model extends BF_Model
 			$tanda        	= $data['tanda'];
 			$approve        = $data['approve'];
 
-			$pic        	= strtolower($data['pic']);
-			$keterangan     = strtolower($data['keterangan']);
+			$pic        	= strtolower((string) $data['pic']);
+			$keterangan     = strtolower((string) $data['keterangan']);
 
 			$detail 		= $data['detail'];
 
@@ -3344,10 +3344,10 @@ class Metode_pembelian_model extends BF_Model
 						$SUM_HARGA 	+= $harga * $qty;
 
 						$ArrDetail[$val]['id'] 				= $valx['id'];
-						$ArrDetail[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
+						$ArrDetail[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
 						$ArrDetail[$val]['qty'] 			= $qty;
 						$ArrDetail[$val]['price_unit'] 		= $harga;
-						$ArrDetail[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+						$ArrDetail[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 						$ArrDetail[$val]['tgl_dibutuhkan'] 		= $valx['tanggal'];
 						$ArrDetail[$val]['created_by'] 		= $data_session['ORI_User']['username'];
 						$ArrDetail[$val]['created_date'] 	= $dateTime;
@@ -3378,15 +3378,15 @@ class Metode_pembelian_model extends BF_Model
 						$SUM_HARGA 	+= $harga * $qty;
 
 						$ArrDetail[$val]['id'] 				= $valx['id'];
-						$ArrDetail[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
+						$ArrDetail[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
 						$ArrDetail[$val]['qty_rev'] 		= $qty;
 						$ArrDetail[$val]['price_unit_rev'] 	= $harga;
-						$ArrDetail[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+						$ArrDetail[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 						$ArrDetail[$val]['tgl_dibutuhkan'] 	= $valx['tanggal'];
 						$ArrDetail[$val]['satuan'] 			= $valx['satuan'];
 						$ArrDetail[$val]['created_by'] 		= $data_session['ORI_User']['username'];
 						$ArrDetail[$val]['created_date'] 	= $dateTime;
-						$ArrDetail[$val]['app_reason'] 		= strtolower($reason);
+						$ArrDetail[$val]['app_reason'] 		= strtolower((string) $reason);
 						$ArrDetail[$val]['app_status'] 		= $sts_app;
 						$ArrDetail[$val]['app_by'] 			= $data_session['ORI_User']['username'];
 						$ArrDetail[$val]['app_date'] 		= $dateTime;
@@ -3403,7 +3403,7 @@ class Metode_pembelian_model extends BF_Model
 					'app_status' 	=> $sts_app,
 					'app_by'		=> $data_session['ORI_User']['username'],
 					'app_date'		=> $dateTime,
-					'app_reason' 	=> strtolower($reason),
+					'app_reason' 	=> strtolower((string) $reason),
 				);
 			}
 
@@ -3466,7 +3466,7 @@ class Metode_pembelian_model extends BF_Model
 			}
 			$data = array(
 				'title'				=> $tanda . ' Non PO',
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'akses_menu'	=> $Arr_Akses,
 				'header'		=> $header,
 				'detail'		=> $detail,
@@ -3529,15 +3529,15 @@ class Metode_pembelian_model extends BF_Model
 			$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 			$resultMtr		= $this->db->query($srcMtr)->result_array();
 			$angkaUrut2		= $resultMtr[0]['maxP'];
-			$urutan2		= (int)substr($angkaUrut2, 7, 4);
+			$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 			$urutan2++;
 			$urut2			= sprintf('%04s', $urutan2);
 			$no_po			= "POX" . $Ym . $urut2;
 			// echo $no_po; exit;
 
 			$check			= $data['check'];
-			$tgl_dibutuhkan	= date('Y-m-d', strtotime($data['tanggal_dibutuhkan']));
-			$valid_date		= (!empty($data['valid_date'])) ? date('Y-m-d', strtotime($data['valid_date'])) : NULL;
+			$tgl_dibutuhkan	= date('Y-m-d', strtotime((string) $data['tanggal_dibutuhkan']));
+			$valid_date		= (!empty($data['valid_date'])) ? date('Y-m-d', strtotime((string) $data['valid_date'])) : NULL;
 			$total_po		= str_replace(',', '', $data['total_po']);
 			$discount		= str_replace(',', '', $data['discount']);
 			$net_price		= str_replace(',', '', $data['net_price']);
@@ -3699,18 +3699,18 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='center'>" . $row['no_rfq'] . "
 									<input type='hidden' name='harga_idr_" . $row['id'] . "' value='" . $row['harga_idr'] . "' class='harga_idr_val'>
 									<input type='hidden' name='total_harga_" . $row['id'] . "' value='" . $row['total_harga'] . "' class='total_harga_val'></div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nm_barang']) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['qty'], 2) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['qty_po'], 2) . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['tgl_dibutuhkan'])) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nm_barang']) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['qty'], 2) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['qty_po'], 2) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['created_by'] . "</div>";
-			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime($row['created_date'])) . "</div>";
-			$nestedData[]	= "<div align='right' class='harga_idr'>" . number_format($row['harga_idr'], 2) . "</div>";
+			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $row['created_date'])) . "</div>";
+			$nestedData[]	= "<div align='right' class='harga_idr'>" . number_format((float) $row['harga_idr'], 2) . "</div>";
 			$nestedData[]	= "<div align='left'><span class='text-primary text-bold'>" . $row['currency'] . "</span></div>";
 			$nestedData[]	= "<div align='center'>
 									<input type='text' name='purchase_" . $row['id'] . "' id='purchase_" . $row['id'] . "' value='" . $row['qty'] . "' class='form-control input-md text-right maskM qty_po' style='width:100%;'>
 								</div><script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '2', aPad: false});</script>";
-			$nestedData[]	= "<div align='right' class='total_harga'>" . number_format($row['total_harga'], 2) . "</div>";
+			$nestedData[]	= "<div align='right' class='total_harga'>" . number_format((float) $row['total_harga'], 2) . "</div>";
 			$data[] = $nestedData;
 			$urut1++;
 			$urut2++;
@@ -3821,19 +3821,19 @@ class Metode_pembelian_model extends BF_Model
 			}
 			$arr_mat = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_mat[$val] = strtoupper($valx['nm_barang']);
+				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
 			$dt_mat	= implode("<br>", $arr_mat);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_qty[$val] = number_format($valx['qty_purchase']);
+				$arr_qty[$val] = number_format((float) $valx['qty_purchase']);
 			}
 			$dt_qty	= implode("<br>", $arr_qty);
 
 			$arr_pur = array();
 			foreach ($list_material as $val => $valx) {
-				$arr_pur[$val] = number_format($valx['net_price']);
+				$arr_pur[$val] = number_format((float) $valx['net_price']);
 			}
 			$dt_pur	= implode("<br>", $arr_pur);
 
@@ -3844,7 +3844,7 @@ class Metode_pembelian_model extends BF_Model
 			$nestedData[]	= "<div align='left'>" . $dt_mat . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_qty . "</div>";
 			$nestedData[]	= "<div align='right'>" . $dt_pur . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['total_price'], 2) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['total_price'], 2) . "</div>";
 
 			$app1 = "<button type='button' class='btn btn-sm btn-success approved' title='Approval' data-id='" . $ID . "' data-no_po='" . $row['no_po'] . "'><i class='fa fa-check'></i></button>";
 
@@ -3952,9 +3952,9 @@ class Metode_pembelian_model extends BF_Model
 					$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress']);
 					$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd']);
 					$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr']);
-					$ArrEditPO[$val]['keterangan'] 	= strtolower($valx['keterangan']);
+					$ArrEditPO[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 					$ArrEditPO[$val]['jatuh_tempo'] = $valx['jatuh_tempo'];
-					$ArrEditPO[$val]['syarat'] 		= strtolower($valx['syarat']);
+					$ArrEditPO[$val]['syarat'] 		= strtolower((string) $valx['syarat']);
 					$ArrEditPO[$val]['created_by'] 	= $data_session['ORI_User']['username'];
 					$ArrEditPO[$val]['created_date'] = date('Y-m-d H:i:s');
 				}
@@ -4018,7 +4018,7 @@ class Metode_pembelian_model extends BF_Model
 	 */
 	private function _get_category_config($category, $no_pr)
 	{
-		$cat = strtolower(trim($category));
+		$cat = strtolower(trim((string) $category));
 		if ($cat == 'departemen' || $cat == 'pr departemen') {
 			return [
 				'table_header' => 'rutin_non_planning_header',
@@ -4104,7 +4104,7 @@ class Metode_pembelian_model extends BF_Model
 			'no_surat'    => $header->no_pr,
 			'nama'        => $nm_pic,
 			'tgl_doc'     => date('Y-m-d'),
-			'keperluan'   => 'PR Cash - ' . $header->no_pr . ' (' . ucfirst($config['label']) . ')',
+			'keperluan'   => 'PR Cash - ' . $header->no_pr . ' (' . ucfirst((string) $config['label']) . ')',
 			'tipe'        => 'Cash',
 			'jumlah'      => $total_pr,
 			'status'      => 'open',
@@ -4129,7 +4129,7 @@ class Metode_pembelian_model extends BF_Model
 		$query_data = 'SELECT * FROM ms_generate WHERE tipe = "' . $tipe_data . '";';
 		$data = $this->db->query($query_data)->row();
 		if (!empty($data)) {
-			if (stripos($data->info, 'YEAR', 0) !== false) {
+			if (stripos((string) $data->info, 'YEAR', 0) !== false) {
 				if ($data->info3 != date("Y")) {
 					$years = date("Y");
 					$number = 1;
@@ -4158,7 +4158,7 @@ class Metode_pembelian_model extends BF_Model
 			$qMax = $this->db->query("SELECT MAX(no_non_po) as max_no FROM tr_pr_non_po WHERE no_non_po LIKE 'DPM-$year-%'")->row();
 			$lastNum = 0;
 			if (!empty($qMax) && !empty($qMax->max_no)) {
-				$parts = explode('-', $qMax->max_no);
+				$parts = explode('-', (string) $qMax->max_no);
 				$lastNum = intval(end($parts));
 			}
 			$number = $lastNum + 1;

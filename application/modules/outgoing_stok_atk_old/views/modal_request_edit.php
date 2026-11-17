@@ -30,12 +30,12 @@ $nm_dept    = isset($nm_dept) ? $nm_dept : '-';
                         <tr>
                             <td class="fw-bold text-muted" width="130">Tgl Outgoing</td>
                             <td width="10">:</td>
-                            <td><?= date('d F Y', strtotime($tanggal)); ?></td>
+                            <td><?= date('d F Y', strtotime((string) $tanggal)); ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold text-muted">PIC Pemohon</td>
                             <td>:</td>
-                            <td><?= ucfirst($pic); ?></td>
+                            <td><?= ucfirst((string) $pic); ?></td>
                         </tr>
                     </table>
                 </div>
@@ -73,16 +73,16 @@ $nm_dept    = isset($nm_dept) ? $nm_dept : '-';
                 ?>
                         <tr>
                             <td class="text-center"><?= $No; ?></td>
-                            <td class="fw-semibold text-primary"><?= strtoupper($code_material); ?></td>
-                            <td class="fw-bold"><?= strtoupper($nm_material); ?></td>
-                            <td class="text-center fw-bold text-primary"><?= number_format($berat_req, 2); ?></td>
-                            <td class="text-center"><span class="badge bg-light text-dark border"><?= strtoupper($unit); ?></span></td>
-                            <td><?= (!empty($value['keterangan'])) ? htmlspecialchars($value['keterangan']) : '-'; ?></td>
+                            <td class="fw-semibold text-primary"><?= strtoupper((string) $code_material); ?></td>
+                            <td class="fw-bold"><?= strtoupper((string) $nm_material); ?></td>
+                            <td class="text-center fw-bold text-primary"><?= number_format((float) $berat_req, 2); ?></td>
+                            <td class="text-center"><span class="badge bg-light text-dark border"><?= strtoupper((string) $unit); ?></span></td>
+                            <td><?= (!empty($value['keterangan'])) ? htmlspecialchars((string) $value['keterangan']) : '-'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                     <tr class="table-light fw-bold">
                         <td colspan="3" class="text-end">Total Barang Dikeluarkan:</td>
-                        <td class="text-center text-primary"><?= number_format($total_qty, 2); ?></td>
+                        <td class="text-center text-primary"><?= number_format((float) $total_qty, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>
                 <?php else : ?>

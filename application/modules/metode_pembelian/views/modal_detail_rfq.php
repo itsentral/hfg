@@ -29,8 +29,8 @@
 					if(in_array($no, $dataArr) || $no == '1'){
 						echo "<td align='left' rowspan='".$rows2."'>".$valx['nm_supplier']."</td>";
 					}
-					echo "<td align='left'>".strtoupper($valx['nm_barang'])."</td>";
-					echo "<td align='center'>".number_format($valx['qty'])."</td>";
+					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";
+					echo "<td align='center'>".number_format((float) $valx['qty'])."</td>";
 					
 				echo "</tr>";
 			}

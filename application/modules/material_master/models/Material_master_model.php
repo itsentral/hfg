@@ -23,7 +23,7 @@ class Material_master_model extends CI_Model
         $Query            = "SELECT MAX(" . $this->code . ") as maxP FROM " . $this->table_name . " WHERE " . $this->code . " LIKE '" . $kode . "%' ";
         $resultIPP        = $this->db->query($Query)->result_array();
         $angkaUrut2        = $resultIPP[0]['maxP'];
-        $urutan2        = (int)substr($angkaUrut2, 4, 6);
+        $urutan2        = (int)substr((string) $angkaUrut2, 4, 6);
         $urutan2++;
         $urut2            = sprintf('%06s', $urutan2);
         $kode_id        = $kode . $urut2;
@@ -93,10 +93,10 @@ class Material_master_model extends CI_Model
 
             $nestedData = array();
             $nestedData[] = $nomor;
-            $nestedData[] = strtoupper($material_type);
-            $nestedData[] = strtoupper($material_category);
-            $nestedData[] = strtoupper($material_jenis);
-            $nestedData[] = strtoupper($row['nama']);
+            $nestedData[] = strtoupper((string) $material_type);
+            $nestedData[] = strtoupper((string) $material_category);
+            $nestedData[] = strtoupper((string) $material_jenis);
+            $nestedData[] = strtoupper((string) $row['nama']);
 
             // ===== STATUS (pakai toggle switch seperti index baru) =====
             $checked = ($row['status'] == '1') ? 'checked' : '';

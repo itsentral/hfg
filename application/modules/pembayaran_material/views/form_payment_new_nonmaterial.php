@@ -58,10 +58,10 @@
 				$total=($total+$record->request_payment);
 				echo $payterm->name;?></td>
 				<td><?= $record->curs_header?></td>
-				<td align=right><?= number_format($record->nilai_po_invoice,2)?></td>
-				<td align=right><?= number_format($record->invoice_ppn,2)?></td>
-				<td align=right><?= number_format($record->nilai_pph_invoice,2)?></td>
-				<td align=right><?= number_format($record->request_payment,2)?></td>
+				<td align=right><?= number_format((float) $record->nilai_po_invoice,2)?></td>
+				<td align=right><?= number_format((float) $record->invoice_ppn,2)?></td>
+				<td align=right><?= number_format((float) $record->nilai_pph_invoice,2)?></td>
+				<td align=right><?= number_format((float) $record->request_payment,2)?></td>
 			</tr>
 			<?php 
 			$total_dpp=($total_dpp+$record->nilai_po_invoice); $total_invoice_ppn=($total_invoice_ppn+$record->invoice_ppn); $total_invoice_pph=($total_invoice_pph+$record->nilai_pph_invoice);
@@ -73,24 +73,24 @@
 					<td colspan=5 align=right>Total</td>
 					<td align=right><?php 
 					if($total_dpp>0){
-						echo number_format($total_dpp,2);
+						echo number_format((float) $total_dpp,2);
 					}
 					?>
 					</td>
 					<td align=right><?php 
 					if($total_invoice_ppn>0){
-						echo number_format($total_invoice_ppn);
+						echo number_format((float) $total_invoice_ppn);
 					}
 					?>
 					</td>					
 					<td align=right><?php 
 					if($total_invoice_pph>0){
-						echo number_format($total_invoice_pph);
+						echo number_format((float) $total_invoice_pph);
 					}
 					?>
 					<td align=right><?php 
 					if($total>0){
-						echo number_format($total,2);
+						echo number_format((float) $total,2);
 					}
 					?>
 					</td>
@@ -98,7 +98,7 @@
 				<tr>
 					<td colspan=9 >A/P PO : <?php 
 					if($total>0){
-						echo number_format($terima_barang_idr,2);
+						echo number_format((float) $terima_barang_idr,2);
 					}
 					?>
 					</td>

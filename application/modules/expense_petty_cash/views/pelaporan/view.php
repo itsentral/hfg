@@ -3,8 +3,8 @@ $header = isset($pelaporan->header) ? $pelaporan->header : $pelaporan;
 $pencatatan_list = isset($pelaporan->pencatatan_list) ? $pelaporan->pencatatan_list : [];
 $jumlah_item = count($pencatatan_list);
 
-$periode_start_fmt = date('d/m/Y', strtotime($header->periode_start));
-$periode_end_fmt   = date('d/m/Y', strtotime($header->periode_end));
+$periode_start_fmt = date('d/m/Y', strtotime((string) $header->periode_start));
+$periode_end_fmt   = date('d/m/Y', strtotime((string) $header->periode_end));
 
 $coa_map = [];
 if (!empty($coa_list)) {
@@ -19,7 +19,7 @@ function get_pelaporan_status_badge($status) {
         case 'waiting': return '<span class="badge bg-info text-dark px-3 py-2 rounded-pill"><i class="fa fa-clock-o me-1"></i>Waiting Approval</span>';
         case 'approved': return '<span class="badge bg-success px-3 py-2 rounded-pill"><i class="fa fa-check-circle me-1"></i>Approved</span>';
         case 'reject': return '<span class="badge bg-danger px-3 py-2 rounded-pill"><i class="fa fa-times-circle me-1"></i>Reject</span>';
-        default: return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars($status) . '</span>';
+        default: return '<span class="badge bg-secondary px-3 py-2 rounded-pill">' . htmlspecialchars((string) $status) . '</span>';
     }
 }
 ?>
@@ -30,7 +30,7 @@ function get_pelaporan_status_badge($status) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-file-text-o me-2"></i>Detail Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars($header->no_pelaporan) ?></span></small>
+            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash/pelaporan') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -50,7 +50,7 @@ function get_pelaporan_status_badge($status) {
             <div class="col-md-3">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">No Pelaporan</span>
-                    <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($header->no_pelaporan) ?></h5>
+                    <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars((string) $header->no_pelaporan) ?></h5>
                 </div>
             </div>
             <div class="col-md-3">
@@ -67,7 +67,7 @@ function get_pelaporan_status_badge($status) {
                         $comp = $header->company;
                         $bCls = ($comp === 'STM') ? 'bg-primary' : (($comp === 'VUCA') ? 'bg-info text-dark' : 'bg-success');
                         ?>
-                        <span class="badge <?= $bCls ?> px-2 py-1 fs-6"><?= htmlspecialchars($comp) ?></span>
+                        <span class="badge <?= $bCls ?> px-2 py-1 fs-6"><?= htmlspecialchars((string) $comp) ?></span>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ function get_pelaporan_status_badge($status) {
             <div class="col-md-2">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">Grand Total</span>
-                    <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format($header->grand_total, 0, ',', '.') ?></h5>
+                    <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format((float) $header->grand_total, 0, ',', '.') ?></h5>
                 </div>
             </div>
             <div class="col-md-4">
@@ -92,20 +92,20 @@ function get_pelaporan_status_badge($status) {
             <div class="col-md-4">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">Dibuat Pada</span>
-                    <div class="fw-semibold text-dark mt-1"><i class="fa fa-clock-o me-1 text-muted"></i><?= !empty($header->created_on) ? date('d/m/Y H:i', strtotime($header->created_on)) : '-' ?></div>
+                    <div class="fw-semibold text-dark mt-1"><i class="fa fa-clock-o me-1 text-muted"></i><?= !empty($header->created_on) ? date('d/m/Y H:i', strtotime((string) $header->created_on)) : '-' ?></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">Disetujui / Ditolak Pada</span>
-                    <div class="fw-semibold text-dark mt-1"><i class="fa fa-check me-1 text-muted"></i><?= !empty($header->approved_on) ? date('d/m/Y H:i', strtotime($header->approved_on)) : '-' ?></div>
+                    <div class="fw-semibold text-dark mt-1"><i class="fa fa-check me-1 text-muted"></i><?= !empty($header->approved_on) ? date('d/m/Y H:i', strtotime((string) $header->approved_on)) : '-' ?></div>
                 </div>
             </div>
             <?php if (!empty($header->reject_reason)) : ?>
                 <div class="col-12">
                     <div class="alert alert-danger border-0 rounded-3 mb-0">
                         <h6 class="fw-bold mb-1"><i class="fa fa-ban me-1"></i>Alasan Reject:</h6>
-                        <p class="mb-0 small"><?= nl2br(htmlspecialchars($header->reject_reason)) ?></p>
+                        <p class="mb-0 small"><?= nl2br(htmlspecialchars((string) $header->reject_reason)) ?></p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -138,13 +138,13 @@ function get_pelaporan_status_badge($status) {
                         <button class="accordion-button <?= ($pIdx === 0) ? '' : 'collapsed' ?> bg-light py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_v_<?= $pItem->id ?>" aria-expanded="<?= ($pIdx === 0) ? 'true' : 'false' ?>">
                             <div class="d-flex flex-wrap align-items-center justify-content-between w-100 me-3">
                                 <div>
-                                    <span class="fw-bold text-primary me-2"><i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars($pItem->no_pencatatan) ?></span>
-                                    <span class="text-muted small me-2"><i class="fa fa-calendar me-1"></i><?= date('d/m/Y', strtotime($pItem->tanggal)) ?></span>
-                                    <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars($pItem->request_by) ?></span>
+                                    <span class="fw-bold text-primary me-2"><i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars((string) $pItem->no_pencatatan) ?></span>
+                                    <span class="text-muted small me-2"><i class="fa fa-calendar me-1"></i><?= date('d/m/Y', strtotime((string) $pItem->tanggal)) ?></span>
+                                    <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars((string) $pItem->request_by) ?></span>
                                 </div>
                                 <div>
                                     <span class="badge bg-white text-dark border me-2"><?= count($pItems) ?> item</span>
-                                    <span class="fw-bold text-success">Rp <?= number_format($pItem->grand_total, 0, ',', '.') ?></span>
+                                    <span class="fw-bold text-success">Rp <?= number_format((float) $pItem->grand_total, 0, ',', '.') ?></span>
                                 </div>
                             </div>
                         </button>
@@ -152,7 +152,7 @@ function get_pelaporan_status_badge($status) {
                     <div id="collapse_v_<?= $pItem->id ?>" class="accordion-collapse collapse <?= ($pIdx === 0) ? 'show' : '' ?>" data-bs-parent="#accordionPencatatanView">
                         <div class="accordion-body p-3 bg-white">
                             <?php if (!empty($pItem->keterangan)) : ?>
-                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars($pItem->keterangan) ?></p>
+                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
                             <?php endif; ?>
 
                             <div class="table-responsive">
@@ -174,12 +174,12 @@ function get_pelaporan_status_badge($status) {
                                             <?php $iNo = 1; foreach ($pItems as $item) : ?>
                                                 <tr>
                                                     <td class="text-center text-muted"><?= $iNo++ ?></td>
-                                                    <td><?= isset($coa_map[$item->coa_code]) ? htmlspecialchars($coa_map[$item->coa_code]) : htmlspecialchars($item->coa_code) ?></td>
-                                                    <td><?= htmlspecialchars($item->pengeluaran) ?></td>
-                                                    <td><?= htmlspecialchars($item->spesifikasi) ?: '-' ?></td>
+                                                    <td><?= isset($coa_map[$item->coa_code]) ? htmlspecialchars($coa_map[$item->coa_code]) : htmlspecialchars((string) $item->coa_code) ?></td>
+                                                    <td><?= htmlspecialchars((string) $item->pengeluaran) ?></td>
+                                                    <td><?= htmlspecialchars((string) $item->spesifikasi) ?: '-' ?></td>
                                                     <td class="text-center"><?= $item->jumlah ?></td>
-                                                    <td class="text-end">Rp <?= number_format($item->nominal, 0, ',', '.') ?></td>
-                                                    <td class="text-end fw-semibold">Rp <?= number_format($item->total, 0, ',', '.') ?></td>
+                                                    <td class="text-end">Rp <?= number_format((float) $item->nominal, 0, ',', '.') ?></td>
+                                                    <td class="text-end fw-semibold">Rp <?= number_format((float) $item->total, 0, ',', '.') ?></td>
                                                     <td>
                                                         <?php
                                                         $evs = [];
@@ -191,7 +191,7 @@ function get_pelaporan_status_badge($status) {
                                                         if (!empty($evs)) : ?>
                                                             <?php foreach ($evs as $ev) : ?>
                                                                 <a href="<?= base_url('assets/expense_petty_cash/' . $ev->encrypted_name) ?>" target="_blank" class="badge bg-light text-dark border text-decoration-none p-1 me-1 mb-1">
-                                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen($ev->original_name) > 12 ? substr($ev->original_name, 0, 12) . '...' : $ev->original_name) ?>
+                                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen((string) $ev->original_name) > 12 ? substr((string) $ev->original_name, 0, 12) . '...' : $ev->original_name) ?>
                                                                 </a>
                                                             <?php endforeach; ?>
                                                         <?php else : ?>

@@ -38,7 +38,7 @@ class App_pr_material extends Admin_Controller
             $session    = $this->session->userdata('app_session');
 
             $so_number        = $data['so_number'];
-            $tgl_dibutuhkan   = (!empty($data['tgl_dibutuhkan'])) ? date('Y-m-d', strtotime($data['tgl_dibutuhkan'])) : NULL;
+            $tgl_dibutuhkan   = (!empty($data['tgl_dibutuhkan'])) ? date('Y-m-d', strtotime((string) $data['tgl_dibutuhkan'])) : NULL;
             $detail           = $data['detail'];
 
             $ArrPlanningDetail = [];

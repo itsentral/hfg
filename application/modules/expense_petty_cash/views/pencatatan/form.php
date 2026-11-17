@@ -24,7 +24,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Master</span>
-                    <h4 class="fw-bold mb-0 text-success mt-1" id="budget-display">Rp <?= number_format($budget, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-success mt-1" id="budget-display">Rp <?= number_format((float) $budget, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil aktif</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
@@ -38,7 +38,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Terpakai</span>
-                    <h4 class="fw-bold mb-0 text-warning mt-1" id="budget-terpakai-display">Rp <?= number_format($budget_terpakai, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-warning mt-1" id="budget-terpakai-display">Rp <?= number_format((float) $budget_terpakai, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;">Realisasi periode berjalan</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-warning" style="width: 48px; height: 48px; font-size: 20px;">
@@ -52,7 +52,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Budget Tersedia</span>
-                    <h4 class="fw-bold mb-0 text-primary mt-1" id="sisa-budget-display">Rp <?= number_format($sisa_budget, 0, ',', '.') ?></h4>
+                    <h4 class="fw-bold mb-0 text-primary mt-1" id="sisa-budget-display">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></h4>
                     <small class="text-muted" style="font-size: 11px;" id="sisa-budget-status">Sisa saldo aman</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 48px; height: 48px; font-size: 20px;">
@@ -164,26 +164,26 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                     <select name="details[<?= $idx ?>][coa_code]" class="form-select form-select-sm coa-select select2" required style="width: 100%;">
                                         <option value="">-- Pilih COA --</option>
                                         <?php foreach ($coa_list as $coa) : ?>
-                                            <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars($coa->jenis_pengeluaran) ?>" <?= ($coa->coa_code === $detail->coa_code) ? 'selected' : '' ?>>
+                                            <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars((string) $coa->jenis_pengeluaran) ?>" <?= ($coa->coa_code === $detail->coa_code) ? 'selected' : '' ?>>
                                                 <?= $coa->coa_code ?> - <?= $coa->coa_nama ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" name="details[<?= $idx ?>][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="<?= htmlspecialchars($detail->pengeluaran) ?>" placeholder="Pengeluaran..." required>
+                                    <input type="text" name="details[<?= $idx ?>][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="<?= htmlspecialchars((string) $detail->pengeluaran) ?>" placeholder="Pengeluaran..." required>
                                 </td>
                                 <td>
-                                    <input type="text" name="details[<?= $idx ?>][spesifikasi]" class="form-control form-control-sm" value="<?= htmlspecialchars($detail->spesifikasi) ?>" placeholder="Spesifikasi...">
+                                    <input type="text" name="details[<?= $idx ?>][spesifikasi]" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $detail->spesifikasi) ?>" placeholder="Spesifikasi...">
                                 </td>
                                 <td>
                                     <input type="number" name="details[<?= $idx ?>][jumlah]" class="form-control form-control-sm text-center jumlah-input" value="<?= $detail->jumlah ?>" min="1" max="9999" required>
                                 </td>
                                 <td>
-                                    <input type="text" name="details[<?= $idx ?>][nominal]" class="form-control form-control-sm text-end nominal-input" value="<?= number_format($detail->nominal, 0, ',', '.') ?>" placeholder="0" required>
+                                    <input type="text" name="details[<?= $idx ?>][nominal]" class="form-control form-control-sm text-end nominal-input" value="<?= number_format((float) $detail->nominal, 0, ',', '.') ?>" placeholder="0" required>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control form-control-sm text-end total-display bg-light fw-semibold" value="<?= number_format($detail->total, 0, ',', '.') ?>" readonly>
+                                    <input type="text" class="form-control form-control-sm text-end total-display bg-light fw-semibold" value="<?= number_format((float) $detail->total, 0, ',', '.') ?>" readonly>
                                     <input type="hidden" name="details[<?= $idx ?>][total]" class="total-hidden" value="<?= $detail->total ?>">
                                 </td>
                                 <td>
@@ -191,14 +191,14 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                         <div class="evidence-list mb-1">
                                             <?php if (isset($pencatatan->evidences[$detail->id]) && !empty($pencatatan->evidences[$detail->id])) : ?>
                                                 <?php foreach ($pencatatan->evidences[$detail->id] as $evKey => $evidence) : ?>
-                                                    <div class="evidence-item badge bg-light text-dark border d-inline-flex align-items-center me-1 mb-1 p-1 px-2" data-encrypted="<?= htmlspecialchars($evidence->encrypted_name) ?>">
+                                                    <div class="evidence-item badge bg-light text-dark border d-inline-flex align-items-center me-1 mb-1 p-1 px-2" data-encrypted="<?= htmlspecialchars((string) $evidence->encrypted_name) ?>">
                                                         <i class="fa fa-file me-1 text-primary"></i>
-                                                        <span class="evidence-name text-truncate" style="max-width: 90px;" title="<?= htmlspecialchars($evidence->original_name) ?>"><?= htmlspecialchars($evidence->original_name) ?></span>
+                                                        <span class="evidence-name text-truncate" style="max-width: 90px;" title="<?= htmlspecialchars((string) $evidence->original_name) ?>"><?= htmlspecialchars((string) $evidence->original_name) ?></span>
                                                         <a href="javascript:void(0)" class="text-danger ms-1 btn-remove-evidence" title="Hapus"><i class="fa fa-times"></i></a>
-                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][original_name]" value="<?= htmlspecialchars($evidence->original_name) ?>">
-                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][encrypted_name]" value="<?= htmlspecialchars($evidence->encrypted_name) ?>">
-                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][file_type]" value="<?= htmlspecialchars($evidence->file_type) ?>">
-                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][file_size]" value="<?= htmlspecialchars($evidence->file_size) ?>">
+                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][original_name]" value="<?= htmlspecialchars((string) $evidence->original_name) ?>">
+                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][encrypted_name]" value="<?= htmlspecialchars((string) $evidence->encrypted_name) ?>">
+                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][file_type]" value="<?= htmlspecialchars((string) $evidence->file_type) ?>">
+                                                        <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][file_size]" value="<?= htmlspecialchars((string) $evidence->file_size) ?>">
                                                     </div>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
@@ -222,7 +222,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 <select name="details[0][coa_code]" class="form-select form-select-sm coa-select select2" required style="width: 100%;">
                                     <option value="">-- Pilih COA --</option>
                                     <?php foreach ($coa_list as $coa) : ?>
-                                        <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars($coa->jenis_pengeluaran) ?>">
+                                        <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars((string) $coa->jenis_pengeluaran) ?>">
                                             <?= $coa->coa_code ?> - <?= $coa->coa_nama ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -267,12 +267,12 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     </tr>
                     <tr class="bg-light">
                         <th colspan="6" class="text-end fw-semibold text-muted py-2">Alokasi Budget:</th>
-                        <th class="text-end fw-semibold text-muted py-2" id="budget-table-display">Rp <?= number_format($budget, 0, ',', '.') ?></th>
+                        <th class="text-end fw-semibold text-muted py-2" id="budget-table-display">Rp <?= number_format((float) $budget, 0, ',', '.') ?></th>
                         <th colspan="2"></th>
                     </tr>
                     <tr class="bg-light">
                         <th colspan="6" class="text-end fw-bold py-2">Sisa Budget Tersisa:</th>
-                        <th class="text-end fw-bold py-2 text-success" id="sisa-budget-table-display">Rp <?= number_format($sisa_budget, 0, ',', '.') ?></th>
+                        <th class="text-end fw-bold py-2 text-success" id="sisa-budget-table-display">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></th>
                         <th colspan="2"></th>
                     </tr>
                 </tfoot>
@@ -414,7 +414,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
 <script type="text/template" id="coa-options-template">
     <option value="">-- Pilih COA --</option>
     <?php foreach ($coa_list as $coa) : ?>
-        <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars($coa->jenis_pengeluaran) ?>">
+        <option value="<?= $coa->coa_code ?>" data-pengeluaran="<?= htmlspecialchars((string) $coa->jenis_pengeluaran) ?>">
             <?= $coa->coa_code ?> - <?= $coa->coa_nama ?>
         </option>
     <?php endforeach; ?>

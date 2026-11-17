@@ -42,7 +42,7 @@ $ENABLE_DELETE  = has_permission('Material_Type.Delete');
 						?>
 							<tr>
 								<td><?= $numb; ?></td>
-								<td><?= strtoupper($record->nama) ?></td>
+								<td><?= strtoupper((string) $record->nama) ?></td>
 								<td>
 									<label class="toggle-switch">
 										<input type="checkbox"

@@ -193,39 +193,39 @@
                             <tr class="product-row">
                                 <td class="text-center text-muted font-monospace col-sticky-1" style="font-size: 11px;"><?= $i + 1 ?></td>
                                 <td class="product-cell col-sticky-2">
-                                    <div class="product-name text-dark fw-bold"><?= htmlspecialchars($row->nm_produk) ?></div>
-                                    <span class="product-code-badge"><?= htmlspecialchars($row->code_lv4) ?></span>
+                                    <div class="product-name text-dark fw-bold"><?= htmlspecialchars((string) $row->nm_produk) ?></div>
+                                    <span class="product-code-badge"><?= htmlspecialchars((string) $row->code_lv4) ?></span>
                                     <?php if ($row->trade_name): ?>
-                                        <div class="text-muted small italic">(<?= htmlspecialchars($row->trade_name) ?>)</div>
+                                        <div class="text-muted small italic">(<?= htmlspecialchars((string) $row->trade_name) ?>)</div>
                                     <?php endif; ?>
                                 </td>
                                 <!-- Bahan Pendukung -->
                                 <td class="cell-numeric">
-                                    Rp <?= number_format($row->bahan_pendukung_khusus, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->bahan_pendukung_khusus, 2, ',', '.') ?>
                                 </td>
                                 <!-- Consumable -->
                                 <td class="cell-numeric">
-                                    Rp <?= number_format($row->consumable, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->consumable, 2, ',', '.') ?>
                                 </td>
                                 <!-- FOH -->
                                 <td class="cell-numeric">
-                                    Rp <?= number_format($row->foh, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->foh, 2, ',', '.') ?>
                                 </td>
                                 <!-- Cycle Time -->
                                 <td class="cell-numeric">
-                                    <?= number_format($row->cycle_time, 2, ',', '.') ?>
+                                    <?= number_format((float) $row->cycle_time, 2, ',', '.') ?>
                                 </td>
                                 <!-- MP -->
                                 <td class="text-center font-monospace">
-                                    <?= number_format($row->mp, 0, ',', '.') ?>
+                                    <?= number_format((float) $row->mp, 0, ',', '.') ?>
                                 </td>
                                 <!-- Total Man Hour -->
                                 <td class="cell-numeric cell-disabled-gray">
-                                    <?= number_format($row->total_man_hour, 4, ',', '.') ?>
+                                    <?= number_format((float) $row->total_man_hour, 4, ',', '.') ?>
                                 </td>
                                 <!-- Man Hour Rate -->
                                 <td class="cell-numeric cell-disabled-gray">
-                                    Rp <?= number_format($row->man_hour_rate, 0, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->man_hour_rate, 0, ',', '.') ?>
                                 </td>
                                 <!-- Kg / Pcs -->
                                 <td class="cell-numeric cell-disabled-gray">
@@ -236,7 +236,7 @@
 
                                     <div class="d-flex align-items-center justify-content-end gap-1">
                                         <span class="<?= !$has_val ? 'text-danger fw-bold' : '' ?>">
-                                            <?= number_format($val_kg, 4, ',', '.') ?>
+                                            <?= number_format((float) $val_kg, 4, ',', '.') ?>
                                         </span>
 
                                         <?php if (!$has_val): ?>
@@ -252,19 +252,19 @@
                                 </td>
                                 <!-- Gaji Direct -->
                                 <td class="cell-numeric cell-disabled-gray">
-                                    Rp <?= number_format($row->gaji_direct, 4, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->gaji_direct, 4, ',', '.') ?>
                                 </td>
                                 <!-- % Rate Indirect -->
                                 <td class="text-center font-monospace cell-disabled-gray">
-                                    <?= number_format($row->rate_indirect, 2, ',', '.') ?>%
+                                    <?= number_format((float) $row->rate_indirect, 2, ',', '.') ?>%
                                 </td>
                                 <!-- Gaji Indirect -->
                                 <td class="cell-numeric cell-disabled-gray">
-                                    Rp <?= number_format($row->gaji_indirect, 4, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->gaji_indirect, 4, ',', '.') ?>
                                 </td>
                                 <!-- Standard Biaya Gaji (Rounded) -->
                                 <td class="cell-journal-green">
-                                    Rp <?= number_format($row->standard_biaya_gaji_round, 0, ',', '.') ?>
+                                    Rp <?= number_format((float) $row->standard_biaya_gaji_round, 0, ',', '.') ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

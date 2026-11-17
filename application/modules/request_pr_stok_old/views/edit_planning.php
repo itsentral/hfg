@@ -17,31 +17,31 @@ $tgl_appre_3 = '';
 if (!empty($header)) {
 	if ($header[0]['app_1'] == '1') {
 		$status1 = '<div class="badge bg-green">Approved</div>';
-		$tgl_appre_1 = date('d F Y', strtotime($header[0]['app_1_date']));
+		$tgl_appre_1 = date('d F Y', strtotime((string) $header[0]['app_1_date']));
 	} else {
 		if ($header[0]['sts_reject1'] == '1') {
 			$status1 = '<div class="badge bg-red">Rejected</div>';
-			$tgl_appre_1 = date('d F Y', strtotime($header[0]['sts_reject1_date']));
+			$tgl_appre_1 = date('d F Y', strtotime((string) $header[0]['sts_reject1_date']));
 		}
 	}
 
 	if ($header[0]['app_2'] == '1') {
 		$status2 = '<div class="badge bg-green">Approved</div>';
-		$tgl_appre_2 = date('d F Y', strtotime($header[0]['app_2_date']));
+		$tgl_appre_2 = date('d F Y', strtotime((string) $header[0]['app_2_date']));
 	} else {
 		if ($header[0]['sts_reject2'] == '1') {
 			$status2 = '<div class="badge bg-red">Rejected</div>';
-			$tgl_appre_2 = date('d F Y', strtotime($header[0]['sts_reject2_date']));
+			$tgl_appre_2 = date('d F Y', strtotime((string) $header[0]['sts_reject2_date']));
 		}
 	}
 
 	if ($header[0]['app_3'] == '1') {
 		$status3 = '<div class="badge bg-green">Approved</div>';
-		$tgl_appre_3 = date('d F Y', strtotime($header[0]['app_3_date']));
+		$tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['app_3_date']));
 	} else {
 		if ($header[0]['sts_reject3'] == '1') {
 			$status3 = '<div class="badge bg-red">Rejected</div>';
-			$tgl_appre_3 = date('d F Y', strtotime($header[0]['sts_reject3_date']));
+			$tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['sts_reject3_date']));
 		}
 	}
 }
@@ -79,7 +79,7 @@ if (!empty($header)) {
 							<td></td>
 						</tr>
 						<?php
-						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
+						$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '';
 						?>
 						<tr>
 							<td>Tgl Dibutuhkan</td>
@@ -186,8 +186,8 @@ if (!empty($header)) {
 								echo '<tr>';
 								echo '<td class="text-center">' . $no . '</td>';
 								echo '<td>' . $item['stock_name'] . '</td>';
-								echo '<td class="text-right">' . number_format($item['min_stok'], 2) . '</td>';
-								echo '<td class="text-right">' . number_format($item['max_stok'], 2) . '</td>';
+								echo '<td class="text-right">' . number_format((float) $item['min_stok'], 2) . '</td>';
+								echo '<td class="text-right">' . number_format((float) $item['max_stok'], 2) . '</td>';
 								echo '<td class="text-right">' . number_format(0, 2) . '</td>';
 								echo '<td>';
 								echo '<input type="text" class="form-control autoNumeric2 nmat_qty_' . $item['id'] . '">';
@@ -234,8 +234,8 @@ if (!empty($header)) {
 									echo "<tr>";
 									echo "<td class='text-center'>" . $key . "</td>";
 									echo "	<td class='text-left'>" . $value['stock_name'] . "</td>";
-									echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-									echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+									echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+									echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 									echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
 									if ($value['status_app'] == 'N') {
 										echo "<td align='center'>";
@@ -245,11 +245,11 @@ if (!empty($header)) {
 										echo "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";
 									}
 									if ($value['status_app'] == 'Y') {
-										echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+										echo "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
 										echo "<td class='text-center'><span class='badge bg-green text-bold'>Approved</span></td>";
 									}
 									if ($value['status_app'] == 'D') {
-										echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+										echo "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
 										echo "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
 									}
 

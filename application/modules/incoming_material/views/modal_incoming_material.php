@@ -114,10 +114,10 @@ if (!empty($no_ros)) {
                                         </td>";
                                 echo "<td>" . $valx['codematerial'] . "</td>";
                                 echo "<td>" . $valx['namamaterial'] . "</td>";
-                                echo "<td align='right'>" . number_format($valx['qty'], 2) . "</td>";
+                                echo "<td align='right'>" . number_format((float) $valx['qty'], 2) . "</td>";
                                 echo "<td align='center'>" . $valx['unit_measure'] . "</td>";
                                 echo "<td align='right' class='belumDiterima'>" . number_format(($valx['qty'] - $ttl_qty_incoming_check), 2) . "</td>";
-                                echo "<td align='right' class='belumDiterima'>" . number_format($ttl_qty_ng, 2) . "</td>";
+                                echo "<td align='right' class='belumDiterima'>" . number_format((float) $ttl_qty_ng, 2) . "</td>";
                                 echo "<td align='center'><input type='text' required name='addInMat[$Noo][qty_in]' data-no='$No' class='form-control input-sm text-right maskM qtyDiterima'></td>";
                                 echo "<td align='center'><input type='text' name='addInMat[$Noo][keterangan]' data-no='$No' class='form-control input-sm text-left'></td>";
                                 echo "</tr>";
@@ -132,10 +132,10 @@ if (!empty($no_ros)) {
                     <tr>
                         <td><b></b></td>
                         <td colspan='2'><b>SUM TOTAL</b></td>
-                        <td align='right'><b><?= number_format($Total2, 2); ?></b></td>
+                        <td align='right'><b><?= number_format((float) $Total2, 2); ?></b></td>
                         <td><b></b></td>
-                        <td align='right'><b><?= number_format($Total1, 2); ?></b></td>
-                        <td align='right'><b><?= number_format($grand_ttl_qty_ng, 2); ?></b></td>
+                        <td align='right'><b><?= number_format((float) $Total1, 2); ?></b></td>
+                        <td align='right'><b><?= number_format((float) $grand_ttl_qty_ng, 2); ?></b></td>
                         <td colspan='2'><b></b></td>
                     </tr>
                 <?php

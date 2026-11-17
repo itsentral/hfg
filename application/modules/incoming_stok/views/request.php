@@ -59,7 +59,7 @@
                                     <?php if (!empty($listSupplier)) : ?>
                                         <?php foreach ($listSupplier as $item) : ?>
                                             <option value="<?= $item->kode_supplier; ?>">
-                                                <?= strtoupper($item->nama); ?>
+                                                <?= strtoupper((string) $item->nama); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -117,7 +117,7 @@
                                     <?php if (!empty($listGudang)) : ?>
                                         <?php foreach ($listGudang as $val) : ?>
                                             <option value="<?= $val['id']; ?>">
-                                                <?= strtoupper($val['nm_gudang']); ?>
+                                                <?= strtoupper((string) $val['nm_gudang']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

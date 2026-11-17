@@ -47,7 +47,7 @@
                         <select name="id_warehouse" id="id_warehouse" class="form-select select2">
                             <?php foreach ($warehouse as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
-                                    <?= strtoupper($value['nm_gudang']); ?>
+                                    <?= strtoupper((string) $value['nm_gudang']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -59,7 +59,7 @@
                             <option value="0">SEMUA KATEGORI</option>
                             <?php foreach ($category as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
-                                    <?= strtoupper($value['nm_category']); ?>
+                                    <?= strtoupper((string) $value['nm_category']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

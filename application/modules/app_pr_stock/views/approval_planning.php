@@ -1,7 +1,7 @@
 <?php
-$pembeda = substr($header[0]['so_number'], 0, 1);
-$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime($header[0]['due_date'])) : '-';
-$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-';
+$pembeda = substr((string) $header[0]['so_number'], 0, 1);
+$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime((string) $header[0]['due_date'])) : '-';
+$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '-';
 
 // Detail Approval
 $alasan_reject1 = (!empty($header)) ? $header[0]['reject_reason1'] : '';
@@ -21,11 +21,11 @@ $tgl_appre_3 = '-';
 if (!empty($header)) {
     if ($header[0]['app_3'] == '1') {
         $status3 = '<span class="badge bg-success px-2 py-1">Approved</span>';
-        $tgl_appre_3 = date('d F Y', strtotime($header[0]['app_3_date']));
+        $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['app_3_date']));
     } else {
         if ($header[0]['sts_reject3'] == '1') {
             $status3 = '<span class="badge bg-danger px-2 py-1">Rejected</span>';
-            $tgl_appre_3 = date('d F Y', strtotime($header[0]['sts_reject3_date']));
+            $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['sts_reject3_date']));
         }
     }
 }
@@ -37,7 +37,7 @@ if (!empty($header)) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-square-o me-2"></i>Form Approval PR Stock - Management
             </h5>
-            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars($header[0]['so_number']) ?></span></small>
+            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
         </div>
         <div>
             <a href="<?= site_url('app_pr_stock/approval_management') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
@@ -48,22 +48,22 @@ if (!empty($header)) {
 
     <div class="card-body p-4">
         <form id="data-form" method="post" autocomplete="off">
-            <input type="hidden" name="so_number" id="so_number" value="<?= htmlspecialchars($header[0]['so_number']) ?>">
-            <input type="hidden" name="tingkat_approval" id="tingkat_approval" value="<?= htmlspecialchars($tingkat_approval) ?>">
+            <input type="hidden" name="so_number" id="so_number" value="<?= htmlspecialchars((string) $header[0]['so_number']) ?>">
+            <input type="hidden" name="tingkat_approval" id="tingkat_approval" value="<?= htmlspecialchars((string) $tingkat_approval) ?>">
 
             <!-- Summary Information Cards -->
             <div class="row g-3 mb-4">
                 <div class="col-md-6 col-lg-3">
                     <div class="p-3 bg-light rounded-3 border h-100">
                         <span class="text-muted small fw-semibold text-uppercase">No. Request / SO</span>
-                        <h6 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($header[0]['so_number']) ?></h6>
+                        <h6 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars((string) $header[0]['so_number']) ?></h6>
                         <small class="text-muted">Due Date: <?= $due_date ?></small>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="p-3 bg-light rounded-3 border h-100">
                         <span class="text-muted small fw-semibold text-uppercase">No. PR</span>
-                        <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars($header[0]['no_pr']) ?></h6>
+                        <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars((string) $header[0]['no_pr']) ?></h6>
                         <small class="text-muted">Dibutuhkan: <?= $tgl_dibutuhkan ?></small>
                     </div>
                 </div>
@@ -79,11 +79,11 @@ if (!empty($header)) {
                         <span class="text-muted small fw-semibold text-uppercase">Perbandingan Nilai</span>
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <small class="text-muted">Budget:</small>
-                            <span class="fw-bold text-dark">Rp <?= number_format($header[0]['nilai_budget']) ?></span>
+                            <span class="fw-bold text-dark">Rp <?= number_format((float) $header[0]['nilai_budget']) ?></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">Pengajuan:</small>
-                            <span class="fw-bold text-primary">Rp <?= number_format($ttl_pengajuan_pr) ?></span>
+                            <span class="fw-bold text-primary">Rp <?= number_format((float) $ttl_pengajuan_pr) ?></span>
                         </div>
                     </div>
                 </div>
@@ -112,10 +112,10 @@ if (!empty($header)) {
                                     <td class="text-center"><?= $status3 ?></td>
                                     <td class="text-center text-muted"><?= $tgl_appre_3 ?></td>
                                     <td>
-                                        <input type="text" name="reject_reason3" class="form-control form-control-sm" placeholder="Alasan reject..." value="<?= htmlspecialchars($alasan_reject3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
+                                        <input type="text" name="reject_reason3" class="form-control form-control-sm" placeholder="Alasan reject..." value="<?= htmlspecialchars((string) $alasan_reject3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
                                     </td>
                                     <td>
-                                        <input type="text" name="keterangan_3" class="form-control form-control-sm" placeholder="Keterangan..." value="<?= htmlspecialchars($keterangan_3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
+                                        <input type="text" name="keterangan_3" class="form-control form-control-sm" placeholder="Keterangan..." value="<?= htmlspecialchars((string) $keterangan_3) ?>" <?= ($header[0]['app_3'] == '1') ? 'readonly' : '' ?>>
                                     </td>
                                 </tr>
                             </tbody>
@@ -148,7 +148,7 @@ if (!empty($header)) {
                         if (!empty($detail)) :
                             foreach ($detail as $key => $value) :
                                 $key++;
-                                $nm_material = htmlspecialchars($value['nm_material']) . ' <br><small class="text-muted fw-semibold">(' . htmlspecialchars($value['no_coa'] . ' - ' . $value['nm_coa']) . ')</small>';
+                                $nm_material = htmlspecialchars((string) $value['nm_material']) . ' <br><small class="text-muted fw-semibold">(' . htmlspecialchars($value['no_coa'] . ' - ' . $value['nm_coa']) . ')</small>';
                                 $propose = $value['propose_purchase'];
 
                                 $get_kebutuhan = $this->db->get_where('budget_rutin_detail', ['id_barang' => $value['id_material']])->row();
@@ -171,12 +171,12 @@ if (!empty($header)) {
                                     <?= $nm_material ?>
                                     <input type="hidden" name="detail[<?= $key ?>][id]" value="<?= $value['id'] ?>">
                                 </td>
-                                <td class="text-end"><?= number_format($kebutuhan) ?></td>
+                                <td class="text-end"><?= number_format((float) $kebutuhan) ?></td>
                                 <td class="text-end"><?= number_format($kebutuhan * 1.5) ?></td>
-                                <td class="text-end fw-semibold"><?= number_format($stock, 2) ?></td>
-                                <td class="text-end fw-bold text-primary"><?= number_format($propose, 2) ?></td>
-                                <td class="text-end">Rp <?= number_format($value['price_ref']) ?></td>
-                                <td class="text-end fw-bold">Rp <?= number_format($total_row) ?></td>
+                                <td class="text-end fw-semibold"><?= number_format((float) $stock, 2) ?></td>
+                                <td class="text-end fw-bold text-primary"><?= number_format((float) $propose, 2) ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $value['price_ref']) ?></td>
+                                <td class="text-end fw-bold">Rp <?= number_format((float) $total_row) ?></td>
                             </tr>
                         <?php
                             endforeach;
@@ -186,7 +186,7 @@ if (!empty($header)) {
                     <tfoot class="table-light">
                         <tr>
                             <th colspan="7" class="text-end fw-bold">Total Price Pengajuan:</th>
-                            <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format($grand_total_price) ?></th>
+                            <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format((float) $grand_total_price) ?></th>
                         </tr>
                     </tfoot>
                 </table>

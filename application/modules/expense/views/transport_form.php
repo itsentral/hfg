@@ -70,12 +70,12 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 									$emp_dept_id = $emp->department;
 									$emp_dept_name = isset($dept_map[$emp_dept_id]) ? $dept_map[$emp_dept_id] : $emp_dept_id;
 								?>
-								<option value="<?= htmlspecialchars($emp->nm_karyawan); ?>" data-department="<?= htmlspecialchars($emp_dept_id); ?>" data-department-name="<?= htmlspecialchars($emp_dept_name); ?>" <?= $selected; ?>>
-									<?= htmlspecialchars($emp->nm_karyawan); ?> (<?= htmlspecialchars($emp->nik); ?>)
+								<option value="<?= htmlspecialchars((string) $emp->nm_karyawan); ?>" data-department="<?= htmlspecialchars((string) $emp_dept_id); ?>" data-department-name="<?= htmlspecialchars((string) $emp_dept_name); ?>" <?= $selected; ?>>
+									<?= htmlspecialchars((string) $emp->nm_karyawan); ?> (<?= htmlspecialchars((string) $emp->nik); ?>)
 								</option>
 							<?php endforeach; ?>
 						<?php else: ?>
-							<option value="<?= htmlspecialchars($selected_nama); ?>" selected><?= htmlspecialchars($selected_nama); ?></option>
+							<option value="<?= htmlspecialchars((string) $selected_nama); ?>" selected><?= htmlspecialchars((string) $selected_nama); ?></option>
 						<?php endif; ?>
 					</select>
 				</div>
@@ -83,9 +83,9 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Departemen <span class="text-danger">*</span></label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-light text-muted"><i class="fa fa-building"></i></span>
-						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars($selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
+						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
 					</div>
-					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars($selected_dept); ?>">
+					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars((string) $selected_dept); ?>">
 				</div>
 				<div class="col-md-6">
 					<label for="coa" class="form-label fw-semibold text-secondary small">Akun COA (Accounting) <span class="text-danger">*</span></label>
@@ -96,17 +96,17 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 								<?php
 									$selected = (isset($data->no_coa) && $data->no_coa == $item_coa->no_coa) ? 'selected' : '';
 								?>
-								<option value="<?= $item_coa->no_coa; ?>" data-name="<?= htmlspecialchars($item_coa->nm_coa); ?>" <?= $selected; ?>>
-									<?= $item_coa->no_coa; ?> - <?= htmlspecialchars($item_coa->nm_coa); ?>
+								<option value="<?= $item_coa->no_coa; ?>" data-name="<?= htmlspecialchars((string) $item_coa->nm_coa); ?>" <?= $selected; ?>>
+									<?= $item_coa->no_coa; ?> - <?= htmlspecialchars((string) $item_coa->nm_coa); ?>
 								</option>
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</select>
-					<input type="hidden" name="nm_coa" id="nm_coa" value="<?= (isset($data->nm_coa)) ? htmlspecialchars($data->nm_coa) : ''; ?>">
+					<input type="hidden" name="nm_coa" id="nm_coa" value="<?= (isset($data->nm_coa)) ? htmlspecialchars((string) $data->nm_coa) : ''; ?>">
 				</div>
 				<div class="col-md-6">
 					<label for="keperluan" class="form-label fw-semibold text-secondary small">Keperluan Perjalanan <span class="text-danger">*</span></label>
-					<input type="text" class="form-control form-control-sm" id="keperluan" name="keperluan" value="<?= (isset($data->keperluan) ? htmlspecialchars($data->keperluan) : ''); ?>" placeholder="Contoh: Meeting dengan vendor, survey lapangan..." required <?= $is_view ? 'disabled' : ''; ?>>
+					<input type="text" class="form-control form-control-sm" id="keperluan" name="keperluan" value="<?= (isset($data->keperluan) ? htmlspecialchars((string) $data->keperluan) : ''); ?>" placeholder="Contoh: Meeting dengan vendor, survey lapangan..." required <?= $is_view ? 'disabled' : ''; ?>>
 				</div>
 			</div>
 		</div>
@@ -123,12 +123,12 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 							<label for="nopol" class="form-label fw-semibold text-secondary small">Nomor Polisi Kendaraan</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text"><i class="fa fa-car text-muted"></i></span>
-								<input type="text" class="form-control text-uppercase" id="nopol" name="nopol" value="<?= (isset($data->nopol) ? htmlspecialchars($data->nopol) : ''); ?>" placeholder="Contoh: B 1234 ABC" maxlength="15" <?= $is_view ? 'disabled' : ''; ?>>
+								<input type="text" class="form-control text-uppercase" id="nopol" name="nopol" value="<?= (isset($data->nopol) ? htmlspecialchars((string) $data->nopol) : ''); ?>" placeholder="Contoh: B 1234 ABC" maxlength="15" <?= $is_view ? 'disabled' : ''; ?>>
 							</div>
 						</div>
 						<div class="mb-3">
 							<label for="rute" class="form-label fw-semibold text-secondary small">Rute Perjalanan</label>
-							<textarea class="form-control form-control-sm" id="rute" name="rute" rows="2" placeholder="Contoh: Kantor - Cikarang - Kantor" <?= $is_view ? 'disabled' : ''; ?>><?= (isset($data->rute) ? htmlspecialchars($data->rute) : ''); ?></textarea>
+							<textarea class="form-control form-control-sm" id="rute" name="rute" rows="2" placeholder="Contoh: Kantor - Cikarang - Kantor" <?= $is_view ? 'disabled' : ''; ?>><?= (isset($data->rute) ? htmlspecialchars((string) $data->rute) : ''); ?></textarea>
 						</div>
 						<div class="row g-2">
 							<div class="col-6">
@@ -221,7 +221,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					<?php if (isset($data->doc_file) && $data->doc_file != ''): ?>
 						<div class="mt-3 p-2 bg-white rounded border d-flex align-items-center justify-content-between">
 							<div class="d-flex align-items-center">
-								<i class="fa <?= (strpos($data->doc_file, '.pdf') !== false) ? 'fa-file-pdf-o text-danger' : 'fa-file-image-o text-primary' ?> fs-4 me-2"></i>
+								<i class="fa <?= (strpos((string) $data->doc_file, '.pdf') !== false) ? 'fa-file-pdf-o text-danger' : 'fa-file-image-o text-primary' ?> fs-4 me-2"></i>
 								<div>
 									<small class="fw-bold d-block text-truncate" style="max-width: 250px;"><?= $data->doc_file; ?></small>
 									<span class="badge bg-success-subtle text-success">File terlampir</span>
@@ -237,7 +237,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 				</div>
 				<div class="col-md-6">
 					<label for="keterangan" class="form-label fw-semibold text-secondary small">Keterangan Tambahan</label>
-					<textarea class="form-control form-control-sm" id="keterangan" name="keterangan" rows="3" placeholder="Catatan atau keterangan tambahan (opsional)" <?= $is_view ? 'disabled' : ''; ?>><?= (isset($data->keterangan) ? htmlspecialchars($data->keterangan) : ''); ?></textarea>
+					<textarea class="form-control form-control-sm" id="keterangan" name="keterangan" rows="3" placeholder="Catatan atau keterangan tambahan (opsional)" <?= $is_view ? 'disabled' : ''; ?>><?= (isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : ''); ?></textarea>
 				</div>
 			</div>
 		</div>

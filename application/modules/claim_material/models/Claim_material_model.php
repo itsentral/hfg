@@ -311,7 +311,7 @@ class Claim_material_model extends CI_Model
                                  ->or_where('parent_coil_id', (int)$claim['id_baby_coil']);
                     }
                     if (!empty($claim['no_coil_packing_list'])) {
-                        $clean = trim($claim['no_coil_packing_list']);
+                        $clean = trim((string) $claim['no_coil_packing_list']);
                         $this->db->or_where('no_coil', $clean)
                                  ->or_where('no_coil', $clean . '-HOLD');
                     }
@@ -333,7 +333,7 @@ class Claim_material_model extends CI_Model
                                  ->or_where('parent_coil_id', (int)$claim['id_baby_coil']);
                     }
                     if (!empty($claim['no_coil_packing_list'])) {
-                        $clean = trim($claim['no_coil_packing_list']);
+                        $clean = trim((string) $claim['no_coil_packing_list']);
                         $this->db->or_where('no_coil', $clean)
                                  ->or_where('no_coil', $clean . '-HOLD');
                     }
@@ -420,12 +420,12 @@ class Claim_material_model extends CI_Model
             ->row();
         $seq = 1;
         if ($last && !empty($last->no_debit_note)) {
-            $parts = explode('-', $last->no_debit_note);
+            $parts = explode('-', (string) $last->no_debit_note);
             if (isset($parts[2])) {
                 $seq = (int)$parts[2] + 1;
             }
         }
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
     /**

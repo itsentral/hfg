@@ -75,13 +75,13 @@ class Pr_material_model extends BF_Model
                 "<div align='center'>{$nomor}</div>",
                 "<div align='left'>{$row['code_lv4']}</div>",
                 "<div align='left'>{$row['local_code']}</div>",
-                "<div align='left'>" . strtoupper($row['nm_material']) . "</div>",
-                "<div align='left'>" . strtoupper($row['nm_lain']) . "</div>",
+                "<div align='left'>" . strtoupper((string) $row['nm_material']) . "</div>",
+                "<div align='left'>" . strtoupper((string) $row['nm_lain']) . "</div>",
                 "<div align='left'>{$row['category']}</div>",
-                "<div align='right'>" . number_format($row['qty_stock']) . "</div>",
-                "<div align='right'>" . number_format($row['min_stok']) . "</div>",
-                "<div align='right'>" . number_format($row['max_stok']) . "</div>",
-                "<div align='right'>" . number_format($outstanding_pr) . "<input type='hidden' name='stock_awal' id='stock_awal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' value='{$stock_awal}'></div>",
+                "<div align='right'>" . number_format((float) $row['qty_stock']) . "</div>",
+                "<div align='right'>" . number_format((float) $row['min_stok']) . "</div>",
+                "<div align='right'>" . number_format((float) $row['max_stok']) . "</div>",
+                "<div align='right'>" . number_format((float) $outstanding_pr) . "<input type='hidden' name='stock_awal' id='stock_awal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' value='{$stock_awal}'></div>",
                 "<input type='text' name='forecast' id='forecast_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$forecast}'>",
                 "<input type='text' name='purchase' id='purchase_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$purchase}'>",
                 "<input type='text' name='kuota_internal' id='kuota_internal_{$nomor}' data-id_material='{$row['code_lv4']}' data-no='{$nomor}' class='form-control moneyFormat input-sm text-end changeSave' style='width:100px;' value='{$row['kuota']}'>",
@@ -207,7 +207,7 @@ class Pr_material_model extends BF_Model
                     ? $item->qty_order
                     : $item->propose_purchase;
 
-                $list_qty_barang[] = number_format($jumlah, 2) . ' ' . strtoupper($item->satuan);
+                $list_qty_barang[] = number_format((float) $jumlah, 2) . ' ' . strtoupper((string) $item->satuan);
             }
 
             $status_info = $this->get_status_info($row);
@@ -218,7 +218,7 @@ class Pr_material_model extends BF_Model
                 "<div align='left'>" . implode('<br><br>', $list_barang) . "</div>",
                 "<div align='left'>" . implode('<br><br>', $list_lainnya) . "</div>",
                 "<div align='left'>" . implode('<br><br>', $list_qty_barang) . "</div>",
-                "<div align='center'>" . date('d F Y', strtotime($row['tgl_dibutuhkan'])) . "</div>",
+                "<div align='center'>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>",
                 "<div align='center'><span class='badge' style='background-color: {$status_info['warna']};'>{$status_info['sts']}</span></div>",
                 "<div align='center'>{$row['request_by']}</div>",
                 "<div align='center'>{$row['request_date']}</div>",

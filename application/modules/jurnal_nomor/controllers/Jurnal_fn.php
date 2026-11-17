@@ -150,8 +150,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -265,7 +265,7 @@ class Jurnal_fn extends CI_Controller
         $kd_invoice        = $data_bayar->no_invoice;
         $kd_bank             = $data_bayar->kd_bank;
         $jenis_pph         = $data_bayar->jenis_pph;
-        $nama                = addslashes($data_bayar->nm_customer);
+        $nama                = addslashes((string) $data_bayar->nm_customer);
         // print_r($nama);
         // exit;
         $jmlpph            = $data_bayar->biaya_pph_idr;
@@ -282,10 +282,10 @@ class Jurnal_fn extends CI_Controller
 
         $No_Inv  = $kd_bayar;
         $Tgl_Inv = $tgl_byr;
-        $Bln             = substr($Tgl_Inv, 6, 2);
-        $Thn             = substr($Tgl_Inv, 0, 4);
-        $bulan_bayar = date("n", strtotime($Tgl_Inv));
-        $tahun_bayar = date("Y", strtotime($Tgl_Inv));
+        $Bln             = substr((string) $Tgl_Inv, 6, 2);
+        $Thn             = substr((string) $Tgl_Inv, 0, 4);
+        $bulan_bayar = date("n", strtotime((string) $Tgl_Inv));
+        $tahun_bayar = date("Y", strtotime((string) $Tgl_Inv));
         $keterangan_byr  = $data_bayar->keterangan;
         $jumlah_total    = round($data_bayar->jumlah_pembayaran_idr);
         $jumlah_terima   = round($data_bayar->jumlah_bank_idr);
@@ -554,8 +554,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -658,10 +658,10 @@ class Jurnal_fn extends CI_Controller
 
         $No_Inv  = $kd_bayar;
         $Tgl_Inv = $tgl_byr;
-        $Bln             = substr($Tgl_Inv, 6, 2);
-        $Thn             = substr($Tgl_Inv, 0, 4);
-        $bulan_bayar = date("n", strtotime($Tgl_Inv));
-        $tahun_bayar = date("Y", strtotime($Tgl_Inv));
+        $Bln             = substr((string) $Tgl_Inv, 6, 2);
+        $Thn             = substr((string) $Tgl_Inv, 0, 4);
+        $bulan_bayar = date("n", strtotime((string) $Tgl_Inv));
+        $tahun_bayar = date("Y", strtotime((string) $Tgl_Inv));
         $keterangan_byr  = $data_bayar->no_po;
         $jumlah_total    = round($data_bayar->jumlah_pembayaran_idr);
 
@@ -825,8 +825,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_no_buk('101');
 
 
-        $Bln             = substr($tgl_po, 5, 2);
-        $Thn             = substr($tgl_po, 0, 4);
+        $Bln             = substr((string) $tgl_po, 5, 2);
+        $Thn             = substr((string) $tgl_po, 0, 4);
         // ## NOMOR JV ##
         // $Nomor_JV				= $this->Jurnal_model->get_no_buk('101');
 
@@ -1079,8 +1079,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -1310,8 +1310,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -1506,8 +1506,8 @@ class Jurnal_fn extends CI_Controller
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -1596,7 +1596,7 @@ class Jurnal_fn extends CI_Controller
         $kd_invoice        = $data_bayar->no_invoice;
         $kd_bank             = $data_bayar->kd_bank;
         $jenis_pph         = $data_bayar->jenis_pph;
-        $nama                = addslashes($data_bayar->nm_customer);
+        $nama                = addslashes((string) $data_bayar->nm_customer);
         // print_r($nama);
         // exit;
         $jmlpph            = $data_bayar->biaya_pph_idr;
@@ -1613,10 +1613,10 @@ class Jurnal_fn extends CI_Controller
 
         $No_Inv  = $kd_bayar;
         $Tgl_Inv = $tgl_byr;
-        $Bln             = substr($Tgl_Inv, 6, 2);
-        $Thn             = substr($Tgl_Inv, 0, 4);
-        $bulan_bayar = date("n", strtotime($Tgl_Inv));
-        $tahun_bayar = date("Y", strtotime($Tgl_Inv));
+        $Bln             = substr((string) $Tgl_Inv, 6, 2);
+        $Thn             = substr((string) $Tgl_Inv, 0, 4);
+        $bulan_bayar = date("n", strtotime((string) $Tgl_Inv));
+        $tahun_bayar = date("Y", strtotime((string) $Tgl_Inv));
         $keterangan_byr  = $data_bayar->keterangan;
         $jumlah_total    = round($data_bayar->jumlah_pembayaran_idr);
         $jumlah_terima   = round($data_bayar->jumlah_bank_idr);

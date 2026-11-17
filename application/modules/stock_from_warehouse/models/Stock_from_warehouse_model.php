@@ -102,7 +102,7 @@ class Stock_from_warehouse_model extends BF_Model
                 "<div class='text-center'>{$no}</div>",
                 htmlspecialchars(isset($row['nm_material']) ? $row['nm_material'] : '')
                     . '<br><small class="text-muted">' . htmlspecialchars(isset($row['id_material']) ? $row['id_material'] : '') . '</small>'
-                    . (isset($row['trade_name']) && $row['trade_name'] ? '<br><small class="text-info">' . htmlspecialchars($row['trade_name']) . '</small>' : ''),
+                    . (isset($row['trade_name']) && $row['trade_name'] ? '<br><small class="text-info">' . htmlspecialchars((string) $row['trade_name']) . '</small>' : ''),
                 "<div class='text-center'>" . htmlspecialchars(isset($row['no_coil']) ? $row['no_coil'] : '-') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars(isset($row['kode_internal']) ? $row['kode_internal'] : '-') . "</div>",
                 "<div class='text-end'>" . number_format((float) $row['net_weight'], 3, ',', '.') . "</div>",
@@ -300,13 +300,13 @@ class Stock_from_warehouse_model extends BF_Model
             // Tentukan status material sesuai BA UC-N35
             $status_material = '<span class="badge bg-danger">Hold</span>';
             if (!empty($row['dec_aksis'])) {
-                if (strpos($row['dec_aksis'], 'Lanjut Produksi') !== false) {
+                if (strpos((string) $row['dec_aksis'], 'Lanjut Produksi') !== false) {
                     $status_material = '<span class="badge bg-success">Dapat Dipakai (Release)</span>';
-                } elseif (strpos($row['dec_aksis'], 'Jual Material') !== false) {
+                } elseif (strpos((string) $row['dec_aksis'], 'Jual Material') !== false) {
                     $status_material = '<span class="badge bg-info text-dark">Dijual (Gudang Slitting)</span>';
-                } elseif (strpos($row['dec_aksis'], 'Retur') !== false) {
+                } elseif (strpos((string) $row['dec_aksis'], 'Retur') !== false) {
                     $status_material = '<span class="badge bg-warning text-dark">Dalam Retur</span>';
-                } elseif (strpos($row['dec_aksis'], 'Debit Note') !== false) {
+                } elseif (strpos((string) $row['dec_aksis'], 'Debit Note') !== false) {
                     $status_material = '<span class="badge bg-primary">Dikompensasi</span>';
                 }
             } elseif ($row['status_proses'] === 'in_warehouse') {
@@ -315,21 +315,21 @@ class Stock_from_warehouse_model extends BF_Model
 
             // Tombol Action Lihat Claim
             if (!empty($row['no_claim'])) {
-                $claim_q = urlencode($row['no_claim']);
+                $claim_q = urlencode((string) $row['no_claim']);
                 $act_btn = '<a href="' . site_url('claim_material?q=' . $claim_q) . '" class="btn btn-outline-primary btn-sm py-0 px-2" title="Buka Detail Claim di Modul Claim Material"><i class="fa fa-external-link"></i> Lihat Claim</a>';
             } else {
                 $clean_coil = str_replace('-HOLD', '', $row['no_coil']);
-                $claim_q = urlencode($clean_coil);
+                $claim_q = urlencode((string) $clean_coil);
                 $act_btn = '<a href="' . site_url('claim_material?q=' . $claim_q) . '" class="btn btn-outline-secondary btn-sm py-0 px-2" title="Cari Claim berdasarkan No. Coil"><i class="fa fa-search"></i> Cari Claim</a>';
             }
 
             // Teks problem / alasan
             $problem_text = '';
             if (!empty($row['problem'])) {
-                $problem_text = '<span class="text-danger fw-semibold">' . htmlspecialchars($row['problem']) . '</span>';
+                $problem_text = '<span class="text-danger fw-semibold">' . htmlspecialchars((string) $row['problem']) . '</span>';
             }
             if (!empty($row['alasan_produksi'])) {
-                $problem_text .= (!empty($problem_text) ? '<br>' : '') . '<small class="text-muted">' . htmlspecialchars($row['alasan_produksi']) . '</small>';
+                $problem_text .= (!empty($problem_text) ? '<br>' : '') . '<small class="text-muted">' . htmlspecialchars((string) $row['alasan_produksi']) . '</small>';
             }
             if (empty($problem_text)) {
                 $problem_text = '<span class="text-muted">-</span>';
@@ -340,9 +340,9 @@ class Stock_from_warehouse_model extends BF_Model
                 "<strong>" . htmlspecialchars($row['nama_supplier'] ?: '-') . "</strong>",
                 htmlspecialchars(isset($row['nm_material']) ? $row['nm_material'] : '')
                     . '<br><small class="text-muted">' . htmlspecialchars(isset($row['id_material']) ? $row['id_material'] : '') . '</small>'
-                    . (isset($row['trade_name']) && $row['trade_name'] ? '<br><small class="text-info">' . htmlspecialchars($row['trade_name']) . '</small>' : ''),
+                    . (isset($row['trade_name']) && $row['trade_name'] ? '<br><small class="text-info">' . htmlspecialchars((string) $row['trade_name']) . '</small>' : ''),
                 "<div class='text-center'><code>" . htmlspecialchars(isset($row['no_coil']) ? $row['no_coil'] : '-') . "</code>"
-                    . (!empty($row['no_claim']) ? '<br><small class="badge bg-light text-dark border">' . htmlspecialchars($row['no_claim']) . '</small>' : '') . "</div>",
+                    . (!empty($row['no_claim']) ? '<br><small class="badge bg-light text-dark border">' . htmlspecialchars((string) $row['no_claim']) . '</small>' : '') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars(isset($row['no_po']) ? $row['no_po'] : '-') . "</div>",
                 "<div class='text-end fw-bold'>" . number_format((float) $row['net_weight'], 3, ',', '.') . "</div>",
                 $problem_text,
@@ -397,7 +397,7 @@ class Stock_from_warehouse_model extends BF_Model
 
         // ── Judul ──────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:J1');
-        $sheet->setCellValue('A1', 'STOCK FROM WAREHOUSE — ' . strtoupper($label_gudang));
+        $sheet->setCellValue('A1', 'STOCK FROM WAREHOUSE — ' . strtoupper((string) $label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
@@ -615,7 +615,7 @@ class Stock_from_warehouse_model extends BF_Model
             } elseif ($gudang_label == 'HLD') {
                 $gudang_html = '<span class="badge bg-danger">HLD</span>';
             } else {
-                $gudang_html = '<span class="badge bg-secondary">' . htmlspecialchars($gudang_label) . '</span>';
+                $gudang_html = '<span class="badge bg-secondary">' . htmlspecialchars((string) $gudang_label) . '</span>';
             }
 
             $data[] = [
@@ -684,7 +684,7 @@ class Stock_from_warehouse_model extends BF_Model
         if ($kd_gudang === 'PRO') $label_source = 'Production (PRO)';
         if ($kd_gudang === 'WIP') $label_source = 'WIP';
 
-        $label_date = date('d/m/Y', strtotime($date_filter));
+        $label_date = date('d/m/Y', strtotime((string) $date_filter));
 
         ini_set('memory_limit', '512M');
         $ci = &get_instance();
@@ -695,7 +695,7 @@ class Stock_from_warehouse_model extends BF_Model
 
         // ── Judul ──────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:K1');
-        $sheet->setCellValue('A1', 'HISTORY STOCK FROM WAREHOUSE — ' . strtoupper($label_source) . ' | Tanggal: ' . $label_date);
+        $sheet->setCellValue('A1', 'HISTORY STOCK FROM WAREHOUSE — ' . strtoupper((string) $label_source) . ' | Tanggal: ' . $label_date);
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
@@ -821,7 +821,7 @@ class Stock_from_warehouse_model extends BF_Model
         $sheet->getStyle('J' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
 
         // ── Output ─────────────────────────────────────────────────────────
-        $filename = 'History_Stock_From_Warehouse_' . date('Ymd', strtotime($date_filter)) . '.xls';
+        $filename = 'History_Stock_From_Warehouse_' . date('Ymd', strtotime((string) $date_filter)) . '.xls';
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         ob_end_clean();
@@ -860,7 +860,7 @@ class Stock_from_warehouse_model extends BF_Model
         }
 
         $label = $status_proses !== '' ? ucwords(str_replace('_', ' ', $status_proses)) : 'Aktif';
-        return '<span class="badge bg-light text-dark border">' . htmlspecialchars($label) . '</span>';
+        return '<span class="badge bg-light text-dark border">' . htmlspecialchars((string) $label) . '</span>';
     }
 
     /**

@@ -62,7 +62,7 @@ class Rate_borongan_helper extends Admin_Controller
                 'before' => $old ? (array)$old : null,
                 'after'  => $data,
             ];
-            write_log('Rate Borongan Helper', $action, $action . ' Rate Borongan ' . $cat_name . ' (Rp ' . number_format($rate, 2, ',', '.') . '/m)', $log, null, 1);
+            write_log('Rate Borongan Helper', $action, $action . ' Rate Borongan ' . $cat_name . ' (Rp ' . number_format((float) $rate, 2, ',', '.') . '/m)', $log, null, 1);
             $this->session->set_flashdata('success', 'Rate Borongan Helper berhasil disimpan');
         } else {
             write_log('Rate Borongan Helper', 'Save', 'Gagal simpan Rate Borongan Helper', $data, null, 0);

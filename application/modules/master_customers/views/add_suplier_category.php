@@ -14,7 +14,7 @@
 											<option value="">-- inventory --</option>
 											<?php foreach ($results['inventory_1'] as $inventory_1){ 
 											?>
-											<option value="<?= $inventory_1->id_type?>"><?= ucfirst(strtolower($inventory_1->nama))?></option>
+											<option value="<?= $inventory_1->id_type?>"><?= ucfirst(strtolower((string) $inventory_1->nama))?></option>
 											<?php } ?>
 										  </select>
 									    </div>

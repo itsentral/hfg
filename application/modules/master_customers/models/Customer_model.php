@@ -71,9 +71,9 @@ class Customer_model extends BF_Model
         $row = $query->row_array();
         $thn = date('y');
         $max_id = $row['max_id'];
-        $max_id1 = (int) substr($max_id, 4, 5);
+        $max_id1 = (int) substr((string) $max_id, 4, 5);
         $counter = $max_id1 + 1;
-        $idcust = "MC" . $thn . str_pad($counter, 5, "0", STR_PAD_LEFT);
+        $idcust = "MC" . $thn . str_pad((string) $counter, 5, "0", STR_PAD_LEFT);
         return $idcust;
     }
     function generate_Category($kode = '')
@@ -82,9 +82,9 @@ class Customer_model extends BF_Model
         $row = $query->row_array();
         $thn = date('y');
         $max_id = $row['max_id'];
-        $max_id1 = (int) substr($max_id, 4, 5);
+        $max_id1 = (int) substr((string) $max_id, 4, 5);
         $counter = $max_id1 + 1;
-        $idcust = "CC" . $thn . str_pad($counter, 5, "0", STR_PAD_LEFT);
+        $idcust = "CC" . $thn . str_pad((string) $counter, 5, "0", STR_PAD_LEFT);
         return $idcust;
     }
 

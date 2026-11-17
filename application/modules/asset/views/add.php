@@ -34,7 +34,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                         <option value="0">Select Owned Assets</option>
                         <?php foreach ($list_cab as $valx): ?>
                             <?php $sexd = ($valx['id_branch'] == $kdcab) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id_branch'] ?>" <?= $sexd ?>><?= strtoupper($valx['nm_alias']) ?></option>
+                            <option value="<?= $valx['id_branch'] ?>" <?= $sexd ?>><?= strtoupper((string) $valx['nm_alias']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -45,7 +45,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                         <option value="0">Select Tax Category</option>
                         <?php foreach ($list_pajak as $valx): ?>
                             <?php $sexd = ($valx['id'] == $category_pajak) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper($valx['nm_category']) ?></option>
+                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper((string) $valx['nm_category']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -56,7 +56,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                         <option value="0">Select Category</option>
                         <?php foreach ($list_catg as $valx): ?>
                             <?php $sexd = ($valx['id'] == $category) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper($valx['nm_category']) ?></option>
+                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper((string) $valx['nm_category']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -85,7 +85,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                         <?php foreach ($list_dept as $valx): ?>
                             <?php if (isset($valx['deleted']) && $valx['deleted'] == 'Y') continue; ?>
                             <?php $sexd = ($valx['id'] == $id_dept) ? 'selected' : ''; ?>
-                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper($valx['nm_dept']) ?></option>
+                            <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper((string) $valx['nm_dept']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -103,7 +103,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                         <select name="lokasi_asset_new" id="lokasi_asset_new" class="form-select select2">
                             <option value="0">Pilih Department New</option>
                             <?php foreach ($list_dept as $valx): ?>
-                                <option value="<?= $valx['id'] ?>"><?= strtoupper($valx['nm_dept']) ?></option>
+                                <option value="<?= $valx['id'] ?>"><?= strtoupper((string) $valx['nm_dept']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

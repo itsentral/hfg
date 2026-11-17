@@ -3,8 +3,8 @@ $header = isset($pelaporan->header) ? $pelaporan->header : $pelaporan;
 $pencatatan_list = isset($pelaporan->pencatatan_list) ? $pelaporan->pencatatan_list : [];
 $jumlah_item = count($pencatatan_list);
 
-$periode_start_fmt = date('d/m/Y', strtotime($header->periode_start));
-$periode_end_fmt   = date('d/m/Y', strtotime($header->periode_end));
+$periode_start_fmt = date('d/m/Y', strtotime((string) $header->periode_start));
+$periode_end_fmt   = date('d/m/Y', strtotime((string) $header->periode_end));
 
 $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budget : 0;
 
@@ -22,7 +22,7 @@ if (!empty($coa_list)) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle text-primary me-2"></i>Review Approval Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars($header->no_pelaporan) ?></span></small>
+            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash/approval') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -43,7 +43,7 @@ if (!empty($coa_list)) {
             <div class="col-md-3">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">No Pelaporan</span>
-                    <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($header->no_pelaporan) ?></h5>
+                    <h5 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars((string) $header->no_pelaporan) ?></h5>
                 </div>
             </div>
             <div class="col-md-3">
@@ -60,7 +60,7 @@ if (!empty($coa_list)) {
                         $comp = $header->company;
                         $bCls = ($comp === 'STM') ? 'bg-primary' : (($comp === 'VUCA') ? 'bg-info text-dark' : 'bg-success');
                         ?>
-                        <span class="badge <?= $bCls ?> px-2 py-1 fs-6"><?= htmlspecialchars($comp) ?></span>
+                        <span class="badge <?= $bCls ?> px-2 py-1 fs-6"><?= htmlspecialchars((string) $comp) ?></span>
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@ if (!empty($coa_list)) {
             <div class="col-md-2">
                 <div class="p-3 bg-light rounded-3 border">
                     <span class="text-muted small fw-semibold text-uppercase">Grand Total</span>
-                    <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format($header->grand_total, 0, ',', '.') ?></h5>
+                    <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format((float) $header->grand_total, 0, ',', '.') ?></h5>
                 </div>
             </div>
         </div>
@@ -96,13 +96,13 @@ if (!empty($coa_list)) {
                         <button class="accordion-button <?= ($pIdx === 0) ? '' : 'collapsed' ?> bg-light py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_app_<?= $pItem->id ?>" aria-expanded="<?= ($pIdx === 0) ? 'true' : 'false' ?>">
                             <div class="d-flex flex-wrap align-items-center justify-content-between w-100 me-3">
                                 <div>
-                                    <span class="fw-bold text-primary me-2"><i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars($pItem->no_pencatatan) ?></span>
-                                    <span class="text-muted small me-2"><i class="fa fa-calendar me-1"></i><?= date('d/m/Y', strtotime($pItem->tanggal)) ?></span>
-                                    <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars($pItem->request_by) ?></span>
+                                    <span class="fw-bold text-primary me-2"><i class="fa fa-file-text-o me-1"></i><?= htmlspecialchars((string) $pItem->no_pencatatan) ?></span>
+                                    <span class="text-muted small me-2"><i class="fa fa-calendar me-1"></i><?= date('d/m/Y', strtotime((string) $pItem->tanggal)) ?></span>
+                                    <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars((string) $pItem->request_by) ?></span>
                                 </div>
                                 <div>
                                     <span class="badge bg-white text-dark border me-2"><?= count($items) ?> item</span>
-                                    <span class="fw-bold text-success">Rp <?= number_format($pItem->grand_total, 0, ',', '.') ?></span>
+                                    <span class="fw-bold text-success">Rp <?= number_format((float) $pItem->grand_total, 0, ',', '.') ?></span>
                                 </div>
                             </div>
                         </button>
@@ -110,7 +110,7 @@ if (!empty($coa_list)) {
                     <div id="collapse_app_<?= $pItem->id ?>" class="accordion-collapse collapse <?= ($pIdx === 0) ? 'show' : '' ?>" data-bs-parent="#accordionApproval">
                         <div class="accordion-body p-3 bg-white">
                             <?php if (!empty($pItem->keterangan)) : ?>
-                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars($pItem->keterangan) ?></p>
+                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
                             <?php endif; ?>
 
                             <div class="table-responsive">
@@ -132,19 +132,19 @@ if (!empty($coa_list)) {
                                             <?php $iNo = 1; foreach ($items as $item) : ?>
                                                 <tr>
                                                     <td class="text-center text-muted"><?= $iNo++ ?></td>
-                                                    <td><?= isset($coa_map[$item->coa_code]) ? htmlspecialchars($coa_map[$item->coa_code]) : htmlspecialchars($item->coa_code) ?></td>
-                                                    <td><?= htmlspecialchars($item->pengeluaran) ?></td>
-                                                    <td><?= htmlspecialchars($item->spesifikasi) ?: '-' ?></td>
+                                                    <td><?= isset($coa_map[$item->coa_code]) ? htmlspecialchars($coa_map[$item->coa_code]) : htmlspecialchars((string) $item->coa_code) ?></td>
+                                                    <td><?= htmlspecialchars((string) $item->pengeluaran) ?></td>
+                                                    <td><?= htmlspecialchars((string) $item->spesifikasi) ?: '-' ?></td>
                                                     <td class="text-center"><?= $item->jumlah ?></td>
-                                                    <td class="text-end">Rp <?= number_format($item->nominal, 0, ',', '.') ?></td>
-                                                    <td class="text-end fw-semibold">Rp <?= number_format($item->total, 0, ',', '.') ?></td>
+                                                    <td class="text-end">Rp <?= number_format((float) $item->nominal, 0, ',', '.') ?></td>
+                                                    <td class="text-end fw-semibold">Rp <?= number_format((float) $item->total, 0, ',', '.') ?></td>
                                                     <td>
                                                         <?php
                                                         $evs = isset($item->evidences) ? $item->evidences : [];
                                                         if (!empty($evs)) : ?>
                                                             <?php foreach ($evs as $ev) : ?>
                                                                 <a href="<?= base_url('assets/expense_petty_cash/' . $ev->encrypted_name) ?>" target="_blank" class="badge bg-light text-dark border text-decoration-none p-1 me-1 mb-1">
-                                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen($ev->original_name) > 12 ? substr($ev->original_name, 0, 12) . '...' : $ev->original_name) ?>
+                                                                    <i class="fa fa-paperclip text-primary me-1"></i><?= htmlspecialchars(strlen((string) $ev->original_name) > 12 ? substr((string) $ev->original_name, 0, 12) . '...' : $ev->original_name) ?>
                                                                 </a>
                                                             <?php endforeach; ?>
                                                         <?php else : ?>
@@ -203,10 +203,10 @@ if (!empty($coa_list)) {
                                 $nama = isset($coa_map[$code]) ? $coa_map[$code] : $code;
                             ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($code) ?></td>
-                                    <td><?= htmlspecialchars($nama) ?></td>
-                                    <td class="text-center"><?= htmlspecialchars($header->company) ?></td>
-                                    <td class="text-end">Rp <?= number_format($tot, 0, ',', '.') ?></td>
+                                    <td><?= htmlspecialchars((string) $code) ?></td>
+                                    <td><?= htmlspecialchars((string) $nama) ?></td>
+                                    <td class="text-center"><?= htmlspecialchars((string) $header->company) ?></td>
+                                    <td class="text-end">Rp <?= number_format((float) $tot, 0, ',', '.') ?></td>
                                     <td class="text-end text-muted">-</td>
                                 </tr>
                             <?php endforeach; ?>
@@ -215,14 +215,14 @@ if (!empty($coa_list)) {
                                 <td>Kas Kecil</td>
                                 <td class="text-center">STM</td>
                                 <td class="text-end text-muted">-</td>
-                                <td class="text-end">Rp <?= number_format($grand_total, 0, ',', '.') ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $grand_total, 0, ',', '.') ?></td>
                             </tr>
                         </tbody>
                         <tfoot class="table-light fw-bold">
                             <tr>
                                 <td colspan="3" class="text-end">Balancing:</td>
-                                <td class="text-end">Rp <?= number_format($grand_total, 0, ',', '.') ?></td>
-                                <td class="text-end">Rp <?= number_format($grand_total, 0, ',', '.') ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $grand_total, 0, ',', '.') ?></td>
+                                <td class="text-end">Rp <?= number_format((float) $grand_total, 0, ',', '.') ?></td>
                             </tr>
                         </tfoot>
                     </table>

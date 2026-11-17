@@ -183,7 +183,7 @@ if (!isset($data->departement)) {
                                     </tr>
                             <?php
                                     if ($record->doc_file != '') {
-                                        if (strpos($record->doc_file, 'pdf', 0) > 1) {
+                                        if (strpos((string) $record->doc_file, 'pdf', 0) > 1) {
                                             $gambar .= '<div class="col-md-12">
 								<iframe src="' . base_url('assets/expense/' . $record->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 										 <a href="' . base_url('assets/expense/' . $record->doc_file) . '">Download PDF</a>
@@ -274,10 +274,10 @@ if (!isset($data->departement)) {
                                         echo '<tr>';
                                         echo '<td class="text-center">' . $no_kasbon_detail . '</td>';
                                         echo '<td class="text-center">' . $kasbon_detail['nm_material'] . '</td>';
-                                        echo '<td class="text-center">' . number_format($kasbon_detail['qty']) . '</td>';
+                                        echo '<td class="text-center">' . number_format((float) $kasbon_detail['qty']) . '</td>';
                                         echo '<td class="text-center">' . $kasbon_detail['satuan'] . '</td>';
-                                        echo '<td class="text-right">' . number_format($kasbon_detail['harga']) . '</td>';
-                                        echo '<td class="text-right">' . number_format($kasbon_detail['total_harga']) . '</td>';
+                                        echo '<td class="text-right">' . number_format((float) $kasbon_detail['harga']) . '</td>';
+                                        echo '<td class="text-right">' . number_format((float) $kasbon_detail['total_harga']) . '</td>';
                                         echo '</tr>';
 
                                         $no_kasbon_detail++;

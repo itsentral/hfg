@@ -17,7 +17,7 @@
 function formatDate($date)
 {
 	if (empty($date) || $date == '0000-00-00') return '-';
-	return date('d-M-y', strtotime($date));
+	return date('d-M-y', strtotime((string) $date));
 }
 ?>
 <html>
@@ -170,7 +170,7 @@ function formatDate($date)
 			<td width="40"></td>
 			<td width="110">Keterangan</td>
 			<td width="5">:</td>
-			<td>Transportasi <?= date('d/m/Y', strtotime($data->date1)) ?> - <?= date('d/m/Y', strtotime($data->date2)) ?></td>
+			<td>Transportasi <?= date('d/m/Y', strtotime((string) $data->date1)) ?> - <?= date('d/m/Y', strtotime((string) $data->date2)) ?></td>
 		</tr>
 		<tr>
 			<td>Request By</td>
@@ -228,10 +228,10 @@ function formatDate($date)
 						<td><?= $record->keperluan ?></td>
 						<td style="text-align: right;"><?= number_format((float)$record->km_awal, 0, ',', '.') ?></td>
 						<td style="text-align: right;"><?= number_format((float)$record->km_akhir, 0, ',', '.') ?></td>
-						<td style="text-align: right;"><?= 'Rp ' . number_format($record->bensin, 0, ',', '.') ?></td>
-						<td style="text-align: right;"><?= 'Rp ' . number_format($record->tol, 0, ',', '.') ?></td>
-						<td style="text-align: right;"><?= 'Rp ' . number_format($record->parkir, 0, ',', '.') ?></td>
-						<td style="text-align: right;"><?= 'Rp ' . number_format($record->lainnya, 0, ',', '.') ?></td>
+						<td style="text-align: right;"><?= 'Rp ' . number_format((float) $record->bensin, 0, ',', '.') ?></td>
+						<td style="text-align: right;"><?= 'Rp ' . number_format((float) $record->tol, 0, ',', '.') ?></td>
+						<td style="text-align: right;"><?= 'Rp ' . number_format((float) $record->parkir, 0, ',', '.') ?></td>
+						<td style="text-align: right;"><?= 'Rp ' . number_format((float) $record->lainnya, 0, ',', '.') ?></td>
 					</tr>
 			<?php
 				endforeach;
@@ -241,10 +241,10 @@ function formatDate($date)
 		<tfoot>
 			<tr>
 				<td colspan="5" style="text-align: right; font-weight: bold;">Subtotal</td>
-				<td style="text-align: right;"><?= 'Rp ' . number_format($total_bensin, 0, ',', '.') ?></td>
-				<td style="text-align: right;"><?= 'Rp ' . number_format($total_tol, 0, ',', '.') ?></td>
-				<td style="text-align: right;"><?= 'Rp ' . number_format($total_parkir, 0, ',', '.') ?></td>
-				<td style="text-align: right;"><?= 'Rp ' . number_format($total_lainnya, 0, ',', '.') ?></td>
+				<td style="text-align: right;"><?= 'Rp ' . number_format((float) $total_bensin, 0, ',', '.') ?></td>
+				<td style="text-align: right;"><?= 'Rp ' . number_format((float) $total_tol, 0, ',', '.') ?></td>
+				<td style="text-align: right;"><?= 'Rp ' . number_format((float) $total_parkir, 0, ',', '.') ?></td>
+				<td style="text-align: right;"><?= 'Rp ' . number_format((float) $total_lainnya, 0, ',', '.') ?></td>
 			</tr>
 			<tr>
 				<td colspan="5" style="text-align: right; font-weight: bold;">Total</td>
@@ -276,7 +276,7 @@ function formatDate($date)
 			</table>
 		</div>
 		<div class="signature-section">
-			<?php $tgl_approval = !empty($data->approved_on) ? date('d-M-Y', strtotime($data->approved_on)) : '-'; ?>
+			<?php $tgl_approval = !empty($data->approved_on) ? date('d-M-Y', strtotime((string) $data->approved_on)) : '-'; ?>
 			<div style="width: 100%; text-align: right;">
 				<table class="signature-box" style="border-collapse: collapse; display: inline-table;">
 					<tr>

@@ -49,7 +49,7 @@ class Asset_category_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div align='center'>" . $nomor . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
             $nestedData[] = "<div align='center'>" . ($row['status'] == 'Y' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>') . "</div>";
 
             $edit   = "<button type='button' class='btn btn-sm btn-primary edit' data-code='" . $row['id'] . "' title='Edit Data'><i class='fa fa-edit'></i></button>";

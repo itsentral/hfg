@@ -36,7 +36,7 @@ class Base_Controller extends MX_Controller
         if (empty($uri)) {
             // Try to get the current URL through PATH INFO.
             $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : @getenv('PATH_INFO');
-            if (trim($path, '/') != '' && $path != '/' . SELF) {
+            if (trim((string) $path, '/') != '' && $path != '/' . SELF) {
                 $uri = $path;
             }
         }
@@ -44,7 +44,7 @@ class Base_Controller extends MX_Controller
         if (empty($uri)) {
             // Finally, try the query string.
             $path =  isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
-            if (trim($path, '/') != '') {
+            if (trim((string) $path, '/') != '') {
                 $uri = $path;
             }
         }

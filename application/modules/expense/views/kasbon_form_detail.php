@@ -124,7 +124,7 @@ if (empty($all_attachments)) {
 						Detail Pengajuan Kasbon <span class="text-primary">#<?= $data->no_doc ?></span>
 					</h3>
 					<p class="text-muted small mb-0">
-						Dibuat pada <?= date('d F Y', strtotime($data->tgl_doc)) ?> &bull; Pemohon: <span class="fw-semibold text-dark"><?= $nama_pemohon ?></span> <?= !empty($dept_name) ? "({$dept_name})" : "" ?>
+						Dibuat pada <?= date('d F Y', strtotime((string) $data->tgl_doc)) ?> &bull; Pemohon: <span class="fw-semibold text-dark"><?= $nama_pemohon ?></span> <?= !empty($dept_name) ? "({$dept_name})" : "" ?>
 					</p>
 				</div>
 
@@ -165,7 +165,7 @@ if (empty($all_attachments)) {
 			<div class="fs-3 text-danger"><i class="fa fa-ban"></i></div>
 			<div>
 				<h5 class="fw-bold mb-1 text-danger">Pengajuan Kasbon Ditolak!</h5>
-				<p class="mb-0 text-dark"><?= nl2br(htmlspecialchars($reject_msg)) ?></p>
+				<p class="mb-0 text-dark"><?= nl2br(htmlspecialchars((string) $reject_msg)) ?></p>
 			</div>
 		</div>
 	<?php endif; ?>
@@ -188,7 +188,7 @@ if (empty($all_attachments)) {
 						</div>
 						<div class="col-sm-6">
 							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Tanggal Dokumen</label>
-							<div class="fw-bold text-dark fs-6"><?= date('d F Y', strtotime($data->tgl_doc)) ?></div>
+							<div class="fw-bold text-dark fs-6"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></div>
 						</div>
 
 						<div class="col-sm-6">
@@ -218,7 +218,7 @@ if (empty($all_attachments)) {
 							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Akun COA</label>
 							<div class="d-flex align-items-center gap-2">
 								<span class="badge bg-secondary-subtle text-secondary-emphasis px-3 py-2 rounded-2 fs-7 fw-semibold border">
-									<i class="fa fa-book me-1"></i><?= htmlspecialchars($val_coa) ?>
+									<i class="fa fa-book me-1"></i><?= htmlspecialchars((string) $val_coa) ?>
 								</span>
 							</div>
 						</div>
@@ -238,7 +238,7 @@ if (empty($all_attachments)) {
 							<span class="badge bg-primary text-light px-2 py-1 rounded">IDR</span>
 						</div>
 						<h2 class="fw-bolder text-primary mb-2">
-							Rp <?= number_format($data->jumlah_kasbon, 0, ',', '.') ?>
+							Rp <?= number_format((float) $data->jumlah_kasbon, 0, ',', '.') ?>
 						</h2>
 						<?php if (!empty($terbilang_nominal)) : ?>
 							<p class="text-muted small fst-italic mb-0 border-top pt-2 mt-2">
@@ -304,7 +304,7 @@ if (empty($all_attachments)) {
 				</div>
 				<?php if (!empty($data->tipe_pr)) : ?>
 					<span class="text-muted small">
-						Kategori: <strong class="text-dark"><?= ucwords($data->tipe_pr) ?></strong>
+						Kategori: <strong class="text-dark"><?= ucwords((string) $data->tipe_pr) ?></strong>
 					</span>
 				<?php endif; ?>
 			</div>
@@ -333,12 +333,12 @@ if (empty($all_attachments)) {
 									<tr>
 										<td class="text-center text-muted fw-medium"><?= $no++ ?></td>
 										<td>
-											<span class="fw-semibold text-dark"><?= htmlspecialchars($detail_pr['nm_material']) ?></span>
+											<span class="fw-semibold text-dark"><?= htmlspecialchars((string) $detail_pr['nm_material']) ?></span>
 										</td>
-										<td class="text-center fw-medium"><?= number_format($detail_pr['qty']) ?></td>
+										<td class="text-center fw-medium"><?= number_format((float) $detail_pr['qty']) ?></td>
 										<td class="text-center text-muted"><?= htmlspecialchars($detail_pr['satuan'] ?: '-') ?></td>
-										<td class="text-end font-monospace"><?= number_format($detail_pr['harga'], 0, ',', '.') ?></td>
-										<td class="text-end font-monospace fw-bold text-dark pe-4"><?= number_format($total_harga, 0, ',', '.') ?></td>
+										<td class="text-end font-monospace"><?= number_format((float) $detail_pr['harga'], 0, ',', '.') ?></td>
+										<td class="text-end font-monospace fw-bold text-dark pe-4"><?= number_format((float) $total_harga, 0, ',', '.') ?></td>
 									</tr>
 								<?php
 								endforeach;
@@ -355,7 +355,7 @@ if (empty($all_attachments)) {
 							<tr>
 								<th colspan="5" class="text-end py-3 fw-bold text-dark">Grand Total Referensi PR :</th>
 								<th class="text-end py-3 pe-4 font-monospace fw-bolder fs-6 text-primary">
-									Rp <?= number_format($grand_total_pr, 0, ',', '.') ?>
+									Rp <?= number_format((float) $grand_total_pr, 0, ',', '.') ?>
 								</th>
 							</tr>
 						</tfoot>
@@ -407,9 +407,9 @@ if (empty($all_attachments)) {
 												<div class="d-flex align-items-center gap-2">
 													<i class="fa <?= $icon ?> fs-5"></i>
 													<div>
-														<div class="fw-semibold text-dark text-break small"><?= htmlspecialchars($att['file_name']) ?></div>
+														<div class="fw-semibold text-dark text-break small"><?= htmlspecialchars((string) $att['file_name']) ?></div>
 														<span class="text-muted" style="font-size: 0.75rem;">
-															<?= strtoupper($ext) ?> &bull; <?= !empty($att['uploaded_at']) ? date('d M Y H:i', strtotime($att['uploaded_at'])) : 'Tersimpan' ?>
+															<?= strtoupper((string) $ext) ?> &bull; <?= !empty($att['uploaded_at']) ? date('d M Y H:i', strtotime((string) $att['uploaded_at'])) : 'Tersimpan' ?>
 														</span>
 													</div>
 												</div>
@@ -417,7 +417,7 @@ if (empty($all_attachments)) {
 											<td class="text-center">
 												<div class="btn-group btn-group-sm">
 													<?php if ($is_image || $is_pdf) : ?>
-														<button type="button" class="btn btn-outline-primary btn-sm" onclick="previewModalFile('<?= $att['file_path'] ?>', '<?= $is_pdf ? 'pdf' : 'image' ?>', '<?= htmlspecialchars($att['file_name']) ?>')" title="Lihat Preview">
+														<button type="button" class="btn btn-outline-primary btn-sm" onclick="previewModalFile('<?= $att['file_path'] ?>', '<?= $is_pdf ? 'pdf' : 'image' ?>', '<?= htmlspecialchars((string) $att['file_name']) ?>')" title="Lihat Preview">
 															<i class="fa fa-eye"></i>
 														</button>
 													<?php endif; ?>
@@ -457,7 +457,7 @@ if (empty($all_attachments)) {
 							<div class="fw-bold text-dark small text-uppercase">1. Pengajuan Dibuat</div>
 							<div class="fw-semibold text-dark"><?= $nama_pemohon ?></div>
 							<div class="text-muted small">
-								<?= !empty($data->created_on) ? date('d F Y, H:i', strtotime($data->created_on)) : '-' ?>
+								<?= !empty($data->created_on) ? date('d F Y, H:i', strtotime((string) $data->created_on)) : '-' ?>
 							</div>
 						</div>
 
@@ -472,7 +472,7 @@ if (empty($all_attachments)) {
 							<?php if ($fin_approved) : ?>
 								<div class="fw-semibold text-success"><i class="fa fa-check me-1"></i>Telah Diverifikasi</div>
 								<div class="text-muted small">
-									<?= !empty($data->app_finance_date) ? date('d F Y, H:i', strtotime($data->app_finance_date)) : 'Selesai' ?>
+									<?= !empty($data->app_finance_date) ? date('d F Y, H:i', strtotime((string) $data->app_finance_date)) : 'Selesai' ?>
 								</div>
 							<?php elseif ($data->status == '9') : ?>
 								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>
@@ -494,7 +494,7 @@ if (empty($all_attachments)) {
 									<i class="fa fa-check me-1"></i>Disetujui oleh <?= $data->approved_by ?: 'Management' ?>
 								</div>
 								<div class="text-muted small">
-									<?= !empty($data->approved_on) ? date('d F Y, H:i', strtotime($data->approved_on)) : '-' ?>
+									<?= !empty($data->approved_on) ? date('d F Y, H:i', strtotime((string) $data->approved_on)) : '-' ?>
 								</div>
 							<?php elseif ($data->status == '9') : ?>
 								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>

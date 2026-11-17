@@ -2,7 +2,7 @@
 $is_edit     = isset($bom) && $bom;
 $page_title  = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
 $bom_num     = !empty($bom->id) ? (int)$bom->id : (isset($next_bom_id) ? (int)$next_bom_id : 1);
-$bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
+$bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
 ?>
 
 <!-- Select2 -->
@@ -29,13 +29,13 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                     <select name="id_produk" id="select-produk" class="form-select select2-produk" required <?= $is_edit ? 'disabled' : '' ?>>
                         <option value="">-- Pilih Produk --</option>
                         <?php foreach ($produk_list as $idx => $p): ?>
-                            <option value="<?= htmlspecialchars($p->code_lv4) ?>"
-                                data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad($p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
+                            <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
+                                data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad((string) $p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
                                 data-idx="<?= str_pad($idx + 1, 3, '0', STR_PAD_LEFT) ?>"
-                                data-nama="<?= htmlspecialchars($p->nama) ?>"
+                                data-nama="<?= htmlspecialchars((string) $p->nama) ?>"
                                 data-trade="<?= htmlspecialchars(!empty($p->trade_name) ? $p->trade_name : $p->nama) ?>"
                                 <?= ($is_edit && $bom->id_produk == $p->code_lv4) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                                <?= htmlspecialchars((string) $p->code_lv4) ?> — <?= htmlspecialchars((string) $p->nama) ?>
                                 <?php if ($p->nm_lv1 || $p->nm_lv2): ?>
                                     (<?= htmlspecialchars(implode(' / ', array_filter([$p->nm_lv1, $p->nm_lv2, $p->nm_lv3]))) ?>)
                                 <?php endif; ?>
@@ -43,9 +43,9 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                         <?php endforeach; ?>
                     </select>
                     <?php if ($is_edit): ?>
-                        <input type="hidden" name="id_produk" value="<?= htmlspecialchars($bom->id_produk) ?>">
+                        <input type="hidden" name="id_produk" value="<?= htmlspecialchars((string) $bom->id_produk) ?>">
                     <?php endif; ?>
-                    <input type="hidden" name="nm_produk" id="nm_produk" value="<?= $is_edit ? htmlspecialchars($bom->nm_produk) : '' ?>">
+                    <input type="hidden" name="nm_produk" id="nm_produk" value="<?= $is_edit ? htmlspecialchars((string) $bom->nm_produk) : '' ?>">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Trade Name Produk</label>
@@ -97,14 +97,14 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                                                 class="form-select form-select-sm select2-material" required>
                                                 <option value="">-- Pilih Material --</option>
                                                 <?php foreach ($material_list as $m): ?>
-                                                    <option value="<?= htmlspecialchars($m->code_lv4) ?>"
-                                                        data-nama="<?= htmlspecialchars($m->nama) ?>"
+                                                    <option value="<?= htmlspecialchars((string) $m->code_lv4) ?>"
+                                                        data-nama="<?= htmlspecialchars((string) $m->nama) ?>"
                                                         data-thick="<?= (float) $m->thickness ?>"
                                                         data-width="<?= (float) $m->width ?>"
                                                         data-unit="<?= htmlspecialchars($m->id_unit ?: '') ?>"
                                                         data-nm-unit="<?= htmlspecialchars($m->nm_unit ?: '') ?>"
                                                         <?= ($d->id_material == $m->code_lv4) ? 'selected' : '' ?>>
-                                                        <?= htmlspecialchars($m->code_lv4) ?> — <?= htmlspecialchars($m->nama) ?>
+                                                        <?= htmlspecialchars((string) $m->code_lv4) ?> — <?= htmlspecialchars((string) $m->nama) ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
@@ -141,7 +141,7 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
 
             <!-- Keterangan Formula Sesuai Mockup -->
             <div class="alert alert-light border py-2 mb-4 text-muted small">
-                <i class="fa fa-info-circle me-1"></i> <strong>Berat/Meter (otomatis, dapat diubah manual)</strong> = <code>((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code> &middot; nilai standar dari Master Standard Material (Toleransi <?= number_format($standard_mat->standar_toleransi, 2) ?>, Berat Jenis <?= number_format($standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format($standard_mat->coating, 2) ?>). Nilai terisi otomatis saat material dipilih dan boleh diubah bila ada hitungan sendiri; kolom yang berbeda dari hitungan otomatis ditandai kuning dan bisa dikembalikan dengan tombol Recalculate Berat/Meter. Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).
+                <i class="fa fa-info-circle me-1"></i> <strong>Berat/Meter (otomatis, dapat diubah manual)</strong> = <code>((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code> &middot; nilai standar dari Master Standard Material (Toleransi <?= number_format((float) $standard_mat->standar_toleransi, 2) ?>, Berat Jenis <?= number_format((float) $standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format((float) $standard_mat->coating, 2) ?>). Nilai terisi otomatis saat material dipilih dan boleh diubah bila ada hitungan sendiri; kolom yang berbeda dari hitungan otomatis ditandai kuning dan bisa dikembalikan dengan tombol Recalculate Berat/Meter. Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).
             </div>
 
             <!-- Tombol Action Simpan & Batal -->

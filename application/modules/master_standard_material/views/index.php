@@ -45,16 +45,16 @@
                 <tbody>
                     <tr>
                         <td class="text-center fw-bold fs-6 text-primary">
-                            <?= number_format($standard->standar_toleransi, 6, '.', '') ?>
+                            <?= number_format((float) $standard->standar_toleransi, 6, '.', '') ?>
                         </td>
                         <td class="text-center fw-bold fs-6 text-success">
-                            <?= number_format($standard->standar_berat_jenis, 6, '.', '') ?>
+                            <?= number_format((float) $standard->standar_berat_jenis, 6, '.', '') ?>
                         </td>
                         <td class="text-center fw-bold fs-6 text-info">
-                            <?= number_format($standard->coating, 6, '.', '') ?>
+                            <?= number_format((float) $standard->coating, 6, '.', '') ?>
                         </td>
                         <td class="text-center text-muted">
-                            <?= !empty($standard->latest_update) ? date('d/m/Y H:i', strtotime($standard->latest_update)) : '-' ?>
+                            <?= !empty($standard->latest_update) ? date('d/m/Y H:i', strtotime((string) $standard->latest_update)) : '-' ?>
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modal-edit-standard" title="Edit">
@@ -102,11 +102,11 @@
                             ?>
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
-                                <td><code><?= htmlspecialchars($m->code_lv4) ?></code></td>
-                                <td><?= htmlspecialchars($m->nama) ?></td>
-                                <td class="text-end"><?= number_format($th, 3, '.', '') ?></td>
-                                <td class="text-end"><?= number_format($wd, 2, '.', '') ?></td>
-                                <td class="text-end fw-bold text-success"><?= number_format($bpm, 6, '.', '') ?></td>
+                                <td><code><?= htmlspecialchars((string) $m->code_lv4) ?></code></td>
+                                <td><?= htmlspecialchars((string) $m->nama) ?></td>
+                                <td class="text-end"><?= number_format((float) $th, 3, '.', '') ?></td>
+                                <td class="text-end"><?= number_format((float) $wd, 2, '.', '') ?></td>
+                                <td class="text-end fw-bold text-success"><?= number_format((float) $bpm, 6, '.', '') ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -135,21 +135,21 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Standar Toleransi <span class="text-danger">*</span></label>
                         <input type="number" step="0.000001" min="0" name="standar_toleransi" class="form-control" required
-                            value="<?= number_format($standard->standar_toleransi, 6, '.', '') ?>">
+                            value="<?= number_format((float) $standard->standar_toleransi, 6, '.', '') ?>">
                         <div class="form-text text-muted">Standar toleransi ketebalan material (default: 0.000000).</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Standar Berat Jenis Baja <span class="text-danger">*</span></label>
                         <input type="number" step="0.000001" min="0.000001" name="standar_berat_jenis" class="form-control" required
-                            value="<?= number_format($standard->standar_berat_jenis, 6, '.', '') ?>">
+                            value="<?= number_format((float) $standard->standar_berat_jenis, 6, '.', '') ?>">
                         <div class="form-text text-muted">Standar berat jenis baja (default: 7.850000).</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Coating <span class="text-danger">*</span></label>
                         <input type="number" step="0.000001" min="0" name="coating" class="form-control" required
-                            value="<?= number_format($standard->coating, 6, '.', '') ?>">
+                            value="<?= number_format((float) $standard->coating, 6, '.', '') ?>">
                         <div class="form-text text-muted">Nilai penambahan lapisan coating (default: 0.000000).</div>
                     </div>
                 </div>

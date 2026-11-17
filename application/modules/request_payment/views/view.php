@@ -62,35 +62,35 @@
             
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">Kurs</label>
-                <input type="text" name="kurs" class="form-control bg-light text-end auto_num" value="<?= number_format($data_invoice['kurs'], 2) ?>" readonly>
+                <input type="text" name="kurs" class="form-control bg-light text-end auto_num" value="<?= number_format((float) $data_invoice['kurs'], 2) ?>" readonly>
             </div>
             
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">Persentase DP</label>
                 <div class="input-group">
-                    <input type="text" name="persen_dp" class="form-control bg-light text-end persen_dp" value="<?= number_format($data_invoice['persen_dp'], 2) ?>" readonly>
+                    <input type="text" name="persen_dp" class="form-control bg-light text-end persen_dp" value="<?= number_format((float) $data_invoice['persen_dp'], 2) ?>" readonly>
                     <span class="input-group-text bg-light small">%</span>
                 </div>
             </div>
 
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">DPP (Total Pembelian)</label>
-                <input type="text" name="total_pembelian" class="form-control bg-light text-end total_pembelian" value="<?= number_format($data_invoice['total_pembelian'], 2) ?>" readonly>
+                <input type="text" name="total_pembelian" class="form-control bg-light text-end total_pembelian" value="<?= number_format((float) $data_invoice['total_pembelian'], 2) ?>" readonly>
             </div>
             
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">Nilai Disc</label>
-                <input type="text" name="nilai_disc" class="form-control bg-light text-end auto_num nilai_disc" value="<?= number_format($nilai_disc, 2) ?>" readonly>
+                <input type="text" name="nilai_disc" class="form-control bg-light text-end auto_num nilai_disc" value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
             </div>
 
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">Nilai PPN</label>
-                <input type="text" name="nilai_ppn" class="form-control bg-light text-end auto_num nilai_ppn" value="<?= number_format($nilai_ppn, 2) ?>" readonly>
+                <input type="text" name="nilai_ppn" class="form-control bg-light text-end auto_num nilai_ppn" value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
             </div>
             
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold small text-muted">Value DP</label>
-                <input type="text" name="value_dp" class="form-control bg-light text-end fw-bold text-success value_dp" value="<?= number_format($nilai_top, 2) ?>" readonly>
+                <input type="text" name="value_dp" class="form-control bg-light text-end fw-bold text-success value_dp" value="<?= number_format((float) $nilai_top, 2) ?>" readonly>
             </div>
 
             <div class="col-12 col-md-6">

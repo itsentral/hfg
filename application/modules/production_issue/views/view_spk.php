@@ -14,7 +14,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 <!-- Header SPK -->
 <div class="card mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Detail SPK: <?= htmlspecialchars($spk->spk_no) ?></h5>
+        <h5 class="mb-0">Detail SPK: <?= htmlspecialchars((string) $spk->spk_no) ?></h5>
         <div class="d-flex gap-2">
             <?php if ($spk->status === 'Draft'): ?>
                 <button class="btn btn-success btn-sm btn-release-spk" data-spk="<?= $spk->spk_no ?>">
@@ -38,12 +38,12 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td width="160" class="fw-semibold">No SPK</td>
-                        <td>: <?= htmlspecialchars($spk->spk_no) ?></td>
+                        <td>: <?= htmlspecialchars((string) $spk->spk_no) ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">No Plan</td>
                         <td>: <a href="<?= base_url('production_planning/view/' . $spk->plan_no) ?>">
-                            <?= htmlspecialchars($spk->plan_no) ?></a>
+                            <?= htmlspecialchars((string) $spk->plan_no) ?></a>
                         </td>
                     </tr>
                     <tr>
@@ -52,7 +52,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                     </tr>
                     <tr>
                         <td class="fw-semibold">Tanggal SPK</td>
-                        <td>: <?= date('d/m/Y', strtotime($spk->tgl_spk)) ?></td>
+                        <td>: <?= date('d/m/Y', strtotime((string) $spk->tgl_spk)) ?></td>
                     </tr>
                 </table>
             </div>
@@ -60,11 +60,11 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td width="160" class="fw-semibold">Target Qty</td>
-                        <td>: <?= number_format($spk->target_qty, 2) ?></td>
+                        <td>: <?= number_format((float) $spk->target_qty, 2) ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Due Date</td>
-                        <td>: <?= $spk->due_date ? date('d/m/Y', strtotime($spk->due_date)) : '-' ?></td>
+                        <td>: <?= $spk->due_date ? date('d/m/Y', strtotime((string) $spk->due_date)) : '-' ?></td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Status</td>
@@ -93,7 +93,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 
         <?php if ($spk->catatan): ?>
             <div class="mt-2">
-                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars($spk->catatan)) ?>
+                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars((string) $spk->catatan)) ?>
             </div>
         <?php endif; ?>
     </div>
@@ -133,13 +133,13 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                             <tr class="<?= $is_scanned ? 'table-success' : '' ?>">
                                 <td class="text-center"><?= $i + 1 ?></td>
                                 <td>
-                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode($d->no_coil)) ?>">
-                                        <?= htmlspecialchars($d->no_coil) ?>
+                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode((string) $d->no_coil)) ?>">
+                                        <?= htmlspecialchars((string) $d->no_coil) ?>
                                     </a>
                                 </td>
                                 <td><?= htmlspecialchars($d->no_ros ?: '-') ?></td>
                                 <td><?= htmlspecialchars($d->nm_material ?: '-') ?></td>
-                                <td class="text-end"><?= number_format($d->net_weight, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $d->net_weight, 3) ?></td>
                                 <td class="text-center">
                                     <?php if ($is_scanned): ?>
                                         <span class="badge bg-success"><i class="fa fa-check"></i> Issued</span>
@@ -184,8 +184,8 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                         <?php foreach ($logs as $i => $log): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><?= htmlspecialchars($log->no_coil) ?></td>
-                                <td class="text-center"><?= date('d/m/Y H:i:s', strtotime($log->scan_time)) ?></td>
+                                <td><?= htmlspecialchars((string) $log->no_coil) ?></td>
+                                <td class="text-center"><?= date('d/m/Y H:i:s', strtotime((string) $log->scan_time)) ?></td>
                                 <td><?= htmlspecialchars($log->nama_user ?: 'User #' . $log->scan_user) ?></td>
                                 <td class="text-center">
                                     <?php if ($log->status_scan === 'success'): ?>

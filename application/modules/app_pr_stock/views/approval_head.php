@@ -28,7 +28,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
                     <option value='0'>All Product Type</option>
                     <?php
                     foreach (get_list_inventory_lv1('product') as $val => $valx) {
-                        echo "<option value='" . $valx['code_lv1'] . "'>" . strtoupper($valx['nama']) . "</option>";
+                        echo "<option value='" . $valx['code_lv1'] . "'>" . strtoupper((string) $valx['nama']) . "</option>";
                     }
                     ?>
                 </select>
@@ -43,7 +43,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
                     <option value='0'>All Costcenter</option>
                     <?php
                     foreach (get_costcenter() as $val => $valx) {
-                        echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper($valx['nama_costcenter']) . "</option>";
+                        echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper((string) $valx['nama_costcenter']) . "</option>";
                     }
                     ?>
                 </select>

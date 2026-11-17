@@ -54,7 +54,7 @@ foreach($result AS $val => $valx){
 				foreach($dt_supplier AS $val => $valx){
 					echo '<td align=center>'.$value[$valx->id_supplier]['lead_time'].'</td>';
 				}
-				echo'<td>'.date('d-m-Y', strtotime($value['tgl_dibutuhkan'])).'</td>
+				echo'<td>'.date('d-m-Y', strtotime((string) $value['tgl_dibutuhkan'])).'</td>
 				</tr>';
 			}
 /*			

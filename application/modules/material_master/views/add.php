@@ -55,7 +55,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php
 			foreach ($listLevel1 as $key => $value) {
 				$selected = ($code_lv1 == $value['code_lv1']) ? 'selected' : '';
-				echo "<option value='" . $value['code_lv1'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
+				echo "<option value='" . $value['code_lv1'] . "' " . $selected . ">" . strtoupper((string) $value['nama']) . "</option>";
 			}
 			?>
 		</select>
@@ -73,7 +73,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 				echo "<option value='0'>Select Slithed / Mother Coil</option>";
 				foreach ($listLevel2 as $key => $value) {
 					$selected = ($code_lv2 == $value['code_lv2']) ? 'selected' : '';
-					echo "<option value='" . $value['code_lv2'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
+					echo "<option value='" . $value['code_lv2'] . "' " . $selected . ">" . strtoupper((string) $value['nama']) . "</option>";
 				}
 			} else {
 				echo "<option value='0'>Select Slithed / Mother Coil</option>";
@@ -94,7 +94,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 				echo "<option value='0'>Select Boron / Non Boron</option>";
 				foreach ($listLevel3 as $key => $value) {
 					$selected = ($code_lv3 == $value['code_lv3']) ? 'selected' : '';
-					echo "<option value='" . $value['code_lv3'] . "' " . $selected . ">" . strtoupper($value['nama']) . "</option>";
+					echo "<option value='" . $value['code_lv3'] . "' " . $selected . ">" . strtoupper((string) $value['nama']) . "</option>";
 				}
 			} else {
 				echo "<option value='0'>Select Boron / Non Boron</option>";
@@ -166,7 +166,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($coating as $value) {
 				$sel = ($value->id == $id_coating) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $value->nama)) ?></option>
 			<?php } ?>
 		</select>
 	</div>
@@ -203,7 +203,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($tensile as $value) {
 				$sel = ($value->id == $id_tensile) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $value->nama)) ?></option>
 			<?php } ?>
 		</select>
 	</div>
@@ -229,7 +229,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($satuan as $value) {
 				$sel = ($value->id == $id_unit_other) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->code)) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $value->code)) ?></option>
 			<?php } ?>
 		</select>
 	</div>
@@ -249,7 +249,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($satuan_packing as $value) {
 				$sel = ($value->id == $id_unit_packing) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->code)) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $value->code)) ?></option>
 			<?php } ?>
 		</select>
 	</div>
@@ -265,7 +265,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($satuan as $value) {
 				$sel = ($value->id == $id_unit) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper($value->code) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper((string) $value->code) ?></option>
 			<?php } ?>
 		</select>
 	</div>
@@ -408,7 +408,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 			<?php foreach ($supplier as $value) {
 				$sel = ($value->id == $id_supplier) ? 'selected' : '';
 			?>
-				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower($value->nama)) ?></option>
+				<option value="<?= $value->id; ?>" <?= $sel; ?>><?= strtoupper(strtolower((string) $value->nama)) ?></option>
 			<?php } ?>
 		</select>
 	</div>

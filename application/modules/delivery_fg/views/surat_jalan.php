@@ -99,7 +99,7 @@
                 </tr>
                 <tr>
                     <td>Tanggal</td>
-                    <td>: <?= date('d/m/Y', strtotime($do->tgl_delivery)) ?></td>
+                    <td>: <?= date('d/m/Y', strtotime((string) $do->tgl_delivery)) ?></td>
                 </tr>
                 <tr>
                     <td>Tgl Cetak</td>
@@ -111,12 +111,12 @@
             <table>
                 <tr>
                     <td>Kepada</td>
-                    <td>: <strong><?= htmlspecialchars($do->customer) ?></strong></td>
+                    <td>: <strong><?= htmlspecialchars((string) $do->customer) ?></strong></td>
                 </tr>
                 <?php if ($do->keterangan): ?>
                 <tr>
                     <td>Keterangan</td>
-                    <td>: <?= htmlspecialchars($do->keterangan) ?></td>
+                    <td>: <?= htmlspecialchars((string) $do->keterangan) ?></td>
                 </tr>
                 <?php endif; ?>
             </table>
@@ -138,18 +138,18 @@
             <?php foreach ($details as $i => $d): ?>
             <tr>
                 <td class="text-center"><?= $i + 1 ?></td>
-                <td><?= htmlspecialchars($d->produk_fg) ?></td>
+                <td><?= htmlspecialchars((string) $d->produk_fg) ?></td>
                 <td><?= htmlspecialchars($d->nm_produk_fg ?: '-') ?></td>
-                <td class="text-right"><?= number_format($d->qty_kirim, 2) ?></td>
-                <td class="text-right"><?= number_format($d->estimasi_berat, 3) ?></td>
+                <td class="text-right"><?= number_format((float) $d->qty_kirim, 2) ?></td>
+                <td class="text-right"><?= number_format((float) $d->estimasi_berat, 3) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3" class="text-right">Total</td>
-                <td class="text-right"><?= number_format($total_qty, 2) ?></td>
-                <td class="text-right"><?= number_format($total_estimasi, 3) ?></td>
+                <td class="text-right"><?= number_format((float) $total_qty, 2) ?></td>
+                <td class="text-right"><?= number_format((float) $total_estimasi, 3) ?></td>
             </tr>
         </tfoot>
     </table>
@@ -159,11 +159,11 @@
         <table>
             <tr>
                 <td>Total Estimasi Berat</td>
-                <td>: <?= number_format($total_estimasi, 3) ?> kg</td>
+                <td>: <?= number_format((float) $total_estimasi, 3) ?> kg</td>
                 <td width="10%"></td>
                 <?php if ($berat_aktual !== null): ?>
                 <td style="font-weight:bold;">Berat Aktual Timbang</td>
-                <td>: <?= number_format($berat_aktual, 3) ?> kg</td>
+                <td>: <?= number_format((float) $berat_aktual, 3) ?> kg</td>
                 <?php endif; ?>
             </tr>
         </table>

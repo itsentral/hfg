@@ -339,7 +339,7 @@ class Simulasi_costing_model extends CI_Model
         // 8. Other Cost (% x HPP)
         $other_labels = [];
         if (!empty($gen->other_cost_labels)) {
-            $decoded = json_decode($gen->other_cost_labels, true);
+            $decoded = json_decode((string) $gen->other_cost_labels, true);
             if (is_array($decoded)) {
                 $other_labels = $decoded;
             }
@@ -503,8 +503,8 @@ class Simulasi_costing_model extends CI_Model
                     'changed_at'                 => $now,
                     'changed_by'                 => $user_id,
                     'change_source'              => 'Update Costing Terkini',
-                    'change_old_value'           => 'Bottom Price: Rp ' . number_format($bottom_lama, 2),
-                    'change_new_value'           => 'Bottom Price: Rp ' . number_format($bottom_baru, 2),
+                    'change_old_value'           => 'Bottom Price: Rp ' . number_format((float) $bottom_lama, 2),
+                    'change_new_value'           => 'Bottom Price: Rp ' . number_format((float) $bottom_baru, 2),
                     'bottom_price_lama_meter'    => $bottom_lama,
                     'bottom_price_lama_kg'       => $is_new ? 0.0 : (float)$old->selling_price_bottom_price_kg,
                     'bottom_price_baru_meter'    => $bottom_baru,
@@ -670,7 +670,7 @@ class Simulasi_costing_model extends CI_Model
         if (!$pl) {
             $year = date('Y');
             $count = $this->db->like('no_pricelist', 'PL-' . $year)->count_all_results('pricelist_header') + 1;
-            $no_pl = 'PL-' . $year . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+            $no_pl = 'PL-' . $year . '-' . str_pad((string) $count, 4, '0', STR_PAD_LEFT);
 
             $this->db->insert('pricelist_header', [
                 'no_pricelist' => $no_pl,

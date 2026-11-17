@@ -161,7 +161,7 @@ class Flow_process extends Admin_Controller
 			if ($name === '') {
 				$errors[] = 'Proses #' . $no . ': Process Name wajib diisi.';
 			}
-			if (strlen($name) > 150 || strlen($area) > 150 || strlen($machine) > 150) {
+			if (strlen((string) $name) > 150 || strlen((string) $area) > 150 || strlen((string) $machine) > 150) {
 				$errors[] = 'Proses #' . $no . ': Costcentre/Area, Process Name, dan Machine maksimal 150 karakter.';
 			}
 			// Titik sebagai pemisah desimal; koma ditolak (bukan dihapus) agar "0,5" tidak berubah menjadi 5
@@ -222,7 +222,7 @@ class Flow_process extends Admin_Controller
 
 		if ($hasil === false) {
 			$result = ['pesan' => 'Failed process data!', 'status' => 0];
-			write_log('Flow Process', $label, 'Gagal ' . strtolower($label) . ' flow process: ' . $nama_kategori, $logPayload, null, 0);
+			write_log('Flow Process', $label, 'Gagal ' . strtolower((string) $label) . ' flow process: ' . $nama_kategori, $logPayload, null, 0);
 		} else {
 			$result = ['pesan' => 'Success process data!', 'status' => 1];
 			write_log('Flow Process', $label, $label . ' flow process: ' . $nama_kategori . ' (' . count($details) . ' proses, total man hour ' . $header['total_man_hour'] . ')', $logPayload, null, 1);

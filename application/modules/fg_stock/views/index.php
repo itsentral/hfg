@@ -157,7 +157,7 @@
                             <?php foreach ($stok_kw1 as $i => $s): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><strong class="text-primary"><?= htmlspecialchars($s->produk_fg) ?></strong></td>
+                                <td><strong class="text-primary"><?= htmlspecialchars((string) $s->produk_fg) ?></strong></td>
                                 <td><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border"><?= htmlspecialchars($s->sub_kategori ?: 'KW 1') ?></span>
@@ -171,9 +171,9 @@
                                 </td>
                                 <td class="text-end">Rp <?= number_format((float) $s->costbook, 2) ?></td>
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
-                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime($s->last_update)) : '-' ?></small></td>
+                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode($s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
                                         <i class="fa fa-history me-1"></i> Kartu Stok
                                     </a>
                                 </td>
@@ -209,7 +209,7 @@
                             <?php foreach ($stok_kw2 as $i => $s): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><strong class="text-warning text-dark"><?= htmlspecialchars($s->produk_fg) ?></strong></td>
+                                <td><strong class="text-warning text-dark"><?= htmlspecialchars((string) $s->produk_fg) ?></strong></td>
                                 <td><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></td>
                                 <td class="text-center">
                                     <span class="badge bg-warning text-dark border"><?= htmlspecialchars($s->sub_kategori ?: 'KW 2') ?></span>
@@ -223,9 +223,9 @@
                                 </td>
                                 <td class="text-end">Rp <?= number_format((float) $s->costbook, 2) ?></td>
                                 <td class="text-end text-primary fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
-                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime($s->last_update)) : '-' ?></small></td>
+                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode($s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
                                         <i class="fa fa-history me-1"></i> Kartu Stok
                                     </a>
                                 </td>
@@ -259,11 +259,11 @@
                             <?php foreach ($stok_tong_coil as $i => $s): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><code><?= htmlspecialchars($s->produk_fg) ?></code></td>
+                                <td><code><?= htmlspecialchars((string) $s->produk_fg) ?></code></td>
                                 <td>
                                     <strong><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></strong>
                                     <?php if (!empty($s->id_material)): ?>
-                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars($s->id_material) ?></small>
+                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars((string) $s->id_material) ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
@@ -272,9 +272,9 @@
                                 <td class="text-end fw-bold text-primary"><?= number_format((float) $s->total_berat, 3) ?></td>
                                 <td class="text-end">Rp <?= number_format((float) $s->costbook, 2) ?></td>
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
-                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime($s->last_update)) : '-' ?></small></td>
+                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode($s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
                                         <i class="fa fa-history me-1"></i> Kartu Stok
                                     </a>
                                 </td>
@@ -308,22 +308,22 @@
                             <?php foreach ($stok_scrap as $i => $s): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><code><?= htmlspecialchars($s->produk_fg) ?></code></td>
+                                <td><code><?= htmlspecialchars((string) $s->produk_fg) ?></code></td>
                                 <td class="text-center">
                                     <span class="badge bg-danger"><?= htmlspecialchars($s->sub_kategori ?: 'Scrap') ?></span>
                                 </td>
                                 <td>
                                     <strong><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></strong>
                                     <?php if (!empty($s->id_material)): ?>
-                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars($s->id_material) ?></small>
+                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars((string) $s->id_material) ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end fw-bold text-danger"><?= number_format((float) $s->total_berat, 3) ?></td>
                                 <td class="text-end">Rp <?= number_format((float) $s->costbook, 2) ?></td>
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
-                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime($s->last_update)) : '-' ?></small></td>
+                                <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode($s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
                                         <i class="fa fa-history me-1"></i> Kartu Stok
                                     </a>
                                 </td>

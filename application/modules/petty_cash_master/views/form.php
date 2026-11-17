@@ -15,13 +15,13 @@ $header_id = (isset($data->id)) ? $data->id : '';
             <label for="nama" class="form-label fw-bold text-dark">
                 <i class="fa fa-tag text-primary me-1"></i> Nama Master Petty Cash <span class="text-danger">*</span>
             </label>
-            <input type="text" class="form-control" id="nama" name="nama" value="<?= isset($data->nama) ? htmlspecialchars($data->nama) : '' ?>" placeholder="Contoh: Petty Cash Operasional HO" required>
+            <input type="text" class="form-control" id="nama" name="nama" value="<?= isset($data->nama) ? htmlspecialchars((string) $data->nama) : '' ?>" placeholder="Contoh: Petty Cash Operasional HO" required>
         </div>
         <div class="col-md-6">
             <label for="keterangan" class="form-label fw-bold text-dark">
                 <i class="fa fa-info-circle text-info me-1"></i> Keterangan <span class="text-danger">*</span>
             </label>
-            <input type="text" class="form-control" id="keterangan" name="keterangan" value="<?= isset($data->keterangan) ? htmlspecialchars($data->keterangan) : '' ?>" placeholder="Contoh: Kas kecil untuk kebutuhan operasional harian" required>
+            <input type="text" class="form-control" id="keterangan" name="keterangan" value="<?= isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : '' ?>" placeholder="Contoh: Kas kecil untuk kebutuhan operasional harian" required>
         </div>
     </div>
 </div>
@@ -64,12 +64,12 @@ $header_id = (isset($data->id)) ? $data->id : '';
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="detail[<?= $idx ?>][jenis_pengeluaran]" class="form-control" value="<?= htmlspecialchars($detail->jenis_pengeluaran) ?>" placeholder="Jenis Pengeluaran">
+                                <input type="text" name="detail[<?= $idx ?>][jenis_pengeluaran]" class="form-control" value="<?= htmlspecialchars((string) $detail->jenis_pengeluaran) ?>" placeholder="Jenis Pengeluaran">
                             </td>
                             <td>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light text-muted small">Rp</span>
-                                    <input type="text" name="detail[<?= $idx ?>][nominal]" class="form-control nominal-input text-end fw-semibold font-monospace" value="<?= number_format($detail->nominal, 0, ',', '.') ?>" placeholder="0">
+                                    <input type="text" name="detail[<?= $idx ?>][nominal]" class="form-control nominal-input text-end fw-semibold font-monospace" value="<?= number_format((float) $detail->nominal, 0, ',', '.') ?>" placeholder="0">
                                 </div>
                             </td>
                             <td class="text-center">

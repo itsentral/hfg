@@ -213,8 +213,8 @@ class Incoming_check extends Admin_Controller
 	{
 		$no_pr = $this->uri->segment(3);
 		$tanggal  = date('Y-m-d', strtotime('-1 month', strtotime(date('Y-m-d'))));
-		$bulan    = ltrim(date('m', strtotime($tanggal)), '0');
-		$tahun    = date('Y', strtotime($tanggal));
+		$bulan    = ltrim(date('m', strtotime((string) $tanggal)), '0');
+		$tahun    = date('Y', strtotime((string) $tanggal));
 
 		$sql		= "	SELECT
 							a.*,
@@ -259,7 +259,7 @@ class Incoming_check extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -295,7 +295,7 @@ class Incoming_check extends Admin_Controller
 		$ch_pr_header = $this->db->get_where('warehouse_planning_header', array('no_ipp' => $no_ipp))->result();
 
 		if ($tanda == 'P') {
-			$no_ippX = date('Y-m-d', strtotime($no_ipp));
+			$no_ippX = date('Y-m-d', strtotime((string) $no_ipp));
 			$ch_pr_header = $this->db->get_where('warehouse_planning_header', array('DATE(created_date)' => $no_ippX))->result();
 		}
 
@@ -308,7 +308,7 @@ class Incoming_check extends Admin_Controller
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2		= (int)substr($angkaUrut2, 7, 4);
+		$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 		$urutan2++;
 		$urut2			= sprintf('%04s', $urutan2);
 		$no_pr			= "PRN" . $Ym . $urut2;
@@ -317,7 +317,7 @@ class Incoming_check extends Admin_Controller
 		$numrowIPPX		= $this->db->query($qIPPX)->num_rows();
 		$resultIPPX		= $this->db->query($qIPPX)->result_array();
 		$angkaUrut2X	= $resultIPPX[0]['maxP'];
-		$urutan2X		= (int)substr($angkaUrut2X, 6, 4);
+		$urutan2X		= (int)substr((string) $angkaUrut2X, 6, 4);
 		$urutan2X++;
 		$urut2X			= sprintf('%04s', $urutan2X);
 		$no_pr_group	= "PR" . $Ym . $urut2X;
@@ -398,10 +398,10 @@ class Incoming_check extends Admin_Controller
 		}
 
 		if ($tanda == 'P') {
-			$this->db->where('DATE(created_date)', date('Y-m-d', strtotime($no_ipp)));
+			$this->db->where('DATE(created_date)', date('Y-m-d', strtotime((string) $no_ipp)));
 			$this->db->update('warehouse_planning_header', $ArrUpdateHEad);
 
-			$this->db->where('DATE(created_date)', date('Y-m-d', strtotime($no_ipp)));
+			$this->db->where('DATE(created_date)', date('Y-m-d', strtotime((string) $no_ipp)));
 			$this->db->update_batch('warehouse_planning_detail', $ArrUpDetail, 'id_material');
 		}
 
@@ -718,7 +718,7 @@ class Incoming_check extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -1268,7 +1268,7 @@ class Incoming_check extends Admin_Controller
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2		= (int)substr($angkaUrut2, 0, 3);
+		$urutan2		= (int)substr((string) $angkaUrut2, 0, 3);
 		$urutan2++;
 		$urut2			= sprintf('%03s', $urutan2);
 		$no_surat_jalan	= $urut2 . "/IA" . $kode_gudang . $monthYear;
@@ -1702,7 +1702,7 @@ class Incoming_check extends Admin_Controller
 		$numrowIPP		= $this->db->query($qIPP)->num_rows();
 		$resultIPP		= $this->db->query($qIPP)->result_array();
 		$angkaUrut2		= $resultIPP[0]['maxP'];
-		$urutan2		= (int)substr($angkaUrut2, 0, 3);
+		$urutan2		= (int)substr((string) $angkaUrut2, 0, 3);
 		$urutan2++;
 		$urut2			= sprintf('%03s', $urutan2);
 		$no_surat_jalan	= $urut2 . "/IA" . $kode_gudang . $monthYear;
@@ -1867,7 +1867,7 @@ class Incoming_check extends Admin_Controller
 	public function list_warehouse_ipp()
 	{
 		$no_ipp		= $this->input->post('no_ipp');
-		$tanda = substr($no_ipp, 0, 2);
+		$tanda = substr((string) $no_ipp, 0, 2);
 		if ($no_ipp <> '0') {
 			$queryIpp	= "SELECT a.kd_gudang_ke, b.urut2 FROM warehouse_adjustment a LEFT JOIN warehouse b ON a.kd_gudang_ke=b.kd_gudang WHERE a.no_ipp = '" . $no_ipp . "' AND a.kd_gudang_dari <> 'PURCHASE' AND b.urut2 >= 2 ORDER BY a.created_date DESC LIMIT 1";
 			$restIpp	= $this->db->query($queryIpp)->result();
@@ -1956,7 +1956,7 @@ class Incoming_check extends Admin_Controller
 		$Q_result	= $this->db->query($query)->result();
 		$option = "<option value='0'>Select Material</option>";
 		foreach ($Q_result as $row) {
-			$option .= "<option value='" . $row->id_material . "'>" . strtoupper($row->nm_material) . "</option>";
+			$option .= "<option value='" . $row->id_material . "'>" . strtoupper((string) $row->nm_material) . "</option>";
 		}
 		echo json_encode(array(
 			'option' => $option
@@ -1975,7 +1975,7 @@ class Incoming_check extends Admin_Controller
 			$option = "<option value='0'>Select Expired</option>";
 			foreach ($Q_result as $row) {
 				if ($row->expired <> NULL and $row->expired <> '0000-00-00') {
-					$option .= "<option value='" . $row->expired . "'>" . date('d-M-Y', strtotime($row->expired)) . "</option>";
+					$option .= "<option value='" . $row->expired . "'>" . date('d-M-Y', strtotime((string) $row->expired)) . "</option>";
 				}
 				// if($row->expired == NULL OR $row->expired == '0000-00-00'){
 				// $option .= "<option value='0'>Expired Empty</option>";
@@ -2159,8 +2159,8 @@ class Incoming_check extends Admin_Controller
 		$get_category = $this->db->select('category')->get_where('warehouse', array('id' => $gudang))->result();
 		$nm_gudang = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $gudang));
 
-		$tanggal_update = (!empty($date_filter)) ? " (" . date('d F Y', strtotime($date_filter)) . ")" : " (" . date('d F Y') . ")";
-		$tanggal_update2 = (!empty($date_filter)) ? date('Y-m-d', strtotime($date_filter)) : date('Y-m-d');
+		$tanggal_update = (!empty($date_filter)) ? " (" . date('d F Y', strtotime((string) $date_filter)) . ")" : " (" . date('d F Y') . ")";
+		$tanggal_update2 = (!empty($date_filter)) ? date('Y-m-d', strtotime((string) $date_filter)) : date('Y-m-d');
 
 		$Row		= 1;
 		$NewRow		= $Row + 1;
@@ -2267,7 +2267,7 @@ class Incoming_check extends Admin_Controller
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
 				$awal_col++;
-				$nm_material	= strtoupper($row_Cek['nm_material']);
+				$nm_material	= strtoupper((string) $row_Cek['nm_material']);
 				$Cols			= getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $nm_material);
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
@@ -2730,28 +2730,28 @@ class Incoming_check extends Admin_Controller
 										<input type='hidden' name='detail2[999" . $key . "][qty_sisa]' value='" . $sisa_req . "'>
 										<input type='hidden' name='detail2[999" . $key . "][qty_total_req]' value='" . $QTY_REQUEST . "'>
 									</td>";
-						$HTML .= "<td>" . strtoupper($value['nm_material']) . "</td>";
-						$HTML .= "<td class='text-right text-bold'>" . number_format($QTY_REQ, 3) . "</td>";
-						$HTML .= "<td class='text-right " . $color . " sisaRequest'>" . number_format($sisa_req, 3) . "</td>";
-						$HTML .= "<td class='text-right text-bold'>" . number_format($QTY_REQUEST, 3) . "</td>";
+						$HTML .= "<td>" . strtoupper((string) $value['nm_material']) . "</td>";
+						$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQ, 3) . "</td>";
+						$HTML .= "<td class='text-right " . $color . " sisaRequest'>" . number_format((float) $sisa_req, 3) . "</td>";
+						$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQUEST, 3) . "</td>";
 						$HTML .= "<td><input type='text' style='width:100%' name='detail2[999" . $key . "][sudah_request]' data-no='" . $key . "' class='form-control text-bold input-sm text-right autoNumeric requestBlock' placeholder='Request (kg)'></td>";
 						$HTML .= "<td><input type='text' style='width:100%' name='detail2[999" . $key . "][ket_request]' data-no='" . $key . "' class='form-control input-sm text-left' placeholder='Keterangan'></td>";
 						$HTML .= "</tr>";
 					} else {
 						$HTML .= "<tr>";
 						$HTML .= "<td class='text-center'>" . $key . "</td>";
-						$HTML .= "<td>" . strtoupper($value['nm_material']) . "</td>";
-						$HTML .= "<td class='text-right text-bold'>" . number_format($QTY_REQ, 3) . "</td>";
-						$HTML .= "<td class='text-right " . $color . "'>" . number_format($sisa_req, 3) . "</td>";
-						$HTML .= "<td class='text-right text-bold'>" . number_format($QTY_REQUEST, 3) . "</td>";
+						$HTML .= "<td>" . strtoupper((string) $value['nm_material']) . "</td>";
+						$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQ, 3) . "</td>";
+						$HTML .= "<td class='text-right " . $color . "'>" . number_format((float) $sisa_req, 3) . "</td>";
+						$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQUEST, 3) . "</td>";
 						$HTML .= "<td colspan='2' class='text-red'><b>Request melebihi limit !!!</b></td>";
 						$HTML .= "</tr>";
 					}
 				} else {
 					$HTML .= "<tr>";
 					$HTML .= "<td class='text-center'>" . $key . "</td>";
-					$HTML .= "<td>" . strtoupper($value['nm_material']) . "</td>";
-					$HTML .= "<td class='text-right text-bold'>" . number_format($QTY_REQ, 3) . "</td>";
+					$HTML .= "<td>" . strtoupper((string) $value['nm_material']) . "</td>";
+					$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQ, 3) . "</td>";
 					$HTML .= "<td class='text-center'>-</td>";
 					$HTML .= "<td class='text-center'>-</td>";
 					$HTML .= "<td colspan='2' class='text-red'><b>Buat request terlebih dahulu !!!</b></td>";
@@ -2768,7 +2768,7 @@ class Incoming_check extends Admin_Controller
 			'option' => $HTML,
 			'id_milik' => $id_milik,
 			'qty_spk' => $qty_spk,
-			'product_name' => strtoupper($product_name)
+			'product_name' => strtoupper((string) $product_name)
 		));
 	}
 
@@ -2779,7 +2779,7 @@ class Incoming_check extends Admin_Controller
 		$UserName		= $data_session['ORI_User']['username'];
 		$DateTime		= date('Y-m-d H:i:s');
 
-		$DMF_TANDA = substr($no_ipp, 0, 3);
+		$DMF_TANDA = substr((string) $no_ipp, 0, 3);
 
 		$query		= "	SELECT
 							a.id_bq AS id_bq,
@@ -2890,10 +2890,10 @@ class Incoming_check extends Admin_Controller
 			'no_po' 	=> $result_header[0]->no_ipp,
 			'no_ipp' 	=> $result_header[0]->no_ipp,
 			'qty_spk' 	=> $result_header[0]->qty_spk,
-			'tanggal' 	=> (!empty($result_header[0]->tanggal)) ? date('d-M-Y', strtotime($result_header[0]->tanggal)) : '',
+			'tanggal' 	=> (!empty($result_header[0]->tanggal)) ? date('d-M-Y', strtotime((string) $result_header[0]->tanggal)) : '',
 			'id_milik' 	=> get_name('production_detail', 'id_milik', 'no_spk', $result_header[0]->no_spk),
-			'dated' 	=> date('ymdhis', strtotime($result_header[0]->created_date)),
-			'resv' 		=> date('d F Y', strtotime($result_header[0]->created_date)),
+			'dated' 	=> date('ymdhis', strtotime((string) $result_header[0]->created_date)),
+			'resv' 		=> date('d F Y', strtotime((string) $result_header[0]->created_date)),
 			'GET_USERNAME' => get_detail_user(),
 			'DETAIL_MATERIAL' => get_detailAktualAdjustmentCheck()
 
@@ -2916,7 +2916,7 @@ class Incoming_check extends Admin_Controller
 		$printby		= $data_session['ORI_User']['username'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -2943,7 +2943,7 @@ class Incoming_check extends Admin_Controller
 				$KeGudang = get_name('warehouse', 'nm_gudang', 'id', $rest_req[0]['id_gudang']);
 			}
 			if (!empty($rest_req[0]['tgl_planning']) and $rest_req[0]['tgl_planning'] != '0000-00-00') {
-				$tgl_planning = date('d F Y', strtotime($rest_req[0]['tgl_planning']));
+				$tgl_planning = date('d F Y', strtotime((string) $rest_req[0]['tgl_planning']));
 			}
 		}
 
@@ -3050,11 +3050,11 @@ class Incoming_check extends Admin_Controller
 			$data_html .= "<td>" . $No . "</td>";
 			$data_html .= "<td class='text-left " . $bold . "'>" . $dari_gudang . "</td>";
 			$data_html .= "<td class='text-left " . $bold2 . "'>" . $ke_gudang . "</td>";
-			$data_html .= "<td class='text-right " . $color . "'>" . number_format($QTY, 4) . "</td>";
-			$data_html .= "<td class='text-right " . $color . "'>" . number_format($QTY_AWAL, 4) . "</td>";
-			$data_html .= "<td class='text-right " . $color . "'>" . number_format($QTY_AKHIR, 4) . "</td>";
-			$data_html .= "<td>" . strtoupper($value['ket']) . "</td>";
-			$data_html .= "<td class='text-center'>" . date('d-M-Y H:i:s', strtotime($value['update_date'])) . "</td>";
+			$data_html .= "<td class='text-right " . $color . "'>" . number_format((float) $QTY, 4) . "</td>";
+			$data_html .= "<td class='text-right " . $color . "'>" . number_format((float) $QTY_AWAL, 4) . "</td>";
+			$data_html .= "<td class='text-right " . $color . "'>" . number_format((float) $QTY_AKHIR, 4) . "</td>";
+			$data_html .= "<td>" . strtoupper((string) $value['ket']) . "</td>";
+			$data_html .= "<td class='text-center'>" . date('d-M-Y H:i:s', strtotime((string) $value['update_date'])) . "</td>";
 			$data_html .= "</tr>";
 
 			$QTY_PLUS = $QTY_AKHIR;
@@ -3062,7 +3062,7 @@ class Incoming_check extends Admin_Controller
 		$data_html .= "<tr>";
 		$data_html .= "<td></td>";
 		$data_html .= "<td colspan='4' class='text-bold'>SISA BOOKING</td>";
-		$data_html .= "<td class='text-right text-bold'>" . number_format($QTY_AKHIR, 4) . "</td>";
+		$data_html .= "<td class='text-right text-bold'>" . number_format((float) $QTY_AKHIR, 4) . "</td>";
 		$data_html .= "<td colspan='2'></td>";
 		$data_html .= "</tr>";
 
@@ -3354,7 +3354,7 @@ class Incoming_check extends Admin_Controller
 			$hasil .= '<td class="text-center">' . $no . '</td>';
 			$hasil .= '<td class="text-center">' . $get_no_surat->no_surat . '</td>';
 			$hasil .= '<td class="">' . $item['nm_material'] . '</td>';
-			$hasil .= '<td class="text-center">' . number_format($item['qty_order'], 2) . ' <input type="hidden" class="qty_order_' . $item['id'] . '" name="qty_order_' . $item['id'] . '" value="' . $item['qty_order'] . '"> </td>';
+			$hasil .= '<td class="text-center">' . number_format((float) $item['qty_order'], 2) . ' <input type="hidden" class="qty_order_' . $item['id'] . '" name="qty_order_' . $item['id'] . '" value="' . $item['qty_order'] . '"> </td>';
 			$hasil .= '<td class="text-center">' . $item['satuan'] . '</td>';
 			$hasil .= '<td class="text-center">' . $konversi . ' <input type="hidden" name="konversi_' . $item['konversi'] . '" class="konversi_' . $item['id'] . '" value="' . $konversi . '"></td>';
 			$hasil .= '<td class="text-center">' . number_format($item['qty_order'] / $konversi) . '</td>';
@@ -3392,10 +3392,10 @@ class Incoming_check extends Admin_Controller
 			foreach ($get_checked as $checked_item) :
 				$hasil .= '<tr>';
 				$hasil .= '<td colspan="8"></td>';
-				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_ng'], 2) . '" readonly></td>';
-				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_oke'], 2) . '" readonly></td>';
-				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_pack'], 2) . '" readonly></td>';
-				$hasil .= '<td class="text-center">' . date('d F Y', strtotime($checked_item['expired_date'])) . '</td>';
+				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_ng'], 2) . '" readonly></td>';
+				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_oke'], 2) . '" readonly></td>';
+				$hasil .= '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_pack'], 2) . '" readonly></td>';
+				$hasil .= '<td class="text-center">' . date('d F Y', strtotime((string) $checked_item['expired_date'])) . '</td>';
 				$hasil .= '<td class="text-center">
 				';
 
@@ -3442,12 +3442,12 @@ class Incoming_check extends Admin_Controller
 
 			$hasil2 .= '<tr class="summary-row" data-id="' . $id . '">';
 			$hasil2 .= '<td class="text-center">' . $no . '</td>';
-			$hasil2 .= '<td class="text-center">' . htmlspecialchars($summ_incom['nm_material']) . '</td>';
+			$hasil2 .= '<td class="text-center">' . htmlspecialchars((string) $summ_incom['nm_material']) . '</td>';
 
 			// simpan angka murni di data-val, tampilkan number_format
-			$hasil2 .= '<td class="text-center sum-order" data-val="' . $summ_incom['qty_order'] . '">' . number_format($summ_incom['qty_order']) . '</td>';
-			$hasil2 .= '<td class="text-center sum-ng"    data-val="' . $summ_incom['ttl_qty_ng'] . '">' . number_format($summ_incom['ttl_qty_ng']) . '</td>';
-			$hasil2 .= '<td class="text-center sum-oke"   data-val="' . $summ_incom['ttl_qty_oke'] . '">' . number_format($summ_incom['ttl_qty_oke']) . '</td>';
+			$hasil2 .= '<td class="text-center sum-order" data-val="' . $summ_incom['qty_order'] . '">' . number_format((float) $summ_incom['qty_order']) . '</td>';
+			$hasil2 .= '<td class="text-center sum-ng"    data-val="' . $summ_incom['ttl_qty_ng'] . '">' . number_format((float) $summ_incom['ttl_qty_ng']) . '</td>';
+			$hasil2 .= '<td class="text-center sum-oke"   data-val="' . $summ_incom['ttl_qty_oke'] . '">' . number_format((float) $summ_incom['ttl_qty_oke']) . '</td>';
 
 			$hasil2 .= '</tr>';
 			$no++;
@@ -3461,10 +3461,10 @@ class Incoming_check extends Admin_Controller
 			<tr>
 				<td colspan="3" class="text-right">Masuk ke Stock</td>
 				<td class="text-center">
-					<span style="color: red;">' . number_format($stok_tidak_masuk) . '</span>
+					<span style="color: red;">' . number_format((float) $stok_tidak_masuk) . '</span>
 				</td>
 				<td class="text-center">
-					<span style="color: green;">' . number_format($stok_masuk) . '</span>
+					<span style="color: green;">' . number_format((float) $stok_masuk) . '</span>
 				</td>
 			</tr>
 		';
@@ -3562,7 +3562,7 @@ class Incoming_check extends Admin_Controller
 		// $sql_header    = "SELECT a.*,b.id as id_ros, b.no_ros FROM warehouse_adjustment a left join report_of_shipment b on a.no_ros=b.id WHERE a.kode_trans='" . $kode_trans . "' ";
 		$sql_header    = "SELECT a.*, b.no_surat FROM tr_incoming_check a LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp WHERE a.kode_trans = '" . $kode_trans . "'";
 		$result_header        = $this->db->query($sql_header)->row();
-		$pembeda = substr($result_header->no_ipp, 0, 1);
+		$pembeda = substr((string) $result_header->no_ipp, 0, 1);
 
 		// if ($pembeda == 'P') {
 		//     $sql     = "	SELECT
@@ -3658,8 +3658,8 @@ class Incoming_check extends Admin_Controller
 			'id_header'     => $result_header->id,
 			'gudang_tujuan'     => $result_header->kd_gudang_ke,
 			'id_tujuan'     => $result_header->id_gudang_ke,
-			'dated'     => date('ymdhis', strtotime($result_header->created_date)),
-			'resv'     => date('d F Y', strtotime($result_header->created_date)),
+			'dated'     => date('ymdhis', strtotime((string) $result_header->created_date)),
+			'resv'     => date('d F Y', strtotime((string) $result_header->created_date)),
 			'no_pr' => $no_pr,
 			'file_incoming_material' => $result_header->file_incoming_material,
 			'no_po' => $no_po
@@ -3686,19 +3686,19 @@ class Incoming_check extends Admin_Controller
 		$printby		= $session['id_user'];
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		//update status qc
-		$explode = explode("-", $id);
+		$explode = explode("-", (string) $id);
 		// $this->db->where_in('id', $explode)->update('so_internal_product', ['sts_print_qr' => 'Y', 'sts_print_qr_date' => date('Y-m-d H:i:s')]);
 
 		$this->db->select('a.*, b.nm_lengkap');
 		$this->db->from('tr_checked_incoming_detail a');
 		$this->db->join('users b', 'b.id_user = a.created_by', 'left');
 		$this->db->join('tr_incoming_check_detail c', 'c.kode_trans = a.kode_trans AND c.id_material = a.id_material', 'left');
-		$this->db->where_in('c.id', explode('-', $id));
+		$this->db->where_in('c.id', explode('-', (string) $id));
 		$getData = $this->db->get()->result_array();
 
 

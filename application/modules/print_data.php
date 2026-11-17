@@ -197,7 +197,7 @@ date_default_timezone_set("Asia/Bangkok");
     <hr/>
     <div id="footer"> 
     <table>
-        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
+        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords((string) $userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
     </table>
     </div>
 </htmlpagefooter>

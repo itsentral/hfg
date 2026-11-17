@@ -431,7 +431,7 @@
   <div class="pr-page-header">
     <div>
       <h1>Input Laporan Produksi</h1>
-      <p>SPK: <strong><?= htmlspecialchars($spk['spk_no']); ?></strong> &bull; Tgl SPK: <?= date('d/m/Y', strtotime($spk['tgl_spk'])); ?></p>
+      <p>SPK: <strong><?= htmlspecialchars((string) $spk['spk_no']); ?></strong> &bull; Tgl SPK: <?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></p>
     </div>
     <div class="d-flex align-items-center gap-2">
       <span class="badge bg-secondary px-3 py-2 fs-6" id="docStatus">Draft</span>
@@ -442,7 +442,7 @@
   </div>
 
   <form id="prodForm" novalidate>
-    <input type="hidden" name="spk_no" value="<?= htmlspecialchars($spk['spk_no']); ?>">
+    <input type="hidden" name="spk_no" value="<?= htmlspecialchars((string) $spk['spk_no']); ?>">
     <input type="hidden" name="id_tr_spk_detail" value="<?= !empty($spk['primary_spk_detail_id']) ? $spk['primary_spk_detail_id'] : ''; ?>">
     <input type="hidden" name="report_id" id="reportId" value="<?= !empty($draft['header']['id']) ? $draft['header']['id'] : ''; ?>">
 
@@ -458,11 +458,11 @@
         <div class="meta-strip-spk">
           <div class="meta-item">
             <span class="meta-label">Nomor SPK</span>
-            <span class="meta-value"><?= htmlspecialchars($spk['spk_no']); ?></span>
+            <span class="meta-value"><?= htmlspecialchars((string) $spk['spk_no']); ?></span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Tanggal SPK</span>
-            <span class="meta-value"><?= date('d/m/Y', strtotime($spk['tgl_spk'])); ?></span>
+            <span class="meta-value"><?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Total Target Qty</span>
@@ -470,7 +470,7 @@
           </div>
           <div class="meta-item">
             <span class="meta-label">Catatan SPK</span>
-            <span class="meta-value text-muted"><?= !empty($spk['catatan']) ? htmlspecialchars($spk['catatan']) : '-'; ?></span>
+            <span class="meta-value text-muted"><?= !empty($spk['catatan']) ? htmlspecialchars((string) $spk['catatan']) : '-'; ?></span>
           </div>
         </div>
 
@@ -484,7 +484,7 @@
             <select class="form-select form-select-sm select2" id="id_asset_machine" name="id_asset_machine" required>
               <option value="">-- Pilih Mesin --</option>
               <?php foreach ($machines as $m): ?>
-                <option value="<?= $m['id']; ?>"><?= htmlspecialchars($m['nm_asset']); ?> (<?= htmlspecialchars($m['kd_asset']); ?>)</option>
+                <option value="<?= $m['id']; ?>"><?= htmlspecialchars((string) $m['nm_asset']); ?> (<?= htmlspecialchars((string) $m['kd_asset']); ?>)</option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -492,7 +492,7 @@
             <label class="form-label fw-semibold small">Helper Name <span class="text-danger">*</span></label>
             <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Pilih 1 atau Lebih Helper --" required>
               <?php foreach ($helpers as $e): ?>
-                <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
+                <option value="<?= htmlspecialchars((string) $e['nm_karyawan']); ?>"><?= htmlspecialchars((string) $e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
             <div class="form-text small text-muted" style="font-size: 11px;">Bisa pilih lebih dari 1 helper</div>
@@ -502,7 +502,7 @@
             <select class="form-select form-select-sm select2" id="employee_setter" name="employee_setter" required>
               <option value="">-- Pilih Setter --</option>
               <?php foreach ($setters as $e): ?>
-                <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
+                <option value="<?= htmlspecialchars((string) $e['nm_karyawan']); ?>"><?= htmlspecialchars((string) $e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
           </div>

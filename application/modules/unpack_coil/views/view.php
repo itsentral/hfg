@@ -7,12 +7,12 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="row mb-2">
-            <div class="col-md-3"><strong>Unpack No</strong><br><?= htmlspecialchars($header['unpack_no']) ?></div>
-            <div class="col-md-3"><strong>Pack</strong><br><span class="badge bg-primary"><?= htmlspecialchars($header['pack_code']) ?></span></div>
-            <div class="col-md-3"><strong>Tanggal Unpack</strong><br><?= date('d/m/Y H:i', strtotime($header['tgl_unpack'])) ?></div>
+            <div class="col-md-3"><strong>Unpack No</strong><br><?= htmlspecialchars((string) $header['unpack_no']) ?></div>
+            <div class="col-md-3"><strong>Pack</strong><br><span class="badge bg-primary"><?= htmlspecialchars((string) $header['pack_code']) ?></span></div>
+            <div class="col-md-3"><strong>Tanggal Unpack</strong><br><?= date('d/m/Y H:i', strtotime((string) $header['tgl_unpack'])) ?></div>
             <div class="col-md-3"><strong>Status</strong><br>
                 <span class="badge <?= $header['status'] == 'Confirmed' ? 'bg-success' : ($header['status'] == 'Cancelled' ? 'bg-danger' : 'bg-secondary') ?>">
-                    <?= htmlspecialchars($header['status']) ?>
+                    <?= htmlspecialchars((string) $header['status']) ?>
                 </span>
             </div>
         </div>
@@ -55,8 +55,8 @@
                         <td class="text-end"><?= number_format((float) $header['gross_weight_actual'], 2) ?></td>
                         <td class="text-end"><?= number_format((float) $header['net_weight_pl'], 2) ?></td>
                         <td class="text-end"><?= number_format((float) $header['gross_weight_pl'], 2) ?></td>
-                        <td class="text-end"><?= number_format($net_sel, 2) ?></td>
-                        <td class="text-end"><?= number_format($gross_sel, 2) ?></td>
+                        <td class="text-end"><?= number_format((float) $net_sel, 2) ?></td>
+                        <td class="text-end"><?= number_format((float) $gross_sel, 2) ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -68,8 +68,8 @@
 <?php foreach ($materials as $i => $m): ?>
     <div class="card mb-3">
         <div class="card-header bg-light">
-            <strong>Material #<?= $i + 1 ?>:</strong> <?= htmlspecialchars($m['nm_material']) ?>
-            &mdash; <?= htmlspecialchars($m['no_coil']) ?> | <?= htmlspecialchars($m['kode_internal']) ?>
+            <strong>Material #<?= $i + 1 ?>:</strong> <?= htmlspecialchars((string) $m['nm_material']) ?>
+            &mdash; <?= htmlspecialchars((string) $m['no_coil']) ?> | <?= htmlspecialchars((string) $m['kode_internal']) ?>
             <span class="float-end">Jumlah Roll: <span class="badge bg-success"><?= (int) $m['jumlah_coil_roll'] ?></span></span>
         </div>
         <div class="card-body">
@@ -95,8 +95,8 @@
                             <?php foreach ($m['babies'] as $j => $b): ?>
                                 <tr>
                                     <td><?= $j + 1 ?></td>
-                                    <td><?= htmlspecialchars($b['no_coil']) ?></td>
-                                    <td><?= htmlspecialchars($b['babycoil_code']) ?></td>
+                                    <td><?= htmlspecialchars((string) $b['no_coil']) ?></td>
+                                    <td><?= htmlspecialchars((string) $b['babycoil_code']) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['net_weight_actual'], 2) ?></td>
                                     <td class="text-end"><?= number_format((float) $b['gross_weight_actual'], 2) ?></td>
                                     <td class="text-end"><?= number_format((float) (isset($b['kulit']) ? $b['kulit'] : 0), 2) ?></td>
@@ -120,8 +120,8 @@
                             ?>
                             <td class="text-end"><?= number_format((float) $m['net_weight_actual'], 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['gross_weight_actual'], 2) ?></td>
-                            <td class="text-end"><?= number_format($sum_kulit, 2) ?></td>
-                            <td class="text-end"><?= number_format($sum_clamp, 2) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_kulit, 2) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_clamp, 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['net_weight_pl'], 2) ?></td>
                             <td class="text-end"><?= number_format((float) $m['gross_weight_pl'], 2) ?></td>
                         </tr>

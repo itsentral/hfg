@@ -113,7 +113,7 @@ $ENABLE_VIEW    = has_permission('Payment_List.View');
 								<td><?= $record->tgl_doc ?></td>
 								<td><?= $record->keperluan ?></td>
 								<td><?= $record->tipe ?></td>
-								<td><?= (($record->tipe == 'expense' and $record->id_kasbon != null and $record->kurang_bayar > 0) ? number_format($record->kurang_bayar) : number_format($record->jumlah)) ?></td>
+								<td><?= (($record->tipe == 'expense' and $record->id_kasbon != null and $record->kurang_bayar > 0) ? number_format((float) $record->kurang_bayar) : number_format((float) $record->jumlah)) ?></td>
 								<td class="text-center"><?= $diajukan_oleh ?></td>
 								<td class="text-center"><?= $tgl_pengajuan ?></td>
 								<td class="text-center"><?= $dibayar_oleh ?></td>

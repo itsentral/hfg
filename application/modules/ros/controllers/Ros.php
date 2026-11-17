@@ -138,7 +138,7 @@ class Ros extends Admin_Controller
 
         $this->db->select('a.*');
         $this->db->from('tr_purchase_order a');
-        $this->db->where_in('a.no_po', explode(',', $post['no_po']));
+        $this->db->where_in('a.no_po', explode(',', (string) $post['no_po']));
         $this->db->where('a.status', 2);
         $get_id_po = $this->db->get()->row_array();
 
@@ -154,7 +154,7 @@ class Ros extends Admin_Controller
         $this->db->join('ms_satuan f', 'f.id = c.id_unit', 'left');
         $this->db->join('ms_satuan g', 'g.id = d.id_unit_gudang', 'left');
         $this->db->join('ms_satuan h', 'h.id = e.satuan', 'left');
-        $this->db->where_in('a.no_po', explode(',', $post['no_po']));
+        $this->db->where_in('a.no_po', explode(',', (string) $post['no_po']));
         $this->db->group_by('a.id');
         $get_detail_po = $this->db->get()->result_array();
         // print_r($this->db->error($get_detail_po));
@@ -180,12 +180,12 @@ class Ros extends Admin_Controller
                 $hasil .= '<td class="text-center no-urut">' . $no . '</td>';
                 $hasil .= '<td class="text-center">' . $item_po['namamaterial'] . '</td>';
                 $hasil .= '<td class="text-center">' . $item_po['namalain'] . '</td>';
-                $hasil .= '<td class="text-center">' . ucfirst($item_po['unit_satuan']) . '</td>';
+                $hasil .= '<td class="text-center">' . ucfirst((string) $item_po['unit_satuan']) . '</td>';
                 $hasil .= '<td class="text-center">' . $get_id_po['matauang'] . '</td>';
-                $hasil .= '<td class="text-end hargasatuan">' . number_format($item_po['hargasatuan'], 3) . '</td>';
-                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format($harga_satuan_idr, 2) . '</td>';
-                $hasil .= '<td class="text-center">' . number_format($item_po['qty']) . '</td>';
-                $hasil .= '<td class="text-center">' . number_format($net_price) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan">' . number_format((float) $item_po['hargasatuan'], 3) . '</td>';
+                $hasil .= '<td class="text-end hargasatuan_rp">' . number_format((float) $harga_satuan_idr, 2) . '</td>';
+                $hasil .= '<td class="text-center">' . number_format((float) $item_po['qty']) . '</td>';
+                $hasil .= '<td class="text-center">' . number_format((float) $net_price) . '</td>';
 
                 // Kolom Input Pertama (Baris pertama untuk material ini)
                 $hasil .= '<td><input type="text" name="dt[' . $item_po['id'] . '][berat_kotor][]" class="form-control auto_num text-end"></td>';
@@ -338,9 +338,9 @@ class Ros extends Admin_Controller
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
             $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
-            $no_po_array = array_map('trim', explode(',', $no_po_raw));
+            $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
-            $no_surat_final = implode(',', array_map('trim', explode(',', $no_surat_raw)));
+            $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
 
             // Ambil data detail PO
             $this->db->select('a.*, b.matauang');
@@ -430,9 +430,9 @@ class Ros extends Admin_Controller
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
             $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
-            $no_po_array = array_map('trim', explode(',', $no_po_raw));
+            $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
-            $no_surat_final = implode(',', array_map('trim', explode(',', $no_surat_raw)));
+            $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
             $this->db->delete('tr_ros_detail', ['no_ros' => $post['no_ros']]);
 
             $this->db->select('a.*, b.matauang');
@@ -755,14 +755,14 @@ class Ros extends Admin_Controller
                         $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $no . '</td>';
                         $html .= '<td rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['nm_barang'] . '</td>';
                         $html .= '<td rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['trade_name'] . '</td>';
-                        $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . number_format($coil['qty_order'], 2) . '</td>';
+                        $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . number_format((float) $coil['qty_order'], 2) . '</td>';
                         $html .= '<td class="text-center" rowspan="' . $rowspan . '" style="vertical-align:middle">' . $coil['uom'] . '</td>';
                     }
 
                     // Detail Coil per baris
                     $html .= '<td class="text-center">' . $coil['no_coil'] . '</td>';
-                    $html .= '<td class="text-right">' . number_format($coil['berat_kotor'], 2) . '</td>';
-                    $html .= '<td class="text-right">' . number_format($coil['berat_bersih'], 2) . '</td>';
+                    $html .= '<td class="text-right">' . number_format((float) $coil['berat_kotor'], 2) . '</td>';
+                    $html .= '<td class="text-right">' . number_format((float) $coil['berat_bersih'], 2) . '</td>';
                     $html .= '<td class="text-center">
                             <input type="checkbox" class="check_item_modal" value="' . $coil['id'] . '">
                         </td>';
@@ -782,7 +782,7 @@ class Ros extends Admin_Controller
 
     public function print_qr_multi($ids)
     {
-        $array_id = explode('-', $ids);
+        $array_id = explode('-', (string) $ids);
 
         $this->db->select('
             a.*, 

@@ -57,7 +57,7 @@ class Incoming_stok extends Admin_Controller
       $id_gudang      = $data['id_gudang'];
       $pic            = $data['pic'];
       $keterangan      = $data['keterangan'];
-      $tanggal        = date('Y-m-d', strtotime($data['tanggal']));
+      $tanggal        = date('Y-m-d', strtotime((string) $data['tanggal']));
 
       if (!empty($data['Detail'])) {
         $detail = $data['Detail'];
@@ -149,7 +149,7 @@ class Incoming_stok extends Admin_Controller
               $this->db->select('a.hargasatuan, a.persen_disc as item_disc, b.persen_disc as po_disc');
               $this->db->from('dt_trans_po a');
               $this->db->join('tr_purchase_order b', 'b.no_po = a.no_po', 'left');
-              $this->db->where_in('a.no_po', explode(',', $no_po));
+              $this->db->where_in('a.no_po', explode(',', (string) $no_po));
               $get_nilai_beli = $this->db->get()->result();
               foreach ($get_nilai_beli as $item_beli) {
                 if ($item_beli->item_disc > 0) {
@@ -315,7 +315,7 @@ class Incoming_stok extends Admin_Controller
       if (!empty($ArrUpdatePO)) {
         $this->db->select('a.no_doc');
         $this->db->from('tr_kasbon a');
-        $this->db->where_in('a.no_doc', explode(',', $no_po));
+        $this->db->where_in('a.no_doc', explode(',', (string) $no_po));
         $check_kasbon = $this->db->get()->result();
 
         if (count($check_kasbon)) {
@@ -421,7 +421,7 @@ class Incoming_stok extends Admin_Controller
     $printby = get_name('users', 'nm_lengkap', 'id_user', $session['id_user']);
 
     $data_url = base_url();
-    $Split_Beda = explode('/', $data_url);
+    $Split_Beda = explode('/', (string) $data_url);
     $Jum_Beda = count($Split_Beda);
     $Nama_Beda = $Split_Beda[$Jum_Beda - 2];
 
@@ -447,7 +447,7 @@ class Incoming_stok extends Admin_Controller
 
       $this->db->select('a.no_doc');
       $this->db->from('tr_kasbon a');
-      $this->db->where_in('a.no_doc', explode(',', $getData[0]['no_ipp']));
+      $this->db->where_in('a.no_doc', explode(',', (string) $getData[0]['no_ipp']));
       $get_no_kasbon = $this->db->get()->result();
       foreach ($get_no_kasbon as $item) {
         $no_po[] = $item->no_doc;
@@ -504,7 +504,7 @@ class Incoming_stok extends Admin_Controller
     $kode_trans  = $this->uri->segment(3);
 
     $data_url    = base_url();
-    $Split_Beda    = explode('/', $data_url);
+    $Split_Beda    = explode('/', (string) $data_url);
     $Jum_Beda    = count($Split_Beda);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
@@ -525,7 +525,7 @@ class Incoming_stok extends Admin_Controller
     }
     $this->db->select('a.no_doc');
     $this->db->from('tr_kasbon a');
-    $this->db->where_in('a.no_doc', explode(',', $getData[0]['no_ipp']));
+    $this->db->where_in('a.no_doc', explode(',', (string) $getData[0]['no_ipp']));
     $get_no_kasbon = $this->db->get()->result();
     foreach ($get_no_kasbon as $item) {
       $no_po[] = $item->no_doc;
@@ -560,7 +560,7 @@ class Incoming_stok extends Admin_Controller
         $this->db->select('a.*, b.id_stock');
         $this->db->from('tr_pr_detail_kasbon a');
         $this->db->join('accessories b', 'b.id = a.id_material');
-        $this->db->where_in('a.id_kasbon', explode(',', $no_kasbon));
+        $this->db->where_in('a.id_kasbon', explode(',', (string) $no_kasbon));
         $get_detail_kasbon = $this->db->get()->result();
 
         $d_Header = '';
@@ -574,9 +574,9 @@ class Incoming_stok extends Admin_Controller
             $d_Header .= "<td align='center'>" . $row->id_material . "</td>";
             $d_Header .= "<td align='left'>" . $row->id_stock . "</td>";
             $d_Header .= "<td align='left'>" . $row->nm_material . "</td>";
-            $d_Header .= "<td align='center'>" . number_format($row->qty) . "</td>";
-            $d_Header .= "<td align='center'>" . strtoupper($row->unit) . "</td>";
-            $d_Header .= "<td align='center'>" . number_format($row->qty_in) . "</td>";
+            $d_Header .= "<td align='center'>" . number_format((float) $row->qty) . "</td>";
+            $d_Header .= "<td align='center'>" . strtoupper((string) $row->unit) . "</td>";
+            $d_Header .= "<td align='center'>" . number_format((float) $row->qty_in) . "</td>";
             $d_Header .= "<td align='center' class='qty_max'>" . number_format($row->qty - $row->qty_in) . "</td>";
             $d_Header .= "<td align='left'>";
             $d_Header .= "<input type='text' name='Detail[" . $id . "][qty_in]' class='form-control text-center input-md autoNumeric4 qty_in'>";
@@ -673,9 +673,9 @@ class Incoming_stok extends Admin_Controller
           $d_Header .= "<td align='center'>" . $value['idmaterial'] . "</td>";
           $d_Header .= "<td align='left'>" . $value['id_stock'] . "</td>";
           $d_Header .= "<td align='left'>" . $value['namamaterial'] . "</td>";
-          $d_Header .= "<td align='center'>" . number_format($value['qty_po'], 2) . "</td>";
-          $d_Header .= "<td align='center'>" . strtoupper($value['satuan_packing']) . "</td>";
-          $d_Header .= "<td align='center'>" . number_format($value['qty_in'], 2) . "</td>";
+          $d_Header .= "<td align='center'>" . number_format((float) $value['qty_po'], 2) . "</td>";
+          $d_Header .= "<td align='center'>" . strtoupper((string) $value['satuan_packing']) . "</td>";
+          $d_Header .= "<td align='center'>" . number_format((float) $value['qty_in'], 2) . "</td>";
           $d_Header .= "<td align='center' class='qty_max'>" . number_format($value['qty_po'] - $value['qty_in'], 2) . "</td>";
           $d_Header .= "<td align='left'>";
           $d_Header .= "<input type='text' name='Detail[" . $id . "][qty_in]' class='form-control text-center input-md autoNumeric4 qty_in'>";

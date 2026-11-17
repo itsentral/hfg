@@ -71,23 +71,23 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td width="35%" class="fw-bold">No. SPK</td>
-                            <td>: <?= htmlspecialchars($spk['spk_no']) ?></td>
+                            <td>: <?= htmlspecialchars((string) $spk['spk_no']) ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Tanggal SPK</td>
-                            <td>: <?= date('d/m/Y', strtotime($spk['tgl_spk'])) ?></td>
+                            <td>: <?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])) ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Due Date</td>
-                            <td>: <?= !empty($spk['due_date']) ? date('d/m/Y', strtotime($spk['due_date'])) : '-' ?></td>
+                            <td>: <?= !empty($spk['due_date']) ? date('d/m/Y', strtotime((string) $spk['due_date'])) : '-' ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Shift</td>
-                            <td>: <?= !empty($spk['shift_names']) ? htmlspecialchars($spk['shift_names']) : '-' ?></td>
+                            <td>: <?= !empty($spk['shift_names']) ? htmlspecialchars((string) $spk['shift_names']) : '-' ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Status</td>
-                            <td>: <span class="badge rounded-pill <?= $badge_class ?>"><?= htmlspecialchars($spk['status']) ?></span></td>
+                            <td>: <span class="badge rounded-pill <?= $badge_class ?>"><?= htmlspecialchars((string) $spk['status']) ?></span></td>
                         </tr>
                     </table>
                 </div>
@@ -95,7 +95,7 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td width="35%" class="fw-bold">Catatan</td>
-                            <td>: <?= !empty($spk['catatan']) ? htmlspecialchars($spk['catatan']) : '-' ?></td>
+                            <td>: <?= !empty($spk['catatan']) ? htmlspecialchars((string) $spk['catatan']) : '-' ?></td>
                         </tr>
                         <tr>
                             <td class="fw-bold">Created By</td>
@@ -103,7 +103,7 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                         </tr>
                         <tr>
                             <td class="fw-bold">Created At</td>
-                            <td>: <?= date('d/m/Y H:i', strtotime($spk['created_at'])) ?></td>
+                            <td>: <?= date('d/m/Y H:i', strtotime((string) $spk['created_at'])) ?></td>
                         </tr>
                     </table>
                 </div>
@@ -132,9 +132,9 @@ $is_editable = in_array($spk['status'], $editable_statuses);
                             <?php foreach ($details as $row): ?>
                             <tr>
                                 <td class="text-center"><?= $row['urut'] ?></td>
-                                <td><?= htmlspecialchars($row['nm_produk_fg']) ?></td>
-                                <td class="text-end"><?= number_format($row['target_qty'], 0, ',', '.') ?></td>
-                                <td class="text-end"><?= number_format($row['total_weight'], 2, ',', '.') ?></td>
+                                <td><?= htmlspecialchars((string) $row['nm_produk_fg']) ?></td>
+                                <td class="text-end"><?= number_format((float) $row['target_qty'], 0, ',', '.') ?></td>
+                                <td class="text-end"><?= number_format((float) $row['total_weight'], 2, ',', '.') ?></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

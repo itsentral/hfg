@@ -74,19 +74,19 @@ $id_dept = implode(',', $id_dept);
                                 <td class="text-center">
                                     <?= $No; ?>
                                     <input type="hidden" name="addInMat[<?= $No; ?>][no_po]" value="<?= $valx['no_po']; ?>">
-                                    <input type="hidden" name="addInMat[<?= $No; ?>][nm_barang]" value="<?= htmlspecialchars($valx['namamaterial']); ?>">
-                                    <input type="hidden" name="addInMat[<?= $No; ?>][spec]" value="<?= htmlspecialchars($valx['spec']); ?>">
+                                    <input type="hidden" name="addInMat[<?= $No; ?>][nm_barang]" value="<?= htmlspecialchars((string) $valx['namamaterial']); ?>">
+                                    <input type="hidden" name="addInMat[<?= $No; ?>][spec]" value="<?= htmlspecialchars((string) $valx['spec']); ?>">
                                     <input type="hidden" name="addInMat[<?= $No; ?>][id]" value="<?= $valx['id']; ?>">
                                     <input type="hidden" name="addInMat[<?= $No; ?>][qty_rev]" value="<?= $valx['qty']; ?>">
                                     <input type="hidden" name="addInMat[<?= $No; ?>][tipe_po]" value="<?= $valx['tipe_po']; ?>">
                                     <input type="hidden" class="max_qty_<?= $valx['id']; ?>" value="<?= $Qty_kurang; ?>">
                                 </td>
                                 <td><span class="badge bg-secondary bg-opacity-10 text-dark"><?= $nm_dept; ?></span></td>
-                                <td class="fw-semibold"><?= strtoupper($valx['namamaterial']); ?></td>
-                                <td><small class="text-muted"><?= strtoupper($valx['spec']); ?></small></td>
-                                <td class="text-center"><?= number_format($valx['qty'], 2); ?></td>
+                                <td class="fw-semibold"><?= strtoupper((string) $valx['namamaterial']); ?></td>
+                                <td><small class="text-muted"><?= strtoupper((string) $valx['spec']); ?></small></td>
+                                <td class="text-center"><?= number_format((float) $valx['qty'], 2); ?></td>
                                 <td class="text-center belumDiterima fw-bold <?= ($Qty_kurang > 0) ? 'text-primary' : 'text-muted'; ?>">
-                                    <?= number_format($Qty_kurang, 2); ?>
+                                    <?= number_format((float) $Qty_kurang, 2); ?>
                                 </td>
                                 <td class="text-center">
                                     <input type="text"

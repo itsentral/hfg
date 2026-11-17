@@ -49,11 +49,11 @@ if (isset($data->status)) {
                         <i class="fa fa-calendar-check text-primary me-2"></i>
                         <?= $is_approve_mode ? 'Verifikasi Approval Pembayaran Periodik (Rutin)' : 'Detail Pengajuan Pembayaran Periodik (Rutin)' ?>
                         <?php if (!empty($no_doc)): ?>
-                            <span class="text-primary fs-5">#<?= htmlspecialchars($no_doc) ?></span>
+                            <span class="text-primary fs-5">#<?= htmlspecialchars((string) $no_doc) ?></span>
                         <?php endif; ?>
                     </h4>
                     <small class="text-muted">
-                        Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars($dept_name)) ?></span>
+                        Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></span>
                     </small>
                 </div>
 
@@ -81,15 +81,15 @@ if (isset($data->status)) {
             <div class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label text-muted small mb-1">No. Dokumen</label>
-                    <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars($no_doc) ?></div>
+                    <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $no_doc) ?></div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small mb-1">Departemen</label>
-                    <div class="fw-semibold fs-6 text-dark"><?= strtoupper(htmlspecialchars($dept_name)) ?></div>
+                    <div class="fw-semibold fs-6 text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small mb-1">Tanggal Dokumen</label>
-                    <div class="fw-semibold fs-6 text-dark"><?= date('d F Y', strtotime($tanggal_doc)) ?></div>
+                    <div class="fw-semibold fs-6 text-dark"><?= date('d F Y', strtotime((string) $tanggal_doc)) ?></div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small mb-1">Status Pengajuan</label>
@@ -140,9 +140,9 @@ if (isset($data->status)) {
                                 <tr>
                                     <td class="text-center text-muted fw-medium"><?= $idd++ ?></td>
                                     <td>
-                                        <div class="fw-semibold text-dark"><?= htmlspecialchars($record->nama) ?></div>
+                                        <div class="fw-semibold text-dark"><?= htmlspecialchars((string) $record->nama) ?></div>
                                         <?php if (!empty($record->coa)): ?>
-                                            <span class="badge bg-light text-secondary border small">COA: <?= htmlspecialchars($record->coa) ?></span>
+                                            <span class="badge bg-light text-secondary border small">COA: <?= htmlspecialchars((string) $record->coa) ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
@@ -151,10 +151,10 @@ if (isset($data->status)) {
                                         </span>
                                     </td>
                                     <td class="text-end font-monospace text-secondary">
-                                        Rp <?= number_format($record->budget, 0, ',', '.') ?>
+                                        Rp <?= number_format((float) $record->budget, 0, ',', '.') ?>
                                     </td>
                                     <td class="text-end font-monospace fw-bold text-success fs-6">
-                                        Rp <?= number_format($record->nilai, 0, ',', '.') ?>
+                                        Rp <?= number_format((float) $record->nilai, 0, ',', '.') ?>
                                     </td>
                                     <td>
                                         <span class="small text-muted"><?= htmlspecialchars($record->keterangan ?: '-') ?></span>
@@ -192,7 +192,7 @@ if (isset($data->status)) {
                     <tfoot class="table-light fw-bold">
                         <tr>
                             <td colspan="4" class="text-end py-3 text-uppercase text-secondary">TOTAL PERKIRAAN BIAYA :</td>
-                            <td class="text-end py-3 text-success font-monospace fs-5">Rp <?= number_format($total, 0, ',', '.') ?></td>
+                            <td class="text-end py-3 text-success font-monospace fs-5">Rp <?= number_format((float) $total, 0, ',', '.') ?></td>
                             <td colspan="3"></td>
                         </tr>
                     </tfoot>
@@ -221,10 +221,10 @@ if (isset($data->status)) {
                                 <div class="d-flex align-items-center mb-2">
                                     <i class="fa <?= $is_pdf ? 'fa-file-pdf text-danger' : 'fa-file-image text-primary' ?> fs-4 me-2"></i>
                                     <div class="text-truncate">
-                                        <div class="fw-semibold text-dark text-truncate" title="<?= htmlspecialchars($lamp['nama']) ?>">
-                                            <?= htmlspecialchars($lamp['nama']) ?>
+                                        <div class="fw-semibold text-dark text-truncate" title="<?= htmlspecialchars((string) $lamp['nama']) ?>">
+                                            <?= htmlspecialchars((string) $lamp['nama']) ?>
                                         </div>
-                                        <small class="text-muted"><?= htmlspecialchars($lamp['file']) ?></small>
+                                        <small class="text-muted"><?= htmlspecialchars((string) $lamp['file']) ?></small>
                                     </div>
                                 </div>
                                 <?php if (!$is_pdf): ?>
@@ -406,9 +406,9 @@ if (isset($data->status)) {
                         </div>
                         <h4 class="fw-bold mb-0 text-dark">
                             <?= ($type == 'edit') ? 'Edit Pengajuan Pembayaran Periodik' : 'Input Pengajuan Pembayaran Periodik'; ?>
-                            <?php if (!empty($no_doc)): ?><span class="text-primary ms-1">#<?= htmlspecialchars($no_doc); ?></span><?php endif; ?>
+                            <?php if (!empty($no_doc)): ?><span class="text-primary ms-1">#<?= htmlspecialchars((string) $no_doc); ?></span><?php endif; ?>
                         </h4>
-                        <small class="text-muted">Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars($dept_name)); ?></span></small>
+                        <small class="text-muted">Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)); ?></span></small>
                     </div>
                 </div>
 
@@ -440,13 +440,13 @@ if (isset($data->status)) {
 
                 <div class="col-md-4 col-12">
                     <label class="form-label fw-bold small text-muted">No. Dokumen</label>
-                    <input type="text" class="form-control form-control-sm bg-light fw-semibold text-primary" id="no_doc" name="no_doc" value="<?= htmlspecialchars($no_doc); ?>" placeholder="Auto Generate" readonly>
+                    <input type="text" class="form-control form-control-sm bg-light fw-semibold text-primary" id="no_doc" name="no_doc" value="<?= htmlspecialchars((string) $no_doc); ?>" placeholder="Auto Generate" readonly>
                 </div>
 
                 <div class="col-md-4 col-12">
                     <label class="form-label fw-bold small text-muted">Tanggal Dokumen <span class="text-danger">*</span></label>
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control form-control-sm flatpickr-date bg-white" id="tanggal_doc" name="tanggal_doc" value="<?= htmlspecialchars($tanggal_doc); ?>" placeholder="Pilih tanggal..." required readonly>
+                        <input type="text" class="form-control form-control-sm flatpickr-date bg-white" id="tanggal_doc" name="tanggal_doc" value="<?= htmlspecialchars((string) $tanggal_doc); ?>" placeholder="Pilih tanggal..." required readonly>
                         <span class="input-group-text bg-white"><i class="fa fa-calendar-alt text-primary"></i></span>
                     </div>
                 </div>
@@ -503,7 +503,7 @@ if (isset($data->status)) {
                                         <span class="fw-semibold text-muted"><?= $idd; ?></span>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" name="nama[]" id="nama_<?= $idd; ?>" value="<?= htmlspecialchars($record->nama); ?>">
+                                        <input type="text" class="form-control form-control-sm" name="nama[]" id="nama_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->nama); ?>">
                                     </td>
                                     <td class="text-center">
                                         <input type="text" class="form-control form-control-sm bg-light text-center" name="tanggal[]" id="tanggal_<?= $idd; ?>" value="<?= $record->tanggal; ?>" readonly>
@@ -515,7 +515,7 @@ if (isset($data->status)) {
                                         <input type="text" class="form-control form-control-sm nilai divide text-end fw-bold text-primary" name="nilai[]" id="nilai_<?= $idd; ?>" value="<?= ($record->nilai); ?>" data-no="<?= $idd; ?>">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars($record->keterangan); ?>" placeholder="Catatan...">
+                                        <input type="text" class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Catatan...">
                                     </td>
                                     <td>
                                         <input type="file" class="form-control form-control-sm mb-1" name="doc_file_<?= $idd; ?>" id="doc_file<?= $idd; ?>">
@@ -528,13 +528,13 @@ if (isset($data->status)) {
                                     <td>
                                         <div class="d-flex flex-column gap-1">
                                             <div class="input-group input-group-sm">
-                                                <input type="text" class="form-control form-control-sm" name="bank_id[]" id="bank_id_<?= $idd; ?>" value="<?= htmlspecialchars($record->bank_id); ?>" placeholder="Nama Bank">
+                                                <input type="text" class="form-control form-control-sm" name="bank_id[]" id="bank_id_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->bank_id); ?>" placeholder="Nama Bank">
                                                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="list_bank(<?= $idd; ?>)" title="Pilih dari daftar bank">
                                                     <i class="fa fa-list"></i>
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm" name="accnumber[]" id="accnumber_<?= $idd; ?>" value="<?= htmlspecialchars($record->accnumber); ?>" placeholder="No. Rekening">
-                                            <input type="text" class="form-control form-control-sm" name="accname[]" id="accname_<?= $idd; ?>" value="<?= htmlspecialchars($record->accname); ?>" placeholder="Atas Nama">
+                                            <input type="text" class="form-control form-control-sm" name="accnumber[]" id="accnumber_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accnumber); ?>" placeholder="No. Rekening">
+                                            <input type="text" class="form-control form-control-sm" name="accname[]" id="accname_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accname); ?>" placeholder="Atas Nama">
                                         </div>
                                     </td>
                                 </tr>
@@ -549,7 +549,7 @@ if (isset($data->status)) {
                             <td colspan="4" class="text-end py-2">TOTAL PERKIRAAN BIAYA:</td>
                             <td class="text-end py-2">
                                 <span id="total_nilai_display" class="fw-bold text-success fs-6">
-                                    Rp <?= number_format($total); ?>
+                                    Rp <?= number_format((float) $total); ?>
                                 </span>
                             </td>
                             <td colspan="3"></td>

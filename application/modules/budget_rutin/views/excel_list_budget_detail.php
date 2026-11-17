@@ -27,7 +27,7 @@ header("Content-Disposition: attachment; filename=Budget Stock.xls");
                     <td>' . $item->stock_name . '</td>
                     <td>' . $item->spec . '</td>
                     <td>' . $item->kebutuhan_month . '</td>
-                    <td>' . strtoupper($item->code) . '</td>
+                    <td>' . strtoupper((string) $item->code) . '</td>
                     <td>' . $item->price_reference . '</td>
                     <td>' . $item->total_price . '</td>
                     <td></td>

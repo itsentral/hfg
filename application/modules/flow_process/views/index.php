@@ -43,17 +43,17 @@ $fmt = function ($v, $dec = 6) {
 						<?php $numb = 0;
 						foreach ($list as $row) : $numb++;
 							$nama = (isset($categories[$row['code_lv2']])) ? $categories[$row['code_lv2']] : $row['code_lv2'];
-							$last = (!empty($row['latest_update'])) ? date('d-m-Y H:i', strtotime($row['latest_update'])) : '-';
+							$last = (!empty($row['latest_update'])) ? date('d-m-Y H:i', strtotime((string) $row['latest_update'])) : '-';
 							$oleh = (isset($users[$row['updated_by']])) ? $users[$row['updated_by']] : '-';
 						?>
 							<tr>
 								<td><?= $numb; ?></td>
-								<td><?= strtoupper(htmlspecialchars($nama)); ?></td>
+								<td><?= strtoupper(htmlspecialchars((string) $nama)); ?></td>
 								<td class="text-end"><?= (int) $row['jumlah_proses']; ?></td>
 								<td class="text-end"><?= $fmt($row['cycletime'], 6); ?></td>
 								<td class="text-end"><?= $fmt($row['total_man_hour'], 8); ?></td>
 								<td><?= $last; ?></td>
-								<td><?= htmlspecialchars($oleh); ?></td>
+								<td><?= htmlspecialchars((string) $oleh); ?></td>
 								<td>
 									<div class="d-flex justify-content-center gap-1">
 										<?php if ($ENABLE_VIEW) : ?>

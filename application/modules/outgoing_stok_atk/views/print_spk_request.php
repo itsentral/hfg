@@ -90,11 +90,11 @@ $today = date('l, d F Y [H:i:s]');
             echo "<tr>";
                 echo "<td align='center'>".$No."</td>";
                 echo "<td>".$nm_material."</td>";
-                echo "<td align='center'>".number_format($berat_req,2)."</td>";
+                echo "<td align='center'>".number_format((float) $berat_req,2)."</td>";
                 // echo "<td align='center'>".strtoupper($packing)."</td>";
                 // echo "<td align='center'>".number_format($konversi,2)."</td>";
                 // echo "<td align='center'>".number_format($berat_req * $konversi,2)."</td>";
-                echo "<td align='center'>".strtoupper($unit)."</td>";
+                echo "<td align='center'>".strtoupper((string) $unit)."</td>";
                 // echo "<td align='right'></td>";
                 echo "<td>".$value['keterangan']."</td>";
             echo "</tr>";
@@ -215,7 +215,7 @@ $today = date('l, d F Y [H:i:s]');
 
 
 <?php
-$footer = "<p style='font-family: verdana,arial,sans-serif; font-size:10px;'><i>Printed by : ".ucwords(strtolower($printby)).", ".$today." / Subgudang</i></p>";
+$footer = "<p style='font-family: verdana,arial,sans-serif; font-size:10px;'><i>Printed by : ".ucwords(strtolower((string) $printby)).", ".$today." / Subgudang</i></p>";
 $html = ob_get_contents();
 
 ob_end_clean();

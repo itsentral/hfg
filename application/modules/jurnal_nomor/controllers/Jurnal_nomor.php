@@ -169,8 +169,8 @@ class Jurnal_nomor extends CI_Controller {
 		$Nomor_JV				= $this->Jurnal_model->get_no_buk('101');
        
        
-				$Bln 			= substr($tgl_po,5,2);
-				$Thn 			= substr($tgl_po,0,4);
+				$Bln 			= substr((string) $tgl_po,5,2);
+				$Thn 			= substr((string) $tgl_po,0,4);
 				// ## NOMOR JV ##
 				// $Nomor_JV				= $this->Jurnal_model->get_no_buk('101');
 				

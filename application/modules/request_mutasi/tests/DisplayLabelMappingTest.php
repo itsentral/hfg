@@ -252,7 +252,7 @@ class DisplayLabelMappingTest
             $length = mt_rand(0, 40);
             $random_string = '';
             for ($j = 0; $j < $length; $j++) {
-                $random_string .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random_string .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
 
             // Skip valid values
@@ -403,7 +403,7 @@ class DisplayLabelMappingTest
             $length = mt_rand(0, 50);
             $random = '';
             for ($j = 0; $j < $length; $j++) {
-                $random .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
             $all_inputs[] = $random;
         }

@@ -18,7 +18,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 					<select name="level1" id="level1" class="form-control select2">
 						<option value="0">METAL TYPE</option>
 						<?php foreach ($get_level_1 as $key => $value) : ?>
-							<option value="<?= $value['code_lv1']; ?>"><?= strtoupper($value['nama']); ?></option>
+							<option value="<?= $value['code_lv1']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
@@ -27,7 +27,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 					<select name="level2" id="level2" class="form-control select2">
 						<option value="0">SLITHED/MOTHER COIL</option>
 						<?php foreach ($get_level_2 as $key => $value) : ?>
-							<option value="<?= $value['code_lv2']; ?>"><?= strtoupper($value['nama']); ?></option>
+							<option value="<?= $value['code_lv2']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
@@ -36,7 +36,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 					<select name="level3" id="level3" class="form-control select2">
 						<option value="0">BORON/NON BORON</option>
 						<?php foreach ($get_level_3 as $key => $value) : ?>
-							<option value="<?= $value['code_lv3']; ?>"><?= strtoupper($value['nama']); ?></option>
+							<option value="<?= $value['code_lv3']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
