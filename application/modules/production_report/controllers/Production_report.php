@@ -8,6 +8,10 @@ class Production_report extends Admin_Controller
     protected $managePermission = 'Production_report.Manage';
     protected $deletePermission = 'Production_report.Delete';
 
+    // Mapping template jurnal (ms_jurnal_mapping) untuk posting Laporan Produksi ke gl_interface
+    const JURNAL_MAPPING_MENU   = 'production_report';
+    const JURNAL_MAPPING_ACTION = 'save_production_report';
+
     public function __construct()
     {
         parent::__construct();
@@ -101,7 +105,8 @@ class Production_report extends Admin_Controller
 
         $spk_products = $this->pr_model->get_spk_products($spk_no);
         $machines = $this->pr_model->get_machines();
-        $employees = $this->pr_model->get_employees();
+        $helpers = $this->pr_model->get_employees('Helper');
+        $setters = $this->pr_model->get_employees('Setter');
         $all_products = $this->pr_model->get_all_products();
 
         $draft_data = $this->pr_model->get_draft_by_spk($spk_no);
@@ -110,7 +115,8 @@ class Production_report extends Admin_Controller
             'spk' => $spk_header,
             'spk_products' => $spk_products,
             'machines' => $machines,
-            'employees' => $employees,
+            'helpers' => $helpers,
+            'setters' => $setters,
             'all_products' => $all_products,
             'draft' => $draft_data,
         ];
@@ -342,6 +348,14 @@ class Production_report extends Admin_Controller
             }
         }
 
+        // Validasi template jurnal (JV016 via ms_jurnal_mapping) wajib siap sebelum submit final
+        if ($is_submit) {
+            $jurnal_check = $this->_validate_jurnal_template();
+            if ($jurnal_check !== true) {
+                echo json_encode(['status' => 0, 'message' => $jurnal_check]);
+                exit;
+            }
+        }
         // Ambil snapshot data lama untuk audit log (standar AGENTS.md)
         $old_report = null;
         if ($existing_report_id) {
@@ -366,6 +380,34 @@ class Production_report extends Admin_Controller
                 ], null, 1);
             }
 
+            // Posting jurnal ke gl_interface saat submit final (sekali per laporan)
+            $was_final    = !empty($old_report) && isset($old_report['status_draft']) && (int) $old_report['status_draft'] === 0;
+            $jurnal_error = null;
+            if ($is_submit && !$was_final) {
+                try {
+                    $id_gl = $this->_generate_jurnal_production_report($new_report, $payload['spk_no']);
+                    write_log('Production Report', 'Jurnal', 'Posting jurnal Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . ') ke gl_interface ID: ' . $id_gl, [
+                        'report_id'       => $report_id,
+                        'spk_no'          => $payload['spk_no'],
+                        'id_gl_interface' => $id_gl,
+                    ], null, 1);
+                } catch (Exception $e) {
+                    $jurnal_error = $e->getMessage();
+                    log_message('error', 'GL error production_report ' . $report_id . ': ' . $jurnal_error);
+                    write_log('Production Report', 'Jurnal', 'Gagal posting jurnal Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . '): ' . $jurnal_error, [
+                        'report_id' => $report_id,
+                        'spk_no'    => $payload['spk_no'],
+                    ], null, 0);
+                }
+            }
+            if ($jurnal_error) {
+                echo json_encode([
+                    'status'    => 2,
+                    'message'   => 'Laporan produksi berhasil disimpan, tetapi jurnal GL Interface gagal dibuat: ' . $jurnal_error,
+                    'report_id' => $report_id
+                ]);
+                exit;
+            }
             echo json_encode([
                 'status'    => 1,
                 'message'   => 'Laporan produksi berhasil disimpan!',
@@ -378,6 +420,68 @@ class Production_report extends Admin_Controller
             ]);
         }
         exit;
+    }
+
+    /**
+     * Pastikan mapping jurnal Laporan Produksi ada di ms_jurnal_mapping dan template
+     * (master_oto_jurnal_header / detail di DB accounting) sudah lengkap.
+     *
+     * @return true|string true bila siap, atau pesan error
+     */
+    private function _validate_jurnal_template()
+    {
+        $mapping = $this->db->get_where('ms_jurnal_mapping', [
+            'menu'   => self::JURNAL_MAPPING_MENU,
+            'action' => self::JURNAL_MAPPING_ACTION,
+        ])->row();
+        if (!$mapping || trim((string) $mapping->kode_master_jurnal) === '') {
+            return 'Template jurnal untuk Laporan Produksi belum dibuat. Silakan konfigurasi di Master Jurnal Mapping (menu: '
+                . self::JURNAL_MAPPING_MENU . ', action: ' . self::JURNAL_MAPPING_ACTION . ').';
+        }
+        $db_acc     = $this->load->database('accounting', TRUE);
+        $tpl_header = $db_acc->get_where('master_oto_jurnal_header', [
+            'kode_master_jurnal' => $mapping->kode_master_jurnal,
+        ])->row();
+        $tpl_detail_count = $db_acc
+            ->where('kode_master_jurnal', $mapping->kode_master_jurnal)
+            ->count_all_results('master_oto_jurnal_detail');
+        if (!$tpl_header || $tpl_detail_count === 0) {
+            return "Template jurnal '" . $mapping->kode_master_jurnal . "' untuk Laporan Produksi belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di Master Jurnal.";
+        }
+        return true;
+    }
+
+    /**
+     * Generate jurnal Laporan Produksi ke gl_interface dari template ms_jurnal_mapping.
+     * Seluruh kolom production_reports dikirim sebagai parameter; template memilih field
+     * nominal (cogm_*, hutang_*, total_*, dst) dan field_no_reff ('id') sendiri.
+     *
+     * @return int id gl_interface
+     * @throws Exception
+     */
+    private function _generate_jurnal_production_report(array $report, $spk_no)
+    {
+        $check = $this->_validate_jurnal_template();
+        if ($check !== true) {
+            throw new Exception($check);
+        }
+        $mapping = $this->db->get_where('ms_jurnal_mapping', [
+            'menu'   => self::JURNAL_MAPPING_MENU,
+            'action' => self::JURNAL_MAPPING_ACTION,
+        ])->row();
+        $data_source = array_merge($report, [
+            'tanggal'    => date('Y-m-d'),
+            'no_doc'     => $spk_no,
+            'no_request' => (string) $report['id'],
+            'kode_trans' => (string) $report['id'],
+            'spk_no'     => $spk_no,
+        ]);
+        $this->load->model('gl_interface/Gl_interface_model');
+        $id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($mapping->kode_master_jurnal, $data_source);
+        if ($id_gl === false) {
+            throw new Exception("Gagal generate jurnal dari template '" . $mapping->kode_master_jurnal . "' untuk Laporan Produksi.");
+        }
+        return (int) $id_gl;
     }
 
     public function view($id = null)

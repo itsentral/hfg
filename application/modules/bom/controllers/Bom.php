@@ -152,6 +152,12 @@ class Bom extends Admin_Controller
                 }
                 $material_set[] = $d['id_material'];
 
+                // Berat/Meter boleh diisi manual: harus angka >= 0. Kosong/0 = dihitung otomatis oleh model.
+                $bpm_raw = isset($d['berat_per_meter']) ? trim((string) $d['berat_per_meter']) : '';
+                if ($bpm_raw !== '' && (!is_numeric($bpm_raw) || (float) $bpm_raw < 0 || (float) $bpm_raw >= 100000000)) {
+                    $this->session->set_flashdata('error', 'Berat/Meter material ' . $d['id_material'] . ' harus berupa angka 0 atau lebih (maksimal 99.999.999).');
+                    redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
+                }
                 $uniq = !empty($d['no_uniq_id']) ? trim($d['no_uniq_id']) : '';
                 if (!empty($uniq)) {
                     if (in_array($uniq, $uniq_set)) {
@@ -178,6 +184,27 @@ class Bom extends Admin_Controller
 
         if ($result) {
             $action_label = $existing ? 'Edit' : 'Add';
+            // Bandingkan Berat/Meter lama vs yang tersimpan, per material (mencatat perubahan manual)
+            $oldBpm = [];
+            foreach ($oldDetails as $od) {
+                $oldBpm[$od->id_material] = (float) $od->berat_per_meter;
+            }
+            $detailChanges = [];
+            $newBpm = [];
+            foreach ($this->Bom_model->get_bom_details($result) as $nd) {
+                $newBpm[$nd->id_material] = (float) $nd->berat_per_meter;
+                $label = 'Varian [' . $nd->no_uniq_id . ' ' . $nd->id_material . '] - Berat/Meter';
+                if (!array_key_exists($nd->id_material, $oldBpm)) {
+                    $detailChanges[$label] = ['old' => null, 'new' => (float) $nd->berat_per_meter];
+                } elseif (abs($oldBpm[$nd->id_material] - (float) $nd->berat_per_meter) > 0.0000005) {
+                    $detailChanges[$label] = ['old' => $oldBpm[$nd->id_material], 'new' => (float) $nd->berat_per_meter];
+                }
+            }
+            foreach ($oldBpm as $mat => $val) {
+                if (!array_key_exists($mat, $newBpm)) {
+                    $detailChanges['Varian [' . $mat . '] - Berat/Meter'] = ['old' => $val, 'new' => null];
+                }
+            }
             $logPayload = [
                 'id_produk'     => $id_produk,
                 'nm_produk'     => $nm_produk,
@@ -190,6 +217,22 @@ class Bom extends Admin_Controller
                     ];
                 }, $details),
             ];
+            if ($existing) {
+                // Edit: format Before-After agar detail_changes (perubahan Berat/Meter) tampil di Activity Log
+                $logPayload = [
+                    'old' => [
+                        'id_produk'    => $existing->id_produk,
+                        'nm_produk'    => $existing->nm_produk,
+                        'total_varian' => count($oldDetails),
+                    ],
+                    'new' => [
+                        'id_produk'    => $id_produk,
+                        'nm_produk'    => $nm_produk,
+                        'total_varian' => count($details),
+                    ],
+                    'detail_changes' => $detailChanges,
+                ];
+            }
             write_log('BOM', $action_label, ($action_label == 'Edit' ? 'Update BOM ' : 'Tambah BOM ') . $id_produk, $logPayload, null, 1);
             $this->session->set_flashdata('success', 'BOM berhasil disimpan.');
             redirect('bom');

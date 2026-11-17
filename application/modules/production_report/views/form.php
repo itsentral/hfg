@@ -491,7 +491,7 @@
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Helper Name <span class="text-danger">*</span></label>
             <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Pilih 1 atau Lebih Helper --" required>
-              <?php foreach ($employees as $e): ?>
+              <?php foreach ($helpers as $e): ?>
                 <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
@@ -501,7 +501,7 @@
             <label class="form-label fw-semibold small">Setter Name <span class="text-danger">*</span></label>
             <select class="form-select form-select-sm select2" id="employee_setter" name="employee_setter" required>
               <option value="">-- Pilih Setter --</option>
-              <?php foreach ($employees as $e): ?>
+              <?php foreach ($setters as $e): ?>
                 <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
@@ -2658,6 +2658,16 @@
             }).then(function() {
               window.location.href = BASE_MODULE_URL;
             });
+          } else if (response.status == 2) {
+            // Laporan tersimpan, tetapi jurnal GL Interface gagal dibuat
+            Swal.fire({
+              icon: 'warning',
+              title: 'Tersimpan dengan Catatan',
+              text: response.message,
+              confirmButtonText: 'OK'
+            }).then(function() {
+              window.location.href = BASE_MODULE_URL;
+            });
           } else {
             Swal.fire('Gagal', response.message || 'Terjadi kesalahan sistem.', 'error');
           }
@@ -3061,9 +3071,20 @@
       var helpers = Array.isArray(h.employee_helper) 
         ? h.employee_helper 
         : String(h.employee_helper).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+      // Nama draft yang kini tidak ada di daftar role (role berubah / nonaktif) tetap ditampilkan agar tidak hilang diam-diam
+      helpers.forEach(function(n) {
+        if ($('#employee_helper option').filter(function() { return this.value === n; }).length === 0) {
+          $('#employee_helper').append(new Option(n, n, false, false));
+        }
+      });
       $('#employee_helper').val(helpers).trigger('change.select2');
     }
-    if (h.employee_setter) $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    if (h.employee_setter) {
+      if ($('#employee_setter option').filter(function() { return this.value === h.employee_setter; }).length === 0) {
+        $('#employee_setter').append(new Option(h.employee_setter, h.employee_setter, false, false));
+      }
+      $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    }
     if (h.start_time) $('#startTime').val(h.start_time.substring(0, 5));
     if (h.finished_time) $('#finishedTime').val(h.finished_time.substring(0, 5));
 

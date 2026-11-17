@@ -47,7 +47,7 @@
       </span>
       <?php if (($report['header']['status_draft'] ?? 1) == 0): ?>
         <a href="<?= site_url('production_report/hpp/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
-          <i class="fa fa-calculator me-1"></i> Laporan HPP &amp; Jurnal
+          <i class="fa fa-calculator me-1"></i> Laporan HPP
         </a>
         <a href="<?= site_url('production_report/export_excel/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
           <i class="fa fa-file-excel me-1"></i> Export Report

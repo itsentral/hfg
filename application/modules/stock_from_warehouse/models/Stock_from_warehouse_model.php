@@ -924,7 +924,7 @@ class Stock_from_warehouse_model extends BF_Model
             FROM warehouse_stock_transaction_detail
             WHERE kd_gudang = 'PRT'
               AND status_qc = 'IN'
-              AND to_status IN ('in_transit', 'unpacked')
+              AND to_status IN ('in_transit')
             ORDER BY created_at ASC, id ASC
         ")->result_array();
 
