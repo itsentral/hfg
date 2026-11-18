@@ -639,6 +639,14 @@ class Production_report_model extends CI_Model
         $header_data['hutang_crossing_scrap']      = round($total_cogm_scrap, 2);
         $header_data['total_hutang_crossing']      = $tot_crossing;
 
+        // Pastikan no_spk terisi jika belum ada di $header_data
+        if (empty($header_data['no_spk']) && !empty($header_data['id_tr_spk_detail'])) {
+            $spk_d = $this->db->select('spk_no')->where('id', $header_data['id_tr_spk_detail'])->get('tr_spk_material_detail')->row();
+            if ($spk_d && !empty($spk_d->spk_no)) {
+                $header_data['no_spk'] = $spk_d->spk_no;
+            }
+        }
+
         // Filter kolom agar hanya field yang benar-benar ada di tabel database yang dikirim ke query
         $table_fields = $this->db->list_fields('production_reports');
         $header_data = array_intersect_key($header_data, array_flip($table_fields));

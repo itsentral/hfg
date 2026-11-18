@@ -221,6 +221,7 @@ class Production_report extends Admin_Controller
 
         $header_data = [
             'id_tr_spk_detail'                  => $id_tr_spk_detail,
+            'no_spk'                            => !empty($payload['spk_no']) ? trim($payload['spk_no']) : null,
             'tgl_produksi'                      => !empty($payload['tgl_produksi']) ? $payload['tgl_produksi'] : date('Y-m-d'),
             'id_asset_machine'                  => !empty($payload['id_asset_machine']) ? $payload['id_asset_machine'] : 0,
             'employee_helper'                   => !empty($payload['employee_helper']) ? (is_array($payload['employee_helper']) ? implode(', ', array_filter(array_map('trim', $payload['employee_helper']))) : $payload['employee_helper']) : null,
@@ -470,11 +471,17 @@ class Production_report extends Admin_Controller
             'action' => self::JURNAL_MAPPING_ACTION,
         ])->row();
         $data_source = array_merge($report, [
-            'tanggal'    => date('Y-m-d'),
-            'no_doc'     => $spk_no,
-            'no_request' => (string) $report['id'],
-            'kode_trans' => (string) $report['id'],
-            'spk_no'     => $spk_no,
+            'tanggal'               => date('Y-m-d'),
+            'no_doc'                => $spk_no,
+            'no_request'            => (string) $report['id'],
+            'kode_trans'            => (string) $report['id'],
+            'spk_no'                => $spk_no,
+            'no_spk'                => $spk_no,
+            // Khusus akun 7201-01-03 (B. SELISIH STOCK AUDIT) dengan posisi 'otomatis' di GL Interface:
+            // Susut material (selisih_kg < 0 / selisih_weight_value < 0) adalah BEBAN sehingga harus DEBET (nominal >= 0).
+            // Surplus material (selisih_kg > 0 / selisih_weight_value > 0) adalah PENDAPATAN sehingga harus KREDIT (nominal < 0).
+            'selisih_weight_value'  => -1 * (float)($report['selisih_weight_value'] ?? 0),
+            'journal_selisih_audit' => -1 * (float)($report['selisih_weight_value'] ?? 0),
         ]);
         $this->load->model('gl_interface/Gl_interface_model');
         $id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($mapping->kode_master_jurnal, $data_source);
