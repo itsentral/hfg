@@ -52,7 +52,7 @@
                         $get_invoice = $this->db->get_where('tr_invoice_po', ['no_po' => $item['no_surat'], 'id_top' => $item['id_top']])->row();
                         $check_payment_approve = $this->db->get_where('payment_approve', ['no_doc' => $get_invoice->id, 'status' => 2])->result();
 
-                        if (count($check_payment_approve) > 0) {
+                        if (count($check_payment_approve ?? []) > 0) {
                             $sts = '<div class="badge bg-blue">Lunas</div>';
                             $close = 1;
                         }
@@ -114,13 +114,13 @@
                     }
 
                     if (!empty($no_purchase_invoice)) {
-                        $no_purchase_invoice = implode(', ', $no_purchase_invoice);
+                        $no_purchase_invoice = implode(', ', $no_purchase_invoice ?? []);
                     } else {
                         $no_purchase_invoice = '';
                     }
 
                     if (!empty($no_invoice)) {
-                        $no_invoice = implode(', ', $no_invoice);
+                        $no_invoice = implode(', ', $no_invoice ?? []);
                     } else {
                         $no_invoice = '';
                     }
@@ -131,7 +131,7 @@
                         $no_payment[] = $item_no_payment->id_payment;
                     }
 
-                    $no_payment = implode(', ', $no_payment);
+                    $no_payment = implode(', ', $no_payment ?? []);
 
                     echo '<tr>';
                     echo '<td class="text-center">' . $no . '</td>';

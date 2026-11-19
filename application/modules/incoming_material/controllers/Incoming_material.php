@@ -180,7 +180,7 @@ class Incoming_material extends Admin_Controller
         $upload_incoming = '';
 
         $files = $_FILES['file_incoming_material'];
-        $file_count = count($files['name']);
+        $file_count = count($files['name'] ?? []);
         for ($i = 0; $i < $file_count; $i++) {
             $_FILES['file_incoming_material']['name'] = $files['name'][$i];
             $_FILES['file_incoming_material']['type'] = $files['type'][$i];
@@ -304,7 +304,7 @@ class Incoming_material extends Admin_Controller
             }
 
             if (!empty($no_pr)) {
-                $no_pr = implode(', ', $no_pr);
+                $no_pr = implode(', ', $no_pr ?? []);
             } else {
                 $no_pr = '';
             }

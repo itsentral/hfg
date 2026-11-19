@@ -268,7 +268,7 @@ class Request_list_model extends BF_Model
                 'ref_number'         => $pack['ref_number'],
                 'no_po'              => $pack['no_po'],
                 'kd_gudang'          => $pack['kd_gudang'],
-                'coil_count'         => count($eligible_coils),
+                'coil_count'         => count($eligible_coils ?? []),
                 'total_net_weight'   => round($total_net, 3),
                 'total_gross_weight' => round($total_gross, 3),
             ],
@@ -400,17 +400,17 @@ class Request_list_model extends BF_Model
 
         $this->db->trans_commit();
 
-        $new_pack_snapshot = array_merge($old_pack_snapshot, [
+        $new_pack_snapshot = array_merge($old_pack_snapshot ?? [], [
             'id_gudang' => 3,
             'kd_gudang' => 'PRT',
         ]);
 
         return [
             'status'      => true,
-            'message'     => 'Pack ' . $pack['pack_code'] . ' (' . count($moved_coils) . ' coil, ' . number_format((float) $total_weight, 2, '.', ',') . ' Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi ' . $spk_no . '.',
+            'message'     => 'Pack ' . $pack['pack_code'] . ' (' . count($moved_coils ?? []) . ' coil, ' . number_format((float) $total_weight, 2, '.', ',') . ' Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi ' . $spk_no . '.',
             'pack_code'   => $pack['pack_code'],
             'spk_no'      => $spk_no,
-            'coil_count'  => count($moved_coils),
+            'coil_count'  => count($moved_coils ?? []),
             'total_weight'=> round($total_weight, 3),
             'log_payload' => [
                 'old' => $old_pack_snapshot,
@@ -477,7 +477,7 @@ class Request_list_model extends BF_Model
             'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
             'log_payload' => [
                 'old' => $old,
-                'new' => array_merge($old, $update_data),
+                'new' => array_merge($old ?? [], $update_data ?? []),
             ],
             'counts'      => $this->get_status_counts(),
         ];
@@ -575,7 +575,7 @@ class Request_list_model extends BF_Model
         if (!empty($user_ids)) {
             $users = $this->db
                 ->select('id_user, nm_lengkap, username')
-                ->where_in('id_user', array_values(array_unique($user_ids)))
+                ->where_in('id_user', array_values(array_unique($user_ids ?? [])))
                 ->get('users')
                 ->result_array();
             foreach ($users as $u) {
@@ -734,7 +734,7 @@ class Request_list_model extends BF_Model
         $pro_coils = $this->db->query($sql_pro, [$id_material])->result_array();
         $wip_coils = $this->db->query($sql_wip, [$id_material])->result_array();
 
-        return array_merge($pro_coils, $wip_coils);
+        return array_merge($pro_coils ?? [], $wip_coils ?? []);
     }
 
     // ---------------------------------------------------------------
@@ -959,7 +959,7 @@ class Request_list_model extends BF_Model
 
         $result = $this->db->get()->result_array();
 
-        return array_column($result, 'id_coil');
+        return array_column($result ?? [], 'id_coil');
     }
 
     // ---------------------------------------------------------------
@@ -1074,11 +1074,11 @@ class Request_list_model extends BF_Model
                          WHERE wrh.spk_no = ? AND wrh.status != 'Rejected'";
 
         $selected_materials = $this->db->query($sql_selected, [$spk_no])->result_array();
-        $selected_ids = array_column($selected_materials, 'id_material');
+        $selected_ids = array_column($selected_materials ?? [], 'id_material');
 
         // Check if any BOM material belum ada di selections
         foreach ($bom_materials as $material) {
-            if (!in_array($material['id_material'], $selected_ids)) {
+            if (!in_array($material['id_material'], $selected_ids ?? [])) {
                 return true;
             }
         }
@@ -1326,7 +1326,7 @@ class Request_list_model extends BF_Model
                 'id_material' => $coil['id_material'],
                 'id_gudang'   => $source_id_gudang,
                 'no_coil'     => $coil['no_coil'],
-            ], $coil_snap_out_data));
+            ], $coil_snap_out_data ?? []));
         } else {
             $this->db->update('warehouse_coil_per_day', $coil_snap_out_data, ['id' => $coil_snap_out->id]);
         }
@@ -1357,7 +1357,7 @@ class Request_list_model extends BF_Model
                 'id_material' => $coil['id_material'],
                 'id_gudang'   => 3,
                 'no_coil'     => $coil['no_coil'],
-            ], $coil_snap_in_data));
+            ], $coil_snap_in_data ?? []));
         } else {
             $this->db->update('warehouse_coil_per_day', $coil_snap_in_data, ['id' => $coil_snap_in->id]);
         }
@@ -1660,7 +1660,7 @@ class Request_list_model extends BF_Model
             return array('status' => false, 'message' => 'Gagal menambah coil ke SPK Coil.');
         }
 
-        return array('status' => true, 'message' => count($detail_records) . ' coil berhasil ditambahkan ke ' . $header['spk_coil_no'] . '.', 'spk_no' => $header['spk_no']);
+        return array('status' => true, 'message' => count($detail_records ?? []) . ' coil berhasil ditambahkan ke ' . $header['spk_coil_no'] . '.', 'spk_no' => $header['spk_no']);
     }
 
     /**
@@ -1686,7 +1686,7 @@ class Request_list_model extends BF_Model
     {
         if (empty($materials_needed)) return ['unpacked_packs' => [], 'raw_packs' => []];
 
-        $mat_ids = array_column($materials_needed, 'id_material');
+        $mat_ids = array_column($materials_needed ?? [], 'id_material');
         if (empty($mat_ids)) return ['unpacked_packs' => [], 'raw_packs' => []];
 
         $this->db->select('wsc.id_pack, wp.pack_code, wsc.id_material, wsc.status_proses, COUNT(wsc.id) as coil_count');
@@ -1709,8 +1709,8 @@ class Request_list_model extends BF_Model
         }
 
         return [
-            'unpacked_packs' => array_values(array_unique(array_filter($unpacked_packs))),
-            'raw_packs'      => array_values(array_unique(array_filter($raw_packs))),
+            'unpacked_packs' => array_values(array_unique(array_filter($unpacked_packs ?? []))),
+            'raw_packs'      => array_values(array_unique(array_filter($raw_packs ?? []))),
         ];
     }
 }

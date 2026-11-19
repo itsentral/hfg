@@ -131,7 +131,7 @@ class Request_list extends Admin_Controller
                 . '<i class="fa fa-print me-1"></i> Print SPK</a>';
 
             $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap" style="min-width: 190px;">'
-                . implode('', $actions)
+                . implode('', $actions ?? [])
                 . '</div>';
 
             $data[] = array(
@@ -208,7 +208,7 @@ class Request_list extends Admin_Controller
 
         // Validate status — allow creation if status is 'Material Requested' or 'Material On Load'
         $valid_statuses = array('Material Requested', 'Material On Load');
-        if (!in_array($spk_data['header']['status'], $valid_statuses)) {
+        if (!in_array($spk_data['header']['status'], $valid_statuses ?? [])) {
             $this->session->set_flashdata('error', 'SPK tidak dapat dikelola/dibuatkan SPK Coil karena status: ' . $spk_data['header']['status']);
             redirect('request_list');
         }
@@ -381,8 +381,8 @@ class Request_list extends Admin_Controller
         return $this->_json(array(
             'status' => 1,
             'data'   => $grouped,
-            'total_gudang_coil' => count($grouped['gudang_coil']),
-            'total_wip'         => count($grouped['wip'])
+            'total_gudang_coil' => count($grouped['gudang_coil'] ?? []),
+            'total_wip'         => count($grouped['wip'] ?? [])
         ));
     }
 
@@ -453,7 +453,7 @@ class Request_list extends Admin_Controller
         }
 
         $valid_statuses = array('Material Requested', 'Material On Load');
-        if (!in_array($spk_data['header']['status'], $valid_statuses)) {
+        if (!in_array($spk_data['header']['status'], $valid_statuses ?? [])) {
             return $this->_json(array('status' => 0, 'message' => 'SPK tidak dapat dibuatkan SPK Coil karena status: ' . $spk_data['header']['status']));
         }
 
@@ -508,7 +508,7 @@ class Request_list extends Admin_Controller
         if (!empty($unavailable)) {
             return $this->_json(array(
                 'status'  => 0,
-                'message' => 'Coil berikut sudah tidak tersedia: ' . implode(', ', array_slice($unavailable, 0, 5))
+                'message' => 'Coil berikut sudah tidak tersedia: ' . implode(', ', array_slice($unavailable ?? [], 0, 5))
             ));
         }
 
@@ -566,7 +566,7 @@ class Request_list extends Admin_Controller
 
         // Check and cancel empty old SPK Coils
         if (!empty($old_requests_to_check)) {
-            $old_requests_to_check = array_unique($old_requests_to_check);
+            $old_requests_to_check = array_unique($old_requests_to_check ?? []);
             foreach ($old_requests_to_check as $req_id) {
                 $this->Request_list_model->check_and_cancel_empty_spkc($req_id);
             }
@@ -724,7 +724,7 @@ class Request_list extends Admin_Controller
 
         $parts = explode('/', (string) $qr_string);
 
-        if (count($parts) < 2 || trim((string) $parts[0]) === '' || trim((string) $parts[1]) === '') {
+        if (count($parts ?? []) < 2 || trim((string) $parts[0]) === '' || trim((string) $parts[1]) === '') {
             return $this->_json(array(
                 'status'  => 0,
                 'message' => 'Format kode salah'
@@ -858,7 +858,7 @@ class Request_list extends Admin_Controller
             }
         }
 
-        return $this->_json(array('status' => 1, 'message' => $inserted . ' coils dari ' . count($packs) . ' pack berhasil ditambahkan.'));
+        return $this->_json(array('status' => 1, 'message' => $inserted . ' coils dari ' . count($packs ?? []) . ' pack berhasil ditambahkan.'));
     }
 
     public function scan_pack()
@@ -1014,7 +1014,7 @@ class Request_list extends Admin_Controller
         $pending_spkcs = $this->Request_list_model->get_pending_spkc_by_spk($spk_no);
         if (!empty($pending_spkcs)) {
             $this->db->trans_rollback();
-            return $this->_json(array('status' => 0, 'message' => 'Masih ada ' . count($pending_spkcs) . ' SPK Coil yang belum dikonfirmasi. Konfirmasi semua terlebih dahulu.'));
+            return $this->_json(array('status' => 0, 'message' => 'Masih ada ' . count($pending_spkcs ?? []) . ' SPK Coil yang belum dikonfirmasi. Konfirmasi semua terlebih dahulu.'));
         }
 
         // Update status SPK Material

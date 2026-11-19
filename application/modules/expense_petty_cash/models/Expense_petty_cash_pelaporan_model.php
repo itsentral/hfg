@@ -332,7 +332,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         if (!empty($details)) {
             $pencatatan_ids = array_map(function ($d) {
                 return $d->pencatatan_id;
-            }, $details);
+            }, $details ?? []);
 
             $this->db->where_in('id', $pencatatan_ids);
             $this->db->update('tr_expense_petty_cash', ['status' => 'waiting approval']);
@@ -395,7 +395,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         if (!empty($details)) {
             $pencatatan_ids = array_map(function ($d) {
                 return $d->pencatatan_id;
-            }, $details);
+            }, $details ?? []);
 
             $this->db->where_in('id', $pencatatan_ids);
             $this->db->update('tr_expense_petty_cash', ['status' => 'approved']);
@@ -472,7 +472,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         if (!empty($details)) {
             $pencatatan_ids = array_map(function ($d) {
                 return $d->pencatatan_id;
-            }, $details);
+            }, $details ?? []);
 
             $this->db->where_in('id', $pencatatan_ids);
             $this->db->update('tr_expense_petty_cash', ['status' => 'draft']);
@@ -529,7 +529,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
                 $keterangan_list[] = trim((string) $row->keterangan);
             }
         }
-        $keterangan_text = implode(', ', $keterangan_list);
+        $keterangan_text = implode(', ', $keterangan_list ?? []);
 
         // Prepare request payment data
         $company = strtoupper(trim((string) $pelaporan->company));
@@ -673,7 +673,7 @@ class Expense_petty_cash_pelaporan_model extends BF_Model
         if (!empty($details)) {
             $pencatatan_ids = array_map(function ($d) {
                 return $d->pencatatan_id;
-            }, $details);
+            }, $details ?? []);
 
             $this->db->where_in('id', $pencatatan_ids);
             $this->db->update('tr_expense_petty_cash', ['status' => 'waiting approval']);

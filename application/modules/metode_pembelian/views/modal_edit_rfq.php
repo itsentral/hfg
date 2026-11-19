@@ -8,7 +8,7 @@
 					foreach($supplierList AS $val => $valx){
 						$sel3 = '';
 						if(!empty($supplierChecked)){
-							$sel3 = (isset($supplierChecked) && in_array($valx['id_supplier'], $supplierChecked))?'selected':'';
+							$sel3 = (isset($supplierChecked) && in_array($valx['id_supplier'], $supplierChecked ?? []))?'selected':'';
 						}
 						echo "<option value='".$valx['id_supplier']."' ".$sel3.">".strtoupper((string) $valx['nm_supplier'])."</option>";
 					}

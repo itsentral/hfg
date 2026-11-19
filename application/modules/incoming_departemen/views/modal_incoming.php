@@ -7,8 +7,8 @@ if (!empty($result)) {
         }
     }
 }
-$id_dept = array_unique($id_dept);
-$id_dept = implode(',', $id_dept);
+$id_dept = array_unique($id_dept ?? []);
+$id_dept = implode(',', $id_dept ?? []);
 ?>
 <form action="#" method="POST" id="form_adjustment" enctype="multipart/form-data" autocomplete="off">
     <div class="p-2">

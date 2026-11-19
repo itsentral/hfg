@@ -475,10 +475,10 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                             $ttl_price_detail += $item['total_nilai'];
                                         }
 
-                                        $subtotal_gross = array_sum(array_column($rows, 'berat_kotor'));
-                                        $subtotal_net   = array_sum(array_column($rows, 'berat_bersih'));
-                                        $subtotal_total = array_sum(array_column($rows, 'total_nilai'));
-                                        $subtotal_coil  = count($rows);
+                                        $subtotal_gross = array_sum(array_column($rows ?? [], 'berat_kotor'));
+                                        $subtotal_net   = array_sum(array_column($rows ?? [], 'berat_bersih'));
+                                        $subtotal_total = array_sum(array_column($rows ?? [], 'total_nilai'));
+                                        $subtotal_coil  = count($rows ?? []);
 
                                         echo '<tr class="subtotal-material table-info" data-id="' . $id_po_detail . '">';
                                         echo '<td colspan="8" class="text-end"><b>Subtotal </b></td>';

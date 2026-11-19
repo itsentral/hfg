@@ -215,9 +215,9 @@ class Pr_material_model extends BF_Model
             $nestedData = [
                 "<div align='center'>{$nomor}</div>",
                 "<div align='center'>{$row['no_pr']}</div>",
-                "<div align='left'>" . implode('<br><br>', $list_barang) . "</div>",
-                "<div align='left'>" . implode('<br><br>', $list_lainnya) . "</div>",
-                "<div align='left'>" . implode('<br><br>', $list_qty_barang) . "</div>",
+                "<div align='left'>" . implode('<br><br>', $list_barang ?? []) . "</div>",
+                "<div align='left'>" . implode('<br><br>', $list_lainnya ?? []) . "</div>",
+                "<div align='left'>" . implode('<br><br>', $list_qty_barang ?? []) . "</div>",
                 "<div align='center'>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>",
                 "<div align='center'><span class='badge' style='background-color: {$status_info['warna']};'>{$status_info['sts']}</span></div>",
                 "<div align='center'>{$row['request_by']}</div>",
@@ -344,7 +344,7 @@ class Pr_material_model extends BF_Model
         $view = "<a href='{$base_url}/detail_planning/{$row['so_number']}' class='btn btn-sm btn-warning'><i class='fa fa-eye'></i></a>";
         $print = "<a href='{$base_url}/print_new/{$row['so_number']}' class='btn btn-sm btn-primary' target='_blank'><i class='fa fa-print'></i></a>";
         $edit = '';
-        if ($this->ENABLE_MANAGE && (count($getCheck) > 0 || $row['reject_status'] == '1')) {
+        if ($this->ENABLE_MANAGE && (count($getCheck ?? []) > 0 || $row['reject_status'] == '1')) {
             $edit = "<a href='{$base_url}/edit_planning/{$row['so_number']}' class='btn btn-sm btn-info'><i class='fa fa-edit'></i></a>";
         }
 

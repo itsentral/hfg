@@ -391,7 +391,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                         $kategori_pr[] = $item_kategori_pr->kategori;
                                     }
 
-                                    $kategori_text = !empty($kategori_pr) ? implode(', ', $kategori_pr) : '-';
+                                    $kategori_text = !empty($kategori_pr) ? implode(', ', $kategori_pr ?? []) : '-';
 
                                     echo '<tr>';
                                     echo '<td class="text-center">' . $no . '</td>';

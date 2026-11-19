@@ -110,7 +110,7 @@ class Purchase_order extends Admin_Controller
 				foreach ($get_no_incoming as $item_incoming) {
 					$incoming_no[] = $item_incoming->kode_trans;
 				}
-				$incoming_no = implode(', ', $incoming_no);
+				$incoming_no = implode(', ', $incoming_no ?? []);
 			} else {
 				$this->db->select('a.kode_trans');
 				$this->db->from('warehouse_adjustment a');
@@ -121,7 +121,7 @@ class Purchase_order extends Admin_Controller
 					foreach ($get_no_incoming_warehouse as $item_incoming) {
 						$incoming_no[] = $item_incoming->kode_trans;
 					}
-					$incoming_no = implode(', ', $incoming_no);
+					$incoming_no = implode(', ', $incoming_no ?? []);
 				} else {
 					$incoming_no = '';
 				}
@@ -312,7 +312,7 @@ class Purchase_order extends Admin_Controller
 		$this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
 		$this->db->where('a.no_po', $no_po);
 		$list_top = $this->db->get()->result();
-		$num_top = count($list_top);
+		$num_top = count($list_top ?? []);
 
 		$data = [
 			// 'supplier' => $supplier,
@@ -533,7 +533,7 @@ class Purchase_order extends Admin_Controller
 		}
 
 		if (!empty($nm_depart)) {
-			$nm_depart = implode(', ', $nm_depart);
+			$nm_depart = implode(', ', $nm_depart ?? []);
 		} else {
 			$nm_depart = '';
 		}
@@ -1129,7 +1129,7 @@ class Purchase_order extends Admin_Controller
 	function CariTDiskon()
 	{
 		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = str_replace(',', '', $_GET['diskon']) / 100;
+		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $diskon;
 		$isi = number_format($val1 + $diskontotal);
@@ -1138,7 +1138,7 @@ class Purchase_order extends Admin_Controller
 	function CariTPajak()
 	{
 		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = str_replace(',', '', $_GET['pajak']) / 100;
+		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $pajak;
 		$isi = number_format($val1 + $taxtotal);
@@ -1147,12 +1147,12 @@ class Purchase_order extends Admin_Controller
 	function CariTSum()
 	{
 		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = str_replace(',', '', $_GET['pajak']) / 100;
+		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $pajak;
 		$isi1 = $val1 + $taxtotal;
 		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = str_replace(',', '', $_GET['diskon']) / 100;
+		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
 		$val2 = $jumlahharga * $diskon;
 		$isi2 = $val2 + $diskontotal;
 		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
@@ -1170,7 +1170,7 @@ class Purchase_order extends Admin_Controller
 	function CariMinDiskon()
 	{
 		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = str_replace(',', '', $_GET['diskon']) / 100;
+		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $diskon;
 		$isi = number_format($val1 - $diskontotal);
@@ -1179,7 +1179,7 @@ class Purchase_order extends Admin_Controller
 	function CariMinPajak()
 	{
 		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = str_replace(',', '', $_GET['pajak']) / 100;
+		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $pajak;
 		$isi = number_format($taxtotal - $val1);
@@ -1188,12 +1188,12 @@ class Purchase_order extends Admin_Controller
 	function CariMinSum()
 	{
 		$taxtotal = str_replace(',', '', $_GET['taxtotal']);
-		$pajak = str_replace(',', '', $_GET['pajak']) / 100;
+		$pajak = (float) str_replace(',', '', $_GET['pajak']) / 100;
 		$jumlahharga = str_replace(',', '', $_GET['jumlahharga']);
 		$val1 = $jumlahharga * $pajak;
 		$isi1 = $val1 - $taxtotal;
 		$diskontotal = str_replace(',', '', $_GET['diskontotal']);
-		$diskon = str_replace(',', '', $_GET['diskon']) / 100;
+		$diskon = (float) str_replace(',', '', $_GET['diskon']) / 100;
 		$val2 = $jumlahharga * $diskon;
 		$isi2 = $val2 - $diskontotal;
 		$hargatotal = str_replace(',', '', $_GET['hargatotal']);
@@ -1463,7 +1463,7 @@ class Purchase_order extends Admin_Controller
 		$no_surat = $this->Pr_model->BuatNomor($tgl);
 
 		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
-		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept']) : '';
+		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept'] ?? []) : '';
 
 		$this->db->trans_start();
 
@@ -1791,7 +1791,7 @@ class Purchase_order extends Admin_Controller
 		$no_surat = $is_edit ? $post['no_surat'] : $this->Pr_model->BuatNomor($tgl);
 
 		$nominal_kurs = isset($post['nominal_kurs']) ? str_replace(',', '', $post['nominal_kurs']) : 0;
-		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept']) : '';
+		$id_dept = isset($post['dept']) && is_array($post['dept']) ? implode(',', $post['dept'] ?? []) : '';
 
 		$this->db->trans_start();
 
@@ -1967,7 +1967,7 @@ class Purchase_order extends Admin_Controller
 				->get()->result();
 			$locked_top_ids = array_map(function ($r) {
 				return $r->id;
-			}, $locked_top);
+			}, $locked_top ?? []);
 
 			// Hapus hanya baris TOP yang BELUM punya status_bayar
 			$this->db->where('no_po', $code)
@@ -2087,7 +2087,7 @@ class Purchase_order extends Admin_Controller
 
 				$log_payload = [
 					'old'            => $old_po_data,
-					'new'            => array_merge($old_po_data, $data),
+					'new'            => array_merge($old_po_data ?? [], $data ?? []),
 					'detail_changes' => $detail_changes
 				];
 				write_log('Purchase Order', 'Save Edit PO', 'Save edit PO success: ' . $no_surat_disp, $log_payload, null, 1);
@@ -2143,7 +2143,7 @@ class Purchase_order extends Admin_Controller
 			'total_ppn_persen'	=> str_replace(',', '', $post['persenppn']),
 			'persen_disc'		=> str_replace(',', '', $post['persendisc']),
 			'nilai_disc'		=> str_replace(',', '', $post['totaldisc']),
-			'id_dept'		 	=> implode(',', $post['dept']),
+			'id_dept'		 	=> implode(',', $post['dept'] ?? []),
 			'delivery_address' 	=> $post['delivery_address'],
 			'delivery_date' 	=> $post['delivery_date'],
 			'note' 				=> $post['keterangan']
@@ -2558,7 +2558,7 @@ class Purchase_order extends Admin_Controller
 			foreach ($prs as $p) if ($p->no_pr !== '') $list_no_pr[] = $p->no_pr;
 		}
 
-		$no_pr_join = implode(', ', $list_no_pr);
+		$no_pr_join = implode(', ', $list_no_pr ?? []);
 
 		// ---------------------------
 		// 5) Summary & Supplier
@@ -2575,14 +2575,14 @@ class Purchase_order extends Admin_Controller
 		$nm_depart = '';
 		if (!empty($header->id_dept)) {
 			$ids = explode(',', (string) $header->id_dept);
-			$ids = array_map('trim', $ids);
+			$ids = array_map('trim', $ids ?? []);
 			if (!empty($ids)) {
 				$deptNames = $this->db->select('UPPER(nama) AS nama')
 					->from('ms_department')
 					->where_in('id', $ids)->get()->result();
 				$nm_depart = implode(', ', array_map(function ($r) {
 					return $r->nama;
-				}, $deptNames));
+				}, $deptNames ?? []));
 			}
 		}
 
@@ -2697,7 +2697,7 @@ class Purchase_order extends Admin_Controller
 				}
 			}
 
-			if (count($list_idpr_non) > 0) {
+			if (count($list_idpr_non ?? []) > 0) {
 				$this->db->select('IF(a.no_pr IS NULL, "", a.no_pr) as no_pr');
 				$this->db->from('material_planning_base_on_produksi a');
 				$this->db->join('material_planning_base_on_produksi_detail b', 'b.so_number = a.so_number', 'left');
@@ -2713,7 +2713,7 @@ class Purchase_order extends Admin_Controller
 			}
 
 
-			$data['no_pr'] = implode(', ', $list_no_pr);
+			$data['no_pr'] = implode(', ', $list_no_pr ?? []);
 
 			// print_r($data['header'][0]->tipe);
 			// exit;
@@ -2754,7 +2754,7 @@ class Purchase_order extends Admin_Controller
 				}
 			}
 
-			if (count($list_idpr_dep) > 0) {
+			if (count($list_idpr_dep ?? []) > 0) {
 				$this->db->select('IF(a.no_pr IS NULL, "", a.no_pr) as no_pr');
 				$this->db->from('rutin_non_planning_header a');
 				$this->db->join('rutin_non_planning_detail b', 'b.no_pengajuan = a.no_pengajuan', 'left');
@@ -2770,7 +2770,7 @@ class Purchase_order extends Admin_Controller
 				}
 			}
 
-			$data['no_pr'] = implode(', ', $list_no_pr);
+			$data['no_pr'] = implode(', ', $list_no_pr ?? []);
 		}
 
 		// print_r("SELECT a.id as id, a.no_po as no_po, a.id_dt_po as id_dt_po, a.idpr as idpr, a.idmaterial as idmaterial, a.namamaterial as namamaterial, a.description as description, a.hargasatuan as hargasatuan, a.jumlahharga as jumlahharga, a.kode_barang as kode_barang, a.ppn as ppn, a.ppn_persen as ppn_persen, a.harga_total as harga_total, a.tipe as tipe, a.keterangan as keterangan, a.namamaterial as nama, a.kode_barang as code, '1' as konversi, c.code as satuan, '' as satuan_packing FROM dt_trans_po a 
@@ -2791,7 +2791,7 @@ class Purchase_order extends Admin_Controller
 		}
 
 		if (!empty($nm_depart)) {
-			$nm_depart = implode(', ', $nm_depart);
+			$nm_depart = implode(', ', $nm_depart ?? []);
 		} else {
 			$nm_depart = '';
 		}
@@ -3466,7 +3466,7 @@ class Purchase_order extends Admin_Controller
 				$ArrPR[$key] = $value['no_pr'];
 			}
 		}
-		$dtImplode	= "('" . implode("','", $ArrPR) . "')";
+		$dtImplode	= "('" . implode("','", $ArrPR ?? []) . "')";
 
 
 		$data 		=  $this->db->query("	SELECT 
@@ -3555,7 +3555,7 @@ class Purchase_order extends Admin_Controller
 				LEFT JOIN ms_satuan h ON h.id = d.id_unit
 				LEFT JOIN hscode hs  ON hs.id = c.hscode
 			WHERE
-				a.so_number IN ('" . str_replace(",", "','", implode(',', $getparam)) . "')
+				a.so_number IN ('" . str_replace(",", "','", implode(',', $getparam ?? [])) . "')
 				AND a.status_app = 'Y'
 			GROUP BY a.id_material
 
@@ -3583,7 +3583,7 @@ class Purchase_order extends Admin_Controller
 				rutin_non_planning_detail a 
 				LEFT JOIN ms_satuan b ON b.id = a.satuan
 			WHERE
-				a.no_pengajuan IN ('" . str_replace(",", "','", implode(',', $getparam)) . "')
+				a.no_pengajuan IN ('" . str_replace(",", "','", implode(',', $getparam ?? [])) . "')
 				
 			GROUP BY a.id
 
@@ -3610,7 +3610,7 @@ class Purchase_order extends Admin_Controller
 			FROM
 				asset_planning a 
 			WHERE
-				a.code_plan IN ('" . str_replace(",", "','", implode(',', $getparam)) . "')
+				a.code_plan IN ('" . str_replace(",", "','", implode(',', $getparam ?? [])) . "')
 		")->result();
 
 		$aktif = 'active';
@@ -3674,7 +3674,7 @@ class Purchase_order extends Admin_Controller
 
 		$get_checked_pr = $this->db->get_where('tr_po_checked_pr', ['no_pr' => $no_pr, 'id_user' => $this->auth->user_id()])->result();
 
-		if (count($get_checked_pr) < 1) {
+		if (count($get_checked_pr ?? []) < 1) {
 			$this->db->trans_begin();
 
 			$this->db->insert('tr_po_checked_pr', [
@@ -3749,10 +3749,10 @@ class Purchase_order extends Admin_Controller
 			}
 		}
 
-		if (count($list_id) < 1) {
+		if (count($list_id ?? []) < 1) {
 			$list_id = 0;
 		} else {
-			$list_id = implode(';', $list_id);
+			$list_id = implode(';', $list_id ?? []);
 		}
 
 		echo json_encode([
@@ -3905,7 +3905,7 @@ class Purchase_order extends Admin_Controller
 		$this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
 		$this->db->where('a.no_po', $no_po);
 		$list_top = $this->db->get()->result();
-		$num_top = count($list_top);
+		$num_top = count($list_top ?? []);
 
 		$nm_depart = [];
 		if (!empty($get_po->id_dept)) {
@@ -3925,7 +3925,7 @@ class Purchase_order extends Admin_Controller
 			'getitemso'       => $getitemso,
 			'list_supplier'   => $list_supplier,
 			'list_department' => $list_department,
-			'nm_depart'       => !empty($nm_depart) ? implode(', ', $nm_depart) : '',
+			'nm_depart'       => !empty($nm_depart) ? implode(', ', $nm_depart ?? []) : '',
 			'list_top'        => $list_top,
 			'list_group_top'  => $list_group_top,
 			'num_po'          => $num_top,

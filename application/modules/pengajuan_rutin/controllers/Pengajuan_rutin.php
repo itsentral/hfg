@@ -216,13 +216,13 @@ class Pengajuan_rutin extends Admin_Controller
 				);
 				$this->Pengajuan_rutin_model->update_batch($dataheader, 'id');
 				if (is_array($detail_id)) {
-					$delid = implode("','", $detail_id);
+					$delid = implode("','", $detail_id ?? []);
 					$this->All_model->dataDelete('tr_pengajuan_rutin_detail', " id not in ('" . $delid . "') and no_doc='" . $no_doc . "'");
 				} else {
 					$this->All_model->dataDelete('tr_pengajuan_rutin_detail', "no_doc='" . $no_doc . "'");
 				}
 			}
-			for ($x = 0; $x < count($detail_id); $x++) {
+			for ($x = 0; $x < count($detail_id ?? []); $x++) {
 				$idf = $details[$x];
 				if ($detail_id[$x] != '') {
 					if ($nilai[$x] > 0) {

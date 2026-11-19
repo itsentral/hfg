@@ -161,7 +161,7 @@
                 </span>
             <?php endif; ?>
         </h6>
-        <span class="badge bg-primary fs-6"><?= count($ledger) ?> Catatan Transaksi</span>
+        <span class="badge bg-primary fs-6"><?= count($ledger ?? []) ?> Catatan Transaksi</span>
     </div>
     <div class="card-body p-0">
         <?php if (empty($ledger)): ?>

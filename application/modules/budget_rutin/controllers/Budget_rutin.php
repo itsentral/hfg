@@ -170,7 +170,7 @@ class Budget_rutin extends Admin_Controller
         $sql = $this->db->last_query();
         if (!empty($id_barang)) {
             $this->All_model->dataDelete('budget_rutin_detail', array('code_budget' => $id));
-            for ($i = 0; $i < count($id_barang); $i++) {
+            for ($i = 0; $i < count($id_barang ?? []); $i++) {
                 if ($kebutuhan_month[$i] > 0) {
                     $data_detail =  array(
                         'code_budget' => $id,

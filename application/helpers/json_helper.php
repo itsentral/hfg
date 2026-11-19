@@ -358,7 +358,7 @@ function get_inventory_lv4_lv3()
 	$CI = &get_instance();
 	$listGetCategory4 = $CI->db->select('code_lv4 AS code, nama, "LEVEL 4" AS tanda')->get('new_inventory_4')->result_array();
 	$listGetCategory3 = $CI->db->select('code_lv3 AS code, nama, "LEVEL 3" AS tanda')->get('new_inventory_3')->result_array();
-	$listGetCategory	= array_merge($listGetCategory4, $listGetCategory3);
+	$listGetCategory	= array_merge($listGetCategory4 ?? [], $listGetCategory3 ?? []);
 
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
@@ -695,7 +695,7 @@ function move_warehouse($ArrUpdateStock = null, $id_gudang_dari = null, $id_guda
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -887,7 +887,7 @@ function move_warehouse_stok($ArrUpdateStock = null, $id_gudang_dari = null, $id
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1127,7 +1127,7 @@ function move_warehouse_stok_non_product($ArrUpdateStock = null, $id_gudang_dari
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1370,7 +1370,7 @@ function move_warehouse_adjustment($ArrUpdateStock = null, $id_gudang_dari = nul
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1586,7 +1586,7 @@ function move_warehouse_stok_adjustment($ArrUpdateStock = null, $id_gudang_dari 
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -2065,7 +2065,7 @@ function booking_warehouse($ArrUpdateStock = null, $id_gudang_dari = null, $id_g
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -2268,7 +2268,7 @@ function checkInputMixingQty($id)
 	$temp = [];
 	if (!empty($listCheck)) {
 		foreach ($listCheck as $key => $value) {
-			if (!array_key_exists($value['id'], $temp)) {
+			if (!array_key_exists($value['id'], $temp ?? [])) {
 				$temp[$value['id']] = 0;
 			}
 			$temp[$value['id']] += 1;
@@ -2303,7 +2303,7 @@ function checkInputProduksiQty($id)
 	$temp = [];
 	if (!empty($listCheck)) {
 		foreach ($listCheck as $key => $value) {
-			if (!array_key_exists($value['id'], $temp)) {
+			if (!array_key_exists($value['id'], $temp ?? [])) {
 				$temp[$value['id']] = 0;
 			}
 			$temp[$value['id']] += 1;

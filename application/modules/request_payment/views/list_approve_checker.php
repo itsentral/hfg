@@ -37,7 +37,7 @@ foreach ($data as $item) :
     if ($item->tipe == 'direct_payment' || $item->tipe == 'Cash') {
         $count_direct_payment += 1;
     }
-    if (in_array($item->tipe, $ros_payment_types)) {
+    if (in_array($item->tipe, $ros_payment_types ?? [])) {
         $count_document_import += 1;
     }
 endforeach;
@@ -278,7 +278,7 @@ endforeach;
                                 echo '</td>';
                                 echo '<td class="text-center"><div class="d-flex justify-content-center gap-1">';
                                 if ($ENABLE_MANAGE && $get_kasbon->project_consultant == '0') :
-                                    if ($item_kasbon->status !== '2' && count($get_req_payment) > 0 && $get_req_payment[0]->app_checker === null) : ?>
+                                    if ($item_kasbon->status !== '2' && count($get_req_payment ?? []) > 0 && $get_req_payment[0]->app_checker === null) : ?>
                                         <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_kasbon->tipe . '&id=' . $item_kasbon->id . '&nilai=' . $item_kasbon->jumlah); ?>" class="btn btn-success btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>
                         <?php endif;
                                 endif;
@@ -364,7 +364,7 @@ endforeach;
                                     }
                                     echo '</td>';
                                     echo '<td class="text-center">';
-                                    if ($ENABLE_MANAGE || (!empty($get_sts_payment) && $get_sts_payment['status'] < 1) && count($get_req_payment) > 0 && $get_req_payment[0]->app_checker === null) {
+                                    if ($ENABLE_MANAGE || (!empty($get_sts_payment) && $get_sts_payment['status'] < 1) && count($get_req_payment ?? []) > 0 && $get_req_payment[0]->app_checker === null) {
                                         if ($get_expense['project_consultant'] == '1') {
                                             echo '<a href="' . base_url('approval_request_payment/approval_payment_checker/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant']))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-success"><i class="fa fa-check-square-o"></i> Approve</a>';
                                         } else {
@@ -475,7 +475,7 @@ endforeach;
                                 foreach ($get_po_note as $item_po_note) {
                                     $po_note[] = $item_po_note->note;
                                 }
-                                $po_note = implode(', ', $po_note);
+                                $po_note = implode(', ', $po_note ?? []);
 
                                 if ($get_expense['exp_inv_po'] == '1') {
                                     echo '<tr>';
@@ -576,7 +576,7 @@ endforeach;
                     <tbody>
                         <?php
                         foreach ($data as $item_ros) :
-                            if (in_array($item_ros->tipe, $ros_payment_types)) {
+                            if (in_array($item_ros->tipe, $ros_payment_types ?? [])) {
                                 $tipe_label = str_replace(
                                     ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'],
                                     ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],

@@ -6,7 +6,7 @@
 <input type="hidden" name="no_surat" value="<?= $is_view ? $data['no_surat'] : $data_po['no_surat'] ?>">
 
 <?php
-$d = $is_view ? $data : array_merge($data_po, [
+$d = $is_view ? $data : array_merge($data_po ?? [], [
     'nm_supplier'          => $get_supplier['nama'] ?? '-',
     'nomor_invoice'        => '',
     'invoice_date'         => '',

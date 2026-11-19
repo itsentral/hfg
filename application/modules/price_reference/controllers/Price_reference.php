@@ -109,7 +109,7 @@ class Price_reference extends Admin_Controller
         // Hitung Max, Latest, Avg
         $max_usd = !empty($numeric_vals) ? max($numeric_vals) : 0;
         $latest_usd = !empty($numeric_vals) ? end($numeric_vals) : 0;
-        $avg_usd = !empty($numeric_vals) ? (array_sum($numeric_vals) / count($numeric_vals)) : 0;
+        $avg_usd = !empty($numeric_vals) ? (array_sum($numeric_vals ?? []) / count($numeric_vals ?? [])) : 0;
 
         $calc_kurs = ($material->kurs && (float)$material->kurs > 0) ? (float)$material->kurs : $kurs_info['kurs'];
         $calc_id_kurs = ($material->id_kurs && (int)$material->id_kurs > 0) ? (int)$material->id_kurs : $kurs_info['id_kurs'];

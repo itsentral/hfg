@@ -246,7 +246,7 @@
   <div class="pr-card mb-3">
     <div class="pr-card-header d-flex justify-content-between align-items-center">
       <h2 class="pr-card-title">Claim Material Yang Diajukan (FR-94)</h2>
-      <span class="badge bg-warning text-dark"><?= count($report['claims']); ?> Claim</span>
+      <span class="badge bg-warning text-dark"><?= count($report['claims'] ?? []); ?> Claim</span>
     </div>
     <div class="p-0 table-responsive">
       <table class="tbl-custom">

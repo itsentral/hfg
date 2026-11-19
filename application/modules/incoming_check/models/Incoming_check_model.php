@@ -111,7 +111,7 @@ class Incoming_check_model extends BF_Model
             $no_surat = array_map('trim', explode(',', (string) $no_surat));
         }
 
-        $placeholders = implode(',', array_fill(0, count($no_surat), '?'));
+        $placeholders = implode(',', array_fill(0, count($no_surat ?? []), '?'));
 
         $sql = "
                 SELECT d.no_pr as no_pr
@@ -133,7 +133,7 @@ class Incoming_check_model extends BF_Model
                 AND a.tipe = 'pr depart'
                 GROUP BY c.no_pr
             ";
-        $params = array_merge($no_surat, $no_surat);
+        $params = array_merge($no_surat ?? [], $no_surat ?? []);
         $get_no_pr = $this->db->query($sql, $params)->result();
 
         $no_pr = [];
@@ -142,7 +142,7 @@ class Incoming_check_model extends BF_Model
         }
 
         if (!empty($no_pr)) {
-            $no_pr = implode(', ', $no_pr);
+            $no_pr = implode(', ', $no_pr ?? []);
         } else {
             $no_pr = '';
         }
@@ -246,7 +246,7 @@ class Incoming_check_model extends BF_Model
             $arr_no_pr[] = $pr['no_pr'];
         endforeach;
 
-        $no_pr = implode(', ', $arr_no_pr);
+        $no_pr = implode(', ', $arr_no_pr ?? []);
 
         $get_summary_incoming = $this->db->select('
             a.id,
@@ -268,7 +268,7 @@ class Incoming_check_model extends BF_Model
         foreach ($get_no_surat as $item) {
             $no_surat[] = $item->no_surat;
         }
-        $no_surat = implode(', ', $no_surat);
+        $no_surat = implode(', ', $no_surat ?? []);
 
         $data = array(
             'result_header'     => $result_header,
@@ -738,12 +738,12 @@ class Incoming_check_model extends BF_Model
             $ttl_qty_sub = 0;
             $ttl_qty_prod = 0;
 
-            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $det_inc['id_material'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
+            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $det_inc['id_material'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub ?? [])) . "')")->row();
             if (!empty($get_ttl_qty_sub)) {
                 $ttl_qty_sub = $get_ttl_qty_sub->ttl_qty_sub;
             }
 
-            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $det_inc['id_material'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
+            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $det_inc['id_material'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod ?? [])) . "')")->row();
             if (!empty($get_ttl_qty_prod)) {
                 $ttl_qty_prod = $get_ttl_qty_prod->ttl_qty_prod;
             }
@@ -916,7 +916,7 @@ class Incoming_check_model extends BF_Model
 
         $data_url        = base_url();
         $Split_Beda        = explode('/', (string) $data_url);
-        $Jum_Beda        = count($Split_Beda);
+        $Jum_Beda        = count($Split_Beda ?? []);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
         // $okeH  			= $this->session->userdata("ses_username");
 
@@ -934,7 +934,7 @@ class Incoming_check_model extends BF_Model
 
         $data_url        = base_url();
         $Split_Beda        = explode('/', (string) $data_url);
-        $Jum_Beda        = count($Split_Beda);
+        $Jum_Beda        = count($Split_Beda ?? []);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
         $this->db->select('a.*, b.no_surat, c.konversi, d.code as satuan, e.code as packing');
@@ -987,7 +987,7 @@ class Incoming_check_model extends BF_Model
 
         $data_url        = base_url();
         $Split_Beda        = explode('/', (string) $data_url);
-        $Jum_Beda        = count($Split_Beda);
+        $Jum_Beda        = count($Split_Beda ?? []);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
         // $okeH  			= $this->session->userdata("ses_username");
 
@@ -1019,7 +1019,7 @@ class Incoming_check_model extends BF_Model
 
         $data_url        = base_url();
         $Split_Beda        = explode('/', (string) $data_url);
-        $Jum_Beda        = count($Split_Beda);
+        $Jum_Beda        = count($Split_Beda ?? []);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
         $data = array(
@@ -1041,7 +1041,7 @@ class Incoming_check_model extends BF_Model
 
         $data_url        = base_url();
         $Split_Beda        = explode('/', (string) $data_url);
-        $Jum_Beda        = count($Split_Beda);
+        $Jum_Beda        = count($Split_Beda ?? []);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
         $data = array(
@@ -1839,7 +1839,7 @@ class Incoming_check_model extends BF_Model
             foreach ($ArrUpdateStock as $value) {
                 $key++;
                 if ($value['qty'] > 0) {
-                    if (!array_key_exists($value['id'], $temp)) {
+                    if (!array_key_exists($value['id'], $temp ?? [])) {
                         $temp[$value['id']]['good'] = 0;
                     }
                     $temp[$value['id']]['good'] += $value['qty'];
@@ -1923,7 +1923,7 @@ class Incoming_check_model extends BF_Model
             foreach ($ArrUpdateStockExp as $value) {
                 $key++;
                 //grouping good
-                if (!array_key_exists($value['id'] . $value['expired'], $tempEXP)) {
+                if (!array_key_exists($value['id'] . $value['expired'], $tempEXP ?? [])) {
                     $tempEXP[$value['id'] . $value['expired']]['good'] = 0;
                 }
                 $tempEXP[$value['id'] . $value['expired']]['good'] += $value['qty_good'];
@@ -2270,7 +2270,7 @@ class Incoming_check_model extends BF_Model
                         //kurangi stock gudang dari
                         if (!empty($rest_exp)) {
                             $ArrUpdExp[$val2 . $val]['id']             = $rest_exp[0]->id;
-                            $ArrUpdExp[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock - str_replace(',', '', $valx['qty_oke']);
+                            $ArrUpdExp[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock - (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrUpdExp[$val2 . $val]['qty_rusak']     = $rest_exp[0]->qty_rusak;
                             $ArrUpdExp[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
                             $ArrUpdExp[$val2 . $val]['update_date']     = date('Y-m-d H:i:s');
@@ -2281,7 +2281,7 @@ class Incoming_check_model extends BF_Model
                             $ArrUpdExpHist[$val2 . $val]['expired']         = $expired;
                             $ArrUpdExpHist[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock;
                             $ArrUpdExpHist[$val2 . $val]['qty_rusak']     = $rest_exp[0]->qty_rusak;
-                            $ArrUpdExpHist[$val2 . $val]['qty_stock_akhir']     = $rest_exp[0]->qty_stock - str_replace(',', '', $valx['qty_oke']);
+                            $ArrUpdExpHist[$val2 . $val]['qty_stock_akhir']     = $rest_exp[0]->qty_stock - (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrUpdExpHist[$val2 . $val]['qty_rusak_akhir']     = $rest_exp[0]->qty_rusak;
                             $ArrUpdExpHist[$val2 . $val]['kode_trans']     = $kode_trans;
                             $ArrUpdExpHist[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
@@ -2295,7 +2295,7 @@ class Incoming_check_model extends BF_Model
                             $ArrInsExp[$val2 . $val]['nm_material']     = $rest_mat[0]->nm_material;;
                             $ArrInsExp[$val2 . $val]['id_gudang']     = $gudang_before;
                             $ArrInsExp[$val2 . $val]['expired']         = $expired;
-                            $ArrInsExp[$val2 . $val]['qty_stock']     = 0 - str_replace(',', '', $valx['qty_oke']);
+                            $ArrInsExp[$val2 . $val]['qty_stock']     = 0 - (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrInsExp[$val2 . $val]['qty_rusak']     = 0;
                             $ArrInsExp[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
                             $ArrInsExp[$val2 . $val]['update_date']     = date('Y-m-d H:i:s');
@@ -2306,7 +2306,7 @@ class Incoming_check_model extends BF_Model
                             $ArrInsExpHist[$val2 . $val]['expired']         = $expired;
                             $ArrInsExpHist[$val2 . $val]['qty_stock']     = 0;
                             $ArrInsExpHist[$val2 . $val]['qty_rusak']     = 0;
-                            $ArrInsExpHist[$val2 . $val]['qty_stock_akhir']     = 0 - str_replace(',', '', $valx['qty_oke']);
+                            $ArrInsExpHist[$val2 . $val]['qty_stock_akhir']     = 0 - (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrInsExpHist[$val2 . $val]['qty_rusak_akhir']     = 0;
                             $ArrInsExpHist[$val2 . $val]['kode_trans']     = $kode_trans;
                             $ArrInsExpHist[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
@@ -2320,7 +2320,7 @@ class Incoming_check_model extends BF_Model
                         //kurangi stock gudang tujuan
                         if (!empty($rest_exp)) {
                             $ArrUpdExp2[$val2 . $val]['id']             = $rest_exp[0]->id;
-                            $ArrUpdExp2[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock + str_replace(',', '', $valx['qty_oke']);
+                            $ArrUpdExp2[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock + (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrUpdExp2[$val2 . $val]['qty_rusak']     = $rest_exp[0]->qty_rusak;
                             $ArrUpdExp2[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
                             $ArrUpdExp2[$val2 . $val]['update_date']     = date('Y-m-d H:i:s');
@@ -2331,7 +2331,7 @@ class Incoming_check_model extends BF_Model
                             $ArrUpdExpHist2[$val2 . $val]['expired']         = $expired;
                             $ArrUpdExpHist2[$val2 . $val]['qty_stock']     = $rest_exp[0]->qty_stock;
                             $ArrUpdExpHist2[$val2 . $val]['qty_rusak']     = $rest_exp[0]->qty_rusak;
-                            $ArrUpdExpHist2[$val2 . $val]['qty_stock_akhir']     = $rest_exp[0]->qty_stock + str_replace(',', '', $valx['qty_oke']);
+                            $ArrUpdExpHist2[$val2 . $val]['qty_stock_akhir']     = $rest_exp[0]->qty_stock + (float) str_replace(',', '', $valx['qty_oke']);
                             $ArrUpdExpHist2[$val2 . $val]['qty_rusak_akhir']     = $rest_exp[0]->qty_rusak;
                             $ArrUpdExpHist2[$val2 . $val]['kode_trans']     = $kode_trans;
                             $ArrUpdExpHist2[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
@@ -2860,8 +2860,8 @@ class Incoming_check_model extends BF_Model
                     $ArrNo_SO[]     = (!empty($row['no_so'])) ? $row['no_so'] : $SO_SEARCH;
                 }
 
-                $NO_SO = implode('<br>', array_unique($ArrNo_SO));
-                $NO_SPK = implode('<br>', array_unique($ArrNo_SPK));
+                $NO_SO = implode('<br>', array_unique($ArrNo_SO ?? []));
+                $NO_SPK = implode('<br>', array_unique($ArrNo_SPK ?? []));
             }
 
             $nestedData     = array();
@@ -3780,7 +3780,7 @@ class Incoming_check_model extends BF_Model
             foreach ($list_supplier as $val => $valx) {
                 $arr_sup[$val] = '<li>' . $valx['nm_material'] . '</li>';
             }
-            $dt_sup = '<ul>' . implode('', $arr_sup) . '</ul>';
+            $dt_sup = '<ul>' . implode('', $arr_sup ?? []) . '</ul>';
 
             $get_sum_material = $this->db->select('IF(SUM(qty_order) IS NULL, 0, SUM(qty_order)) jumlah_mat_check')->get_where('tr_incoming_check_detail', ['kode_trans' => $row['kode_trans']])->row();
 
@@ -3793,7 +3793,7 @@ class Incoming_check_model extends BF_Model
                 $no_surat[] = $item->no_surat;
             }
 
-            $no_surat = implode(', ', $no_surat);
+            $no_surat = implode(', ', $no_surat ?? []);
 
             $no_pr = [];
             $get_no_pr = $this->db->query("
@@ -3828,7 +3828,7 @@ class Incoming_check_model extends BF_Model
             }
 
             if (!empty($no_pr)) {
-                $no_pr = implode(', ', $no_pr);
+                $no_pr = implode(', ', $no_pr ?? []);
             } else {
                 $no_pr = '';
             }

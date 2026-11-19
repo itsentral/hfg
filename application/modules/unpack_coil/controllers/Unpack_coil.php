@@ -98,7 +98,7 @@ class Unpack_coil extends Admin_Controller
                 . '<button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown" aria-expanded="false">'
                 . '<i class="fa fa-ellipsis-v"></i></button>'
                 . '<ul class="dropdown-menu dropdown-menu-end">'
-                . '<li>' . implode('</li><li>', $dropdown_items) . '</li>'
+                . '<li>' . implode('</li><li>', $dropdown_items ?? []) . '</li>'
                 . '</ul></div>';
 
             $data[] = array(
@@ -357,7 +357,7 @@ class Unpack_coil extends Admin_Controller
             }
 
             $babies = isset($m['babies']) && is_array($m['babies']) ? $m['babies'] : array();
-            $roll   = count($babies);
+            $roll   = count($babies ?? []);
             if ($roll <= 0) {
                 $this->db->trans_rollback();
                 return $this->_json(array('status' => 0, 'message' => 'Detail baby coil untuk material ' . $id_material . ' belum diisi. Silakan klik "View Detail" sebelum Save.'));
@@ -438,7 +438,7 @@ class Unpack_coil extends Admin_Controller
 
                 // parent_coil_id cuma valid kalau grup = persis 1 baris asli & jumlahnya tidak di-adjust
                 $induk_ref = $rep;
-                $induk_ref['id'] = (count($real_coils) === 1 && $roll === (int) $real_coils[0]['qty_roll'])
+                $induk_ref['id'] = (count($real_coils ?? []) === 1 && $roll === (int) $real_coils[0]['qty_roll'])
                     ? $rep['id']
                     : null;
 

@@ -49,7 +49,7 @@ class Incoming_material_model extends BF_Model
                 $no_surat[] = $item->no_surat;
             }
 
-            $no_surat = implode(', ', $no_surat);
+            $no_surat = implode(', ', $no_surat ?? []);
 
             $no_pr = [];
             if (!empty($no_surat)) {
@@ -88,7 +88,7 @@ class Incoming_material_model extends BF_Model
             }
 
             if (!empty($no_pr)) {
-                $no_pr = implode(', ', $no_pr);
+                $no_pr = implode(', ', $no_pr ?? []);
             } else {
                 $no_pr = '';
             }
@@ -225,7 +225,7 @@ class Incoming_material_model extends BF_Model
         foreach ($get_no_surat as $item_surat) {
             $no_surat[] = $item_surat->no_surat;
         }
-        $no_surat = implode(', ', $no_surat);
+        $no_surat = implode(', ', $no_surat ?? []);
 
 
 
@@ -285,12 +285,12 @@ class Incoming_material_model extends BF_Model
             $arr_no_pr[] = $pr['no_pr'];
         endforeach;
 
-        $no_pr = implode(', ', $arr_no_pr);
+        $no_pr = implode(', ', $arr_no_pr ?? []);
 
         $data = array(
-            'no_po' => implode(',', $arrNoPO),
+            'no_po' => implode(',', $arrNoPO ?? []),
             'no_pr' => $no_pr,
-            'no_surat' => implode(',', $list_no_surat),
+            'no_surat' => implode(',', $list_no_surat ?? []),
             'result_header' => $result_header
         );
 

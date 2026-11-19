@@ -53,7 +53,7 @@ class Incoming_stok extends Admin_Controller
       $data           = $this->input->post();
       $session        = $this->session->userdata('app_session');
       $no_po          = $data['no_po'];
-      $no_po = implode(',', $no_po);
+      $no_po = implode(',', $no_po ?? []);
       $id_gudang      = $data['id_gudang'];
       $pic            = $data['pic'];
       $keterangan      = $data['keterangan'];
@@ -228,12 +228,12 @@ class Incoming_stok extends Admin_Controller
             $ttl_qty_prod = 0;
             $ttl_qty_pusat = 0;
 
-            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
+            $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub ?? [])) . "')")->row();
             if (!empty($get_ttl_qty_sub)) {
               $ttl_qty_sub = $get_ttl_qty_sub->ttl_qty_sub;
             }
 
-            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
+            $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock_non_material WHERE id_material = '" . $valx['id_barang'] . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod ?? [])) . "')")->row();
             if (!empty($get_ttl_qty_prod)) {
               $ttl_qty_prod = $get_ttl_qty_prod->ttl_qty_prod;
             }
@@ -318,7 +318,7 @@ class Incoming_stok extends Admin_Controller
         $this->db->where_in('a.no_doc', explode(',', (string) $no_po));
         $check_kasbon = $this->db->get()->result();
 
-        if (count($check_kasbon)) {
+        if (count($check_kasbon ?? [])) {
           $this->db->update_batch('tr_pr_detail_kasbon', $ArrUpdatePO, 'id');
         } else {
           $this->db->update_batch('dt_trans_po', $ArrUpdatePO, 'id');
@@ -422,7 +422,7 @@ class Incoming_stok extends Admin_Controller
 
     $data_url = base_url();
     $Split_Beda = explode('/', (string) $data_url);
-    $Jum_Beda = count($Split_Beda);
+    $Jum_Beda = count($Split_Beda ?? []);
     $Nama_Beda = $Split_Beda[$Jum_Beda - 2];
 
     // Validasi data exists
@@ -453,7 +453,7 @@ class Incoming_stok extends Admin_Controller
         $no_po[] = $item->no_doc;
       }
 
-      $no_po = implode(', ', $no_po);
+      $no_po = implode(', ', $no_po ?? []);
     } else {
       $no_po = '-';
     }
@@ -505,7 +505,7 @@ class Incoming_stok extends Admin_Controller
 
     $data_url    = base_url();
     $Split_Beda    = explode('/', (string) $data_url);
-    $Jum_Beda    = count($Split_Beda);
+    $Jum_Beda    = count($Split_Beda ?? []);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
     $getData = $this->db->get_where('warehouse_adjustment a', array(
@@ -530,7 +530,7 @@ class Incoming_stok extends Admin_Controller
     foreach ($get_no_kasbon as $item) {
       $no_po[] = $item->no_doc;
     }
-    $no_po = implode(', ', $no_po);
+    $no_po = implode(', ', $no_po ?? []);
 
     $data = array(
       'getData' => $getData,
@@ -547,7 +547,7 @@ class Incoming_stok extends Admin_Controller
   public function detail_purchasing_order()
   {
     $no_po       = $this->input->post('no_po');
-    $no_po = implode(',', $no_po);
+    $no_po = implode(',', $no_po ?? []);
     $id_gudang   = $this->input->post('id_gudang');
 
     $categoryGudang = getPembedaAccessories($id_gudang);
@@ -800,7 +800,7 @@ class Incoming_stok extends Admin_Controller
             $no_pr[] = $item_pr->no_pr;
           }
 
-          $no_pr = implode(', ', $no_pr);
+          $no_pr = implode(', ', $no_pr ?? []);
 
           $hasil .= '<tr>';
           $hasil .= '<td class="text-center">' . $item->no_surat . '</td>';

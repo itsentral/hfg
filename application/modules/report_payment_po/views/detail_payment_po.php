@@ -90,7 +90,7 @@
                 <?php if (!empty($details)) : ?>
                     <?php 
                     $is_first = true;
-                    $row_count = count($details);
+                    $row_count = count($details ?? []);
                     foreach ($details as $item) : 
                         if ($item['category'] == 'dp') {
                             $category_label = 'Uang Muka';

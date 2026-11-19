@@ -152,7 +152,7 @@ if (!function_exists('assertIsArray')) {
 if (!function_exists('assertArrayHasKey')) {
     function assertArrayHasKey($key, $array, string $message = ''): void
     {
-        if (!is_array($array) || !array_key_exists($key, $array)) {
+        if (!is_array($array) || !array_key_exists($key, $array ?? [])) {
             throw new AssertionError($message ?: "Expected array to have key '{$key}'");
         }
     }
@@ -476,7 +476,7 @@ class CoaLookupTargetDbTest
 
             // Verify query was recorded
             assertTrue(
-                count($db->queries_executed) > 0,
+                count($db->queries_executed ?? []) > 0,
                 "At least one query should be executed for '{$target}'"
             );
 
@@ -722,7 +722,7 @@ class CoaLookupTargetDbTest
             }
         }
 
-        echo "    Property verified: " . count($all_inputs) . " inputs all produce valid response structure\n";
+        echo "    Property verified: " . count($all_inputs ?? []) . " inputs all produce valid response structure\n";
     }
 
     /**

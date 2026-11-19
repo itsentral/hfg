@@ -98,7 +98,7 @@ class Pricelist extends Admin_Controller
         $status = isset($status_map[$tab]) ? $status_map[$tab] : null;
         $list   = $this->pl_model->get_pricelists($status);
         if ($tab === 'all') {
-            $list = array_values(array_filter($list, function ($r) {
+            $list = array_values(array_filter($list ?? [], function ($r) {
                 return $r->status !== 'Draft';
             }));
         }

@@ -428,7 +428,7 @@ endforeach;
                                     $po_note[] = $item_po_note->note;
                                 }
 
-                                $po_note = implode(', ', $po_note);
+                                $po_note = implode(', ', $po_note ?? []);
 
 
                                 if ($get_expense['exp_inv_po'] == '1') {

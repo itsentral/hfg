@@ -181,7 +181,7 @@ class Incoming extends Admin_Controller
                 $no_surat_list[] = $item_surat->no_surat;
             }
         }
-        $no_surat = implode(', ', $no_surat_list);
+        $no_surat = implode(', ', $no_surat_list ?? []);
 
         // 4. Kirim data ke View
         // Kita kirim 'detail_ros' yang berisi hasil join tadi untuk di-loop dengan logika grouping
@@ -410,7 +410,7 @@ class Incoming extends Admin_Controller
 
         // 5. Update status semua ROS yang terlibat menjadi '1' (Closed)
         if (!empty($list_ros)) {
-            $this->db->where_in('id', array_unique($list_ros));
+            $this->db->where_in('id', array_unique($list_ros ?? []));
             $this->db->update('tr_ros', ['sts' => '1']);
         }
 
@@ -657,8 +657,8 @@ class Incoming extends Admin_Controller
         }
 
         // Hitung komponen jurnal
-        $total_biaya_masuk = array_sum(array_column($materials, 'biaya_masuk'));
-        $total_forwarding  = array_sum(array_column($materials, 'forwarding'));
+        $total_biaya_masuk = array_sum(array_column($materials ?? [], 'biaya_masuk'));
+        $total_forwarding  = array_sum(array_column($materials ?? [], 'forwarding'));
 
         // Selisih kurs = uang_muka_idr - (kurs_pib * uang_muka_usd)
         // Positif → rugi kurs → KREDIT 7201-01-07
@@ -856,8 +856,8 @@ class Incoming extends Admin_Controller
         }
 
         // Hitung selisih debet vs kredit
-        $total_debet  = array_sum(array_column($details, 'debet'));
-        $total_kredit = array_sum(array_column($details, 'kredit'));
+        $total_debet  = array_sum(array_column($details ?? [], 'debet'));
+        $total_kredit = array_sum(array_column($details ?? [], 'kredit'));
         $selisih      = round($total_debet) - round($total_kredit); // selisih dalam rupiah bulat
 
         // Selisih berapapun → tambahkan ke Unbill (2101-01-06) agar balance
@@ -1018,6 +1018,6 @@ class Incoming extends Admin_Controller
             }
         }
 
-        return (!empty($uploaded_paths)) ? implode('|', $uploaded_paths) : '';
+        return (!empty($uploaded_paths)) ? implode('|', $uploaded_paths ?? []) : '';
     }
 }

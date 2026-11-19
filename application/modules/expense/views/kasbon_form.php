@@ -241,7 +241,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 					</div>
 					<div class="d-flex align-items-center gap-2">
 						<span class="badge bg-secondary" id="badge_total_files">
-							<?= (isset($list_files) && !empty($list_files)) ? count($list_files) : 0 ?> / 5 File
+							<?= (isset($list_files) && !empty($list_files)) ? count($list_files ?? []) : 0 ?> / 5 File
 						</span>
 						<?php if (!isset($stsview) || $stsview == '') : ?>
 							<button type="button" class="btn btn-primary btn-sm" id="btn_add_files">

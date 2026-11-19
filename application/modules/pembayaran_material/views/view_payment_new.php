@@ -139,8 +139,8 @@ if (!empty($results['result_header']->nm_supplier)) {
 				<td width="15%" style="">Supplier</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier) ?>">
-					<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier) ?>">
+					<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier ?? []) ?>">
+					<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier ?? []) ?>">
 					<select name="supplier" id="" class="form-control form-control-sm supplier" disabled>
 						<option value="">- Supplier Name -</option>
 						<?php

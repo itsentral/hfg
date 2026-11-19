@@ -495,7 +495,7 @@ class Menus extends Admin_Controller
       'next_order'     => $next_order,
       'max_order'      => $max_order,
       'current_order'  => $current_order,
-      'total_siblings' => count($siblings),
+      'total_siblings' => count($siblings ?? []),
       'siblings'       => $siblings
     ]);
     exit;

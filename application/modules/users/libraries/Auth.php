@@ -174,7 +174,7 @@ class Auth
                 $arr[] = ucwords((string) $gr->nm_group);
             }
 
-            $return = implode(", ", $arr);
+            $return = implode(", ", $arr ?? []);
         }
 
         return $return;

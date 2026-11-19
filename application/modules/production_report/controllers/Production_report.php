@@ -33,7 +33,7 @@ class Production_report extends Admin_Controller
         $search = $this->input->get('q', true);
         $data = $this->pr_model->get_spk_list($search);
 
-        $total_spk = count($data);
+        $total_spk = count($data ?? []);
         $done_count = 0;
         $waiting_count = 0;
         $total_target_qty = 0;
@@ -110,6 +110,7 @@ class Production_report extends Admin_Controller
         $all_products = $this->pr_model->get_all_products();
 
         $draft_data = $this->pr_model->get_draft_by_spk($spk_no);
+        $costing_check = $this->pr_model->check_costing_availability_for_spk($spk_no);
 
         $data = [
             'spk' => $spk_header,
@@ -119,6 +120,7 @@ class Production_report extends Admin_Controller
             'setters' => $setters,
             'all_products' => $all_products,
             'draft' => $draft_data,
+            'costing_check' => $costing_check,
         ];
 
         $this->template->set($data);
@@ -224,7 +226,7 @@ class Production_report extends Admin_Controller
             'no_spk'                            => !empty($payload['spk_no']) ? trim($payload['spk_no']) : null,
             'tgl_produksi'                      => !empty($payload['tgl_produksi']) ? $payload['tgl_produksi'] : date('Y-m-d'),
             'id_asset_machine'                  => !empty($payload['id_asset_machine']) ? $payload['id_asset_machine'] : 0,
-            'employee_helper'                   => !empty($payload['employee_helper']) ? (is_array($payload['employee_helper']) ? implode(', ', array_filter(array_map('trim', $payload['employee_helper']))) : $payload['employee_helper']) : null,
+            'employee_helper'                   => !empty($payload['employee_helper']) ? (is_array($payload['employee_helper']) ? implode(', ', array_filter(array_map('trim', $payload['employee_helper'] ?? []))) : $payload['employee_helper']) : null,
             'employee_setter'                   => !empty($payload['employee_setter']) ? $payload['employee_setter'] : null,
             'start_time'                        => !empty($payload['start_time']) ? $payload['start_time'] : null,
             'finished_time'                     => !empty($payload['finished_time']) ? $payload['finished_time'] : null,
@@ -309,7 +311,7 @@ class Production_report extends Admin_Controller
                     ]);
                     exit;
                 }
-                if (empty($cl['bukti']) || !is_array($cl['bukti']) || count($cl['bukti']) < 1) {
+                if (empty($cl['bukti']) || !is_array($cl['bukti']) || count($cl['bukti'] ?? []) < 1) {
                     echo json_encode([
                         'status'  => 0,
                         'message' => 'Bukti dokumen pendukung (foto/video/QC) wajib diunggah minimal 1 berkas per baris claim (FR-94)!'
@@ -354,6 +356,20 @@ class Production_report extends Admin_Controller
             $jurnal_check = $this->_validate_jurnal_template();
             if ($jurnal_check !== true) {
                 echo json_encode(['status' => 0, 'message' => $jurnal_check]);
+                exit;
+            }
+
+            // Validasi ketersediaan Product Costing (FR-48, FR-74) sebelum submit final
+            $costing_check = $this->pr_model->check_costing_availability_for_items($items, $spk_header);
+            if (!$costing_check['is_all_available']) {
+                $missing_names = array_unique(array_column($costing_check['missing_products'] ?? [], 'nm_produk'));
+                $missing_str = implode(', ', $missing_names ?? []);
+                echo json_encode([
+                    'status'           => 0,
+                    'costing_missing'  => true,
+                    'missing_products' => $costing_check['missing_products'],
+                    'message'          => 'Laporan Produksi tidak dapat disubmit ke Accounting karena data Product Costing untuk produk [' . $missing_str . '] belum di-update di modul Simulasi Costing. Silakan lakukan Update Costing terlebih dahulu atau Simpan sebagai Draft.'
+                ]);
                 exit;
             }
         }
@@ -470,7 +486,7 @@ class Production_report extends Admin_Controller
             'menu'   => self::JURNAL_MAPPING_MENU,
             'action' => self::JURNAL_MAPPING_ACTION,
         ])->row();
-        $data_source = array_merge($report, [
+        $data_source = array_merge($report ?? [], [
             'tanggal'               => date('Y-m-d'),
             'no_doc'                => $spk_no,
             'no_request'            => (string) $report['id'],
@@ -533,11 +549,51 @@ class Production_report extends Admin_Controller
             return;
         }
 
+        $spk_no = $data['report']['spk_header']['spk_no'] ?? ($data['report']['header']['no_spk'] ?? '');
+        $data['costing_check'] = $this->pr_model->check_costing_availability_for_spk($spk_no);
         $data['rates'] = $this->pr_model->get_cost_rates();
 
         $this->template->title('Laporan HPP Produksi');
         $this->template->set($data);
         $this->template->render('view_hpp');
+    }
+
+    /**
+     * AJAX: Refresh / Tarik Rate Costing Terkini untuk Laporan Produksi berstatus Draft (FR-48, FR-74).
+     */
+    public function refresh_costing($report_id = null)
+    {
+        $this->auth->restrict($this->editPermission);
+
+        if (empty($report_id)) {
+            echo json_encode(['status' => 0, 'message' => 'ID Laporan Produksi tidak valid.']);
+            exit;
+        }
+
+        // Ambil snapshot lama untuk audit log
+        $old_report = $this->db->get_where('production_reports', ['id' => $report_id])->row_array();
+        if (!$old_report) {
+            echo json_encode(['status' => 0, 'message' => 'Laporan Produksi tidak ditemukan.']);
+            exit;
+        }
+
+        if ((int)$old_report['status_draft'] !== 1) {
+            echo json_encode(['status' => 0, 'message' => 'Hanya Laporan Produksi berstatus Draft yang dapat diperbarui rate costing-nya. Laporan Final sudah dibekukan.']);
+            exit;
+        }
+
+        $result = $this->pr_model->recalculate_draft_hpp($report_id);
+
+        if ($result['status'] === 1) {
+            $new_report = $this->db->get_where('production_reports', ['id' => $report_id])->row_array();
+            write_log('Production Report', 'Edit', 'Refresh Rate Costing Terkini untuk Draft Report ID: ' . $report_id, [
+                'old' => $old_report,
+                'new' => $new_report
+            ], null, 1);
+        }
+
+        echo json_encode($result);
+        exit;
     }
 
     /**
@@ -738,7 +794,7 @@ class Production_report extends Admin_Controller
             return $curr + 1;
         }
 
-        $totals = array_fill_keys(array_keys($numCols), 0.0);
+        $totals = array_fill_keys(array_keys($numCols ?? []), 0.0);
         foreach ($rows as $row) {
             $sheet->setCellValueExplicit('B' . $curr, (string) ($row['material'] ?? '-'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $curr, (string) ($row['kode_internal'] ?? '-'), PHPExcel_Cell_DataType::TYPE_STRING);

@@ -37,7 +37,7 @@ class Production_issue_model extends CI_Model
         $this->db->trans_start();
 
         $spk_no = $this->generate_spk_no();
-        $this->db->insert('tr_spk_production', array_merge($data, [
+        $this->db->insert('tr_spk_production', array_merge($data ?? [], [
             'spk_no'     => $spk_no,
             'status'     => 'Draft',
             'created_at' => date('Y-m-d H:i:s'),

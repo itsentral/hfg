@@ -154,7 +154,7 @@ if (!function_exists('assertIsArray')) {
 if (!function_exists('assertArrayHasKey')) {
     function assertArrayHasKey($key, $array, string $message = ''): void
     {
-        if (!is_array($array) || !array_key_exists($key, $array)) {
+        if (!is_array($array) || !array_key_exists($key, $array ?? [])) {
             throw new AssertionError($message ?: "Expected array to have key '{$key}'");
         }
     }
@@ -172,8 +172,8 @@ if (!function_exists('assertStringContains')) {
 if (!function_exists('assertCount')) {
     function assertCount(int $expected, array $array, string $message = ''): void
     {
-        if (count($array) !== $expected) {
-            throw new AssertionError($message ?: "Expected count {$expected}, got " . count($array));
+        if (count($array ?? []) !== $expected) {
+            throw new AssertionError($message ?: "Expected count {$expected}, got " . count($array ?? []));
         }
     }
 }
@@ -1738,7 +1738,7 @@ class JournalRoutingTest
 
             // Check uniqueness
             assertFalse(
-                in_array($result['journal_no'], $generated_numbers),
+                in_array($result['journal_no'], $generated_numbers ?? []),
                 "Iteration {$i}: journal number '{$result['journal_no']}' should be unique"
             );
             $generated_numbers[] = $result['journal_no'];

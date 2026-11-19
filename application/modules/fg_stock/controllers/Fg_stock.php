@@ -55,7 +55,7 @@ class Fg_stock extends Admin_Controller
         $produk_fg        = null;
 
         if (!empty($kategori_param)) {
-            if (in_array(strtoupper((string) $kategori_param), $categories_valid)) {
+            if (in_array(strtoupper((string) $kategori_param), $categories_valid ?? [])) {
                 $kategori = strtoupper((string) $kategori_param);
             } else {
                 $produk_fg = $kategori_param;
@@ -316,7 +316,7 @@ class Fg_stock extends Admin_Controller
         $produk_fg        = null;
 
         if (!empty($kategori_param)) {
-            if (in_array(strtoupper((string) $kategori_param), $categories_valid)) {
+            if (in_array(strtoupper((string) $kategori_param), $categories_valid ?? [])) {
                 $kategori = strtoupper((string) $kategori_param);
             } else {
                 $produk_fg = $kategori_param;

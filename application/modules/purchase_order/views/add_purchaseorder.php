@@ -16,9 +16,9 @@ if (!empty($results['headerso'])) {
 
 	<div class="card-body">
 		<form id="data-form" method="post">
-			<input type="hidden" name="so_number" value="<?= implode(',', $results['param']) ?>">
-			<input type="hidden" class="count_all_prod" value="<?= count($results['getitemso']) ?>">
-			<input type="hidden" name="no_pr" value="<?= implode(',', $noPrList) ?>">
+			<input type="hidden" name="so_number" value="<?= implode(',', $results['param'] ?? []) ?>">
+			<input type="hidden" class="count_all_prod" value="<?= count($results['getitemso'] ?? []) ?>">
+			<input type="hidden" name="no_pr" value="<?= implode(',', $noPrList ?? []) ?>">
 			<input type="hidden" id="h_subtotal" name="subtotal" value="0">
 			<input type="hidden" id="h_totalinppn" name="totalinppn" value="0">
 			<input type="hidden" id="h_hargatotal" name="hargatotal" value="0">

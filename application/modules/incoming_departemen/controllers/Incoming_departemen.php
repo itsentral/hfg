@@ -929,7 +929,7 @@ class Incoming_departemen extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -948,7 +948,7 @@ class Incoming_departemen extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -1020,7 +1020,7 @@ class Incoming_departemen extends Admin_Controller
 				$no_pr[] = $item_no_pr['no_pr'];
 			}
 
-			$no_pr = implode(', ', $no_pr);
+			$no_pr = implode(', ', $no_pr ?? []);
 
 			if (empty($no_pr)) {
 				$get_no_pr_non_po = $this->db->select('id_pr')->get_where('tr_kasbon', ['no_doc' => $item_po['no_po']])->row_array();

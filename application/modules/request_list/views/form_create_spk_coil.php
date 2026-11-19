@@ -34,7 +34,7 @@
         <div class="card mb-4 border-info">
             <div class="card-header bg-info text-dark d-flex justify-content-between align-items-center" style="cursor:pointer;" id="toggle-saved">
                 <h6 class="mb-0 fw-bold"><i class="fa fa-list-alt me-2"></i> Daftar SPK Pack Yang Sudah Dibuat</h6>
-                <span class="badge bg-light text-dark fw-bold" id="saved-count"><?= isset($saved_spk_coils) ? count($saved_spk_coils) : 0 ?> SPK Pack</span>
+                <span class="badge bg-light text-dark fw-bold" id="saved-count"><?= isset($saved_spk_coils) ? count($saved_spk_coils ?? []) : 0 ?> SPK Pack</span>
             </div>
             <div class="card-body p-3" id="container-saved"></div>
         </div>

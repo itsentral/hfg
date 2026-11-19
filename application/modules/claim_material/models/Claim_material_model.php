@@ -209,7 +209,7 @@ class Claim_material_model extends CI_Model
         if (function_exists('write_log')) {
             $logPayload = [
                 'old'           => $old_claim,
-                'new'           => array_merge($old_claim, $data_update),
+                'new'           => array_merge($old_claim ?? [], $data_update ?? []),
                 'email_to'      => $email_to,
                 'email_subject' => $email_subject,
             ];
@@ -380,7 +380,7 @@ class Claim_material_model extends CI_Model
                 'id'       => $cid,
                 'no_claim' => $claim['no_claim'],
                 'old'      => $old_claim,
-                'new'      => array_merge($old_claim, $update_claim),
+                'new'      => array_merge($old_claim ?? [], $update_claim ?? []),
                 'decisions'=> $decisions,
             ];
         }
@@ -461,14 +461,14 @@ class Claim_material_model extends CI_Model
             $dec = $this->get_claim_decisions($r['id']);
             $status_material = 'Hold';
             if (!empty($dec)) {
-                $aksis = array_column($dec, 'aksi');
-                if (in_array('Lanjut Produksi', $aksis)) {
+                $aksis = array_column($dec ?? [], 'aksi');
+                if (in_array('Lanjut Produksi', $aksis ?? [])) {
                     $status_material = 'Dapat Dipakai (Release)';
-                } elseif (in_array('Jual Material', $aksis)) {
+                } elseif (in_array('Jual Material', $aksis ?? [])) {
                     $status_material = 'Dijual (Gudang Slitting)';
-                } elseif (in_array('Retur', $aksis)) {
+                } elseif (in_array('Retur', $aksis ?? [])) {
                     $status_material = 'Dalam Retur';
-                } elseif (in_array('Debit Note', $aksis)) {
+                } elseif (in_array('Debit Note', $aksis ?? [])) {
                     $status_material = 'Dikompensasi';
                 }
             }

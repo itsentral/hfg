@@ -64,7 +64,7 @@
 
                 <?php if (!empty($row['thicknesses'])): ?>
                     <div class="thickness-badge">
-                        <?= implode(' + ', array_map('htmlspecialchars', $row['thicknesses'])) ?>
+                        <?= implode(' + ', array_map('htmlspecialchars', $row['thicknesses'] ?? [])) ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -81,7 +81,7 @@
                 <tr>
                     <td class="label-td">Material</td>
                     <td>:
-                        <?php if (count($row['materials']) === 1): ?>
+                        <?php if (count($row['materials'] ?? []) === 1): ?>
                             <?= htmlspecialchars((string) $row['materials'][0]) ?>
                         <?php else: ?>
                             <ul class="material-list">

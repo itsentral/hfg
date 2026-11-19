@@ -37,14 +37,14 @@
 
         public function __construct($mode, $size, $data, $bstream = null) 
         {
-            $setData = array_slice($data, 0, $size);
+            $setData = array_slice($data ?? [], 0, $size);
             
-            if (count($setData) < $size) {
-                $setData = array_merge($setData, array_fill(0,$size-count($setData),0));
+            if (count($setData ?? []) < $size) {
+                $setData = array_merge($setData ?? [], array_fill(0,$size-count($setData ?? []),0));
             }
         
             if(!QRinput::check($mode, $size, $setData)) {
-                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData));
+                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData ?? []));
                 return null;
             }
             

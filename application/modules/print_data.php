@@ -165,7 +165,7 @@ date_default_timezone_set("Asia/Bangkok");
                 <?php 
                 $tc = 0;
                 foreach($colly as $kc){
-                    $tc = count($colly);
+                    $tc = count($colly ?? []);
                     echo $tc.'<br>';
                 }
                 ?>

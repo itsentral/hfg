@@ -62,7 +62,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             </div>
             <div class="col-md-8 text-md-end pt-3 pt-md-0">
                 <span class="badge bg-light text-dark border px-3 py-2">
-                    Total: <strong><?= count($costings) ?></strong> Varian BOM
+                    Total: <strong><?= count($costings ?? []) ?></strong> Varian BOM
                 </span>
                 <?php if ($incomplete_count > 0): ?>
                     <span class="badge bg-warning text-dark border border-warning px-3 py-2 ms-2">
@@ -123,8 +123,8 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <?php if ($c->is_lengkap): ?>
                                         <span class="badge bg-success-subtle text-success border border-success px-2 py-1">Lengkap</span>
                                     <?php else: ?>
-                                        <span class="badge bg-warning text-dark border border-warning px-2 py-1" data-bs-toggle="tooltip" title="<?= htmlspecialchars(implode(', ', $c->gaps)) ?>">
-                                            &#9888; <?= count($c->gaps) ?> Kekurangan
+                                        <span class="badge bg-warning text-dark border border-warning px-2 py-1" data-bs-toggle="tooltip" title="<?= htmlspecialchars(implode(', ', $c->gaps ?? [])) ?>">
+                                            &#9888; <?= count($c->gaps ?? []) ?> Kekurangan
                                         </span>
                                     <?php endif; ?>
                                 </td>
@@ -158,7 +158,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                             <?php else: ?>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary opacity-50 shadow-xs" disabled
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Tidak dapat diajukan: <?= htmlspecialchars(implode(', ', $c->gaps)) ?>"
+                                                    title="Tidak dapat diajukan: <?= htmlspecialchars(implode(', ', $c->gaps ?? [])) ?>"
                                                     style="width: 80px;">
                                                     <i class="fa fa-lock me-1"></i> Draft
                                                 </button>

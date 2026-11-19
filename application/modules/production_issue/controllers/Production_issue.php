@@ -62,7 +62,7 @@ class Production_issue extends Admin_Controller
         }
 
         // Hitung progress scan dari scan_status di detail coil
-        $total_coil   = count($details);
+        $total_coil   = count($details ?? []);
         $scanned_coil = 0;
         foreach ($details as $d) {
             if ($d->scan_status === 'scanned') {
@@ -146,7 +146,7 @@ class Production_issue extends Admin_Controller
             }
         }
 
-        $spk->total_coil   = count($details);
+        $spk->total_coil   = count($details ?? []);
         $spk->scanned_coil = $scanned_coil;
 
         echo json_encode(['status' => 'ok', 'spk' => $spk, 'details' => $details]);

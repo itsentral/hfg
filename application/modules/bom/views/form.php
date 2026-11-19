@@ -167,7 +167,7 @@ $(document).ready(function() {
     };
 
     var materialList = <?= json_encode($material_list) ?>;
-    var rowIndex = <?= ($is_edit && !empty($details)) ? count($details) : 0 ?>;
+    var rowIndex = <?= ($is_edit && !empty($details)) ? count($details ?? []) : 0 ?>;
     var defaultBomNumStr = '<?= $bom_num_str ?>';
     var currentBomNumStr = defaultBomNumStr;
 

@@ -118,7 +118,7 @@ class Approval_mutasi extends Admin_Controller
             $this->approval_mutasi_model->_generate_jurnal_mutasi($mutation);
 
             $this->db->trans_commit();
-            $new_mutation = array_merge($mutation, array('status' => 2));
+            $new_mutation = array_merge($mutation ?? [], array('status' => 2));
             write_log('Approval Mutasi', 'Approve Mutasi', 'Mutation approved successfully: ' . $mutation['mutation_number'], array('old' => $mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation approved successfully. Stock has been transferred.']);
         } catch (Exception $e) {
@@ -152,7 +152,7 @@ class Approval_mutasi extends Admin_Controller
         $result = $this->approval_mutasi_model->reject_mutation($id, $this->username, $this->datetime, $reason);
 
         if ($result) {
-            $new_mutation = array_merge($mutation, array('status' => 3, 'reject_reason' => $reason));
+            $new_mutation = array_merge($mutation ?? [], array('status' => 3, 'reject_reason' => $reason));
             write_log('Approval Mutasi', 'Reject Mutasi', 'Mutation rejected successfully: ' . $mutation['mutation_number'] . ' (' . $reason . ')', array('old' => $mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation rejected successfully.']);
         }

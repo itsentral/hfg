@@ -375,7 +375,7 @@ if (empty($all_attachments)) {
 						<i class="fa fa-paperclip text-primary me-2"></i>Berkas Lampiran Pendukung
 					</h5>
 					<span class="badge bg-light text-dark border rounded-pill px-3">
-						<?= count($all_attachments) ?> Berkas
+						<?= count($all_attachments ?? []) ?> Berkas
 					</span>
 				</div>
 				<div class="card-body p-4">

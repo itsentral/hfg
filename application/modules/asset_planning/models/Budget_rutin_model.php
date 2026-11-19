@@ -503,7 +503,7 @@ class Budget_rutin_model extends BF_Model {
 
     		$Row		= 1;
     		$NewRow		= $Row+1;
-    		$Col_Akhir	= $Cols	= getColsChar(5+COUNT($group_header));
+    		$Col_Akhir	= $Cols	= getColsChar(5+COUNT($group_header ?? []));
     		$sheet->setCellValue('A'.$Row, 'KOMPILASI BUDGET'.$nm_category);
     		$sheet->getStyle('A'.$Row.':'.$Col_Akhir.$NewRow)->applyFromArray($style_header2);
     		$sheet->mergeCells('A'.$Row.':'.$Col_Akhir.$NewRow);

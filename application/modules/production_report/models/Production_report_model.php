@@ -245,6 +245,11 @@ class Production_report_model extends CI_Model
         }
 
         if ($costing) {
+            $has_any_rate = ((float)$costing->biaya_proses_man_power_kg > 0 
+                || (float)$costing->biaya_proses_foh_kg > 0 
+                || (float)$costing->biaya_proses_bahan_pendukung_khusus_kg > 0
+                || (float)$costing->manufacturing_support_consumables_kg > 0);
+
             return [
                 'man_power'       => (float)$costing->biaya_proses_man_power_kg,
                 'foh'             => (float)$costing->biaya_proses_foh_kg,
@@ -254,21 +259,127 @@ class Production_report_model extends CI_Model
                 'scrap'           => (float)$costing->manufacturing_support_scrap_kg,
                 'no_uniq_id'      => $costing->no_uniq_id,
                 'source'          => 'costing_detail',
+                'is_available'    => $has_any_rate,
             ];
         }
 
-        // Fallback jika belum pernah di-Update Costing untuk varian ini
-        $legacy = $this->get_cost_rates();
+        // Jika belum pernah di-Update Costing untuk varian ini: rate 0.0 (rate flat ms_production_cost_rate dipensiunkan)
         return [
-            'man_power'       => (float)($legacy['man_power'] ?? 400.0),
-            'foh'             => (float)($legacy['foh'] ?? 300.0),
-            'bahan_pendukung' => (float)($legacy['bahan_pendukung'] ?? 500.0),
-            'consumables'     => (float)($legacy['consumables'] ?? 200.0),
-            'koordinasi'      => (float)($legacy['koordinasi'] ?? 200.0),
-            'scrap'           => 100.0,
-            'no_uniq_id'      => $no_uniq_id ?: 'Type 001.1',
-            'source'          => 'fallback',
+            'man_power'       => 0.0,
+            'foh'             => 0.0,
+            'bahan_pendukung' => 0.0,
+            'consumables'     => 0.0,
+            'koordinasi'      => 0.0,
+            'scrap'           => 0.0,
+            'no_uniq_id'      => $no_uniq_id ?: '',
+            'source'          => 'empty',
+            'is_available'    => false,
         ];
+    }
+
+    /**
+     * Periksa ketersediaan Product Costing untuk seluruh produk FG pada SPK.
+     */
+    public function check_costing_availability_for_spk($spk_no)
+    {
+        $products = $this->get_spk_products($spk_no);
+        $missing = [];
+        $available = [];
+
+        foreach ($products as $p) {
+            $code_lv4 = $p['id_produk_fg'];
+            $uniq     = $p['no_uniq_id'];
+            $rate     = $this->get_costing_rates_for_variant($code_lv4, $uniq);
+
+            $info = [
+                'code_lv4'     => $code_lv4,
+                'nm_produk'    => $p['nm_produk_fg'],
+                'no_uniq_id'   => $uniq,
+                'is_available' => $rate['is_available'],
+            ];
+
+            if ($rate['is_available']) {
+                $available[] = $info;
+            } else {
+                $missing[] = $info;
+            }
+        }
+
+        return [
+            'is_all_available'   => empty($missing),
+            'missing_count'      => count($missing ?? []),
+            'missing_products'   => $missing,
+            'available_products' => $available,
+        ];
+    }
+
+    /**
+     * Periksa ketersediaan Product Costing untuk payload items sebelum submit final.
+     */
+    public function check_costing_availability_for_items(array $items, array $spk_header = [])
+    {
+        $missing = [];
+        $available = [];
+
+        $spk_prod_fallback = $spk_header['primary_product_code'] ?? null;
+        $spk_uniq_fallback = $spk_header['primary_bom_uniq_id'] ?? null;
+
+        foreach ($items as $it) {
+            $prod_id = !empty($it['product_lvl_4_id']) ? $it['product_lvl_4_id'] : $spk_prod_fallback;
+            $uniq    = !empty($it['no_uniq_id']) ? $it['no_uniq_id'] : $spk_uniq_fallback;
+
+            $rates = $this->get_costing_rates_for_variant($prod_id, $uniq);
+            $info = [
+                'prod_id'      => $prod_id,
+                'no_uniq_id'   => $rates['no_uniq_id'],
+                'nm_produk'    => $it['nama_product_custom'] ?? $prod_id,
+                'is_available' => $rates['is_available'],
+            ];
+
+            if ($rates['is_available']) {
+                $available[] = $info;
+            } else {
+                $missing[] = $info;
+            }
+        }
+
+        return [
+            'is_all_available'   => empty($missing),
+            'missing_count'      => count($missing ?? []),
+            'missing_products'   => $missing,
+            'available_products' => $available,
+        ];
+    }
+
+    /**
+     * Hitung ulang HPP Laporan Produksi berstatus DRAFT dari Product Costing terkini.
+     */
+    public function recalculate_draft_hpp($report_id)
+    {
+        $report = $this->get_report_full($report_id);
+        if (!$report) {
+            throw new Exception('Laporan produksi tidak ditemukan.');
+        }
+
+        if (empty($report['header']['status_draft']) || (int)$report['header']['status_draft'] !== 1) {
+            throw new Exception('Hanya laporan berstatus Draft yang dapat diperbarui rate costing-nya.');
+        }
+
+        $header    = $report['header'];
+        $materials = $report['materials'];
+        $items     = $report['items'];
+        $scraps    = $report['scraps'];
+
+        // Format ulang items dan scraps agar siap diproses ulang oleh save_report
+        foreach ($items as &$it) {
+            if (empty($it['product_lvl_4_id']) && !empty($it['id_product_lvl_4'])) {
+                $it['product_lvl_4_id'] = $it['id_product_lvl_4'];
+            }
+        }
+        unset($it);
+
+        $saved_id = $this->save_report($header, $materials, $items, $scraps, $report_id);
+        return $this->get_report_full($saved_id);
     }
 
     public function get_coils_by_source($source)
@@ -649,7 +760,7 @@ class Production_report_model extends CI_Model
 
         // Filter kolom agar hanya field yang benar-benar ada di tabel database yang dikirim ke query
         $table_fields = $this->db->list_fields('production_reports');
-        $header_data = array_intersect_key($header_data, array_flip($table_fields));
+        $header_data = array_intersect_key($header_data, array_flip($table_fields ?? []));
 
         // 7. Simpan Header & Detail
         if (!empty($existing_report_id)) {
@@ -772,7 +883,7 @@ class Production_report_model extends CI_Model
         // Hapus claim yang statusnya masih 'Claim Baru' bila baris sumbernya telah dihapus dari form (FR-98 butir f)
         if (!empty($existing_claims)) {
             foreach ($existing_claims as $k => $old_cl) {
-                if (!in_array($k, $current_keys) && in_array($old_cl['status_claim'], ['Claim Baru', 'Baru'])) {
+                if (!in_array($k, $current_keys ?? []) && in_array($old_cl['status_claim'], ['Claim Baru', 'Baru'])) {
                     $this->db->where('id', $old_cl['id'])->delete('claim_material');
                 }
             }
@@ -881,7 +992,7 @@ class Production_report_model extends CI_Model
 
             $material_groups[$id_mat]['total_qty'] += $net_kg;
             $material_groups[$id_mat]['coil_count']++;
-            $material_groups[$id_mat]['coils'][] = array_merge($coil, [
+            $material_groups[$id_mat]['coils'][] = array_merge($coil ?? [], [
                 'net_weight_used' => $net_kg,
             ]);
             $material_groups[$id_mat]['coil_ids'][] = $coil['id'];
@@ -979,7 +1090,7 @@ class Production_report_model extends CI_Model
                 'no_ipp'          => $kode_trans,
                 'jumlah_mat'      => $qty_pakai,
                 'ket'             => 'Pemakaian Produksi ' . $kode_trans,
-                'no_coil'         => implode(', ', $grp['coil_codes']),
+                'no_coil'         => implode(', ', $grp['coil_codes'] ?? []),
                 'harga_beli'      => $costbook,
                 'total_harga'     => $total_harga,
                 'saldo_awal'      => $saldo_awal,
@@ -1074,7 +1185,7 @@ class Production_report_model extends CI_Model
         $prod_map = [];
         if (!empty($prod_ids)) {
             $prods = $this->db->select('id, code_lv4, nama, weight')
-                ->where_in('id', array_unique($prod_ids))
+                ->where_in('id', array_unique($prod_ids ?? []))
                 ->get('product_lvl_4')
                 ->result_array();
             foreach ($prods as $p) {
@@ -1720,9 +1831,9 @@ class Production_report_model extends CI_Model
             return;
         }
 
-        $coil_ids    = array_keys($coil_weights);
-        $count       = count($coil_ids);
-        $sum_weights = array_sum($coil_weights);
+        $coil_ids    = array_keys($coil_weights ?? []);
+        $count       = count($coil_ids ?? []);
+        $sum_weights = array_sum($coil_weights ?? []);
         $allocated   = 0.0;
 
         foreach ($coil_ids as $idx => $cid) {
@@ -2325,7 +2436,7 @@ class Production_report_model extends CI_Model
             'report_id' => (int) $report_id,
             'spk_no'    => $spk_no,
             'header'    => $report['header'],
-            'section1'  => array_values($coil_ctx['rows']),
+            'section1'  => array_values($coil_ctx['rows'] ?? []),
             'section2'  => $section2,
             'section3'  => $section3,
         ];
@@ -2470,7 +2581,7 @@ class Production_report_model extends CI_Model
                 $pids[] = (int) $it['product_lvl_4_id'];
             }
         }
-        $pids = array_values(array_unique($pids));
+        $pids = array_values(array_unique($pids ?? []));
         if (empty($pids)) {
             return $meta;
         }
@@ -2501,7 +2612,7 @@ class Production_report_model extends CI_Model
             $boms = $this->db->select('h.id_produk, d.no_uniq_id, d.berat_per_meter')
                 ->from('ms_bom_header h')
                 ->join('ms_bom_detail d', 'd.id_bom = h.id AND d.is_delete = 0')
-                ->where_in('h.id_produk', array_keys($code_to_pid))
+                ->where_in('h.id_produk', array_keys($code_to_pid ?? []))
                 ->where('h.is_delete', 0)
                 ->order_by('d.urut', 'ASC')
                 ->get()

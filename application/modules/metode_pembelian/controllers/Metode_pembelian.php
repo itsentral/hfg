@@ -791,7 +791,7 @@ class Metode_pembelian extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -1938,7 +1938,7 @@ class Metode_pembelian extends Admin_Controller
 			foreach ($list_supplier as $val => $valx) {
 				$arr_sup[$val] = $valx['nm_supplier'];
 			}
-			$dt_sup	= implode("<br>", $arr_sup);
+			$dt_sup	= implode("<br>", $arr_sup ?? []);
 
 			if ($row['status'] != 'DELETED') {
 				$list_material	= $this->db->query("SELECT nm_barang, qty_purchase, price_ref, price_ref_sup, net_price FROM tran_po_detail WHERE no_po='" . $row['no_po'] . "' AND deleted='N' GROUP BY id_barang")->result_array();
@@ -1949,19 +1949,19 @@ class Metode_pembelian extends Admin_Controller
 			foreach ($list_material as $val => $valx) {
 				$arr_mat[$val] = strtoupper((string) $valx['nm_barang']);
 			}
-			$dt_mat	= implode("<br>", $arr_mat);
+			$dt_mat	= implode("<br>", $arr_mat ?? []);
 
 			$arr_qty = array();
 			foreach ($list_material as $val => $valx) {
 				$arr_qty[$val] = number_format((float) $valx['qty_purchase']);
 			}
-			$dt_qty	= implode("<br>", $arr_qty);
+			$dt_qty	= implode("<br>", $arr_qty ?? []);
 
 			$arr_pur = array();
 			foreach ($list_material as $val => $valx) {
 				$arr_pur[$val] = number_format((float) $valx['net_price'], 2);
 			}
-			$dt_pur	= implode("<br>", $arr_pur);
+			$dt_pur	= implode("<br>", $arr_pur ?? []);
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";

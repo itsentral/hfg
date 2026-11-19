@@ -245,10 +245,10 @@ class Material_master_model extends CI_Model
         if (!empty($dipakai_bom)) {
             $prods = array_unique(array_filter(array_map(function ($b) {
                 return !empty($b['nm_produk']) ? $b['nm_produk'] : $b['id_produk'];
-            }, $dipakai_bom)));
-            $prodList = implode(', ', array_slice($prods, 0, 3));
-            if (count($prods) > 3) {
-                $prodList .= ' dan ' . (count($prods) - 3) . ' produk lainnya';
+            }, $dipakai_bom ?? [])));
+            $prodList = implode(', ', array_slice($prods ?? [], 0, 3));
+            if (count($prods ?? []) > 3) {
+                $prodList .= ' dan ' . (count($prods ?? []) - 3) . ' produk lainnya';
             }
             return [
                 'valid'   => false,
@@ -311,10 +311,10 @@ class Material_master_model extends CI_Model
             ->where('h.deleted_date IS NULL', null, false)
             ->get()->result_array();
         if (!empty($incoming_check)) {
-            $docs = array_column($incoming_check, 'kode_trans');
-            $docList = implode(', ', array_slice($docs, 0, 3));
-            if (count($docs) > 3) {
-                $docList .= ' dan ' . (count($docs) - 3) . ' dokumen lainnya';
+            $docs = array_column($incoming_check ?? [], 'kode_trans');
+            $docList = implode(', ', array_slice($docs ?? [], 0, 3));
+            if (count($docs ?? []) > 3) {
+                $docList .= ' dan ' . (count($docs ?? []) - 3) . ' dokumen lainnya';
             }
             return [
                 'valid'   => false,

@@ -14,7 +14,7 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
         </div>
         <div>
             <span class="badge bg-light text-dark border px-3 py-2 me-2">
-                Total: <strong><?= count($list) ?></strong> Kategori
+                Total: <strong><?= count($list ?? []) ?></strong> Kategori
             </span>
             <?php if (($ENABLE_ADD || $ENABLE_MANAGE) && !empty($available)): ?>
                 <button type="button" class="btn btn-primary btn-sm btn-add-rate shadow-sm">

@@ -30,7 +30,7 @@ foreach ($results['result_payment'] as $item) {
 				$arr_no_po[] = $item_no_po->no_ipp;
 			}
 
-			$arr_no_po = implode(',', $arr_no_po);
+			$arr_no_po = implode(',', $arr_no_po ?? []);
 			$arr_no_po = str_replace(', ', ',', $arr_no_po);
 
 			$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
@@ -82,8 +82,8 @@ foreach ($results['result_payment'] as $item) {
 					<td width="15%" style="">Supplier</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
-						<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier) ?>">
-						<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier) ?>">
+						<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier ?? []) ?>">
+						<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier ?? []) ?>">
 						<select name="supplier" id="" class="form-control form-control-sm supplier" disabled>
 							<option value="">- Supplier Name -</option>
 							<?php
@@ -207,7 +207,7 @@ foreach ($results['result_payment'] as $item) {
 									$arr_no_po[] = $item_no_po->no_ipp;
 								}
 
-								$arr_no_po = implode(',', $arr_no_po);
+								$arr_no_po = implode(',', $arr_no_po ?? []);
 								$arr_no_po = str_replace(', ', ',', $arr_no_po);
 
 								$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
@@ -265,7 +265,7 @@ foreach ($results['result_payment'] as $item) {
 							}
 						}
 
-						$nm_supplier = implode(', ', $nm_supplier);
+						$nm_supplier = implode(', ', $nm_supplier ?? []);
 
 						if ($ppn != 0) {
 							$nilai_ppn = $ppn;

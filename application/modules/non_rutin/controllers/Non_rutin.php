@@ -1129,7 +1129,7 @@ class Non_rutin extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -1298,11 +1298,11 @@ class Non_rutin extends Admin_Controller
 				$arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
 				$arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
 			}
-			$dt_nama_barang    = implode("<br>", $arr_nmbarang);
-			$dt_spec    = implode("<br>", $arr_spec);
-			$dt_qty    = implode("<br>", $arr_qty);
-			$dt_tanggal    = implode("<br>", $arr_tanggal);
-			$dt_ket    = implode("<br>", $arr_ket);
+			$dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+			$dt_spec    = implode("<br>", $arr_spec ?? []);
+			$dt_qty    = implode("<br>", $arr_qty ?? []);
+			$dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+			$dt_ket    = implode("<br>", $arr_ket ?? []);
 
 			$hasil .= '<td>' . $dt_nama_barang . '</td>';
 			$hasil .= '<td>' . $dt_spec . '</td>';
@@ -1374,7 +1374,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$btns = array_filter([$view, $edit, $approve, $cancel, $print, $close]);
-			$hasil .= '<td class="text-center"><div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $btns) . '</div></td>';
+			$hasil .= '<td class="text-center"><div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $btns ?? []) . '</div></td>';
 
 			$hasil .= '</tr>';
 
