@@ -187,7 +187,7 @@ $budgets = 0;
 								echo '<td class="text-center">' . $no . '</td>';
 								echo '<td class="text-left">' . $item->no_doc . '</td>';
 								echo '<td class="text-left">' . $item->informasi . '</td>';
-								echo '<td class="text-center">' . number_format($item->jumlah) . '</td>';
+								echo '<td class="text-center">' . number_format((float) $item->jumlah) . '</td>';
 								echo '<td class="text-center">
 									<button type="button" class="btn btn-sm btn-success	add_ganti_expense" data-no_doc="' . $item->no_doc . '">Bayar</button>
 								</td>';
@@ -217,7 +217,7 @@ $budgets = 0;
 								echo '<td class="text-center">' . $item->created_by . '</td>';
 								echo '<td class="text-left">' . $item->no_doc . '</td>';
 								echo '<td class="text-left">' . $item->keperluan . '</td>';
-								echo '<td class="text-center">' . number_format($item->jumlah_kasbon) . '</td>';
+								echo '<td class="text-center">' . number_format((float) $item->jumlah_kasbon) . '</td>';
 								echo '<td class="text-center">
 									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Bayar</button>
 								</td>';
@@ -342,7 +342,7 @@ $budgets = 0;
 									</tr>
 							<?php
 									if ($record->doc_file != '') {
-										if (strpos($record->doc_file, 'pdf', 0) > 1) {
+										if (strpos((string) $record->doc_file, 'pdf', 0) > 1) {
 											$gambar .= '<div class="col-md-12">
 								<iframe src="' . base_url('assets/expense/' . $record->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 										 <a href="' . base_url('assets/expense/' . $record->doc_file) . '">Download PDF</a>

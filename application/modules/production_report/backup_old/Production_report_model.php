@@ -146,7 +146,7 @@ class Production_report_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(report_no) AS max_no FROM tr_production_report WHERE report_no LIKE '{$prefix}%'"
         )->row();
-        $last = ($row && $row->max_no) ? (int) substr($row->max_no, -4) : 0;
+        $last = ($row && $row->max_no) ? (int) substr((string) $row->max_no, -4) : 0;
         return $prefix . sprintf('%04d', $last + 1);
     }
 
@@ -603,7 +603,7 @@ class Production_report_model extends CI_Model
         $row = $this->db->query(
             "SELECT MAX(fg_receipt_no) AS max_no FROM tr_fg_receipt WHERE fg_receipt_no LIKE '{$prefix}%'"
         )->row();
-        $last = ($row && $row->max_no) ? (int) substr($row->max_no, -4) : 0;
+        $last = ($row && $row->max_no) ? (int) substr((string) $row->max_no, -4) : 0;
         return $prefix . sprintf('%04d', $last + 1);
     }
 
@@ -619,7 +619,7 @@ class Production_report_model extends CI_Model
         $pesan = 'Laporan produksi ' . $report_no . ' untuk SPK ' . $spk_no . ' telah di-submit dan menunggu approval.';
 
         $supervisor_ids_raw = get_param('supervisor_user_ids', '');
-        $supervisor_ids     = array_filter(array_map('trim', explode(',', $supervisor_ids_raw)));
+        $supervisor_ids     = array_filter(array_map('trim', explode(',', (string) $supervisor_ids_raw)));
 
         if (!empty($supervisor_ids)) {
             foreach ($supervisor_ids as $uid) {

@@ -44,7 +44,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nama']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -54,13 +54,13 @@ class Non_rutin_model extends BF_Model
             $arr_ket = array();
             foreach ($list_barang as $val => $valx) {
                 $get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-                $nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-                $arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-                $arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+                $nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+                $arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+                $arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
                 $arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
+                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
-                $arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+                $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
             $dt_nama_barang    = implode("<br>", $arr_nmbarang);
             $dt_spec    = implode("<br>", $arr_spec);
@@ -198,7 +198,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nama']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -208,13 +208,13 @@ class Non_rutin_model extends BF_Model
             $arr_ket = array();
             foreach ($list_barang as $val => $valx) {
                 $get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-                $nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-                $arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-                $arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+                $nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+                $arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+                $arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
                 $arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
+                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
-                $arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+                $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
             $dt_nama_barang    = implode("<br>", $arr_nmbarang);
             $dt_spec    = implode("<br>", $arr_spec);
@@ -340,7 +340,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nama']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -350,13 +350,13 @@ class Non_rutin_model extends BF_Model
             $arr_ket = array();
             foreach ($list_barang as $val => $valx) {
                 $get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-                $nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-                $arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-                $arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+                $nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+                $arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+                $arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
                 $arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
+                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
-                $arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+                $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
             $dt_nama_barang    = implode("<br>", $arr_nmbarang);
             $dt_spec    = implode("<br>", $arr_spec);
@@ -485,7 +485,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($dept_name) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $dept_name) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -495,13 +495,13 @@ class Non_rutin_model extends BF_Model
             $arr_ket = array();
             foreach ($list_barang as $val => $valx) {
                 $get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-                $nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-                $arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-                $arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+                $nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+                $arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+                $arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
                 $arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
-                $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime($valx['created_date']));
-                $arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
+                $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime((string) $valx['created_date']));
+                $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
             $dt_nama_barang    = implode("<br>", $arr_nmbarang);
             $dt_spec    = implode("<br>", $arr_spec);
@@ -512,8 +512,8 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='left'>" . $row['project_name'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $dt_tanggal . "</div>";
-            $nestedData[]    = "<div align='left'>" . ucwords(strtolower($row['nm_lengkap'])) . "</div>";
-            $nestedData[]    = "<div align='left'>" . (!empty($row['created_date']) ? date('d-M-Y', strtotime($row['created_date'])) : '-') . "</div>";
+            $nestedData[]    = "<div align='left'>" . ucwords(strtolower((string) $row['nm_lengkap'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . (!empty($row['created_date']) ? date('d-M-Y', strtotime((string) $row['created_date'])) : '-') . "</div>";
 
             $last_by     = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
             $last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
@@ -891,7 +891,7 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $no_pr = (!empty($row['no_pr'])) ? $row['no_pr'] : "<span class='text-red' title='No Pengajuan'>" . $row['no_pengajuan'] . "</span>";
             $nestedData[]    = "<div align='left'>" . $no_pr . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($dept_name) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $dept_name) . "</div>";
 
             $list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $row['no_pengajuan']))->result_array();
             $arr_nmbarang = array();
@@ -901,13 +901,13 @@ class Non_rutin_model extends BF_Model
             $arr_ket = array();
             foreach ($list_barang as $val => $valx) {
                 $get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-                $nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-                $arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-                $arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+                $nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+                $arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+                $arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
                 $arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
-                $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime($valx['created_date']));
-                $arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+                $tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
+                $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime((string) $valx['created_date']));
+                $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
             $dt_nama_barang    = implode("<br>", $arr_nmbarang);
             $dt_spec    = implode("<br>", $arr_spec);
@@ -918,8 +918,8 @@ class Non_rutin_model extends BF_Model
             $nestedData[]    = "<div align='left'>" . $row['project_name'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $dt_tanggal . "</div>";
-            $nestedData[]    = "<div align='left'>" . ucwords(strtolower($row['nm_lengkap'])) . "</div>";
-            $nestedData[]    = "<div align='left'>" . (!empty($row['created_date']) ? date('d-M-Y', strtotime($row['created_date'])) : '-') . "</div>";
+            $nestedData[]    = "<div align='left'>" . ucwords(strtolower((string) $row['nm_lengkap'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . (!empty($row['created_date']) ? date('d-M-Y', strtotime((string) $row['created_date'])) : '-') . "</div>";
 
             $last_by     = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
             $last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];
@@ -1077,7 +1077,7 @@ class Non_rutin_model extends BF_Model
                 'keterangan' => $item->project_name,
                 'tingkat_pr' => $tingkat_pr,
                 'pic' => $item->nm_lengkap,
-                'created_date' => date('d F Y H:i:s', strtotime($item->created_date)),
+                'created_date' => date('d F Y H:i:s', strtotime((string) $item->created_date)),
                 'status' => $status,
                 'option' => $options
             ];

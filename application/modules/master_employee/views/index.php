@@ -57,11 +57,11 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 						?>
 							<tr>
 								<td class="text-center"><?= $numb; ?></td>
-								<td class="fw-semibold"><?= ucwords(strtolower($record->nm_karyawan)) ?></td>
+								<td class="fw-semibold"><?= ucwords(strtolower((string) $record->nm_karyawan)) ?></td>
 								<td><?= $gender ?></td>
 								<td><?= $dept ?></td>
-								<td><?= strtoupper($record->no_ponsel) ?></td>
-								<td><?= strtolower($record->email) ?></td>
+								<td><?= strtoupper((string) $record->no_ponsel) ?></td>
+								<td><?= strtolower((string) $record->email) ?></td>
 
 								<td class="text-center">
 									<?php if ($record->status == 'N') : ?>
@@ -144,7 +144,10 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 			confirmButtonText: "Yes",
 			cancelButtonText: "No",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: siteurl + active_controller + '/delete',

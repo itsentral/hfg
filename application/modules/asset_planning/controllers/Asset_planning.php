@@ -134,15 +134,15 @@ class Asset_planning extends Admin_Controller
 			$id_costcenter 	= (!empty($data['id_costcenter'])) ? $data['id_costcenter'] : NULL;
 			$coa 			= (!empty($data['coa'])) ? $data['coa'] : NULL;
 			$coa_akum 		= (!empty($data['coa_akum'])) ? $data['coa_akum'] : NULL;
-			$nama_asset 	= strtolower($data['nama_asset']);
+			$nama_asset 	= strtolower((string) $data['nama_asset']);
 			$tahun 			= $data['tahun'];
 			$bulan 			= $data['bulan'];
 			$budget 		= str_replace(',', '', $data['budget']);
 			$budget_pr 		= (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr']) : '';
 			$budget_po 		= (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po']) : '';
 			$qty 			= str_replace(',', '', $data['qty']);
-			$keterangan 	= strtolower($data['keterangan']);
-			$reason 		= (!empty($data['reason'])) ? strtolower($data['reason']) : '';
+			$keterangan 	= strtolower((string) $data['keterangan']);
+			$reason 		= (!empty($data['reason'])) ? strtolower((string) $data['reason']) : '';
 			$status 		= (!empty($data['status'])) ? $data['status'] : '';
 			$coa = $data['coa'];
 			$nm_coa = $data['nm_coa'];
@@ -171,7 +171,7 @@ class Asset_planning extends Admin_Controller
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 7, 3);
+				$urutan2		= (int)substr((string) $angkaUrut2, 7, 3);
 				$urutan2++;
 				$urut2			= sprintf('%03s', $urutan2);
 				$code_plan	= 	"PLA" . $ym . $urut2;
@@ -305,7 +305,7 @@ class Asset_planning extends Admin_Controller
 
 			$this->db->select('a.no_perkiraan, a.nama');
 			$this->db->from(DBACC . '.coa_master a');
-			$this->db->where_in('a.no_perkiraan', explode(';', $jenis_coa));
+			$this->db->where_in('a.no_perkiraan', explode(';', (string) $jenis_coa));
 			$data_coa = $this->db->get()->result();
 
 			$this->hris->select('a.id, a.name as nm_dept, b.name as nm_comp');
@@ -316,7 +316,7 @@ class Asset_planning extends Admin_Controller
 			$list_costcenter = $this->db->get_where('ms_costcenter', ['deleted_by' => null])->result_array();
 			$data = array(
 				'title'			=> $tanda . ' Asset_planning Asset',
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'datacoa'		=> $datacoa,
 				'penyusutan'	=> $penyusutan,
@@ -347,15 +347,15 @@ class Asset_planning extends Admin_Controller
 			$id_costcenter 	= (!empty($data['id_costcenter'])) ? $data['id_costcenter'] : NULL;
 			$coa 			= (!empty($data['coa'])) ? $data['coa'] : NULL;
 			$coa_akum 		= (!empty($data['coa_akum'])) ? $data['coa_akum'] : NULL;
-			$nama_asset 	= strtolower($data['nama_asset']);
+			$nama_asset 	= strtolower((string) $data['nama_asset']);
 			$tahun 			= $data['tahun'];
 			$bulan 			= $data['bulan'];
 			$budget 		= str_replace(',', '', $data['budget']);
 			$budget_pr 		= (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr']) : '';
 			$budget_po 		= (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po']) : '';
 			$qty 			= str_replace(',', '', $data['qty']);
-			$keterangan 	= strtolower($data['keterangan']);
-			$reason 		= (!empty($data['reason'])) ? strtolower($data['reason']) : '';
+			$keterangan 	= strtolower((string) $data['keterangan']);
+			$reason 		= (!empty($data['reason'])) ? strtolower((string) $data['reason']) : '';
 			$status 		= (!empty($data['status'])) ? $data['status'] : '';
 			$coa = $data['coa'];
 			$nm_coa = $data['nm_coa'];
@@ -384,7 +384,7 @@ class Asset_planning extends Admin_Controller
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 7, 3);
+				$urutan2		= (int)substr((string) $angkaUrut2, 7, 3);
 				$urutan2++;
 				$urut2			= sprintf('%03s', $urutan2);
 				$code_plan	= 	"PLA" . $ym . $urut2;
@@ -520,7 +520,7 @@ class Asset_planning extends Admin_Controller
 
 			$this->db->select('a.no_perkiraan, a.nama');
 			$this->db->from(DBACC . '.coa_master a');
-			$this->db->where_in('a.no_perkiraan', explode(';', $jenis_coa));
+			$this->db->where_in('a.no_perkiraan', explode(';', (string) $jenis_coa));
 			$data_coa = $this->db->get()->result();
 
 			$this->hris->select('a.id, a.name as nm_dept, b.name as nm_comp');
@@ -531,7 +531,7 @@ class Asset_planning extends Admin_Controller
 			$list_costcenter = $this->db->get_where('ms_costcenter', ['deleted_by' => null])->result_array();
 			$data = array(
 				'title'			=> $tanda . ' Asset_planning Asset',
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'datacoa'		=> $datacoa,
 				'penyusutan'	=> $penyusutan,

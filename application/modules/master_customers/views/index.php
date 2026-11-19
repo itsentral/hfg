@@ -80,7 +80,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 											<td><?= $numb; ?></td>
 											<td><?= $customer->id_customer ?></td>
 											<td class="fw-semibold"><?= $customer->name_customer ?></td>
-											<td><?= ucfirst($customer->nama_karyawan) ?></td>
+											<td><?= ucfirst((string) $customer->nama_karyawan) ?></td>
 
 											<td hidden>
 												<?php
@@ -492,7 +492,10 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 			confirmButtonText: "Ya, Hapus!",
 			cancelButtonText: "Batal",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: siteurl + 'master_customers/deleteCategory',
@@ -541,7 +544,10 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 			confirmButtonText: "Ya, Hapus!",
 			cancelButtonText: "Batal",
 			closeOnConfirm: false
-		}, function() {
+		}, function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 			$.ajax({
 				type: 'POST',
 				url: siteurl + 'master_customers/deletelokal',

@@ -4,7 +4,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
             <i class="fa fa-bar-chart"></i>
-            Perbandingan Timbang Awal — SPK: <strong><?= htmlspecialchars($spk_no) ?></strong>
+            Perbandingan Timbang Awal — SPK: <strong><?= htmlspecialchars((string) $spk_no) ?></strong>
         </h5>
         <a href="<?= base_url('production_weighing') ?>" class="btn btn-secondary btn-sm">
             <i class="fa fa-arrow-left"></i> Kembali
@@ -55,7 +55,7 @@
                         <div class="card-body py-2">
                             <div class="text-muted small">Total Selisih Net</div>
                             <div class="fs-4 fw-bold <?= $total_selisih_net < 0 ? 'text-danger' : 'text-success' ?>">
-                                <?= number_format($total_selisih_net, 3) ?> kg
+                                <?= number_format((float) $total_selisih_net, 3) ?> kg
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                     <div class="card text-center border-secondary">
                         <div class="card-body py-2">
                             <div class="text-muted small">Rata-rata Deviasi</div>
-                            <div class="fs-4 fw-bold"><?= number_format($total_selisih_pct, 2) ?>%</div>
+                            <div class="fs-4 fw-bold"><?= number_format((float) $total_selisih_pct, 2) ?>%</div>
                         </div>
                     </div>
                 </div>
@@ -115,39 +115,39 @@
                                 <td class="text-center"><?= $i + 1 ?></td>
                                 <td>
                                     <a href="<?= base_url('production_weighing/view/' . $r->preweigh_no) ?>">
-                                        <?= htmlspecialchars($r->preweigh_no) ?>
+                                        <?= htmlspecialchars((string) $r->preweigh_no) ?>
                                     </a>
                                 </td>
-                                <td><?= htmlspecialchars($r->no_coil) ?></td>
-                                <td class="text-end"><?= number_format($r->gross_pl, 3) ?></td>
-                                <td class="text-end"><?= number_format($r->gross_actual, 3) ?></td>
+                                <td><?= htmlspecialchars((string) $r->no_coil) ?></td>
+                                <td class="text-end"><?= number_format((float) $r->gross_pl, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $r->gross_actual, 3) ?></td>
                                 <td class="text-end <?= $r->selisih_gross < 0 ? 'text-danger' : '' ?>">
-                                    <?= number_format($r->selisih_gross, 3) ?>
+                                    <?= number_format((float) $r->selisih_gross, 3) ?>
                                 </td>
-                                <td class="text-end"><?= number_format($r->net_pl, 3) ?></td>
-                                <td class="text-end"><?= number_format($r->net_timbang_awal, 3) ?></td>
-                                <td class="text-end <?= $sn_class ?>"><?= number_format($r->selisih_net, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $r->net_pl, 3) ?></td>
+                                <td class="text-end"><?= number_format((float) $r->net_timbang_awal, 3) ?></td>
+                                <td class="text-end <?= $sn_class ?>"><?= number_format((float) $r->selisih_net, 3) ?></td>
                                 <td class="text-end <?= $sn_class ?>"><?= number_format($r->selisih_net_pct * 100, 2) ?>%</td>
                                 <td class="text-center">
                                     <span class="badge bg-<?= $status_color ?>"><?= $r->status ?></span>
                                 </td>
                                 <td class="text-center"><?= htmlspecialchars($r->nama_user ?: '-') ?></td>
-                                <td class="text-center"><?= date('d/m/Y H:i', strtotime($r->created_at)) ?></td>
+                                <td class="text-center"><?= date('d/m/Y H:i', strtotime((string) $r->created_at)) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr class="table-light fw-bold">
                             <td colspan="3" class="text-end">Total:</td>
-                            <td class="text-end"><?= number_format($sum_gross_pl, 3) ?></td>
-                            <td class="text-end"><?= number_format($sum_gross_actual, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_gross_pl, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_gross_actual, 3) ?></td>
                             <td class="text-end <?= $sum_selisih_gross < 0 ? 'text-danger' : '' ?>">
-                                <?= number_format($sum_selisih_gross, 3) ?>
+                                <?= number_format((float) $sum_selisih_gross, 3) ?>
                             </td>
-                            <td class="text-end"><?= number_format($sum_net_pl, 3) ?></td>
-                            <td class="text-end"><?= number_format($sum_net_timbang, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_net_pl, 3) ?></td>
+                            <td class="text-end"><?= number_format((float) $sum_net_timbang, 3) ?></td>
                             <td class="text-end <?= $sum_selisih_net < 0 ? 'text-danger' : '' ?>">
-                                <?= number_format($sum_selisih_net, 3) ?>
+                                <?= number_format((float) $sum_selisih_net, 3) ?>
                             </td>
                             <td colspan="4"></td>
                         </tr>

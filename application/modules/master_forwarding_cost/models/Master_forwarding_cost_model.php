@@ -16,7 +16,7 @@ class Master_forwarding_cost_model extends CI_Model
             return $this->db->get($this->table_name)->row();
         }
         if ($tipe) {
-            $this->db->where('tipe', strtolower($tipe));
+            $this->db->where('tipe', strtolower((string) $tipe));
             return $this->db->get($this->table_name)->row();
         }
         $this->db->order_by('tipe', 'ASC');
@@ -27,7 +27,7 @@ class Master_forwarding_cost_model extends CI_Model
     {
         $this->db->where('is_delete', '0');
         if (!empty($tipe)) {
-            $this->db->where('tipe', strtolower($tipe));
+            $this->db->where('tipe', strtolower((string) $tipe));
         }
         $this->db->limit(1);
         $result = $this->db->get($this->table_name)->row();
@@ -37,7 +37,7 @@ class Master_forwarding_cost_model extends CI_Model
     public function check_existing_tipe($tipe, $exclude_id = null)
     {
         $this->db->where('is_delete', '0');
-        $this->db->where('tipe', strtolower($tipe));
+        $this->db->where('tipe', strtolower((string) $tipe));
         if ($exclude_id) {
             $this->db->where('id !=', $exclude_id);
         }

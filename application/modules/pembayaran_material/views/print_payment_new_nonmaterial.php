@@ -127,7 +127,7 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 <tr><td rowspan=2 width="100"><img src="<?=base_url("assets/images/ori_logo.jpg")?>" width="80"></td><td colspan=2><h1>PT. ORI POLITEC COMPOSITES</h1></td></tr>
 <tr><td><center><div style="font-size:18px;"><u>BUKTI PENGELUARAN BANK/KAS</u></div><?=$coa->nama?></center></td></tr>
 <tr><td rowspan=2 valign=top>Supplier</td><td rowspan=2 valign=top>: <?=$supplier->nm_supplier?></td><td valign=top width="100">Nomor</td><td valign=top nowrap>: <?=$kodebayar?></td></tr>
-<tr><td valign=top>Tanggal</td><td valign=top nowrap>: <?=date("d M Y",strtotime($headers->payment_date))?></td></tr>
+<tr><td valign=top>Tanggal</td><td valign=top nowrap>: <?=date("d M Y",strtotime((string) $headers->payment_date))?></td></tr>
 <tr><td rowspan=2 valign=top>Say</td><td rowspan=2 valign=top>: <?php if($headers->curs_header!='IDR'){ 
 	echo "# ". ucfirst(trim(ynz_terbilang_format($headers->nilai_bayar_bank)))." US dollar #";
 }else{
@@ -152,14 +152,14 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 		?>
 		<tbody>
 			<tr>
-				<td class="text-center"><?=date("d M Y",strtotime($dtpo->tgl_terima))?></td>
+				<td class="text-center"><?=date("d M Y",strtotime((string) $dtpo->tgl_terima))?></td>
 				<td class="text-center"><?=$det->no_po?></td>
 				<td class="text-center"><?=$dtpo->invoice_no?></td>
 				<td class="text-right" align="right"><?php 
 				if($headers->curs_header!='IDR'){
-					echo  number_format($det->request_payment,2);
+					echo  number_format((float) $det->request_payment,2);
 				}else{
-					echo  number_format($det->request_payment);
+					echo  number_format((float) $det->request_payment);
 				}?></td>
 			</tr>
 		<?php
@@ -171,9 +171,9 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 				<td class="text-right" align="right"><b>
 				<?php 
 				if($headers->curs_header!='IDR'){
-					echo 'US'. number_format($headers->nilai_bayar_bank,2);
+					echo 'US'. number_format((float) $headers->nilai_bayar_bank,2);
 				}else{
-					echo 'Rp.'. number_format($headers->nilai_bayar_bank);
+					echo 'Rp.'. number_format((float) $headers->nilai_bayar_bank);
 				}?></b></td>
 			</tr>
 			<tr>
@@ -181,9 +181,9 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 				<td class="text-right" align="right"><b>
 				<?php 
 				if($headers->curs_header!='IDR'){
-					echo 'US'. number_format($headers->biaya_admin_forex,2);
+					echo 'US'. number_format((float) $headers->biaya_admin_forex,2);
 				}else{
-					echo 'Rp.'. number_format($headers->biaya_admin);
+					echo 'Rp.'. number_format((float) $headers->biaya_admin);
 				}?></b></td>
 			</tr>
 			<tr>
@@ -191,9 +191,9 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 				<td class="text-right" align="right"><b>
 				<?php 
 				if($headers->curs_header!='IDR'){
-					echo 'US'. number_format($headers->biaya_admin_forex2,2);
+					echo 'US'. number_format((float) $headers->biaya_admin_forex2,2);
 				}else{
-					echo 'Rp.'. number_format($headers->biaya_admin2);
+					echo 'Rp.'. number_format((float) $headers->biaya_admin2);
 				}?></b></td>
 			</tr>
 		</tbody>

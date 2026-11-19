@@ -43,7 +43,7 @@ $this->load->view('include/side_menu');
 										<td><?= $record->nm_supplier ?></td>
 										<td class="divide"><?= $record->request_payment ?></td>
 										<td><?= $record->approved_by ?></td>
-										<td><?= ($record->approved_on != "" ? date("d-m-Y", strtotime($record->approved_on)) : "") ?></td>
+										<td><?= ($record->approved_on != "" ? date("d-m-Y", strtotime((string) $record->approved_on)) : "") ?></td>
 										<td><?= $data_status[$record->status] ?></td>
 										<td><?php if ($akses_menu['read']) : ?>
 												<a href='<?= base_url() . 'pembayaran_material/view_payment/' . $record->id ?>/1' class='btn btn-sm btn-default view' title='View Request Payment'><i class='fa fa-search'></i></a>
@@ -93,7 +93,7 @@ $this->load->view('include/side_menu');
 										<td><?= $record->nm_supplier ?></td>
 										<td class="divide"><?= $record->request_payment ?></td>
 										<td><?= $record->approved_by ?></td>
-										<td><?= ($record->approved_on != "" ? date("d-m-Y", strtotime($record->approved_on)) : "") ?></td>
+										<td><?= ($record->approved_on != "" ? date("d-m-Y", strtotime((string) $record->approved_on)) : "") ?></td>
 										<td><?= $data_status[$record->status] ?><!-- <?= $record->status ?> --></td>
 										<td><?php if ($akses_menu['read']) : ?>
 												<a href='<?= base_url() . 'pembayaran_material/view_payment/' . $record->id ?>/2' class='btn btn-sm btn-default view' title='View Request Payment'><i class='fa fa-search'></i></a>

@@ -58,7 +58,7 @@ class History_costing extends Admin_Controller
             return;
         }
 
-        $snapshot = json_decode($row->detail_komponen, true);
+        $snapshot = json_decode((string) $row->detail_komponen, true);
 
         echo json_encode([
             'status'   => 1,
@@ -125,7 +125,7 @@ class History_costing extends Admin_Controller
                 $r->change_source,
                 number_format((float)$r->bottom_price_lama_meter, 2, '.', ''),
                 number_format((float)$r->bottom_price_baru_meter, 2, '.', ''),
-                number_format($delta, 2, '.', ''),
+                number_format((float) $delta, 2, '.', ''),
                 number_format((float)$r->price_list_baru_meter, 2, '.', ''),
                 number_format((float)$r->rate_negotiation_allowance * 100, 2, '.', ''),
                 $r->changed_by_name ? $r->changed_by_name : '-',

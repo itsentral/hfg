@@ -9,11 +9,11 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label">Tanggal Dari</label>
-                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars($filter['tgl_dari']) ?>">
+                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Tanggal Sampai</label>
-                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars($filter['tgl_sampai']) ?>">
+                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
@@ -69,7 +69,7 @@
                             ?>
                             <tr class="<?= $row_class ?>">
                                 <td class="text-center"><?= $is_new_produk ? $no : '' ?></td>
-                                <td><?= $is_new_produk ? htmlspecialchars($row->produk_fg) : '' ?></td>
+                                <td><?= $is_new_produk ? htmlspecialchars((string) $row->produk_fg) : '' ?></td>
                                 <td class="text-end"><?= $is_new_produk ? number_format((float) $row->qty_stok, 2) : '' ?></td>
                                 <td class="text-end"><?= $is_new_produk ? number_format((float) $row->total_berat, 3) : '' ?></td>
                                 <td class="text-end text-primary fw-bold">
@@ -85,7 +85,7 @@
                                     <?= $row->total_berat_historis !== null ? number_format((float) $row->total_berat_historis, 3) : '-' ?>
                                 </td>
                                 <td class="text-center">
-                                    <?= $row->effective_date ? date('d/m/Y H:i', strtotime($row->effective_date)) : '-' ?>
+                                    <?= $row->effective_date ? date('d/m/Y H:i', strtotime((string) $row->effective_date)) : '-' ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

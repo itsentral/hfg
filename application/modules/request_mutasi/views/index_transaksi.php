@@ -50,14 +50,14 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                             ?>
                             <tr>
                                 <td class="text-center text-muted fw-semibold"><?= $numb++; ?></td>
-                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($record->tgl_request)) ?></td>
-                                <td><span class="fw-bold text-primary"><?= htmlspecialchars($record->kd_mutasi) ?></span></td>
+                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $record->tgl_request)) ?></td>
+                                <td><span class="fw-bold text-primary"><?= htmlspecialchars((string) $record->kd_mutasi) ?></span></td>
                                 <td class="text-center"><?= $jenis_badge ?></td>
-                                <td><?= htmlspecialchars($record->keterangan) ?></td>
+                                <td><?= htmlspecialchars((string) $record->keterangan) ?></td>
                                 <td><?= htmlspecialchars($record->nama_bank_asal ?: $record->bank_asal) ?></td>
                                 <td><?= htmlspecialchars($record->nama_bank_tujuan ?: $record->bank_tujuan) ?></td>
-                                <td class="text-end fw-semibold"><?= number_format($record->nilai, 0, ',', '.') ?></td>
-                                <td class="text-end fw-bold text-success">Rp <?= number_format($record->transaksi, 0, ',', '.') ?></td>
+                                <td class="text-end fw-semibold"><?= number_format((float) $record->nilai, 0, ',', '.') ?></td>
+                                <td class="text-end fw-bold text-success">Rp <?= number_format((float) $record->transaksi, 0, ',', '.') ?></td>
                                 <td class="text-center text-nowrap">
                                     <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_transaksi/' . $record->kd_mutasi) ?>" target="_blank" title="Cetak Bukti Transaksi">
                                         <i class="fa fa-print"></i>

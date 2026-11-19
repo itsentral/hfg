@@ -22,7 +22,7 @@
                     </tr>
                     <tr>
                         <td>Customer</td>
-                        <td><?= htmlspecialchars($do->customer) ?></td>
+                        <td><?= htmlspecialchars((string) $do->customer) ?></td>
                     </tr>
                     <tr>
                         <td>Status</td>
@@ -56,7 +56,7 @@
                 <div class="row text-center">
                     <div class="col-md-4">
                         <div class="fw-bold">Estimasi Berat</div>
-                        <div class="fs-5"><?= number_format($total_estimasi, 3) ?> kg</div>
+                        <div class="fs-5"><?= number_format((float) $total_estimasi, 3) ?> kg</div>
                     </div>
                     <div class="col-md-4">
                         <div class="fw-bold">Selisih (kg)</div>

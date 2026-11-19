@@ -37,7 +37,7 @@ if (!empty($header)) {
 	}
 }
 
-$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '';
+$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '';
 ?>
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css">
 <div class="card">
@@ -128,8 +128,8 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 									echo '<td class="text-center">' . $no_non_pr . '</td>';
 									echo '<td>' . $item['nama'] . '</td>';
 									echo '<td>' . $item['trade_name'] . '</td>';
-									echo '<td class="text-right">' . number_format($item['min_stok'], 2) . '</td>';
-									echo '<td class="text-right">' . number_format($item['max_stok'], 2) . '</td>';
+									echo '<td class="text-right">' . number_format((float) $item['min_stok'], 2) . '</td>';
+									echo '<td class="text-right">' . number_format((float) $item['max_stok'], 2) . '</td>';
 									echo '<td class="text-right">' . number_format(0, 2) . '</td>';
 									echo '<td><input type="text" class="form-control form-control-sm autoNumeric2 nmat_qty_pr_' . $item['code_lv4'] . '" data-id_material="' . $item['code_lv4'] . '"></td>';
 									echo '<td><input type="text" class="form-control form-control-sm nmat_notes_' . $item['code_lv4'] . '" data-id_material="' . $item['code_lv4'] . '"></td>';
@@ -177,8 +177,8 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 										echo "<td class='text-center'>" . $key . "</td>";
 										echo "	<td class='text-left'>" . $nm_material . "</td>";
 										echo "	<td class='text-left'>" . $nm_lain . "</td>";
-										echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-										echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+										echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+										echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 										echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
 										if ($value['status_app'] == 'N') {
 											echo "<td align='center'>";
@@ -188,11 +188,11 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 											echo "<td class='text-center'><span class='badge rounded-pill bg-primary text-bold'>Waiting Process</span></td>";
 										}
 										if ($value['status_app'] == 'Y') {
-											echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+											echo "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
 											echo "<td class='text-center'><span class='badge rounded-pill bg-success text-bold'>Approved</span></td>";
 										}
 										if ($value['status_app'] == 'D') {
-											echo "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+											echo "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
 											echo "<td class='text-center'><span class='badge rounded-pill bg-danger text-bold'>Rejected</span></td>";
 										}
 										echo "<td class='text-center'><input type='text' class='form-control notes_" . $value['id'] . "' name='detail[" . $key . "][note]' value='" . $value['note'] . "'></td>";

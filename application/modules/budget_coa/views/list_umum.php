@@ -90,7 +90,7 @@ $ENABLE_DELETE  = has_permission('Budget_Non_Rutin.Delete');
                             <tr>
                                 <td class="text-center text-muted small"><?= $numb ?></td>
                                 <td class="small text-nowrap">
-                                    <?= !empty($record->created_on_dept) ? date('d M Y H:i', strtotime($record->created_on_dept)) : '-' ?>
+                                    <?= !empty($record->created_on_dept) ? date('d M Y H:i', strtotime((string) $record->created_on_dept)) : '-' ?>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-secondary-subtle text-secondary border"><?= $record->tahun ?></span>
@@ -106,10 +106,10 @@ $ENABLE_DELETE  = has_permission('Budget_Non_Rutin.Delete');
                                     <span class="badge bg-info-subtle text-info border border-info-subtle"><?= $record->kategori ?></span>
                                 </td>
                                 <td class="text-end font-monospace">
-                                    <?= number_format($record->finance_tahun, 0, ',', '.') ?>
+                                    <?= number_format((float) $record->finance_tahun, 0, ',', '.') ?>
                                 </td>
                                 <td class="text-end font-monospace fw-bold text-primary">
-                                    <?= number_format($record->total, 0, ',', '.') ?>
+                                    <?= number_format((float) $record->total, 0, ',', '.') ?>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border"><?= $record->revisi ?></span>

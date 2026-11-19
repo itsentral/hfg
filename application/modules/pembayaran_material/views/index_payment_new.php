@@ -62,17 +62,17 @@
                                         <td class="text-center">
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
-                                                $list_no_doc = array_unique(explode('||', $item->detail_no_doc));
+                                                $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
                                                 echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
                                             } else {
                                                 echo '-';
                                             }
                                             ?>
                                         </td>
-                                        <td class="text-center"><?= !empty($item->tgl_bayar) ? date('d F Y', strtotime($item->tgl_bayar)) : '-'; ?></td>
+                                        <td class="text-center"><?= !empty($item->tgl_bayar) ? date('d F Y', strtotime((string) $item->tgl_bayar)) : '-'; ?></td>
                                         <td><?= !empty($item->nm_supplier) ? $item->nm_supplier : '-'; ?></td>
-                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->dibayar_idr) ? number_format($item->dibayar_idr, 2) : '-'; ?></td>
-                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->payment_bank) ? number_format($item->payment_bank, 2) : '-'; ?></td>
+                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->dibayar_idr) ? number_format((float) $item->dibayar_idr, 2) : '-'; ?></td>
+                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->payment_bank) ? number_format((float) $item->payment_bank, 2) : '-'; ?></td>
                                         <td><?= !empty($item->keterangan_pembayaran) ? $item->keterangan_pembayaran : '-'; ?></td>
                                         <td class="text-center">
                                             <div class="d-flex gap-1 justify-content-center">
@@ -113,18 +113,18 @@
                                         <td class="text-center">
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
-                                                $list_no_doc = array_unique(explode('||', $item->detail_no_doc));
+                                                $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
                                                 echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
                                             } else {
                                                 echo '-';
                                             }
                                             ?>
                                         </td>
-                                        <td class="text-center"><?= !empty($item->tgl_bayar) ? date('d F Y', strtotime($item->tgl_bayar)) : '-'; ?></td>
+                                        <td class="text-center"><?= !empty($item->tgl_bayar) ? date('d F Y', strtotime((string) $item->tgl_bayar)) : '-'; ?></td>
                                         <td><?= !empty($item->created_by) ? $item->created_by : '-'; ?></td>
 
-                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->dibayar_idr) ? number_format($item->dibayar_idr, 2) : '-'; ?></td>
-                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->payment_bank) ? number_format($item->payment_bank, 2) : '-'; ?></td>
+                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->dibayar_idr) ? number_format((float) $item->dibayar_idr, 2) : '-'; ?></td>
+                                        <td class="text-end fw-semibold text-primary"><?= !empty($item->payment_bank) ? number_format((float) $item->payment_bank, 2) : '-'; ?></td>
                                         <td><?= !empty($item->keterangan_pembayaran) ? $item->keterangan_pembayaran : '-'; ?></td>
                                         <td class="text-center">
                                             <div class="d-flex gap-1 justify-content-center">

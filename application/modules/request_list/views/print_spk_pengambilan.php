@@ -267,13 +267,13 @@
             <tr>
                 <td class="info-label">Tanggal SPK</td>
                 <td class="info-separator">:</td>
-                <td><?php echo date('d-m-Y', strtotime($spk['tgl_spk'])); ?></td>
+                <td><?php echo date('d-m-Y', strtotime((string) $spk['tgl_spk'])); ?></td>
             </tr>
             <?php if (!empty($spk['due_date'])): ?>
                 <tr>
                     <td class="info-label">Due Date</td>
                     <td class="info-separator">:</td>
-                    <td><?php echo date('d-m-Y', strtotime($spk['due_date'])); ?></td>
+                    <td><?php echo date('d-m-Y', strtotime((string) $spk['due_date'])); ?></td>
                 </tr>
             <?php endif; ?>
         </table>
@@ -311,9 +311,9 @@
                 <table class="product-info-table">
                     <tr>
                         <td class="product-info-label">Target Qty</td>
-                        <td class="product-info-value"><strong><?php echo number_format($detail['target_qty']); ?></strong></td>
+                        <td class="product-info-value"><strong><?php echo number_format((float) $detail['target_qty']); ?></strong></td>
                         <td class="product-info-label">Total Weight</td>
-                        <td class="product-info-value"><strong><?php echo number_format($detail['total_weight'], 2); ?> Kg</strong></td>
+                        <td class="product-info-value"><strong><?php echo number_format((float) $detail['total_weight'], 2); ?> Kg</strong></td>
                     </tr>
                 </table>
 
@@ -361,7 +361,7 @@
                     <div class="signature-box">
                         <span class="signature-title">Dibuat oleh,</span>
                         <span class="signature-name"><?php echo $created_by_name; ?></span>
-                        <span class="signature-date"><?php echo date('d-m-Y', strtotime($spk['created_at'])); ?></span>
+                        <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $spk['created_at'])); ?></span>
                     </div>
                 </td>
             </tr>

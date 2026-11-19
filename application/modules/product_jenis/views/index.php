@@ -36,10 +36,10 @@
                         ?>
                             <tr>
                                 <td><?= $numb; ?></td>
-                                <td><?= strtoupper($product_type); ?></td>
-                                <td><?= strtoupper($product_category); ?></td>
-                                <td><?= strtoupper($record->nama); ?></td>
-                                <td><?= strtoupper($record->code); ?></td>
+                                <td><?= strtoupper((string) $product_type); ?></td>
+                                <td><?= strtoupper((string) $product_category); ?></td>
+                                <td><?= strtoupper((string) $record->nama); ?></td>
+                                <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
                                         <span class="badge bg-success">Aktif</span>
@@ -166,7 +166,10 @@
                 title: "Are you sure?", text: "Process this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
                 confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'add',
@@ -194,7 +197,10 @@
                 title: "Are you sure?", text: "Delete this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
                 confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal", closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

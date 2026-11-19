@@ -215,10 +215,10 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                     <tr>
                                         <td class="text-center"><?= $no++; ?></td>
                                         <td class="text-center fw-semibold text-primary"><?= $item['kode_trans']; ?></td>
-                                        <td class="text-center"><?= !empty($item['incoming_date']) ? date('d M Y', strtotime($item['incoming_date'])) : '-'; ?></td>
+                                        <td class="text-center"><?= !empty($item['incoming_date']) ? date('d M Y', strtotime((string) $item['incoming_date'])) : '-'; ?></td>
                                         <td class="text-center"><?= $item['no_po']; ?></td>
-                                        <td class="text-center fw-bold"><?= number_format($item['sum_qty']); ?></td>
-                                        <td class="text-center"><?= ucfirst($item['pic']); ?></td>
+                                        <td class="text-center fw-bold"><?= number_format((float) $item['sum_qty']); ?></td>
+                                        <td class="text-center"><?= ucfirst((string) $item['pic']); ?></td>
                                         <td class="text-center"><?= $item['receiver']; ?></td>
                                         <td><?= $supp_name; ?></td>
                                         <td class="text-center">

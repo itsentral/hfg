@@ -40,7 +40,7 @@
                 <td style="border:none; padding:0; text-align:right; vertical-align:top;">
                     <?php if ($catalog): ?>
                         <strong>No. Katalog: <?= html_escape($catalog->header->no_catalog) ?></strong><br>
-                        <span style="font-size:10px;">Rilis: <?= date('d/m/Y', strtotime($catalog->header->released_at)) ?></span><br>
+                        <span style="font-size:10px;">Rilis: <?= date('d/m/Y', strtotime((string) $catalog->header->released_at)) ?></span><br>
                         <span style="font-size:10px;">Ref Pricelist: <?= html_escape($catalog->header->no_pricelist ? $catalog->header->no_pricelist : '-') ?></span>
                     <?php endif; ?>
                 </td>

@@ -106,7 +106,7 @@ class Incoming extends Admin_Controller
                 $revision_info = '';
                 if (!empty($row['revision_note'])) {
                     $revision_info = '<br><small class="text-danger"><i class="fa fa-exclamation-circle"></i> Revisi: '
-                        . htmlspecialchars($row['revision_note']) . '</small>';
+                        . htmlspecialchars((string) $row['revision_note']) . '</small>';
                 }
 
                 $btn_edit = '<a href="' . base_url('incoming/edit_draft/' . $row['id']) . '" 
@@ -318,7 +318,7 @@ class Incoming extends Admin_Controller
             // Tampilkan catatan revisi jika ada
             $revision_info = '';
             if (!empty($row['revision_note'])) {
-                $revision_info = '<br><small class="text-danger"><i class="fa fa-exclamation-circle"></i> Revisi: ' . htmlspecialchars($row['revision_note']) . '</small>';
+                $revision_info = '<br><small class="text-danger"><i class="fa fa-exclamation-circle"></i> Revisi: ' . htmlspecialchars((string) $row['revision_note']) . '</small>';
             }
 
             $btn_edit = '<a href="' . base_url('incoming/edit_draft/' . $row['id']) . '" class="btn btn-sm btn-warning" title="Edit" style="width:100px">
@@ -353,7 +353,7 @@ class Incoming extends Admin_Controller
                 $row['id'] . $revision_info,
                 $no_po_display,
                 $row['nm_supplier'],
-                "<div class='text-center'>" . ($row['draft_date'] ? date('d/m/Y H:i', strtotime($row['draft_date'])) : '-') . "</div>",
+                "<div class='text-center'>" . ($row['draft_date'] ? date('d/m/Y H:i', strtotime((string) $row['draft_date'])) : '-') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars($row['draft_by_name'] ?? '-') . "</div>",
                 "<span class='badge rounded-pill bg-warning text-dark'>Saved</span>",
                 "<div class='text-center d-flex flex-column align-items-center gap-1'>
@@ -505,7 +505,7 @@ class Incoming extends Admin_Controller
                 $row['id'],
                 $no_po_display,
                 $row['nm_supplier'],
-                "<div class='text-center'>" . ($row['draft_date'] ? date('d/m/Y H:i', strtotime($row['draft_date'])) : '-') . "</div>",
+                "<div class='text-center'>" . ($row['draft_date'] ? date('d/m/Y H:i', strtotime((string) $row['draft_date'])) : '-') . "</div>",
                 "<div class='text-center'>" . htmlspecialchars($row['draft_by_name'] ?? '-') . "</div>",
                 "<span class='badge rounded-pill bg-info text-dark'>Draft</span>",
                 "<div class='text-center d-flex flex-column align-items-center gap-1'>
@@ -700,7 +700,7 @@ class Incoming extends Admin_Controller
             'page_mode'              => 'view',
             'detail_ros'             => $detail_ros,
             'no_surat'               => implode(', ', $no_surat_list),
-            'tanggal'                => $get_incoming ? date('d F Y', strtotime($get_incoming->tanggal)) : '-',
+            'tanggal'                => $get_incoming ? date('d F Y', strtotime((string) $get_incoming->tanggal)) : '-',
             // 4. Sesuaikan nama kolom file upload
             'file_incoming_material' => $get_incoming->file_dokumen ?? '',
             'ros_data'               => null,
@@ -731,7 +731,7 @@ class Incoming extends Admin_Controller
 
         // ── Decode detail dari JSON ──
         $detail_json = $post['detail_json'] ?? '';
-        $details     = json_decode($detail_json, true);
+        $details     = json_decode((string) $detail_json, true);
 
         if (empty($details)) {
             echo json_encode(['status' => 0, 'pesan' => 'Coil data not found!']);
@@ -1119,7 +1119,7 @@ class Incoming extends Admin_Controller
         }
 
         // Decode QC data dari modal finalize
-        $qc_data = json_decode($qc_json, true);
+        $qc_data = json_decode((string) $qc_json, true);
         $qc_map  = [];
         if (!empty($qc_data) && is_array($qc_data)) {
             foreach ($qc_data as $qc) {
@@ -1430,7 +1430,7 @@ class Incoming extends Admin_Controller
         foreach ($details as $d) {
             if ($d['status_qc'] !== 'OK') continue;
 
-            $kd         = strtoupper(trim($d['kd_gudang_ke']));
+            $kd         = strtoupper(trim((string) $d['kd_gudang_ke']));
             $coa_gudang = ($kd === 'SLI') ? $coa_map['slitting'] : $coa_map['produksi'];
 
             if (!isset($debet_per_gudang[$coa_gudang])) {
@@ -1884,7 +1884,7 @@ class Incoming extends Admin_Controller
             'ket'             => 'QC Incoming Coil Check'
                 . ' (Coil: ' . $no_coil
                 . ', PO: '   . $no_po
-                . ', Kurs: ' . number_format($kurs_pib, 0, ',', '.') . ')',
+                . ', Kurs: ' . number_format((float) $kurs_pib, 0, ',', '.') . ')',
             'no_coil'         => $no_coil,
             'harga_beli'      => (int) round($price_unit_idr),
             'total_harga'     => $nilai_baru,
@@ -2596,7 +2596,7 @@ class Incoming extends Admin_Controller
         $header = $this->db->get_where('gl_interface', ['nomor' => $nomor_jv, 'status' => 'pending'])->row_array();
         if (empty($header)) return;
 
-        $memo          = !empty($header['memo']) ? json_decode($header['memo'], true) : [];
+        $memo          = !empty($header['memo']) ? json_decode((string) $header['memo'], true) : [];
         $id_supplier   = $memo['id_supplier']   ?? null;
         $nama_supplier = $memo['nama_supplier'] ?? null;
 
@@ -2842,7 +2842,7 @@ class Incoming extends Admin_Controller
                 $row['id'],
                 $no_po_display,
                 $row['nm_supplier'],
-                "<div class='text-center'>" . ($row['tgl_finalize'] ? date('d/m/Y H:i', strtotime($row['tgl_finalize'])) : '-') . "</div>",
+                "<div class='text-center'>" . ($row['tgl_finalize'] ? date('d/m/Y H:i', strtotime((string) $row['tgl_finalize'])) : '-') . "</div>",
                 "<div class='text-center'>" . ($row['kode_incoming'] ?? '-') . "</div>",
                 "<div class='text-center'>{$sts_badge}</div>",
                 "<div class='text-center'>{$btn_view}</div>",

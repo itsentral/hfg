@@ -43,7 +43,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 
 							$tgl_create 	= $record->price_ref_new_date;
 							$max_exp 		= $record->price_ref_new_expired;
-							$tgl_expired 	= date('Y-m-d', strtotime('+' . $max_exp . ' month', strtotime($tgl_create)));
+							$tgl_expired 	= date('Y-m-d', strtotime('+' . $max_exp . ' month', strtotime((string) $tgl_create)));
 							$date_now		= date('Y-m-d');
 
 							$status = 'Not Set';
@@ -55,8 +55,8 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 							$expired_new = '-';
 
 							if (!empty($record->price_ref_date)) {
-								$price_ref_date 	= date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime($record->price_ref_date)));
-								$expired = date('d-M-Y', strtotime($price_ref_date));
+								$price_ref_date 	= date('Y-m-d', strtotime('+' . $record->price_ref_expired . ' month', strtotime((string) $record->price_ref_date)));
+								$expired = date('d-M-Y', strtotime((string) $price_ref_date));
 
 								if ($date_now > $price_ref_date) {
 									$status = 'Expired';
@@ -68,20 +68,20 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 							}
 
 							if ($record->status_app == 'Y') {
-								$expired_new = date('d-M-Y', strtotime($tgl_expired));
+								$expired_new = date('d-M-Y', strtotime((string) $tgl_expired));
 								$status2 = 'Waiting Approve';
 								$status2_ = 'secondary';
 							}
 					?>
 							<tr>
 								<td class="text-center"><?= $numb; ?></td>
-								<td><?= strtoupper($record->code) ?></td>
-								<td><?= strtoupper($record->nama) ?></td>
+								<td><?= strtoupper((string) $record->code) ?></td>
+								<td><?= strtoupper((string) $record->nama) ?></td>
 
-								<td class="text-end"><?= number_format($record->price_ref, 2) ?></td>
-								<td class="text-end"><?= number_format($record->price_ref_new, 2) ?></td>
-								<td class="text-end"><?= number_format($record->price_ref_high, 2) ?></td>
-								<td class="text-end"><?= number_format($record->price_ref_high_new, 2) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref, 2) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref_new, 2) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref_high, 2) ?></td>
+								<td class="text-end"><?= number_format((float) $record->price_ref_high_new, 2) ?></td>
 
 								<td class="text-center"><?= $expired; ?></td>
 								<td class="text-center"><?= $expired_new; ?></td>
@@ -93,7 +93,7 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 									<?php } ?>
 								</td>
 
-								<td><?= strtoupper($record->status_reject) ?></td>
+								<td><?= strtoupper((string) $record->status_reject) ?></td>
 
 								<td class="text-end">
 									<?php if ($ENABLE_MANAGE) : ?>
@@ -212,7 +212,10 @@ $ENABLE_DELETE  = has_permission('Price_Supplier_Raw_Material.Delete');
 				confirmButtonText: "Yes",
 				cancelButtonText: "No",
 				closeOnConfirm: false
-			}, function() {
+			}, function(isConfirm) {
+				if (!isConfirm) {
+					return;
+				}
 
 				const formData = new FormData(document.getElementById('data_form'));
 

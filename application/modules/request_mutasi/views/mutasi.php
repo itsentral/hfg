@@ -36,18 +36,18 @@
                         <?php $numb = 1; foreach ($data as $record) : ?>
                             <tr>
                                 <td class="text-center text-muted fw-semibold"><?= $numb++; ?></td>
-                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime($record->tgl_request)) ?></td>
+                                <td class="text-center text-nowrap"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $record->tgl_request)) ?></td>
                                 <td>
-                                    <span class="fw-bold text-success"><?= htmlspecialchars($record->kd_mutasi) ?></span>
+                                    <span class="fw-bold text-success"><?= htmlspecialchars((string) $record->kd_mutasi) ?></span>
                                     <?php if (!empty($record->kd_mutasi_request)): ?>
-                                        <br><small class="text-muted">Req: <?= htmlspecialchars($record->kd_mutasi_request) ?></small>
+                                        <br><small class="text-muted">Req: <?= htmlspecialchars((string) $record->kd_mutasi_request) ?></small>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= htmlspecialchars($record->keterangan) ?></td>
-                                <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($record->nama_bank_asal) ?></td>
-                                <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars($record->nama_bank_tujuan) ?></td>
+                                <td><?= htmlspecialchars((string) $record->keterangan) ?></td>
+                                <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars((string) $record->nama_bank_asal) ?></td>
+                                <td><i class="fa fa-bank me-1 text-muted"></i><?= htmlspecialchars((string) $record->nama_bank_tujuan) ?></td>
                                 <td class="text-center"><span class="badge bg-light text-dark border"><?= htmlspecialchars($record->mata_uang ?: 'IDR') ?></span></td>
-                                <td class="text-end fw-bold text-success">Rp <?= number_format($record->nilai_request, 0, ',', '.') ?></td>
+                                <td class="text-end fw-bold text-success">Rp <?= number_format((float) $record->nilai_request, 0, ',', '.') ?></td>
                                 <td class="text-center text-nowrap">
                                     <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_mutasi/' . $record->kd_mutasi) ?>" target="_blank" title="Cetak Bukti Mutasi">
                                         <i class="fa fa-print"></i>

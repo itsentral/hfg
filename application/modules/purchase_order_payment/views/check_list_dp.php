@@ -48,7 +48,7 @@
                                     <td style="text-align: center;"><?= $no; ?></td>
                                     <td style="text-align: center;"><?= !empty($item['no_surat']) ? $item['no_surat'] : $item['no_po']; ?></td>
                                     <td style="text-align: center;"><?= !empty($item['no_pr']) ? $item['no_pr'] : '-'; ?></td>
-                                    <td style="text-align: right;"><?= number_format($harga_po); ?></td>
+                                    <td style="text-align: right;"><?= number_format((float) $harga_po); ?></td>
                                     <td style="text-align: center;"><?= !empty($item['nama_supplier']) ? $item['nama_supplier'] : '-'; ?></td>
                                 </tr>
                             <?php

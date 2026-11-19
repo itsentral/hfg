@@ -116,7 +116,7 @@ foreach ($results['cus'] as $cus) {
                                         <?php foreach ($results['prof'] as $prof) {
                                             $select = $cus->id_prov == $prof->id_prov ? 'selected' : '';
                                         ?>
-                                            <option value="<?= $prof->id_prov ?>" <?= $select ?>><?= ucfirst(strtolower($prof->nama)) ?></option>
+                                            <option value="<?= $prof->id_prov ?>" <?= $select ?>><?= ucfirst(strtolower((string) $prof->nama)) ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -132,7 +132,7 @@ foreach ($results['cus'] as $cus) {
                                         <?php foreach ($results['kota'] as $kota) {
                                             $select = $cus->id_kota == $kota->id_kota ? 'selected' : '';
                                         ?>
-                                            <option value="<?= $kota->id_kota ?>" <?= $select ?>><?= ucfirst(strtolower($kota->nama_kota)) ?></option>
+                                            <option value="<?= $kota->id_kota ?>" <?= $select ?>><?= ucfirst(strtolower((string) $kota->nama_kota)) ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -764,7 +764,7 @@ foreach ($results['cus'] as $cus) {
             Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
             Template += '<option value="">--pilih--</option>';
             Template += '<?php foreach ($results['category'] as $category) { ?>';
-            Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower($category->name_category_customer)) ?></option>';
+            Template += '<option value="<?= $category->name_category_customer ?>"><?= ucfirst(strtolower((string) $category->name_category_customer)) ?></option>';
             Template += '<?php } ?>';
             Template += '</select>';
             Template += '</td>';

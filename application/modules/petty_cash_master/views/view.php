@@ -6,13 +6,13 @@
         <div class="col-md-6">
             <div class="text-muted small fw-semibold text-uppercase">Nama Master Petty Cash</div>
             <div class="fs-6 fw-bold text-dark mt-1">
-                <i class="fa fa-money text-primary me-2"></i><?= isset($data->nama) ? htmlspecialchars($data->nama) : '-' ?>
+                <i class="fa fa-money text-primary me-2"></i><?= isset($data->nama) ? htmlspecialchars((string) $data->nama) : '-' ?>
             </div>
         </div>
         <div class="col-md-6">
             <div class="text-muted small fw-semibold text-uppercase">Keterangan</div>
             <div class="fs-6 text-secondary mt-1">
-                <i class="fa fa-info-circle text-info me-2"></i><?= isset($data->keterangan) ? htmlspecialchars($data->keterangan) : '-' ?>
+                <i class="fa fa-info-circle text-info me-2"></i><?= isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : '-' ?>
             </div>
         </div>
     </div>
@@ -49,15 +49,15 @@
                             <td class="text-center text-muted fw-semibold"><?= $no++ ?></td>
                             <td>
                                 <div class="d-flex flex-column">
-                                    <span class="badge bg-secondary-subtle text-dark border px-2 py-1 font-monospace align-self-start mb-1"><?= htmlspecialchars($detail->coa_code) ?></span>
-                                    <span class="small fw-semibold text-dark"><?= htmlspecialchars($coa_label) ?></span>
+                                    <span class="badge bg-secondary-subtle text-dark border px-2 py-1 font-monospace align-self-start mb-1"><?= htmlspecialchars((string) $detail->coa_code) ?></span>
+                                    <span class="small fw-semibold text-dark"><?= htmlspecialchars((string) $coa_label) ?></span>
                                 </div>
                             </td>
                             <td>
-                                <span class="text-dark fw-medium"><?= htmlspecialchars($detail->jenis_pengeluaran) ?></span>
+                                <span class="text-dark fw-medium"><?= htmlspecialchars((string) $detail->jenis_pengeluaran) ?></span>
                             </td>
                             <td class="text-end">
-                                <span class="fw-bold text-dark font-monospace">Rp <?= number_format($detail->nominal, 0, ',', '.') ?></span>
+                                <span class="fw-bold text-dark font-monospace">Rp <?= number_format((float) $detail->nominal, 0, ',', '.') ?></span>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -84,7 +84,7 @@
             </div>
         </div>
         <div class="fs-4 fw-bold text-success font-monospace">
-            Rp <?= isset($data->total_budget) ? number_format($data->total_budget, 0, ',', '.') : '0' ?>
+            Rp <?= isset($data->total_budget) ? number_format((float) $data->total_budget, 0, ',', '.') : '0' ?>
         </div>
     </div>
 </div>

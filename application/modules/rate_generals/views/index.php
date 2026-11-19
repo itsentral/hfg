@@ -72,26 +72,26 @@ foreach ($elements as $el) {
                                     </span>
                                 <?php endif; ?>
                             </td>
-                            <td class="fw-bold text-dark"><?= htmlspecialchars($el['label']) ?></td>
-                            <td class="text-muted"><?= htmlspecialchars($el['basis']) ?></td>
+                            <td class="fw-bold text-dark"><?= htmlspecialchars((string) $el['label']) ?></td>
+                            <td class="text-muted"><?= htmlspecialchars((string) $el['basis']) ?></td>
                             <td class="text-end fw-bold fs-6">
                                 <?php if ($el['unit'] === 'pct'): ?>
                                     <span class="text-success"><?= number_format($el['value'] * 100, 2, ',', '.') ?> %</span>
                                 <?php else: ?>
-                                    <span class="text-primary">Rp <?= number_format($el['value'], 2, ',', '.') ?> / Kg</span>
+                                    <span class="text-primary">Rp <?= number_format((float) $el['value'], 2, ',', '.') ?> / Kg</span>
                                 <?php endif; ?>
                             </td>
-                            <td><?= htmlspecialchars($el['by']) ?></td>
+                            <td><?= htmlspecialchars((string) $el['by']) ?></td>
                             <td class="text-center text-muted">
-                                <?= !empty($el['updated']) ? date('d/m/Y H:i', strtotime($el['updated'])) : '-' ?>
+                                <?= !empty($el['updated']) ? date('d/m/Y H:i', strtotime((string) $el['updated'])) : '-' ?>
                             </td>
                             <?php if ($ENABLE_MANAGE): ?>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-primary btn-edit-single shadow-sm"
                                         data-key="<?= $el['key'] ?>"
                                         data-group="<?= $el['group'] ?>"
-                                        data-label="<?= htmlspecialchars($el['label']) ?>"
-                                        data-basis="<?= htmlspecialchars($el['basis']) ?>"
+                                        data-label="<?= htmlspecialchars((string) $el['label']) ?>"
+                                        data-basis="<?= htmlspecialchars((string) $el['basis']) ?>"
                                         data-unit="<?= $el['unit'] ?>"
                                         data-val="<?= $el['unit'] === 'pct' ? (float)($el['value'] * 100) : (float)$el['value'] ?>"
                                         data-req="<?= $el['required'] ? '1' : '0' ?>"

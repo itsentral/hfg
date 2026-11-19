@@ -104,7 +104,7 @@ class Pengajuan_rutin_model extends BF_Model
 	{
 		$sql = "select * from ms_budget_rutin where departement='" . $dept . "' ";
 		if ($idbudget !== null) $sql .= " and id not in (" . implode(",", $idbudget) . ")";
-		if ($tanggal !== null) $sql .= " and (tipe ='bulan' or (tipe='tahun' and left(tanggal,2)='" . date("m", strtotime($tanggal)) . "'))";
+		if ($tanggal !== null) $sql .= " and (tipe ='bulan' or (tipe='tahun' and left(tanggal,2)='" . date("m", strtotime((string) $tanggal)) . "'))";
 		$query = $this->db->query($sql);
 		if ($query->num_rows() != 0) {
 			return $query->result();

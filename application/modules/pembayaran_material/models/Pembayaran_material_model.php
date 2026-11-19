@@ -42,10 +42,10 @@ class Pembayaran_material_model extends BF_Model
 		return $query->result();
 	}
 
-	public function generate_id_payment_paid($kode_bank = null, $tanggal)
+	public function generate_id_payment_paid($kode_bank, $tanggal)
 	{
 		$huruf  = "BK--" . ($kode_bank ? $kode_bank . "-" : "");
-		$tahun  = date('my-', strtotime($tanggal));
+		$tahun  = date('my-', strtotime((string) $tanggal));
 		$prefix = $huruf . $tahun;
 
 		$generate_id = $this->db->query(
@@ -154,9 +154,9 @@ class Pembayaran_material_model extends BF_Model
 				'no' => $no,
 				'no_dokumen' => $item->no_surat,
 				'tipe' => $tipe_clean, // Dikirim ke DataTables columns
-				'tgl' => date('d F Y', strtotime($item->created_on)),
+				'tgl' => date('d F Y', strtotime((string) $item->created_on)),
 				'keperluan' => $item->keperluan,
-				'total_invoice' => number_format($item->jumlah),
+				'total_invoice' => number_format((float) $item->jumlah),
 				'requestor' => $item->requestor,
 				'supplier' => $item->supplier,
 				'currency' => $item->currency,
@@ -189,7 +189,7 @@ class Pembayaran_material_model extends BF_Model
 
 		$this->db->select('a.*');
 		$this->db->from('request_payment a');
-		$this->db->where_in('a.id', explode(',', $id_payment));
+		$this->db->where_in('a.id', explode(',', (string) $id_payment));
 		$get_payment = $this->db->get()->result();
 
 		$nilai_pph = $this->input->post('nilai_pph', true);
@@ -300,12 +300,12 @@ class Pembayaran_material_model extends BF_Model
 							$hasil_jurnal .= '</td>';
 
 							$hasil_jurnal .= '<td class="text-right">';
-							$hasil_jurnal .= number_format($debit);
+							$hasil_jurnal .= number_format((float) $debit);
 							$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 							$hasil_jurnal .= '</td>';
 
 							$hasil_jurnal .= '<td class="text-right">';
-							$hasil_jurnal .= number_format($kredit);
+							$hasil_jurnal .= number_format((float) $kredit);
 							$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 							$hasil_jurnal .= '</td>';
 
@@ -387,12 +387,12 @@ class Pembayaran_material_model extends BF_Model
 									$hasil_jurnal .= '</td>';
 
 									$hasil_jurnal .= '<td class="text-right">';
-									$hasil_jurnal .= number_format($debit);
+									$hasil_jurnal .= number_format((float) $debit);
 									$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 									$hasil_jurnal .= '</td>';
 
 									$hasil_jurnal .= '<td class="text-right">';
-									$hasil_jurnal .= number_format($kredit);
+									$hasil_jurnal .= number_format((float) $kredit);
 									$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 									$hasil_jurnal .= '</td>';
 
@@ -484,12 +484,12 @@ class Pembayaran_material_model extends BF_Model
 									$hasil_jurnal .= '</td>';
 
 									$hasil_jurnal .= '<td class="text-right">';
-									$hasil_jurnal .= number_format($debit);
+									$hasil_jurnal .= number_format((float) $debit);
 									$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 									$hasil_jurnal .= '</td>';
 
 									$hasil_jurnal .= '<td class="text-right">';
-									$hasil_jurnal .= number_format($kredit);
+									$hasil_jurnal .= number_format((float) $kredit);
 									$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 									$hasil_jurnal .= '</td>';
 
@@ -649,12 +649,12 @@ class Pembayaran_material_model extends BF_Model
 					$hasil_jurnal .= '</td>';
 
 					$hasil_jurnal .= '<td class="text-right">';
-					$hasil_jurnal .= number_format($debit);
+					$hasil_jurnal .= number_format((float) $debit);
 					$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 					$hasil_jurnal .= '</td>';
 
 					$hasil_jurnal .= '<td class="text-right">';
-					$hasil_jurnal .= number_format($kredit);
+					$hasil_jurnal .= number_format((float) $kredit);
 					$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 					$hasil_jurnal .= '</td>';
 
@@ -779,12 +779,12 @@ class Pembayaran_material_model extends BF_Model
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($debit);
+								$hasil_jurnal .= number_format((float) $debit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($kredit);
+								$hasil_jurnal .= number_format((float) $kredit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 								$hasil_jurnal .= '</td>';
 
@@ -835,12 +835,12 @@ class Pembayaran_material_model extends BF_Model
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($debit);
+								$hasil_jurnal .= number_format((float) $debit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($kredit);
+								$hasil_jurnal .= number_format((float) $kredit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 								$hasil_jurnal .= '</td>';
 
@@ -891,12 +891,12 @@ class Pembayaran_material_model extends BF_Model
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($debit);
+								$hasil_jurnal .= number_format((float) $debit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($kredit);
+								$hasil_jurnal .= number_format((float) $kredit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 								$hasil_jurnal .= '</td>';
 
@@ -947,12 +947,12 @@ class Pembayaran_material_model extends BF_Model
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($debit);
+								$hasil_jurnal .= number_format((float) $debit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 								$hasil_jurnal .= '</td>';
 
 								$hasil_jurnal .= '<td class="text-right">';
-								$hasil_jurnal .= number_format($kredit);
+								$hasil_jurnal .= number_format((float) $kredit);
 								$hasil_jurnal .= '<input type="hidden" name="jurnal_ls[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 								$hasil_jurnal .= '</td>';
 
@@ -1186,7 +1186,7 @@ class Pembayaran_material_model extends BF_Model
 		$srcMtr            = "SELECT MAX(no_jurnal) as maxP FROM tr_jurnal WHERE no_jurnal LIKE '%" . int_to_roman(date('m')) . "-" . date('-y') . "%' ";
 		$resultMtr        = $this->db->query($srcMtr)->result_array();
 		$angkaUrut2        = $resultMtr[0]['maxP'];
-		$urutan2        = (int)substr($angkaUrut2, 0, 5);
+		$urutan2        = (int)substr((string) $angkaUrut2, 0, 5);
 		$urutan2 = $urutan2 + $nomor;
 		$urut2            = sprintf('%05s', $urutan2);
 		$kode_trans        = $urut2 . '-AJV-' . int_to_roman(date('m')) . '-' . date('y');
@@ -1231,7 +1231,7 @@ class Pembayaran_material_model extends BF_Model
 
 		$this->db->select('a.*');
 		$this->db->from('payment_approve a');
-		$this->db->where_in('a.id', explode(',', $id_payment));
+		$this->db->where_in('a.id', explode(',', (string) $id_payment));
 		$get_payment = $this->db->get()->result();
 
 		$ttl_debit = 0;
@@ -1336,12 +1336,12 @@ class Pembayaran_material_model extends BF_Model
 						$hasil .= '</td>';
 
 						$hasil .= '<td class="text-right">';
-						$hasil .= number_format($debit);
+						$hasil .= number_format((float) $debit);
 						$hasil .= '<input type="hidden" name="jurnal_refill_pettycash[' . $no_jurnal . '][debit]" value="' . $debit . '">';
 						$hasil .= '</td>';
 
 						$hasil .= '<td class="text-right">';
-						$hasil .= number_format($kredit);
+						$hasil .= number_format((float) $kredit);
 						$hasil .= '<input type="hidden" name="jurnal_refill_pettycash[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
 						$hasil .= '</td>';
 

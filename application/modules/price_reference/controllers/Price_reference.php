@@ -125,7 +125,7 @@ class Price_reference extends Admin_Controller
                 'id'           => $material->id,
                 'code_lv4'     => $material->code_lv4,
                 'code'         => $material->code ?: $material->code_lv4,
-                'nama'         => strtoupper($material->nama),
+                'nama'         => strtoupper((string) $material->nama),
                 'status_label' => $status_label,
                 'status_badge' => $status_badge,
             ],

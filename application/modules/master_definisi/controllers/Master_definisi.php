@@ -71,7 +71,7 @@ class Master_definisi extends Admin_Controller
 					'pesan'  => 'Process Failed !',
 					'status' => 0
 				);
-				write_log('Master Definisi', $field_hist, 'Gagal ' . strtolower($field_hist) . ' definisi: ' . $istilah, $logPayload, null, 0);
+				write_log('Master Definisi', $field_hist, 'Gagal ' . strtolower((string) $field_hist) . ' definisi: ' . $istilah, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data = array(

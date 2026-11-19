@@ -379,7 +379,7 @@ class TargetAccountingInheritanceTest
         assertEquals(2, $result['status'], "Save should be rejected when parent has null target_accounting");
         assertNull($result['child_data'], "Child data should be null on rejection");
         assertTrue(
-            strpos($result['pesan'], 'Target Accounting') !== false,
+            strpos((string) $result['pesan'], 'Target Accounting') !== false,
             "Error message should mention 'Target Accounting'"
         );
     }
@@ -397,7 +397,7 @@ class TargetAccountingInheritanceTest
         assertEquals(2, $result['status'], "Save should be rejected when parent has empty target_accounting");
         assertNull($result['child_data'], "Child data should be null on rejection");
         assertTrue(
-            strpos($result['pesan'], 'Target Accounting') !== false,
+            strpos((string) $result['pesan'], 'Target Accounting') !== false,
             "Error message should mention 'Target Accounting'"
         );
     }

@@ -17,7 +17,7 @@ foreach ($results['result_payment'] as $item_check) {
 		if (empty($get_po_loi)) {
 			$get_po_loi = $this->db->select('loi')->get_where('tr_purchase_order', ['no_surat' => $item_check->no_doc])->row();
 		}
-		if (!empty($get_po_loi) && strtolower(trim($get_po_loi->loi)) === 'import') {
+		if (!empty($get_po_loi) && strtolower(trim((string) $get_po_loi->loi)) === 'import') {
 			$is_import = true;
 		}
 		// Fallback: jika tipe request_payment = invoice_import, anggap import
@@ -36,7 +36,7 @@ foreach ($results['result_payment'] as $item_check) {
 		$get_inv_po = $this->db->get_where('tr_invoice_po', ['id' => $item_check->no_doc])->row();
 		if (!empty($get_inv_po) && !empty($get_inv_po->no_po)) {
 			$no_po_check = $get_inv_po->no_po;
-			if (strpos($no_po_check, 'TRS1') !== false) {
+			if (strpos((string) $no_po_check, 'TRS1') !== false) {
 				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check));
 				$get_ipp = $this->db->select('no_ipp')->where_in('kode_trans', $arr_inc)->get('tr_incoming_check')->row();
 				if (!empty($get_ipp)) {
@@ -44,7 +44,7 @@ foreach ($results['result_payment'] as $item_check) {
 				}
 			}
 			$get_po_loi2 = $this->db->select('loi')->get_where('tr_purchase_order', ['no_po' => $no_po_check])->row();
-			if (!empty($get_po_loi2) && strtolower($get_po_loi2->loi) === 'import') {
+			if (!empty($get_po_loi2) && strtolower((string) $get_po_loi2->loi) === 'import') {
 				$is_import = true;
 			}
 		}
@@ -187,19 +187,19 @@ if (!empty($results['result_header']->nm_supplier)) {
 				<td width="15%" style="">Nilai Bank</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="<?= number_format($results['result_header']->payment_bank, 2) ?>" readonly>
+					<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="<?= number_format((float) $results['result_header']->payment_bank, 2) ?>" readonly>
 				</td>
 			</tr>
 			<tr>
 				<td width="15%" style="">Kurs</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="<?= number_format($results['result_header']->kurs_payment, 2) ?>" readonly disabled placeholder="Pilih mata uang dulu">
+					<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="<?= number_format((float) $results['result_header']->kurs_payment, 2) ?>" readonly disabled placeholder="Pilih mata uang dulu">
 				</td>
 				<td width="15%" style="">Nilai Bank IDR</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="text" name="nilai_bank_idr" id="" class="form-control form-control-sm text-right nilai_bank_idr" value="<?= number_format($results['result_header']->dibayar_idr, 2) ?>" readonly readonly style="background-color: #e9ecef;">
+					<input type="text" name="nilai_bank_idr" id="" class="form-control form-control-sm text-right nilai_bank_idr" value="<?= number_format((float) $results['result_header']->dibayar_idr, 2) ?>" readonly readonly style="background-color: #e9ecef;">
 				</td>
 			</tr>
 		</table>
@@ -256,7 +256,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 						echo '<td class="text-right req_payment_col_' . $item->id . '">
 							<input type="hidden" class="jumlah_col_' . $item->id . '">
 							<input type="hidden" class="payment_bank_' . $item->id . '" value="' . $item->nilai_invoice . '">
-							' . number_format($item->nilai_invoice, 2) . '
+							' . number_format((float) $item->nilai_invoice, 2) . '
 						</td>';
 
 						// PPH column
@@ -279,7 +279,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 						echo '<td class="text-center">';
 						if (!empty($item->file_hash_name)) {
 							$nama_tampil = !empty($item->file_original_name) ? $item->file_original_name : $item->file_hash_name;
-							echo '<a href="' . base_url('uploads/payment_invoice/' . $item->file_hash_name) . '" target="_blank" class="btn btn-primary btn-sm" title="' . htmlspecialchars($nama_tampil, ENT_QUOTES) . '">';
+							echo '<a href="' . base_url('uploads/payment_invoice/' . $item->file_hash_name) . '" target="_blank" class="btn btn-primary btn-sm" title="' . htmlspecialchars((string) $nama_tampil, ENT_QUOTES) . '">';
 							echo '<i class="fa fa-download"></i> Download';
 							echo '</a>';
 						} else {
@@ -287,7 +287,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 						}
 						echo '</td>';
 						// DPP column
-						echo '<td class="text-right payment_col_' . $item->id . '">' . number_format($total_bayar_idr, 2) . '</td>';
+						echo '<td class="text-right payment_col_' . $item->id . '">' . number_format((float) $total_bayar_idr, 2) . '</td>';
 
 
 						echo '</tr>';
@@ -305,32 +305,32 @@ if (!empty($results['result_header']->nm_supplier)) {
 						<td colspan="<?= $footer_colspan ?>"></td>
 						<td>Subtotal</td>
 						<td class="text-right total_payment_col">
-							<?= number_format($total_payment, 2) ?>
+							<?= number_format((float) $total_payment, 2) ?>
 						</td>
 					</tr>
 					<tr class="ppn_footer_row" <?= $hide_ppn_pph_style ?>>
 						<td colspan="6"></td>
 						<td>PPN</td>
-						<td class="text-right total_ppn_col"><?= number_format($results['result_header']->total_ppn, 2) ?></td>
+						<td class="text-right total_ppn_col"><?= number_format((float) $results['result_header']->total_ppn, 2) ?></td>
 					</tr>
 					<tr class="pph_footer_row" <?= $hide_ppn_pph_style ?>>
 						<td colspan="6"></td>
 						<td>PPH</td>
 						<td class="text-right total_pph_col">
-							<?= number_format($results['result_header']->total_pph, 2) ?>
+							<?= number_format((float) $results['result_header']->total_pph, 2) ?>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="<?= $footer_colspan ?>"></td>
 						<td>Bank Charge</td>
 						<td>
-							<input type="text" name="bank_charge" id="" class="form-control form-control-sm text-right auto_num bank_charge" readonly value="<?= number_format($results['result_header']->bank_charge, 2) ?>" readonly>
+							<input type="text" name="bank_charge" id="" class="form-control form-control-sm text-right auto_num bank_charge" readonly value="<?= number_format((float) $results['result_header']->bank_charge, 2) ?>" readonly>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="<?= $footer_colspan ?>"></td>
 						<td><strong>Grand Total Payment</strong></td>
-						<td class="text-right grand_total_payment_col"><strong><?= number_format($results['result_header']->grand_total_payment, 2) ?></strong></td>
+						<td class="text-right grand_total_payment_col"><strong><?= number_format((float) $results['result_header']->grand_total_payment, 2) ?></strong></td>
 					</tr>
 					<tr class="selisih_kurs_row">
 						<td colspan="<?= $footer_colspan ?>"></td>
@@ -345,7 +345,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		<input type="hidden" name="total_payment" class="total_payment" value="<?= $total_payment ?>">
 		<input type="hidden" name="total_ppn" class="total_ppn" value="<?= $total_ppn ?>">
 		<input type="hidden" name="total_payment_bank" class="total_payment_bank" value="<?= $total_payment_bank ?>">
-		<input type="hidden" name="kontrol" class="kontrol" value="<?= number_format($results['result_header']->payment_bank, 2) ?>" readonly>
+		<input type="hidden" name="kontrol" class="kontrol" value="<?= number_format((float) $results['result_header']->payment_bank, 2) ?>" readonly>
 		<input type="hidden" class="kurs_receive_invoice" value="<?= $kurs_receive_invoice ?>">
 		<input type="hidden" class="is_import" value="<?= $is_import ? '1' : '0' ?>">
 	</div>

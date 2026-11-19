@@ -44,7 +44,7 @@
                 }
             }
             
-            ImageDestroy($image);
+            // ImageDestroy($image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
         }
     
         //----------------------------------------------------------------------
@@ -59,14 +59,14 @@
                 ImageJpeg($image, $filename, $q);            
             }
             
-            ImageDestroy($image);
+            // ImageDestroy($image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
         }
     
         //----------------------------------------------------------------------
         private static function image($frame, $pixelPerPoint = 4, $outerFrame = 4) 
         {
             $h = count($frame);
-            $w = strlen($frame[0]);
+            $w = strlen((string) $frame[0]);
             
             $imgW = $w + 2*$outerFrame;
             $imgH = $h + 2*$outerFrame;
@@ -88,7 +88,7 @@
             
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            // ImageDestroy($base_image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
             
             return $target_image;
         }

@@ -1,7 +1,7 @@
 <?php
-$pembeda = substr($header[0]['so_number'], 0, 1);
-$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime($header[0]['due_date'])) : '-';
-$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-';
+$pembeda = substr((string) $header[0]['so_number'], 0, 1);
+$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime((string) $header[0]['due_date'])) : '-';
+$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '-';
 
 $alasan_reject3 = (!empty($header)) ? $header[0]['reject_reason3'] : '';
 $keterangan_3 = (!empty($header)) ? $header[0]['keterangan_3'] : '';
@@ -10,10 +10,10 @@ $status3 = '';
 $tgl_appre_3 = '';
 if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
     $status3 = '<div class="badge bg-green">Approved</div>';
-    $tgl_appre_3 = date('d F Y', strtotime($header[0]['app_3_date']));
+    $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['app_3_date']));
 } elseif (!empty($header[0]['sts_reject3']) && $header[0]['sts_reject3'] == '1') {
     $status3 = '<div class="badge bg-red">Rejected</div>';
-    $tgl_appre_3 = date('d F Y', strtotime($header[0]['sts_reject3_date']));
+    $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['sts_reject3_date']));
 } else {
     $status3 = '<div class="badge bg-blue">Waiting Approval</div>';
 }
@@ -127,21 +127,21 @@ if (!empty($header[0]['app_3']) && $header[0]['app_3'] == '1') {
                                 </td>
                                 <td><?= $nm_lain ?></td>
                                 <?php if ($pembeda == 'SO') { ?>
-                                    <td class="text-right qty_order"><?= number_format($value['qty_order'], 5) ?></td>
-                                    <td class="text-right stock_free"><?= number_format($stock_free, 5) ?></td>
-                                    <td class="text-right stock_free"><?= number_format($use_stock, 5) ?></td>
-                                    <td class="text-right sisa_free"><?= number_format($sisa_free, 5) ?></td>
+                                    <td class="text-right qty_order"><?= number_format((float) $value['qty_order'], 5) ?></td>
+                                    <td class="text-right stock_free"><?= number_format((float) $stock_free, 5) ?></td>
+                                    <td class="text-right stock_free"><?= number_format((float) $use_stock, 5) ?></td>
+                                    <td class="text-right sisa_free"><?= number_format((float) $sisa_free, 5) ?></td>
                                 <?php } ?>
-                                <td class="text-right min_stok"><?= number_format($value['min_stok'], 2) ?></td>
-                                <td class="text-right max_stok"><?= number_format($value['max_stok'], 2) ?></td>
+                                <td class="text-right min_stok"><?= number_format((float) $value['min_stok'], 2) ?></td>
+                                <td class="text-right max_stok"><?= number_format((float) $value['max_stok'], 2) ?></td>
                                 <td class="text-right min_order"><?= number_format(0, 2) ?></td>
-                                <td class="text-right"><?= number_format($propose, 2) ?></td>
+                                <td class="text-right"><?= number_format((float) $propose, 2) ?></td>
                                 <td class="text-left"><?= $value['note'] ?></td>
                                 <td class="text-center">
                                     <?php if ($value['status_app'] == 'N') { ?>
                                         <input type="text" class="form-control input-sm text-center autoNumeric5 propose" id="pr_rev_<?= $value['id'] ?>" name="pr_rev_<?= $value['id'] ?>" value="<?= $propose ?>" style="width: 100px;">
                                     <?php } else { ?>
-                                        <span><?= number_format($value['propose_rev'], 2) ?></span>
+                                        <span><?= number_format((float) $value['propose_rev'], 2) ?></span>
                                     <?php } ?>
                                 </td>
                                 <td class="text-center">

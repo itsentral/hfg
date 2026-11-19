@@ -53,7 +53,7 @@
     if (isset($_REQUEST['data'])) { 
     
         //it's very important!
-        if (trim($_REQUEST['data']) == '')
+        if (trim((string) $_REQUEST['data']) == '')
             die('data cannot be empty! <a href="?">back</a>');
             
         // user data
@@ -73,7 +73,7 @@
     
     //config form
     echo '<form action="index.php" method="post">
-        Data:&nbsp;<input name="data" value="'.(isset($_REQUEST['data'])?htmlspecialchars($_REQUEST['data']):'PHP QR Code :)').'" />&nbsp;
+        Data:&nbsp;<input name="data" value="'.(isset($_REQUEST['data'])?htmlspecialchars((string) $_REQUEST['data']):'PHP QR Code :)').'" />&nbsp;
         ECC:&nbsp;<select name="level">
             <option value="L"'.(($errorCorrectionLevel=='L')?' selected':'').'>L - smallest</option>
             <option value="M"'.(($errorCorrectionLevel=='M')?' selected':'').'>M</option>

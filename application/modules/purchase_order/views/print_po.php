@@ -15,7 +15,7 @@ if (!function_exists('fmt2')) {
 if (!function_exists('idDate')) {
     function idDate($d)
     {
-        return $d ? date('d M Y', strtotime($d)) : '';
+        return $d ? date('d M Y', strtotime((string) $d)) : '';
     }
 }
 
@@ -195,14 +195,14 @@ $terbilang = function_exists('rupiah_to_words')
                 <tr>
                     <td style="width: 60px; vertical-align: top;"><strong>Vendor</strong></td>
                     <td>
-                        <?= strtoupper($vendorName)  ?> <br>
-                        <?= nl2br($vendorAddress) ?>
+                        <?= strtoupper((string) $vendorName)  ?> <br>
+                        <?= nl2br((string) $vendorAddress) ?>
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align: top;"><strong>Ship To</strong></td>
                     <td>
-                        <?= nl2br($shipTo) ?>
+                        <?= nl2br((string) $shipTo) ?>
                     </td>
                 </tr>
             </table>
@@ -213,7 +213,7 @@ $terbilang = function_exists('rupiah_to_words')
                     <td>PO Date :<br>
                         <?= idDate($poDate) ?></td>
                     <td>PO Number :<br>
-                        <?= htmlspecialchars($poNumber) ?></td>
+                        <?= htmlspecialchars((string) $poNumber) ?></td>
                 </tr>
                 <tr>
                     <td>Terms : <br>
@@ -259,8 +259,8 @@ $terbilang = function_exists('rupiah_to_words')
                 $amount = $line - $discA;
             ?>
                 <tr>
-                    <td class="text-center"><?= htmlspecialchars($code) ?></td>
-                    <td><?= nl2br(htmlspecialchars($desc)) ?></td>
+                    <td class="text-center"><?= htmlspecialchars((string) $code) ?></td>
+                    <td><?= nl2br(htmlspecialchars((string) $desc)) ?></td>
                     <td class="text-center"><?= fmt($qty) ?></td>
                     <td class="text-right"><?= fmt2($price) ?></td>
                     <td class="text-center"><?= $discP ? fmt2($discP) . '%' : '0' ?></td>
@@ -280,7 +280,7 @@ $terbilang = function_exists('rupiah_to_words')
         <tr>
             <td style="width:65%;">
                 <div>Terbilang :</div>
-                <div class="box" style="min-height:26px;"><em><strong><?= htmlspecialchars($terbilang) ?></strong></em></div>
+                <div class="box" style="min-height:26px;"><em><strong><?= htmlspecialchars((string) $terbilang) ?></strong></em></div>
 
                 <div class="box mt-8" style="white-space:pre-line; min-height:80px;">
                     <strong>Keterangan :</strong>
@@ -298,7 +298,7 @@ $terbilang = function_exists('rupiah_to_words')
                         <td class="text-right"><?= $totalDiskon ? fmt2($totalDiskon) : '0' ?></td>
                     </tr>
                     <tr>
-                        <td class="text-left">PPN (<?= rtrim(rtrim(number_format($ppnPersen, 2), '0'), ',') ?>%)</td>
+                        <td class="text-left">PPN (<?= rtrim(rtrim(number_format((float) $ppnPersen, 2), '0'), ',') ?>%)</td>
                         <td class="text-right"><?= fmt2($header->total_ppn) ?></td>
                     </tr>
                     <tr>

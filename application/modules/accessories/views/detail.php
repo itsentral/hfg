@@ -20,7 +20,7 @@ $badge_color    = ($status == 'Active') ? 'success' : 'danger';
 // Material fallback fields
 $code_material  = (!empty($header) && isset($header[0]->code_material)) ? $header[0]->code_material : '';
 $code_company   = (!empty($header) && isset($header[0]->code_company)) ? $header[0]->code_company : '';
-$nm_material    = (!empty($header) && isset($header[0]->nm_material)) ? strtoupper($header[0]->nm_material) : '';
+$nm_material    = (!empty($header) && isset($header[0]->nm_material)) ? strtoupper((string) $header[0]->nm_material) : '';
 $satuan_packing = (!empty($header) && isset($header[0]->satuan_packing)) ? $header[0]->satuan_packing : '';
 $unit           = (!empty($header) && isset($header[0]->unit)) ? $header[0]->unit : '';
 $begin_balance  = (!empty($header) && isset($header[0]->begin_balance)) ? $header[0]->begin_balance : '';
@@ -42,15 +42,15 @@ $unit_fisik     = (!empty($header) && isset($header[0]->unit_fisik)) ? $header[0
                         </tr>
                         <tr>
                             <th class="bg-light">Stok Name</th>
-                            <td class="fw-bold"><?= !empty($stock_name) ? strtoupper($stock_name) : '-' ?></td>
+                            <td class="fw-bold"><?= !empty($stock_name) ? strtoupper((string) $stock_name) : '-' ?></td>
                         </tr>
                         <tr>
                             <th class="bg-light">Trade Name</th>
-                            <td><?= !empty($trade_name) ? strtoupper($trade_name) : '-' ?></td>
+                            <td><?= !empty($trade_name) ? strtoupper((string) $trade_name) : '-' ?></td>
                         </tr>
                         <tr>
                             <th class="bg-light">Brand</th>
-                            <td><?= !empty($brand) ? strtoupper($brand) : '-' ?></td>
+                            <td><?= !empty($brand) ? strtoupper((string) $brand) : '-' ?></td>
                         </tr>
                         <tr>
                             <th class="bg-light">Spesification</th>

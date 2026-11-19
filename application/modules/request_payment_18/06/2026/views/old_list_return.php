@@ -63,9 +63,9 @@
 										<td><?= $record->tgl_doc ?></td>
 										<td><?= $record->keperluan ?></td>
 										<td><?= $record->tipe ?></td>
-										<td><?= number_format($record->jumlah) ?></td>
-										<td><?= number_format($get_pengembalian_expense->ttl_kembali_expense) ?></td>
-										<td><?= number_format($sisa_kembali) ?></td>
+										<td><?= number_format((float) $record->jumlah) ?></td>
+										<td><?= number_format((float) $get_pengembalian_expense->ttl_kembali_expense) ?></td>
+										<td><?= number_format((float) $sisa_kembali) ?></td>
 										<td><?= $status ?></td>
 										<td>
 											<a href="javascript:edit(<?= $record->ids ?>)"><i class="fa fa-check fa-2x"></i></a>

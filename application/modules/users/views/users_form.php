@@ -133,7 +133,7 @@
 				$deptid = (!empty($data->department_id)) ? $data->department_id : 0;
 				$departmentx[0] = 'Select An Department';
 				foreach ($department as $key => $value) {
-					$departmentx[$value['id']] = strtoupper($value['nama']);
+					$departmentx[$value['id']] = strtoupper((string) $value['nama']);
 				}
 				?>
 

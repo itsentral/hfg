@@ -18,31 +18,31 @@ $tgl_appre_3 = '-';
 if (!empty($header)) {
     if ($header[0]['app_1'] == '1') {
         $status1 = '<span class="badge bg-success">Approved</span>';
-        $tgl_appre_1 = date('d F Y', strtotime($header[0]['app_1_date']));
+        $tgl_appre_1 = date('d F Y', strtotime((string) $header[0]['app_1_date']));
     } else {
         if ($header[0]['sts_reject1'] == '1') {
             $status1 = '<span class="badge bg-danger">Rejected</span>';
-            $tgl_appre_1 = date('d F Y', strtotime($header[0]['sts_reject1_date']));
+            $tgl_appre_1 = date('d F Y', strtotime((string) $header[0]['sts_reject1_date']));
         }
     }
 
     if ($header[0]['app_2'] == '1') {
         $status2 = '<span class="badge bg-success">Approved</span>';
-        $tgl_appre_2 = date('d F Y', strtotime($header[0]['app_2_date']));
+        $tgl_appre_2 = date('d F Y', strtotime((string) $header[0]['app_2_date']));
     } else {
         if ($header[0]['sts_reject2'] == '1') {
             $status2 = '<span class="badge bg-danger">Rejected</span>';
-            $tgl_appre_2 = date('d F Y', strtotime($header[0]['sts_reject2_date']));
+            $tgl_appre_2 = date('d F Y', strtotime((string) $header[0]['sts_reject2_date']));
         }
     }
 
     if ($header[0]['app_3'] == '1') {
         $status3 = '<span class="badge bg-success">Approved</span>';
-        $tgl_appre_3 = date('d F Y', strtotime($header[0]['app_3_date']));
+        $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['app_3_date']));
     } else {
         if ($header[0]['sts_reject3'] == '1') {
             $status3 = '<span class="badge bg-danger">Rejected</span>';
-            $tgl_appre_3 = date('d F Y', strtotime($header[0]['sts_reject3_date']));
+            $tgl_appre_3 = date('d F Y', strtotime((string) $header[0]['sts_reject3_date']));
         }
     }
 }
@@ -123,22 +123,22 @@ if (!empty($header)) {
                                             <td class="fw-semibold">Department Head</td>
                                             <td class="text-center"><?= $status1 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_1 ?></td>
-                                            <td><input type="text" name="reject_reason1" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars($alasan_reject1) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_1" class="form-control form-control-sm" value="<?= htmlspecialchars($keterangan_1) ?>" placeholder="Catatan Dept Head"></td>
+                                            <td><input type="text" name="reject_reason1" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject1) ?>" readonly></td>
+                                            <td><input type="text" name="keterangan_1" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_1) ?>" placeholder="Catatan Dept Head"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-semibold">Cost Control</td>
                                             <td class="text-center"><?= $status2 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_2 ?></td>
-                                            <td><input type="text" name="reject_reason2" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars($alasan_reject2) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_2" class="form-control form-control-sm" value="<?= htmlspecialchars($keterangan_2) ?>" placeholder="Catatan Cost Control"></td>
+                                            <td><input type="text" name="reject_reason2" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject2) ?>" readonly></td>
+                                            <td><input type="text" name="keterangan_2" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_2) ?>" placeholder="Catatan Cost Control"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-semibold">Management / Direktur</td>
                                             <td class="text-center"><?= $status3 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_3 ?></td>
-                                            <td><input type="text" name="reject_reason3" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars($alasan_reject3) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_3" class="form-control form-control-sm" value="<?= htmlspecialchars($keterangan_3) ?>" placeholder="Catatan Management"></td>
+                                            <td><input type="text" name="reject_reason3" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject3) ?>" readonly></td>
+                                            <td><input type="text" name="keterangan_3" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_3) ?>" placeholder="Catatan Management"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -187,10 +187,10 @@ if (!empty($header)) {
                                                 echo "</td>";
                                                 echo "<td class='text-center'><span class='badge bg-warning text-dark'>Waiting Process</span></td>";
                                             } elseif (($value['status_app'] ?? '') == 'Y') {
-                                                echo "<td class='text-center fw-bold'>" . number_format($propose, 2) . "</td>";
+                                                echo "<td class='text-center fw-bold'>" . number_format((float) $propose, 2) . "</td>";
                                                 echo "<td class='text-center'><span class='badge bg-success'>Approved</span></td>";
                                             } elseif (($value['status_app'] ?? '') == 'D') {
-                                                echo "<td class='text-center fw-bold'>" . number_format($propose, 2) . "</td>";
+                                                echo "<td class='text-center fw-bold'>" . number_format((float) $propose, 2) . "</td>";
                                                 echo "<td class='text-center'><span class='badge bg-danger'>Rejected</span></td>";
                                             }
 
@@ -239,9 +239,9 @@ if (!empty($header)) {
                                             foreach ($list_stok_non_pr as $item) {
                                                 echo '<tr>';
                                                 echo '<td class="text-center">' . $no . '</td>';
-                                                echo '<td class="text-start fw-semibold">' . htmlspecialchars($item['stock_name']) . '</td>';
-                                                echo '<td class="text-end">' . number_format($item['min_stok'], 2) . '</td>';
-                                                echo '<td class="text-end">' . number_format($item['max_stok'], 2) . '</td>';
+                                                echo '<td class="text-start fw-semibold">' . htmlspecialchars((string) $item['stock_name']) . '</td>';
+                                                echo '<td class="text-end">' . number_format((float) $item['min_stok'], 2) . '</td>';
+                                                echo '<td class="text-end">' . number_format((float) $item['max_stok'], 2) . '</td>';
                                                 echo '<td class="text-end">' . number_format(0, 2) . '</td>';
                                                 echo '<td>';
                                                 echo '<input type="text" class="form-control form-control-sm text-center autoNumeric2 nmat_qty_' . $item['id'] . '" placeholder="Qty">';

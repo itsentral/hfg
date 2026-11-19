@@ -3,8 +3,8 @@
 	<div class='note'>
 		<p>
 			<strong>Info!</strong><br> 
-			Kurs last updated by <b><?= strtoupper($data_kurs[0]->update_by);?></b>, on <b><?=date('l, d F Y H:i:s', strtotime($data_kurs[0]->update_date));?></b><br>
-			<span style='color:green;font-size: 18px;'><b>1 USD = <?=number_format($data_kurs[0]->kurs,2);?> IDR</b></span><br>
+			Kurs last updated by <b><?= strtoupper((string) $data_kurs[0]->update_by);?></b>, on <b><?=date('l, d F Y H:i:s', strtotime((string) $data_kurs[0]->update_date));?></b><br>
+			<span style='color:green;font-size: 18px;'><b>1 USD = <?=number_format((float) $data_kurs[0]->kurs,2);?> IDR</b></span><br>
 		</p>
 	</div>
 	<br>
@@ -14,7 +14,7 @@
 		<label class='label-control col-sm-1'><b>Incoterms</b></label>
 		<div class='col-sm-5'>
 			<?php
-			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','placeholder'=>'Incoterms'), strtoupper($data[0]->tgl_dibutuhkan));
+			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','placeholder'=>'Incoterms'), strtoupper((string) $data[0]->tgl_dibutuhkan));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Request Date</b></label>
@@ -30,7 +30,7 @@
 				<?php
 				foreach(get_list_kurs2() AS $val => $valx){
 					$sel = ($valx['kode_dari'] == $data[0]->mata_uang)?'selected':'';
-					echo "<option value='".$valx['kode_dari']."' ".$sel.">".$valx['kode_dari']." - ".strtoupper($valx['negara'])."</option>";
+					echo "<option value='".$valx['kode_dari']."' ".$sel.">".$valx['kode_dari']." - ".strtoupper((string) $valx['negara'])."</option>";
 				}
 				?>
 			</select>
@@ -55,13 +55,13 @@
 		<label class='label-control col-sm-1'><b>Buyer</b></label>
 		<div class='col-sm-5'>
 			<?php
-			 echo form_input(array('id'=>'buyer','name'=>'buyer','class'=>'form-control input-md','placeholder'=>'Buyer'), strtoupper($data[0]->buyer));
+			 echo form_input(array('id'=>'buyer','name'=>'buyer','class'=>'form-control input-md','placeholder'=>'Buyer'), strtoupper((string) $data[0]->buyer));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Remarks</b></label>
 		<div class='col-sm-5'>
 			<?php
-			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper($data[0]->remarks));
+			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper((string) $data[0]->remarks));
 			?>
 		</div>
 	</div>
@@ -69,7 +69,7 @@
 		<label class='label-control col-sm-1'><b>Term Of Payment</b></label>
 		<div class='col-sm-3'>
 		<?php
-			 echo form_input(array('id'=>'top','name'=>'top','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper($data[0]->top));
+			 echo form_input(array('id'=>'top','name'=>'top','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper((string) $data[0]->top));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Currency Amount Word</b></label>
@@ -101,19 +101,19 @@
 						$SUM += $qty_p * $valx['price_ref_sup'];
 						echo "<tr>";
 							echo "<td align='left'>
-									<input name='detail[".$no."][nm_barang]' id='nm_barang_".$no."' class='form-control input-md ' value='".strtoupper($valx['nm_barang'])."' >
+									<input name='detail[".$no."][nm_barang]' id='nm_barang_".$no."' class='form-control input-md ' value='".strtoupper((string) $valx['nm_barang'])."' >
 									<input type='hidden' name='detail[".$no."][id]' id='id_".$no."' value='".$valx['id']."'>
 									<input type='hidden' name='detail[".$no."][price]' id='price_".$no."' value='".$valx['price_ref_sup']."'>
 									</td>";
-							echo "<td align='right'><input name='detail[".$no."][qty]' id='qty_".$no."' class='form-control text-right input-md maskM ch_qty' value='".number_format($qty_p,2)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly tabindex='-1'></td>";
-							echo "<td align='right'>".number_format($valx['price_ref_sup'],2)."</td>";
+							echo "<td align='right'><input name='detail[".$no."][qty]' id='qty_".$no."' class='form-control text-right input-md maskM ch_qty' value='".number_format((float) $qty_p,2)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly tabindex='-1'></td>";
+							echo "<td align='right'>".number_format((float) $valx['price_ref_sup'],2)."</td>";
 							echo "<td align='right'><div id='qtytot_".$no."' class='sum_tot'>".number_format($qty_p * $valx['price_ref_sup'],2)."</div></td>";
 						echo "</tr>";
 					}
 					echo "<tr>";
 						echo "<td align='left' colspan='2'></td>";
 						echo "<td align='right'><b>TOTAL PRICE</b></td>";
-						echo "<td align='right'><b><div id='total'>".number_format($SUM,2)."</div></b></td>";
+						echo "<td align='right'><b><div id='total'>".number_format((float) $SUM,2)."</div></b></td>";
 					echo "</tr>";
 					?>
 				</tbody>
@@ -147,7 +147,7 @@
 										echo "<option value='0'>Select Group TOP</option>";
 										foreach($payment AS $val2 => $valx2){
 											$sel = ($valx2['name'] == $valx['group_top'])?'selected':'';
-											echo "<option value='".$valx2['name']."' ".$sel.">".strtoupper($valx2['name'])."</option>";
+											echo "<option value='".$valx2['name']."' ".$sel.">".strtoupper((string) $valx2['name'])."</option>";
 										}
 									echo "</select>";
 									echo "<input type='hidden' name='detail_po[".$id."][term]' class='form-control text-center input-md' value='".$valx['term']."'>"; 
@@ -155,9 +155,9 @@
 								echo "<td align='left'><input type='text' id='progress_".$id."' name='detail_po[".$id."][progress]' value='".$valx['progress']."' class='form-control input-md text-center maskM progress_term'></td>";
 								echo "<td align='left'><input type='text' id='usd_".$id."' name='detail_po[".$id."][value_usd]' value='".$valx['value_usd']."' class='form-control input-md text-right maskM sum_tot_usd' readonly></td>";
 								echo "<td align='left'><input type='text' id='idr_".$id."' name='detail_po[".$id."][value_idr]' value='".$valx['value_idr']."' class='form-control input-md text-right maskM sum_tot_idr' readonly></td>";
-								echo "<td align='left'><input type='text' id='total_harga_".$id."' name='detail_po[".$id."][keterangan]' value='".strtoupper($valx['keterangan'])."' class='form-control input-md text-left'></td>";
+								echo "<td align='left'><input type='text' id='total_harga_".$id."' name='detail_po[".$id."][keterangan]' value='".strtoupper((string) $valx['keterangan'])."' class='form-control input-md text-left'></td>";
 								echo "<td align='left'><input type='text' name='detail_po[".$id."][jatuh_tempo]' value='".$valx['jatuh_tempo']."' class='form-control input-md text-center datepicker' readonly></td>";
-								echo "<td align='left'><input type='text' name='detail_po[".$id."][syarat]' value='".strtoupper($valx['syarat'])."' class='form-control input-md'></td>";
+								echo "<td align='left'><input type='text' name='detail_po[".$id."][syarat]' value='".strtoupper((string) $valx['syarat'])."' class='form-control input-md'></td>";
 								echo "<td align='center'>";
 								echo "&nbsp;<button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-close'></i></button>";
 								echo "</td>";

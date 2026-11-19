@@ -31,13 +31,13 @@
                     $No = 0;
                     foreach ($result as $val => $valx) {
                         $No++;
-                        $qty_oke    = number_format($valx['qty_oke'], 2);
-                        $keterangan = (!empty($valx['keterangan'])) ? ucfirst($valx['keterangan']) : '-';
-                        $pemeriksa  = (!empty($valx['ket_req_po'])) ? ucfirst($valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst($valx['ket_req_pro']) : '-');
+                        $qty_oke    = number_format((float) $valx['qty_oke'], 2);
+                        $keterangan = (!empty($valx['keterangan'])) ? ucfirst((string) $valx['keterangan']) : '-';
+                        $pemeriksa  = (!empty($valx['ket_req_po'])) ? ucfirst((string) $valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst((string) $valx['ket_req_pro']) : '-');
                         if (isset($tanda) && $tanda == 'check' && isset($checked) && $checked == 'Y') {
-                            $qty_oke    = number_format($valx['check_qty_oke'], 2);
-                            $keterangan = (!empty($valx['check_keterangan'])) ? ucfirst($valx['check_keterangan']) : '-';
-                            $pemeriksa  = (!empty($valx['ket_req_po'])) ? ucfirst($valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst($valx['ket_req_pro']) : '-');
+                            $qty_oke    = number_format((float) $valx['check_qty_oke'], 2);
+                            $keterangan = (!empty($valx['check_keterangan'])) ? ucfirst((string) $valx['check_keterangan']) : '-';
+                            $pemeriksa  = (!empty($valx['ket_req_po'])) ? ucfirst((string) $valx['ket_req_po']) : ((!empty($valx['ket_req_pro'])) ? ucfirst((string) $valx['ket_req_pro']) : '-');
                         }
                 ?>
                         <tr>

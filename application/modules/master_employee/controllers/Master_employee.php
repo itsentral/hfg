@@ -55,7 +55,7 @@ class Master_employee extends Admin_Controller
 			$nm_karyawan		= $data['nm_karyawan'];
 			$no_ktp				= $data['no_ktp'];
 			$tmp_lahir			= $data['tmp_lahir'];
-			$tgl_lahir			= (!empty($data['tgl_lahir'])) ? date('Y-m-d', strtotime($data['tgl_lahir'])) : NULL;
+			$tgl_lahir			= (!empty($data['tgl_lahir'])) ? date('Y-m-d', strtotime((string) $data['tgl_lahir'])) : NULL;
 			$gender				= $data['gender'];
 			$agama				= $data['agama'];
 			$department			= $data['department'];
@@ -69,8 +69,8 @@ class Master_employee extends Admin_Controller
 			$domisili_alamat	= $data['domisili_alamat'];
 			$npwp				= $data['npwp'];
 			$bpjs				= $data['bpjs'];
-			$tgl_join			= (!empty($data['tgl_join'])) ? date('Y-m-d', strtotime($data['tgl_join'])) : NULL;
-			$tgl_end			= (!empty($data['tgl_end'])) ? date('Y-m-d', strtotime($data['tgl_end'])) : NULL;
+			$tgl_join			= (!empty($data['tgl_join'])) ? date('Y-m-d', strtotime((string) $data['tgl_join'])) : NULL;
+			$tgl_end			= (!empty($data['tgl_end'])) ? date('Y-m-d', strtotime((string) $data['tgl_end'])) : NULL;
 			$rek_number			= $data['rek_number'];
 			$bank_account		= $data['bank_account'];
 			$sts_karyawan		= $data['sts_karyawan'];
@@ -89,7 +89,7 @@ class Master_employee extends Admin_Controller
 				$q_group		= "SELECT max(nik) as maxP FROM employee WHERE nik LIKE 'ID" . $Y . "%' ";
 				$rest_group		= $this->db->query($q_group)->result_array();
 				$angka_group	= $rest_group[0]['maxP'];
-				$urut_g			= (int)substr($angka_group, 4, 5);
+				$urut_g			= (int)substr((string) $angka_group, 4, 5);
 				$urut_g++;
 				$urut			= sprintf('%05s', $urut_g);
 				$nik			= "ID" . $Y . $urut;
@@ -162,7 +162,7 @@ class Master_employee extends Admin_Controller
 					'pesan'		=> 'Process data failed. Please try again later ...',
 					'status'	=> 2
 				);
-				write_log('Master Employee', $tandax, 'Gagal ' . strtolower($tandax) . ' employee: ' . $nik . ' (' . $nm_karyawan . ')', $logPayload, null, 0);
+				write_log('Master Employee', $tandax, 'Gagal ' . strtolower((string) $tandax) . ' employee: ' . $nik . ' (' . $nm_karyawan . ')', $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Kembali	= array(

@@ -35,7 +35,7 @@ $note       = isset($note) ? $note : '-';
                         <tr>
                             <td class="fw-bold text-muted">PIC Penerima</td>
                             <td>:</td>
-                            <td><?= ucfirst($pic); ?></td>
+                            <td><?= ucfirst((string) $pic); ?></td>
                         </tr>
                         <?php endif; ?>
                         <?php if (!empty($note) && $note != '-') : ?>
@@ -71,18 +71,18 @@ $note       = isset($note) ? $note : '-';
                         $No++;
                         $qty_oke    = isset($valx['qty_oke']) ? (float)$valx['qty_oke'] : 0;
                         $total_qty += $qty_oke;
-                        $keterangan = (!empty($valx['keterangan'])) ? ucfirst($valx['keterangan']) : '-';
+                        $keterangan = (!empty($valx['keterangan'])) ? ucfirst((string) $valx['keterangan']) : '-';
                 ?>
                         <tr>
                             <td class="text-center"><?= $No; ?></td>
-                            <td class="fw-semibold"><?= strtoupper($valx['nm_material']); ?></td>
-                            <td class="text-center fw-bold text-primary"><?= number_format($qty_oke, 2); ?></td>
+                            <td class="fw-semibold"><?= strtoupper((string) $valx['nm_material']); ?></td>
+                            <td class="text-center fw-bold text-primary"><?= number_format((float) $qty_oke, 2); ?></td>
                             <td><?= $keterangan; ?></td>
                         </tr>
                     <?php endforeach; ?>
                     <tr class="table-light fw-bold">
                         <td colspan="2" class="text-end">Total Diterima:</td>
-                        <td class="text-center text-primary"><?= number_format($total_qty, 2); ?></td>
+                        <td class="text-center text-primary"><?= number_format((float) $total_qty, 2); ?></td>
                         <td></td>
                     </tr>
                 <?php else : ?>

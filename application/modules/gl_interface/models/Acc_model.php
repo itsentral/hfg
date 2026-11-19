@@ -305,8 +305,8 @@ class Acc_model extends BF_Model
     function generate_jurnal_jv($kode, $tanggal, $bank = '')
     {
         $template_jurnal = $this->db->query("SELECT * from ms_generate where tipe='ms_generate_jurnal' and info='" . $kode . "'")->row();
-        $tahun = substr($tanggal, 0, 2);
-        $bulan = substr($tanggal, 3, 2);
+        $tahun = substr((string) $tanggal, 0, 2);
+        $bulan = substr((string) $tanggal, 3, 2);
         $angka = 1;
         $no_urut = $this->db->query("SELECT * from ms_generate_jurnal where tipe='" . $kode . "' and tahun='" . $tahun . "' and bulan='" . $bulan . "'")->row();
         if (!empty($no_urut)) {

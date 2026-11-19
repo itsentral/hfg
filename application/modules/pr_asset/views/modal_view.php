@@ -12,7 +12,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Asset Milik </b></label>
 			<div class='col-sm-4'>             
 				<?php
-					echo form_input(array('id'=>'kdcab','name'=>'kdcab','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nama Asset','readonly'=>'readonly'), strtoupper($dataD[0]['kdcab']));
+					echo form_input(array('id'=>'kdcab','name'=>'kdcab','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nama Asset','readonly'=>'readonly'), strtoupper((string) $dataD[0]['kdcab']));
 				?>		
 			</div>
 			<label class='label-control col-sm-2'><b>Kategori Pajak <span class='text-red'>*</span></b></label>
@@ -22,7 +22,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 					<?php
 						foreach($list_pajak AS $val => $valx){
 							$sexd	= ($valx['id'] == $dataD[0]['category_pajak'])?'selected':'';
-							echo "<option value='".$valx['id']."' ".$sexd.">".strtoupper($valx['nm_category'])."</option>";
+							echo "<option value='".$valx['id']."' ".$sexd.">".strtoupper((string) $valx['nm_category'])."</option>";
 						}
 					?>
 				</select>	
@@ -32,7 +32,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Nama Asset</b></label>
 			<div class='col-sm-4'>             
 				<?php
-					echo form_input(array('id'=>'nm_asset','name'=>'nm_asset','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nama Asset','readonly'=>'readonly'), strtoupper($dataD[0]['nm_asset']));
+					echo form_input(array('id'=>'nm_asset','name'=>'nm_asset','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nama Asset','readonly'=>'readonly'), strtoupper((string) $dataD[0]['nm_asset']));
 				?>		
 			</div>
 			<label class='label-control col-sm-2'><b>Kategori</b></label>
@@ -41,7 +41,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 					<?php
 						foreach($list_catg AS $val => $valx){
 							$selx = ($dataD[0]['category'] == $valx['id'])?'selected':'';
-							echo "<option value='".$valx['id']."' ".$selx.">".strtoupper($valx['nm_category'])."</option>";
+							echo "<option value='".$valx['id']."' ".$selx.">".strtoupper((string) $valx['nm_category'])."</option>";
 						}
 					?>
 				</select>	
@@ -54,7 +54,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 					<?php
 						foreach($list_dept AS $val => $valx){
 							$selx = ($dataD[0]['lokasi_asset'] == $valx['id'])?'selected':''; 
-							echo "<option value='".$valx['id']."' ".$selx.">".strtoupper($valx['nm_dept'])."</option>";
+							echo "<option value='".$valx['id']."' ".$selx.">".strtoupper((string) $valx['nm_dept'])."</option>";
 						}
 					?>
 				</select>	
@@ -62,7 +62,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Cost Center</b></label>
 			<div class='col-sm-4'>             
 				<?php 
-					echo form_input(array('id'=>'cost_center','name'=>'cost_center','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Cost Center','readonly'=>'readonly'), strtoupper($dataD[0]['nm_costcenter']));											
+					echo form_input(array('id'=>'cost_center','name'=>'cost_center','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Cost Center','readonly'=>'readonly'), strtoupper((string) $dataD[0]['nm_costcenter']));											
 				?>		
 			</div>
 		</div>
@@ -70,14 +70,14 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Nilai Asset</b></label>
 			<div class='col-sm-4'>             
 					<?php
-						echo form_input(array('id'=>'nilai_asset','name'=>'nilai_asset','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nilai Asset','data-decimal'=>'.','data-thousand'=>'','data-precision'=>'0','data-allow-zero'=>false,'readonly'=>'readonly'), number_format($dataD[0]['nilai_asset']));											
+						echo form_input(array('id'=>'nilai_asset','name'=>'nilai_asset','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Nilai Asset','data-decimal'=>'.','data-thousand'=>'','data-precision'=>'0','data-allow-zero'=>false,'readonly'=>'readonly'), number_format((float) $dataD[0]['nilai_asset']));											
 					?>		
 			</div>
 			
 			<label class='label-control col-sm-2'><b>Tanggal Perolehan</b></label>
 			<div class='col-sm-4'>
 				<?php
-					echo form_input(array('id'=>'tgl_perolehan','class'=>'form-control input-md','autocomplete'=>'off','readonly'=>'readonly'),date('d F Y', strtotime($dataD[0]['tgl_perolehan'])));											
+					echo form_input(array('id'=>'tgl_perolehan','class'=>'form-control input-md','autocomplete'=>'off','readonly'=>'readonly'),date('d F Y', strtotime((string) $dataD[0]['tgl_perolehan'])));											
 				?>	
 			</div>
 		</div>
@@ -92,7 +92,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Dipresiasi Perbulan</b></label>
 			<div class='col-sm-4'>             
 					<?php
-						echo form_input(array('id'=>'value','name'=>'value','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Dipresiasi Perbulan', 'readonly'=>'readonly','data-decimal'=>'.','data-thousand'=>'','data-precision'=>'0','data-allow-zero'=>false), number_format($dataD[0]['value']));											
+						echo form_input(array('id'=>'value','name'=>'value','class'=>'form-control input-md','autocomplete'=>'off','placeholder'=>'Dipresiasi Perbulan', 'readonly'=>'readonly','data-decimal'=>'.','data-thousand'=>'','data-precision'=>'0','data-allow-zero'=>false), number_format((float) $dataD[0]['value']));											
 					?>		
 			</div>
 		</div>
@@ -111,7 +111,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 					<?php
 						foreach($list_coa AS $val => $valx){
 							$selx = ($dataD[0]['id_coa'] == $valx['id'])?'selected':'';
-							echo "<option value='".$valx['coa']."' ".$selx.">".strtoupper($valx['coa'])." | ".strtoupper($valx['keterangan'])."</option>";
+							echo "<option value='".$valx['coa']."' ".$selx.">".strtoupper((string) $valx['coa'])." | ".strtoupper((string) $valx['keterangan'])."</option>";
 						}
 					?>
 				</select>	
@@ -125,7 +125,7 @@ $paths 	= base_url().'/assets/foto/'.$dataD[0]['foto'];
 			<label class='label-control col-sm-2'><b>Tanggal Mulai Penyusutan</b></label>
 			<div class='col-sm-4'>
 				<?php
-					echo form_input(array('id'=>'tgl_depresiasi','class'=>'form-control input-md','autocomplete'=>'off','readonly'=>'readonly'),date('d F Y', strtotime($dataD[0]['tgl_depresiasi'])));											
+					echo form_input(array('id'=>'tgl_depresiasi','class'=>'form-control input-md','autocomplete'=>'off','readonly'=>'readonly'),date('d F Y', strtotime((string) $dataD[0]['tgl_depresiasi'])));											
 				?>	
 			</div>
 		</div>

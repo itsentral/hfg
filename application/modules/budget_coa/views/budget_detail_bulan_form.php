@@ -74,7 +74,7 @@ if (!empty($data)) {
                 <div class="card bg-light border p-3 rounded-3">
                     <small class="text-muted d-block fw-semibold">Alokasi Bulan <?= $nama_bulan ?></small>
                     <div class="fs-5 fw-bold text-dark font-monospace mt-1">
-                        Rp <?= number_format($tot_bulan, 0, ',', '.') ?>
+                        Rp <?= number_format((float) $tot_bulan, 0, ',', '.') ?>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@ if (!empty($data)) {
                 <div class="card bg-primary-subtle border-primary-subtle p-3 rounded-3">
                     <small class="text-primary d-block fw-semibold">Year To Date (YTD) s/d <?= $nama_bulan ?></small>
                     <div class="fs-5 fw-bold text-primary font-monospace mt-1">
-                        Rp <?= number_format($tot_ytd, 0, ',', '.') ?>
+                        Rp <?= number_format((float) $tot_ytd, 0, ',', '.') ?>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@ if (!empty($data)) {
                 <div class="card bg-success-subtle border-success-subtle p-3 rounded-3">
                     <small class="text-success d-block fw-semibold">Total Alokasi Setahun (<?= $tahun ?>)</small>
                     <div class="fs-5 fw-bold text-success font-monospace mt-1">
-                        Rp <?= number_format($tot_tahun, 0, ',', '.') ?>
+                        Rp <?= number_format((float) $tot_tahun, 0, ',', '.') ?>
                     </div>
                 </div>
             </div>
@@ -139,13 +139,13 @@ if (!empty($data)) {
                                     <?= $record->nama_perkiraan ?>
                                 </td>
                                 <td class="text-end font-monospace <?= ($b_val > 0 ? 'text-dark' : 'text-muted') ?>">
-                                    <?= number_format($b_val, 0, ',', '.') ?>
+                                    <?= number_format((float) $b_val, 0, ',', '.') ?>
                                 </td>
                                 <td class="text-end font-monospace fw-bold text-primary">
-                                    <?= number_format($ytd_val, 0, ',', '.') ?>
+                                    <?= number_format((float) $ytd_val, 0, ',', '.') ?>
                                 </td>
                                 <td class="text-end font-monospace fw-bold text-success">
-                                    <?= number_format($tot_val, 0, ',', '.') ?>
+                                    <?= number_format((float) $tot_val, 0, ',', '.') ?>
                                 </td>
                             </tr>
                         <?php
@@ -163,13 +163,13 @@ if (!empty($data)) {
                     <tr class="fw-bold text-nowrap">
                         <th colspan="3" class="text-end">TOTAL KESELURUHAN:</th>
                         <th class="text-end font-monospace text-dark">
-                            <?= number_format($tot_bulan, 0, ',', '.') ?>
+                            <?= number_format((float) $tot_bulan, 0, ',', '.') ?>
                         </th>
                         <th class="text-end font-monospace text-primary bg-primary-subtle">
-                            <?= number_format($tot_ytd, 0, ',', '.') ?>
+                            <?= number_format((float) $tot_ytd, 0, ',', '.') ?>
                         </th>
                         <th class="text-end font-monospace text-success bg-success-subtle">
-                            <?= number_format($tot_tahun, 0, ',', '.') ?>
+                            <?= number_format((float) $tot_tahun, 0, ',', '.') ?>
                         </th>
                     </tr>
                 </tfoot>

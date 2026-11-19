@@ -9,7 +9,7 @@
         <tr>
             <td class="fw-bold">Kategori PR</td>
             <td class="text-center fw-bold">:</td>
-            <td><span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars($kategori_pr) ?></span></td>
+            <td><span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars((string) $kategori_pr) ?></span></td>
         </tr>
         <?php endif; ?>
     </table>
@@ -39,8 +39,8 @@
                     echo '<tr>';
                     echo '<td class="text-center">' . $no . '</td>';
                     echo '<td class="text-start fw-semibold">' . htmlspecialchars($item->nm_barang ?? '-') . '</td>';
-                    echo '<td class="text-end fw-bold">' . number_format($qty, 2) . '</td>';
-                    echo '<td class="text-end fw-bold text-primary">' . number_format($qty_packing, 2) . '</td>';
+                    echo '<td class="text-end fw-bold">' . number_format((float) $qty, 2) . '</td>';
+                    echo '<td class="text-end fw-bold text-primary">' . number_format((float) $qty_packing, 2) . '</td>';
                     echo '<td class="text-center"><span class="badge bg-light text-dark border">' . ucfirst($item->unit ?? '-') . '</span></td>';
                     echo '<td class="text-center"><span class="badge bg-light text-dark border">' . ucfirst($item->unit_packing ?? '-') . '</span></td>';
                     echo '</tr>';

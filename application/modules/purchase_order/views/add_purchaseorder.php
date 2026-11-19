@@ -43,7 +43,7 @@ if (!empty($results['headerso'])) {
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" required>
 											<option value="">--Select--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
-												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower($supplier->name_suplier)) ?></option>
+												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -72,7 +72,7 @@ if (!empty($results['headerso'])) {
 								<select id="select_department" name="dept[]" class="form-control select2" multiple required>
 									<?php
 									foreach ($results['list_department'] as $item) {
-										echo '<option value="' . $item->id . '">' . strtoupper($item->nama) . '</option>';
+										echo '<option value="' . $item->id . '">' . strtoupper((string) $item->nama) . '</option>';
 									}
 									?>
 								</select>
@@ -125,7 +125,7 @@ if (!empty($results['headerso'])) {
 									<?php foreach ($results['mata_uang'] as $mata_uang) {
 										$selected = '';
 									?>
-										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
+										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $mata_uang->kode)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -154,8 +154,8 @@ if (!empty($results['headerso'])) {
 								<select id="term" name="term" class="form-control select2" required>
 									<option value="">-- Select --</option>
 									<?php foreach ($results['term'] as $term): ?>
-										<option value="<?= htmlspecialchars($term->id) ?>">
-											<?= htmlspecialchars($term->name) ?>
+										<option value="<?= htmlspecialchars((string) $term->id) ?>">
+											<?= htmlspecialchars((string) $term->name) ?>
 										</option>
 									<?php endforeach; ?>
 								</select>
@@ -174,7 +174,7 @@ if (!empty($results['headerso'])) {
 									<?php foreach ($results['list_supplier'] as $supplier) {
 										$selected = '';
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -358,8 +358,8 @@ if (!empty($results['headerso'])) {
 														<input type='hidden' class='form-control input-sm autoNumeric' name='dt[" . $key . "][totalweight]' id='dt_totalweight_" . $key . "' value='" . $total_weight . "'  onkeyup='HitAmmount(" . $key . ")'>
 														<input type='text' class='form-control input-sm auto_num text-center' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . ($value->propose_purchase - $get_qty_all_po->qty_all_po) . "' onkeyup='HitAmmount(" . $key . ")'>
 													</td>
-													<td class='text-center'>" . ucfirst($value->unit_measure) . "</td>
-													<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+													<td class='text-center'>" . ucfirst((string) $value->unit_measure) . "</td>
+													<td class='text-center'>" . ucfirst((string) $value->packing_unit) . ucfirst((string) $value->packing_unit2) . "</td>
 													
 													<td hidden>
 														<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
@@ -377,7 +377,7 @@ if (!empty($results['headerso'])) {
 													<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 													<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 												
-												  	<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
+												  	<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format((float) $total, 4, '.', ',') . "'></td>
 													<td>
 														<div class='input-group input-group-sm mb-2'>
 															<input type='text' name='dt[" . $key . "][disc_persen]' class='form-control input-sm auto_num disc_persen'
@@ -396,7 +396,7 @@ if (!empty($results['headerso'])) {
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' readonly>
 													</td>
 													
-													<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
+													<td><input type='text' class='form-control input-sm text-end ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format((float) $total, 4, '.', ',') . "'></td>
 													<td><input type='text' class='form-control input-sm' id='dt_note_" . $key . "' name='dt[" . $key . "][note]'></td>
 													<td><input type='text' class='form-control input-sm text-end sisa_kuota autoNumeric3' id='dt_sisa_kuota_" . $key . "' name='dt[" . $key . "][sisa_kuota]'></td>
 											 	</tr>

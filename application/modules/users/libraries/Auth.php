@@ -171,7 +171,7 @@ class Auth
         $arr    = array();
         if ($groups) {
             foreach ($groups as $key => $gr) {
-                $arr[] = ucwords($gr->nm_group);
+                $arr[] = ucwords((string) $gr->nm_group);
             }
 
             $return = implode(", ", $arr);

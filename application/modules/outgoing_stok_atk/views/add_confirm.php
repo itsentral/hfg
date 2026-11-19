@@ -13,17 +13,17 @@
 					<tr>
 						<td>Product Name</td>
 						<td>:</td>
-						<td><?=strtoupper($getData[0]['nama_product']);?></td>
+						<td><?=strtoupper((string) $getData[0]['nama_product']);?></td>
 					</tr>
 					<tr>
 						<td>No SPK</td>
 						<td>:</td>
-						<td><?=strtoupper($getData[0]['no_spk']);?></td>
+						<td><?=strtoupper((string) $getData[0]['no_spk']);?></td>
 					</tr>
 					<tr>
 						<td>Qty Produksi</td>
 						<td>:</td>
-						<td><?=number_format($getData[0]['qty']);?></td>
+						<td><?=number_format((float) $getData[0]['qty']);?></td>
 					</tr>
 					<tr>
 						<td>From Warehouse</td>
@@ -57,8 +57,8 @@
 						$berat			= $value['berat'];
 						echo "<tr>";
 							echo "<td>".$nm_material."</td>";
-							echo "<td class='text-right'>".number_format($stock,4)."</td>";
-							echo "<td class='text-right'>".number_format($berat,4)."</td>";
+							echo "<td class='text-right'>".number_format((float) $stock,4)."</td>";
+							echo "<td class='text-right'>".number_format((float) $berat,4)."</td>";
 							echo "<td>
 									<input type='hidden' name='detail[".$key."][id]' value='".$value['id2']."'>
 									<input type='hidden' name='detail[".$key."][code_material]' value='".$value['code_material']."'>

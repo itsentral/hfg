@@ -46,7 +46,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     </tr>
                     <tr>
                         <td>Customer</td>
-                        <td><?= htmlspecialchars($do->customer) ?></td>
+                        <td><?= htmlspecialchars((string) $do->customer) ?></td>
                     </tr>
                     <tr>
                         <td>Tgl Delivery</td>
@@ -55,7 +55,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     <?php if ($do->keterangan): ?>
                     <tr>
                         <td>Keterangan</td>
-                        <td><?= htmlspecialchars($do->keterangan) ?></td>
+                        <td><?= htmlspecialchars((string) $do->keterangan) ?></td>
                     </tr>
                     <?php endif; ?>
                 </table>
@@ -104,21 +104,21 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     <?php foreach ($details as $d): ?>
                     <tr>
                         <td>
-                            <?= htmlspecialchars($d->produk_fg) ?>
+                            <?= htmlspecialchars((string) $d->produk_fg) ?>
                             <?php if ($d->nm_produk_fg): ?>
-                                <br><small class="text-muted"><?= htmlspecialchars($d->nm_produk_fg) ?></small>
+                                <br><small class="text-muted"><?= htmlspecialchars((string) $d->nm_produk_fg) ?></small>
                             <?php endif; ?>
                         </td>
-                        <td class="text-end"><?= number_format($d->qty_kirim, 2) ?></td>
-                        <td class="text-end"><?= number_format($d->berat_referensi, 4) ?></td>
-                        <td class="text-end"><?= number_format($d->estimasi_berat, 3) ?></td>
+                        <td class="text-end"><?= number_format((float) $d->qty_kirim, 2) ?></td>
+                        <td class="text-end"><?= number_format((float) $d->berat_referensi, 4) ?></td>
+                        <td class="text-end"><?= number_format((float) $d->estimasi_berat, 3) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
                         <td colspan="3" class="text-end fw-bold">Total Estimasi Berat:</td>
-                        <td class="text-end fw-bold"><?= number_format($total_estimasi, 3) ?> kg</td>
+                        <td class="text-end fw-bold"><?= number_format((float) $total_estimasi, 3) ?> kg</td>
                     </tr>
                 </tfoot>
             </table>
@@ -151,7 +151,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                 </div>
             </div>
             <div class="mt-2 text-muted small">
-                Total estimasi berat: <strong><?= number_format($total_estimasi, 3) ?> kg</strong>
+                Total estimasi berat: <strong><?= number_format((float) $total_estimasi, 3) ?> kg</strong>
             </div>
         </form>
     </div>
@@ -181,9 +181,9 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     <tr class="<?= $is_exception ? 'table-warning' : '' ?>">
                         <td><?= $log->tgl_timbang ?></td>
                         <td><?= isset($log->nama_user) ? $log->nama_user : '-' ?></td>
-                        <td class="text-end"><?= number_format($log->berat_aktual, 3) ?></td>
+                        <td class="text-end"><?= number_format((float) $log->berat_aktual, 3) ?></td>
                         <td class="text-end <?= $log->selisih_kg < 0 ? 'text-danger' : 'text-success' ?>">
-                            <?= ($log->selisih_kg >= 0 ? '+' : '') . number_format($log->selisih_kg, 3) ?>
+                            <?= ($log->selisih_kg >= 0 ? '+' : '') . number_format((float) $log->selisih_kg, 3) ?>
                         </td>
                         <td class="text-end <?= $is_exception ? 'text-danger fw-bold' : 'text-success' ?>">
                             <?= number_format($log->selisih_pct * 100, 2) ?>%

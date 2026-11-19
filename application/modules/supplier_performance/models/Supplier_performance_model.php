@@ -21,7 +21,7 @@ class Supplier_performance_model extends CI_Model
      */
     public function get_feed_datatable($params)
     {
-        $search    = isset($params['search']['value']) ? trim($params['search']['value']) : '';
+        $search    = isset($params['search']['value']) ? trim((string) $params['search']['value']) : '';
         $start     = isset($params['start']) ? (int) $params['start'] : 0;
         $length    = isset($params['length']) ? (int) $params['length'] : 10;
         $order_col = isset($params['order'][0]['column']) ? (int) $params['order'][0]['column'] : 0;
@@ -128,7 +128,7 @@ class Supplier_performance_model extends CI_Model
      */
     public function get_summary_datatable($params)
     {
-        $search    = isset($params['search']['value']) ? trim($params['search']['value']) : '';
+        $search    = isset($params['search']['value']) ? trim((string) $params['search']['value']) : '';
         $start     = isset($params['start']) ? (int) $params['start'] : 0;
         $length    = isset($params['length']) ? (int) $params['length'] : 10;
         $order_col = isset($params['order'][0]['column']) ? (int) $params['order'][0]['column'] : 0;

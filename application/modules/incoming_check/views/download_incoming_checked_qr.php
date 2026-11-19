@@ -1,9 +1,8 @@
 <?php
 
 $sroot         = $_SERVER['DOCUMENT_ROOT'] . 'origa_live/';
-include $sroot . "application/libraries/MPDF57/mpdf.php";
 include $sroot . "application/libraries/phpqrcode/qrlib.php";
-$mpdf = new mPDF('utf-8', array(42, 23));
+$mpdf = new \Mpdf\Mpdf(['format' => [42, 23]]);
 $mpdf->defaultheaderline = 0;
 
 set_time_limit(0);
@@ -33,8 +32,8 @@ foreach ($detail as $val => $valx) {
 				<td style='vertical-align:top; padding-right: -5px; padding-top: 7px;'>
                     <b>PT ORIGA MULIA FRP</b> <br><br>
                     <b style='font-size: 6px; padding-left: 1.5px;'>No. Lot : " . $valx['lot_description'] . "</b> <br>
-                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Datang : " . date('d F Y', strtotime($valx['created_date'])) . "</b> <br>
-                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Exp : " . date('d F Y', strtotime($valx['expired_date'])) . "</b> <br>    
+                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Datang : " . date('d F Y', strtotime((string) $valx['created_date'])) . "</b> <br>
+                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Exp : " . date('d F Y', strtotime((string) $valx['expired_date'])) . "</b> <br>    
                     ";
 
     if ($valx['sts'] == '1') {
@@ -42,7 +41,7 @@ foreach ($detail as $val => $valx) {
     }
 
     $images .= "
-                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Check : " . date('d F Y', strtotime($valx['created_date'])) . "</b> <br>
+                    <b style='font-size: 6px; padding-left: 1.5px;'>Tgl Check : " . date('d F Y', strtotime((string) $valx['created_date'])) . "</b> <br>
                     <b style='font-size: 6px; padding-left: 1.5px;'>Checked : " . $valx['nm_lengkap'] . "</b>
                 </td>
 			</tr>

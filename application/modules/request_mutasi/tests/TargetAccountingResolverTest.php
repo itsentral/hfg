@@ -456,11 +456,11 @@ class TargetAccountingResolverTest
         foreach ($injection_inputs as $input) {
             assertFalse(
                 $this->isValidTargetAccounting($input),
-                "Injection attempt should be rejected: " . substr($input, 0, 40)
+                "Injection attempt should be rejected: " . substr((string) $input, 0, 40)
             );
 
             $result = $this->resolveTargetDb($input);
-            assertFalse($result, "Injection attempt should cause resolver to return false: " . substr($input, 0, 40));
+            assertFalse($result, "Injection attempt should cause resolver to return false: " . substr((string) $input, 0, 40));
         }
 
         echo "    " . count($injection_inputs) . " injection attempts correctly rejected\n";
@@ -485,7 +485,7 @@ class TargetAccountingResolverTest
             $length = mt_rand(1, 50);
             $random_string = '';
             for ($j = 0; $j < $length; $j++) {
-                $random_string .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random_string .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
 
             // Skip if we accidentally generated a valid value
@@ -531,8 +531,8 @@ class TargetAccountingResolverTest
         // For each valid value, generate character-level mutations and verify they fail
         foreach ($valid_values as $value) {
             // Single character deletion at each position
-            for ($pos = 0; $pos < strlen($value); $pos++) {
-                $mutated = substr($value, 0, $pos) . substr($value, $pos + 1);
+            for ($pos = 0; $pos < strlen((string) $value); $pos++) {
+                $mutated = substr((string) $value, 0, $pos) . substr((string) $value, $pos + 1);
                 if (!in_array($mutated, $valid_values)) {
                     assertFalse(
                         $this->isValidTargetAccounting($mutated),
@@ -545,8 +545,8 @@ class TargetAccountingResolverTest
             // Single character insertion at each position
             $insert_chars = ['x', '1', '_', ' '];
             foreach ($insert_chars as $char) {
-                for ($pos = 0; $pos <= strlen($value); $pos++) {
-                    $mutated = substr($value, 0, $pos) . $char . substr($value, $pos);
+                for ($pos = 0; $pos <= strlen((string) $value); $pos++) {
+                    $mutated = substr((string) $value, 0, $pos) . $char . substr((string) $value, $pos);
                     if (!in_array($mutated, $valid_values)) {
                         assertFalse(
                             $this->isValidTargetAccounting($mutated),
@@ -559,9 +559,9 @@ class TargetAccountingResolverTest
 
             // Single character substitution at each position
             foreach ($insert_chars as $char) {
-                for ($pos = 0; $pos < strlen($value); $pos++) {
+                for ($pos = 0; $pos < strlen((string) $value); $pos++) {
                     if ($value[$pos] !== $char) {
-                        $mutated = substr($value, 0, $pos) . $char . substr($value, $pos + 1);
+                        $mutated = substr((string) $value, 0, $pos) . $char . substr((string) $value, $pos + 1);
                         if (!in_array($mutated, $valid_values)) {
                             assertFalse(
                                 $this->isValidTargetAccounting($mutated),
@@ -637,7 +637,7 @@ class TargetAccountingResolverTest
             $length = mt_rand(0, 30);
             $random = '';
             for ($j = 0; $j < $length; $j++) {
-                $random .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
             $test_inputs[] = $random;
         }

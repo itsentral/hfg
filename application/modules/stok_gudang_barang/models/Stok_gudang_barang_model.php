@@ -53,13 +53,13 @@ class Stok_gudang_barang_model extends BF_Model
 
 			$nestedData 	= array();
 			$nestedData[]	= "<div align='center'>" . $nomor . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
 			$nestedData[]	= "<div align='left'>" . $row['code'] . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($row['nama']) . "</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper($nm_gudang) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $nm_gudang) . "</div>";
 
 			$unit_packing = (!empty($GET_UNIT[$row['id_unit_packing']]['code'])) ? $GET_UNIT[$row['id_unit_packing']]['code'] : '';
-			$nestedData[]	= "<div align='left'>" . strtoupper($unit_packing) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) $unit_packing) . "</div>";
 
 			$id_material = $row['code_lv4'];
 			$stock_pack = (!empty($GET_STOK[$id_material]['stok_packing'])) ? $GET_STOK[$id_material]['stok_packing'] : 0;
@@ -67,9 +67,9 @@ class Stok_gudang_barang_model extends BF_Model
 			$booking    = 0;
 			$available  = $stock - $booking;
 
-			$nestedData[]	= "<div align='right' title='" . $TAND . "'>" . number_format($stock_pack, 2) . "</div>";
-			$nestedData[]	= "<div align='right'>" . number_format($row['konversi'], 2) . "</div>";
-			$nestedData[]	= "<div align='right' title='" . $id_material . "'>" . number_format($stock, 2) . "</div>";
+			$nestedData[]	= "<div align='right' title='" . $TAND . "'>" . number_format((float) $stock_pack, 2) . "</div>";
+			$nestedData[]	= "<div align='right'>" . number_format((float) $row['konversi'], 2) . "</div>";
+			$nestedData[]	= "<div align='right' title='" . $id_material . "'>" . number_format((float) $stock, 2) . "</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($booking, 2)."</div>";
 			// $nestedData[]	= "<div align='right'>".number_format($available, 2)."</div>";
 			// $nestedData[]	= "<div align='center'></div>";

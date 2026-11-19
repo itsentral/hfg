@@ -9,43 +9,43 @@ if (!empty($header['foto'])) {
 <div class="row g-3">
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Kode Asset</label>
-        <p class="fw-bold fs-6 mb-2 text-primary"><?= isset($header['kd_asset']) ? strtoupper($header['kd_asset']) : '-' ?></p>
+        <p class="fw-bold fs-6 mb-2 text-primary"><?= isset($header['kd_asset']) ? strtoupper((string) $header['kd_asset']) : '-' ?></p>
     </div>
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Nama Asset</label>
-        <p class="fw-bold fs-6 mb-2"><?= isset($header['nm_asset']) ? strtoupper($header['nm_asset']) : '-' ?></p>
+        <p class="fw-bold fs-6 mb-2"><?= isset($header['nm_asset']) ? strtoupper((string) $header['nm_asset']) : '-' ?></p>
     </div>
 
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Owned Asset (Cabang)</label>
-        <p class="fw-bold mb-2"><?= isset($header['kdcab']) ? strtoupper($header['kdcab']) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['kdcab']) ? strtoupper((string) $header['kdcab']) : '-' ?></p>
     </div>
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Department</label>
-        <p class="fw-bold mb-2"><?= isset($header['department']) ? strtoupper($header['department']) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['department']) ? strtoupper((string) $header['department']) : '-' ?></p>
     </div>
 
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Cost Center</label>
-        <p class="fw-bold mb-2"><?= isset($header['nm_costcenter']) ? strtoupper($header['nm_costcenter']) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['nm_costcenter']) ? strtoupper((string) $header['nm_costcenter']) : '-' ?></p>
     </div>
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Nama User</label>
-        <p class="fw-bold mb-2"><?= isset($header['nama_user']) && !empty($header['nama_user']) ? strtoupper($header['nama_user']) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['nama_user']) && !empty($header['nama_user']) ? strtoupper((string) $header['nama_user']) : '-' ?></p>
     </div>
 
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Tanggal Perolehan</label>
-        <p class="fw-bold mb-2"><?= isset($header['tgl_perolehan']) ? date('d F Y', strtotime($header['tgl_perolehan'])) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['tgl_perolehan']) ? date('d F Y', strtotime((string) $header['tgl_perolehan'])) : '-' ?></p>
     </div>
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Tanggal Mulai Depresiasi</label>
-        <p class="fw-bold mb-2"><?= isset($header['tgl_depresiasi']) && !empty($header['tgl_depresiasi']) ? date('d F Y', strtotime($header['tgl_depresiasi'])) : '-' ?></p>
+        <p class="fw-bold mb-2"><?= isset($header['tgl_depresiasi']) && !empty($header['tgl_depresiasi']) ? date('d F Y', strtotime((string) $header['tgl_depresiasi'])) : '-' ?></p>
     </div>
 
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Nilai Perolehan (Value Asset)</label>
-        <p class="fw-bold mb-2 text-success fs-6">Rp <?= isset($header['nilai_asset']) ? number_format($header['nilai_asset']) : '0' ?></p>
+        <p class="fw-bold mb-2 text-success fs-6">Rp <?= isset($header['nilai_asset']) ? number_format((float) $header['nilai_asset']) : '0' ?></p>
     </div>
     <div class="col-md-6">
         <label class="form-label text-muted mb-0 small fw-semibold">Penyusutan Status</label>
@@ -65,7 +65,7 @@ if (!empty($header['foto'])) {
         </div>
         <div class="col-md-6">
             <label class="form-label text-muted mb-0 small fw-semibold">Depresiasi / Bulan</label>
-            <p class="fw-bold mb-2 text-warning fs-6">Rp <?= isset($header['value']) ? number_format($header['value']) : '0' ?></p>
+            <p class="fw-bold mb-2 text-warning fs-6">Rp <?= isset($header['value']) ? number_format((float) $header['value']) : '0' ?></p>
         </div>
     <?php endif; ?>
 

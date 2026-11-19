@@ -116,7 +116,7 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                                 <i class="fa fa-calendar-alt me-1"></i>Bulan
                             </span>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1">Rp <?= number_format($rate->total_direct_labor_per_bulan, 0, ',', '.') ?></h4>
+                        <h4 class="fw-bold text-dark mb-1">Rp <?= number_format((float) $rate->total_direct_labor_per_bulan, 0, ',', '.') ?></h4>
                         <div class="small text-muted text-truncate">Salary + BPJS + Lain-Lain</div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                                 <i class="fa fa-clock me-1"></i>Standar
                             </span>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1"><?= number_format($rate->jam_kerja_per_bulan, 0) ?> <span class="fs-6 fw-normal text-muted">Jam / Bln</span></h4>
+                        <h4 class="fw-bold text-dark mb-1"><?= number_format((float) $rate->jam_kerja_per_bulan, 0) ?> <span class="fs-6 fw-normal text-muted">Jam / Bln</span></h4>
                         <div class="small text-muted">Porsi Operator: <strong>1 / <?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?></strong></div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                                 <i class="fa fa-check me-1"></i>CEIL
                             </span>
                         </div>
-                        <h4 class="fw-bold text-primary mb-1">Rp <?= number_format($rate->rate_1_3_operator, 0, ',', '.') ?> <span class="fs-6 fw-normal text-muted">/ Jam</span></h4>
+                        <h4 class="fw-bold text-primary mb-1">Rp <?= number_format((float) $rate->rate_1_3_operator, 0, ',', '.') ?> <span class="fs-6 fw-normal text-muted">/ Jam</span></h4>
                         <div class="small text-muted">Dibulatkan ke Rupiah penuh</div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@ $ENABLE_MANAGE = has_permission('Man_Power_Rate.Manage');
                                 <i class="fa fa-percent me-1"></i>Global
                             </span>
                         </div>
-                        <h4 class="fw-bold text-dark mb-1"><?= number_format($faktor, 2) ?>x</h4>
+                        <h4 class="fw-bold text-dark mb-1"><?= number_format((float) $faktor, 2) ?>x</h4>
                         <div class="small text-muted">
                             <a href="<?= base_url('faktor_indirect_labor') ?>" class="text-primary text-decoration-none fw-semibold">Kelola Faktor &rarr;</a>
                         </div>
@@ -213,7 +213,7 @@ $groups = [
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge <?= $g['badge_cls'] ?> border px-3 py-2 fs-6">
-                Subtotal: <strong>Rp <?= number_format($g['sub'], 0, ',', '.') ?></strong>
+                Subtotal: <strong>Rp <?= number_format((float) $g['sub'], 0, ',', '.') ?></strong>
             </span>
             <?php if ($ENABLE_MANAGE): ?>
                 <button type="button" class="btn btn-primary btn-sm btn-add-comp shadow-xs" data-kelompok="<?= $gKey ?>" data-title="<?= $g['title'] ?>">
@@ -245,15 +245,15 @@ $groups = [
                             <?php foreach ($g['items'] as $idx => $item): ?>
                                 <tr>
                                     <td class="text-center"><?= $idx + 1 ?></td>
-                                    <td class="fw-bold"><?= htmlspecialchars($item->nama_komponen) ?></td>
-                                    <td class="text-end fw-bold text-success">Rp <?= number_format($item->nilai, 0, ',', '.') ?></td>
+                                    <td class="fw-bold"><?= htmlspecialchars((string) $item->nama_komponen) ?></td>
+                                    <td class="text-end fw-bold text-success">Rp <?= number_format((float) $item->nilai, 0, ',', '.') ?></td>
                                     <td class="text-muted"><?= htmlspecialchars($item->keterangan ?: '—') ?></td>
                                     <?php if ($ENABLE_MANAGE): ?>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-warning btn-edit-comp"
                                                 data-id="<?= $item->id ?>"
                                                 data-kelompok="<?= $gKey ?>"
-                                                data-nama="<?= htmlspecialchars($item->nama_komponen) ?>"
+                                                data-nama="<?= htmlspecialchars((string) $item->nama_komponen) ?>"
                                                 data-nilai="<?= (float)$item->nilai ?>"
                                                 data-ket="<?= htmlspecialchars($item->keterangan ?: '') ?>"
                                                 title="Edit">
@@ -261,7 +261,7 @@ $groups = [
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger btn-del-comp ms-1"
                                                 data-id="<?= $item->id ?>"
-                                                data-nama="<?= htmlspecialchars($item->nama_komponen) ?>"
+                                                data-nama="<?= htmlspecialchars((string) $item->nama_komponen) ?>"
                                                 title="Hapus">
                                                 <i class="fa fa-trash"></i>
                                             </button>
@@ -321,7 +321,7 @@ $groups = [
                     <tbody>
                         <tr>
                             <td>Jam kerja per bulan <span class="badge bg-light text-dark border ms-1">parameter</span></td>
-                            <td class="text-end fw-bold fs-6"><?= number_format($rate->jam_kerja_per_bulan, 0) ?> jam</td>
+                            <td class="text-end fw-bold fs-6"><?= number_format((float) $rate->jam_kerja_per_bulan, 0) ?> jam</td>
                             <td class="text-muted">Pembagi Total Biaya Direct Labor Operator per bulan</td>
                         </tr>
                         <tr>
@@ -331,22 +331,22 @@ $groups = [
                         </tr>
                         <tr>
                             <td><strong>Faktor Indirect Labor</strong> <span class="badge bg-info text-dark ms-1">master global</span></td>
-                            <td class="text-end fw-bold fs-6 text-primary"><?= number_format($faktor, 2) ?></td>
+                            <td class="text-end fw-bold fs-6 text-primary"><?= number_format((float) $faktor, 2) ?></td>
                             <td class="text-muted">Master: menu <a href="<?= base_url('faktor_indirect_labor') ?>" class="fw-bold text-decoration-none">Faktor Indirect Labor</a></td>
                         </tr>
                         <tr class="table-light">
                             <td><strong>Total Biaya Direct Labor Operator / Bulan</strong></td>
-                            <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format($rate->total_direct_labor_per_bulan, 0, ',', '.') ?></td>
+                            <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format((float) $rate->total_direct_labor_per_bulan, 0, ',', '.') ?></td>
                             <td class="text-muted">Salary + BPJS + Biaya Lain-Lain</td>
                         </tr>
                         <tr>
                             <td>Rate Direct Labor Operator (Rp/jam)</td>
-                            <td class="text-end fw-bold text-secondary">Rp <?= number_format($rate->rate_direct_labor, 2, ',', '.') ?></td>
+                            <td class="text-end fw-bold text-secondary">Rp <?= number_format((float) $rate->rate_direct_labor, 2, ',', '.') ?></td>
                             <td class="text-muted">Total &divide; jam kerja per bulan (belum dibulatkan)</td>
                         </tr>
                         <tr>
                             <td><strong>Rate 1/3 Operator (Rp/jam)</strong></td>
-                            <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format($rate->rate_1_3_operator, 0, ',', '.') ?></td>
+                            <td class="text-end fw-bold fs-6 text-dark">Rp <?= number_format((float) $rate->rate_1_3_operator, 0, ',', '.') ?></td>
                             <td class="text-muted"><strong>CEIL(Rate Direct Labor &times; 1/<?= round(1 / ((float)$rate->porsi_operator ?: 0.3333)) ?>)</strong> &mdash; dibulatkan ke atas ke Rupiah penuh sesudah dikali 1/3. Satu-satunya angka yang dibulatkan.</td>
                         </tr>
                     </tbody>
@@ -399,24 +399,24 @@ $groups = [
                             <?php foreach ($simulation as $idx => $sim): ?>
                                 <tr>
                                     <td class="text-center"><?= $idx + 1 ?></td>
-                                    <td class="fw-bold"><?= htmlspecialchars(strtoupper($sim->nama)) ?></td>
+                                    <td class="fw-bold"><?= htmlspecialchars(strtoupper((string) $sim->nama)) ?></td>
                                     <td class="text-end">
-                                        <?= $sim->has_flow ? number_format($sim->tmh, 6, '.', '') : '<span class="badge bg-warning text-dark">Flow belum ada</span>' ?>
+                                        <?= $sim->has_flow ? number_format((float) $sim->tmh, 6, '.', '') : '<span class="badge bg-warning text-dark">Flow belum ada</span>' ?>
                                     </td>
                                     <td class="text-end">
-                                        <?= $sim->has_flow ? 'Rp ' . number_format($sim->op_cost, 2, ',', '.') : '—' ?>
+                                        <?= $sim->has_flow ? 'Rp ' . number_format((float) $sim->op_cost, 2, ',', '.') : '—' ?>
                                     </td>
                                     <td class="text-end">
-                                        <?= $sim->has_bor ? 'Rp ' . number_format($sim->bor, 2, ',', '.') : '<span class="badge bg-warning text-dark">Rate belum ada</span>' ?>
+                                        <?= $sim->has_bor ? 'Rp ' . number_format((float) $sim->bor, 2, ',', '.') : '<span class="badge bg-warning text-dark">Rate belum ada</span>' ?>
                                     </td>
                                     <td class="text-end fw-semibold">
-                                        <?= $sim->subtotal !== null ? 'Rp ' . number_format($sim->subtotal, 2, ',', '.') : '—' ?>
+                                        <?= $sim->subtotal !== null ? 'Rp ' . number_format((float) $sim->subtotal, 2, ',', '.') : '—' ?>
                                     </td>
                                     <td class="text-end text-primary fw-bold">
-                                        <?= number_format($sim->faktor, 2) ?>
+                                        <?= number_format((float) $sim->faktor, 2) ?>
                                     </td>
                                     <td class="text-end fw-bold text-success fs-6">
-                                        <?= $sim->total_mpc !== null ? 'Rp ' . number_format($sim->total_mpc, 2, ',', '.') : '—' ?>
+                                        <?= $sim->total_mpc !== null ? 'Rp ' . number_format((float) $sim->total_mpc, 2, ',', '.') : '—' ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -481,7 +481,7 @@ $groups = [
                     <div class="mb-3">
                         <label class="form-label fw-bold">Jam Kerja per Bulan <span class="text-danger">*</span></label>
                         <input type="number" step="0.5" min="1" name="jam_kerja_per_bulan" class="form-control" required
-                            value="<?= number_format($rate->jam_kerja_per_bulan, 2, '.', '') ?>">
+                            value="<?= number_format((float) $rate->jam_kerja_per_bulan, 2, '.', '') ?>">
                         <div class="form-text text-muted">Standar parameter jam kerja operasional (default 173 jam).</div>
                     </div>
                     <div class="mb-3">

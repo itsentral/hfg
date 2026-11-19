@@ -464,7 +464,7 @@
         <?php if (!empty($qr_base64)): ?>
             <div class="doc-qr">
                 <img src="data:image/png;base64,<?= $qr_base64 ?>" alt="QR SPK">
-                <span><?= htmlspecialchars($spk['spk_no']) ?></span>
+                <span><?= htmlspecialchars((string) $spk['spk_no']) ?></span>
             </div>
         <?php endif; ?>
     </div>
@@ -479,13 +479,13 @@
             <tr>
                 <td class="info-label">Tanggal SPK</td>
                 <td class="info-separator">:</td>
-                <td><?php echo date('d-m-Y', strtotime($spk['tgl_spk'])); ?></td>
+                <td><?php echo date('d-m-Y', strtotime((string) $spk['tgl_spk'])); ?></td>
             </tr>
             <?php if (!empty($spk['due_date'])): ?>
                 <tr>
                     <td class="info-label">Due Date</td>
                     <td class="info-separator">:</td>
-                    <td><?php echo date('d-m-Y', strtotime($spk['due_date'])); ?></td>
+                    <td><?php echo date('d-m-Y', strtotime((string) $spk['due_date'])); ?></td>
                 </tr>
             <?php endif; ?>
         </table>
@@ -516,15 +516,15 @@
             <div class="product-group">
 
                 <div class="section-header">
-                    <?php echo ($idx + 1) . '. ' . htmlspecialchars($detail['nm_produk_fg']); ?>
+                    <?php echo ($idx + 1) . '. ' . htmlspecialchars((string) $detail['nm_produk_fg']); ?>
                 </div>
 
                 <table class="product-info-table">
                     <tr>
                         <td class="product-info-label" width="18%">Target Qty</td>
-                        <td class="product-info-value" width="32%"><strong><?php echo number_format($detail['target_qty']); ?> Pcs</strong></td>
+                        <td class="product-info-value" width="32%"><strong><?php echo number_format((float) $detail['target_qty']); ?> Pcs</strong></td>
                         <td class="product-info-label" width="18%">Total Weight</td>
-                        <td class="product-info-value" width="32%"><strong><?php echo number_format($detail['total_weight'], 2); ?> Kg</strong></td>
+                        <td class="product-info-value" width="32%"><strong><?php echo number_format((float) $detail['total_weight'], 2); ?> Kg</strong></td>
                     </tr>
                 </table>
             </div>
@@ -544,7 +544,7 @@
                     <div class="signature-box">
                         <span class="signature-title">Dibuat oleh,</span>
                         <span class="signature-name"><?php echo $created_by_name; ?></span>
-                        <span class="signature-date"><?php echo date('d-m-Y', strtotime($spk['created_at'])); ?></span>
+                        <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $spk['created_at'])); ?></span>
                     </div>
                 </td>
             </tr>
@@ -563,7 +563,7 @@
             <tr>
                 <td class="fi-label">No. SPK</td>
                 <td class="fi-sep">:</td>
-                <td style="width:22%;"><strong><?php echo htmlspecialchars($spk['spk_no']); ?></strong></td>
+                <td style="width:22%;"><strong><?php echo htmlspecialchars((string) $spk['spk_no']); ?></strong></td>
 
                 <td class="fi-label">Setter Name</td>
                 <td class="fi-sep">:</td>
@@ -821,9 +821,9 @@
                 ?>
                     <tr>
                         <td class="sop-no"><?php echo $idx + 1; ?></td>
-                        <td class="sop-bagian"><?php echo htmlspecialchars($r[0]); ?></td>
-                        <td class="sop-item"><?php echo htmlspecialchars($r[1]); ?></td>
-                        <td><?php echo htmlspecialchars($r[2]); ?></td>
+                        <td class="sop-bagian"><?php echo htmlspecialchars((string) $r[0]); ?></td>
+                        <td class="sop-item"><?php echo htmlspecialchars((string) $r[1]); ?></td>
+                        <td><?php echo htmlspecialchars((string) $r[2]); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

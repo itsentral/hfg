@@ -22,7 +22,7 @@ class Purchase_request extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library(array('Mpdf', 'upload', 'Image_lib'));
+		$this->load->library(array('upload', 'Image_lib'));
 		$this->load->model(array(
 			'Purchase_request/Pr_model',
 			'Aktifitas/aktifitas_model',

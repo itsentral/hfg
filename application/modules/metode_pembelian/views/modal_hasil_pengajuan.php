@@ -21,15 +21,15 @@
             foreach($result AS $val => $valx){ $no++;
 				$nm_material = $valx['nm_barang'];
                 echo "<tr>";
-					echo "<td class='mid' >".strtoupper($valx['nm_supplier'])."</td>";
-					echo "<td class='mid' >".strtoupper($nm_material)."</td>";
-					echo "<td class='text-center mid'>".number_format($valx['price_ref'],2)."</td>";
-					echo "<td class='text-right mid'>".number_format($valx['harga_idr'],2)." <span class='text-primary text-bold'>".strtoupper($valx['currency'])."</span></td>";
-					echo "<td class='text-center mid'>".number_format($valx['moq'],2)."</td>";
-					echo "<td class='text-center mid'>".number_format($valx['lead_time'],2)."</td>";
-					echo "<td class='text-center mid'>".number_format($valx['qty'],2)."</td>";
+					echo "<td class='mid' >".strtoupper((string) $valx['nm_supplier'])."</td>";
+					echo "<td class='mid' >".strtoupper((string) $nm_material)."</td>";
+					echo "<td class='text-center mid'>".number_format((float) $valx['price_ref'],2)."</td>";
+					echo "<td class='text-right mid'>".number_format((float) $valx['harga_idr'],2)." <span class='text-primary text-bold'>".strtoupper((string) $valx['currency'])."</span></td>";
+					echo "<td class='text-center mid'>".number_format((float) $valx['moq'],2)."</td>";
+					echo "<td class='text-center mid'>".number_format((float) $valx['lead_time'],2)."</td>";
+					echo "<td class='text-center mid'>".number_format((float) $valx['qty'],2)."</td>";
 					echo "<td class='text-right mid'>".number_format($valx['harga_idr'] * $valx['qty'],2)."</td>";
-					echo "<td class='text-center mid'><b>".strtoupper($valx['status'])."</b></td>";
+					echo "<td class='text-center mid'><b>".strtoupper((string) $valx['status'])."</b></td>";
 				echo "</tr>";
 			}
 			?>

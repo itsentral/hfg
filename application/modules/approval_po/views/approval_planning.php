@@ -1,5 +1,5 @@
 <?php
-$pembeda = substr($header[0]['so_number'],0,1);
+$pembeda = substr((string) $header[0]['so_number'],0,1);
 ?>
 <div class="box box-primary">
     <div class="box-body">
@@ -14,7 +14,7 @@ $pembeda = substr($header[0]['so_number'],0,1);
 						<td width='29%'><?=$header[0]['so_number'];?></td>
 						<td width='20%'>Due Date SO</td>
 						<td width='1%'>:</td>
-						<td width='29%'><?=date('d F Y',strtotime($header[0]['due_date']));?></td>
+						<td width='29%'><?=date('d F Y',strtotime((string) $header[0]['due_date']));?></td>
 					</tr>
 					<tr>
 						<td>Customer</td>
@@ -25,7 +25,7 @@ $pembeda = substr($header[0]['so_number'],0,1);
 						<td></td>
 					</tr>
 					<?php
-					$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan']))?date('d F Y',strtotime($header[0]['tgl_dibutuhkan'])):'';
+					$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan']))?date('d F Y',strtotime((string) $header[0]['tgl_dibutuhkan'])):'';
 					?>
 					<tr>
 						<td>Tgl Dibutuhkan</td>
@@ -77,20 +77,20 @@ $pembeda = substr($header[0]['so_number'],0,1);
 										<input type='hidden' name='detail[".$key."][id]' value='".$value['id']."'>
 										</td>";
 								if($pembeda == 'S'){
-								echo "<td class='text-right qty_order'>".number_format($value['qty_order'],5)."</td>";
-								echo "<td class='text-right stock_free'>".number_format($stock_free,5)."</td>";
-								echo "<td class='text-right stock_free'>".number_format($use_stock,5)."</td>";
-								echo "<td class='text-right sisa_free'>".number_format($sisa_free,5)."</td>";
+								echo "<td class='text-right qty_order'>".number_format((float) $value['qty_order'],5)."</td>";
+								echo "<td class='text-right stock_free'>".number_format((float) $stock_free,5)."</td>";
+								echo "<td class='text-right stock_free'>".number_format((float) $use_stock,5)."</td>";
+								echo "<td class='text-right sisa_free'>".number_format((float) $sisa_free,5)."</td>";
 								}
-								echo "<td class='text-right min_stok'>".number_format($value['min_stok'],2)."</td>";
-								echo "<td class='text-right max_stok'>".number_format($value['max_stok'],2)."</td>";
+								echo "<td class='text-right min_stok'>".number_format((float) $value['min_stok'],2)."</td>";
+								echo "<td class='text-right max_stok'>".number_format((float) $value['max_stok'],2)."</td>";
 								echo "<td class='text-right min_order'>".number_format(0,2)."</td>";
-								echo "<td class='text-right'>".number_format($propose,2)."</td>";
+								echo "<td class='text-right'>".number_format((float) $propose,2)."</td>";
 								if($value['status_app'] == 'N'){
 									echo "<td align='center'><input type='text' class='form-control input-sm text-center autoNumeric5 propose' style='width: 100px;' id='pr_rev_".$value['id']."' name='pr_rev_".$value['id']."' value='".$propose."'></td>";
 								}
 								else{
-									echo "<td class='text-center'>".number_format($value['propose_rev'],2)."</td>";
+									echo "<td class='text-center'>".number_format((float) $value['propose_rev'],2)."</td>";
 								}
 								if($value['status_app'] == 'N'){
 								echo "	<td align='center'>
@@ -249,7 +249,10 @@ $pembeda = substr($header[0]['so_number'],0,1);
 			cancelButtonText: "Batal",
 			closeOnConfirm: false
 			},
-			function(){
+			function(isConfirm){
+				if (!isConfirm) {
+					return;
+				}
 			$.ajax({
 				type:'POST',
 				url: base_url + active_controller + '/process_approval_satuan',

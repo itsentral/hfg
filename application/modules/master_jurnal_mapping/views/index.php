@@ -13,31 +13,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (!empty($results)) : ?>
-                        <?php foreach ($results as $key => $row) : ?>
-                            <tr>
-                                <td class="text-center align-middle"><?= $key + 1 ?></td>
-                                <td class="align-middle"><?= $row->menu ?></td>
-                                <td class="align-middle"><?= $row->action ?></td>
-                                <td class="text-center align-middle"><span class="badge bg-success"><?= $row->kode_master_jurnal ?></span></td>
-                                <td class="align-middle"><?= $row->keterangan ?></td>
-                                <td class="text-center align-middle">
-                                    <button type="button" class="btn btn-sm btn-warning btn-edit text-dark fw-bold"
-                                        data-id="<?= $row->id ?>"
-                                        data-menu="<?= $row->menu ?>"
-                                        data-action="<?= $row->action ?>"
-                                        data-kode="<?= $row->kode_master_jurnal ?>"
-                                        data-ket="<?= $row->keterangan ?>">
-                                        <i class="fa fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                    <?php foreach ((array) $results as $key => $row) : ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Tidak ada data.</td>
+                            <td class="text-center align-middle"><?= $key + 1 ?></td>
+                            <td class="align-middle"><?= html_escape($row->menu) ?></td>
+                            <td class="align-middle"><?= html_escape($row->action) ?></td>
+                            <td class="text-center align-middle"><span class="badge bg-success"><?= html_escape($row->kode_master_jurnal) ?></span></td>
+                            <td class="align-middle"><?= html_escape($row->keterangan) ?></td>
+                            <td class="text-center align-middle">
+                                <button type="button" class="btn btn-sm btn-warning btn-edit text-dark fw-bold"
+                                    data-id="<?= (int) $row->id ?>"
+                                    data-menu="<?= html_escape($row->menu) ?>"
+                                    data-action="<?= html_escape($row->action) ?>"
+                                    data-kode="<?= html_escape($row->kode_master_jurnal) ?>"
+                                    data-ket="<?= html_escape($row->keterangan) ?>">
+                                    <i class="fa fa-edit"></i> Edit
+                                </button>
+                            </td>
                         </tr>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -88,7 +82,38 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
-        $('.btn-edit').click(function() {
+        $('#my-grid').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [[1, 'asc'], [2, 'asc']],
+            columnDefs: [
+                { targets: [0, 5], orderable: false, searchable: false },
+                { targets: 5, width: '90px' }
+            ],
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 data",
+                infoFiltered: "(disaring dari _MAX_ data)",
+                emptyTable: "Tidak ada data.",
+                zeroRecords: "Data tidak ditemukan.",
+                paginate: {
+                    previous: "Prev",
+                    next: "Next"
+                }
+            },
+            // Nomor urut mengikuti urutan & filter tampilan
+            drawCallback: function() {
+                var api = this.api();
+                var start = api.page.info().start;
+                api.column(0, { page: 'current' }).nodes().each(function(cell, i) {
+                    cell.innerHTML = start + i + 1;
+                });
+            }
+        });
+
+        $(document).on('click', '.btn-edit', function() {
             var id = $(this).data('id');
             var menu = $(this).data('menu');
             var action = $(this).data('action');

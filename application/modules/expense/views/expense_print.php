@@ -439,7 +439,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 			<tr>
 				<td class="info-label">Tanggal Dokumen</td>
 				<td class="info-separator">:</td>
-				<td class="info-value"><?= date('d F Y', strtotime($data->tgl_doc)) ?></td>
+				<td class="info-value"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 
 				<td class="info-label">Bank Penerima</td>
 				<td class="info-separator">:</td>
@@ -494,18 +494,18 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				?>
 						<tr>
 							<td class="text-center"><?= $no++ ?></td>
-							<td class="text-center"><?= date('d/m/Y', strtotime($record->tanggal)) ?></td>
+							<td class="text-center"><?= date('d/m/Y', strtotime((string) $record->tanggal)) ?></td>
 							<td><?= htmlspecialchars($record->coa ?: ($is_kasbon ? 'Kasbon' : '-')) ?></td>
 							<td>
-								<?= htmlspecialchars($record->deskripsi) ?>
+								<?= htmlspecialchars((string) $record->deskripsi) ?>
 								<?php if ($is_kasbon) : ?>
 									<br><small style="color:#0d6efd;">(Kasbon: <?= $record->id_kasbon ?>)</small>
 								<?php endif; ?>
 							</td>
 							<td><?= htmlspecialchars($record->keterangan ?: '-') ?></td>
-							<td class="text-center"><?= number_format($record->qty) ?></td>
-							<td class="text-right"><?= number_format($record->harga, 0, ',', '.') ?></td>
-							<td class="text-right fw-bold"><strong><?= number_format($row_total, 0, ',', '.') ?></strong></td>
+							<td class="text-center"><?= number_format((float) $record->qty) ?></td>
+							<td class="text-right"><?= number_format((float) $record->harga, 0, ',', '.') ?></td>
+							<td class="text-right fw-bold"><strong><?= number_format((float) $row_total, 0, ',', '.') ?></strong></td>
 						</tr>
 					<?php
 					endforeach;
@@ -519,12 +519,12 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 			<tfoot>
 				<tr>
 					<th colspan="7" class="text-right">TOTAL EXPENSE</th>
-					<th class="text-right">Rp <?= number_format($total_expense, 0, ',', '.') ?></th>
+					<th class="text-right">Rp <?= number_format((float) $total_expense, 0, ',', '.') ?></th>
 				</tr>
 				<?php if ($total_kasbon > 0) : ?>
 					<tr>
 						<th colspan="7" class="text-right">TOTAL KASBON DITERIMA</th>
-						<th class="text-right">Rp <?= number_format($total_kasbon, 0, ',', '.') ?></th>
+						<th class="text-right">Rp <?= number_format((float) $total_kasbon, 0, ',', '.') ?></th>
 					</tr>
 					<tr>
 						<th colspan="7" class="text-right">SELISIH (<?= ($selisih >= 0) ? 'KURANG BAYAR' : 'LEBIH BAYAR' ?>)</th>
@@ -540,7 +540,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				Total Biaya yang Dipertanggungjawabkan :
 			</div>
 			<div class="nominal-card-amount">
-				Rp <?= number_format($total_expense, 0, ',', '.') ?>
+				Rp <?= number_format((float) $total_expense, 0, ',', '.') ?>
 			</div>
 			<?php if (!empty($terbilang_nominal)) : ?>
 				<div class="nominal-card-terbilang">
@@ -566,7 +566,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 			<tr>
 				<td>
 					<div class="signature-name"><?= $pelapor_name ?></div>
-					<div class="signature-date">Tgl: <?= !empty($data->created_on) ? date('d/m/Y', strtotime($data->created_on)) : date('d/m/Y') ?></div>
+					<div class="signature-date">Tgl: <?= !empty($data->created_on) ? date('d/m/Y', strtotime((string) $data->created_on)) : date('d/m/Y') ?></div>
 				</td>
 				<td>
 					<div class="signature-name"><?= !empty($mengetahui_name) ? $mengetahui_name : 'Atasan Langsung' ?></div>
@@ -579,7 +579,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				<td>
 					<div class="signature-name"><?= !empty($approved_by_name) ? $approved_by_name : 'Direksi / Management' ?></div>
 					<div class="signature-date">
-						Tgl: <?= !empty($data->approved_on) ? date('d/m/Y', strtotime($data->approved_on)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
+						Tgl: <?= !empty($data->approved_on) ? date('d/m/Y', strtotime((string) $data->approved_on)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
 					</div>
 				</td>
 			</tr>

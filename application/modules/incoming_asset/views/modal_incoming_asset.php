@@ -41,7 +41,7 @@
                 <?php
                 if (!empty($result)) {
                     $No = 0;
-                    $cek_type = substr($no_po, 0, 3);
+                    $cek_type = substr((string) $no_po, 0, 3);
                     foreach ($result as $val => $valx) {
                         $No++;
 
@@ -70,11 +70,11 @@
                                 <input type="hidden" name="addInMat[<?= $No; ?>][id]" value="<?= html_escape($valx['id']); ?>">
                                 <input type="hidden" name="addInMat[<?= $No; ?>][qty_rev]" value="<?= $qty; ?>">
                             </td>
-                            <td><?= strtoupper($dept); ?></td>
+                            <td><?= strtoupper((string) $dept); ?></td>
                             <td class="fw-bold"><?= strtoupper(html_escape($valx['nm_barang'])); ?></td>
-                            <td class="text-center"><?= number_format($qty, 2); ?></td>
-                            <td class="text-center"><?= strtoupper($satuan); ?></td>
-                            <td class="text-center text-danger fw-bold"><?= number_format($Qty_kurang, 2); ?></td>
+                            <td class="text-center"><?= number_format((float) $qty, 2); ?></td>
+                            <td class="text-center"><?= strtoupper((string) $satuan); ?></td>
+                            <td class="text-center text-danger fw-bold"><?= number_format((float) $Qty_kurang, 2); ?></td>
                             <td>
                                 <input type="number" step="any" min="0" max="<?= $Qty_kurang; ?>" name="addInMat[<?= $No; ?>][qty_in]" class="form-control form-control-sm text-center fw-bold" placeholder="0" value="<?= $Qty_kurang; ?>">
                             </td>

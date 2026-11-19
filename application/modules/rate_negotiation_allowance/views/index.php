@@ -91,7 +91,7 @@ $ENABLE_MANAGE = has_permission('Rate_Negotiation_Allowance.Manage');
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center text-muted">
-                                    <?= !empty($r->latest_update) ? date('d/m/Y H:i', strtotime($r->latest_update)) : '-' ?>
+                                    <?= !empty($r->latest_update) ? date('d/m/Y H:i', strtotime((string) $r->latest_update)) : '-' ?>
                                 </td>
                                 <td><?= htmlspecialchars($r->updated_by_name ?: '-') ?></td>
                                 <?php if ($ENABLE_MANAGE): ?>

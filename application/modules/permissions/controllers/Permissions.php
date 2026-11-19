@@ -227,9 +227,7 @@ class Permissions extends Admin_Controller {
 
     function print_request($id){
         $id_customer = $id;
-        $mpdf=new mPDF('','','','','','','','','','');
-        $mpdf->SetImportUse();
-        $mpdf->RestartDocTemplate();
+        $mpdf = new \Mpdf\Mpdf();
 
         $cust_toko      =  $this->Toko_model->tampil_toko($id_customer)->result();
         $cust_setpen    =  $this->Penagihan_model->tampil_tagih($id_customer)->result();
@@ -247,8 +245,8 @@ class Permissions extends Admin_Controller {
         $this->template->set('cust_pic', $cust_pic);
         $show = $this->template->load_view('print_data',$data);
 
-        $this->mpdf->WriteHTML($show);        
-        $this->mpdf->Output();
+        $mpdf->WriteHTML($show);        
+        $mpdf->Output();
     }
 
     function downloadExcel()
@@ -336,9 +334,9 @@ class Permissions extends Admin_Controller {
         $no = 1;
         $counter = 4;
         foreach ($data as $row):
-            $tanggallahir = date('d-m-Y',strtotime($row->tanggallahir));            
+            $tanggallahir = date('d-m-Y',strtotime((string) $row->tanggallahir));            
             $ex->setCellValue('A'.$counter, $no++);
-            $ex->setCellValue('B'.$counter, strtoupper($row->nama_mitra));
+            $ex->setCellValue('B'.$counter, strtoupper((string) $row->nama_mitra));
             $ex->setCellValue('C'.$counter, $row->nim);
             $ex->setCellValue('D'.$counter, $row->tempatlahir);
             $ex->setCellValue('E'.$counter, $tanggallahir);

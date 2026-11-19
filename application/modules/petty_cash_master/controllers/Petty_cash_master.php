@@ -172,8 +172,8 @@ class Petty_cash_master extends Admin_Controller
         // Validate each detail row
         $details = [];
         foreach ($detail as $row) {
-            $coa_code          = isset($row['coa_code']) ? trim($row['coa_code']) : '';
-            $jenis_pengeluaran = isset($row['jenis_pengeluaran']) ? trim($row['jenis_pengeluaran']) : '';
+            $coa_code          = isset($row['coa_code']) ? trim((string) $row['coa_code']) : '';
+            $jenis_pengeluaran = isset($row['jenis_pengeluaran']) ? trim((string) $row['jenis_pengeluaran']) : '';
             $nominal_raw       = isset($row['nominal']) ? $row['nominal'] : '';
 
             // Strip dot formatting (e.g., "1.000.000" → "1000000")

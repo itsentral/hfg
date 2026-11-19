@@ -141,7 +141,7 @@
     function fmt_date($val)
     {
         if (empty($val) || $val === '0000-00-00') return '-';
-        return date('d-M-Y', strtotime($val));
+        return date('d-M-Y', strtotime((string) $val));
     }
 
     $no_ros        = isset($header_ros['id'])            ? $header_ros['id']            : '-';
@@ -255,15 +255,15 @@
                 foreach ($detail_ros as $item) : ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
-                        <td><?= htmlspecialchars($item['trade_name']) ?></td>
-                        <td class="text-center"><?= ucfirst($item['unit_satuan']) ?></td>
-                        <td class="text-end"><?= number_format($item['length'], 2) ?></td>
-                        <td class="text-center"><?= htmlspecialchars($item['no_coil']) ?></td>
+                        <td><?= htmlspecialchars((string) $item['trade_name']) ?></td>
+                        <td class="text-center"><?= ucfirst((string) $item['unit_satuan']) ?></td>
+                        <td class="text-end"><?= number_format((float) $item['length'], 2) ?></td>
+                        <td class="text-center"><?= htmlspecialchars((string) $item['no_coil']) ?></td>
                         <td class="text-center">
-                            <?= !empty($item['kode_internal']) ? htmlspecialchars($item['kode_internal']) : '-' ?>
+                            <?= !empty($item['kode_internal']) ? htmlspecialchars((string) $item['kode_internal']) : '-' ?>
                         </td>
-                        <td class="text-end"><?= number_format($item['berat_kotor'], 2) ?></td>
-                        <td class="text-end"><?= number_format($item['berat_bersih'], 2) ?></td>
+                        <td class="text-end"><?= number_format((float) $item['berat_kotor'], 2) ?></td>
+                        <td class="text-end"><?= number_format((float) $item['berat_bersih'], 2) ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
@@ -277,8 +277,8 @@
         <tfoot>
             <tr>
                 <td colspan="6" class="text-end">Total</td>
-                <td class="text-end"><?= number_format($ttl_berat_kotor, 2) ?></td>
-                <td class="text-end"><?= number_format($ttl_berat_bersih, 2) ?></td>
+                <td class="text-end"><?= number_format((float) $ttl_berat_kotor, 2) ?></td>
+                <td class="text-end"><?= number_format((float) $ttl_berat_bersih, 2) ?></td>
             </tr>
         </tfoot>
     </table>

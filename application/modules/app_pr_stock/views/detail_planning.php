@@ -1,7 +1,7 @@
 <?php
-$pembeda = substr($header[0]['so_number'], 0, 1);
-$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime($header[0]['due_date'])) : '-';
-$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime($header[0]['tgl_dibutuhkan'])) : '-';
+$pembeda = substr((string) $header[0]['so_number'], 0, 1);
+$due_date = (!empty($header[0]['due_date'])) ? date('d F Y', strtotime((string) $header[0]['due_date'])) : '-';
+$tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtotime((string) $header[0]['tgl_dibutuhkan'])) : '-';
 ?>
 
 <div class="card shadow-sm border-0 mb-4 box">
@@ -10,7 +10,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-info-circle me-2"></i>Detail PR Stock
             </h5>
-            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars($header[0]['so_number']) ?></span></small>
+            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
         </div>
         <div>
             <button type="button" class="btn btn-outline-secondary btn-sm px-3 shadow-sm" id="back">
@@ -25,14 +25,14 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
             <div class="col-md-6 col-lg-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
                     <span class="text-muted small fw-semibold text-uppercase">No. Request / SO</span>
-                    <h6 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars($header[0]['so_number']) ?></h6>
+                    <h6 class="fw-bold text-primary mb-0 mt-1"><?= htmlspecialchars((string) $header[0]['so_number']) ?></h6>
                     <small class="text-muted">Due Date: <?= $due_date ?></small>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
                     <span class="text-muted small fw-semibold text-uppercase">No. PR</span>
-                    <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars($header[0]['no_pr']) ?></h6>
+                    <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars((string) $header[0]['no_pr']) ?></h6>
                     <small class="text-muted">Dibutuhkan: <?= $tgl_dibutuhkan ?></small>
                 </div>
             </div>
@@ -48,11 +48,11 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                     <span class="text-muted small fw-semibold text-uppercase">Perbandingan Nilai</span>
                     <div class="d-flex justify-content-between align-items-center mt-1">
                         <small class="text-muted">Budget:</small>
-                        <span class="fw-bold text-dark">Rp <?= number_format($header[0]['nilai_budget']) ?></span>
+                        <span class="fw-bold text-dark">Rp <?= number_format((float) $header[0]['nilai_budget']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Pengajuan:</small>
-                        <span class="fw-bold text-primary">Rp <?= number_format($ttl_pengajuan_pr) ?></span>
+                        <span class="fw-bold text-primary">Rp <?= number_format((float) $ttl_pengajuan_pr) ?></span>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                     if (!empty($detail)) :
                         $numb = 1;
                         foreach ($detail as $key => $value) :
-                            $nm_material = htmlspecialchars($value['nm_material']) . ' <br><small class="text-muted fw-semibold">(' . htmlspecialchars($value['no_coa'] . ' - ' . $value['nm_coa']) . ')</small>';
+                            $nm_material = htmlspecialchars((string) $value['nm_material']) . ' <br><small class="text-muted fw-semibold">(' . htmlspecialchars($value['no_coa'] . ' - ' . $value['nm_coa']) . ')</small>';
                             $propose = $value['propose_purchase'];
 
                             $get_kebutuhan = $this->db->get_where('budget_rutin_detail', ['id_barang' => $value['id_material']])->row();
@@ -95,12 +95,12 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                         <tr>
                             <td class="text-center text-muted fw-semibold"><?= $numb++ ?></td>
                             <td><?= $nm_material ?></td>
-                            <td class="text-end"><?= number_format($kebutuhan) ?></td>
+                            <td class="text-end"><?= number_format((float) $kebutuhan) ?></td>
                             <td class="text-end"><?= number_format($kebutuhan * 1.5) ?></td>
-                            <td class="text-end fw-semibold"><?= number_format($stock, 2) ?></td>
-                            <td class="text-end fw-bold text-primary"><?= number_format($propose, 2) ?></td>
-                            <td class="text-end">Rp <?= number_format($price_ref) ?></td>
-                            <td class="text-end fw-bold">Rp <?= number_format($total_row) ?></td>
+                            <td class="text-end fw-semibold"><?= number_format((float) $stock, 2) ?></td>
+                            <td class="text-end fw-bold text-primary"><?= number_format((float) $propose, 2) ?></td>
+                            <td class="text-end">Rp <?= number_format((float) $price_ref) ?></td>
+                            <td class="text-end fw-bold">Rp <?= number_format((float) $total_row) ?></td>
                         </tr>
                     <?php
                         endforeach;
@@ -110,7 +110,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                 <tfoot class="table-light">
                     <tr>
                         <th colspan="7" class="text-end fw-bold">Total Price Pengajuan:</th>
-                        <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format($grand_total_price) ?></th>
+                        <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format((float) $grand_total_price) ?></th>
                     </tr>
                 </tfoot>
             </table>

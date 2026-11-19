@@ -32,7 +32,7 @@ class Incoming_stok_model extends BF_Model
     $srcMtr            = "SELECT MAX(no_jurnal) as maxP FROM tr_jurnal WHERE no_jurnal LIKE '%" . int_to_roman(date('m')) . "-" . date('-y') . "%' ";
     $resultMtr        = $this->db->query($srcMtr)->result_array();
     $angkaUrut2        = $resultMtr[0]['maxP'];
-    $urutan2        = (int)substr($angkaUrut2, 0, 5);
+    $urutan2        = (int)substr((string) $angkaUrut2, 0, 5);
     $urutan2 = $urutan2 + $nomor;
     $urut2            = sprintf('%05s', $urutan2);
     $kode_trans        = $urut2 . '-AJV-' . int_to_roman(date('m')) . '-' . date('y');
@@ -81,7 +81,7 @@ class Incoming_stok_model extends BF_Model
 
       $this->db->select('a.no_doc');
       $this->db->from('tr_kasbon a');
-      $this->db->where_in('a.no_doc', explode(',', $row['no_ipp']));
+      $this->db->where_in('a.no_doc', explode(',', (string) $row['no_ipp']));
       $get_no_kasbon = $this->db->get()->result();
       foreach ($get_no_kasbon as $item) {
         $no_po[] = $item->no_doc;
@@ -107,7 +107,7 @@ class Incoming_stok_model extends BF_Model
 
       $this->db->select('a.id_pr');
       $this->db->from('tr_kasbon a');
-      $this->db->where_in('a.no_doc', explode(',', $no_po));
+      $this->db->where_in('a.no_doc', explode(',', (string) $no_po));
       $get_no_kasbon = $this->db->get()->result();
 
       foreach ($get_no_kasbon as $item_no_pr) {
@@ -122,16 +122,16 @@ class Incoming_stok_model extends BF_Model
 
       $nestedData   = array();
       $nestedData[]  = "<div align='center'>" . $nomor . "</div>";
-      $nestedData[]  = "<div align='center'>" . strtoupper($row['kode_trans']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime($row['tanggal'])) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($no_po) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($no_pr) . "</div>";
-      $nestedData[]  = "<div align='left'>" . strtoupper($row['nm_gudang']) . "</div>";
-      $nestedData[]  = "<div align='center'>" . number_format($row['qty_unit'], 2) . "</div>";
+      $nestedData[]  = "<div align='center'>" . strtoupper((string) $row['kode_trans']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . date('d-M-Y', strtotime((string) $row['tanggal'])) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $no_po) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $no_pr) . "</div>";
+      $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['nm_gudang']) . "</div>";
+      $nestedData[]  = "<div align='center'>" . number_format((float) $row['qty_unit'], 2) . "</div>";
       $nestedData[]  = "<div align='left'>" . $row['pic'] . "</div>";
       $username = (!empty($GET_USER[$row['created_by']]['nama'])) ? $GET_USER[$row['created_by']]['nama'] : '-';
       $nestedData[]  = "<div align='left'>" . $username . "</div>";
-      $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+      $nestedData[]  = "<div align='center'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
 
       $status = 'Waiting Confirm';
       $warna = 'blue';
@@ -297,12 +297,12 @@ class Incoming_stok_model extends BF_Model
             $hasil_jurnal .= '</td>';
 
             $hasil_jurnal .= '<td class="text-right">';
-            $hasil_jurnal .= number_format($debit);
+            $hasil_jurnal .= number_format((float) $debit);
             $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][debit]" value="' . $debit . '">';
             $hasil_jurnal .= '</td>';
 
             $hasil_jurnal .= '<td class="text-right">';
-            $hasil_jurnal .= number_format($kredit);
+            $hasil_jurnal .= number_format((float) $kredit);
             $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
             $hasil_jurnal .= '</td>';
 
@@ -358,12 +358,12 @@ class Incoming_stok_model extends BF_Model
                 $hasil_jurnal .= '</td>';
 
                 $hasil_jurnal .= '<td class="text-right">';
-                $hasil_jurnal .= number_format($debit);
+                $hasil_jurnal .= number_format((float) $debit);
                 $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][debit]" value="' . $debit . '">';
                 $hasil_jurnal .= '</td>';
 
                 $hasil_jurnal .= '<td class="text-right">';
-                $hasil_jurnal .= number_format($kredit);
+                $hasil_jurnal .= number_format((float) $kredit);
                 $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
                 $hasil_jurnal .= '</td>';
 
@@ -425,12 +425,12 @@ class Incoming_stok_model extends BF_Model
               $hasil_jurnal .= '</td>';
 
               $hasil_jurnal .= '<td class="text-right">';
-              $hasil_jurnal .= number_format($debit);
+              $hasil_jurnal .= number_format((float) $debit);
               $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][debit]" value="' . $debit . '">';
               $hasil_jurnal .= '</td>';
 
               $hasil_jurnal .= '<td class="text-right">';
-              $hasil_jurnal .= number_format($kredit);
+              $hasil_jurnal .= number_format((float) $kredit);
               $hasil_jurnal .= '<input type="hidden" name="jurnal[' . $no_jurnal . '][kredit]" value="' . $kredit . '">';
               $hasil_jurnal .= '</td>';
 

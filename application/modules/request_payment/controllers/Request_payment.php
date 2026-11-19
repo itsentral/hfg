@@ -156,7 +156,7 @@ class Request_payment extends Admin_Controller
 		// Tambahan — dari tr_receive_invoice_imp_lok
 		$get_il = $this->db->select('id, nomor_invoice, no_surat, tipe')->get('tr_receive_invoice_imp_lok')->result();
 		foreach ($get_il as $item) {
-			$list_no_invoice[$item->id] = $item->nomor_invoice . ' (' . $item->no_surat . ' - ' . ucfirst($item->tipe) . ')';
+			$list_no_invoice[$item->id] = $item->nomor_invoice . ' (' . $item->no_surat . ' - ' . ucfirst((string) $item->tipe) . ')';
 		}
 
 		$this->template->set('data', $data);
@@ -392,7 +392,7 @@ class Request_payment extends Admin_Controller
 			$max_id = (int)$max_id;
 			$count 	= $max_id + 1;
 		}
-		$new_id  	= 'PAY' . $y . str_pad($count, 5, '0', STR_PAD_LEFT);
+		$new_id  	= 'PAY' . $y . str_pad((string) $count, 5, '0', STR_PAD_LEFT);
 		return  $new_id;
 	}
 
@@ -424,7 +424,7 @@ class Request_payment extends Admin_Controller
 		if (!empty($get_request_payment)) {
 			$get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $no_doc_sendigs))->row();
 
-			$no_coa_bank = explode(' - ', $get_request_payment->bank_name);
+			$no_coa_bank = explode(' - ', (string) $get_request_payment->bank_name);
 			$no_coa_bank = $no_coa_bank[0];
 
 			$kode_bank = '';
@@ -476,7 +476,7 @@ class Request_payment extends Admin_Controller
 
 			$get_expense = $this->db->get_where('tr_expense', array('no_doc' => $id_expense))->row();
 
-			$no_coa_bank = explode(' - ', $get_request_payment->bank_name);
+			$no_coa_bank = explode(' - ', (string) $get_request_payment->bank_name);
 			$no_coa_bank = $no_coa_bank[0];
 
 			$kode_bank = '';
@@ -814,7 +814,7 @@ class Request_payment extends Admin_Controller
 
 				$nilai = !empty($dtl->total_pr) ? $dtl->total_pr : (!empty($dtl->grand_total) ? $dtl->grand_total : ($data_request_payment->jumlah ?? 0));
 				$deskripsi = !empty($dtl->deskripsi) ? $dtl->deskripsi : ($data_request_payment->keperluan ?? 'PR Cash ' . ($dtl->no_pr ?? ''));
-				$tgl_doc = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : (!empty($dtl->created_date) ? date('Y-m-d', strtotime($dtl->created_date)) : ($data_request_payment->tgl_doc ?? date('Y-m-d')));
+				$tgl_doc = !empty($dtl->tgl_doc) ? $dtl->tgl_doc : (!empty($dtl->created_date) ? date('Y-m-d', strtotime((string) $dtl->created_date)) : ($data_request_payment->tgl_doc ?? date('Y-m-d')));
 
 				$ArrDetail[] 		= [
 					'id' 			=> $id_detail,
@@ -1438,8 +1438,8 @@ class Request_payment extends Admin_Controller
 		$nocust         = $this->input->post('nocust');
 		$total			= 0;
 		$total_po		= $this->input->post('total_po');
-		$Bln 			= substr($tanggal, 5, 2);
-		$Thn 			= substr($tanggal, 0, 4);
+		$Bln 			= substr((string) $tanggal, 5, 2);
+		$Thn 			= substr((string) $tanggal, 0, 4);
 		$Nomor_JV = $this->Jurnal_model->get_no_buk('101');
 		$session = $this->session->userdata('app_session');
 		$data_session	= $this->session->userdata;
@@ -1740,7 +1740,7 @@ class Request_payment extends Admin_Controller
 				$nm_supplier = [];
 				$no_po = str_replace(', ', ',', $get_invoice->no_po);
 
-				if (strpos($no_po, 'TR') !== false) {
+				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
 						SELECT
 							c.nama as nm_supplier
@@ -1792,7 +1792,7 @@ class Request_payment extends Admin_Controller
 					$valid = 0;
 				}
 			} else if ($actived_tab == 'expense') {
-				if (strpos($record->no_doc, 'ER-') !== false) {
+				if (strpos((string) $record->no_doc, 'ER-') !== false) {
 					$valid = 1;
 				} else {
 					$valid = 0;
@@ -1865,7 +1865,7 @@ class Request_payment extends Admin_Controller
 				}
 				$hasil .= '</select>';
 				$hasil .= '</td>';
-				$hasil .= '<td>' . number_format($record->jumlah) . '</td>';
+				$hasil .= '<td>' . number_format((float) $record->jumlah) . '</td>';
 				$hasil .= '<td>' . $sts . '</td>';
 				$hasil .= '<td>';
 				$hasil .= '
@@ -1874,7 +1874,7 @@ class Request_payment extends Admin_Controller
 						<td>Nilai Pengajuan</td>
 						<td class="text-center">:</td>
 						<td>
-							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . number_format($record->jumlah) . '" readonly>
+							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . number_format((float) $record->jumlah) . '" readonly>
 						</td>
 					</tr>
 					<tr>
@@ -2018,7 +2018,7 @@ class Request_payment extends Admin_Controller
 				$nm_supplier = [];
 				$no_po = str_replace(', ', ',', $get_invoice->no_po);
 
-				if (strpos($no_po, 'TR') !== false) {
+				if (strpos((string) $no_po, 'TR') !== false) {
 					$get_supplier = $this->db->query("
 						SELECT
 							c.nama as nm_supplier
@@ -2070,7 +2070,7 @@ class Request_payment extends Admin_Controller
 					$valid = 0;
 				}
 			} else if ($tab == 'expense') {
-				if (strpos($record->no_doc, 'ER-') !== false || strpos($record->no_doc, 'ROS') !== false) {
+				if (strpos((string) $record->no_doc, 'ER-') !== false || strpos((string) $record->no_doc, 'ROS') !== false) {
 					$valid = 1;
 				} else {
 					$valid = 0;
@@ -2146,7 +2146,7 @@ class Request_payment extends Admin_Controller
 				}
 				$hasil .= '</select>';
 				$hasil .= '</td>';
-				$hasil .= '<td>' . (($record->tipe == 'expense' and $record->kurang_bayar > 0) ? number_format($record->kurang_bayar) : number_format($record->jumlah))  . '</td>';
+				$hasil .= '<td>' . (($record->tipe == 'expense' and $record->kurang_bayar > 0) ? number_format((float) $record->kurang_bayar) : number_format((float) $record->jumlah))  . '</td>';
 				$hasil .= '<td>' . $sts . '</td>';
 				$hasil .= '<td>';
 				$hasil .= '
@@ -2155,7 +2155,7 @@ class Request_payment extends Admin_Controller
 						<td>Nilai Pengajuan</td>
 						<td class="text-center">:</td>
 						<td>
-							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . (($record->tipe == 'expense' and $record->kurang_bayar > 0) ? number_format($record->kurang_bayar) : number_format($record->jumlah)) . '" readonly>
+							<input type="text" name="" id="" class="form-control form-control-sm text-right nilai_pengajuan_' . $numb . '" value="' . (($record->tipe == 'expense' and $record->kurang_bayar > 0) ? number_format((float) $record->kurang_bayar) : number_format((float) $record->jumlah)) . '" readonly>
 						</td>
 					</tr>
 					<tr>
@@ -2260,7 +2260,7 @@ class Request_payment extends Admin_Controller
 			}
 		} else {
 			$id_po = str_replace(', ', ',', $get_invoice['no_po']);
-			$no_incoming = explode(',', $id_po);
+			$no_incoming = explode(',', (string) $id_po);
 
 			$this->template->set('data_invoice', $get_invoice);
 			$this->template->set('no_incoming', $no_incoming);
@@ -2343,12 +2343,12 @@ class Request_payment extends Admin_Controller
 		$header 	= $this->db->get_where('request_payment', ['no_doc' => $id])->row_array();
 		// $Id 		= $this->_getIdPayment(str_replace('/', '-', $Data['date']));
 
-		$no_coa_bank = explode(' - ', $header['bank_name']);
+		$no_coa_bank = explode(' - ', (string) $header['bank_name']);
 		$no_coa_bank = $no_coa_bank[0];
 
 		$kode_bank = '';
 		$get_kode_bank = $this->db->get_where(DBACC . '.coa_master', ['no_perkiraan' => $no_coa_bank])->row();
-		if (count($get_kode_bank) > 0) {
+		if (!empty($get_kode_bank)) {
 			$kode_bank = $get_kode_bank->kode_bank;
 		}
 
@@ -2376,7 +2376,7 @@ class Request_payment extends Admin_Controller
 				'id' 			=> $id_detail,
 				'payment_id' 	=> $Id,
 				'no_doc' 		=> $dtl->id,
-				'tgl_doc' 		=> date('Y-m-d', strtotime($dtl->created_date)),
+				'tgl_doc' 		=> date('Y-m-d', strtotime((string) $dtl->created_date)),
 				'deskripsi' 	=> $header['keperluan'],
 				'qty' 			=> 1,
 				'harga' 		=> $harga,
@@ -2658,8 +2658,8 @@ class Request_payment extends Admin_Controller
 					$arr_insert[] = [
 						'no_doc' => $item->no_doc,
 						'nama' => $get_data_non_po->nm_pic,
-						'tgl_doc' => date('Y-m-d', strtotime($get_data_non_po->created_date)),
-						'keperluan' => 'PR Cash - ' . $get_data_non_po->no_pr . ' - ' . ucfirst($get_data_non_po->jenis_pr),
+						'tgl_doc' => date('Y-m-d', strtotime((string) $get_data_non_po->created_date)),
+						'keperluan' => 'PR Cash - ' . $get_data_non_po->no_pr . ' - ' . ucfirst((string) $get_data_non_po->jenis_pr),
 						'tipe' => 'Cash',
 						'jumlah' => $get_data_non_po->total_pr,
 						'status' => 0,
@@ -3037,7 +3037,7 @@ class Request_payment extends Admin_Controller
 			$sheet->setCellValue('A' . $row, $no);
 			$sheet->setCellValue('B' . $row, $item->no_surat);
 			$sheet->setCellValue('C' . $row, $nmuser);
-			$sheet->setCellValue('D' . $row, date('d F Y', strtotime($item->tanggal)));
+			$sheet->setCellValue('D' . $row, date('d F Y', strtotime((string) $item->tanggal)));
 			$sheet->setCellValue('E' . $row, $item->keperluan);
 			$sheet->setCellValue('F' . $row, $item->kategori);
 			$sheet->setCellValue('G' . $row, $item->nilai_pengajuan);
@@ -3116,7 +3116,7 @@ class Request_payment extends Admin_Controller
 			$tipe_rp      = 'invoice_dp';
 		} else {
 			$data_receive = $this->db->get_where('tr_receive_invoice_imp_lok', ['id' => $id_receive])->row_array();
-			$tipe_label   = 'Invoice ' . ucfirst($tipe);
+			$tipe_label   = 'Invoice ' . ucfirst((string) $tipe);
 			$tipe_rp      = 'invoice_' . $tipe;
 		}
 

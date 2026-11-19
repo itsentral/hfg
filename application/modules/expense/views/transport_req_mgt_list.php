@@ -39,11 +39,11 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
 						<?php $no = 1; foreach ($results as $item): ?>
 							<tr>
 								<td class="text-center"><?= $no++; ?></td>
-								<td class="fw-semibold text-primary"><?= htmlspecialchars($item->no_doc); ?></td>
-								<td><?= date('d M Y', strtotime($item->tgl_doc)); ?></td>
+								<td class="fw-semibold text-primary"><?= htmlspecialchars((string) $item->no_doc); ?></td>
+								<td><?= date('d M Y', strtotime((string) $item->tgl_doc)); ?></td>
 								<td class="fw-medium"><?= htmlspecialchars(!empty($item->nama) ? $item->nama : $item->nmuser); ?></td>
-								<td><?= htmlspecialchars($item->departement); ?></td>
-								<td class="text-end fw-bold">Rp <?= number_format($item->jumlah_expense, 0, ',', '.'); ?></td>
+								<td><?= htmlspecialchars((string) $item->departement); ?></td>
+								<td class="text-end fw-bold">Rp <?= number_format((float) $item->jumlah_expense, 0, ',', '.'); ?></td>
 								<td class="text-center">
 									<?php 
 										$st = isset($status[$item->status]) ? $status[$item->status] : 'Baru';

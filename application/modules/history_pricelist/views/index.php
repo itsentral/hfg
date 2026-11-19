@@ -41,7 +41,7 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
                     <option value="">-- Semua Dokumen --</option>
                     <?php if (!empty($pricelists)): foreach ($pricelists as $pl): ?>
                         <option value="<?= html_escape($pl->no_pricelist) ?>" <?= ($filters['no_pricelist'] == $pl->no_pricelist) ? 'selected' : '' ?>>
-                            <?= html_escape($pl->no_pricelist) ?> (<?= date('d/m/Y', strtotime($pl->event_at)) ?> - <?= $pl->total_items ?> item)
+                            <?= html_escape($pl->no_pricelist) ?> (<?= date('d/m/Y', strtotime((string) $pl->event_at)) ?> - <?= $pl->total_items ?> item)
                         </option>
                     <?php endforeach; endif; ?>
                 </select>
@@ -93,8 +93,8 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
                             <td class="text-center">
-                                <div><strong><?= date('d/m/Y', strtotime($r->event_at)) ?></strong></div>
-                                <div class="text-muted" style="font-size:10px;"><?= date('H:i', strtotime($r->event_at)) ?></div>
+                                <div><strong><?= date('d/m/Y', strtotime((string) $r->event_at)) ?></strong></div>
+                                <div class="text-muted" style="font-size:10px;"><?= date('H:i', strtotime((string) $r->event_at)) ?></div>
                                 <div class="text-muted" style="font-size:10px;">By: <?= html_escape($r->event_by_name ? $r->event_by_name : '-') ?></div>
                             </td>
                             <td>
@@ -113,8 +113,8 @@ $ENABLE_VIEW   = has_permission('History_Pricelist.View');
                                 <div class="text-muted" style="font-size:10px;">(Rp <?= number_format((float)$r->price_list_baru_kg, 2) ?>/Kg)</div>
                             </td>
                             <td class="text-right" style="font-weight:600; color:<?= ($delta >= 0) ? '#27ae60' : '#e74c3c' ?>;">
-                                <?= ($delta >= 0) ? '+' : '' ?>Rp <?= number_format($delta, 2) ?>
-                                <div style="font-size:10px;"><?= ($pct >= 0) ? '+' : '' ?><?= number_format($pct, 2) ?>%</div>
+                                <?= ($delta >= 0) ? '+' : '' ?>Rp <?= number_format((float) $delta, 2) ?>
+                                <div style="font-size:10px;"><?= ($pct >= 0) ? '+' : '' ?><?= number_format((float) $pct, 2) ?>%</div>
                             </td>
                             <td class="text-right">
                                 Rp <?= number_format((float)$r->bottom_price_meter, 2) ?>

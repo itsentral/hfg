@@ -12,7 +12,7 @@
                     </div>
                     <div class="d-flex align-items-center mb-2">
                         <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Nomor PO / Kasbon</span>
-                        <span class="fw-bold text-dark">: <?= strtoupper($no_po); ?></span>
+                        <span class="fw-bold text-dark">: <?= strtoupper((string) $no_po); ?></span>
                     </div>
                     <div class="d-flex align-items-center">
                         <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Warehouse</span>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="d-flex align-items-center mb-2">
                         <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">PIC Penerima</span>
-                        <span class="fw-semibold text-dark">: <?= !empty($getData[0]['pic']) ? strtoupper($getData[0]['pic']) : '-'; ?></span>
+                        <span class="fw-semibold text-dark">: <?= !empty($getData[0]['pic']) ? strtoupper((string) $getData[0]['pic']) : '-'; ?></span>
                     </div>
                     <div class="d-flex align-items-center">
                         <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Catatan</span>
@@ -75,10 +75,10 @@
                 ?>
                         <tr>
                             <td class="text-center fw-semibold text-muted"><?= $No; ?></td>
-                            <td class="fw-semibold text-primary font-monospace"><?= strtoupper($code_material); ?></td>
-                            <td class="fw-bold text-dark"><?= strtoupper($nm_material); ?></td>
-                            <td class="text-center fw-bold text-success fs-6"><?= number_format($qty_in, 2); ?></td>
-                            <td class="text-center text-muted fw-semibold"><?= strtoupper($satuan_nama); ?></td>
+                            <td class="fw-semibold text-primary font-monospace"><?= strtoupper((string) $code_material); ?></td>
+                            <td class="fw-bold text-dark"><?= strtoupper((string) $nm_material); ?></td>
+                            <td class="text-center fw-bold text-success fs-6"><?= number_format((float) $qty_in, 2); ?></td>
+                            <td class="text-center text-muted fw-semibold"><?= strtoupper((string) $satuan_nama); ?></td>
                             <td class="text-muted"><?= !empty($value['keterangan']) ? $value['keterangan'] : '-'; ?></td>
                         </tr>
                     <?php
@@ -86,7 +86,7 @@
                     ?>
                     <tr class="table-light fw-bold">
                         <td colspan="3" class="text-end">TOTAL QTY MASUK :</td>
-                        <td class="text-center text-primary fs-6"><?= number_format($totalQty, 2); ?></td>
+                        <td class="text-center text-primary fs-6"><?= number_format((float) $totalQty, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>
                 <?php else : ?>

@@ -139,7 +139,7 @@ class Approval_mutasi extends Admin_Controller
 
         $reason = $this->input->post('reject_reason');
 
-        if (empty(trim($reason))) {
+        if (empty(trim((string) $reason))) {
             return $this->_json(['status' => 0, 'message' => 'Rejection reason is required.']);
         }
 
@@ -171,7 +171,7 @@ class Approval_mutasi extends Admin_Controller
 
         $reason = $this->input->post('reject_reason');
 
-        if (empty(trim($reason))) {
+        if (empty(trim((string) $reason))) {
             return $this->_json(['status' => 0, 'message' => 'Revision notes are required.']);
         }
 

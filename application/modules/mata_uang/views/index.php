@@ -100,7 +100,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                                href="javascript:void(0)"
                                                title="Hapus"
                                                data-id="<?= $record->id_kurs; ?>"
-                                               data-name="<?= htmlspecialchars($record->negara, ENT_QUOTES, 'UTF-8'); ?>">
+                                               data-name="<?= htmlspecialchars((string) $record->negara, ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="ti ti-trash"></i>
                                             </a>
                                         <?php endif; ?>

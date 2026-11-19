@@ -54,8 +54,8 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                 <select id="filter-category" class="form-select form-select-sm select2 chosen-select" style="width: 100%;">
                     <option value="">-- SEMUA PRODUCT CATEGORY --</option>
                     <?php foreach ($categories as $cat): ?>
-                        <option value="<?= htmlspecialchars($cat->code_lv2) ?>" <?= ($cat_filter === $cat->code_lv2) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars(strtoupper($cat->nama)) ?>
+                        <option value="<?= htmlspecialchars((string) $cat->code_lv2) ?>" <?= ($cat_filter === $cat->code_lv2) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars(strtoupper((string) $cat->nama)) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -106,18 +106,18 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                         <?php foreach ($costings as $idx => $c): ?>
                             <tr>
                                 <td class="text-center"><?= $idx + 1 ?></td>
-                                <td><?= htmlspecialchars(strtoupper($c->nm_category)) ?></td>
-                                <td class="fw-bold text-dark"><?= htmlspecialchars(strtoupper($c->nm_product)) ?></td>
-                                <td><?= htmlspecialchars($c->nm_material) ?></td>
-                                <td><span class="badge bg-light text-dark border"><?= htmlspecialchars($c->no_uniq_id) ?></span></td>
+                                <td><?= htmlspecialchars(strtoupper((string) $c->nm_category)) ?></td>
+                                <td class="fw-bold text-dark"><?= htmlspecialchars(strtoupper((string) $c->nm_product)) ?></td>
+                                <td><?= htmlspecialchars((string) $c->nm_material) ?></td>
+                                <td><span class="badge bg-light text-dark border"><?= htmlspecialchars((string) $c->no_uniq_id) ?></span></td>
                                 <td class="text-end fw-bold">
-                                    Rp <?= number_format($c->bottom_meter, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $c->bottom_meter, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-end fw-bold text-primary fs-6">
-                                    Rp <?= number_format($c->pricelist_meter, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $c->pricelist_meter, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-end fw-bold text-success fs-6">
-                                    Rp <?= number_format($c->pricelist_kg, 2, ',', '.') ?>
+                                    Rp <?= number_format((float) $c->pricelist_kg, 2, ',', '.') ?>
                                 </td>
                                 <td class="text-center">
                                     <?php if ($c->is_lengkap): ?>
@@ -129,14 +129,14 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center text-muted small">
-                                    <?= (!empty($c->last_updated) && strtotime($c->last_updated) > 0) ? date('d/m/Y H:i', strtotime($c->last_updated)) : '-' ?>
+                                    <?= (!empty($c->last_updated) && strtotime((string) $c->last_updated) > 0) ? date('d/m/Y H:i', strtotime((string) $c->last_updated)) : '-' ?>
                                 </td>
                                 <td class="text-center text-nowrap">
                                     <div class="d-flex flex-column align-items-center gap-1">
                                         <button type="button" class="btn btn-sm btn-primary btn-view-detail shadow-xs"
                                             data-bom-detail-id="<?= $c->bom_detail_id ?>"
-                                            data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
-                                            data-product="<?= htmlspecialchars($c->nm_product) ?>"
+                                            data-uniq="<?= htmlspecialchars((string) $c->no_uniq_id) ?>"
+                                            data-product="<?= htmlspecialchars((string) $c->nm_product) ?>"
                                             title="Lihat Report Costing Detail"
                                             style="width: 80px;">
                                             <i class="fa fa-eye me-1"></i> Detail
@@ -146,11 +146,11 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                             <?php if ($c->is_lengkap): ?>
                                                 <button type="button" class="btn btn-sm btn-success btn-add-draft shadow-xs"
                                                     data-bom-detail-id="<?= $c->bom_detail_id ?>"
-                                                    data-uniq="<?= htmlspecialchars($c->no_uniq_id) ?>"
-                                                    data-product="<?= htmlspecialchars($c->nm_product) ?>"
-                                                    data-category="<?= htmlspecialchars($c->nm_category) ?>"
-                                                    data-price-m="Rp <?= number_format($c->pricelist_meter, 2, ',', '.') ?>"
-                                                    data-price-kg="Rp <?= number_format($c->pricelist_kg, 2, ',', '.') ?>"
+                                                    data-uniq="<?= htmlspecialchars((string) $c->no_uniq_id) ?>"
+                                                    data-product="<?= htmlspecialchars((string) $c->nm_product) ?>"
+                                                    data-category="<?= htmlspecialchars((string) $c->nm_category) ?>"
+                                                    data-price-m="Rp <?= number_format((float) $c->pricelist_meter, 2, ',', '.') ?>"
+                                                    data-price-kg="Rp <?= number_format((float) $c->pricelist_kg, 2, ',', '.') ?>"
                                                     title="Ajukan varian ini ke Draft Pricelist"
                                                     style="width: 80px;">
                                                     <i class="fa fa-plus-circle me-1"></i> Draft

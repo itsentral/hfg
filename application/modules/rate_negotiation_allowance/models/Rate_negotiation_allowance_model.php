@@ -186,7 +186,7 @@ class Rate_negotiation_allowance_model extends CI_Model
         $now = date('Y-m-d H:i:s');
         return $this->db->where('id', $id)->update('rate_negotiation_allowance_request', [
             'status'        => 'Rejected',
-            'reject_reason' => trim($reject_reason),
+            'reject_reason' => trim((string) $reject_reason),
             'decided_by'    => $id_user,
             'decided_at'    => $now,
         ]);

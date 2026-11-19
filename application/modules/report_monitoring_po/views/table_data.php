@@ -36,7 +36,7 @@
                                 </td>
                                 <td>
                                     <span class="text-secondary small">
-                                        <?= !empty($record->tanggal) ? date('d M Y', strtotime($record->tanggal)) : '-'; ?>
+                                        <?= !empty($record->tanggal) ? date('d M Y', strtotime((string) $record->tanggal)) : '-'; ?>
                                     </span>
                                 </td>
                                 <td>
@@ -51,10 +51,10 @@
                                             <?php foreach ($record->pr_arr as $pr) : ?>
                                                 <div class="d-flex flex-column">
                                                     <span class="fw-bold text-dark font-monospace small">
-                                                        <i class="ti ti-clipboard-list text-primary me-1"></i><?= htmlspecialchars($pr['no_pr'], ENT_QUOTES, 'UTF-8'); ?>
+                                                        <i class="ti ti-clipboard-list text-primary me-1"></i><?= htmlspecialchars((string) $pr['no_pr'], ENT_QUOTES, 'UTF-8'); ?>
                                                     </span>
                                                     <span class="badge bg-light text-secondary text-uppercase border" style="font-size: 10px; width: fit-content;">
-                                                        <?= htmlspecialchars($pr['tipe_pr'], ENT_QUOTES, 'UTF-8'); ?>
+                                                        <?= htmlspecialchars((string) $pr['tipe_pr'], ENT_QUOTES, 'UTF-8'); ?>
                                                     </span>
                                                 </div>
                                             <?php endforeach; ?>
@@ -68,7 +68,7 @@
                                         <div class="d-flex flex-column gap-1">
                                             <?php foreach ($record->materials_arr as $mat) : ?>
                                                 <span class="badge bg-light text-dark text-start text-wrap fw-normal border" style="font-size: 11px; line-height: 1.4;">
-                                                    <i class="ti ti-box text-secondary me-1"></i><?= htmlspecialchars($mat, ENT_QUOTES, 'UTF-8'); ?>
+                                                    <i class="ti ti-box text-secondary me-1"></i><?= htmlspecialchars((string) $mat, ENT_QUOTES, 'UTF-8'); ?>
                                                 </span>
                                             <?php endforeach; ?>
                                         </div>
@@ -77,13 +77,13 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end fw-semibold text-dark">
-                                    <?= number_format($record->total_qty_po, 2); ?>
+                                    <?= number_format((float) $record->total_qty_po, 2); ?>
                                 </td>
                                 <td class="text-end fw-semibold text-success">
-                                    <?= number_format($record->total_diterima, 2); ?>
+                                    <?= number_format((float) $record->total_diterima, 2); ?>
                                 </td>
                                 <td class="text-end fw-semibold <?= ($record->sisa_qty < 0) ? 'text-danger' : (($record->sisa_qty == 0) ? 'text-muted' : 'text-primary'); ?>">
-                                    <?= number_format($record->sisa_qty, 2); ?>
+                                    <?= number_format((float) $record->sisa_qty, 2); ?>
                                 </td>
                                 <td class="text-center">
                                     <!-- Progress & Status ditaruh 1 kolom -->

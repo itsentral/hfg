@@ -2,7 +2,7 @@
 $is_edit     = isset($bom) && $bom;
 $page_title  = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
 $bom_num     = !empty($bom->id) ? (int)$bom->id : (isset($next_bom_id) ? (int)$next_bom_id : 1);
-$bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
+$bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
 ?>
 
 <!-- Select2 -->
@@ -29,13 +29,13 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                     <select name="id_produk" id="select-produk" class="form-select select2-produk" required <?= $is_edit ? 'disabled' : '' ?>>
                         <option value="">-- Pilih Produk --</option>
                         <?php foreach ($produk_list as $idx => $p): ?>
-                            <option value="<?= htmlspecialchars($p->code_lv4) ?>"
-                                data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad($p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
+                            <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
+                                data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad((string) $p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
                                 data-idx="<?= str_pad($idx + 1, 3, '0', STR_PAD_LEFT) ?>"
-                                data-nama="<?= htmlspecialchars($p->nama) ?>"
+                                data-nama="<?= htmlspecialchars((string) $p->nama) ?>"
                                 data-trade="<?= htmlspecialchars(!empty($p->trade_name) ? $p->trade_name : $p->nama) ?>"
                                 <?= ($is_edit && $bom->id_produk == $p->code_lv4) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($p->code_lv4) ?> — <?= htmlspecialchars($p->nama) ?>
+                                <?= htmlspecialchars((string) $p->code_lv4) ?> — <?= htmlspecialchars((string) $p->nama) ?>
                                 <?php if ($p->nm_lv1 || $p->nm_lv2): ?>
                                     (<?= htmlspecialchars(implode(' / ', array_filter([$p->nm_lv1, $p->nm_lv2, $p->nm_lv3]))) ?>)
                                 <?php endif; ?>
@@ -43,9 +43,9 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                         <?php endforeach; ?>
                     </select>
                     <?php if ($is_edit): ?>
-                        <input type="hidden" name="id_produk" value="<?= htmlspecialchars($bom->id_produk) ?>">
+                        <input type="hidden" name="id_produk" value="<?= htmlspecialchars((string) $bom->id_produk) ?>">
                     <?php endif; ?>
-                    <input type="hidden" name="nm_produk" id="nm_produk" value="<?= $is_edit ? htmlspecialchars($bom->nm_produk) : '' ?>">
+                    <input type="hidden" name="nm_produk" id="nm_produk" value="<?= $is_edit ? htmlspecialchars((string) $bom->nm_produk) : '' ?>">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Trade Name Produk</label>
@@ -97,14 +97,14 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                                                 class="form-select form-select-sm select2-material" required>
                                                 <option value="">-- Pilih Material --</option>
                                                 <?php foreach ($material_list as $m): ?>
-                                                    <option value="<?= htmlspecialchars($m->code_lv4) ?>"
-                                                        data-nama="<?= htmlspecialchars($m->nama) ?>"
+                                                    <option value="<?= htmlspecialchars((string) $m->code_lv4) ?>"
+                                                        data-nama="<?= htmlspecialchars((string) $m->nama) ?>"
                                                         data-thick="<?= (float) $m->thickness ?>"
                                                         data-width="<?= (float) $m->width ?>"
                                                         data-unit="<?= htmlspecialchars($m->id_unit ?: '') ?>"
                                                         data-nm-unit="<?= htmlspecialchars($m->nm_unit ?: '') ?>"
                                                         <?= ($d->id_material == $m->code_lv4) ? 'selected' : '' ?>>
-                                                        <?= htmlspecialchars($m->code_lv4) ?> — <?= htmlspecialchars($m->nama) ?>
+                                                        <?= htmlspecialchars((string) $m->code_lv4) ?> — <?= htmlspecialchars((string) $m->nama) ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
@@ -112,7 +112,6 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                                             <input type="hidden" name="detail[<?= $i ?>][id_unit]" class="inp-id-unit" value="<?= htmlspecialchars($d->id_unit ?: '') ?>">
                                             <input type="hidden" name="detail[<?= $i ?>][nm_unit]" class="inp-nm-unit" value="<?= htmlspecialchars($d->nm_unit ?: '') ?>">
                                             <input type="hidden" name="detail[<?= $i ?>][qty]" value="1">
-                                            <input type="hidden" name="detail[<?= $i ?>][berat_per_meter]" class="inp-bpm" value="<?= number_format($d->berat_per_meter, 6, '.', '') ?>">
                                         </td>
                                         <td class="text-end col-thick">
                                             <?= number_format(isset($d->thickness) ? $d->thickness : 0, 3, '.', '') ?>
@@ -120,8 +119,11 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
                                         <td class="text-end col-width">
                                             <?= number_format(isset($d->width) ? $d->width : 0, 2, '.', '') ?>
                                         </td>
-                                        <td class="text-end fw-bold col-bpm <?= ((float)$d->berat_per_meter > 0) ? 'text-success' : 'text-danger' ?>">
-                                            <?= number_format($d->berat_per_meter, 4, '.', '') ?>
+                                        <td class="col-bpm">
+                                            <input type="number" step="any" min="0" name="detail[<?= $i ?>][berat_per_meter]"
+                                                class="form-control form-control-sm text-end fw-bold inp-bpm"
+                                                title="Kuning = berbeda dari hitungan otomatis. Klik Recalculate Berat/Meter untuk mengembalikan."
+                                                value="<?= number_format((float) $d->berat_per_meter, 6, '.', '') ?>">
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm btn-del-row" title="Hapus">
@@ -139,7 +141,7 @@ $bom_num_str = str_pad($bom_num, 3, '0', STR_PAD_LEFT);
 
             <!-- Keterangan Formula Sesuai Mockup -->
             <div class="alert alert-light border py-2 mb-4 text-muted small">
-                <i class="fa fa-info-circle me-1"></i> <strong>Berat/Meter (otomatis, read-only)</strong> = <code>((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code> &middot; nilai standar dari Master Standard Material (Toleransi <?= number_format($standard_mat->standar_toleransi, 2) ?>, Berat Jenis <?= number_format($standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format($standard_mat->coating, 2) ?>). Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).
+                <i class="fa fa-info-circle me-1"></i> <strong>Berat/Meter (otomatis, dapat diubah manual)</strong> = <code>((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code> &middot; nilai standar dari Master Standard Material (Toleransi <?= number_format((float) $standard_mat->standar_toleransi, 2) ?>, Berat Jenis <?= number_format((float) $standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format((float) $standard_mat->coating, 2) ?>). Nilai terisi otomatis saat material dipilih dan boleh diubah bila ada hitungan sendiri; kolom yang berbeda dari hitungan otomatis ditandai kuning dan bisa dikembalikan dengan tombol Recalculate Berat/Meter. Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).
             </div>
 
             <!-- Tombol Action Simpan & Batal -->
@@ -223,6 +225,35 @@ $(document).ready(function() {
         return bpm > 0 ? bpm : 0;
     }
 
+    // Isi Berat/Meter dengan hitungan otomatis (nilai otomatis disimpan di data 'auto' untuk pembanding)
+    function setBpmAuto(tr, thick, width) {
+        var bpm = calcBPM(thick, width);
+        var inp = tr.find('.inp-bpm');
+        inp.data('auto', bpm).val(bpm > 0 ? bpm.toFixed(6) : '');
+        markBpm(tr);
+    }
+    // Tandai kuning bila nilai berbeda dari hitungan otomatis (manual atau standar berubah); reset lewat tombol Recalculate
+    function markBpm(tr) {
+        var inp = tr.find('.inp-bpm');
+        var auto = parseFloat(inp.data('auto'));
+        var val = parseFloat(inp.val());
+        var differs = !isNaN(auto) && (isNaN(val) || Math.abs(val - auto) > 0.0005);
+        inp.toggleClass('border-warning', differs);
+        return differs;
+    }
+    // Pembanding awal untuk baris yang sudah ada (mode edit)
+    $('#tbody-variant tr').each(function() {
+        var tr = $(this);
+        var opt = tr.find('.select2-material').find(':selected');
+        if (opt.val()) {
+            tr.find('.inp-bpm').data('auto', calcBPM(parseFloat(opt.data('thick')) || 0, parseFloat(opt.data('width')) || 0));
+            markBpm(tr);
+        }
+    });
+    // Ketik manual di kolom Berat/Meter
+    $(document).on('input', '.inp-bpm', function() {
+        markBpm($(this).closest('tr'));
+    });
     // Event saat Material di baris varian dipilih
     $(document).on('change', '.select2-material', function() {
         var tr = $(this).closest('tr');
@@ -240,9 +271,7 @@ $(document).ready(function() {
         tr.find('.col-thick').text(thick > 0 ? thick.toFixed(3) : '—');
         tr.find('.col-width').text(width > 0 ? width.toFixed(2) : '—');
 
-        var bpm = calcBPM(thick, width);
-        tr.find('.col-bpm').removeClass('text-danger text-muted').addClass('text-success').text(bpm > 0 ? bpm.toFixed(4) : '—');
-        tr.find('.inp-bpm').val(bpm.toFixed(6));
+        setBpmAuto(tr, thick, width);
     });
 
     // Fungsi hitung ulang Berat/Meter untuk semua baris material yang dipilih
@@ -266,9 +295,7 @@ $(document).ready(function() {
                 tr.find('.col-thick').text(thick > 0 ? thick.toFixed(3) : '—');
                 tr.find('.col-width').text(width > 0 ? width.toFixed(2) : '—');
 
-                var bpm = calcBPM(thick, width);
-                tr.find('.col-bpm').removeClass('text-danger text-muted').addClass('text-success').text(bpm > 0 ? bpm.toFixed(4) : '—');
-                tr.find('.inp-bpm').val(bpm.toFixed(6));
+                setBpmAuto(tr, thick, width);
                 count++;
             }
         });
@@ -303,7 +330,29 @@ $(document).ready(function() {
 
     // Event tombol Recalculate Berat/Meter
     $('#btn-recalculate').on('click', function() {
-        recalculateAllBPM(true);
+        var differs = 0;
+        $('#tbody-variant tr').each(function() {
+            if ($(this).find('.select2-material').val() && markBpm($(this))) differs++;
+        });
+        if (differs === 0) {
+            recalculateAllBPM(true);
+            return;
+        }
+        var msg = differs + ' baris berbeda dari hitungan otomatis (diubah manual atau standar berubah). Hitung ulang akan menimpa nilai tersebut.';
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Timpa nilai Berat/Meter?',
+                text: msg,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hitung ulang',
+                cancelButtonText: 'Batal'
+            }).then(function(r) {
+                if (r.isConfirmed) recalculateAllBPM(true);
+            });
+        } else if (confirm(msg)) {
+            recalculateAllBPM(true);
+        }
     });
 
     // Tambah Varian Baru
@@ -334,11 +383,12 @@ $(document).ready(function() {
             +   '<input type="hidden" name="detail[' + rowIndex + '][id_unit]" class="inp-id-unit">'
             +   '<input type="hidden" name="detail[' + rowIndex + '][nm_unit]" class="inp-nm-unit">'
             +   '<input type="hidden" name="detail[' + rowIndex + '][qty]" value="1">'
-            +   '<input type="hidden" name="detail[' + rowIndex + '][berat_per_meter]" class="inp-bpm" value="0.000000">'
             + '</td>'
             + '<td class="text-end col-thick">—</td>'
             + '<td class="text-end col-width">—</td>'
-            + '<td class="text-end fw-bold text-success col-bpm">—</td>'
+            + '<td class="col-bpm">'
+            +   '<input type="number" step="any" min="0" name="detail[' + rowIndex + '][berat_per_meter]" class="form-control form-control-sm text-end fw-bold inp-bpm" title="Kuning = berbeda dari hitungan otomatis. Klik Recalculate Berat/Meter untuk mengembalikan." value="">'
+            + '</td>'
             + '<td class="text-center">'
             +   '<button type="button" class="btn btn-danger btn-sm btn-del-row" title="Hapus"><i class="fa fa-trash"></i></button>'
             + '</td>'

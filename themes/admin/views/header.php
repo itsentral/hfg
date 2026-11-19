@@ -414,7 +414,7 @@ if (!function_exists('get_company_logo')) {
                 <h4 class="mb-0">
                   <span id="greetingText">Hello</span>,
                   <span class="small text-muted">
-                    <?= isset($userData->nm_lengkap) ? ucwords($userData->nm_lengkap) : $userData->username; ?>
+                    <?= isset($userData->nm_lengkap) ? ucwords((string) $userData->nm_lengkap) : $userData->username; ?>
                   </span>
                 </h4>
 

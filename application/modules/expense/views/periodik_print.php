@@ -30,8 +30,8 @@
 		</tr>
 		<tr>
 			<td nowrap colspan=2>No Dokumen : <?= $data->no_doc ?></td>
-			<td nowrap colspan=2>Jumlah Nilai : <?= number_format($data->jumlah_kasbon) ?></td>
-			<td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime($data->tgl_doc)) ?></td>
+			<td nowrap colspan=2>Jumlah Nilai : <?= number_format((float) $data->jumlah_kasbon) ?></td>
+			<td nowrap colspan=2>Tanggal : <?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 		</tr>
 		<tr>
 			<th colspan=6><br /></th>
@@ -64,14 +64,14 @@
 		}
 
         if (!empty($data->approved_on) && $data->approved_on != '0000-00-00') {
-        $tglMengetahui = date('d F Y', strtotime($data->approved_on));
+        $tglMengetahui = date('d F Y', strtotime((string) $data->approved_on));
         } else {
         $tglMengetahui = date('d F Y');
         }
 		?>
 		<tr height=120>
 			<td colspan=2 align=center nowrap valign="bottom">
-				<u>&nbsp; &nbsp; <?= (($nmuser) ? $nmuser : ' &nbsp; &nbsp;  &nbsp; &nbsp;  &nbsp; &nbsp; ') ?> &nbsp; &nbsp; </u><br><?= date('d F Y', strtotime($data->created_on)); ?>
+				<u>&nbsp; &nbsp; <?= (($nmuser) ? $nmuser : ' &nbsp; &nbsp;  &nbsp; &nbsp;  &nbsp; &nbsp; ') ?> &nbsp; &nbsp; </u><br><?= date('d F Y', strtotime((string) $data->created_on)); ?>
 			</td>
 			<td colspan=2 align=center nowrap valign="bottom">
                 <u>&nbsp; &nbsp; <?= $mengetahui->name ?> &nbsp; &nbsp; </u>
@@ -87,7 +87,7 @@
 				// if (isset($item_rutin)) {
 		//	echo '<div class="pagebreak"> </div>';
 					if ($item_rutin->doc_file != '') {
-						if (strpos($item_rutin->doc_file, 'pdf', 0) > 1) {
+						if (strpos((string) $item_rutin->doc_file, 'pdf', 0) > 1) {
 							echo '<div class="col-md-12">
 						<iframe src="' . base_url('assets/bayar_rutin/' . $item_rutin->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 								<a href="' . base_url('assets/bayar_rutin/' . $item_rutin->doc_file) . '">Download PDF</a>

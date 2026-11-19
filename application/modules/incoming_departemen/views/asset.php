@@ -66,7 +66,7 @@ $this->load->view('include/side_menu');
 							$cc='';
                                 foreach((function_exists('get_list_costcenter') ? get_list_costcenter() : []) AS $val => $valx){
                                     //$cc = ($valx['id_costcenter'] == $id_costcenter)?'selected':'';
-                                    echo "<option value='".$valx['id_costcenter']."' ".$cc.">".strtoupper($valx['nm_costcenter'])."</option>";
+                                    echo "<option value='".$valx['id_costcenter']."' ".$cc.">".strtoupper((string) $valx['nm_costcenter'])."</option>";
                                 }
                             ?>
                         </select>
@@ -89,7 +89,7 @@ $this->load->view('include/side_menu');
 				<option value='0'>All PO Number</option>
 				<?php
 					foreach($list_po AS $val => $valx){
-						echo "<option value='".$valx['no_ipp']."'>".strtoupper($valx['no_ipp'])."</option>";
+						echo "<option value='".$valx['no_ipp']."'>".strtoupper((string) $valx['no_ipp'])."</option>";
 					}
 				?>
 			</select>
@@ -97,7 +97,7 @@ $this->load->view('include/side_menu');
 				<option value='0'>All Warehouse</option>
 				<?php
 					foreach($data_gudang AS $val => $valx){
-						echo "<option value='".$valx['id_gudang_ke']."'>".strtoupper($valx['kd_gudang_ke'])."</option>";
+						echo "<option value='".$valx['id_gudang_ke']."'>".strtoupper((string) $valx['kd_gudang_ke'])."</option>";
 					}
 				?>
 			</select>

@@ -234,12 +234,12 @@
 					<tr>
 						<td width='80' align="left">Date</td>
 						<td width='10' align="left">:</td>
-						<td width='250' align="left"><?= date('d-F-Y', strtotime($header->created_date))  ?></td>
+						<td width='250' align="left"><?= date('d-F-Y', strtotime((string) $header->created_date))  ?></td>
 					</tr>
 					<tr>
 						<td width='80' align="left">Needed Date</td>
 						<td width='10' align="left">:</td>
-						<td width='250' align="left"><?= date('d-F-Y', strtotime($header->tgl_dibutuhkan))  ?></td>
+						<td width='250' align="left"><?= date('d-F-Y', strtotime((string) $header->tgl_dibutuhkan))  ?></td>
 					</tr>
 					<tr>
 						<td width='80' align="left">Revision</td>
@@ -262,12 +262,12 @@
 	</table>
 	<br>
 	<?php
-	$matauang = (!empty($header->matauang)) ? "<br>(" . strtoupper($header->matauang) . ")" : '';
+	$matauang = (!empty($header->matauang)) ? "<br>(" . strtoupper((string) $header->matauang) . ")" : '';
 
-	if (strtolower($header->matauang) == 'usd') {
+	if (strtolower((string) $header->matauang) == 'usd') {
 		$kode = '$';
 	}
-	if (strtolower($header->matauang) == 'idr') {
+	if (strtolower((string) $header->matauang) == 'idr') {
 		$kode = 'Rp';
 	}
 	?>
@@ -289,11 +289,11 @@
 				$barang  = $this->db->query("SELECT * FROM new_inventory_4 WHERE code_lv4 = '$kategory' ")->row();
 
 				$TOT_PPH += $detail->jumlahharga * $detail->pajak / 100;
-				$HS = number_format($detail->hargasatuan, 2);
-				$JH = number_format($detail->jumlahharga, 2);
-				if (strtolower($header->loi) == 'lokal') {
-					$HS = number_format($detail->hargasatuan, 2);
-					$JH = number_format($detail->jumlahharga, 2);
+				$HS = number_format((float) $detail->hargasatuan, 2);
+				$JH = number_format((float) $detail->jumlahharga, 2);
+				if (strtolower((string) $header->loi) == 'lokal') {
+					$HS = number_format((float) $detail->hargasatuan, 2);
+					$JH = number_format((float) $detail->jumlahharga, 2);
 				}
 
 				$qty = $detail->propose_purchase;
@@ -315,10 +315,10 @@
 							<tr >
 								<td style='text-align: center;'>" . $barang->code . "</td>
 								<td style='min-width: 200px; max-width: 300px;'>" . $detail->nama . "</td>
-								<td style='text-align: center;'>" . number_format($qty_pack, 2) . "</td>
-								<td style='text-align: center;'>" . strtoupper($unit_packing) . "</td>
-								<td style='text-align: center;'>" . number_format($qty , 2) . "</td>
-								<td style='text-align: center;'>" . strtoupper($unit_meas) . "</td>
+								<td style='text-align: center;'>" . number_format((float) $qty_pack, 2) . "</td>
+								<td style='text-align: center;'>" . strtoupper((string) $unit_packing) . "</td>
+								<td style='text-align: center;'>" . number_format((float) $qty , 2) . "</td>
+								<td style='text-align: center;'>" . strtoupper((string) $unit_meas) . "</td>
 							</tr>";
 					}
 					$CIF = "";
@@ -328,10 +328,10 @@
 							<tr >
 								<td style='text-align: center;'>" . $barang->code . "</td>
 								<td style='min-width: 200px; max-width: 300px;'>" . $detail->nama . "</td>
-								<td style='text-align: center;'>" . number_format($qty_pack, 2) . "</td>
-								<td style='text-align: center;'>" . strtoupper($unit_packing) . "</td>
-								<td style='text-align: center;'>" . number_format($qty , 2) . "</td>
-								<td style='text-align: center;'>" . strtoupper($unit_meas) . "</td>
+								<td style='text-align: center;'>" . number_format((float) $qty_pack, 2) . "</td>
+								<td style='text-align: center;'>" . strtoupper((string) $unit_packing) . "</td>
+								<td style='text-align: center;'>" . number_format((float) $qty , 2) . "</td>
+								<td style='text-align: center;'>" . strtoupper((string) $unit_meas) . "</td>
 							</tr>";
 					}
 					$CIF = "";
@@ -349,7 +349,7 @@
 			}
 
 			$TOTHEAD = number_format($detailsum[0]->sumjumlahharga + $TOT_PPH, 2);
-			if (strtolower($header->loi) == 'lokal') {
+			if (strtolower((string) $header->loi) == 'lokal') {
 				$TOTHEAD = number_format($detailsum[0]->sumjumlahharga + $TOT_PPH, 2);
 			}
 			?>

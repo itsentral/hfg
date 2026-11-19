@@ -124,7 +124,7 @@ class Mata_uang_model extends CI_Model
         }
         foreach ($this->country_aliases as $id_name => $en_names) {
             foreach ($en_names as $en) {
-                if (strtolower(trim($en)) === $lower_raw) {
+                if (strtolower(trim((string) $en)) === $lower_raw) {
                     $aliases_to_check[] = $this->clean_name($id_name);
                 }
             }
@@ -135,7 +135,7 @@ class Mata_uang_model extends CI_Model
             if (in_array($row_clean, $aliases_to_check)) {
                 return true;
             }
-            $row_lower = strtolower(trim($row->negara));
+            $row_lower = strtolower(trim((string) $row->negara));
             if (isset($this->country_aliases[$row_lower])) {
                 foreach ($this->country_aliases[$row_lower] as $row_al) {
                     if (in_array($this->clean_name($row_al), $aliases_to_check)) {
@@ -174,7 +174,7 @@ class Mata_uang_model extends CI_Model
             $clean = $this->clean_name($row->negara);
             $existing_normalized[$clean] = $row->kode;
 
-            $lower = strtolower(trim($row->negara));
+            $lower = strtolower(trim((string) $row->negara));
             if (isset($this->country_aliases[$lower])) {
                 foreach ($this->country_aliases[$lower] as $al) {
                     $al_clean = $this->clean_name($al);
@@ -183,7 +183,7 @@ class Mata_uang_model extends CI_Model
             }
             foreach ($this->country_aliases as $id_name => $en_names) {
                 foreach ($en_names as $en) {
-                    if (strtolower(trim($en)) === $lower) {
+                    if (strtolower(trim((string) $en)) === $lower) {
                         $id_clean = $this->clean_name($id_name);
                         $existing_normalized[$id_clean] = $row->kode;
                     }
@@ -204,16 +204,16 @@ class Mata_uang_model extends CI_Model
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // curl_close($ch); // no-op sejak PHP 8.0, deprecated di PHP 8.5
 
         if ($http_code === 200 && !empty($response)) {
-            $json = json_decode($response, true);
+            $json = json_decode((string) $response, true);
             if (!empty($json['data']) && is_array($json['data'])) {
                 foreach ($json['data'] as $item) {
                     if (!empty($item['name'])) {
                         $countries_data[] = [
-                            'name'          => trim($item['name']),
-                            'currency_code' => !empty($item['currency']) ? strtoupper(trim($item['currency'])) : '',
+                            'name'          => trim((string) $item['name']),
+                            'currency_code' => !empty($item['currency']) ? strtoupper(trim((string) $item['currency'])) : '',
                             'iso2'          => $item['iso2'] ?? '',
                             'iso3'          => $item['iso3'] ?? '',
                         ];
@@ -228,8 +228,8 @@ class Mata_uang_model extends CI_Model
             $db_countries = $this->db->select('name, country_code, currency')->order_by('name', 'ASC')->get('countries')->result();
             foreach ($db_countries as $c) {
                 $countries_data[] = [
-                    'name'          => trim($c->name),
-                    'currency_code' => !empty($c->currency) ? strtoupper(trim($c->currency)) : '',
+                    'name'          => trim((string) $c->name),
+                    'currency_code' => !empty($c->currency) ? strtoupper(trim((string) $c->currency)) : '',
                     'iso2'          => '',
                     'iso3'          => $c->country_code ?? '',
                 ];
@@ -247,8 +247,8 @@ class Mata_uang_model extends CI_Model
             $mu_clean = $this->clean_name($mu->negara);
             if (!isset($known_names_clean[$mu_clean])) {
                 $countries_data[] = [
-                    'name'          => trim($mu->negara),
-                    'currency_code' => !empty($mu->kode) ? strtoupper(trim($mu->kode)) : '',
+                    'name'          => trim((string) $mu->negara),
+                    'currency_code' => !empty($mu->kode) ? strtoupper(trim((string) $mu->kode)) : '',
                     'iso2'          => '',
                     'iso3'          => '',
                 ];
@@ -311,9 +311,9 @@ class Mata_uang_model extends CI_Model
         $kurs = isset($data['kurs']) ? (float) str_replace(',', '', (string)$data['kurs']) : 0.0;
 
         $payload = [
-            'kode'       => strtoupper(trim($data['kode'])),
-            'negara'     => trim($data['negara']),
-            'mata_uang'  => trim($data['mata_uang']),
+            'kode'       => strtoupper(trim((string) $data['kode'])),
+            'negara'     => trim((string) $data['negara']),
+            'mata_uang'  => trim((string) $data['mata_uang']),
             'kurs'       => $kurs,
             'activation' => !empty($data['activation']) ? $data['activation'] : 'active',
             'modified_on'=> $date,

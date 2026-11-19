@@ -351,10 +351,10 @@ class Master_customers extends Admin_Controller
 			$score = 0;
 
 			// Hitung skor
-			if (strtolower($cust['ontime']) === 'yes') $score += 20;
-			elseif (strtolower($cust['ontime']) === 'new') $score += 10;
+			if (strtolower((string) $cust['ontime']) === 'yes') $score += 20;
+			elseif (strtolower((string) $cust['ontime']) === 'new') $score += 10;
 
-			if (strtolower($cust['toko_sendiri']) === 'yes') $score += 15;
+			if (strtolower((string) $cust['toko_sendiri']) === 'yes') $score += 15;
 
 			$pickup = (int)$cust['armada_pickup'];
 			if ($pickup >= 5) $score += 15;
@@ -363,13 +363,13 @@ class Master_customers extends Admin_Controller
 
 			if ((int)$cust['armada_truck'] >= 1) $score += 10;
 
-			if (strtolower($cust['attitude']) === 'yes') $score += 10;
+			if (strtolower((string) $cust['attitude']) === 'yes') $score += 10;
 
 			$luas = (int)$cust['luas_tanah'];
 			if ($luas > 1000) $score += 10;
 			elseif ($luas >= 500) $score += 5;
 
-			if (strtolower($cust['pbb']) === 'yes') $score += 10;
+			if (strtolower((string) $cust['pbb']) === 'yes') $score += 10;
 
 			// Tentukan kelas
 			if ($score >= 70) $kelas = 'TITANIUM';

@@ -49,16 +49,16 @@
                             $i++; ?>
                             <tr>
                                 <td><?= $i; ?></td>
-                                <td><?= date('d F Y', strtotime($data->created_on)); ?></td>
+                                <td><?= date('d F Y', strtotime((string) $data->created_on)); ?></td>
                                 <td><?= $record->deskripsi; ?></td>
                                 <td><?= $record->keterangan; ?></td>
-                                <td align="right"><?= number_format($record->qty); ?></td>
-                                <td align="right"><?= number_format($record->harga); ?></td>
-                                <td align="right"><?= number_format($record->expense); ?></td>
+                                <td align="right"><?= number_format((float) $record->qty); ?></td>
+                                <td align="right"><?= number_format((float) $record->harga); ?></td>
+                                <td align="right"><?= number_format((float) $record->expense); ?></td>
                             </tr>
                     <?php
                             if ($record->doc_file != '' && file_exists('assets/expense/' . $record->doc_file)) {
-                                if (strpos($record->doc_file, 'pdf', 0) > 1) {
+                                if (strpos((string) $record->doc_file, 'pdf', 0) > 1) {
                                     $gambar .= '<iframe src="' . base_url('assets/expense/' . $record->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0"></iframe><br /><br />';
                                 } else {
                                     $gambar .= '<img src="' . base_url() . 'assets/expense/' . $record->doc_file . '" width="500"><br />';
@@ -85,7 +85,7 @@
                     ?>
                     <tr>
                         <td colspan=6 align=center><strong>Total</strong></td>
-                        <td align="right"><?= number_format($grand_total); ?></td>
+                        <td align="right"><?= number_format((float) $grand_total); ?></td>
                     </tr>
                 </table>
             </td>

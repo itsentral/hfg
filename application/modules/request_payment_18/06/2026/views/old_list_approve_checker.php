@@ -19,7 +19,7 @@ foreach ($data as $item) :
         $count_kasbon += 1;
     }
     if ($item->tipe == 'expense') {
-        if (strpos($item->no_doc, 'ER-') !== false || strpos($item->no_doc, 'ROS-') !== false) {
+        if (strpos((string) $item->no_doc, 'ER-') !== false || strpos((string) $item->no_doc, 'ROS-') !== false) {
             $count_expense += 1;
         } else {
             $count_pembayaran_po += 1;
@@ -134,7 +134,7 @@ endforeach;
                             echo '<td>' . $item_transportasi->tgl_doc . '</td>';
                             echo '<td>' . $item_transportasi->keperluan . '</td>';
                             echo '<td>' . $item_transportasi->tipe . '</td>';
-                            echo '<td class="text-right">' . number_format($item_transportasi->jumlah) . '</td>';
+                            echo '<td class="text-right">' . number_format((float) $item_transportasi->jumlah) . '</td>';
                             echo '<td>' . $item_transportasi->tanggal . '</td>';
                             echo '<td>';
                             $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_transportasi->no_doc, 'ids' => $item_transportasi->ids])->row_array();
@@ -196,7 +196,7 @@ endforeach;
                             echo '<td>' . $item_kasbon->tgl_doc . '</td>';
                             echo '<td>' . $item_kasbon->keperluan . '</td>';
                             echo '<td>' . $item_kasbon->tipe . '</td>';
-                            echo '<td class="text-right">' . number_format($item_kasbon->jumlah) . '</td>';
+                            echo '<td class="text-right">' . number_format((float) $item_kasbon->jumlah) . '</td>';
                             echo '<td>' . $item_kasbon->tanggal . '</td>';
                             echo '<td>';
                             $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_kasbon->no_doc, 'ids' => $item_kasbon->ids])->row_array();
@@ -299,23 +299,23 @@ endforeach;
                     <?php
                     foreach ($data as $item_expense) :
                         if ($item_expense->tipe == 'expense') {
-                            $tipe = ucfirst($item_expense->tipe);
+                            $tipe = ucfirst((string) $item_expense->tipe);
                             $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
                             $get_req_payment = $this->db->get_where('request_payment', ['no_doc' => $item_kasbon->no_doc])->result();
                             if ($get_expense['exp_inv_po'] == '1') {
                                 $tipe = 'Pembayaran PO';
                             }
-                            if (strpos($item_expense->no_doc, 'ROS') === true) {
+                            if (strpos((string) $item_expense->no_doc, 'ROS') === true) {
                                 $tipe = 'Pembayaran PIB';
                             }
-                            if (strpos($item_expense->no_doc, 'ER-') !== false || strpos($item_expense->no_doc, 'ROS-') !== false) {
+                            if (strpos((string) $item_expense->no_doc, 'ER-') !== false || strpos((string) $item_expense->no_doc, 'ROS-') !== false) {
                                 echo '<tr>';
                                 echo '<td>' . $item_expense->no_doc . '</td>';
                                 echo '<td>' . $item_expense->nama . '</td>';
                                 echo '<td>' . $item_expense->tgl_doc . '</td>';
                                 echo '<td>' . $item_expense->keperluan . '</td>';
                                 echo '<td>' . $tipe . '</td>';
-                                echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
+                                echo '<td class="text-right">' . number_format((float) $item_expense->jumlah) . '</td>';
                                 echo '<td>' . $item_expense->tanggal . '</td>';
                                 echo '<td>';
                                 $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_expense->no_doc, 'ids' => $item_expense->ids])->row_array();
@@ -387,7 +387,7 @@ endforeach;
                             echo '<td>' . $item_periodik->tgl_doc . '</td>';
                             echo '<td>' . $item_periodik->keperluan . '</td>';
                             echo '<td>' . $item_periodik->tipe . '</td>';
-                            echo '<td class="text-right">' . number_format($item_periodik->jumlah) . '</td>';
+                            echo '<td class="text-right">' . number_format((float) $item_periodik->jumlah) . '</td>';
                             echo '<td>' . $item_periodik->tanggal . '</td>';
                             echo '<td>';
                             $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_periodik->no_doc, 'ids' => $item_periodik->ids])->row_array();
@@ -443,17 +443,17 @@ endforeach;
                         $no_invoice = (isset($list_no_invoice[$item_expense->no_doc])) ? $list_no_invoice[$item_expense->no_doc] : '';
 
                         if ($item_expense->tipe == 'expense') {
-                            $tipe = ucfirst($item_expense->tipe);
+                            $tipe = ucfirst((string) $item_expense->tipe);
                             $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
                             if ($get_expense['exp_inv_po'] == '1') {
                                 $tipe = 'Pembayaran PO';
                             }
-                            if (strpos($item_expense->no_doc, 'ROS-') !== false) {
+                            if (strpos((string) $item_expense->no_doc, 'ROS-') !== false) {
                                 $tipe = 'Pembayaran PIB';
                             }
 
 
-                            $exp_id_po = explode(',', $get_expense['id_po']);
+                            $exp_id_po = explode(',', (string) $get_expense['id_po']);
 
                             $po_note = [];
                             $this->db->select('note');
@@ -475,7 +475,7 @@ endforeach;
                                 echo '<td>' . $item_expense->tgl_doc . '</td>';
                                 echo '<td>' . $item_expense->keperluan . '</td>';
                                 echo '<td>' . $tipe . '</td>';
-                                echo '<td class="text-right">' . number_format($item_expense->jumlah) . '</td>';
+                                echo '<td class="text-right">' . number_format((float) $item_expense->jumlah) . '</td>';
                                 echo '<td>' . $item_expense->tanggal . '</td>';
                                 echo '<td>' . $po_note . '</td>';
                                 echo '<td>';
@@ -537,7 +537,7 @@ endforeach;
                             echo '<td>' . $item_dp->tgl_doc . '</td>';
                             echo '<td>' . $item_dp->keperluan . '</td>';
                             echo '<td>' . $item_dp->tipe . '</td>';
-                            echo '<td class="text-right">' . number_format($item_dp->jumlah) . '</td>';
+                            echo '<td class="text-right">' . number_format((float) $item_dp->jumlah) . '</td>';
                             echo '<td>' . $item_dp->tanggal . '</td>';
                             echo '<td>';
                             $get_sts_payment = $this->db->select('status')->get_where('payment_approve', ['no_doc' => $item_dp->no_doc, 'ids' => $item_dp->ids])->row_array();

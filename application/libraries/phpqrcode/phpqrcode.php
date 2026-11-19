@@ -97,7 +97,7 @@
 	
 	class qrstr {
 		public static function set(&$srctab, $x, $y, $repl, $replLen = false) {
-			$srctab[$y] = substr_replace($srctab[$y], ($replLen !== false)?substr($repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen($repl));
+			$srctab[$y] = substr_replace($srctab[$y], ($replLen !== false)?substr((string) $repl,0,$replLen):$repl, $x, ($replLen !== false)?$replLen:strlen((string) $repl));
 		}
 	}	
 
@@ -177,7 +177,7 @@
             $barcode_array = array();
             
             if (!is_array($mode))
-                $mode = explode(',', $mode);
+                $mode = explode(',', (string) $mode);
                 
             $eccLevel = 'L';
                 
@@ -802,8 +802,8 @@
             if ($binary_mode) {
             
                     foreach ($frame as &$frameLine) {
-                        $frameLine = join('<span class="m">&nbsp;&nbsp;</span>', explode('0', $frameLine));
-                        $frameLine = join('&#9608;&#9608;', explode('1', $frameLine));
+                        $frameLine = join('<span class="m">&nbsp;&nbsp;</span>', explode('0', (string) $frameLine));
+                        $frameLine = join('&#9608;&#9608;', explode('1', (string) $frameLine));
                     }
                     
                     ?>
@@ -818,19 +818,19 @@
             } else {
             
                 foreach ($frame as &$frameLine) {
-                    $frameLine = join('<span class="m">&nbsp;</span>',  explode("\xc0", $frameLine));
-                    $frameLine = join('<span class="m">&#9618;</span>', explode("\xc1", $frameLine));
-                    $frameLine = join('<span class="p">&nbsp;</span>',  explode("\xa0", $frameLine));
-                    $frameLine = join('<span class="p">&#9618;</span>', explode("\xa1", $frameLine));
-                    $frameLine = join('<span class="s">&#9671;</span>', explode("\x84", $frameLine)); //format 0
-                    $frameLine = join('<span class="s">&#9670;</span>', explode("\x85", $frameLine)); //format 1
-                    $frameLine = join('<span class="x">&#9762;</span>', explode("\x81", $frameLine)); //special bit
-                    $frameLine = join('<span class="c">&nbsp;</span>',  explode("\x90", $frameLine)); //clock 0
-                    $frameLine = join('<span class="c">&#9719;</span>', explode("\x91", $frameLine)); //clock 1
-                    $frameLine = join('<span class="f">&nbsp;</span>',  explode("\x88", $frameLine)); //version
-                    $frameLine = join('<span class="f">&#9618;</span>', explode("\x89", $frameLine)); //version
-                    $frameLine = join('&#9830;', explode("\x01", $frameLine));
-                    $frameLine = join('&#8901;', explode("\0", $frameLine));
+                    $frameLine = join('<span class="m">&nbsp;</span>',  explode("\xc0", (string) $frameLine));
+                    $frameLine = join('<span class="m">&#9618;</span>', explode("\xc1", (string) $frameLine));
+                    $frameLine = join('<span class="p">&nbsp;</span>',  explode("\xa0", (string) $frameLine));
+                    $frameLine = join('<span class="p">&#9618;</span>', explode("\xa1", (string) $frameLine));
+                    $frameLine = join('<span class="s">&#9671;</span>', explode("\x84", (string) $frameLine)); //format 0
+                    $frameLine = join('<span class="s">&#9670;</span>', explode("\x85", (string) $frameLine)); //format 1
+                    $frameLine = join('<span class="x">&#9762;</span>', explode("\x81", (string) $frameLine)); //special bit
+                    $frameLine = join('<span class="c">&nbsp;</span>',  explode("\x90", (string) $frameLine)); //clock 0
+                    $frameLine = join('<span class="c">&#9719;</span>', explode("\x91", (string) $frameLine)); //clock 1
+                    $frameLine = join('<span class="f">&nbsp;</span>',  explode("\x88", (string) $frameLine)); //version
+                    $frameLine = join('<span class="f">&#9618;</span>', explode("\x89", (string) $frameLine)); //version
+                    $frameLine = join('&#9830;', explode("\x01", (string) $frameLine));
+                    $frameLine = join('&#8901;', explode("\0", (string) $frameLine));
                 }
                 
                 ?>
@@ -955,7 +955,7 @@
                 }
             }
             
-            ImageDestroy($image);
+            // ImageDestroy($image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
         }
     
         //----------------------------------------------------------------------
@@ -970,14 +970,14 @@
                 ImageJpeg($image, $filename, $q);            
             }
             
-            ImageDestroy($image);
+            // ImageDestroy($image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
         }
     
         //----------------------------------------------------------------------
         private static function image($frame, $pixelPerPoint = 4, $outerFrame = 4) 
         {
             $h = count($frame);
-            $w = strlen($frame[0]);
+            $w = strlen((string) $frame[0]);
             
             $imgW = $w + 2*$outerFrame;
             $imgH = $h + 2*$outerFrame;
@@ -999,7 +999,7 @@
             
             $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
             ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            // ImageDestroy($base_image); // no-op sejak PHP 8.0, deprecated di PHP 8.5
             
             return $target_image;
         }
@@ -1984,7 +1984,7 @@
         //----------------------------------------------------------------------
         public static function isdigitat($str, $pos)
         {    
-            if ($pos >= strlen($str))
+            if ($pos >= strlen((string) $str))
                 return false;
             
             return ((ord($str[$pos]) >= ord('0'))&&(ord($str[$pos]) <= ord('9')));
@@ -1993,7 +1993,7 @@
         //----------------------------------------------------------------------
         public static function isalnumat($str, $pos)
         {
-            if ($pos >= strlen($str))
+            if ($pos >= strlen((string) $str))
                 return false;
                 
             return (QRinput::lookAnTable(ord($str[$pos])) >= 0);
@@ -2002,7 +2002,7 @@
         //----------------------------------------------------------------------
         public function identifyMode($pos)
         {
-            if ($pos >= strlen($this->dataStr)) 
+            if ($pos >= strlen((string) $this->dataStr)) 
                 return QR_MODE_NUL;
                 
             $c = $this->dataStr[$pos];
@@ -2013,7 +2013,7 @@
                 return QR_MODE_AN;
             } else if($this->modeHint == QR_MODE_KANJI) {
             
-                if ($pos+1 < strlen($this->dataStr)) 
+                if ($pos+1 < strlen((string) $this->dataStr)) 
                 {
                     $d = $this->dataStr[$pos+1];
                     $word = (ord($c) << 8) | ord($d);
@@ -2133,7 +2133,7 @@
             $ln = QRspec::lengthIndicator(QR_MODE_NUM, $this->input->getVersion());
 
             $p = 1;
-            $dataStrLen = strlen($this->dataStr);
+            $dataStrLen = strlen((string) $this->dataStr);
             
             while($p < $dataStrLen) {
                 
@@ -2184,7 +2184,7 @@
         //----------------------------------------------------------------------
         public function splitString()
         {
-            while (strlen($this->dataStr) > 0)
+            while (strlen((string) $this->dataStr) > 0)
             {
                 if($this->dataStr == '')
                     return 0;
@@ -2206,18 +2206,18 @@
                 if($length == 0) return 0;
                 if($length < 0)  return -1;
                 
-                $this->dataStr = substr($this->dataStr, $length);
+                $this->dataStr = substr((string) $this->dataStr, $length);
             }
         }
 
         //----------------------------------------------------------------------
         public function toUpper()
         {
-            $stringLen = strlen($this->dataStr);
+            $stringLen = strlen((string) $this->dataStr);
             $p = 0;
             
             while ($p<$stringLen) {
-                $mode = self::identifyMode(substr($this->dataStr, $p), $this->modeHint);
+                $mode = self::identifyMode(substr((string) $this->dataStr, $p), $this->modeHint);
                 if($mode == QR_MODE_KANJI) {
                     $p += 2;
                 } else {
@@ -3059,7 +3059,7 @@
             $input = new QRinput($version, $level);
             if($input == NULL) return NULL;
 
-            $ret = $input->append($input, QR_MODE_8, strlen($string), str_split($string));
+            $ret = $input->append($input, QR_MODE_8, strlen((string) $string), str_split($string));
             if($ret < 0) {
                 unset($input);
                 return NULL;

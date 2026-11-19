@@ -3,22 +3,22 @@ $id_dept         = (!empty($header)) ? $header[0]->id_dept : '';
 $id_costcenter     = (!empty($header)) ? $header[0]->id_costcenter : '';
 $coa             = (!empty($header)) ? $header[0]->coa : '';
 $coa_akum         = (!empty($header)) ? $header[0]->coa_akum : '';
-$nama_asset     = (!empty($header)) ? strtoupper($header[0]->nama_asset) : '';
+$nama_asset     = (!empty($header)) ? strtoupper((string) $header[0]->nama_asset) : '';
 $tahun             = (!empty($header)) ? $header[0]->tahun : date('Y');
 $bulan             = (!empty($header)) ? $header[0]->bulan : date('m');
-$budget         = (!empty($header)) ? number_format($header[0]->budget) : '';
-$qty             = (!empty($header)) ? number_format($header[0]->qty) : '';
-$keterangan     = (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
+$budget         = (!empty($header)) ? number_format((float) $header[0]->budget) : '';
+$qty             = (!empty($header)) ? number_format((float) $header[0]->qty) : '';
+$keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->keterangan) : '';
 $tanda             = (!empty($id)) ? 'Update' : 'Insert';
 $disabled        = (!empty($approve)) ? 'disabled' : '';
 $disabled2        = ($approve == 'view') ? 'disabled' : '';
 
-$rev_nama_asset     = (!empty($header)) ? strtoupper($header[0]->rev_nama_asset) : '';
+$rev_nama_asset     = (!empty($header)) ? strtoupper((string) $header[0]->rev_nama_asset) : '';
 $rev_tahun             = (!empty($header)) ? $header[0]->rev_tahun : date('Y');
 $rev_bulan             = (!empty($header)) ? $header[0]->rev_bulan : date('m');
-$rev_budget         = (!empty($header)) ? number_format($header[0]->rev_budget) : '';
-$rev_qty             = (!empty($header)) ? number_format($header[0]->rev_qty) : '';
-$rev_keterangan     = (!empty($header)) ? strtoupper($header[0]->rev_keterangan) : '';
+$rev_budget         = (!empty($header)) ? number_format((float) $header[0]->rev_budget) : '';
+$rev_qty             = (!empty($header)) ? number_format((float) $header[0]->rev_qty) : '';
+$rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_keterangan) : '';
 ?>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <form action="#" method="POST" id="form_proses_bro" enctype="multipart/form-data" autocomplete='off'>
@@ -53,7 +53,7 @@ $rev_keterangan     = (!empty($header)) ? strtoupper($header[0]->rev_keterangan)
                         <?php
                         foreach ($datacoa as $val => $valx) {
                             $cc = ($valx['no_perkiraan'] == $coa) ? 'selected' : '';
-                            echo "<option value='" . $valx['no_perkiraan'] . "' " . $cc . ">" . strtoupper($valx['no_perkiraan']) . " - " . strtoupper($valx['nama']) . "</option>";
+                            echo "<option value='" . $valx['no_perkiraan'] . "' " . $cc . ">" . strtoupper((string) $valx['no_perkiraan']) . " - " . strtoupper((string) $valx['nama']) . "</option>";
                         }
                         ?>
                     </select>
@@ -67,7 +67,7 @@ $rev_keterangan     = (!empty($header)) ? strtoupper($header[0]->rev_keterangan)
                         <?php
                         foreach ($list_costcenter as $val => $valx) {
                             $cc = ($valx['id'] == $id_costcenter) ? 'selected' : '';
-                            echo "<option value='" . $valx['id'] . "' " . $cc . ">" . strtoupper($valx['nama_costcenter']) . "</option>";
+                            echo "<option value='" . $valx['id'] . "' " . $cc . ">" . strtoupper((string) $valx['nama_costcenter']) . "</option>";
                         }
                         ?>
                     </select>
@@ -79,7 +79,7 @@ $rev_keterangan     = (!empty($header)) ? strtoupper($header[0]->rev_keterangan)
                         <?php
                         foreach ($penyusutan as $val => $valx) {
                             $cc = ($valx['no_perkiraan'] == $coa_akum) ? 'selected' : '';
-                            echo "<option value='" . $valx['no_perkiraan'] . "' " . $cc . ">" . strtoupper($valx['no_perkiraan']) . " - " . strtoupper($valx['nama']) . "</option>";
+                            echo "<option value='" . $valx['no_perkiraan'] . "' " . $cc . ">" . strtoupper((string) $valx['no_perkiraan']) . " - " . strtoupper((string) $valx['nama']) . "</option>";
                         }
                         ?>
                     </select>

@@ -73,8 +73,8 @@ width:90%;
 			<td><?= $tglpr->tgl_pr?></td>
 			<td><?= $tglpo->tgl_po?></td>
 			<td><?= $record->tgl_periksa?></td>
-			<td><?= number_format($record->request_payment)?></td>
-			<td><?= number_format($record->terbayar)?></td>
+			<td><?= number_format((float) $record->request_payment)?></td>
+			<td><?= number_format((float) $record->terbayar)?></td>
 			<td><?= $record->nama?></td>
 		</tr>
 		<?php } 

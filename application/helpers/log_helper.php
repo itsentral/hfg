@@ -45,7 +45,7 @@ if (!function_exists('is_numeric_field_name')) {
         ];
         $lower = strtolower((string) $fieldName);
         foreach ($numericKeywords as $kw) {
-            if (strpos($lower, $kw) !== false) {
+            if (strpos((string) $lower, $kw) !== false) {
                 return true;
             }
         }
@@ -76,7 +76,7 @@ if (!function_exists('calculate_log_diff')) {
         ];
 
         foreach ($new as $key => $newVal) {
-            if (in_array(strtolower($key), $ignoredKeys, true)) {
+            if (in_array(strtolower((string) $key), $ignoredKeys, true)) {
                 continue;
             }
 
@@ -225,7 +225,7 @@ if (!function_exists('write_log')) {
                 }
 
                 if (preg_match('/(?:PO|No PO|no_po)[:\s]+([A-Za-z0-9\-\/]+)/i', $message, $matches)) {
-                    $poCandidates[] = trim($matches[1]);
+                    $poCandidates[] = trim((string) $matches[1]);
                 }
 
                 foreach (array_unique($poCandidates) as $candidatePo) {
@@ -242,7 +242,7 @@ if (!function_exists('write_log')) {
                 if (is_array($item) || is_object($item)) {
                     $arr = (array) $item;
                     foreach ($arr as $k => $v) {
-                        if (in_array(strtolower($k), $sensitive_keys, true)) {
+                        if (in_array(strtolower((string) $k), $sensitive_keys, true)) {
                             $arr[$k] = '******';
                         } elseif (is_array($v) || is_object($v)) {
                             $arr[$k] = $maskSensitive($v);

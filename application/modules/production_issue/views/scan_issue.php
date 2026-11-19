@@ -14,10 +14,10 @@
                     <select id="select-spk" class="form-select">
                         <option value="">-- Pilih SPK --</option>
                         <?php foreach ($spk_list as $s): ?>
-                            <option value="<?= htmlspecialchars($s->spk_no) ?>"
+                            <option value="<?= htmlspecialchars((string) $s->spk_no) ?>"
                                 data-produk="<?= htmlspecialchars($s->nm_produk_fg ?: $s->produk_fg) ?>"
                                 <?= (isset($_GET['spk_no']) && $_GET['spk_no'] === $s->spk_no) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($s->spk_no) ?> — <?= htmlspecialchars($s->nm_produk_fg ?: $s->produk_fg) ?>
+                                <?= htmlspecialchars((string) $s->spk_no) ?> — <?= htmlspecialchars($s->nm_produk_fg ?: $s->produk_fg) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -120,7 +120,7 @@
 
 <script>
 var siteurl_scan = '<?= base_url() ?>';
-var currentSpkNo = '<?= isset($_GET['spk_no']) ? htmlspecialchars($_GET['spk_no']) : '' ?>';
+var currentSpkNo = '<?= isset($_GET['spk_no']) ? htmlspecialchars((string) $_GET['spk_no']) : '' ?>';
 
 $(document).ready(function () {
 

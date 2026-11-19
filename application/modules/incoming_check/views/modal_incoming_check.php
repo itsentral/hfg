@@ -61,7 +61,7 @@
 	</table> -->
 
 	<?php
-	$exp_no_ipp = explode(',', $no_po);
+	$exp_no_ipp = explode(',', (string) $no_po);
 	foreach ($exp_no_ipp as $no_ipp) {
 		$sql = '
 				SELECT 
@@ -140,7 +140,7 @@
 						echo '<td class="text-center">' . $no . '</td>';
 						echo '<td class="text-center">' . $get_no_surat->no_surat . '</td>';
 						echo '<td class="">' . $item['nm_material'] . '</td>';
-						echo '<td class="text-center">' . number_format($item['qty_order'], 2) . ' <input type="hidden" class="qty_order_' . $item['id'] . '" name="qty_order_' . $item['id'] . '" value="' . $item['qty_order'] . '"> </td>';
+						echo '<td class="text-center">' . number_format((float) $item['qty_order'], 2) . ' <input type="hidden" class="qty_order_' . $item['id'] . '" name="qty_order_' . $item['id'] . '" value="' . $item['qty_order'] . '"> </td>';
 						echo '<td class="text-center">' . $item['satuan'] . '</td>';
 						echo '<td class="text-center">' . $konversi . ' <input type="hidden" name="konversi_' . $konversi . '" class="konversi_' . $item['id'] . '" value="' . $konversi . '"></td>';
 						echo '<td class="text-center">' . number_format(($item['qty_order'] / $konversi), 2) . '</td>';
@@ -182,10 +182,10 @@
 							}
 							echo '<tr>';
 							echo '<td colspan="8"></td>';
-							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_ng'], 2) . '" readonly></td>';
-							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_oke'], 2) . '" readonly></td>';
-							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format($checked_item['qty_pack'], 2) . '" readonly></td>';
-							echo '<td class="text-center" style="vertical-align: middle;">' . date('d F Y', strtotime($checked_item['expired_date'])) . '</td>';
+							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_ng'], 2) . '" readonly></td>';
+							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_oke'], 2) . '" readonly></td>';
+							echo '<td><input type="text" class="form-control" name="" id="" value="' . number_format((float) $checked_item['qty_pack'], 2) . '" readonly></td>';
+							echo '<td class="text-center" style="vertical-align: middle;">' . date('d F Y', strtotime((string) $checked_item['expired_date'])) . '</td>';
 							echo '<td class="text-center"><a href="' . base_url($checked_item['uploaded_file']) . '" class="btn btn-sm btn-primary" target="_blank">Download File</a></td>';
 							echo '<td>' . $checked_item['lot_description'] . '</td>';
 							echo '<td class="text-center">';
@@ -248,12 +248,12 @@
 
 							echo '<tr class="summary-row" data-id="' . $id . '">';
 							echo '<td class="text-center">' . $no . '</td>';
-							echo '<td class="text-center">' . htmlspecialchars($summ['nm_material']) . '</td>';
+							echo '<td class="text-center">' . htmlspecialchars((string) $summ['nm_material']) . '</td>';
 
 							// simpan angka murni di data-val, tampilkan number_format
-							echo '<td class="text-center sum-order" data-val="' . $summ['qty_order'] . '">' . number_format($summ['qty_order']) . '</td>';
-							echo '<td class="text-center sum-ng"    data-val="' . $summ['ttl_qty_ng'] . '">' . number_format($summ['ttl_qty_ng']) . '</td>';
-							echo '<td class="text-center sum-oke"   data-val="' . $summ['ttl_qty_oke'] . '">' . number_format($summ['ttl_qty_oke']) . '</td>';
+							echo '<td class="text-center sum-order" data-val="' . $summ['qty_order'] . '">' . number_format((float) $summ['qty_order']) . '</td>';
+							echo '<td class="text-center sum-ng"    data-val="' . $summ['ttl_qty_ng'] . '">' . number_format((float) $summ['ttl_qty_ng']) . '</td>';
+							echo '<td class="text-center sum-oke"   data-val="' . $summ['ttl_qty_oke'] . '">' . number_format((float) $summ['ttl_qty_oke']) . '</td>';
 
 							echo '</tr>';
 							$no++;
@@ -268,10 +268,10 @@
 						<tr>
 							<td colspan="3" class="text-right">Masuk ke Stock</td>
 							<td class="text-center">
-								<span style="color: red;"><?= number_format($stok_tidak_masuk) ?></span>
+								<span style="color: red;"><?= number_format((float) $stok_tidak_masuk) ?></span>
 							</td>
 							<td class="text-center">
-								<span style="color: green;"><?= number_format($stok_masuk) ?></span>
+								<span style="color: green;"><?= number_format((float) $stok_masuk) ?></span>
 							</td>
 						</tr>
 					</tbody>

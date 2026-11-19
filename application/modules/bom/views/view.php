@@ -17,7 +17,7 @@
             <table class="table table-sm table-borderless mb-0">
                 <tr>
                     <td width="160" class="fw-bold text-muted">Kode Produk</td>
-                    <td>: <strong class="fs-6 text-dark"><?= htmlspecialchars($bom->id_produk) ?></strong></td>
+                    <td>: <strong class="fs-6 text-dark"><?= htmlspecialchars((string) $bom->id_produk) ?></strong></td>
                 </tr>
                 <tr>
                     <td class="fw-bold text-muted">Nama Produk</td>
@@ -29,7 +29,7 @@
                 </tr>
                 <tr>
                     <td class="fw-bold text-muted">Latest Update</td>
-                    <td>: <?= !empty($bom->updated_at) ? date('d/m/Y H:i', strtotime($bom->updated_at)) : (!empty($bom->created_at) ? date('d/m/Y H:i', strtotime($bom->created_at)) : '-') ?></td>
+                    <td>: <?= !empty($bom->updated_at) ? date('d/m/Y H:i', strtotime((string) $bom->updated_at)) : (!empty($bom->created_at) ? date('d/m/Y H:i', strtotime((string) $bom->created_at)) : '-') ?></td>
                 </tr>
             </table>
         </div>
@@ -69,7 +69,7 @@
                             <td>
                                 <span class="badge bg-primary fs-6"><?= htmlspecialchars(!empty($d->no_uniq_id) ? $d->no_uniq_id : 'Type 001.' . ($i + 1)) ?></span>
                             </td>
-                            <td><code><?= htmlspecialchars($d->id_material) ?></code></td>
+                            <td><code><?= htmlspecialchars((string) $d->id_material) ?></code></td>
                             <td><?= htmlspecialchars($d->nm_material ?: '-') ?></td>
                             <td class="text-end"><?= number_format(isset($d->thickness) ? (float)$d->thickness : 0, 3, '.', '') ?></td>
                             <td class="text-end"><?= number_format(isset($d->width) ? (float)$d->width : 0, 2, '.', '') ?></td>

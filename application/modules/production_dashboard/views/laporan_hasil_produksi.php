@@ -12,20 +12,20 @@
                     <select name="spk_no" class="form-select">
                         <option value="">-- Semua SPK --</option>
                         <?php foreach ($spk_list as $spk): ?>
-                            <option value="<?= htmlspecialchars($spk->spk_no) ?>"
+                            <option value="<?= htmlspecialchars((string) $spk->spk_no) ?>"
                                 <?= ($filter['spk_no'] == $spk->spk_no) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($spk->spk_no) ?> — <?= htmlspecialchars($spk->produk_fg) ?>
+                                <?= htmlspecialchars((string) $spk->spk_no) ?> — <?= htmlspecialchars((string) $spk->produk_fg) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Dari</label>
-                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars($filter['tgl_dari']) ?>">
+                    <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tanggal Sampai</label>
-                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars($filter['tgl_sampai']) ?>">
+                    <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
@@ -92,9 +92,9 @@
                             ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td><?= htmlspecialchars($row->report_no) ?></td>
-                                <td><?= htmlspecialchars($row->spk_no) ?></td>
-                                <td><?= htmlspecialchars($row->barcode_coil) ?></td>
+                                <td><?= htmlspecialchars((string) $row->report_no) ?></td>
+                                <td><?= htmlspecialchars((string) $row->spk_no) ?></td>
+                                <td><?= htmlspecialchars((string) $row->barcode_coil) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->total_berat_coil, 3) ?></td>
                                 <td class="text-end"><?= number_format((float) $row->fg_kg, 3) ?></td>
                                 <td class="text-end text-success fw-bold"><?= number_format((float) $row->yield_fg_pct, 2) ?>%</td>

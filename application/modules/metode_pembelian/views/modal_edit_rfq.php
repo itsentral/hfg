@@ -10,7 +10,7 @@
 						if(!empty($supplierChecked)){
 							$sel3 = (isset($supplierChecked) && in_array($valx['id_supplier'], $supplierChecked))?'selected':'';
 						}
-						echo "<option value='".$valx['id_supplier']."' ".$sel3.">".strtoupper($valx['nm_supplier'])."</option>";
+						echo "<option value='".$valx['id_supplier']."' ".$sel3.">".strtoupper((string) $valx['nm_supplier'])."</option>";
 					}
 				?>
 			</select>
@@ -40,10 +40,10 @@
 				echo "<tr>";
                     echo "<td align='center'>".$No."</td>";
                     echo "<td align='center'>".$valx['no_pr']."</td>";
-					echo "<td align='center'>".date('d-M-Y', strtotime($valx['tgl_pr']))."</td>";
-					echo "<td align='left'>".strtoupper($valx['nm_barang'])."</td>";
-					echo "<td align='center'>".number_format($valx['qty'])."</td>";
-					echo "<td align='center'>".date('d-M-Y', strtotime($valx['tgl_dibutuhkan']))."
+					echo "<td align='center'>".date('d-M-Y', strtotime((string) $valx['tgl_pr']))."</td>";
+					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";
+					echo "<td align='center'>".number_format((float) $valx['qty'])."</td>";
+					echo "<td align='center'>".date('d-M-Y', strtotime((string) $valx['tgl_dibutuhkan']))."
 							<input type='hidden' name='check[".$No."]' value='".$valx['no_pr']."'>
 						  </td>";
 					echo "<td align='left'><input type='text' class='form-control changeSpec' data-no_pr='".$valx['no_pr']."' data-no_rfq='".$valx['no_rfq']."' value='".$valx['spec']."'></td>";

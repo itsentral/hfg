@@ -448,7 +448,7 @@ class CoaLookupTargetDbTest
 
             foreach ($response['data'] as $index => $item) {
                 assertTrue(
-                    strpos($item['no_perkiraan'], '1101') === 0,
+                    strpos((string) $item['no_perkiraan'], '1101') === 0,
                     "Item {$index} for '{$target}': no_perkiraan '{$item['no_perkiraan']}' " .
                         "should start with '1101' (bank account prefix)"
                 );
@@ -482,19 +482,19 @@ class CoaLookupTargetDbTest
 
             $last_query = end($db->queries_executed);
             assertTrue(
-                strpos($last_query, 'coa_master') !== false,
+                strpos((string) $last_query, 'coa_master') !== false,
                 "Query should reference 'coa_master' table for '{$target}'"
             );
             assertTrue(
-                strpos($last_query, "1101%") !== false,
+                strpos((string) $last_query, "1101%") !== false,
                 "Query should contain '1101%' bank filter for '{$target}'"
             );
             assertTrue(
-                strpos($last_query, 'no_perkiraan') !== false,
+                strpos((string) $last_query, 'no_perkiraan') !== false,
                 "Query should select 'no_perkiraan' for '{$target}'"
             );
             assertTrue(
-                strpos($last_query, 'nama') !== false,
+                strpos((string) $last_query, 'nama') !== false,
                 "Query should select 'nama' for '{$target}'"
             );
         }
@@ -558,7 +558,7 @@ class CoaLookupTargetDbTest
                 "Response should have 'pesan' key for invalid input: " . var_export($input, true)
             );
             assertTrue(
-                strlen($response['pesan']) > 0,
+                strlen((string) $response['pesan']) > 0,
                 "Error message should not be empty for invalid input: " . var_export($input, true)
             );
         }
@@ -619,7 +619,7 @@ class CoaLookupTargetDbTest
             $length = mt_rand(0, 40);
             $random_string = '';
             for ($j = 0; $j < $length; $j++) {
-                $random_string .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random_string .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
 
             // Skip if accidentally generated a valid value
@@ -695,7 +695,7 @@ class CoaLookupTargetDbTest
             $length = mt_rand(0, 25);
             $random = '';
             for ($j = 0; $j < $length; $j++) {
-                $random .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
             $all_inputs[] = $random;
         }

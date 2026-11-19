@@ -116,7 +116,7 @@ class Request_pr_stok extends Admin_Controller
   {
     $data = $this->input->post();
     $tgl_now = date('Y-m-d');
-    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
 
 
     $get_materials   = $this->db->get_where('accessories', array('id_category' => $id_category))->result_array();
@@ -206,7 +206,7 @@ class Request_pr_stok extends Admin_Controller
     $qIPP        = "SELECT MAX(so_number) as maxP FROM material_planning_base_on_produksi WHERE so_number LIKE 'P" . $Ym . "%' ";
     $resultIPP  = $this->db->query($qIPP)->result_array();
     $angkaUrut2  = $resultIPP[0]['maxP'];
-    $urutan2    = (int)substr($angkaUrut2, 5, 5);
+    $urutan2    = (int)substr((string) $angkaUrut2, 5, 5);
     $urutan2++;
     $urut2      = sprintf('%05s', $urutan2);
     $so_number      = "P" . $Ym . $urut2;
@@ -485,7 +485,7 @@ class Request_pr_stok extends Admin_Controller
     $data = $this->input->post();
     $category_awal = $this->uri->segment(3);
     $tgl_now = date('Y-m-d');
-    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime($tgl_now)));
+    $tgl_next_month = date('Y-m-' . '20', strtotime('+1 month', strtotime((string) $tgl_now)));
     $get_rutin   = $this->db->get_where('accessories', array('id_category' => $category_awal))->result_array();
     $ArrUpdate = [];
 
@@ -638,8 +638,8 @@ class Request_pr_stok extends Admin_Controller
         $hasil .= "	<td class='text-left'>" . $value['nm_material'] . "
             
             </td>";
-        $hasil .= "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-        $hasil .= "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+        $hasil .= "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+        $hasil .= "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
         $hasil .= "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
         if ($value['status_app'] == 'N') {
           $hasil .= "<td align='center'>";
@@ -649,11 +649,11 @@ class Request_pr_stok extends Admin_Controller
           $hasil .= "<td class='text-center'><span class='badge bg-blue text-bold'>Waiting Process</span></td>";
         }
         if ($value['status_app'] == 'Y') {
-          $hasil .= "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+          $hasil .= "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
           $hasil .= "<td class='text-center'><span class='badge bg-green text-bold'>Approved</span></td>";
         }
         if ($value['status_app'] == 'D') {
-          $hasil .= "<td class='text-center'>" . number_format($propose, 2) . "</td>";
+          $hasil .= "<td class='text-center'>" . number_format((float) $propose, 2) . "</td>";
           $hasil .= "<td class='text-center'><span class='badge bg-red text-bold'>Rejected</span></td>";
         }
         $hasil .= "<td class='text-center'><input type='text' class='form-control notes_" . $value['id'] . "' name='detail[" . $key . "][note]' value='" . $value['note'] . "'></td>";

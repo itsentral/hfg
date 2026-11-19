@@ -32,8 +32,8 @@
                         <?php $numb = 0; foreach ($result as $record) : $numb++; ?>
                             <tr>
                                 <td><?= $numb; ?></td>
-                                <td><?= strtoupper($record->nama); ?></td>
-                                <td><?= strtoupper($record->code); ?></td>
+                                <td><?= strtoupper((string) $record->nama); ?></td>
+                                <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
                                         <label class="badge bg-success">Aktif</label>
@@ -147,7 +147,10 @@
                 confirmButtonText: "Ya, Simpan!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'add',
@@ -182,7 +185,10 @@
                 confirmButtonText: "Ya, Hapus!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function () {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

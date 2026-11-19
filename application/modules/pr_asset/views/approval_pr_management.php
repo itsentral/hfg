@@ -27,7 +27,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
         </div>
 
         <div class="card-body p-4">
-            <input type="hidden" id="tanda" value="<?= isset($tanda) ? htmlspecialchars($tanda) : 'approval_management'; ?>">
+            <input type="hidden" id="tanda" value="<?= isset($tanda) ? htmlspecialchars((string) $tanda) : 'approval_management'; ?>">
 
             <!-- Status Filter Tabs -->
             <ul class="nav nav-tabs mb-4" id="prStatusTabs" role="tablist">

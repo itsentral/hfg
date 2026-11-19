@@ -720,7 +720,7 @@ class Expense_petty_cash extends Admin_Controller
                 'periode_end'       => $row->periode_end,
                 'company'           => $row->company,
                 'jumlah_pencatatan' => intval($row->jumlah_pencatatan),
-                'grand_total'       => number_format($row->grand_total, 0, ',', '.'),
+                'grand_total'       => number_format((float) $row->grand_total, 0, ',', '.'),
                 'status'            => $row->status,
             ];
         }
@@ -896,8 +896,8 @@ class Expense_petty_cash extends Admin_Controller
             return;
         }
 
-        $alasan = trim($alasan);
-        $alasan_length = mb_strlen($alasan);
+        $alasan = trim((string) $alasan);
+        $alasan_length = mb_strlen((string) $alasan);
 
         if ($alasan_length < 10) {
             echo json_encode([
@@ -1084,7 +1084,7 @@ class Expense_petty_cash extends Admin_Controller
                 'id'           => $row->id,
                 'nama'         => $row->nama,
                 'keterangan'   => $row->keterangan,
-                'total_budget' => number_format($row->total_budget, 0, ',', '.'),
+                'total_budget' => number_format((float) $row->total_budget, 0, ',', '.'),
             ];
         }
 
@@ -1304,9 +1304,9 @@ class Expense_petty_cash extends Admin_Controller
         }
 
         // Validate request_by
-        if (empty(trim($request_by))) {
+        if (empty(trim((string) $request_by))) {
             $errors['request_by'] = 'Request By wajib diisi';
-        } elseif (strlen($request_by) > 100) {
+        } elseif (strlen((string) $request_by) > 100) {
             $errors['request_by'] = 'Request By maksimal 100 karakter';
         }
 
@@ -1366,7 +1366,7 @@ class Expense_petty_cash extends Admin_Controller
         $header = [
             'tanggal'       => $tanggal,
             'company'       => $company,
-            'request_by'    => trim($request_by),
+            'request_by'    => trim((string) $request_by),
             'keterangan'    => $keterangan ?: null,
             'petty_cash_id' => $petty_cash_id,
         ];

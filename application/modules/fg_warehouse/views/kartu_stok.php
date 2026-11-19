@@ -19,9 +19,9 @@
                 <select name="produk_fg" class="form-control select2" required>
                     <option value="">-- Pilih Produk --</option>
                     <?php foreach ($produk_list as $p): ?>
-                        <option value="<?= htmlspecialchars($p->produk_fg) ?>"
+                        <option value="<?= htmlspecialchars((string) $p->produk_fg) ?>"
                             <?= ($produk_fg === $p->produk_fg) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($p->produk_fg) ?> — <?= htmlspecialchars($p->nm_produk_fg ? $p->nm_produk_fg : '-') ?>
+                            <?= htmlspecialchars((string) $p->produk_fg) ?> — <?= htmlspecialchars($p->nm_produk_fg ? $p->nm_produk_fg : '-') ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -54,14 +54,14 @@
         <div class="alert alert-light border border-primary d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h5 class="text-primary fw-bold mb-1">
-                    <i class="fa fa-cube me-1"></i> [<?= htmlspecialchars($stok_info->produk_fg) ?>] <?= htmlspecialchars($stok_info->nm_produk_fg ? $stok_info->nm_produk_fg : '-') ?>
+                    <i class="fa fa-cube me-1"></i> [<?= htmlspecialchars((string) $stok_info->produk_fg) ?>] <?= htmlspecialchars($stok_info->nm_produk_fg ? $stok_info->nm_produk_fg : '-') ?>
                 </h5>
                 <small class="text-muted">
-                    Last Update: <?= $stok_info->last_update ? date('d-m-Y H:i:s', strtotime($stok_info->last_update)) : '-' ?>
+                    Last Update: <?= $stok_info->last_update ? date('d-m-Y H:i:s', strtotime((string) $stok_info->last_update)) : '-' ?>
                 </small>
             </div>
             <div>
-                <a href="<?= base_url('fg_warehouse/export_excel_kartu_stok/' . urlencode($produk_fg) . '?tgl_dari=' . urlencode($tgl_dari) . '&tgl_sampai=' . urlencode($tgl_sampai)) ?>"
+                <a href="<?= base_url('fg_warehouse/export_excel_kartu_stok/' . urlencode((string) $produk_fg) . '?tgl_dari=' . urlencode((string) $tgl_dari) . '&tgl_sampai=' . urlencode((string) $tgl_sampai)) ?>"
                    class="btn btn-success btn-sm">
                     <i class="fa fa-file-excel me-1"></i> Export Excel
                 </a>
@@ -115,7 +115,7 @@
 <div class="card shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0 fw-bold">
-            Riwayat Mutasi: <strong><?= htmlspecialchars($produk_fg) ?></strong>
+            Riwayat Mutasi: <strong><?= htmlspecialchars((string) $produk_fg) ?></strong>
             <?php if ($tgl_dari || $tgl_sampai): ?>
                 <small class="text-muted">
                     (<?= $tgl_dari ? $tgl_dari : '...' ?> s/d <?= $tgl_sampai ? $tgl_sampai : '...' ?>)
@@ -157,9 +157,9 @@
                     <tr class="<?= $row->jenis_mutasi === 'IN' ? 'table-success bg-opacity-25' : 'table-danger bg-opacity-25' ?>">
                         <td class="text-center"><?= $i + 1 ?></td>
                         <td class="text-center"><?= $row->tgl_transaksi ?></td>
-                        <td><?= htmlspecialchars($row->no_referensi) ?></td>
-                        <td><?= $row->spk_no ? '<span class="badge bg-light text-dark border">' . htmlspecialchars($row->spk_no) . '</span>' : '-' ?></td>
-                        <td class="text-center"><?= $row->category_type ? '<span class="badge bg-secondary">' . htmlspecialchars($row->category_type) . '</span>' : '-' ?></td>
+                        <td><?= htmlspecialchars((string) $row->no_referensi) ?></td>
+                        <td><?= $row->spk_no ? '<span class="badge bg-light text-dark border">' . htmlspecialchars((string) $row->spk_no) . '</span>' : '-' ?></td>
+                        <td class="text-center"><?= $row->category_type ? '<span class="badge bg-secondary">' . htmlspecialchars((string) $row->category_type) . '</span>' : '-' ?></td>
                         <td class="text-center">
                             <span class="badge bg-<?= $row->jenis_mutasi === 'IN' ? 'success' : 'danger' ?>">
                                 <?= $row->jenis_mutasi ?>

@@ -30,11 +30,11 @@ class Spk_material_model extends BF_Model
 
         $next_counter = 1;
         if ($last) {
-            $parts = explode('-', $last->spk_no);
+            $parts = explode('-', (string) $last->spk_no);
             $next_counter = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($next_counter, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_counter, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -58,11 +58,11 @@ class Spk_material_model extends BF_Model
 
         $next_counter = 1;
         if ($last) {
-            $parts = explode('-', $last->spk_no);
+            $parts = explode('-', (string) $last->spk_no);
             $next_counter = (int) end($parts) + 1;
         }
 
-        return $prefix . str_pad($next_counter, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_counter, 4, '0', STR_PAD_LEFT);
     }
 
     // ---------------------------------------------------------------
@@ -126,6 +126,24 @@ class Spk_material_model extends BF_Model
     public function get_spk($spk_no)
     {
         return $this->db->where('spk_no', $spk_no)->get('tr_spk_material_header')->row_array();
+    }
+
+    /**
+     * Get header SPK untuk halaman view, beserta nama pembuat (created_by_name).
+     * Dipisah dari get_spk() agar snapshot log edit tidak ikut berubah.
+     *
+     * @param string $spk_no Nomor SPK
+     * @return array|null
+     */
+    public function get_spk_for_view($spk_no)
+    {
+        return $this->db
+            ->select('h.*, COALESCE(u.nm_lengkap, u.username, h.created_by) AS created_by_name')
+            ->from('tr_spk_material_header h')
+            ->join('users u', 'u.id_user = h.created_by', 'left')
+            ->where('h.spk_no', $spk_no)
+            ->get()
+            ->row_array();
     }
 
     /**

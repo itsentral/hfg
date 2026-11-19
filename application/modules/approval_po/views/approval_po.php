@@ -21,7 +21,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" required>
 											<option value="">--Pilih--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
-												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower($supplier->name_suplier)) ?></option>
+												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -102,7 +102,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											$selected = 'selected';
 										}
 									?>
-										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
+										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $mata_uang->kode)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -134,7 +134,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											$selected = 'selected';
 										}
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -303,8 +303,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															<input type='hidden' class='form-control input-sm autoNumeric' name='dt[" . $key . "][totalweight]' id='dt_totalweight_" . $key . "' value='" . $total_weight . "'  onkeyup='HitAmmount(" . $key . ")'>
 															<input type='text' class='form-control text-center input-sm' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . $value->qty . "' onkeyup='HitAmmount(" . $key . ")'>
 														</td>
-														<td class='text-center'>" . ucfirst($value->satuan) . "</td>
-														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+														<td class='text-center'>" . ucfirst((string) $value->satuan) . "</td>
+														<td class='text-center'>" . ucfirst((string) $value->packing_unit) . ucfirst((string) $value->packing_unit2) . "</td>
 														<td hidden>
 															<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
 																<option value=''>-Pilih-</option>
@@ -326,7 +326,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 													
-														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-end auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
+														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-end auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format((float) $total, 4, '.', ',') . "'></td>
 														
 														<td>
 															<div class='input-group input-group-sm' style='margin-bottom:6px;'>
@@ -337,7 +337,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															<div class='input-group input-group-sm'>
 																<span class='input-group-text'>Rp</span>
 																<input type='text' name='dt[" . $key . "][disc_num]' class='form-control input-sm auto_num disc_num'
-																	id='disc_num_" . $key . "' data-key='" . $key . "' value='" . number_format($value->nilai_disc) . "'>
+																	id='disc_num_" . $key . "' data-key='" . $key . "' value='" . number_format((float) $value->nilai_disc) . "'>
 															</div>
 														</td>
 														<td hidden>
@@ -355,19 +355,19 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="9"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['header_po']->subtotal, 4, '.', ',') ?>" required name="totalinppn">
+									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format((float) $results['header_po']->subtotal, 4, '.', ',') ?>" required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
 								<td class="text-end" colspan="9"><b>Diskon Khusus</b></th>
 								<td colspan="2">
-									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= number_format($results['header_po']->diskon_khusus) ?>" name="diskonkhusus">
+									<input type="text" class="form-control text-end auto_num" id="diskonkhusus" value="<?= number_format((float) $results['header_po']->diskon_khusus) ?>" name="diskonkhusus">
 								</td>
 							</tr>
 							<tr hidden>
 								<td class="text-end" colspan="9"><b>Total (Exclude PPn)</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= number_format($results['header_po']->total_exclude_ppn) ?>" required name="totalexppn">
+									<input readonly type="text" class="form-control auto_num text-end" id="totalexppn" value="<?= number_format((float) $results['header_po']->total_exclude_ppn) ?>" required name="totalexppn">
 								</td>
 							</tr>
 							<?php
@@ -383,13 +383,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr <?= ((isset($results['header_po']->show_tax) && $results['header_po']->show_tax == 'Y') ? '' : 'hidden') ?>>
 								<td class="text-end" colspan="9"><b>DPP</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= number_format($dpp_val, 2, '.', ',') ?>" required name="dpp">
+									<input readonly type="text" class="form-control auto_num text-end" id="dpp" value="<?= number_format((float) $dpp_val, 2, '.', ',') ?>" required name="dpp">
 								</td>
 							</tr>
 							<tr <?= ((isset($results['header_po']->show_tax) && $results['header_po']->show_tax == 'Y') ? '' : 'hidden') ?>>
 								<td class="text-end" colspan="9"><b>PPn</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= number_format($results['header_po']->total_ppn) ?>" required name="ppn">
+									<input readonly type="text" class="form-control auto_num text-end" id="ppn" value="<?= number_format((float) $results['header_po']->total_ppn) ?>" required name="ppn">
 								</td>
 							</tr>
 							<tr>
@@ -402,7 +402,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="9"><b>Total Order</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= number_format($results['header_po']->total_include_ppn, 4, '.', ',') ?>" required name="subtotal">
+									<input readonly type="text" class="form-control text-end" id="subtotal" value="<?= number_format((float) $results['header_po']->total_include_ppn, 4, '.', ',') ?>" required name="subtotal">
 								</td>
 							</tr>
 						</tfoot>
@@ -471,17 +471,17 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '<select name="group_top_' . $no . '" class="form-control form-control-sm">';
 									foreach ($results['list_group_top'] as $item_group_top) {
 										$selected = ($item_group_top->id == $item_top->group_top) ? 'selected' : '';
-										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper((string) $item_group_top->name) . '</option>';
 									}
 									echo '</select>';
 									echo '</td>';
 
 									echo '<td>';
-									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '">';
+									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format((float) $item_top->progress, 2) . '">';
 									echo '</td>';
 
 									echo '<td class="text-right">';
-									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '">';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format((float) $item_top->nilai, 4, '.', ',') . '">';
 									echo '</td>';
 
 									echo '<td>';
@@ -570,7 +570,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<label for="id_customer">Sub Total</label>
 							</div>
 							<div class="col-md-8" id="ForHarga">
-								<input readonly type="text" class="form-control" id="hargatotal" value="<?= number_format($total_harga) ?>" required name="hargatotal">
+								<input readonly type="text" class="form-control" id="hargatotal" value="<?= number_format((float) $total_harga) ?>" required name="hargatotal">
 							</div>
 						</div>
 					</div>
@@ -608,7 +608,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8" id="ForTax">
 								<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
-								<input type="text" class="form-control" id="kirim" value="<?= number_format($results['header_po']->taxtotal, 2) ?>" readonly name="kirim">
+								<input type="text" class="form-control" id="kirim" value="<?= number_format((float) $results['header_po']->taxtotal, 2) ?>" readonly name="kirim">
 							</div>
 						</div>
 					</div>

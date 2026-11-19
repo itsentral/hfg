@@ -31,7 +31,7 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
                     <option value="0">ALL CATEGORY</option>
                     <?php
                     foreach ($category as $key => $value) {
-                        echo "<option value='" . $value['id'] . "'>" . strtoupper($value['nm_category']) . "</option>";
+                        echo "<option value='" . $value['id'] . "'>" . strtoupper((string) $value['nm_category']) . "</option>";
                     }
                     ?>
                 </select>
@@ -111,7 +111,10 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
             },
-            function() {
+            function(isConfirm) {
+            if (!isConfirm) {
+                return;
+            }
                 $.ajax({
                     type: 'POST',
                     url: "<?= site_url('accessories/hapus'); ?>",

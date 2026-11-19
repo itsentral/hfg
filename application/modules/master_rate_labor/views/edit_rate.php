@@ -4,7 +4,7 @@
 
 <div class="mb-3">
     <label class="form-label fw-bold text-secondary">Item Tenaga Kerja</label>
-    <input type="text" class="form-control bg-light fw-bold" readonly value="<?= htmlspecialchars($rate->item) ?>">
+    <input type="text" class="form-control bg-light fw-bold" readonly value="<?= htmlspecialchars((string) $rate->item) ?>">
 </div>
 
 <div class="mb-3">

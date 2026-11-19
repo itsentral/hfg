@@ -277,7 +277,7 @@
                         <tr>
                             <td width='100' align="left" style="vertical-align: top;">Date</td>
                             <td width='10' align="left" style="vertical-align: top;">:</td>
-                            <td width='200' align="left" style="vertical-align: top;"><?= date('d F Y', strtotime($header->tanggal)) ?></td>
+                            <td width='200' align="left" style="vertical-align: top;"><?= date('d F Y', strtotime((string) $header->tanggal)) ?></td>
                         </tr>
                         <tr>
                             <td width='100' align="left" style="vertical-align: top;">PR</td>
@@ -287,7 +287,7 @@
                         <tr>
                             <td width='100' align="left" style="vertical-align: top;">Delivery Date</td>
                             <td width='10' align="left" style="vertical-align: top;">:</td>
-                            <td width='200' align="left" style="vertical-align: top;"><?= date('d F Y', strtotime($header->delivery_date)) ?></td>
+                            <td width='200' align="left" style="vertical-align: top;"><?= date('d F Y', strtotime((string) $header->delivery_date)) ?></td>
                         </tr>
                         <tr>
                             <td width='100' align="left" style="vertical-align: top;">PIC</td>
@@ -310,12 +310,12 @@
         </table>
         <br>
         <?php
-        $matauang = (!empty($header->matauang)) ? "<br>(" . strtoupper($header->matauang) . ")" : '';
+        $matauang = (!empty($header->matauang)) ? "<br>(" . strtoupper((string) $header->matauang) . ")" : '';
 
-        if (strtolower($header->matauang) == 'usd') {
+        if (strtolower((string) $header->matauang) == 'usd') {
             $kode = '$';
         }
-        if (strtolower($header->matauang) == 'idr') {
+        if (strtolower((string) $header->matauang) == 'idr') {
             $kode = 'Rp';
         }
         ?>
@@ -340,11 +340,11 @@
                     $barang  = $this->db->query("SELECT * FROM ms_inventory_category3 WHERE id_category3 ='$kategory' ")->row();
 
                     $TOT_PPH += $detail->jumlahharga * $detail->pajak / 100;
-                    $HS = number_format($detail->hargasatuan, 2);
-                    $JH = number_format($detail->jumlahharga, 2);
-                    if (strtolower($header->loi) == 'lokal') {
-                        $HS = number_format($detail->hargasatuan, 2);
-                        $JH = number_format($detail->jumlahharga, 2);
+                    $HS = number_format((float) $detail->hargasatuan, 2);
+                    $JH = number_format((float) $detail->jumlahharga, 2);
+                    if (strtolower((string) $header->loi) == 'lokal') {
+                        $HS = number_format((float) $detail->hargasatuan, 2);
+                        $JH = number_format((float) $detail->jumlahharga, 2);
                     }
 
                     $satuan = $detail->satuan;
@@ -378,12 +378,12 @@
                         <tr >
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . $final_detail_code . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . $final_detail_nama . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst($satuan) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst((string) $satuan) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format($detail->qty / $konversi, 2) . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . ucfirst($satuan_packing) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . ucfirst((string) $satuan_packing) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $HS . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $detail->qty . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format($detail->nilai_disc) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format((float) $detail->nilai_disc) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $JH . "</td>
                         </tr>";
                         $CIF = "";
@@ -394,9 +394,9 @@
                         <tr >
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . $final_detail_code . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . $final_detail_nama . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst($satuan) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='center'>" . ucfirst((string) $satuan) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . number_format($detail->qty / $konversi, 2) . "</td>
-                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . ucfirst($satuan_packing) . "</td>
+                            <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;'>" . ucfirst((string) $satuan_packing) . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $HS . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $detail->qty . "</td>
                             <td style='font-size: 8px; max-width: 250px !important; word-wrap: break-word;' align='right'>" . $JH . "</td>
@@ -416,34 +416,34 @@
                 }
 
                 $TOTHEAD = number_format($detailsum[0]->sumjumlahharga + $TOT_PPH, 2);
-                if (strtolower($header->loi) == 'lokal') {
+                if (strtolower((string) $header->loi) == 'lokal') {
                     $TOTHEAD = number_format($detailsum[0]->sumjumlahharga + $TOT_PPH, 2);
                 }
                 ?>
                 <tr>
                     <td align="right" colspan='8'>Total </td>
-                    <td align="right" style="font-size: 8px;"><?= number_format($header->total_barang, 2) ?></td>
+                    <td align="right" style="font-size: 8px;"><?= number_format((float) $header->total_barang, 2) ?></td>
 
                 </tr>
                 <tr>
                     <td align="right" colspan='8'>Biaya Kirim </td>
-                    <td align="right" style="font-size: 8px;"><?= number_format($header->taxtotal, 2) ?></td>
+                    <td align="right" style="font-size: 8px;"><?= number_format((float) $header->taxtotal, 2) ?></td>
 
                 </tr>
 
                 <tr>
                     <td align="right" colspan='8'>Discount </td>
-                    <td align="right" style="font-size: 8px;"><?= number_format($header->nilai_disc, 2) ?></td>
+                    <td align="right" style="font-size: 8px;"><?= number_format((float) $header->nilai_disc, 2) ?></td>
                 </tr>
 
                 <tr>
                     <td align="right" colspan='8'>PPN </td>
-                    <td align="right" style="font-size: 8px;"><?= number_format($header->total_ppn, 2) ?></td>
+                    <td align="right" style="font-size: 8px;"><?= number_format((float) $header->total_ppn, 2) ?></td>
                 </tr>
 
                 <tr>
                     <td align="right" colspan='8'>Grand Total </td>
-                    <td align="right" style="font-size: 8px;"><?= number_format($header->subtotal, 2) ?></td>
+                    <td align="right" style="font-size: 8px;"><?= number_format((float) $header->subtotal, 2) ?></td>
 
                 </tr>
 
@@ -482,7 +482,7 @@
                         <tr>
                             <td width="620" height="100%">
                                 <b>Keterangan :</b> <br>
-                                <?= wordwrap($header->note, 90, '<br>', true) ?>
+                                <?= wordwrap((string) $header->note, 90, '<br>', true) ?>
                             </td>
                         </tr>
                     </table>

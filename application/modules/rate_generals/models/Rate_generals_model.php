@@ -42,7 +42,7 @@ class Rate_generals_model extends CI_Model
 
         $other_labels = [];
         if (!empty($r->other_cost_labels)) {
-            $decoded = json_decode($r->other_cost_labels, true);
+            $decoded = json_decode((string) $r->other_cost_labels, true);
             if (is_array($decoded)) {
                 $other_labels = $decoded;
             }
@@ -195,16 +195,16 @@ class Rate_generals_model extends CI_Model
             'rate_other_cost_profit',
         ];
 
-        if (in_array($key, $other_cost_keys) && $new_label !== null && trim($new_label) !== '') {
+        if (in_array($key, $other_cost_keys) && $new_label !== null && trim((string) $new_label) !== '') {
             $row = $this->db->select('other_cost_labels')->where('id', 1)->get('rate_generals')->row();
             $labels = [];
             if ($row && !empty($row->other_cost_labels)) {
-                $decoded = json_decode($row->other_cost_labels, true);
+                $decoded = json_decode((string) $row->other_cost_labels, true);
                 if (is_array($decoded)) {
                     $labels = $decoded;
                 }
             }
-            $labels[$key] = trim($new_label);
+            $labels[$key] = trim((string) $new_label);
             $update_data['other_cost_labels'] = json_encode($labels);
         }
 

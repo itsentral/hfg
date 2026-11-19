@@ -162,7 +162,7 @@ class Expense_petty_cash_model extends BF_Model
                 'company'        => $row->company,
                 'request_by'     => $row->request_by,
                 'keterangan'     => $row->keterangan,
-                'grand_total'    => number_format($row->grand_total, 0, ',', '.'),
+                'grand_total'    => number_format((float) $row->grand_total, 0, ',', '.'),
                 'status'         => $row->status,
                 'journal_status' => $row->journal_status,
                 'in_pelaporan'   => intval($row->in_pelaporan) > 0,
@@ -508,8 +508,8 @@ class Expense_petty_cash_model extends BF_Model
 
         // Step 3: Generate no_jurnal (format: NNNNN-AJV-{MM}-{YY})
         $tanggal = $header['tanggal'];
-        $month_roman = $this->_get_roman_month(date('n', strtotime($tanggal)));
-        $year_short = date('y', strtotime($tanggal));
+        $month_roman = $this->_get_roman_month(date('n', strtotime((string) $tanggal)));
+        $year_short = date('y', strtotime((string) $tanggal));
 
         // Get next sequence from existing tr_jurnal for this month/year
         $prefix_like = '%-AJV-' . $month_roman . '-' . $year_short;
@@ -520,12 +520,12 @@ class Expense_petty_cash_model extends BF_Model
 
         if ($query_last->num_rows() > 0) {
             $last_no = $query_last->row()->no_jurnal;
-            $last_seq = (int) substr($last_no, 0, 5);
+            $last_seq = (int) substr((string) $last_no, 0, 5);
             $next_seq = $last_seq + 1;
         } else {
             $next_seq = 1;
         }
-        $no_jurnal = str_pad($next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
+        $no_jurnal = str_pad((string) $next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
 
         // Step 4: Determine company info
         $id_company = '5'; // STM
@@ -652,7 +652,7 @@ class Expense_petty_cash_model extends BF_Model
         }
 
         // Step 2: Determine company info and COA codes
-        $company_upper = strtoupper($company);
+        $company_upper = strtoupper((string) $company);
         if ($company_upper === 'VUCA') {
             $coa_hutang_stm = self::COA_HUTANG_STM_VUCA;
             $coa_piutang    = self::COA_PIUTANG_VUCA;
@@ -670,8 +670,8 @@ class Expense_petty_cash_model extends BF_Model
         }
 
         // Step 3: Generate no_jurnal
-        $month_roman = $this->_get_roman_month(date('n', strtotime($tanggal)));
-        $year_short = date('y', strtotime($tanggal));
+        $month_roman = $this->_get_roman_month(date('n', strtotime((string) $tanggal)));
+        $year_short = date('y', strtotime((string) $tanggal));
         $prefix_like = '%-AJV-' . $month_roman . '-' . $year_short;
 
         $query_last = $this->db->query(
@@ -681,12 +681,12 @@ class Expense_petty_cash_model extends BF_Model
 
         if ($query_last->num_rows() > 0) {
             $last_no = $query_last->row()->no_jurnal;
-            $last_seq = (int) substr($last_no, 0, 5);
+            $last_seq = (int) substr((string) $last_no, 0, 5);
             $next_seq = $last_seq + 1;
         } else {
             $next_seq = 1;
         }
-        $no_jurnal_company = str_pad($next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
+        $no_jurnal_company = str_pad((string) $next_seq, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
         $no_jurnal_stm = str_pad($next_seq + 1, 5, '0', STR_PAD_LEFT) . '-AJV-' . $month_roman . '-' . $year_short;
 
         // Step 4: Get COA names
@@ -822,7 +822,7 @@ class Expense_petty_cash_model extends BF_Model
         $urut   = intval($row->nomorJC) + 1;
 
         $format = $cabang . '-' . $subcab . 'JV' . date('y');
-        $nomor  = $format . str_pad($urut, 5, '0', STR_PAD_LEFT);
+        $nomor  = $format . str_pad((string) $urut, 5, '0', STR_PAD_LEFT);
 
         return $nomor;
     }
@@ -910,7 +910,7 @@ class Expense_petty_cash_model extends BF_Model
         }
 
         // Step 5: Dispatch to appropriate journal creation method based on company
-        $company = strtoupper($header->company);
+        $company = strtoupper((string) $header->company);
         $journal_result = false;
 
         try {
@@ -1005,7 +1005,7 @@ class Expense_petty_cash_model extends BF_Model
         }
 
         // Step 6: Re-attempt journal creation based on company
-        $company_upper = strtoupper($pencatatan->company);
+        $company_upper = strtoupper((string) $pencatatan->company);
 
         if ($company_upper === 'STM') {
             $result = $this->create_journal_stm($pencatatan_id, $header, $details);
@@ -1061,7 +1061,7 @@ class Expense_petty_cash_model extends BF_Model
         if ($query->num_rows() > 0) {
             $row = $query->row();
             // Extract the numeric part (last 4 characters)
-            $last_number = (int) substr($row->no_pencatatan, -4);
+            $last_number = (int) substr((string) $row->no_pencatatan, -4);
             $next_number = $last_number + 1;
         } else {
             $next_number = 1;
@@ -1072,7 +1072,7 @@ class Expense_petty_cash_model extends BF_Model
             return false;
         }
 
-        return $prefix . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next_number, 4, '0', STR_PAD_LEFT);
     }
 
     // =========================================================================

@@ -407,7 +407,7 @@ class Request_list_model extends BF_Model
 
         return [
             'status'      => true,
-            'message'     => 'Pack ' . $pack['pack_code'] . ' (' . count($moved_coils) . ' coil, ' . number_format($total_weight, 2, '.', ',') . ' Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi ' . $spk_no . '.',
+            'message'     => 'Pack ' . $pack['pack_code'] . ' (' . count($moved_coils) . ' coil, ' . number_format((float) $total_weight, 2, '.', ',') . ' Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi ' . $spk_no . '.',
             'pack_code'   => $pack['pack_code'],
             'spk_no'      => $spk_no,
             'coil_count'  => count($moved_coils),
@@ -889,13 +889,13 @@ class Request_list_model extends BF_Model
 
         $next = 1;
         if ($last) {
-            $parts = explode('/TRS-', $last->spk_coil_no);
+            $parts = explode('/TRS-', (string) $last->spk_coil_no);
             if (isset($parts[1])) {
                 $next = (int) $parts[1] + 1;
             }
         }
 
-        return $prefix . str_pad($next, 3, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
     }
 
     // ---------------------------------------------------------------
@@ -1124,7 +1124,7 @@ class Request_list_model extends BF_Model
         $this->db->join('warehouse w', 'w.id = d.id_gudang_sumber', 'left');
         $this->db->where('d.request_id', $request_id);
         $this->db->where('d.kode_internal', $kode_internal);
-        $this->db->where('LOWER(w.nm_gudang)', strtolower($nm_gudang));
+        $this->db->where('LOWER(w.nm_gudang)', strtolower((string) $nm_gudang));
 
         return $this->db->get()->row_array();
     }

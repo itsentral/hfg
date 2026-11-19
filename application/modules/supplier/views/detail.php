@@ -71,10 +71,10 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 						<tr>
 							<td><?= $no; ?></td>
 							<td><?= strtoupper(get_name('new_inventory_1', 'nama', 'code_lv1', $code_lv1)); ?></td>
-							<td><?= strtoupper($nm_category); ?></td>
+							<td><?= strtoupper((string) $nm_category); ?></td>
 							<td><?= strtoupper(get_name('new_inventory_3', 'nama', 'code_lv3', $code_lv3)); ?></td>
-							<td class="fw-semibold"><?= strtoupper($nm_material); ?></td>
-							<td class="text-end"><?= number_format($valx['weight'], 4); ?></td>
+							<td class="fw-semibold"><?= strtoupper((string) $nm_material); ?></td>
+							<td class="text-end"><?= number_format((float) $valx['weight'], 4); ?></td>
 						</tr>
 					<?php } ?>
 
@@ -82,7 +82,7 @@ $nm_product        = (!empty($GET_LEVEL4[$id_product]['nama'])) ? $GET_LEVEL4[$i
 					<tr class="table-light">
 						<td></td>
 						<td colspan="4" class="fw-semibold">Total Berat</td>
-						<td class="text-end fw-bold"><?= number_format($SUM, 4); ?> Kg</td>
+						<td class="text-end fw-bold"><?= number_format((float) $SUM, 4); ?> Kg</td>
 					</tr>
 
 				</tbody>

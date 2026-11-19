@@ -27,14 +27,14 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                     $is_approved = ($r->status === 'Approved');
                     $is_rejected = ($r->status === 'Rejected');
 
-                    $prods = array_filter(array_map('trim', explode(',', $r->product_names)));
+                    $prods = array_filter(array_map('trim', explode(',', (string) $r->product_names)));
                     $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
                     $more_count = count($prods) - 1;
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
                         <td>
-                            <strong class="text-dark fs-6"><?= htmlspecialchars(strtoupper($first_prod)) ?></strong>
+                            <strong class="text-dark fs-6"><?= htmlspecialchars(strtoupper((string) $first_prod)) ?></strong>
                             <?php if ($more_count > 0): ?>
                                 <span class="badge bg-secondary ms-1">+<?= $more_count ?> produk</span>
                             <?php endif; ?>
@@ -43,13 +43,13 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-light text-dark border fw-bold"><?= htmlspecialchars($r->no_pricelist) ?></span>
+                            <span class="badge bg-light text-dark border fw-bold"><?= htmlspecialchars((string) $r->no_pricelist) ?></span>
                         </td>
                         <td class="text-center fw-bold">
                             <?= $r->total_items ?> varian
                         </td>
                         <td class="text-muted small">
-                            <?= date('d/m/Y H:i', strtotime($r->created_at)) ?>
+                            <?= date('d/m/Y H:i', strtotime((string) $r->created_at)) ?>
                         </td>
                         <td class="text-center">
                             <?php if ($is_draft): ?>
@@ -71,7 +71,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                         <td>
                             <?php if ($is_approved): ?>
                                 <div class="text-success small fw-bold"><i class="fa fa-check me-1"></i> Disetujui</div>
-                                <div class="text-muted small"><?= htmlspecialchars($r->decided_by_name ?: 'GM') ?> &middot; <?= date('d/m/Y H:i', strtotime($r->decided_at)) ?></div>
+                                <div class="text-muted small"><?= htmlspecialchars($r->decided_by_name ?: 'GM') ?> &middot; <?= date('d/m/Y H:i', strtotime((string) $r->decided_at)) ?></div>
                             <?php elseif ($is_rejected): ?>
                                 <div class="text-danger small fw-bold"><i class="fa fa-times me-1"></i> Ditolak</div>
                                 <div class="text-danger small"><?= htmlspecialchars($r->reject_reason ?: '-') ?></div>

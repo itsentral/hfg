@@ -352,9 +352,9 @@ class Purchase_order_payment extends Admin_Controller
 		// Validasi kurs
 		$currency = $this->input->post('currency');
 		$kurs_raw = str_replace(',', '', $this->input->post('kurs') ?? '0');
-		$kurs     = strtoupper($currency) === 'IDR' ? 1 : (float)$kurs_raw;
+		$kurs     = strtoupper((string) $currency) === 'IDR' ? 1 : (float)$kurs_raw;
 
-		if (strtoupper($currency) !== 'IDR' && $kurs <= 0) {
+		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
 			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
 			return;
 		}
@@ -537,7 +537,7 @@ class Purchase_order_payment extends Admin_Controller
 		$kurs_raw = str_replace(',', '', $this->input->post('kurs') ?? '0');
 		$kurs     = ceil((float)$kurs_raw);
 
-		if (strtoupper($currency) !== 'IDR' && $kurs <= 0) {
+		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
 			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
 			return;
 		}
@@ -707,7 +707,7 @@ class Purchase_order_payment extends Admin_Controller
 		$kurs_raw = str_replace(',', '', $this->input->post('kurs') ?? '0');
 		$kurs     = (float)$kurs_raw;
 
-		if (strtoupper($currency) !== 'IDR' && $kurs <= 0) {
+		if (strtoupper((string) $currency) !== 'IDR' && $kurs <= 0) {
 			echo json_encode(['status' => 0, 'message' => 'Kurs wajib diisi dan harus lebih dari 0.']);
 			return;
 		}
@@ -1247,7 +1247,7 @@ class Purchase_order_payment extends Admin_Controller
 
 		$get_invoice = $this->db->get_where('tr_invoice_po', ['id' => $id])->row_array();
 		$id_po = str_replace(', ', ',', $get_invoice['no_incoming']);
-		$no_incoming = explode(',', $id_po);
+		$no_incoming = explode(',', (string) $id_po);
 
 		var_dump($id_po);
 
@@ -2219,7 +2219,7 @@ class Purchase_order_payment extends Admin_Controller
 			// ---- FLAG inc_inv_create & hapus tr_check_invoice ----
 			$clean_no_po = str_replace(', ', ',', $post['nomor_po'] ?? '');
 			if (!empty($clean_no_po)) {
-				$arr_no_po = explode(',', $clean_no_po);
+				$arr_no_po = explode(',', (string) $clean_no_po);
 
 				$this->db->where_in('kode_trans', $arr_no_po);
 				$this->db->update('tr_incoming_check', ['inc_inv_create' => 1]);
@@ -2508,7 +2508,7 @@ class Purchase_order_payment extends Admin_Controller
 		$no = 1;
 		foreach ($get_list_inc as $item) {
 
-			$exp_no_po = explode(',', $item['no_po']);
+			$exp_no_po = explode(',', (string) $item['no_po']);
 
 			$nm_supplier = [];
 
@@ -2537,7 +2537,7 @@ class Purchase_order_payment extends Admin_Controller
 			$this->db->select('b.nama as nm_supplier');
 			$this->db->from('tr_purchase_order a');
 			$this->db->join('new_supplier b', 'b.kode_supplier = a.id_suplier', 'left');
-			$this->db->where_in('a.no_po', explode(',', $no_ipp));
+			$this->db->where_in('a.no_po', explode(',', (string) $no_ipp));
 			$this->db->group_by('b.nama');
 			$get_nm_supplier = $this->db->get()->result();
 			foreach ($get_nm_supplier as $item_nm_supplier) {
@@ -2561,11 +2561,11 @@ class Purchase_order_payment extends Admin_Controller
 
 			$view = '<button type="button" class="btn btn-sm btn-info view_inc" data-id="' . $item['id'] . '"><i class="fa fa-eye"></i></button>';
 			if ($kode_supplier !== '') {
-				if (strpos($nm_supplier, $get_supplier->nama) !== false) {
+				if (strpos((string) $nm_supplier, $get_supplier->nama) !== false) {
 					$hasil .= '<tr>';
 					$hasil .= '<td style="text-align: center;">' . $no . '</td>';
 					$hasil .= '<td style="text-align: center;">' . $item['id'] . '</td>';
-					$hasil .= '<td style="text-align: center;">' . date('d F Y', strtotime($item['invoice_date'])) . '</td>';
+					$hasil .= '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item['invoice_date'])) . '</td>';
 					$hasil .= '<td>' . $nm_supplier . '</td>';
 					$hasil .= '<td style="text-align: center;">' . $status . '</td>';
 					$hasil .= '<td style="text-align: center;">' . $view . '</td>';
@@ -2576,7 +2576,7 @@ class Purchase_order_payment extends Admin_Controller
 				$hasil .= '<tr>';
 				$hasil .= '<td style="text-align: center;">' . $no . '</td>';
 				$hasil .= '<td style="text-align: center;">' . $item['id'] . '</td>';
-				$hasil .= '<td style="text-align: center;">' . date('d F Y', strtotime($item['invoice_date'])) . '</td>';
+				$hasil .= '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item['invoice_date'])) . '</td>';
 				$hasil .= '<td>' . $nm_supplier . '</td>';
 				$hasil .= '<td style="text-align: center;">' . $status . '</td>';
 				$hasil .= '<td style="text-align: center;">' . $view . '</td>';
@@ -2910,7 +2910,7 @@ class Purchase_order_payment extends Admin_Controller
 			$hasil .= '<td class="text-center">' . $no_purchase_invoice . '</td>';
 			$hasil .= '<td class="text-center">' . $no_invoice . '</td>';
 			$hasil .= '<td class="text-center">' . $item['nm_supplier'] . '</td>';
-			$hasil .= '<td class="text-center">' . date('d F Y', strtotime($item['tanggal'])) . '</td>';
+			$hasil .= '<td class="text-center">' . date('d F Y', strtotime((string) $item['tanggal'])) . '</td>';
 			$hasil .= '<td class="text-center">' . $item['keterangan_top'] . '</td>';
 			$hasil .= '<td class="text-center">' . $item['nm_lengkap'] . '</td>';
 			$hasil .= '<td class="text-center">' . $sts . '</td>';
@@ -3077,7 +3077,7 @@ class Purchase_order_payment extends Admin_Controller
 			$hasil .= '<td class="text-center">' . $no_purchase_invoice . '</td>';
 			$hasil .= '<td class="text-center">' . $no_invoice . '</td>';
 			$hasil .= '<td class="text-center">' . $item['nm_supplier'] . '</td>';
-			$hasil .= '<td class="text-center">' . date('d F Y', strtotime($item['tanggal'])) . '</td>';
+			$hasil .= '<td class="text-center">' . date('d F Y', strtotime((string) $item['tanggal'])) . '</td>';
 			$hasil .= '<td class="text-center">' . $item['keterangan_top'] . '</td>';
 			$hasil .= '<td class="text-center">' . $item['nm_lengkap'] . '</td>';
 			$hasil .= '<td class="text-center">' . $sts . '</td>';
@@ -3325,7 +3325,7 @@ class Purchase_order_payment extends Admin_Controller
 		}
 
 		// Cek status — jangan bisa re-request kalau sudah diajukan
-		if (isset($data['status']) && strtolower($data['status']) !== 'draft') {
+		if (isset($data['status']) && strtolower((string) $data['status']) !== 'draft') {
 			echo json_encode(['status' => 0, 'message' => 'Invoice ini sudah pernah diajukan.']);
 			return;
 		}

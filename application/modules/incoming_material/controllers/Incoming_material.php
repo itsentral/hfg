@@ -127,7 +127,7 @@ class Incoming_material extends Admin_Controller
 
         $generate_id = $this->db->query("SELECT MAX(kode_trans) AS max_id FROM tr_incoming_check WHERE kode_trans LIKE '%TRS1-" . date('m-y') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
-        $urutan = (int) substr($kodeBarang, 11, 5);
+        $urutan = (int) substr((string) $kodeBarang, 11, 5);
         $urutan++;
         $tahun = date('m-y');
         $huruf = "TRS1-";

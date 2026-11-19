@@ -101,7 +101,7 @@
                 </tr>
                 <tr>
                     <td><b>Net Weight</b></td>
-                    <td>: <?= number_format($row['berat_bersih'], 2) ?> Kg</td>
+                    <td>: <?= number_format((float) $row['berat_bersih'], 2) ?> Kg</td>
                 </tr>
                 <tr>
                     <td><b>Kode Coil</b></td>

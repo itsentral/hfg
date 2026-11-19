@@ -25,18 +25,18 @@
                         <?php foreach ($rates as $i => $row): ?>
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
-                                <td class="fw-semibold text-dark"><?= htmlspecialchars($row->item) ?></td>
+                                <td class="fw-semibold text-dark"><?= htmlspecialchars((string) $row->item) ?></td>
                                 <td class="text-end fw-bold text-success">
                                     <?php if ($row->type === 'direct'): ?>
-                                        Rp <?= number_format($row->rate, 0, ',', '.') ?> / Jam
+                                        Rp <?= number_format((float) $row->rate, 0, ',', '.') ?> / Jam
                                     <?php else: ?>
-                                        <?= number_format($row->rate, 2, ',', '.') ?> %
+                                        <?= number_format((float) $row->rate, 2, ',', '.') ?> %
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($row->remark ?: '-') ?></td>
                                 <td><?= htmlspecialchars($row->updated_by ?: '-') ?></td>
                                 <td class="text-center">
-                                    <?= $row->updated_date ? date('d-M-y H:i', strtotime($row->updated_date)) : '-' ?>
+                                    <?= $row->updated_date ? date('d-M-y H:i', strtotime((string) $row->updated_date)) : '-' ?>
                                 </td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-warning edit-rate me-1" data-id="<?= $row->id ?>" title="Edit Tarif">

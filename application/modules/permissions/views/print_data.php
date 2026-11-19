@@ -220,7 +220,7 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
             Alamat<br/>
             <?php $kodepos = " kode pos ".$cust_data->kode_pos." ";?>
             <i><?=$cust_data->alamat?></i><br>
-            <?=(isset($kodepos) ? $kodepos :" ").strtolower($inisial->kota)." Provinsi ".strtolower($inisial->provinsi);?>
+            <?=(isset($kodepos) ? $kodepos :" ").strtolower((string) $inisial->kota)." Provinsi ".strtolower((string) $inisial->provinsi);?>
             </td>
         </tr>
     </table>
@@ -279,7 +279,7 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
         <hr />
         <div id="footer"> 
         <table>
-            <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
+            <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords((string) $userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
         </table>
         </div>
     </htmlpagefooter>

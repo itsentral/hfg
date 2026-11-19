@@ -39,7 +39,7 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
       <h1 class="h4 fw-bold mb-1">Detail Laporan Produksi</h1>
-      <p class="text-muted small mb-0">Nomor SPK: <strong><?= htmlspecialchars($report['spk_header']['spk_no'] ?? '-'); ?></strong> &bull; Tgl Produksi: <?= !empty($report['header']['tgl_produksi']) ? date('d/m/Y', strtotime($report['header']['tgl_produksi'])) : '-'; ?></p>
+      <p class="text-muted small mb-0">Nomor SPK: <strong><?= htmlspecialchars($report['spk_header']['spk_no'] ?? '-'); ?></strong> &bull; Tgl Produksi: <?= !empty($report['header']['tgl_produksi']) ? date('d/m/Y', strtotime((string) $report['header']['tgl_produksi'])) : '-'; ?></p>
     </div>
     <div class="d-flex gap-2">
       <span class="badge <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'bg-warning text-dark' : 'bg-success'; ?> px-3 py-2 fs-6">
@@ -47,7 +47,7 @@
       </span>
       <?php if (($report['header']['status_draft'] ?? 1) == 0): ?>
         <a href="<?= site_url('production_report/hpp/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
-          <i class="fa fa-calculator me-1"></i> Laporan HPP &amp; Jurnal
+          <i class="fa fa-calculator me-1"></i> Laporan HPP
         </a>
         <a href="<?= site_url('production_report/export_excel/' . ($report['header']['id'] ?? '')); ?>" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
           <i class="fa fa-file-excel me-1"></i> Export Report
@@ -120,13 +120,13 @@
               ?>
               <tr>
                 <td><span class="badge bg-light text-dark border"><?= strtoupper($m['source_warehouse'] ?? '-'); ?></span></td>
-                <td><strong><?= htmlspecialchars($coil_code); ?></strong></td>
+                <td><strong><?= htmlspecialchars((string) $coil_code); ?></strong></td>
                 <td><?= htmlspecialchars($m['material_name'] ?? '-'); ?></td>
-                <td class="text-end"><?= number_format($nett, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($gross, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($meter, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($kulit, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($clamp, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $nett, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $gross, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $meter, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $kulit, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $clamp, 2, ',', '.'); ?></td>
               </tr>
             <?php endforeach; ?>
           <?php endif; ?>
@@ -182,19 +182,19 @@
                     <?= strtoupper(str_replace('_', ' ', $cat)); ?>
                   </span>
                 </td>
-                <td><strong><?= htmlspecialchars($prod_name); ?></strong></td>
+                <td><strong><?= htmlspecialchars((string) $prod_name); ?></strong></td>
                 <td><?= htmlspecialchars($coil_origin ?: '-'); ?></td>
-                <td class="text-end"><?= number_format($qty, 0, ',', '.'); ?></td>
-                <td class="text-end fw-bold"><?= number_format($berat_tot, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($berat_pcs, 2, ',', '.'); ?></td>
-                <td class="text-end"><?= number_format($berat_std, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $qty, 0, ',', '.'); ?></td>
+                <td class="text-end fw-bold"><?= number_format((float) $berat_tot, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $berat_pcs, 2, ',', '.'); ?></td>
+                <td class="text-end"><?= number_format((float) $berat_std, 2, ',', '.'); ?></td>
                 <td class="text-end <?= abs($selisih_pct) > 0.7 ? 'text-danger fw-bold' : 'text-success'; ?>">
-                  <?= number_format($selisih_pct, 2, ',', '.'); ?> %
+                  <?= number_format((float) $selisih_pct, 2, ',', '.'); ?> %
                 </td>
-                <td class="text-end"><?= $berat_m_akt > 0 ? number_format($berat_m_akt, 4, ',', '.') : '-'; ?></td>
-                <td class="text-end"><?= $berat_m_std > 0 ? number_format($berat_m_std, 4, ',', '.') : '-'; ?></td>
+                <td class="text-end"><?= $berat_m_akt > 0 ? number_format((float) $berat_m_akt, 4, ',', '.') : '-'; ?></td>
+                <td class="text-end"><?= $berat_m_std > 0 ? number_format((float) $berat_m_std, 4, ',', '.') : '-'; ?></td>
                 <td class="text-end <?= ($berat_m_std > 0 && abs($selisih_m) > 0.7) ? 'text-danger fw-bold' : 'text-success'; ?>">
-                  <?= $berat_m_std > 0 ? number_format($selisih_m, 2, ',', '.') . ' %' : '-'; ?>
+                  <?= $berat_m_std > 0 ? number_format((float) $selisih_m, 2, ',', '.') . ' %' : '-'; ?>
                 </td>
                 <td><?= htmlspecialchars($it['keterangan'] ?? '-'); ?></td>
               </tr>
@@ -231,7 +231,7 @@
             <tr>
               <td><span class="badge bg-light text-secondary border"><?= strtoupper(str_replace('_', ' ', $sc_type)); ?></span></td>
               <td><?= htmlspecialchars($sc_coil ?: '-'); ?></td>
-              <td class="text-end fw-bold"><?= number_format($sc_berat, 2, ',', '.'); ?></td>
+              <td class="text-end fw-bold"><?= number_format((float) $sc_berat, 2, ',', '.'); ?></td>
               <td><?= htmlspecialchars($sc['keterangan'] ?? '-'); ?></td>
             </tr>
           <?php endforeach; ?>
@@ -268,8 +268,8 @@
         <tbody>
           <?php foreach ($report['claims'] as $cl): ?>
             <tr>
-              <td><strong><?= htmlspecialchars($cl['no_claim']); ?></strong></td>
-              <td><span class="badge <?= $cl['asal'] === 'Hold Coil' ? 'bg-danger' : ($cl['asal'] === 'KW 2 (Supplier)' ? 'bg-warning text-dark' : 'bg-dark'); ?>"><?= htmlspecialchars($cl['asal']); ?></span></td>
+              <td><strong><?= htmlspecialchars((string) $cl['no_claim']); ?></strong></td>
+              <td><span class="badge <?= $cl['asal'] === 'Hold Coil' ? 'bg-danger' : ($cl['asal'] === 'KW 2 (Supplier)' ? 'bg-warning text-dark' : 'bg-dark'); ?>"><?= htmlspecialchars((string) $cl['asal']); ?></span></td>
               <td><?= htmlspecialchars($cl['no_coil_packing_list'] ?: '-'); ?></td>
               <td><?= htmlspecialchars($cl['id_material'] ?: '-'); ?></td>
               <td><?= htmlspecialchars($cl['id_suplier'] ?: '-'); ?></td>
@@ -282,7 +282,7 @@
                   <?php foreach ($cl['bukti'] as $bk): ?>
                     <div class="mb-1">
                       <a href="<?= base_url('uploads/claim_material/' . $bk['file_hash_name']); ?>" target="_blank" class="badge bg-light text-primary border text-decoration-none">
-                        📎 <?= htmlspecialchars($bk['file_original_name']); ?>
+                        📎 <?= htmlspecialchars((string) $bk['file_original_name']); ?>
                       </a>
                     </div>
                   <?php endforeach; ?>
@@ -290,7 +290,7 @@
                   <span class="text-muted small">-</span>
                 <?php endif; ?>
               </td>
-              <td><span class="badge bg-info text-dark"><?= htmlspecialchars($cl['status_claim']); ?></span></td>
+              <td><span class="badge bg-info text-dark"><?= htmlspecialchars((string) $cl['status_claim']); ?></span></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -316,26 +316,26 @@
         <div class="col-md-3">
           <div class="p-2 border rounded bg-light">
             <small class="text-muted d-block">Net Weight Produksi</small>
-            <span class="fs-5 fw-bold text-primary"><?= number_format($net_prod, 2, ',', '.'); ?> kg</span>
+            <span class="fs-5 fw-bold text-primary"><?= number_format((float) $net_prod, 2, ',', '.'); ?> kg</span>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-2 border rounded bg-light">
             <small class="text-muted d-block">Net Weight Packing List</small>
-            <span class="fs-5 fw-bold"><?= number_format($net_pack, 2, ',', '.'); ?> kg</span>
+            <span class="fs-5 fw-bold"><?= number_format((float) $net_pack, 2, ',', '.'); ?> kg</span>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-2 border rounded bg-light">
             <small class="text-muted d-block">Selisih (kg)</small>
-            <span class="fs-5 fw-bold"><?= number_format($sel_kg, 2, ',', '.'); ?> kg</span>
+            <span class="fs-5 fw-bold"><?= number_format((float) $sel_kg, 2, ',', '.'); ?> kg</span>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-2 border rounded <?= abs($sel_pct) > 0.7 ? 'bg-danger-subtle border-danger' : 'bg-light'; ?>">
             <small class="text-muted d-block">Selisih (%)</small>
             <span class="fs-5 fw-bold <?= abs($sel_pct) > 0.7 ? 'text-danger' : 'text-success'; ?>">
-              <?= number_format($sel_pct, 2, ',', '.'); ?> %
+              <?= number_format((float) $sel_pct, 2, ',', '.'); ?> %
             </span>
           </div>
         </div>

@@ -47,7 +47,7 @@ $ENABLE_DELETE  = has_permission('Adjustment_Stock.Delete');
                             <option value="0">SEMUA BARANG STOK</option>
                             <?php foreach ($material as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
-                                    <?= strtoupper($value['stock_name']); ?>
+                                    <?= strtoupper((string) $value['stock_name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

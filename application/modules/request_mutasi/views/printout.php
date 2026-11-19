@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Request Mutasi <?= isset($data->kd_mutasi) ? htmlspecialchars($data->kd_mutasi) : '' ?></title>
+    <title>Request Mutasi <?= isset($data->kd_mutasi) ? htmlspecialchars((string) $data->kd_mutasi) : '' ?></title>
     <style>
         @page {
             size: A4;
@@ -274,7 +274,7 @@
 $statusLabel = ['0' => 'Menunggu Approval', '1' => 'Approved', '2' => 'Ditolak'];
 $statusClass = ['0' => 'status-0', '1' => 'status-1', '2' => 'status-2'];
 $st = isset($data->status_approve) ? $data->status_approve : '0';
-$tgl_req = !empty($data->tgl_request) ? date('d F Y', strtotime($data->tgl_request)) : '-';
+$tgl_req = !empty($data->tgl_request) ? date('d F Y', strtotime((string) $data->tgl_request)) : '-';
 $nilai_req = (float)($data->nilai_request ?? 0);
 
 // Ambil nama mata uang dari tabel mata_uang yang berelasi dengan tr_request_mutasi.mata_uang = mata_uang.kode
@@ -310,7 +310,7 @@ if (!empty($data->nama_mata_uang)) {
         <td></td>
         <td style="font-weight:bold;">Mata Uang</td>
         <td>:</td>
-        <td><?= htmlspecialchars($data->mata_uang) ?></td>
+        <td><?= htmlspecialchars((string) $data->mata_uang) ?></td>
     </tr>
     <tr>
         <td>Keterangan</td>
@@ -321,7 +321,7 @@ if (!empty($data->nama_mata_uang)) {
         <tr>
             <td>Alasan Ditolak</td>
             <td>:</td>
-            <td colspan="5" style="color:#c0392b;"><?= htmlspecialchars($data->alasan) ?></td>
+            <td colspan="5" style="color:#c0392b;"><?= htmlspecialchars((string) $data->alasan) ?></td>
         </tr>
     <?php endif; ?>
 </table>
@@ -344,22 +344,22 @@ if (!empty($data->nama_mata_uang)) {
             <td>
                 <?= htmlspecialchars($data->nama_bank_asal ?? ($data->bank_asal ?? '-')) ?>
                 <?php if (!empty($data->bank_asal)): ?>
-                    <br><small style="color:#555;"><?= htmlspecialchars($data->bank_asal) ?></small>
+                    <br><small style="color:#555;"><?= htmlspecialchars((string) $data->bank_asal) ?></small>
                 <?php endif; ?>
             </td>
             <td>
                 <?= htmlspecialchars($data->nama_bank_tujuan ?? ($data->bank_tujuan ?? '-')) ?>
                 <?php if (!empty($data->bank_tujuan)): ?>
-                    <br><small style="color:#555;"><?= htmlspecialchars($data->bank_tujuan) ?></small>
+                    <br><small style="color:#555;"><?= htmlspecialchars((string) $data->bank_tujuan) ?></small>
                 <?php endif; ?>
             </td>
-            <td class="text-right"><strong><?= number_format($nilai_req, 2) ?></strong></td>
+            <td class="text-right"><strong><?= number_format((float) $nilai_req, 2) ?></strong></td>
         </tr>
     </tbody>
     <tfoot>
         <tr>
             <td colspan="4" class="text-right bold">Total Request</td>
-            <td class="text-right bold"><?= number_format($nilai_req, 2) ?></td>
+            <td class="text-right bold"><?= number_format((float) $nilai_req, 2) ?></td>
         </tr>
     </tfoot>
 </table>
@@ -368,13 +368,13 @@ if (!empty($data->nama_mata_uang)) {
 <?php
 $terbilang_text = '';
 if (!empty($data->terbilang)) {
-    $terbilang_text = ucfirst($data->terbilang);
+    $terbilang_text = ucfirst((string) $data->terbilang);
 } elseif (function_exists('ynz_terbilang') && $nilai_req > 0) {
-    $terbilang_text = ynz_terbilang($nilai_req) . ' ' . strtoupper($nama_mata_uang);
+    $terbilang_text = ynz_terbilang($nilai_req) . ' ' . strtoupper((string) $nama_mata_uang);
 }
 ?>
 <div class="terbilang-box">
-    Terbilang: <strong><?= htmlspecialchars($terbilang_text) ?></strong>
+    Terbilang: <strong><?= htmlspecialchars((string) $terbilang_text) ?></strong>
 </div>
 
 <!-- ===== APPROVAL INFO ===== -->
@@ -383,7 +383,7 @@ if (!empty($data->terbilang)) {
         <tr>
             <td>Disetujui Oleh</td>
             <td>:</td>
-            <td><?= htmlspecialchars($data->approved_by) ?> &mdash; <?= !empty($data->approved_on) ? date('d/m/Y H:i', strtotime($data->approved_on)) : '-' ?></td>
+            <td><?= htmlspecialchars((string) $data->approved_by) ?> &mdash; <?= !empty($data->approved_on) ? date('d/m/Y H:i', strtotime((string) $data->approved_on)) : '-' ?></td>
         </tr>
     </table>
 <?php endif; ?>
@@ -403,12 +403,12 @@ if (!empty($data->terbilang)) {
     <tr>
         <td class="text-center">
             ( <strong><?= htmlspecialchars($data->created_by ?? '-') ?></strong> )<br>
-            <small><?= !empty($data->created_on) ? date('d/m/Y', strtotime($data->created_on)) : '-' ?></small>
+            <small><?= !empty($data->created_on) ? date('d/m/Y', strtotime((string) $data->created_on)) : '-' ?></small>
         </td>
         <td class="text-center">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</td>
         <td class="text-center">
             <?php if ($st == '1' && !empty($data->approved_by)): ?>
-                ( <strong><?= htmlspecialchars($data->approved_by) ?></strong> )
+                ( <strong><?= htmlspecialchars((string) $data->approved_by) ?></strong> )
             <?php else: ?>
                 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
             <?php endif; ?>

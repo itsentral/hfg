@@ -108,7 +108,7 @@ class Incoming_check_model extends BF_Model
         }
 
         if (!is_array($no_surat)) {
-            $no_surat = array_map('trim', explode(',', $no_surat));
+            $no_surat = array_map('trim', explode(',', (string) $no_surat));
         }
 
         $placeholders = implode(',', array_fill(0, count($no_surat), '?'));
@@ -160,10 +160,10 @@ class Incoming_check_model extends BF_Model
             'no_pr'      => $no_pr,
             // 'qty_spk'     => $result_header[0]->qty_spk,
             // 'no_ros'     => $result_header[0]->no_ros,
-            'tanggal'     => (!empty($result_header['created_date'])) ? date('d-M-Y', strtotime($result_header['created_date'])) : '',
+            'tanggal'     => (!empty($result_header['created_date'])) ? date('d-M-Y', strtotime((string) $result_header['created_date'])) : '',
             // 'id_milik'     => get_name('production_detail', 'id_milik', 'no_spk', $result_header['no_spk']),
-            'dated'     => date('ymdhis', strtotime($result_header['created_date'])),
-            'resv'         => date('d F Y', strtotime($result_header['created_date'])),
+            'dated'     => date('ymdhis', strtotime((string) $result_header['created_date'])),
+            'resv'         => date('d F Y', strtotime((string) $result_header['created_date'])),
             'summary_incoming' => $get_summary_incoming,
             'no_surat' => $no_surat
         );
@@ -182,7 +182,7 @@ class Incoming_check_model extends BF_Model
         // $sql_header    = "SELECT a.*,b.id as id_ros, b.no_ros FROM warehouse_adjustment a left join report_of_shipment b on a.no_ros=b.id WHERE a.kode_trans='" . $kode_trans . "' ";
         $sql_header    = "SELECT a.*, b.no_surat FROM tr_incoming_check a LEFT JOIN tr_purchase_order b ON b.no_po = a.no_ipp WHERE a.kode_trans = '" . $kode_trans . "'";
         $result_header        = $this->db->query($sql_header)->result();
-        $pembeda = substr($result_header[0]->no_ipp, 0, 1);
+        $pembeda = substr((string) $result_header[0]->no_ipp, 0, 1);
 
         // if ($pembeda == 'P') {
         //     $sql     = "	SELECT
@@ -277,8 +277,8 @@ class Incoming_check_model extends BF_Model
             'id_header'     => $result_header[0]->id,
             'gudang_tujuan'     => $result_header[0]->kd_gudang_ke,
             'id_tujuan'     => $result_header[0]->id_gudang_ke,
-            'dated'     => date('ymdhis', strtotime($result_header[0]->created_date)),
-            'resv'     => date('d F Y', strtotime($result_header[0]->created_date)),
+            'dated'     => date('ymdhis', strtotime((string) $result_header[0]->created_date)),
+            'resv'     => date('d F Y', strtotime((string) $result_header[0]->created_date)),
             'no_pr' => $no_pr,
             'file_incoming_material' => $result_header[0]->file_incoming_material,
             'summary_incoming' => $get_summary_incoming,
@@ -351,7 +351,7 @@ class Incoming_check_model extends BF_Model
             $numrowMtr        = $this->db->query($srcMtr)->num_rows();
             $resultMtr        = $this->db->query($srcMtr)->result_array();
             $angkaUrut2        = $resultMtr[0]['maxP'];
-            $urutan2        = (int)substr($angkaUrut2, 7, 4);
+            $urutan2        = (int)substr((string) $angkaUrut2, 7, 4);
             $urutan2++;
             $urut2            = sprintf('%04s', $urutan2);
             $kode_trans        = "TRS" . $Ym . $urut2;
@@ -403,7 +403,7 @@ class Incoming_check_model extends BF_Model
                 $ArrDeatilAdj[$val]['qty_oke']             = $qtyIN;
                 $ArrDeatilAdj[$val]['qty_rusak']         = $qtyRISK;
                 $ArrDeatilAdj[$val]['expired_date']     = NULL;
-                $ArrDeatilAdj[$val]['keterangan']         = strtolower($valx['keterangan']);
+                $ArrDeatilAdj[$val]['keterangan']         = strtolower((string) $valx['keterangan']);
                 $ArrDeatilAdj[$val]['update_by']         = $data_session['ORI_User']['username'];
                 $ArrDeatilAdj[$val]['update_date']         = $dateTime;
                 $ArrDeatilAdj[$val]['harga']             = $valx['harga'];
@@ -518,7 +518,7 @@ class Incoming_check_model extends BF_Model
                     $this->db->select('a.id_suplier, b.nama');
                     $this->db->from('tr_purchase_order a');
                     $this->db->join('new_supplier b', 'b.kode_supplier = a.id_suplier', 'left');
-                    $this->db->where_in('a.no_po', explode(',', $det_inc['no_ipp']));
+                    $this->db->where_in('a.no_po', explode(',', (string) $det_inc['no_ipp']));
                     $get_supplier = $this->db->get()->row();
 
                     $supplier = (!empty($get_supplier)) ? $get_supplier->nama : '';
@@ -812,8 +812,8 @@ class Incoming_check_model extends BF_Model
         $Nomor_JV                = $this->Jurnal_model->get_Nomor_Jurnal_Sales('101', $tgl_inv);
 
 
-        $Bln             = substr($tgl_inv, 5, 2);
-        $Thn             = substr($tgl_inv, 0, 4);
+        $Bln             = substr((string) $tgl_inv, 5, 2);
+        $Thn             = substr((string) $tgl_inv, 0, 4);
 
 
         $dataJVhead = array(
@@ -915,7 +915,7 @@ class Incoming_check_model extends BF_Model
         include $sroot . "/application/controllers/plusPurchaseOrder.php";
 
         $data_url        = base_url();
-        $Split_Beda        = explode('/', $data_url);
+        $Split_Beda        = explode('/', (string) $data_url);
         $Jum_Beda        = count($Split_Beda);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
         // $okeH  			= $this->session->userdata("ses_username");
@@ -933,7 +933,7 @@ class Incoming_check_model extends BF_Model
         $printby        = $data_session['ORI_User']['username'];
 
         $data_url        = base_url();
-        $Split_Beda        = explode('/', $data_url);
+        $Split_Beda        = explode('/', (string) $data_url);
         $Jum_Beda        = count($Split_Beda);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
@@ -959,21 +959,17 @@ class Incoming_check_model extends BF_Model
             'rest_data' => $rest_data
         );
 
-        $this->load->library(array('Mpdf'));
-        $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
-        $mpdf->SetImportUse();
-        $mpdf->RestartDocTemplate();
+        $mpdf = new \Mpdf\Mpdf();
         $today = date('l, d F Y [H:i:s]');
         $show = $this->template->load_view('print_tt_material', $data);
-        $this->mpdf->AddPage('L', 'A4', 'en');
         $footer = 'Printed by : ' . ucfirst(strtolower($this->auth->user_name())) . ', ' . $today . ' / ' . $kode_trans . '';
 
         $mpdf->showWatermarkText = true;
         $mpdf->SetTitle($kode_trans . "/" . date('ymdhis'));
-        $mpdf->AddPage();
+        $mpdf->AddPage('L', 'A4');
         $mpdf->SetFooter($footer);
-        $this->mpdf->WriteHTML($show);
-        $this->mpdf->Output('tanda terima rutin ' . $kode_trans . '/' . date('ymdhis') . '.pdf', 'D');
+        $mpdf->WriteHTML($show);
+        $mpdf->Output('tanda terima rutin ' . $kode_trans . '/' . date('ymdhis') . '.pdf', 'D');
         // $this->template->render('print_tt_material', $data);
     }
 
@@ -990,7 +986,7 @@ class Incoming_check_model extends BF_Model
         include $sroot . "/application/controllers/plusPurchaseOrder.php";
 
         $data_url        = base_url();
-        $Split_Beda        = explode('/', $data_url);
+        $Split_Beda        = explode('/', (string) $data_url);
         $Jum_Beda        = count($Split_Beda);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
         // $okeH  			= $this->session->userdata("ses_username");
@@ -1022,7 +1018,7 @@ class Incoming_check_model extends BF_Model
         $printby        = $data_session['ORI_User']['username'];
 
         $data_url        = base_url();
-        $Split_Beda        = explode('/', $data_url);
+        $Split_Beda        = explode('/', (string) $data_url);
         $Jum_Beda        = count($Split_Beda);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
@@ -1044,7 +1040,7 @@ class Incoming_check_model extends BF_Model
         $printby        = $data_session['ORI_User']['username'];
 
         $data_url        = base_url();
-        $Split_Beda        = explode('/', $data_url);
+        $Split_Beda        = explode('/', (string) $data_url);
         $Jum_Beda        = count($Split_Beda);
         $Nama_Beda        = $Split_Beda[$Jum_Beda - 2];
 
@@ -1244,7 +1240,7 @@ class Incoming_check_model extends BF_Model
         $numrowMtr        = $this->db->query($srcMtr)->num_rows();
         $resultMtr        = $this->db->query($srcMtr)->result_array();
         $angkaUrut2        = $resultMtr[0]['maxP'];
-        $urutan2        = (int)substr($angkaUrut2, 6, 3);
+        $urutan2        = (int)substr((string) $angkaUrut2, 6, 3);
         $urutan2++;
         $urut2            = sprintf('%03s', $urutan2);
         $no_move            = "MV" . $Ym . $urut2;
@@ -1404,13 +1400,13 @@ class Incoming_check_model extends BF_Model
             $nestedData     = array();
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $nestedData[]    = "<div align='center'>" . $row['kode_trans'] . "</div>";
-            $nestedData[]    = "<div align='center'>" . date('d-M-Y', strtotime($DATE_TRANS)) . "</div>";
+            $nestedData[]    = "<div align='center'>" . date('d-M-Y', strtotime((string) $DATE_TRANS)) . "</div>";
             $nestedData[]    = "<div align='center'>" . $row['kd_gudang_dari'] . "</div>";
             $nestedData[]    = "<div align='center'>" . $row['kd_gudang_ke'] . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['jumlah_mat'], 4) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['jumlah_mat'], 4) . "</div>";
             $namaLengkap = (!empty($GET_USER[$row['created_by']]['nm_lengkap'])) ? $GET_USER[$row['created_by']]['nm_lengkap'] : $row['created_by'];
-            $nestedData[]    = "<div align='center'>" . strtoupper($namaLengkap) . "</div>";
-            $nestedData[]    = "<div align='center'>" . date('d-M-Y', strtotime($row['created_date'])) . "</div>";
+            $nestedData[]    = "<div align='center'>" . strtoupper((string) $namaLengkap) . "</div>";
+            $nestedData[]    = "<div align='center'>" . date('d-M-Y', strtotime((string) $row['created_date'])) . "</div>";
             $status = "WAITING CONFIRMATION";
             $warna = 'blue';
             if ($row['checked'] == 'Y') {
@@ -1572,14 +1568,14 @@ class Incoming_check_model extends BF_Model
             $data_session    = $this->session->userdata;
             $queryx     = "SELECT * FROM temp_server_side WHERE id_mat = '" . $row['id'] . "' AND created_by = '" . $data_session['ORI_User']['username'] . "' AND category='request subgudang' ";
             $get_temp     = $this->db->query($queryx)->result();
-            $qty           = (!empty($get_temp)) ? number_format($get_temp[0]->qty, 3) : '';
+            $qty           = (!empty($get_temp)) ? number_format((float) $get_temp[0]->qty, 3) : '';
             $ket        = (!empty($get_temp)) ? $get_temp[0]->ket : '';
 
             $nestedData     = array();
             $nestedData[]    = "<div align='center'>" . $nomor . "<input type='hidden' name='detail[" . $nomor . "][id]' id='id_" . $nomor . "' value='" . $row['id'] . "'></div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nm_material']) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_stock'], 2) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_subgudang'], 2) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nm_material']) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_stock'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_subgudang'], 2) . "</div>";
             $nestedData[]    = "<div align='left'><input type='text' style='width:100%' name='detail[" . $nomor . "][sudah_request]' id='sudah_request_" . $nomor . "' data-no='" . $nomor . "' value='" . $qty . "' class='form-control input-sm text-right maskM2 qty'><script type='text/javascript'>$('.maskM2').autoNumeric('init', {mDec: '4', aPad: false});</script></div>";
             $nestedData[]    = "<div align='left'><input type='text' style='width:100%' name='detail[" . $nomor . "][ket_request]' id='ket_request_" . $nomor . "' data-no='" . $nomor . "' value='" . $ket . "' class='form-control input-sm text-left ket'></div>";
 
@@ -1677,7 +1673,7 @@ class Incoming_check_model extends BF_Model
         $numrowMtr        = $this->db->query($srcMtr)->num_rows();
         $resultMtr        = $this->db->query($srcMtr)->result_array();
         $angkaUrut2        = $resultMtr[0]['maxP'];
-        $urutan2        = (int)substr($angkaUrut2, 7, 4);
+        $urutan2        = (int)substr((string) $angkaUrut2, 7, 4);
         $urutan2++;
         $urut2            = sprintf('%04s', $urutan2);
         $kode_trans        = "TRS" . $Ym . $urut2;
@@ -1699,7 +1695,7 @@ class Incoming_check_model extends BF_Model
                 $ArrDeatilAdj[$val]['nm_category']         = $rest_pusat[0]->nm_category;
                 $ArrDeatilAdj[$val]['qty_order']         = $sudah_request;
                 $ArrDeatilAdj[$val]['qty_oke']             = $sudah_request;
-                $ArrDeatilAdj[$val]['keterangan']         = strtolower($valx['ket']);
+                $ArrDeatilAdj[$val]['keterangan']         = strtolower((string) $valx['ket']);
                 $ArrDeatilAdj[$val]['update_by']         = $data_session['ORI_User']['username'];
                 $ArrDeatilAdj[$val]['update_date']         = date('Y-m-d H:i:s');
             }
@@ -1790,7 +1786,7 @@ class Incoming_check_model extends BF_Model
                         $ArrDeatil[$val2]['id']                 = $valx2['id'];
                         $ArrDeatil[$val2]['id_material']         = $ID_MATERIAL_ACT;
                         $ArrDeatil[$val2]['check_qty_oke']         = $QTY_OKE;
-                        $ArrDeatil[$val2]['check_keterangan']    = strtolower($valx['check_keterangan']);
+                        $ArrDeatil[$val2]['check_keterangan']    = strtolower((string) $valx['check_keterangan']);
                         $ArrDeatil[$val2]['update_by']             = $UserName;
                         $ArrDeatil[$val2]['update_date']         = $DateTime;
 
@@ -1808,7 +1804,7 @@ class Incoming_check_model extends BF_Model
                         $ArrDeatilAdj[$val2 . $val]['qty_oke']         = $QTY_OKE;
                         $ArrDeatilAdj[$val2 . $val]['qty_rusak']         = 0;
                         $ArrDeatilAdj[$val2 . $val]['expired_date']     = $EXPIRED;
-                        $ArrDeatilAdj[$val2 . $val]['keterangan']     = strtolower($valx['check_keterangan']);
+                        $ArrDeatilAdj[$val2 . $val]['keterangan']     = strtolower((string) $valx['check_keterangan']);
                         $ArrDeatilAdj[$val2 . $val]['update_by']         = $UserName;
                         $ArrDeatilAdj[$val2 . $val]['update_date']     = $DateTime;
 
@@ -2053,7 +2049,7 @@ class Incoming_check_model extends BF_Model
             $numrowIPP        = $this->db->query($qIPP)->num_rows();
             $resultIPP        = $this->db->query($qIPP)->result_array();
             $angkaUrut2        = $resultIPP[0]['maxP'];
-            $urutan2        = (int)substr($angkaUrut2, 0, 3);
+            $urutan2        = (int)substr((string) $angkaUrut2, 0, 3);
             $urutan2++;
             $urut2            = sprintf('%03s', $urutan2);
             $no_surat_jalan    = $urut2 . "/IA" . $kode_gudang . $monthYear;
@@ -2198,8 +2194,8 @@ class Incoming_check_model extends BF_Model
                 'gudang_after'     => $result_header[0]->id_gudang_ke,
                 'kode_trans'    => $result_header[0]->kode_trans,
                 'no_ipp'        => $result_header[0]->no_ipp,
-                'dated'         => date('ymdhis', strtotime($result_header[0]->created_date)),
-                'resv'             => date('d F Y', strtotime($result_header[0]->created_date))
+                'dated'         => date('ymdhis', strtotime((string) $result_header[0]->created_date)),
+                'resv'             => date('d F Y', strtotime((string) $result_header[0]->created_date))
 
             );
 
@@ -2263,7 +2259,7 @@ class Incoming_check_model extends BF_Model
                         $ArrDeatilAdj2[$val2 . $val]['qty_oke']         = str_replace(',', '', $valx['qty_oke']);
                         $ArrDeatilAdj2[$val2 . $val]['qty_rusak']     = 0;
                         $ArrDeatilAdj2[$val2 . $val]['expired_date']     = $expired;
-                        $ArrDeatilAdj2[$val2 . $val]['keterangan']     = strtolower($valx['check_keterangan']);
+                        $ArrDeatilAdj2[$val2 . $val]['keterangan']     = strtolower((string) $valx['check_keterangan']);
                         $ArrDeatilAdj2[$val2 . $val]['update_by']     = $data_session['ORI_User']['username'];
                         $ArrDeatilAdj2[$val2 . $val]['update_date']     = date('Y-m-d H:i:s');
 
@@ -2489,7 +2485,7 @@ class Incoming_check_model extends BF_Model
             $numrowIPP        = $this->db->query($qIPP)->num_rows();
             $resultIPP        = $this->db->query($qIPP)->result_array();
             $angkaUrut2        = $resultIPP[0]['maxP'];
-            $urutan2        = (int)substr($angkaUrut2, 0, 3);
+            $urutan2        = (int)substr((string) $angkaUrut2, 0, 3);
             $urutan2++;
             $urut2            = sprintf('%03s', $urutan2);
             $no_surat_jalan    = $urut2 . "/IA" . $kode_gudang . $monthYear;
@@ -2602,8 +2598,8 @@ class Incoming_check_model extends BF_Model
                 'gudang_after'     => $result_header[0]->id_gudang_ke,
                 'kode_trans'    => $result_header[0]->kode_trans,
                 'no_ipp'        => $result_header[0]->no_ipp,
-                'dated'         => date('ymdhis', strtotime($result_header[0]->created_date)),
-                'resv'             => date('d F Y', strtotime($result_header[0]->created_date))
+                'dated'         => date('ymdhis', strtotime((string) $result_header[0]->created_date)),
+                'resv'             => date('d F Y', strtotime((string) $result_header[0]->created_date))
 
             );
 
@@ -2740,8 +2736,8 @@ class Incoming_check_model extends BF_Model
                 'gudang_after'     => $result_header[0]->id_gudang_ke,
                 'kode_trans'    => $result_header[0]->kode_trans,
                 'no_ipp'        => $result_header[0]->no_ipp,
-                'dated'         => date('ymdhis', strtotime($result_header[0]->created_date)),
-                'resv'             => date('d F Y', strtotime($result_header[0]->created_date))
+                'dated'         => date('ymdhis', strtotime((string) $result_header[0]->created_date)),
+                'resv'             => date('d F Y', strtotime((string) $result_header[0]->created_date))
 
             );
 
@@ -2761,8 +2757,8 @@ class Incoming_check_model extends BF_Model
         $WHEREIN = ['TYP-0002', 'TYP-0003', 'TYP-0004', 'TYP-0005', 'TYP-0006'];
         $WHEREIN2 = ['TYP-0003', 'TYP-0004', 'TYP-0005', 'TYP-0006'];
 
-        $IPP_TANDA = substr($no_ipp, 0, 4);
-        $DMF_TANDA = substr($no_ipp, 0, 3);
+        $IPP_TANDA = substr((string) $no_ipp, 0, 4);
+        $DMF_TANDA = substr((string) $no_ipp, 0, 3);
 
         $get_planning = $this->db->select('a.*')->from('planning_detail a')->join('raw_materials b', 'a.id_material=b.id_material', 'left')->where('a.no_ipp', $no_ipp)->where_in('b.id_category', $WHEREIN)->order_by('a.nm_material', 'asc')->get()->result_array();
 
@@ -2870,14 +2866,14 @@ class Incoming_check_model extends BF_Model
 
             $nestedData     = array();
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['kode_trans']) . "/<b>" . strtoupper($row['no_ipp']) . "</b></div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['kode_trans']) . "/<b>" . strtoupper((string) $row['no_ipp']) . "</b></div>";
             $nestedData[]    = "<div align='center'>" . $NO_SO . "</div>";
             $nestedData[]    = "<div align='center'>" . $NO_SPK . "</div>";
             $nestedData[]    = "<div align='left'>" . strtoupper(get_name('warehouse', 'nm_gudang', 'id', $row['id_gudang_dari'])) . "</div>";
             $nestedData[]    = "<div align='left'>" . strtoupper(get_name('warehouse', 'nm_gudang', 'id', $row['id_gudang_ke'])) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['jumlah_mat'], 4) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['jumlah_mat'], 4) . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['created_by'] . "</div>";
-            $nestedData[]    = "<div align='left'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
             $status = "WAITING CONFIRMATION";
             $warna = 'blue';
             if ($row['checked'] == 'Y') {
@@ -3090,11 +3086,11 @@ class Incoming_check_model extends BF_Model
             $nestedData     = array();
             $nestedData[]    = "<div align='center'>" . $nomor . "
 								<input type='hidden' class='id' name='detailx[" . $nomor . "][id]' value='" . $row['id'] . "'>
-								<input type='hidden' class='nm_material' name='detailx[" . $nomor . "][nm_material]' value='" . strtoupper($row['nm_material']) . "'>
+								<input type='hidden' class='nm_material' name='detailx[" . $nomor . "][nm_material]' value='" . strtoupper((string) $row['nm_material']) . "'>
 								<input type='hidden' class='qty_stock' name='detailx[" . $nomor . "][qty_stock]' value='" . $row['qty_stock'] . "'>
 								</div>";
-            $nestedData[]    = "	<div align='left'>" . strtoupper($row['nm_material']) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_stock'], 4) . " kg</div>";
+            $nestedData[]    = "	<div align='left'>" . strtoupper((string) $row['nm_material']) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_stock'], 4) . " kg</div>";
             // $nestedData[]	= "<div align='right'>".number_format(0,2)." kg</div>";
             $nestedData[]    = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][sudah_request]' data-no='" . $nomor . "'class='form-control input-sm text-right maskM sudah_request'><script type='text/javascript'>$('.maskM').autoNumeric('init', {mDec: '4', aPad: false}); $('.chosen_select').chosen({width:'100%'});</script></div>";
             $nestedData[]    = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][ket_request]' data-no='" . $nomor . "' class='form-control input-sm text-left ket_request'></div>";
@@ -3178,7 +3174,7 @@ class Incoming_check_model extends BF_Model
         $no_spk            = $data['no_spk'];
         $tanggal        = $data['tanggal'];
         $qty_spk        = str_replace(',', '', $data['qty_spk']);
-        $keterangan        = strtolower($data['keterangan']);
+        $keterangan        = strtolower((string) $data['keterangan']);
         $Ym             = date('ym');
 
         $UserName = $data_session['ORI_User']['username'];
@@ -3191,7 +3187,7 @@ class Incoming_check_model extends BF_Model
         $numrowMtr        = $this->db->query($srcMtr)->num_rows();
         $resultMtr        = $this->db->query($srcMtr)->result_array();
         $angkaUrut2        = $resultMtr[0]['maxP'];
-        $urutan2        = (int)substr($angkaUrut2, 7, 4);
+        $urutan2        = (int)substr((string) $angkaUrut2, 7, 4);
         $urutan2++;
         $urut2            = sprintf('%04s', $urutan2);
         $kode_trans        = "TRS" . $Ym . $urut2;
@@ -3217,7 +3213,7 @@ class Incoming_check_model extends BF_Model
                     $ArrDeatilAdj[$val]['nm_category']         = $det_mat[0]->nm_category;
                     $ArrDeatilAdj[$val]['qty_order']         = $sudah_request;
                     $ArrDeatilAdj[$val]['qty_oke']             = $sudah_request;
-                    $ArrDeatilAdj[$val]['keterangan']         = strtolower($valx['ket_request']);
+                    $ArrDeatilAdj[$val]['keterangan']         = strtolower((string) $valx['ket_request']);
                     $ArrDeatilAdj[$val]['ket_req_pro']         = 'luar budget';
                     $ArrDeatilAdj[$val]['update_by']         = $UserName;
                     $ArrDeatilAdj[$val]['update_date']         = $DateTime;
@@ -3250,7 +3246,7 @@ class Incoming_check_model extends BF_Model
                     $ArrDeatilAdj[$val_number]['nm_category']         = $det_mat2[0]->nm_category;
                     $ArrDeatilAdj[$val_number]['qty_order']         = $det_mat[0]->berat;
                     $ArrDeatilAdj[$val_number]['qty_oke']             = $sudah_request;
-                    $ArrDeatilAdj[$val_number]['keterangan']         = strtolower($valx['ket_request']);
+                    $ArrDeatilAdj[$val_number]['keterangan']         = strtolower((string) $valx['ket_request']);
                     $ArrDeatilAdj[$val_number]['ket_req_pro']         = 'budget';
                     $ArrDeatilAdj[$val_number]['update_by']         = $UserName;
                     $ArrDeatilAdj[$val_number]['update_date']         = $DateTime;
@@ -3405,25 +3401,25 @@ class Incoming_check_model extends BF_Model
 
             $nestedData     = array();
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['idmaterial']) . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nm_material']) . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
-            $nestedData[]    = "<div align='left'>" . strtoupper($row['nm_gudang']) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_stock'], 4) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['idmaterial']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nm_material']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
+            $nestedData[]    = "<div align='left'>" . strtoupper((string) $row['nm_gudang']) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_stock'], 4) . "</div>";
             if ($get_category[0]->category != 'produksi') {
                 if ($get_category[0]->category == 'pusat') {
-                    $nestedData[]    = "<div align='right'><span class='detailBooking text-bold text-primary' style='cursor:pointer;' data-id_material='" . $row['id_material'] . "' data-nm_material='" . $row['nm_material'] . "' data-id_gudang='" . $row['id_gudang'] . "'>" . number_format($row['qty_booking'], 4) . "</span></div>";
+                    $nestedData[]    = "<div align='right'><span class='detailBooking text-bold text-primary' style='cursor:pointer;' data-id_material='" . $row['id_material'] . "' data-nm_material='" . $row['nm_material'] . "' data-id_gudang='" . $row['id_gudang'] . "'>" . number_format((float) $row['qty_booking'], 4) . "</span></div>";
                 } else {
-                    $nestedData[]    = "<div align='right'>" . number_format($row['qty_booking'], 4) . "</div>";
+                    $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_booking'], 4) . "</div>";
                 }
                 $nestedData[]    = "<div align='right'>" . number_format($row['qty_stock'] - $row['qty_booking'], 4) . "</div>";
                 if ($get_category[0]->category == 'pusat') {
-                    $nestedData[]    = "<div align='right'>" . number_format($row['qty_rusak'], 4) . "</div>";
+                    $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_rusak'], 4) . "</div>";
                     // $nestedData[]	= "<div align='right'>".number_format($COSTBOOK,2)."</div>";
                     // $nestedData[]	= "<div align='right'>".number_format($COSTBOOK_TOTAL,2)."</div>";
                 }
             }
-            $nestedData[]    = "<div align='center'><button type='button' class='btn btn-sm btn-warning look_history' data-nm_material='" . strtoupper($row['nm_material']) . "' data-id_material='" . $row['id_material'] . "' data-id_gudang='" . $row['id_gudang'] . "'><i class='fa fa-history'></i></button></div>";
+            $nestedData[]    = "<div align='center'><button type='button' class='btn btn-sm btn-warning look_history' data-nm_material='" . strtoupper((string) $row['nm_material']) . "' data-id_material='" . $row['id_material'] . "' data-id_gudang='" . $row['id_gudang'] . "'><i class='fa fa-history'></i></button></div>";
             $data[] = $nestedData;
             $urut1++;
             $urut2++;
@@ -3572,9 +3568,9 @@ class Incoming_check_model extends BF_Model
             $nestedData[]    = "<div>" . $row['nm_supplier'] . "</div>";
             // $nestedData[]	= "<div align='left'>".$row['kd_gudang_dari']."</div>";
             $nestedData[]    = "<div align='left'>" . get_name('warehouse', 'nm_gudang', 'id', $row['id_gudang_ke']) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['jumlah_mat'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['jumlah_mat'], 2) . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['created_by'] . "</div>";
-            $nestedData[]    = "<div align='left'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+            $nestedData[]    = "<div align='left'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
             $plus    = "";
 
             $print    = "&nbsp;<a href='" . base_url('warehouse/print_incoming/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-warning' title='Print Incoming'><i class='fa fa-print'></i></a>";
@@ -3685,8 +3681,8 @@ class Incoming_check_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $nomor . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['idmaterial'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_material'] . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_stock'], 2) . "</div>";
-            $nestedData[]    = "<div align='right'>" . number_format($row['qty_booking'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_stock'], 2) . "</div>";
+            $nestedData[]    = "<div align='right'>" . number_format((float) $row['qty_booking'], 2) . "</div>";
             $nestedData[]    = "<div align='center'>
 								<input type='hidden' name='ListMove[" . $nomor . "][id]' class='form-control input-sm' value='" . $row['id'] . "'>
 								<input type='hidden' name='ListMove[" . $nomor . "][qty_stock]' class='form-control input-sm' value='" . $row['qty_stock'] . "'>
@@ -3846,7 +3842,7 @@ class Incoming_check_model extends BF_Model
             $nestedData[]    = "<div align='right'>" . number_format(get_incoming_sum_material($row['kode_trans']), 2) . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['checker'] . "</div>";
-            $nestedData[]    = "<div align='right'>" . date('d-M-Y H:i:s', strtotime($row['created_date'])) . "</div>";
+            $nestedData[]    = "<div align='right'>" . date('d-M-Y H:i:s', strtotime((string) $row['created_date'])) . "</div>";
             $status = "WAITING INSPECTION";
             $warna = 'primary';
             if ($row['checked'] == 'Y') {

@@ -22,7 +22,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" required>
 											<option value="">--Pilih--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
-												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower($supplier->name_suplier)) ?></option>
+												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -54,13 +54,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									foreach ($results['list_department'] as $item) {
 										$selected = '';
 										if ($results['get_po']->id_dept !== '') {
-											foreach (explode(',', $results['get_po']->id_dept) as $data_po_dept) {
+											foreach (explode(',', (string) $results['get_po']->id_dept) as $data_po_dept) {
 												if ($data_po_dept == $item->id) {
 													$selected = 'selected';
 												}
 											}
 										}
-										echo '<option value="' . $item->id . '" ' . $selected . '>' . strtoupper($item->nama) . '</option>';
+										echo '<option value="' . $item->id . '" ' . $selected . '>' . strtoupper((string) $item->nama) . '</option>';
 									}
 									?>
 								</select>
@@ -117,7 +117,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											$selected = 'selected';
 										}
 									?>
-										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($mata_uang->kode)) ?></option>
+										<option value="<?= $mata_uang->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $mata_uang->kode)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -135,8 +135,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<select id="term" name="term" class="form-control select2" required>
 									<option value="">-- Pilih --</option>
 									<?php foreach ($results['term'] as $term): ?>
-										<option value="<?= htmlspecialchars($term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
-											<?= htmlspecialchars($term->name) ?>
+										<option value="<?= htmlspecialchars((string) $term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
+											<?= htmlspecialchars((string) $term->name) ?>
 										</option>
 									<?php endforeach; ?>
 								</select>
@@ -158,7 +158,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 											$selected = 'selected';
 										}
 									?>
-										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->nama)) ?></option>
+										<option value="<?= $supplier->kode_supplier ?>" data-address="<?= $supplier->address ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $supplier->nama)) ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -335,8 +335,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															<input type='hidden' class='form-control input-sm autoNumeric' name='dt[" . $key . "][totalweight]' id='dt_totalweight_" . $key . "' value='" . $total_weight . "'  onkeyup='HitAmmount(" . $key . ")'>
 															<input type='text' class='form-control text-center input-sm' id='dt_qty_" . $key . "' name='dt[" . $key . "][qty]' value='" . $value->qty . "' onkeyup='HitAmmount(" . $key . ")'>
 														</td>
-														<td class='text-center'>" . ucfirst($value->unit_measure) . "</td>
-														<td class='text-center'>" . ucfirst($value->packing_unit) . ucfirst($value->packing_unit2) . "</td>
+														<td class='text-center'>" . ucfirst((string) $value->unit_measure) . "</td>
+														<td class='text-center'>" . ucfirst((string) $value->packing_unit) . ucfirst((string) $value->packing_unit2) . "</td>
 														<td hidden>
 															<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
 																<option value=''>-Pilih-</option>
@@ -358,7 +358,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td hidden><input type='text' class='form-control input-sm autoNumeric pajak' id='dt_pajak_" . $key . "' name='dt[" . $key . "][pajak]' onkeyup='HitAmmount(" . $key . ")'></td>
 														<td hidden><input type='text' class='form-control input-sm autoNumeric3' id='dt_diskon_" . $key . "' " . $disabled . " name='dt[" . $key . "][diskon]' onkeyup='HitAmmount(" . $key . ")'></td>
 													
-														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format($total, 4, '.', ',') . "'></td>
+														<td><input type='text' class='form-control input-sm ch_jumlah_ex text-right auto_num' id='dt_jumlahharga_" . $key . "' readonly name='dt[" . $key . "][jumlahharga]' value='" . number_format((float) $total, 4, '.', ',') . "'></td>
 														
 														<td>
 															<div class='input-group input-group-sm mb-2'>
@@ -388,7 +388,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total</b></th>
 								<td colspan="2">
-									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format($results['get_po']->total_include_ppn, 4, '.', ',') ?>" onkeyup required name="totalinppn">
+									<input readonly type="text" class="form-control auto_num_4dec text-end" id="totalinppn" value="<?= number_format((float) $results['get_po']->total_include_ppn, 4, '.', ',') ?>" onkeyup required name="totalinppn">
 								</td>
 							</tr>
 							<tr hidden>
@@ -425,7 +425,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							<tr>
 								<td class="text-end" colspan="11"><b>Total Order</b></td>
 								<td colspan="2">
-									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" value="<?= number_format($results['get_po']->subtotal, 4, '.', ',') ?>" onkeyup required name="subtotal">
+									<input readonly type="text" class="form-control text-end auto_num_4dec" id="subtotal" value="<?= number_format((float) $results['get_po']->subtotal, 4, '.', ',') ?>" onkeyup required name="subtotal">
 								</td>
 							</tr>
 						</tfoot>
@@ -588,17 +588,17 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 										if ($item_group_top->id == $item_top->group_top) {
 											$selected = 'selected';
 										}
-										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper($item_group_top->name) . '</option>';
+										echo '<option value="' . $item_group_top->id . '" ' . $selected . '>' . strtoupper((string) $item_group_top->name) . '</option>';
 									}
 									echo '</select>';
 									echo '</td>';
 
 									echo '<td>';
-									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->progress, 2) . '"' . $disabled_attr . '>';
+									echo '<input type="text" class="form-control form-control-sm input_progress progress_' . $no . ' auto_num" name="progress_' . $no . '" data-no="' . $no . '" value="' . number_format((float) $item_top->progress, 2) . '"' . $disabled_attr . '>';
 									echo '</td>';
 
 									echo '<td class="text-right">';
-									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format($item_top->nilai, 4, '.', ',') . '"' . $disabled_attr . '>';
+									echo '<input type="text" class="form-control form-control-sm nilai_top nilai_top_' . $no . ' auto_num_4dec" name="nilai_top_' . $no . '" data-no="' . $no . '" value="' . number_format((float) $item_top->nilai, 4, '.', ',') . '"' . $disabled_attr . '>';
 									echo '</td>';
 
 									echo '<td>';

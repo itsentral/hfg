@@ -60,7 +60,7 @@ $url_search = 'search_import';
                         $badge = '<span class="badge bg-secondary">Belum Receive</span>';
                     } else {
                         $status_enum = strtolower($item['status_receive_il'] ?? '');
-                        $status_uc   = ucwords($status_enum);
+                        $status_uc   = ucwords((string) $status_enum);
 
                         if ($status_enum === 'draft') {
                             $badge = '<span class="badge bg-info text-dark">Draft</span>';
@@ -72,7 +72,7 @@ $url_search = 'search_import';
                     }
 
                     $dp_info = ((float)($item['total_dp_rupiah'] ?? 0) > 0)
-                        ? '<span class="badge bg-info text-dark">Rp ' . number_format($item['total_dp_rupiah'], 0) . '</span>'
+                        ? '<span class="badge bg-info text-dark">Rp ' . number_format((float) $item['total_dp_rupiah'], 0) . '</span>'
                         : '<span class="badge bg-light text-dark border">Tidak Ada DP</span>';
 
                     $buttons = '';
@@ -110,7 +110,7 @@ $url_search = 'search_import';
                         <td class="text-center align-middle"><?= $item['nomor_invoice'] ?? '-' ?></td>
                         <td class="text-center align-middle"><?= $item['no_payment'] ?? '-' ?></td>
                         <td class="align-middle"><?= $item['nm_supplier'] ?></td>
-                        <td class="text-center align-middle"><?= date('d F Y', strtotime($item['tanggal'])) ?></td>
+                        <td class="text-center align-middle"><?= date('d F Y', strtotime((string) $item['tanggal'])) ?></td>
                         <td class="text-center align-middle"><?= $dp_info ?></td>
                         <td class="text-center align-middle"><?= $badge ?></td>
                         <td class="text-center align-middle"><?= $action_btn ?></td>

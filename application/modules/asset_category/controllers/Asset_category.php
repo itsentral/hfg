@@ -44,7 +44,7 @@ class Asset_category extends Admin_Controller
             $username     = (isset($this->session->userdata['ORI_User']['username']) ? $this->session->userdata['ORI_User']['username'] : (isset($this->session->userdata['app_session']['username']) ? $this->session->userdata['app_session']['username'] : (isset($this->session->userdata['username']) ? $this->session->userdata['username'] : 'admin')));
 
             $id          = isset($data['id']) ? $data['id'] : '';
-            $nm_category = strtoupper($data['nm_category']);
+            $nm_category = strtoupper((string) $data['nm_category']);
             $status      = isset($data['status']) ? $data['status'] : 'Y';
 
             if (empty($id)) {

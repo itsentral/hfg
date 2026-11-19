@@ -25,7 +25,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 					<option value='0'>All Product Type</option>
 					<?php
 					foreach (get_list_inventory_lv1('product') as $val => $valx) {
-						echo "<option value='" . $valx['code_lv1'] . "'>" . strtoupper($valx['nama']) . "</option>";
+						echo "<option value='" . $valx['code_lv1'] . "'>" . strtoupper((string) $valx['nama']) . "</option>";
 					}
 					?>
 				</select>
@@ -38,7 +38,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 					<option value='0'>All Costcenter</option>
 					<?php
 					foreach (get_costcenter() as $val => $valx) {
-						echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper($valx['nama_costcenter']) . "</option>";
+						echo "<option value='" . $valx['id_costcenter'] . "'>" . strtoupper((string) $valx['nama_costcenter']) . "</option>";
 					}
 					?>
 				</select>
@@ -79,7 +79,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 
 							if (!empty($get_stok_data)) {
 								$nm_detail = $nm_detail . $get_stok_data->stock_name . '<br>';
-								$qty_detail = $qty_detail . number_format($item->propose_purchase, 2) . ' ' . ucfirst($get_stok_data->code) . '<br>';
+								$qty_detail = $qty_detail . number_format((float) $item->propose_purchase, 2) . ' ' . ucfirst((string) $get_stok_data->code) . '<br>';
 							}
 						}
 
@@ -103,11 +103,11 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 
 						echo '<tr>';
 						echo '<td class="text-center">' . $no . '</td>';
-						echo '<td>' . strtoupper($row->no_pr) . '</td>';
-						echo '<td>' . strtoupper($kategori_pr) . '</td>';
+						echo '<td>' . strtoupper((string) $row->no_pr) . '</td>';
+						echo '<td>' . strtoupper((string) $kategori_pr) . '</td>';
 						echo '<td>' . $nm_detail . '</td>';
 						echo '<td class="text-end">' . $qty_detail . '</td>';
-						echo '<td>' . date('d F Y', strtotime($row->tgl_dibutuhkan)) . '</td>';
+						echo '<td>' . date('d F Y', strtotime((string) $row->tgl_dibutuhkan)) . '</td>';
 
 						$getCheck = $this->db->get_where('material_planning_base_on_produksi_detail', array('so_number' => $row->so_number, 'status_app' => 'N'))->result();
 
@@ -364,7 +364,10 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 				cancelButtonText: "Batal",
 				closeOnConfirm: false
 			},
-			function() {
+			function(isConfirm) {
+			if (!isConfirm) {
+				return;
+			}
 				$.ajax({
 					type: 'POST',
 					url: base_url + active_controller + 'process_booking',

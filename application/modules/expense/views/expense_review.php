@@ -90,7 +90,7 @@ $readonly = 'readonly';
 								if ($item->id == $deptid) {
 									$selected = 'selected';
 								}
-								echo '<option value="' . $item->id . '" ' . $selected . '>' . strtoupper($item->nama) . '</option>';
+								echo '<option value="' . $item->id . '" ' . $selected . '>' . strtoupper((string) $item->nama) . '</option>';
 							}
 							?>
 						</select>
@@ -175,7 +175,7 @@ $readonly = 'readonly';
 									</tr>
 							<?php
 									if ($record->doc_file != '') {
-										if (strpos($record->doc_file, 'pdf', 0) > 1) {
+										if (strpos((string) $record->doc_file, 'pdf', 0) > 1) {
 											$gambar .= '<div class="col-md-12">
 								<iframe src="' . base_url('assets/expense/' . $record->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 										 <a href="' . base_url('assets/expense/' . $record->doc_file) . '">Download PDF</a>

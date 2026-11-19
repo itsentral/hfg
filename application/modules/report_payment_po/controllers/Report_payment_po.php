@@ -255,7 +255,7 @@ class Report_payment_po extends Admin_Controller
                 } elseif ($item['category'] == 'local') {
                     $category_label = 'Pelunasan (After Incoming)';
                 } else {
-                    $category_label = ucfirst($item['category']);
+                    $category_label = ucfirst((string) $item['category']);
                 }
 
                 $po_display = $is_first ? $po_no : '';

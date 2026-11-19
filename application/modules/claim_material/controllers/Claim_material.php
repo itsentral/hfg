@@ -161,7 +161,7 @@ class Claim_material extends Admin_Controller
             if ($total_kg > (float)$claim['berat_kg']) {
                 echo json_encode([
                     'status' => false,
-                    'message' => 'Total berat keputusan (' . number_format($total_kg, 2) . ' Kg) melebihi berat claim ' . $claim['no_claim'] . ' (' . number_format((float)$claim['berat_kg'], 2) . ' Kg)'
+                    'message' => 'Total berat keputusan (' . number_format((float) $total_kg, 2) . ' Kg) melebihi berat claim ' . $claim['no_claim'] . ' (' . number_format((float)$claim['berat_kg'], 2) . ' Kg)'
                 ]);
                 return;
             }

@@ -58,7 +58,7 @@ class Master_forwarding_cost extends Admin_Controller
 
         // Cek duplikasi tipe
         if ($this->Master_forwarding_cost_model->check_existing_tipe($tipe, $id)) {
-            echo json_encode(['status' => 'error', 'message' => 'Tarif Forwarding Cost untuk tipe ' . strtoupper($tipe) . ' sudah ada! Silakan edit data yang sudah ada.']);
+            echo json_encode(['status' => 'error', 'message' => 'Tarif Forwarding Cost untuk tipe ' . strtoupper((string) $tipe) . ' sudah ada! Silakan edit data yang sudah ada.']);
             return;
         }
 
@@ -74,13 +74,13 @@ class Master_forwarding_cost extends Admin_Controller
         if ($id) {
             // Update
             $result = $this->Master_forwarding_cost_model->save_data($data, $id);
-            $msg = 'Update Forwarding Cost ' . ucfirst($tipe) . ' berhasil';
+            $msg = 'Update Forwarding Cost ' . ucfirst((string) $tipe) . ' berhasil';
         } else {
             $data['create_by']   = $this->auth->nama();
             $data['create_date'] = $this->datetime;
             $data['is_delete']   = '0';
             $result = $this->Master_forwarding_cost_model->save_data($data);
-            $msg = 'Tambah Forwarding Cost ' . ucfirst($tipe) . ' berhasil';
+            $msg = 'Tambah Forwarding Cost ' . ucfirst((string) $tipe) . ' berhasil';
         }
 
         $logPayload = ($id && !empty($oldData)) ? ['old' => $oldData, 'new' => $data] : $data;

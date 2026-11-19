@@ -31,7 +31,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 			<label class='label-control col-sm-2'><b>PIC <span class='text-red'>*</span></b></label>
 			<div class='col-sm-4'>              
 				<?php
-				echo form_input(array('id'=>'pic','name'=>'pic','class'=>'form-control input-md','placeholder'=>'PIC','readonly'=>true),strtoupper($pic));
+				echo form_input(array('id'=>'pic','name'=>'pic','class'=>'form-control input-md','placeholder'=>'PIC','readonly'=>true),strtoupper((string) $pic));
 				?>
 			</div>
 		</div>
@@ -39,7 +39,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 			<label class='label-control col-sm-2'><b>Keterangan</b></label>
 			<div class='col-sm-4'>              
 				<?php
-				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Keterangan','readonly'=>true),strtoupper($keterangan));
+				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Keterangan','readonly'=>true),strtoupper((string) $keterangan));
 				?>
 			</div>
 		</div>
@@ -70,8 +70,8 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 						$SUM += $qty_rev * $nil_rev;
 						echo "<tr class='header_".$nomor."'>";
 							echo "<td align='center'>".$nomor."<input type='hidden' name='detail[".$nomor."][id]' value='".$valx['id']."'></td>";
-							echo "<td align='left'><input type='text' ".$disabled3." disabled name='detail[".$nomor."][nm_barang]' class='form-control input-md' value='".strtoupper($valx['nm_barang'])."'></td>";
-							echo "<td align='left'><input type='text' ".$disabled2." readonly id='qty_".$nomor."' name='detail[".$nomor."][qty]' class='form-control input-md text-center maskM sum_tot' value='".number_format($qty_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+							echo "<td align='left'><input type='text' ".$disabled3." disabled name='detail[".$nomor."][nm_barang]' class='form-control input-md' value='".strtoupper((string) $valx['nm_barang'])."'></td>";
+							echo "<td align='left'><input type='text' ".$disabled2." readonly id='qty_".$nomor."' name='detail[".$nomor."][qty]' class='form-control input-md text-center maskM sum_tot' value='".number_format((float) $qty_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 							echo "<td align='left'>
 									<select name='detail[".$nomor."][satuan]' class='form-control' ".$disabled2." disabled>";
 									echo "<option value='0'>Pilih</option>";
@@ -80,12 +80,12 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 										echo "<option value='".$value['id_satuan']."' ".$selected.">".$value['kode_satuan']."</option>";
 									}
 							echo "</select></td>";
-							echo "<td align='left'><input type='text' ".$disabled2." disabled id='harga_".$nomor."' name='detail[".$nomor."][price_unit]' class='form-control input-md text-right maskM sum_tot' readonly value='".number_format($nil_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+							echo "<td align='left'><input type='text' ".$disabled2." disabled id='harga_".$nomor."' name='detail[".$nomor."][price_unit]' class='form-control input-md text-right maskM sum_tot' readonly value='".number_format((float) $nil_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 							echo "<td align='left'><input type='text' ".$disabled2." disabled id='total_harga_".$nomor."' name='detail[".$nomor."][total_harga]' class='form-control input-md text-right maskM jumlah_all' value='".number_format($qty_rev * $nil_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
-							echo "<td align='left'><input type='text' ".$disabled3." disabled name='detail[".$nomor."][tanggal]' class='form-control text-center input-md datepicker' readonly value='".strtoupper($valx['tgl_dibutuhkan'])."'></td>";
-							echo "<td align='left'><input type='text' id='hargareal_".$nomor."' name='detail[".$nomor."][price_unit_real]' class='form-control input-md text-right maskM sum_tot_real' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' value='".number_format($valx['price_pay_unit'])."'></td>";
-							echo "<td align='left'><input type='text' id='total_harga_real_".$nomor."' name='detail[".$nomor."][total_harga_real]' class='form-control input-md text-right maskM jumlah_all_real' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly value='".number_format($valx['price_pay_total'])."'></td>";
-							echo "<td align='left'><input type='text' name='detail[".$nomor."][keterangan_real]' class='form-control input-md' value='".strtoupper($valx['keterangan_real'])."'></td>";
+							echo "<td align='left'><input type='text' ".$disabled3." disabled name='detail[".$nomor."][tanggal]' class='form-control text-center input-md datepicker' readonly value='".strtoupper((string) $valx['tgl_dibutuhkan'])."'></td>";
+							echo "<td align='left'><input type='text' id='hargareal_".$nomor."' name='detail[".$nomor."][price_unit_real]' class='form-control input-md text-right maskM sum_tot_real' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' value='".number_format((float) $valx['price_pay_unit'])."'></td>";
+							echo "<td align='left'><input type='text' id='total_harga_real_".$nomor."' name='detail[".$nomor."][total_harga_real]' class='form-control input-md text-right maskM jumlah_all_real' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly value='".number_format((float) $valx['price_pay_total'])."'></td>";
+							echo "<td align='left'><input type='text' name='detail[".$nomor."][keterangan_real]' class='form-control input-md' value='".strtoupper((string) $valx['keterangan_real'])."'></td>";
 							// if(empty($approve)){
 							// echo "<td align='center'><button type='button' class='btn btn-sm btn-danger delPart' title='Delete Part'><i class='fa fa-close'></i></button></td>";
 							// }
@@ -95,7 +95,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 				echo "<tr>";
 					echo "<td></td>";
 					echo "<td colspan='4'><b>TOTAL</b></td>";
-					echo "<td><input type='text' id='total_est' class='form-control input-md text-right maskM' value='".number_format($SUM)."' readonly data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+					echo "<td><input type='text' id='total_est' class='form-control input-md text-right maskM' value='".number_format((float) $SUM)."' readonly data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 					echo "<td colspan='2'></td>";
 					echo "<td><input type='text' id='total_real' name='total_real' class='form-control input-md text-right maskM' readonly data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 					echo "<td></td>";
@@ -108,7 +108,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 					echo "</td>";
 					echo "<td></td>";
 					echo "<td>Biaya Lain</td>";
-					echo "<td><input type='text' id='biaya_lain' name='biaya_lain' value='".number_format($biaya_lain)."' class='form-control input-md text-right maskM' placeholder='Biaya Lain' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+					echo "<td><input type='text' id='biaya_lain' name='biaya_lain' value='".number_format((float) $biaya_lain)."' class='form-control input-md text-right maskM' placeholder='Biaya Lain' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 					echo "<td><input type='text' id='keterangan_lain' value='".$keterangan_lain."' name='keterangan_lain' class='form-control input-md text-left' placeholder='Keterangan Biaya Lain'></td>";
 				echo "</tr>";
 				echo "<tr>";
@@ -119,7 +119,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 					echo "</td>";
 					echo "<td></td>";
 					echo "<td>Selisih</td>";
-					echo "<td><input type='text' id='selisih' name='selisih' value='".number_format($nilai_selisih)."' class='form-control input-md text-right maskM' readonly data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+					echo "<td><input type='text' id='selisih' name='selisih' value='".number_format((float) $nilai_selisih)."' class='form-control input-md text-right maskM' readonly data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 					echo "<td></td>";
 				echo "</tr>";
 				?>

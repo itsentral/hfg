@@ -3,24 +3,24 @@ $id_dept 		= (!empty($header)) ? $header[0]->id_dept : '';
 $id_costcenter 	= (!empty($header)) ? $header[0]->id_costcenter : '';
 $coa 			= (!empty($header)) ? $header[0]->coa : '';
 $coa_akum 		= (!empty($header)) ? $header[0]->coa_akum : '';
-$nama_asset 	= (!empty($header)) ? strtoupper($header[0]->nama_asset) : '';
+$nama_asset 	= (!empty($header)) ? strtoupper((string) $header[0]->nama_asset) : '';
 $tahun 			= (!empty($header)) ? $header[0]->tahun : date('Y');
 $bulan 			= (!empty($header)) ? $header[0]->bulan : date('m');
-$budget 		= (!empty($header)) ? number_format($header[0]->budget) : '';
-$qty 			= (!empty($header)) ? number_format($header[0]->qty) : '';
-$keterangan 	= (!empty($header)) ? strtoupper($header[0]->keterangan) : '';
+$budget 		= (!empty($header)) ? number_format((float) $header[0]->budget) : '';
+$qty 			= (!empty($header)) ? number_format((float) $header[0]->qty) : '';
+$keterangan 	= (!empty($header)) ? strtoupper((string) $header[0]->keterangan) : '';
 $tanda 			= (!empty($id)) ? 'Update' : 'Insert';
 $disabled		= (!empty($approve)) ? 'disabled' : '';
 $disabled2		= ($approve == 'view') ? 'disabled' : '';
 $no_coa = (!empty($header)) ? $header[0]->no_coa : '';
 $nm_coa = (!empty($header)) ? $header[0]->nm_coa : '';
 
-$rev_nama_asset 	= (!empty($header)) ? strtoupper($header[0]->rev_nama_asset) : '';
+$rev_nama_asset 	= (!empty($header)) ? strtoupper((string) $header[0]->rev_nama_asset) : '';
 $rev_tahun 			= (!empty($header)) ? $header[0]->rev_tahun : date('Y');
 $rev_bulan 			= (!empty($header)) ? $header[0]->rev_bulan : date('m');
-$rev_budget 		= (!empty($header)) ? number_format($header[0]->rev_budget) : '';
-$rev_qty 			= (!empty($header)) ? number_format($header[0]->rev_qty) : '';
-$rev_keterangan 	= (!empty($header)) ? strtoupper($header[0]->rev_keterangan) : '';
+$rev_budget 		= (!empty($header)) ? number_format((float) $header[0]->rev_budget) : '';
+$rev_qty 			= (!empty($header)) ? number_format((float) $header[0]->rev_qty) : '';
+$rev_keterangan 	= (!empty($header)) ? strtoupper((string) $header[0]->rev_keterangan) : '';
 ?>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />

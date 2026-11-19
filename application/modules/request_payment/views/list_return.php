@@ -52,7 +52,7 @@ if (!empty($row)) {
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
 					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Dokumen</span>
-					<h4 class="fw-bold mb-0 text-primary mt-1"><?= number_format($total_dokumen) ?></h4>
+					<h4 class="fw-bold mb-0 text-primary mt-1"><?= number_format((float) $total_dokumen) ?></h4>
 					<small class="text-muted" style="font-size: 11px;">Pengembalian expense</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 44px; height: 44px; font-size: 18px;">
@@ -66,7 +66,7 @@ if (!empty($row)) {
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
 					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Nilai Pengembalian</span>
-					<h4 class="fw-bold mb-0 text-dark mt-1" style="font-size: 1.15rem;">Rp <?= number_format($total_pengembalian, 0, ',', '.') ?></h4>
+					<h4 class="fw-bold mb-0 text-dark mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_pengembalian, 0, ',', '.') ?></h4>
 					<small class="text-muted" style="font-size: 11px;">Total nilai kembali</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-purple" style="width: 44px; height: 44px; font-size: 18px; color: #7c3aed;">
@@ -80,7 +80,7 @@ if (!empty($row)) {
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
 					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Terbayar</span>
-					<h4 class="fw-bold mb-0 text-success mt-1" style="font-size: 1.15rem;">Rp <?= number_format($total_terbayar, 0, ',', '.') ?></h4>
+					<h4 class="fw-bold mb-0 text-success mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_terbayar, 0, ',', '.') ?></h4>
 					<small class="text-muted" style="font-size: 11px;">Realisasi transfer masuk</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 44px; height: 44px; font-size: 18px;">
@@ -94,7 +94,7 @@ if (!empty($row)) {
 			<div class="card-body p-3 d-flex align-items-center justify-content-between">
 				<div>
 					<span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Belum Selesai</span>
-					<h4 class="fw-bold mb-0 text-warning mt-1" style="font-size: 1.15rem;">Rp <?= number_format($total_sisa, 0, ',', '.') ?></h4>
+					<h4 class="fw-bold mb-0 text-warning mt-1" style="font-size: 1.15rem;">Rp <?= number_format((float) $total_sisa, 0, ',', '.') ?></h4>
 					<small class="text-muted" style="font-size: 11px;">Outstanding pengembalian</small>
 				</div>
 				<div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-warning" style="width: 44px; height: 44px; font-size: 18px;">
@@ -140,33 +140,33 @@ if (!empty($row)) {
 						foreach ($processed_rows as $rowItem) : ?>
 							<?php
 							$rec = $rowItem['record'];
-							$tgl_formatted = !empty($rec->tgl_doc) ? date('d/m/Y', strtotime($rec->tgl_doc)) : '-';
+							$tgl_formatted = !empty($rec->tgl_doc) ? date('d/m/Y', strtotime((string) $rec->tgl_doc)) : '-';
 							?>
 							<tr>
 								<td class="text-center text-muted fw-semibold"><?= $numb++; ?></td>
 								<td>
-									<span class="fw-bold text-primary"><?= htmlspecialchars($rec->no_doc) ?></span>
+									<span class="fw-bold text-primary"><?= htmlspecialchars((string) $rec->no_doc) ?></span>
 								</td>
 								<td class="fw-medium">
-									<i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars($rec->created_by) ?>
+									<i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars((string) $rec->created_by) ?>
 								</td>
 								<td class="text-center text-nowrap">
 									<i class="fa fa-calendar me-1 text-muted"></i><?= $tgl_formatted ?>
 								</td>
 								<td>
-									<span title="<?= htmlspecialchars($rec->keperluan) ?>"><?= htmlspecialchars($rec->keperluan) ?></span>
+									<span title="<?= htmlspecialchars((string) $rec->keperluan) ?>"><?= htmlspecialchars((string) $rec->keperluan) ?></span>
 								</td>
 								<td class="text-center">
-									<span class="badge bg-light text-dark border text-uppercase px-2 py-1"><?= htmlspecialchars($rec->tipe) ?></span>
+									<span class="badge bg-light text-dark border text-uppercase px-2 py-1"><?= htmlspecialchars((string) $rec->tipe) ?></span>
 								</td>
 								<td class="text-end fw-semibold">
-									Rp <?= number_format($rec->jumlah, 0, ',', '.') ?>
+									Rp <?= number_format((float) $rec->jumlah, 0, ',', '.') ?>
 								</td>
 								<td class="text-end fw-semibold text-success">
-									Rp <?= number_format($rowItem['ttl_kembali'], 0, ',', '.') ?>
+									Rp <?= number_format((float) $rowItem['ttl_kembali'], 0, ',', '.') ?>
 								</td>
 								<td class="text-end fw-bold <?= ($rowItem['sisa_kembali'] != 0) ? 'text-danger' : 'text-muted' ?>">
-									Rp <?= number_format($rowItem['sisa_kembali'], 0, ',', '.') ?>
+									Rp <?= number_format((float) $rowItem['sisa_kembali'], 0, ',', '.') ?>
 								</td>
 								<td class="text-center text-nowrap">
 									<?= $rowItem['status_badge'] ?>

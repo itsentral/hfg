@@ -1,13 +1,6 @@
 <?php
 
-if (class_exists('mPDF')) {
-    $mpdf = new mPDF('utf-8', 'A4');
-} elseif (class_exists('\\Mpdf\\Mpdf')) {
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-} else {
-    require_once FCPATH . 'vendor/autoload.php';
-    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-}
+$mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
 
 set_time_limit(0);
 ini_set('memory_limit','1024M');
@@ -52,7 +45,7 @@ $today = date('l, d F Y [H:i:s]');
             <td class="mid"><?=tgl_indo($getData[0]['tanggal']);?></td>
             <td class="mid">No SPK</td>
             <td class="mid">:</td>
-            <td class="mid"><?=strtoupper($getData[0]['no_spk']);?></td>
+            <td class="mid"><?=strtoupper((string) $getData[0]['no_spk']);?></td>
         </tr>
     </thead>
 </table><br>
@@ -77,8 +70,8 @@ $today = date('l, d F Y [H:i:s]');
             echo "<tr>";
                 echo "<td align='center'>".$No."</td>";
                 echo "<td>".$nm_material."</td>";
-                echo "<td align='right'>".number_format($berat_act,4)."</td>";
-                echo "<td align='right'>".number_format($berat_con,4)."</td>";
+                echo "<td align='right'>".number_format((float) $berat_act,4)."</td>";
+                echo "<td align='right'>".number_format((float) $berat_con,4)."</td>";
                 echo "<td></td>";
             echo "</tr>";
         }
@@ -198,7 +191,7 @@ $today = date('l, d F Y [H:i:s]');
 
 
 <?php
-$footer = "<p style='font-family: verdana,arial,sans-serif; font-size:10px;'><i>Printed by : ".ucwords(strtolower($printby)).", ".$today." / Subgudang</i></p>";
+$footer = "<p style='font-family: verdana,arial,sans-serif; font-size:10px;'><i>Printed by : ".ucwords(strtolower((string) $printby)).", ".$today." / Subgudang</i></p>";
 $html = ob_get_contents();
 
 ob_end_clean();

@@ -121,7 +121,7 @@ class Warehouse_model extends BF_Model
 
         foreach ($rows as $row) {
             $qr_text = ($row['kode_internal'] ?? '-') . '/' . strtolower($row['nm_gudang'] ?? '-');
-            $qr_html = "<button type='button' class='btn btn-sm btn-info btn-show-qr' data-qr='" . htmlspecialchars($qr_text) . "'><i class='fa fa-qrcode'></i> QR</button>";
+            $qr_html = "<button type='button' class='btn btn-sm btn-info btn-show-qr' data-qr='" . htmlspecialchars((string) $qr_text) . "'><i class='fa fa-qrcode'></i> QR</button>";
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
@@ -326,19 +326,19 @@ class Warehouse_model extends BF_Model
 
             $data[] = [
                 "<div align='center'>{$nomor}</div>",
-                date('d/M/Y', strtotime($row['tgl_transaksi'])),
+                date('d/M/Y', strtotime((string) $row['tgl_transaksi'])),
                 $row['no_transaksi'],
                 $row['transaksi'],
                 $row['code_lv4'],
                 $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
-                number_format($row['qty']),
-                number_format($row['qty_book']),
-                number_format($row['qty_free']),
-                number_format($row['qty_transaksi']),
-                number_format($row['qty_book_akhir']),
-                number_format($row['qty_akhir']),
-                number_format($row['qty_book_akhir']),
-                number_format($row['qty_free_akhir']),
+                number_format((float) $row['qty']),
+                number_format((float) $row['qty_book']),
+                number_format((float) $row['qty_free']),
+                number_format((float) $row['qty_transaksi']),
+                number_format((float) $row['qty_book_akhir']),
+                number_format((float) $row['qty_akhir']),
+                number_format((float) $row['qty_book_akhir']),
+                number_format((float) $row['qty_free_akhir']),
             ];
             $urut1++;
         }
@@ -647,18 +647,18 @@ class Warehouse_model extends BF_Model
         foreach ($rows as $row) {
             $mat_html = '';
             if (!empty($row['materials_concat'])) {
-                $mats = array_unique(explode(';;', $row['materials_concat']));
+                $mats = array_unique(explode(';;', (string) $row['materials_concat']));
                 foreach ($mats as $m) {
-                    $parts = explode('||', $m);
+                    $parts = explode('||', (string) $m);
                     $trade = $parts[0] ?? '';
                     $nm    = $parts[1] ?? '';
-                    $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars($trade) . '</b> <small class="text-muted">(' . htmlspecialchars($nm) . ')</small></div>';
+                    $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars((string) $trade) . '</b> <small class="text-muted">(' . htmlspecialchars((string) $nm) . ')</small></div>';
                 }
             }
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
-                "<div class='text-center'><span class='badge bg-primary'>" . htmlspecialchars($row['pack_code']) . "</span></div>",
+                "<div class='text-center'><span class='badge bg-primary'>" . htmlspecialchars((string) $row['pack_code']) . "</span></div>",
                 $mat_html,
                 "<div class='text-center'>" . (int) $row['roll_count'] . "</div>",
                 "<div class='text-end'>" . number_format((float) $row['total_nw'], 2, ',', '.') . "</div>",
@@ -824,7 +824,7 @@ class Warehouse_model extends BF_Model
                 $row['id_material'],
                 $row['nm_material'] . ($row['trade_name'] ? '<br><small class="text-muted">' . $row['trade_name'] . '</small>' : ''),
                 $row['nm_gudang'],
-                "<div class='text-center'>" . date('d/m/Y', strtotime($row['hist_date'])) . "</div>",
+                "<div class='text-center'>" . date('d/m/Y', strtotime((string) $row['hist_date'])) . "</div>",
                 "<div class='text-center'>{$jml_coil}</div>",
                 "<div class='text-right'>" . number_format((float) $row['qty_stock'],   3, ',', '.') . "</div>",
                 "<div class='text-right'>" . number_format((float) $row['harga_beli'],  3, ',', '.') . "</div>",
@@ -946,7 +946,7 @@ class Warehouse_model extends BF_Model
         if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
         if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
-        $label_date   = ' | Per Tanggal: ' . date('d/m/Y', strtotime($date_snap));
+        $label_date   = ' | Per Tanggal: ' . date('d/m/Y', strtotime((string) $date_snap));
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -958,7 +958,7 @@ class Warehouse_model extends BF_Model
         $sheet->mergeCells('A1:L1');
         $sheet->setCellValue(
             'A1',
-            'STOCK COIL — ' . strtoupper($label_gudang) . $label_date
+            'STOCK COIL — ' . strtoupper((string) $label_gudang) . $label_date
         );
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
@@ -1108,7 +1108,7 @@ class Warehouse_model extends BF_Model
         // ── Output ─────────────────────────────────────────────────────────
         $filename  = 'Stock_Coil_PerDay_'
             . str_replace(' ', '_', $label_gudang)
-            . '_' . date('Ymd', strtotime($date_snap)) . '.xls';
+            . '_' . date('Ymd', strtotime((string) $date_snap)) . '.xls';
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         ob_end_clean();
@@ -1209,13 +1209,13 @@ class Warehouse_model extends BF_Model
             // Parse materials_concat → build material list HTML
             $mat_html = '';
             if (!empty($row['materials_concat'])) {
-                $mats = array_unique(explode(';;', $row['materials_concat']));
+                $mats = array_unique(explode(';;', (string) $row['materials_concat']));
                 foreach ($mats as $m) {
-                    $parts = explode('||', $m);
+                    $parts = explode('||', (string) $m);
                     $trade = trim($parts[0] ?? '');
                     $nm    = trim($parts[1] ?? '');
                     if ($trade !== '' || $nm !== '') {
-                        $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars($trade) . '</b> <small class="text-muted">(' . htmlspecialchars($nm) . ')</small></div>';
+                        $mat_html .= '<div style="font-size:11px;"><span class="text-primary me-1">&#9679;</span><b>' . htmlspecialchars((string) $trade) . '</b> <small class="text-muted">(' . htmlspecialchars((string) $nm) . ')</small></div>';
                     }
                 }
             }
@@ -1224,14 +1224,14 @@ class Warehouse_model extends BF_Model
             }
 
             // QR button (content = pack_code)
-            $qr_html = "<button type='button' class='btn btn-sm btn-info btn-show-qr' data-qr='" . htmlspecialchars($row['pack_code']) . "'><i class='fa fa-qrcode'></i></button>";
+            $qr_html = "<button type='button' class='btn btn-sm btn-info btn-show-qr' data-qr='" . htmlspecialchars((string) $row['pack_code']) . "'><i class='fa fa-qrcode'></i></button>";
 
             // Detail button
-            $detail_html = "<button type='button' class='btn btn-sm btn-outline-primary btn-show-pack-detail' data-pack-id='" . $row['id_pack'] . "' data-pack-code='" . htmlspecialchars($row['pack_code']) . "'><i class='fa fa-eye'></i></button>";
+            $detail_html = "<button type='button' class='btn btn-sm btn-outline-primary btn-show-pack-detail' data-pack-id='" . $row['id_pack'] . "' data-pack-code='" . htmlspecialchars((string) $row['pack_code']) . "'><i class='fa fa-eye'></i></button>";
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
-                "<div class='text-center'><span class='badge bg-primary'>" . htmlspecialchars($row['pack_code']) . "</span></div>",
+                "<div class='text-center'><span class='badge bg-primary'>" . htmlspecialchars((string) $row['pack_code']) . "</span></div>",
                 $mat_html,
                 "<div class='text-center'>" . (int) $row['roll_count'] . "</div>",
                 "<div class='text-end'>" . number_format((float) $row['total_nw'], 2, ',', '.') . "</div>",

@@ -18,7 +18,7 @@
 <tr>
 	<td>Departemen : <?=$data[0]->nm_dept?></td>
 	<td colspan=2></td>
-	<td>Update On : <?=date("d-M-Y",strtotime($data[0]->created_on_dept))?></td>
+	<td>Update On : <?=date("d-M-Y",strtotime((string) $data[0]->created_on_dept))?></td>
 </tr>
 <tr>
 	<td>Tahun : <?=$dataset['tahun']?></td>
@@ -50,7 +50,7 @@
 			echo '<tr>
 			<td>'.$record->no_perkiraan.'</td>
 			<td>'.$record->nama_perkiraan.'</td>
-			<td align=right>'.number_format($record->total).'</td>';
+			<td align=right>'.number_format((float) $record->total).'</td>';
 			for($bln=1;$bln<=12;$bln++){
 				echo '<td align=right>'.number_format($record->{"bulan_".$bln}).'</td>';
 			}

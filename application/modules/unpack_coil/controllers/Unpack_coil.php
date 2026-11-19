@@ -47,7 +47,7 @@ class Unpack_coil extends Admin_Controller
 
         $order_col = isset($_REQUEST['order'][0]['column']) ? (int) $_REQUEST['order'][0]['column'] : 1;
         $order_dir = isset($_REQUEST['order'][0]['dir']) ? $_REQUEST['order'][0]['dir'] : 'desc';
-        $order_dir = in_array(strtolower($order_dir), array('asc', 'desc')) ? strtolower($order_dir) : 'desc';
+        $order_dir = in_array(strtolower((string) $order_dir), array('asc', 'desc')) ? strtolower((string) $order_dir) : 'desc';
 
         $col_map = array(
             1 => 'h.unpack_no',
@@ -84,14 +84,14 @@ class Unpack_coil extends Admin_Controller
             $status_html = "<span class='badge rounded-pill " . $badge . "'>" . $row['status'] . "</span>";
 
             $dropdown_items = array();
-            $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('unpack_coil/view/' . rawurlencode($row['unpack_no'])) . '"><i class="fa fa-eye me-2 text-info"></i> View</a>';
+            $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('unpack_coil/view/' . rawurlencode((string) $row['unpack_no'])) . '"><i class="fa fa-eye me-2 text-info"></i> View</a>';
 
             if (!in_array($row['status'], array('Cancelled', 'Lock')) && has_permission($this->addPermission)) {
-                $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('unpack_coil/edit/' . rawurlencode($row['unpack_no'])) . '"><i class="fa fa-edit me-2 text-warning"></i> Edit</a>';
+                $dropdown_items[] = '<a class="dropdown-item" href="' . site_url('unpack_coil/edit/' . rawurlencode((string) $row['unpack_no'])) . '"><i class="fa fa-edit me-2 text-warning"></i> Edit</a>';
             }
             if (!in_array($row['status'], array('Cancelled', 'Lock')) && has_permission($this->managePermission)) {
                 $dropdown_items[] = '<div class="dropdown-divider"></div>';
-                $dropdown_items[] = '<a class="dropdown-item btn-lock-unpack" href="javascript:void(0)" data-unpack="' . htmlspecialchars($row['unpack_no']) . '"><i class="fa fa-lock me-2 text-danger"></i> Lock</a>';
+                $dropdown_items[] = '<a class="dropdown-item btn-lock-unpack" href="javascript:void(0)" data-unpack="' . htmlspecialchars((string) $row['unpack_no']) . '"><i class="fa fa-lock me-2 text-danger"></i> Lock</a>';
             }
 
             $aksi = '<div class="dropdown text-center">'
@@ -103,12 +103,12 @@ class Unpack_coil extends Admin_Controller
 
             $data[] = array(
                 "<div class='text-center'>" . $no . "</div>",
-                htmlspecialchars($row['unpack_no']),
-                "<span class='badge bg-primary'>" . htmlspecialchars($row['pack_code']) . "</span>",
+                htmlspecialchars((string) $row['unpack_no']),
+                "<span class='badge bg-primary'>" . htmlspecialchars((string) $row['pack_code']) . "</span>",
                 "<div class='text-center'>" . (int) $row['material_count'] . "</div>",
                 "<div class='text-center'>" . (int) $row['roll_count'] . "</div>",
                 "<div class='text-end'>" . number_format((float) $row['net_weight_actual'], 2) . "</div>",
-                "<div class='text-center'>" . date('d/m/Y', strtotime($row['tgl_unpack'])) . "</div>",
+                "<div class='text-center'>" . date('d/m/Y', strtotime((string) $row['tgl_unpack'])) . "</div>",
                 "<div class='text-center'>" . $status_html . "</div>",
                 $aksi,
             );
@@ -349,7 +349,7 @@ class Unpack_coil extends Admin_Controller
         }
 
         foreach ($materials as $m) {
-            $id_material = isset($m['id_material']) ? trim($m['id_material']) : '';
+            $id_material = isset($m['id_material']) ? trim((string) $m['id_material']) : '';
             $id_gudang   = isset($m['id_gudang']) ? $m['id_gudang'] : null;
             if ($id_material === '' || $id_gudang === null) {
                 $this->db->trans_rollback();
@@ -415,20 +415,20 @@ class Unpack_coil extends Admin_Controller
             $cb_per_kg = (float) (isset($rep['harga_beli']) ? $rep['harga_beli'] : 0);
 
             $base_induk_coil = trim(preg_replace('/-BC\.\d+$/i', '', $rep['no_coil']));
-            if (strpos($base_induk_coil, ',') !== false) {
-                $parts_coil = explode(',', $base_induk_coil);
-                $base_induk_coil = trim($parts_coil[0]);
+            if (strpos((string) $base_induk_coil, ',') !== false) {
+                $parts_coil = explode(',', (string) $base_induk_coil);
+                $base_induk_coil = trim((string) $parts_coil[0]);
             }
             $base_induk_kode = trim(preg_replace('/-BC\.\d+$/i', '', $rep['kode_internal']));
 
             foreach ($babies as $idx => $b) {
                 $seq = $idx + 1;
-                $no_coil_baby = (!empty($b['no_coil']) && strpos($b['no_coil'], ',') === false)
-                    ? trim($b['no_coil'])
+                $no_coil_baby = (!empty($b['no_coil']) && strpos((string) $b['no_coil'], ',') === false)
+                    ? trim((string) $b['no_coil'])
                     : ($base_induk_coil . '-BC.' . $seq);
 
-                $babycoil_code = (!empty($b['babycoil_code']) && strpos($b['babycoil_code'], ',') === false)
-                    ? trim($b['babycoil_code'])
+                $babycoil_code = (!empty($b['babycoil_code']) && strpos((string) $b['babycoil_code'], ',') === false)
+                    ? trim((string) $b['babycoil_code'])
                     : ($base_induk_kode . '-BC.' . $seq);
                 $net_actual    = (float) (isset($b['net_weight_actual']) ? $b['net_weight_actual'] : 0);
                 $gross_actual  = (float) (isset($b['gross_weight_actual']) ? $b['gross_weight_actual'] : 0);
@@ -492,55 +492,14 @@ class Unpack_coil extends Admin_Controller
                     'created_at'     => $this->datetime,
                 ));
 
-                if (strtoupper(trim((string) $rep['kd_gudang'])) === 'PRT' && $id_coil_baru) {
-                    $this->load->helper('coil_kartu_stok');
-                    kartu_stok_record_entry(array(
-                        'id_coil'       => (int) $id_coil_baru,
-                        'no_trs'        => $unpack_no,
-                        'id_material'   => $id_material,
-                        'nm_material'   => $rep['nm_material'],
-                        'no_coil'       => $no_coil_baby,
-                        'kode_internal' => $babycoil_code,
-                        'status'        => 'in',
-                        'dari'          => 'Unpack',
-                        'ke'            => 'prod. 2',
-                        'qty_trans'     => $net_actual,
-                        'qty_awal'      => 0,
-                        'keterangan'    => 'Hasil unpack dari coil ' . $rep['no_coil'],
-                        'created_by'    => $this->id_user,
-                        'created_at'    => $this->datetime,
-                    ));
-                }
+                // Kartu Pemakaian Material per coil (warehouse_coil_kartu_stok) TIDAK dicatat di Unpack.
+                // Pencatatan (consume / WIP / hold / Scrap) dilakukan saat Production Report final;
+                // baris IN pembuka dibuat otomatis di sana bila coil belum punya saldo.
             }
 
             // Nonaktifkan SEMUA baris fisik asli grup ini
-            $is_prt_unpack = (strtoupper(trim((string) $rep['kd_gudang'])) === 'PRT');
-            if ($is_prt_unpack) {
-                $this->load->helper('coil_kartu_stok');
-            }
             foreach ($real_coils as $rc) {
                 $this->Unpack_coil_model->mark_induk_unpacked($rc['id'], $unpack_no);
-                if ($is_prt_unpack) {
-                    $last_rc  = kartu_stok_get_last_balance($rc['id']);
-                    $out_qty  = $last_rc['exists'] ? $last_rc['qty_akhir'] : (float) $rc['net_weight_pl'];
-                    if ($out_qty > 0) {
-                        kartu_stok_record_entry(array(
-                            'id_coil'       => (int) $rc['id'],
-                            'no_trs'        => $unpack_no,
-                            'id_material'   => $rc['id_material'],
-                            'nm_material'   => $rc['nm_material'],
-                            'no_coil'       => $rc['no_coil'],
-                            'kode_internal' => $rc['kode_internal'],
-                            'status'        => 'out',
-                            'dari'          => 'prod. 2',
-                            'ke'            => 'Unpack',
-                            'qty_trans'     => $out_qty,
-                            'keterangan'    => 'Dipecah menjadi ' . $roll . ' baby coil (' . $unpack_no . ')',
-                            'created_by'    => $this->id_user,
-                            'created_at'    => $this->datetime,
-                        ));
-                    }
-                }
             }
 
             // ================================================================

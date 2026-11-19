@@ -75,16 +75,16 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 						$is_sel = ($current_val !== '' && ($current_val === $m['kd_asset'] || $current_val === $m['nm_asset'] || $current_val === (string)$m['id']));
 						if ($is_sel) $found = true;
 				?>
-					<option value="<?= htmlspecialchars($m['kd_asset']); ?>" <?= $is_sel ? 'selected' : ''; ?>>
-						<?= htmlspecialchars($m['nm_asset']); ?> (<?= htmlspecialchars($m['kd_asset']); ?>)
+					<option value="<?= htmlspecialchars((string) $m['kd_asset']); ?>" <?= $is_sel ? 'selected' : ''; ?>>
+						<?= htmlspecialchars((string) $m['nm_asset']); ?> (<?= htmlspecialchars((string) $m['kd_asset']); ?>)
 					</option>
 				<?php 
 					endforeach;
 				endif;
 				if (!$found && $current_val !== ''):
 				?>
-					<option value="<?= htmlspecialchars($current_val); ?>" selected>
-						<?= htmlspecialchars($current_val); ?>
+					<option value="<?= htmlspecialchars((string) $current_val); ?>" selected>
+						<?= htmlspecialchars((string) $current_val); ?>
 					</option>
 				<?php endif; ?>
 			</select>
@@ -108,7 +108,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 <datalist id="list_costcenter">
 	<?php if (!empty($costcentres)): ?>
 		<?php foreach ($costcentres as $c): ?>
-			<option value="<?= htmlspecialchars($c); ?>">
+			<option value="<?= htmlspecialchars((string) $c); ?>">
 		<?php endforeach; ?>
 	<?php endif; ?>
 </datalist>
@@ -122,15 +122,15 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 			<select name="code_lv2" id="code_lv2" class="form-select" style="width: 100%;">
 				<option value="0">Select Product Category</option>
 				<?php foreach ($tersedia as $kode => $nama) : ?>
-					<option value="<?= htmlspecialchars($kode, ENT_QUOTES); ?>"><?= strtoupper(htmlspecialchars($nama)); ?></option>
+					<option value="<?= htmlspecialchars((string) $kode, ENT_QUOTES); ?>"><?= strtoupper(htmlspecialchars((string) $nama)); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<?php if (empty($tersedia)) : ?>
 				<small class="text-muted">Semua Product Category sudah memiliki Flow Process.</small>
 			<?php endif; ?>
 		<?php else : ?>
-			<input type="text" class="form-control bg-light" value="<?= strtoupper(htmlspecialchars($nama_kat)); ?>" readonly>
-			<input type="hidden" name="code_lv2" value="<?= htmlspecialchars($code_lv2, ENT_QUOTES); ?>">
+			<input type="text" class="form-control bg-light" value="<?= strtoupper(htmlspecialchars((string) $nama_kat)); ?>" readonly>
+			<input type="hidden" name="code_lv2" value="<?= htmlspecialchars((string) $code_lv2, ENT_QUOTES); ?>">
 		<?php endif; ?>
 	</div>
 </div>

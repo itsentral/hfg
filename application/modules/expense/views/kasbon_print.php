@@ -455,7 +455,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			<tr>
 				<td class="info-label">Tanggal Dokumen</td>
 				<td class="info-separator">:</td>
-				<td class="info-value"><?= date('d F Y', strtotime($data->tgl_doc)) ?></td>
+				<td class="info-value"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 
 				<td class="info-label">Bank Penerima</td>
 				<td class="info-separator">:</td>
@@ -482,22 +482,22 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			<tr>
 				<td class="info-label">Akun COA</td>
 				<td class="info-separator">:</td>
-				<td class="info-value"><?= htmlspecialchars($coa_display) ?></td>
+				<td class="info-value"><?= htmlspecialchars((string) $coa_display) ?></td>
 
 				<td class="info-label">Referensi PR</td>
 				<td class="info-separator">:</td>
-				<td class="info-value"><?= !empty($data->id_pr) ? $data->id_pr . ' (' . ucwords($data->tipe_pr) . ')' : 'Input Manual' ?></td>
+				<td class="info-value"><?= !empty($data->id_pr) ? $data->id_pr . ' (' . ucwords((string) $data->tipe_pr) . ')' : 'Input Manual' ?></td>
 			</tr>
 			<tr>
 				<td class="info-label">Keperluan</td>
 				<td class="info-separator">:</td>
-				<td class="info-value" colspan="4"><strong><?= nl2br(htmlspecialchars($data->keperluan)) ?></strong></td>
+				<td class="info-value" colspan="4"><strong><?= nl2br(htmlspecialchars((string) $data->keperluan)) ?></strong></td>
 			</tr>
 			<?php if (!empty($data->keterangan)) : ?>
 				<tr>
 					<td class="info-label">Keterangan</td>
 					<td class="info-separator">:</td>
-					<td class="info-value" colspan="4"><?= nl2br(htmlspecialchars($data->keterangan)) ?></td>
+					<td class="info-value" colspan="4"><?= nl2br(htmlspecialchars((string) $data->keterangan)) ?></td>
 				</tr>
 			<?php endif; ?>
 		</table>
@@ -506,7 +506,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 		<div class="nominal-card">
 			<div class="nominal-card-header">Jumlah Kasbon yang Diajukan :</div>
 			<div class="nominal-card-amount">
-				Rp <?= number_format($data->jumlah_kasbon, 0, ',', '.') ?>
+				Rp <?= number_format((float) $data->jumlah_kasbon, 0, ',', '.') ?>
 			</div>
 			<?php if (!empty($terbilang_text)) : ?>
 				<div class="nominal-card-terbilang">
@@ -541,18 +541,18 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 					?>
 						<tr>
 							<td class="text-center"><?= $no++ ?></td>
-							<td><?= htmlspecialchars($item['nm_material']) ?></td>
-							<td class="text-center"><?= number_format($item['qty']) ?></td>
+							<td><?= htmlspecialchars((string) $item['nm_material']) ?></td>
+							<td class="text-center"><?= number_format((float) $item['qty']) ?></td>
 							<td class="text-center"><?= htmlspecialchars($item['satuan'] ?: '-') ?></td>
-							<td class="text-right"><?= number_format($item['harga'], 0, ',', '.') ?></td>
-							<td class="text-right"><strong><?= number_format($tot, 0, ',', '.') ?></strong></td>
+							<td class="text-right"><?= number_format((float) $item['harga'], 0, ',', '.') ?></td>
+							<td class="text-right"><strong><?= number_format((float) $tot, 0, ',', '.') ?></strong></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>
 				<tfoot>
 					<tr>
 						<th colspan="5" class="text-right">Total Referensi PR</th>
-						<th class="text-right">Rp <?= number_format($grand_tot, 0, ',', '.') ?></th>
+						<th class="text-right">Rp <?= number_format((float) $grand_tot, 0, ',', '.') ?></th>
 					</tr>
 				</tfoot>
 			</table>
@@ -575,7 +575,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			<tr>
 				<td>
 					<div class="signature-name"><?= $nmuser ?></div>
-					<div class="signature-date">Tgl: <?= !empty($data->created_on) ? date('d/m/Y', strtotime($data->created_on)) : date('d/m/Y') ?></div>
+					<div class="signature-date">Tgl: <?= !empty($data->created_on) ? date('d/m/Y', strtotime((string) $data->created_on)) : date('d/m/Y') ?></div>
 				</td>
 				<td>
 					<div class="signature-name">Atasan Langsung</div>
@@ -584,13 +584,13 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 				<td>
 					<div class="signature-name"><?= (isset($data->sts_finance) && $data->sts_finance == 1) ? 'Finance Department' : 'Finance' ?></div>
 					<div class="signature-date">
-						Tgl: <?= !empty($data->app_finance_date) ? date('d/m/Y', strtotime($data->app_finance_date)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
+						Tgl: <?= !empty($data->app_finance_date) ? date('d/m/Y', strtotime((string) $data->app_finance_date)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
 					</div>
 				</td>
 				<td>
 					<div class="signature-name"><?= !empty($data->approved_by) ? $data->approved_by : 'Direksi / Management' ?></div>
 					<div class="signature-date">
-						Tgl: <?= !empty($data->approved_on) ? date('d/m/Y', strtotime($data->approved_on)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
+						Tgl: <?= !empty($data->approved_on) ? date('d/m/Y', strtotime((string) $data->approved_on)) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ?>
 					</div>
 				</td>
 			</tr>
@@ -602,7 +602,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 				<strong>Dokumen / Berkas Lampiran Pendukung:</strong>
 				<ol style="margin: 4px 0 0 16px; padding: 0;">
 					<?php foreach ($all_files as $af) : ?>
-						<li><?= htmlspecialchars($af['name']) ?> (<?= strtoupper($af['ext']) ?>)</li>
+						<li><?= htmlspecialchars((string) $af['name']) ?> (<?= strtoupper((string) $af['ext']) ?>)</li>
 					<?php endforeach; ?>
 				</ol>
 			</div>
@@ -620,7 +620,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 			<div class="pagebreak"></div>
 			<div class="print-container attachment-img-page">
 				<div style="text-align: left; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">
-					<strong>Lampiran Berkas:</strong> <?= htmlspecialchars($img_att['name']) ?> &bull; No Dokumen: <?= $data->no_doc ?>
+					<strong>Lampiran Berkas:</strong> <?= htmlspecialchars((string) $img_att['name']) ?> &bull; No Dokumen: <?= $data->no_doc ?>
 				</div>
 				<img src="<?= $img_att['path'] ?>" alt="Lampiran Kasbon">
 			</div>

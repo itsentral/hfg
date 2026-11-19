@@ -432,12 +432,12 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                                 echo '<td class="text-center no-urut">' . $no . '</td>';
                                                 echo '<td class="text-center">' . $item['nm_barang'] . '</td>';
                                                 echo '<td class="text-center">' . $item['trade_name'] . '</td>';
-                                                echo '<td class="text-center">' . ucfirst($item['unit_satuan']) . '</td>';
+                                                echo '<td class="text-center">' . ucfirst((string) $item['unit_satuan']) . '</td>';
                                                 echo '<td class="text-center">' . $item['currency'] . '</td>';
-                                                echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format($item['price_unit'], 3) . '</td>';
+                                                echo '<td class="text-end hargasatuan" data-value="' . $item['price_unit'] . '">' . number_format((float) $item['price_unit'], 3) . '</td>';
                                                 echo '<td class="text-end">' . number_format($item['price_unit'] * $kurs_pib, 2) . '</td>';
-                                                echo '<td class="text-center">' . number_format($item['qty_po']) . '</td>';
-                                                echo '<td class="text-center">' . number_format($nett_price) . '</td>';
+                                                echo '<td class="text-center">' . number_format((float) $item['qty_po']) . '</td>';
+                                                echo '<td class="text-center">' . number_format((float) $nett_price) . '</td>';
                                             } else {
                                                 echo '<tr class="child-' . $id_po_detail . '">';
                                                 echo '<td colspan="9"></td>';
@@ -457,7 +457,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
 
                                             $inisial      = isset($inisial_supplier) ? $inisial_supplier : '';
                                             $no_coil_val  = $item['no_coil'];
-                                            $prefix       = str_pad($global_counter_kode, 3, '0', STR_PAD_LEFT);
+                                            $prefix       = str_pad((string) $global_counter_kode, 3, '0', STR_PAD_LEFT);
                                             $kode_internal = $inisial . '-' . $no_coil_val . '-' . $prefix;
                                             $global_counter_kode++;
 
@@ -483,10 +483,10 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                         echo '<tr class="subtotal-material table-info" data-id="' . $id_po_detail . '">';
                                         echo '<td colspan="8" class="text-end"><b>Subtotal </b></td>';
                                         echo '<td class="text-center subtotal-coil-' . $id_po_detail . '"><small><b>' . $subtotal_coil . ' coil</b></small></td>';
-                                        echo '<td class="text-end subtotal-gross-' . $id_po_detail . '"><b>' . number_format($subtotal_gross, 2) . '</b></td>';
-                                        echo '<td class="text-end subtotal-net-' . $id_po_detail . '"><b>' . number_format($subtotal_net, 2) . '</b></td>';
+                                        echo '<td class="text-end subtotal-gross-' . $id_po_detail . '"><b>' . number_format((float) $subtotal_gross, 2) . '</b></td>';
+                                        echo '<td class="text-end subtotal-net-' . $id_po_detail . '"><b>' . number_format((float) $subtotal_net, 2) . '</b></td>';
                                         echo '<td></td><td></td><td></td><td></td>';
-                                        echo '<td colspan="2" class="text-end subtotal-total-' . $id_po_detail . '"><b>' . number_format($subtotal_total, 2) . '</b></td>';
+                                        echo '<td colspan="2" class="text-end subtotal-total-' . $id_po_detail . '"><b>' . number_format((float) $subtotal_total, 2) . '</b></td>';
                                         echo '<td></td><td></td><td></td>';
                                         echo '</tr>';
 
@@ -510,7 +510,7 @@ $forwarding_cost_per_kg = isset($forwarding_cost_per_kg) ? $forwarding_cost_per_
                                     <td style="background-color: #c7f0ff;"></td>
                                     <td style="background-color: #c7f0ff;"></td>
                                     <td align="right" colspan="2" style="background-color: #c7f0ff;" class="ttl_price_detail_col" id="ttl_total_price">
-                                        <?= number_format($ttl_price_detail, 2) ?>
+                                        <?= number_format((float) $ttl_price_detail, 2) ?>
                                     </td>
                                     <td style="background-color: #c7f0ff;"></td>
                                     <td style="background-color: #c7f0ff;"></td>

@@ -179,18 +179,18 @@ $nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $
 					$nomor++;
 
 					$get_satuan		= $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->row();
-					$nm_satuan = (!empty($get_satuan)) ? strtoupper($get_satuan->code) : '';
-					$tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
+					$nm_satuan = (!empty($get_satuan)) ? strtoupper((string) $get_satuan->code) : '';
+					$tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
 					echo "<tr class='header_" . $nomor . "'>";
 					echo "<td align='center'>" . $nomor . "</td>";
-					echo "<td align='left'>" . strtoupper($valx['nm_barang']) . "</td>";
-					echo "<td align='left'>" . strtoupper($valx['spec']) . "</td>";
-					echo "<td align='right'>" . number_format($valx['qty'], 2) . "</td>";
+					echo "<td align='left'>" . strtoupper((string) $valx['nm_barang']) . "</td>";
+					echo "<td align='left'>" . strtoupper((string) $valx['spec']) . "</td>";
+					echo "<td align='right'>" . number_format((float) $valx['qty'], 2) . "</td>";
 					echo "<td align='center'>" . $nm_satuan . "</td>";
-					echo "<td align='right'>" . number_format($valx['harga']) . "</td>";
+					echo "<td align='right'>" . number_format((float) $valx['harga']) . "</td>";
 					echo "<td align='right'>" . number_format($valx['qty'] * $valx['harga']) . "</td>";
 					echo "<td align='center'>" . $tgl_dibutuhkan . "</td>";
-					echo "<td align='left'>" . strtoupper($valx['keterangan']) . "</td>";
+					echo "<td align='left'>" . strtoupper((string) $valx['keterangan']) . "</td>";
 					echo "</tr>";
 				}
 			}

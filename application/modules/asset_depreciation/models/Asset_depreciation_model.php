@@ -67,9 +67,9 @@ class Asset_depreciation_model extends BF_Model
 
             $SISA_NILAI = ($row['penyusutan'] == 'N') ? $row['nilai_asset'] : $row['sisa_nilai'];
 
-            $TGL_PEROLEHAN  = date('Y-m-01', strtotime($row['tgl_perolehan']));
+            $TGL_PEROLEHAN  = date('Y-m-01', strtotime((string) $row['tgl_perolehan']));
             $DEPRESIASI_BLN = $row['depresiasi'] * 12;
-            $TGL_LAST_DEPT = date('Ym', strtotime('+' . $DEPRESIASI_BLN . ' month', strtotime($TGL_PEROLEHAN)));
+            $TGL_LAST_DEPT = date('Ym', strtotime('+' . $DEPRESIASI_BLN . ' month', strtotime((string) $TGL_PEROLEHAN)));
             $TGL_NOW       = $tahun . $bulan;
             $TGL_NOW_DATE   = date('Y-m-01', strtotime($tahun . '-' . $bulan . '-01'));
 
@@ -85,17 +85,17 @@ class Asset_depreciation_model extends BF_Model
 
             $nestedData   = array();
             $nestedData[] = "<div align='center'>" . $nomor . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['kd_asset']) . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['kd_asset']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_asset']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['tgl_perolehan'] . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['nm_category']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
             $nestedData[] = "<div align='left'>" . (!empty($row['no_perkiraan']) ? strtoupper($row['no_perkiraan'] . ' | ' . $row['ket_coa']) : '') . "</div>";
-            $nestedData[] = "<div align='left'>" . strtoupper($row['cost_center']) . "</div>";
+            $nestedData[] = "<div align='left'>" . strtoupper((string) $row['cost_center']) . "</div>";
             $nestedData[] = "<div align='center'>" . $row['depresiasi'] . " Thn</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['nilai_asset']) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($DEPRESIASI) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($row['total_depresiasi']) . "</div>";
-            $nestedData[] = "<div align='right'>" . number_format($SISA_NILAI) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['nilai_asset']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $DEPRESIASI) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $row['total_depresiasi']) . "</div>";
+            $nestedData[] = "<div align='right'>" . number_format((float) $SISA_NILAI) . "</div>";
 
             $data[] = $nestedData;
             $urut1++;

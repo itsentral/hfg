@@ -105,18 +105,18 @@ $mod = isset($mod) ? $mod : '';
 									$emp_dept_id = $emp->department;
 									$emp_dept_name = isset($dept_map[$emp_dept_id]) ? $dept_map[$emp_dept_id] : $emp_dept_id;
 								?>
-								<option value="<?= htmlspecialchars($emp->nm_karyawan); ?>" 
-										data-department="<?= htmlspecialchars($emp_dept_id); ?>" 
-										data-department-name="<?= htmlspecialchars($emp_dept_name); ?>"
+								<option value="<?= htmlspecialchars((string) $emp->nm_karyawan); ?>" 
+										data-department="<?= htmlspecialchars((string) $emp_dept_id); ?>" 
+										data-department-name="<?= htmlspecialchars((string) $emp_dept_name); ?>"
 										data-bank="<?= htmlspecialchars(!empty($emp->bank_account) ? $emp->bank_account : ''); ?>"
 										data-rekening="<?= htmlspecialchars(!empty($emp->rek_number) ? $emp->rek_number : ''); ?>"
-										data-accname="<?= htmlspecialchars($emp->nm_karyawan); ?>"
+										data-accname="<?= htmlspecialchars((string) $emp->nm_karyawan); ?>"
 										<?= $selected; ?>>
-									<?= htmlspecialchars($emp->nm_karyawan); ?> (<?= htmlspecialchars($emp->nik); ?>)
+									<?= htmlspecialchars((string) $emp->nm_karyawan); ?> (<?= htmlspecialchars((string) $emp->nik); ?>)
 								</option>
 							<?php endforeach; ?>
 						<?php else: ?>
-							<option value="<?= htmlspecialchars($selected_nama); ?>" selected><?= htmlspecialchars($selected_nama); ?></option>
+							<option value="<?= htmlspecialchars((string) $selected_nama); ?>" selected><?= htmlspecialchars((string) $selected_nama); ?></option>
 						<?php endif; ?>
 					</select>
 				</div>
@@ -124,9 +124,9 @@ $mod = isset($mod) ? $mod : '';
 					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Departemen</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-light text-muted"><i class="fa fa-building"></i></span>
-						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars($selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
+						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
 					</div>
-					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars($selected_dept); ?>">
+					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars((string) $selected_dept); ?>">
 				</div>
 
 				<div class="col-md-3">
@@ -152,7 +152,7 @@ $mod = isset($mod) ? $mod : '';
 				<i class="fa fa-exclamation-triangle fs-4 me-3"></i>
 				<div>
 					<h6 class="alert-heading fw-bold mb-1">Pengajuan Ditolak!</h6>
-					<div>Alasan: <?= htmlspecialchars($data->st_reject); ?></div>
+					<div>Alasan: <?= htmlspecialchars((string) $data->st_reject); ?></div>
 				</div>
 			</div>
 		<?php endif; ?>
@@ -165,21 +165,21 @@ $mod = isset($mod) ? $mod : '';
 					<label for="bank_id" class="form-label fw-semibold text-secondary small">Nama Bank</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-university"></i></span>
-						<input type="text" class="form-control bg-white" id="bank_id" name="bank_id" value="<?= htmlspecialchars($bank_id); ?>" placeholder="Contoh: BCA / Mandiri / BNI" <?= $is_view ? 'readonly' : ''; ?>>
+						<input type="text" class="form-control bg-white" id="bank_id" name="bank_id" value="<?= htmlspecialchars((string) $bank_id); ?>" placeholder="Contoh: BCA / Mandiri / BNI" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 				<div class="col-md-4">
 					<label for="accnumber" class="form-label fw-semibold text-secondary small">Nomor Rekening</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-hashtag"></i></span>
-						<input type="text" class="form-control bg-white" id="accnumber" name="accnumber" value="<?= htmlspecialchars($accnumber); ?>" placeholder="Nomor rekening transfer" <?= $is_view ? 'readonly' : ''; ?>>
+						<input type="text" class="form-control bg-white" id="accnumber" name="accnumber" value="<?= htmlspecialchars((string) $accnumber); ?>" placeholder="Nomor rekening transfer" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 				<div class="col-md-4">
 					<label for="accname" class="form-label fw-semibold text-secondary small">Atas Nama Rekening</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-user"></i></span>
-						<input type="text" class="form-control bg-white" id="accname" name="accname" value="<?= htmlspecialchars($accname); ?>" placeholder="Nama pemilik rekening" <?= $is_view ? 'readonly' : ''; ?>>
+						<input type="text" class="form-control bg-white" id="accname" name="accname" value="<?= htmlspecialchars((string) $accname); ?>" placeholder="Nama pemilik rekening" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 			</div>
@@ -263,19 +263,19 @@ $mod = isset($mod) ? $mod : '';
 									<input type="hidden" class="fpark" value="<?= $record->parkir; ?>">
 									<input type="hidden" class="flainnya" value="<?= $record->lainnya; ?>">
 									<input type="hidden" class="fkm" value="<?= $km_diff; ?>">
-									<span class="fw-semibold text-primary"><?= htmlspecialchars($record->no_doc); ?></span>
+									<span class="fw-semibold text-primary"><?= htmlspecialchars((string) $record->no_doc); ?></span>
 								</td>
-								<td><?= htmlspecialchars($record->tgl_doc); ?></td>
+								<td><?= htmlspecialchars((string) $record->tgl_doc); ?></td>
 								<td class="small fw-semibold text-secondary">
 									<?= htmlspecialchars(!empty($record->no_coa) ? ($record->no_coa . ' - ' . $record->nm_coa) : '-'); ?>
 								</td>
-								<td class="small"><?= htmlspecialchars($record->keperluan); ?></td>
-								<td class="small"><?= htmlspecialchars($record->rute); ?></td>
-								<td class="text-end fw-medium"><?= number_format($record->bensin, 0, ',', '.'); ?></td>
-								<td class="text-end fw-medium"><?= number_format($record->tol, 0, ',', '.'); ?></td>
-								<td class="text-end fw-medium"><?= number_format($record->parkir, 0, ',', '.'); ?></td>
-								<td class="text-end fw-medium"><?= number_format($record->lainnya, 0, ',', '.'); ?></td>
-								<td class="text-center small"><?= number_format($km_diff, 0, ',', '.'); ?> KM</td>
+								<td class="small"><?= htmlspecialchars((string) $record->keperluan); ?></td>
+								<td class="small"><?= htmlspecialchars((string) $record->rute); ?></td>
+								<td class="text-end fw-medium"><?= number_format((float) $record->bensin, 0, ',', '.'); ?></td>
+								<td class="text-end fw-medium"><?= number_format((float) $record->tol, 0, ',', '.'); ?></td>
+								<td class="text-end fw-medium"><?= number_format((float) $record->parkir, 0, ',', '.'); ?></td>
+								<td class="text-end fw-medium"><?= number_format((float) $record->lainnya, 0, ',', '.'); ?></td>
+								<td class="text-center small"><?= number_format((float) $km_diff, 0, ',', '.'); ?> KM</td>
 								<td class="text-center">
 									<?php if (!empty($file_url)): ?>
 										<a href="<?= $file_url ?>" target="_blank" class="btn btn-outline-primary btn-xs" title="Lihat Dokumen">
@@ -301,17 +301,17 @@ $mod = isset($mod) ? $mod : '';
 					<tfoot class="table-light">
 						<tr>
 							<th colspan="6" class="text-end fw-bold">SUB TOTAL:</th>
-							<th class="text-end fw-bold" id="lbl_sub_bensin">Rp <?= number_format($total_bensin, 0, ',', '.'); ?></th>
-							<th class="text-end fw-bold" id="lbl_sub_tol">Rp <?= number_format($total_tol, 0, ',', '.'); ?></th>
-							<th class="text-end fw-bold" id="lbl_sub_parkir">Rp <?= number_format($total_parkir, 0, ',', '.'); ?></th>
-							<th class="text-end fw-bold" id="lbl_sub_lainnya">Rp <?= number_format($total_lainnya, 0, ',', '.'); ?></th>
-							<th class="text-center fw-bold" id="lbl_sub_km"><?= number_format($total_km, 0, ',', '.'); ?> KM</th>
+							<th class="text-end fw-bold" id="lbl_sub_bensin">Rp <?= number_format((float) $total_bensin, 0, ',', '.'); ?></th>
+							<th class="text-end fw-bold" id="lbl_sub_tol">Rp <?= number_format((float) $total_tol, 0, ',', '.'); ?></th>
+							<th class="text-end fw-bold" id="lbl_sub_parkir">Rp <?= number_format((float) $total_parkir, 0, ',', '.'); ?></th>
+							<th class="text-end fw-bold" id="lbl_sub_lainnya">Rp <?= number_format((float) $total_lainnya, 0, ',', '.'); ?></th>
+							<th class="text-center fw-bold" id="lbl_sub_km"><?= number_format((float) $total_km, 0, ',', '.'); ?> KM</th>
 							<th colspan="<?= $is_view ? '1' : '2' ?>"></th>
 						</tr>
 						<tr class="table-primary">
 							<th colspan="6" class="text-end fw-bolder fs-6">TOTAL PENGAJUAN:</th>
 							<th colspan="4" class="text-end fw-bolder fs-6 text-primary" id="lbl_grand_total">
-								Rp <?= number_format($grand_total, 0, ',', '.'); ?>
+								Rp <?= number_format((float) $grand_total, 0, ',', '.'); ?>
 							</th>
 							<th colspan="<?= $is_view ? '2' : '3' ?>">
 								<input type="hidden" id="jumlah_expense" name="jumlah_expense" value="<?= $grand_total; ?>">

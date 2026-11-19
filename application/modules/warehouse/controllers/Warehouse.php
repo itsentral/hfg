@@ -216,7 +216,7 @@ class Warehouse extends Admin_Controller
         $filter_material = $this->input->post('filter_material') ?? '';
 
         $total = $this->Warehouse_model->get_grand_total_stock_value($kd_gudang, $id_gudang, $filter_material);
-        echo json_encode(['total' => number_format($total, 0, ',', '.')]);
+        echo json_encode(['total' => number_format((float) $total, 0, ',', '.')]);
     }
 
     // ── HISTORY MATERIAL ──────────────────────────────────────────────────
@@ -310,7 +310,7 @@ class Warehouse extends Admin_Controller
             'font' => ['bold' => true, 'size' => 10],
             'alignment' => ['horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER],
             'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]],
-            'fill' => ['type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => ['rgb' => 'D9E1F2']],
+            'fill' => ['fillType' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => ['rgb' => 'D9E1F2']],
         ];
         $dataStyle = [
             'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]],
@@ -320,7 +320,7 @@ class Warehouse extends Admin_Controller
         $sheet = $objPHPExcel->getActiveSheet();
         $sheet->setTitle('Per Pack');
         $headers1 = ['No', 'Pack Code', 'Material', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll', 'Gudang'];
-        foreach ($headers1 as $col => $h) { $sheet->setCellValueByColumnAndRow($col, 1, $h); }
+        foreach ($headers1 as $col => $h) { $sheet->setCellValue([$col + 1, 1], $h); }
         $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
 
         // Build per pack → per material rows
@@ -352,20 +352,20 @@ class Warehouse extends Admin_Controller
                 $mat_nw_per = $mat_rolls > 0 ? $mat_nw / $mat_rolls : 0;
                 $mat_gw_per = $mat_rolls > 0 ? $mat_gw / $mat_rolls : 0;
 
-                $sheet->setCellValueByColumnAndRow(2, $row, $mat_name);
-                $sheet->setCellValueByColumnAndRow(3, $row, $mat_rolls);
-                $sheet->setCellValueByColumnAndRow(4, $row, $mat_nw);
-                $sheet->setCellValueByColumnAndRow(5, $row, $mat_nw_per);
-                $sheet->setCellValueByColumnAndRow(6, $row, $mat_gw);
-                $sheet->setCellValueByColumnAndRow(7, $row, $mat_gw_per);
+                $sheet->setCellValue([3, $row], $mat_name);
+                $sheet->setCellValue([4, $row], $mat_rolls);
+                $sheet->setCellValue([5, $row], $mat_nw);
+                $sheet->setCellValue([6, $row], $mat_nw_per);
+                $sheet->setCellValue([7, $row], $mat_gw);
+                $sheet->setCellValue([8, $row], $mat_gw_per);
                 $row++;
             }
             $end_row = $row - 1;
 
             // Set pack columns on first row
-            $sheet->setCellValueByColumnAndRow(0, $start_row, $pack_no);
-            $sheet->setCellValueByColumnAndRow(1, $start_row, $pk);
-            $sheet->setCellValueByColumnAndRow(8, $start_row, $gudang);
+            $sheet->setCellValue([1, $start_row], $pack_no);
+            $sheet->setCellValue([2, $start_row], $pk);
+            $sheet->setCellValue([9, $start_row], $gudang);
 
             // Merge cells jika multi-material
             if ($mat_count > 1) {
@@ -382,7 +382,7 @@ class Warehouse extends Admin_Controller
         $sheet2 = $objPHPExcel->createSheet();
         $sheet2->setTitle('Per Material');
         $headers2 = ['No', 'ID Material', 'Material Name', 'Trade Name', 'Gudang', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll'];
-        foreach ($headers2 as $col => $h) { $sheet2->setCellValueByColumnAndRow($col, 1, $h); }
+        foreach ($headers2 as $col => $h) { $sheet2->setCellValue([$col + 1, 1], $h); }
         $sheet2->getStyle('A1:J1')->applyFromArray($headerStyle);
 
         // Group by material + gudang
@@ -411,16 +411,16 @@ class Warehouse extends Admin_Controller
             $no++;
             $nw_per = $mg['roll_count'] > 0 ? $mg['total_nw'] / $mg['roll_count'] : 0;
             $gw_per = $mg['roll_count'] > 0 ? $mg['total_gw'] / $mg['roll_count'] : 0;
-            $sheet2->setCellValueByColumnAndRow(0, $row, $no);
-            $sheet2->setCellValueByColumnAndRow(1, $row, $mg['id_material']);
-            $sheet2->setCellValueByColumnAndRow(2, $row, $mg['nm_material']);
-            $sheet2->setCellValueByColumnAndRow(3, $row, $mg['trade_name']);
-            $sheet2->setCellValueByColumnAndRow(4, $row, $mg['kd_gudang']);
-            $sheet2->setCellValueByColumnAndRow(5, $row, $mg['roll_count']);
-            $sheet2->setCellValueByColumnAndRow(6, $row, $mg['total_nw']);
-            $sheet2->setCellValueByColumnAndRow(7, $row, $nw_per);
-            $sheet2->setCellValueByColumnAndRow(8, $row, $mg['total_gw']);
-            $sheet2->setCellValueByColumnAndRow(9, $row, $gw_per);
+            $sheet2->setCellValue([1, $row], $no);
+            $sheet2->setCellValue([2, $row], $mg['id_material']);
+            $sheet2->setCellValue([3, $row], $mg['nm_material']);
+            $sheet2->setCellValue([4, $row], $mg['trade_name']);
+            $sheet2->setCellValue([5, $row], $mg['kd_gudang']);
+            $sheet2->setCellValue([6, $row], $mg['roll_count']);
+            $sheet2->setCellValue([7, $row], $mg['total_nw']);
+            $sheet2->setCellValue([8, $row], $nw_per);
+            $sheet2->setCellValue([9, $row], $mg['total_gw']);
+            $sheet2->setCellValue([10, $row], $gw_per);
             $row++;
         }
         $sheet2->getStyle('A2:J' . max($row - 1, 2))->applyFromArray($dataStyle);
@@ -430,21 +430,21 @@ class Warehouse extends Admin_Controller
         $sheet3 = $objPHPExcel->createSheet();
         $sheet3->setTitle('Per Coil');
         $headers3 = ['No', 'Pack Code', 'No. Coil', 'Internal Code', 'Material', 'Trade Name', 'N.W.', 'G.W.', 'Length', 'Gudang', 'Baby Coil'];
-        foreach ($headers3 as $col => $h) { $sheet3->setCellValueByColumnAndRow($col, 1, $h); }
+        foreach ($headers3 as $col => $h) { $sheet3->setCellValue([$col + 1, 1], $h); }
         $sheet3->getStyle('A1:K1')->applyFromArray($headerStyle);
         $row = 2;
         foreach ($sheet3_data as $i => $r) {
-            $sheet3->setCellValueByColumnAndRow(0, $row, $i + 1);
-            $sheet3->setCellValueByColumnAndRow(1, $row, $r['pack_code']);
-            $sheet3->setCellValueByColumnAndRow(2, $row, $r['no_coil']);
-            $sheet3->setCellValueByColumnAndRow(3, $row, $r['kode_internal']);
-            $sheet3->setCellValueByColumnAndRow(4, $row, $r['nm_material']);
-            $sheet3->setCellValueByColumnAndRow(5, $row, $r['trade_name']);
-            $sheet3->setCellValueByColumnAndRow(6, $row, (float) $r['net_weight']);
-            $sheet3->setCellValueByColumnAndRow(7, $row, (float) $r['gross_weight']);
-            $sheet3->setCellValueByColumnAndRow(8, $row, (float) $r['length']);
-            $sheet3->setCellValueByColumnAndRow(9, $row, $r['kd_gudang']);
-            $sheet3->setCellValueByColumnAndRow(10, $row, (int) $r['is_baby_coil'] ? 'Yes' : 'No');
+            $sheet3->setCellValue([1, $row], $i + 1);
+            $sheet3->setCellValue([2, $row], $r['pack_code']);
+            $sheet3->setCellValue([3, $row], $r['no_coil']);
+            $sheet3->setCellValue([4, $row], $r['kode_internal']);
+            $sheet3->setCellValue([5, $row], $r['nm_material']);
+            $sheet3->setCellValue([6, $row], $r['trade_name']);
+            $sheet3->setCellValue([7, $row], (float) $r['net_weight']);
+            $sheet3->setCellValue([8, $row], (float) $r['gross_weight']);
+            $sheet3->setCellValue([9, $row], (float) $r['length']);
+            $sheet3->setCellValue([10, $row], $r['kd_gudang']);
+            $sheet3->setCellValue([11, $row], (int) $r['is_baby_coil'] ? 'Yes' : 'No');
             $row++;
         }
         $sheet3->getStyle('A2:K' . ($row - 1))->applyFromArray($dataStyle);
@@ -548,7 +548,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:H1');
-        $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper($label_gudang));
+        $sheet->setCellValue('A1', 'STOCK VALUE REPORT — ' . strtoupper((string) $label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -662,7 +662,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet2->mergeCells('A1:J1');
-        $sheet2->setCellValue('A1', 'DETAIL COIL — ' . strtoupper($label_gudang));
+        $sheet2->setCellValue('A1', 'DETAIL COIL — ' . strtoupper((string) $label_gudang));
         $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet2->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -845,7 +845,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:I1');
-        $sheet->setCellValue('A1', 'STOCK MATERIAL PER COIL — ' . strtoupper($label_gudang));
+        $sheet->setCellValue('A1', 'STOCK MATERIAL PER COIL — ' . strtoupper((string) $label_gudang));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1047,7 +1047,7 @@ class Warehouse extends Admin_Controller
             $date_snap
         );
 
-        echo json_encode(['total' => number_format($total, 3, ',', '.')]);
+        echo json_encode(['total' => number_format((float) $total, 3, ',', '.')]);
     }
 
     public function data_side_stock_perday()
@@ -1207,7 +1207,7 @@ class Warehouse extends Admin_Controller
         if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
         if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
 
-        $label_period = ' | Per Tanggal: ' . date('d/m/Y', strtotime($date_snap));
+        $label_period = ' | Per Tanggal: ' . date('d/m/Y', strtotime((string) $date_snap));
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -1221,7 +1221,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet->mergeCells('A1:J1');
-        $sheet->setCellValue('A1', 'STOCK VALUE HISTORY — ' . strtoupper($label_gudang) . $label_period);
+        $sheet->setCellValue('A1', 'STOCK VALUE HISTORY — ' . strtoupper((string) $label_gudang) . $label_period);
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1282,7 +1282,7 @@ class Warehouse extends Admin_Controller
             $qty_stock   = (float) ($d['qty_stock']    ?? 0);
             $jml_coil    = (int)    $d['jumlah_coil'];
             $trade_name  = $d['trade_name'] ?? '';
-            $tgl         = !empty($d['hist_date']) ? date('d/m/Y', strtotime($d['hist_date'])) : '-';
+            $tgl         = !empty($d['hist_date']) ? date('d/m/Y', strtotime((string) $d['hist_date'])) : '-';
             $nm_gudang   = ($d['nm_gudang'] ?? $d['kd_gudang']) ?? '-';
 
             $sheet->setCellValueExplicit('A' . $row, $no + 1,          PHPExcel_Cell_DataType::TYPE_NUMERIC);
@@ -1343,7 +1343,7 @@ class Warehouse extends Admin_Controller
 
         // ── Judul ─────────────────────────────────────────────────────────────
         $sheet2->mergeCells('A1:M1');
-        $sheet2->setCellValue('A1', 'DETAIL COIL HISTORY — ' . strtoupper($label_gudang) . $label_period);
+        $sheet2->setCellValue('A1', 'DETAIL COIL HISTORY — ' . strtoupper((string) $label_gudang) . $label_period);
         $sheet2->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet2->getStyle('A1')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1413,7 +1413,7 @@ class Warehouse extends Admin_Controller
             $length       = (float) ($c['length']       ?? 0);
             $costbook     = (float) ($c['harga_beli']   ?? 0);
             $total_value  = $costbook * $net_weight;
-            $tgl          = !empty($c['hist_date']) ? date('d/m/Y', strtotime($c['hist_date'])) : '-';
+            $tgl          = !empty($c['hist_date']) ? date('d/m/Y', strtotime((string) $c['hist_date'])) : '-';
             $status       = $c['status']   ?? '-';
             $nm_gudang    = ($c['nm_gudang'] ?? $c['kd_gudang']) ?? '-';
 

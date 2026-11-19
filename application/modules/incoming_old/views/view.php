@@ -22,7 +22,7 @@ if ($tanda != 'request') { ?>
                     <td class="text-left">:</td>
                     <td class="text-left">
                         <?php
-                        $files = explode('|', $file_incoming_material);
+                        $files = explode('|', (string) $file_incoming_material);
                         foreach ($files as $f) :
                             if (file_exists($f)) : ?>
                                 <a href="<?= base_url($f); ?>" target="_blank" style="display:block; margin-top: 5px;">
@@ -77,15 +77,15 @@ if ($tanda != 'request') { ?>
                                     <b>{$valx['nm_barang']}</b><br>
                                     <small>{$valx['id_barang']}</small>
                                   </td>";
-                            echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>" . ucfirst($valx['unit_measure']) . "</td>";
-                            echo "<td align='right' rowspan='$rowspan' style='vertical-align:middle;'>" . number_format($valx['qty_order'], 2) . "</td>";
+                            echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>" . ucfirst((string) $valx['unit_measure']) . "</td>";
+                            echo "<td align='right' rowspan='$rowspan' style='vertical-align:middle;'>" . number_format((float) $valx['qty_order'], 2) . "</td>";
                         }
 
                         // Kolom Data ROS yang muncul di setiap baris (Child)
                         echo "<td align='center' style='background-color: #f9f9f9;'>{$valx['no_coil']}</td>";
-                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format($valx['berat_kotor'], 2) . "</td>";
-                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format($valx['berat_bersih'], 2) . "</td>";
-                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format($valx['length'], 2) . "</td>";
+                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format((float) $valx['berat_kotor'], 2) . "</td>";
+                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format((float) $valx['berat_bersih'], 2) . "</td>";
+                        echo "<td align='right' style='background-color: #f9f9f9;'>" . number_format((float) $valx['length'], 2) . "</td>";
 
                         echo "<td align='center' style='background-color: #f9f9f9;' hidden>{$valx['no_coil']}</td>";
                         echo "<td align='center' style='background-color: #f9f9f9;' hidden>{$valx['no_coil']}</td>";

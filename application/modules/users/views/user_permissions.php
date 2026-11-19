@@ -85,7 +85,7 @@
 								<?php foreach ($ArrActionPers[$pr['id']] as $value6) : ?>
 									<?php
 									$id_permission   = $value6['id_permission'];
-									$x               = explode(".", $value6['nm_permission']);
+									$x               = explode(".", (string) $value6['nm_permission']);
 									$id_roll_permission = (isset($auth_permissions[$id_permission]->is_role_permission) && $auth_permissions[$id_permission]->is_role_permission == 1) ? 1 : '';
 									$action_value    = isset($auth_permissions[$id_permission]) ? 1 : 0;
 									?>
@@ -118,7 +118,7 @@
 									<?php if (!empty($ArrActionPers[$value['id']])) : ?>
 										<?php foreach ($ArrActionPers[$value['id']] as $value3) : ?>
 											<?php
-											$x = explode(".", $value3['nm_permission']);
+											$x = explode(".", (string) $value3['nm_permission']);
 											$id_roll_permission = (isset($auth_permissions[$value3['id_permission']]->is_role_permission) && $auth_permissions[$value3['id_permission']]->is_role_permission == 1) ? 1 : '';
 											$action_value = isset($auth_permissions[$value3['id_permission']]) ? 1 : 0;
 											?>
@@ -151,7 +151,7 @@
 											<?php if (!empty($ArrActionPers[$value_lv3['id']])) : ?>
 												<?php foreach ($ArrActionPers[$value_lv3['id']] as $value_act) : ?>
 													<?php
-													$x = explode(".", $value_act['nm_permission']);
+													$x = explode(".", (string) $value_act['nm_permission']);
 													$id_roll_permission = (isset($auth_permissions[$value_act['id_permission']]->is_role_permission) && $auth_permissions[$value_act['id_permission']]->is_role_permission == 1) ? 1 : '';
 													$action_value = isset($auth_permissions[$value_act['id_permission']]) ? 1 : 0;
 													?>

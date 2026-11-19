@@ -40,9 +40,9 @@ $this->load->view('include/side_menu');
 				<td><?= $record->payment_date ?></td>
 				<td><?= $record->no_po ?></td>
 				<td><?= $record->nm_supplier?></td>
-				<td align=right><?= number_format($record->request_payment,2)?></td>
+				<td align=right><?= number_format((float) $record->request_payment,2)?></td>
 				<td><?= $record->approved_by?></td>
-				<td><?= ($record->approved_on!=""?date("d-m-Y",strtotime($record->approved_on)):"")?></td>
+				<td><?= ($record->approved_on!=""?date("d-m-Y",strtotime((string) $record->approved_on)):"")?></td>
 				<td><?= $data_status[$record->status]?></td>
 				<td>
 					<?php if($akses_menu['update']) : 

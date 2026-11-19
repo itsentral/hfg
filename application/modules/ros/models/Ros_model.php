@@ -17,7 +17,7 @@ class Ros_model extends BF_Model
     {
         $generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM tr_ros WHERE id LIKE '%ROS-" . date('m-y') . "%'")->row();
         $kodeBarang = $generate_id->max_id;
-        $urutan = (int) substr($kodeBarang, 10, 5);
+        $urutan = (int) substr((string) $kodeBarang, 10, 5);
         $urutan++;
         $tahun = date('m-y');
         $huruf = "ROS-";

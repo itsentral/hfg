@@ -213,7 +213,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                         echo '<tr class="detail_pr_' . $detail_pr['id_detail'] . '">';
                                         echo '<td class="text-center">' . $no . '</td>';
                                         echo '<td class="text-center">' . $detail_pr['nm_material'] . '</td>';
-                                        echo '<td class="text-center">' . number_format($detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id_detail'] . '" value="' . $detail_pr['qty'] . '"></td>';
+                                        echo '<td class="text-center">' . number_format((float) $detail_pr['qty']) . ' <input type="hidden" class="qty_' . $detail_pr['id_detail'] . '" value="' . $detail_pr['qty'] . '"></td>';
                                         echo '<td class="text-center">' . $detail_pr['satuan'] . '</td>';
                                         echo '<td class="text-center"><input type="text" name="price_input_' . $detail_pr['id_detail'] . '" class="form-control form-control-sm text-right price_input price_input_' . $detail_pr['id_detail'] . ' autonum" data-no="' . $detail_pr['id_detail'] . '" value="' . $detail_pr['harga'] . '" ' . $readonly . '></td>';
                                         echo '<td class="text-center"><input type="text" name="grand_total_' . $detail_pr['id_detail'] . '" class="form-control form-control-sm text-right grand_total_' . $detail_pr['id_detail'] . ' autonum" value="' . $detail_pr['total_harga'] . '" ' . $readonly . '></td>';
@@ -236,7 +236,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                             <tfoot>
                                 <tr>
                                     <th class="text-right" colspan="5">Grand Total</th>
-                                    <th class="text-right grand_total_non_pr"><?= number_format($grand_total_non_pr, 2) ?></th>
+                                    <th class="text-right grand_total_non_pr"><?= number_format((float) $grand_total_non_pr, 2) ?></th>
                                     <th></th>
                                 </tr>
                             </tfoot>
@@ -269,7 +269,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                     <?php
                     if (isset($data)) {
                         if ($data->doc_file != '') {
-                            if (strpos($data->doc_file, 'pdf', 0) > 1) {
+                            if (strpos((string) $data->doc_file, 'pdf', 0) > 1) {
                                 echo '<div class="col-md-12">
 						<iframe src="' . base_url('assets/expense/' . $data->doc_file) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 						</iframe>
@@ -282,7 +282,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                             }
                         }
                         if ($data->doc_file_2 != '') {
-                            if (strpos($data->doc_file_2, 'pdf', 0) > 1) {
+                            if (strpos((string) $data->doc_file_2, 'pdf', 0) > 1) {
                                 echo '<div class="col-md-12">
 						<iframe src="' . base_url('./assets/expense/' . $data->doc_file_2) . '#toolbar=0&navpanes=0" title="PDF" style="width:600px; height:500px;" frameborder="0">
 						</iframe>

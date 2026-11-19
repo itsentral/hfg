@@ -99,7 +99,7 @@ class Material_category extends Admin_Controller
           'pesan'    => 'Failed process data!',
           'status'  => 0
         );
-        write_log('Material Category', $label, 'Gagal ' . strtolower($label) . ' material category: ' . $code, $logPayload, null, 0);
+        write_log('Material Category', $label, 'Gagal ' . strtolower((string) $label) . ' material category: ' . $code, $logPayload, null, 0);
       } else {
         $this->db->trans_commit();
         $status  = array(

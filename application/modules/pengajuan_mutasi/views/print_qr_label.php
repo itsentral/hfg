@@ -72,21 +72,21 @@
             <table class="info-table">
                 <tr>
                     <td class="label-td">Pack No.</td>
-                    <td>: <?= htmlspecialchars($row['pack_code']) ?></td>
+                    <td>: <?= htmlspecialchars((string) $row['pack_code']) ?></td>
                 </tr>
                 <tr>
                     <td class="label-td">Mutation</td>
-                    <td>: <?= htmlspecialchars($mutation['mutation_number']) ?></td>
+                    <td>: <?= htmlspecialchars((string) $mutation['mutation_number']) ?></td>
                 </tr>
                 <tr>
                     <td class="label-td">Material</td>
                     <td>:
                         <?php if (count($row['materials']) === 1): ?>
-                            <?= htmlspecialchars($row['materials'][0]) ?>
+                            <?= htmlspecialchars((string) $row['materials'][0]) ?>
                         <?php else: ?>
                             <ul class="material-list">
                                 <?php foreach ($row['materials'] as $mat): ?>
-                                    <li><?= htmlspecialchars($mat) ?></li>
+                                    <li><?= htmlspecialchars((string) $mat) ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php endif; ?>
@@ -94,16 +94,16 @@
                 </tr>
                 <tr>
                     <td class="label-td">Total Net Weight</td>
-                    <td>: <?= number_format($row['total_nw'], 2) ?> Kg</td>
+                    <td>: <?= number_format((float) $row['total_nw'], 2) ?> Kg</td>
                 </tr>
                 <tr>
                     <td class="label-td">Total Gross Weight</td>
-                    <td>: <?= number_format($row['total_gw'], 2) ?> Kg</td>
+                    <td>: <?= number_format((float) $row['total_gw'], 2) ?> Kg</td>
                 </tr>
                 <tr>
                     <td class="label-td">Dest. Warehouse</td>
                     <td>
-                        : <?= !empty($row['nm_gudang_tujuan']) ? htmlspecialchars($row['nm_gudang_tujuan']) . ' (' . htmlspecialchars($row['kd_gudang_ke']) . ')' : '-' ?>
+                        : <?= !empty($row['nm_gudang_tujuan']) ? htmlspecialchars((string) $row['nm_gudang_tujuan']) . ' (' . htmlspecialchars((string) $row['kd_gudang_ke']) . ')' : '-' ?>
                         <?php if ($row['kd_gudang_ke'] === 'PRO'): ?>
                             <span style="display:inline-block; width:12px; height:12px; background-color:#000; border-radius:50%; margin-left:4px; vertical-align:middle;"></span>
                         <?php endif; ?>

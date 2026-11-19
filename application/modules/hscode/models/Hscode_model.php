@@ -23,7 +23,7 @@ class Hscode_model extends CI_Model
         if ($maxID) {
             $count = $maxID + 1;
         }
-        $newID = "HSC$y-" . str_pad($count, 5, "0", STR_PAD_LEFT);
+        $newID = "HSC$y-" . str_pad((string) $count, 5, "0", STR_PAD_LEFT);
         return $newID;
     }
 

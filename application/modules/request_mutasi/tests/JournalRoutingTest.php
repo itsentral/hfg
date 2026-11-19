@@ -163,7 +163,7 @@ if (!function_exists('assertArrayHasKey')) {
 if (!function_exists('assertStringContains')) {
     function assertStringContains(string $needle, string $haystack, string $message = ''): void
     {
-        if (strpos($haystack, $needle) === false) {
+        if (strpos((string) $haystack, $needle) === false) {
             throw new AssertionError($message ?: "Expected string to contain '{$needle}', got: '{$haystack}'");
         }
     }
@@ -354,8 +354,8 @@ class JournalRoutingSimulator
     private function generateJournalNumber(string $type, string $tgl, string $db_name): string
     {
         $prefix = ($type === 'BUM') ? 'BUM' : 'BUK';
-        $month = date('m', strtotime($tgl));
-        $year = date('Y', strtotime($tgl));
+        $month = date('m', strtotime((string) $tgl));
+        $year = date('Y', strtotime((string) $tgl));
         $number = str_pad($this->journal_counter++, 5, '0', STR_PAD_LEFT);
         return "{$prefix}-101-{$month}{$year}-{$number}";
     }
@@ -382,7 +382,7 @@ class JournalRoutingSimulator
         }
         $db_name = $target['db_name'];
 
-        $tgl_jurnal = date('Y-m-d', strtotime($tgl));
+        $tgl_jurnal = date('Y-m-d', strtotime((string) $tgl));
         $Nomor_JV = $this->generateJournalNumber('BUM', $tgl_jurnal, $db_name);
         $this->last_journal_number = $Nomor_JV;
 
@@ -482,7 +482,7 @@ class JournalRoutingSimulator
         }
         $db_name = $target['db_name'];
 
-        $tgl_jurnal = date('Y-m-d', strtotime($tgl_request));
+        $tgl_jurnal = date('Y-m-d', strtotime((string) $tgl_request));
         $Nomor_JV = $this->generateJournalNumber('BUM', $tgl_jurnal, $db_name);
         $this->last_journal_number = $Nomor_JV;
 
@@ -582,7 +582,7 @@ class JournalRoutingSimulator
         }
         $db_name = $target['db_name'];
 
-        $tgl_jurnal = date('Y-m-d', strtotime($tgl_request));
+        $tgl_jurnal = date('Y-m-d', strtotime((string) $tgl_request));
         $Nomor_JV = $this->generateJournalNumber('BUK', $tgl_jurnal, $db_name);
         $this->last_journal_number = $Nomor_JV;
 
@@ -875,8 +875,8 @@ class JournalRoutingTest
             $counter_query_found = false;
             foreach ($this->simulator->db->queries as $sql) {
                 if (
-                    strpos($sql, $expected_db . '.pastibisa_tb_cabang') !== false
-                    && strpos($sql, 'nobum') !== false
+                    strpos((string) $sql, $expected_db . '.pastibisa_tb_cabang') !== false
+                    && strpos((string) $sql, 'nobum') !== false
                 ) {
                     $counter_query_found = true;
                     break;
@@ -901,8 +901,8 @@ class JournalRoutingTest
             $counter_query_found = false;
             foreach ($this->simulator->db->queries as $sql) {
                 if (
-                    strpos($sql, $expected_db . '.pastibisa_tb_cabang') !== false
-                    && strpos($sql, 'nobuk') !== false
+                    strpos((string) $sql, $expected_db . '.pastibisa_tb_cabang') !== false
+                    && strpos((string) $sql, 'nobuk') !== false
                 ) {
                     $counter_query_found = true;
                     break;
@@ -939,7 +939,7 @@ class JournalRoutingTest
                 $target
             );
             assertIsArray($result);
-            assertTrue(strlen($result['journal_no']) > 0, "Journal number should not be empty");
+            assertTrue(strlen((string) $result['journal_no']) > 0, "Journal number should not be empty");
 
             $update_found = false;
             foreach ($this->simulator->record_updates as $update) {
@@ -967,7 +967,7 @@ class JournalRoutingTest
                 $target
             );
             assertIsArray($result);
-            assertTrue(strlen($result['journal_no']) > 0, "BUK journal number should not be empty");
+            assertTrue(strlen((string) $result['journal_no']) > 0, "BUK journal number should not be empty");
 
             $update_found = false;
             foreach ($this->simulator->record_updates as $update) {
@@ -1045,13 +1045,13 @@ class JournalRoutingTest
             foreach ($all_tables as $table) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($table, $other_db) === 0,
+                        strpos((string) $table, $other_db) === 0,
                         "BUM for '{$target}': table '{$table}' should NOT reference '{$other_db}'"
                     );
                 }
                 // Verify it either uses expected_db prefix or is a local table
-                $uses_target = (strpos($table, $expected_db) === 0);
-                $is_local = (strpos($table, 'tr_') === 0);
+                $uses_target = (strpos((string) $table, $expected_db) === 0);
+                $is_local = (strpos((string) $table, 'tr_') === 0);
                 assertTrue(
                     $uses_target || $is_local,
                     "BUM for '{$target}': table '{$table}' must use '{$expected_db}' prefix or be local"
@@ -1062,7 +1062,7 @@ class JournalRoutingTest
             foreach ($this->simulator->db->queries as $sql) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($sql, $other_db . '.') !== false,
+                        strpos((string) $sql, $other_db . '.') !== false,
                         "BUM for '{$target}': query should NOT reference '{$other_db}'. SQL: {$sql}"
                     );
                 }
@@ -1084,7 +1084,7 @@ class JournalRoutingTest
             foreach ($all_tables as $table) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($table, $other_db) === 0,
+                        strpos((string) $table, $other_db) === 0,
                         "BUK for '{$target}': table '{$table}' should NOT reference '{$other_db}'"
                     );
                 }
@@ -1093,7 +1093,7 @@ class JournalRoutingTest
             foreach ($this->simulator->db->queries as $sql) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($sql, $other_db . '.') !== false,
+                        strpos((string) $sql, $other_db . '.') !== false,
                         "BUK for '{$target}': query should NOT reference '{$other_db}'. SQL: {$sql}"
                     );
                 }
@@ -1259,20 +1259,20 @@ class JournalRoutingTest
 
             // Verify header table uses correct DB prefix
             assertTrue(
-                strpos($result['header_table'], $expected_db . '.') === 0,
+                strpos((string) $result['header_table'], $expected_db . '.') === 0,
                 "Iteration {$i}: header_table '{$result['header_table']}' should start with '{$expected_db}.'"
             );
 
             // Verify detail table uses correct DB prefix
             assertTrue(
-                strpos($result['detail_table'], $expected_db . '.') === 0,
+                strpos((string) $result['detail_table'], $expected_db . '.') === 0,
                 "Iteration {$i}: detail_table '{$result['detail_table']}' should start with '{$expected_db}.'"
             );
 
             // Verify counter query references correct DB
             $counter_found = false;
             foreach ($this->simulator->db->queries as $sql) {
-                if (strpos($sql, $expected_db . '.pastibisa_tb_cabang') !== false) {
+                if (strpos((string) $sql, $expected_db . '.pastibisa_tb_cabang') !== false) {
                     $counter_found = true;
                     break;
                 }
@@ -1321,7 +1321,7 @@ class JournalRoutingTest
             $length = mt_rand(0, 30);
             $random_target = '';
             for ($j = 0; $j < $length; $j++) {
-                $random_target .= $chars[mt_rand(0, strlen($chars) - 1)];
+                $random_target .= $chars[mt_rand(0, strlen((string) $chars) - 1)];
             }
 
             // Skip if accidentally generated a valid value
@@ -1606,7 +1606,7 @@ class JournalRoutingTest
             foreach ($all_tables as $table) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($table, $other_db) === 0,
+                        strpos((string) $table, $other_db) === 0,
                         "Iter {$i}: '{$table}' must NOT use '{$other_db}' (target='{$target}')"
                     );
                 }
@@ -1616,7 +1616,7 @@ class JournalRoutingTest
             foreach ($this->simulator->db->queries as $sql) {
                 foreach ($other_dbs as $other_db) {
                     assertFalse(
-                        strpos($sql, $other_db . '.') !== false,
+                        strpos((string) $sql, $other_db . '.') !== false,
                         "Iter {$i}: SQL must NOT reference '{$other_db}' (target='{$target}')"
                     );
                 }
@@ -1660,7 +1660,7 @@ class JournalRoutingTest
             // Verify counter update targets correct db
             $counter_found = false;
             foreach ($this->simulator->db->queries as $sql) {
-                if (strpos($sql, $expected_db . '.pastibisa_tb_cabang') !== false) {
+                if (strpos((string) $sql, $expected_db . '.pastibisa_tb_cabang') !== false) {
                     $counter_found = true;
                     break;
                 }
@@ -1732,7 +1732,7 @@ class JournalRoutingTest
 
             assertIsArray($result, "Iteration {$i}: result should be array");
             assertTrue(
-                strlen($result['journal_no']) > 0,
+                strlen((string) $result['journal_no']) > 0,
                 "Iteration {$i}: journal number must not be empty"
             );
 

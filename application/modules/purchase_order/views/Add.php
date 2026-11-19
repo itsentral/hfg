@@ -21,7 +21,7 @@ $tanggal = date('Y-m-d');
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" requi red>
 											<option value="">--Pilih--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
-												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower($supplier->name_suplier)) ?></option>
+												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
 										</select>
 									</div>
@@ -81,7 +81,7 @@ $tanggal = date('Y-m-d');
 											<?php foreach ($results['matauang'] as $supplier) {
 												$selected = '';
 											?>
-												<option value="<?= $supplier->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower($supplier->kode)) ?></option>
+												<option value="<?= $supplier->kode ?>" <?= $selected; ?>><?= strtoupper(strtolower((string) $supplier->kode)) ?></option>
 											<?php } ?>
 										</select>
 									</div>

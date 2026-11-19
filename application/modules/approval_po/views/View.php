@@ -44,7 +44,7 @@ foreach ($results['header'] as $header) {
 										<label for="customer">Tanggal Dibutuhkan</label>
 									</div>
 									<div class="col-md-8">
-										<?= date('d F Y', strtotime($header->tgl_dibutuhkan)) ?>
+										<?= date('d F Y', strtotime((string) $header->tgl_dibutuhkan)) ?>
 									</div>
 								</div>
 							</div>
@@ -82,11 +82,11 @@ foreach ($results['header'] as $header) {
 											echo "	<td class='text-left'>" . $value['nm_product'] . "
 										<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
 										</td>";
-											echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-											echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+											echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+											echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 											echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
-											echo "<td class='text-right'>" . number_format($propose, 2) . "</td>";
-											echo "<td class='text-center'>" . number_format($value['propose_rev'], 2) . "</td>";
+											echo "<td class='text-right'>" . number_format((float) $propose, 2) . "</td>";
+											echo "<td class='text-center'>" . number_format((float) $value['propose_rev'], 2) . "</td>";
 											echo "<td class='text-center'></td>";
 
 											echo "</tr>";

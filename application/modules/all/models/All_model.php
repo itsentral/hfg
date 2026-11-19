@@ -155,7 +155,7 @@ class All_model extends BF_Model
 		$newcode = '';
 		$data = $this->GetOneData('ms_generate', array('tipe' => $tipe));
 		if ($data !== false) {
-			if (stripos($data->info, 'YEAR', 0) !== false) {
+			if (stripos((string) $data->info, 'YEAR', 0) !== false) {
 				if ($data->info3 != date("Y")) {
 					$years = date("Y");
 					$number = 1;
@@ -563,7 +563,7 @@ class All_model extends BF_Model
 	{
 		$generate_id = $this->db->query("SELECT MAX(id) AS max_id FROM tr_cost_book WHERE id LIKE '%CBO-" . date('Y-m-') . "%'")->row();
 		$kodeBarang = $generate_id->max_id;
-		$urutan = (int) substr($kodeBarang, 13, 5);
+		$urutan = (int) substr((string) $kodeBarang, 13, 5);
 		$urutan++;
 		$tahun = date('Y-m-');
 		$huruf = "CBO-";

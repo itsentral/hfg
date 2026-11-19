@@ -22,7 +22,7 @@ foreach ($data as $item) :
         $count_kasbon += 1;
     }
     if ($item->tipe == 'expense') {
-        if (strpos($item->no_doc, 'ER-') !== false || strpos($item->no_doc, 'ROS-') !== false) {
+        if (strpos((string) $item->no_doc, 'ER-') !== false || strpos((string) $item->no_doc, 'ROS-') !== false) {
             $count_expense += 1;
         } else {
             $count_pembayaran_po += 1;
@@ -190,7 +190,7 @@ endforeach;
                                         <td class="text-center"><?= $item_transportasi->tgl_doc ?></td>
                                         <td><?= $item_transportasi->keperluan ?></td>
                                         <td class="text-center small"><?= $item_transportasi->tipe ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_transportasi->jumlah) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_transportasi->jumlah) ?></td>
                                         <td class="text-center"><?= $item_transportasi->tanggal ?></td>
                                         <td class="text-center">
                                             <?php
@@ -256,7 +256,7 @@ endforeach;
                                         <td class="text-center"><?= $item_kasbon->tgl_doc ?></td>
                                         <td><?= $item_kasbon->keperluan ?></td>
                                         <td class="text-center small"><?= $item_kasbon->tipe ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_kasbon->jumlah) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_kasbon->jumlah) ?></td>
                                         <td class="text-center"><?= $item_kasbon->tanggal ?></td>
                                         <td class="text-center">
                                             <?php
@@ -327,16 +327,16 @@ endforeach;
                         <tbody>
                             <?php foreach ($data as $item_expense) :
                                 if ($item_expense->tipe == 'expense') {
-                                    $tipe = ucfirst($item_expense->tipe);
+                                    $tipe = ucfirst((string) $item_expense->tipe);
                                     $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
                                     if ($get_expense['exp_inv_po'] == '1') {
                                         $tipe = 'Pembayaran PO';
                                     }
-                                    if (strpos($item_expense->no_doc, 'ROS-') !== false) {
+                                    if (strpos((string) $item_expense->no_doc, 'ROS-') !== false) {
                                         $tipe = 'Pembayaran PIB';
                                     }
 
-                                    if (strpos($item_expense->no_doc, 'ER-') !== false || strpos($item_expense->no_doc, 'ROS-') !== false) {
+                                    if (strpos((string) $item_expense->no_doc, 'ER-') !== false || strpos((string) $item_expense->no_doc, 'ROS-') !== false) {
                             ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?= $item_expense->no_doc ?></td>
@@ -344,7 +344,7 @@ endforeach;
                                             <td class="text-center"><?= $item_expense->tgl_doc ?></td>
                                             <td><?= $item_expense->keperluan ?></td>
                                             <td class="text-center small"><?= $tipe ?></td>
-                                            <td class="text-end fw-semibold"><?= number_format($item_expense->jumlah) ?></td>
+                                            <td class="text-end fw-semibold"><?= number_format((float) $item_expense->jumlah) ?></td>
                                             <td class="text-center"><?= $item_expense->tanggal ?></td>
                                             <td class="text-center">
                                                 <?php
@@ -410,7 +410,7 @@ endforeach;
                                         <td class="text-center"><?= $item_periodik->tgl_doc ?></td>
                                         <td><?= $item_periodik->keperluan ?></td>
                                         <td class="text-center small"><?= $item_periodik->tipe ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_periodik->jumlah) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_periodik->jumlah) ?></td>
                                         <td class="text-center"><?= $item_periodik->tanggal ?></td>
                                         <td class="text-center">
                                             <?php
@@ -468,17 +468,17 @@ endforeach;
                             <?php foreach ($data as $item_expense) :
                                 $no_invoice = (isset($list_no_invoice[$item_expense->no_doc])) ? $list_no_invoice[$item_expense->no_doc] : '';
                                 if ($item_expense->tipe == 'expense') {
-                                    $tipe = ucfirst($item_expense->tipe);
+                                    $tipe = ucfirst((string) $item_expense->tipe);
                                     $get_expense = $this->db->get_where('tr_expense', ['no_doc' => $item_expense->no_doc])->row_array();
                                     if ($get_expense['exp_inv_po'] == '1') {
                                         $tipe = 'Pembayaran PO';
                                     }
-                                    if (strpos($item_expense->no_doc, 'ROS-') !== false) {
+                                    if (strpos((string) $item_expense->no_doc, 'ROS-') !== false) {
                                         $tipe = 'Pembayaran PIB';
                                     }
 
                                     if ($get_expense['exp_inv_po'] == '1') {
-                                        $exp_id_po = explode(',', $get_expense['id_po']);
+                                        $exp_id_po = explode(',', (string) $get_expense['id_po']);
                                         $po_note = [];
                                         $this->db->select('note')->from('tr_purchase_order')->where_in('no_surat', $exp_id_po);
                                         $get_po_note = $this->db->get()->result();
@@ -494,7 +494,7 @@ endforeach;
                                             <td class="text-center"><?= $item_expense->tgl_doc ?></td>
                                             <td><?= $item_expense->keperluan ?></td>
                                             <td class="text-center small"><?= $tipe ?></td>
-                                            <td class="text-end fw-semibold"><?= number_format($item_expense->jumlah) ?></td>
+                                            <td class="text-end fw-semibold"><?= number_format((float) $item_expense->jumlah) ?></td>
                                             <td class="text-center"><?= $item_expense->tanggal ?></td>
                                             <td><small class="text-muted"><?= $po_note ?></small></td>
                                             <td class="text-center">
@@ -537,7 +537,7 @@ endforeach;
                                         <td class="text-center"><?= $item_inv->tgl_doc ?></td>
                                         <td><?= $item_inv->keperluan ?></td>
                                         <td class="text-center small"><?= $tipe_label ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_inv->jumlah, 2) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_inv->jumlah, 2) ?></td>
                                         <td class="text-center"><?= $item_inv->tanggal ?></td>
                                         <td><small class="text-muted"><?= $item_inv->currency ?? 'IDR' ?></small></td>
                                         <td class="text-center">
@@ -602,7 +602,7 @@ endforeach;
                                         <td class="text-center"><?= $item_ros->tgl_doc ?></td>
                                         <td><?= $item_ros->keperluan ?></td>
                                         <td class="text-center small"><?= $tipe_label ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_ros->jumlah, 2) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_ros->jumlah, 2) ?></td>
                                         <td class="text-center"><?= $item_ros->tanggal ?></td>
                                         <td><?= $item_ros->nm_supplier ?? '' ?></td>
                                         <td class="text-center">
@@ -659,7 +659,7 @@ endforeach;
                                         <td class="text-center"><?= $item_dp->tgl_doc ?></td>
                                         <td><?= $item_dp->keperluan ?></td>
                                         <td class="text-center small"><?= $item_dp->tipe ?></td>
-                                        <td class="text-end fw-semibold"><?= number_format($item_dp->jumlah) ?></td>
+                                        <td class="text-end fw-semibold"><?= number_format((float) $item_dp->jumlah) ?></td>
                                         <td class="text-center"><?= $item_dp->tgl_doc ?></td>
                                         <td class="text-center">
                                             <?php

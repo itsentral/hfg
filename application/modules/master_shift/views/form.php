@@ -10,12 +10,12 @@ $keterangan = isset($row->keterangan) ? $row->keterangan : '';
 	<div class="col-12">
 		<label class="form-label">Shift Name <span class="text-danger">*</span></label>
 		<input type="text" name="nama_shift" id="nama_shift" class="form-control"
-			placeholder="e.g. Shift 1, Shift 2, Shift 3" value="<?= htmlspecialchars($nama_shift); ?>" required>
+			placeholder="e.g. Shift 1, Shift 2, Shift 3" value="<?= htmlspecialchars((string) $nama_shift); ?>" required>
 	</div>
 
 	<div class="col-12">
 		<label class="form-label">Description <small class="text-muted">(optional)</small></label>
 		<textarea name="keterangan" id="keterangan" class="form-control" rows="3"
-			placeholder="e.g. 07:00 - 15:00"><?= htmlspecialchars($keterangan); ?></textarea>
+			placeholder="e.g. 07:00 - 15:00"><?= htmlspecialchars((string) $keterangan); ?></textarea>
 	</div>
 </div>

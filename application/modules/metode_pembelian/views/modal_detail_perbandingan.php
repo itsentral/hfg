@@ -38,17 +38,17 @@
 						echo "<td align='left' rowspan='".$rows2."'>".$valx['nm_supplier']."</td>";
 					}
 					if(in_array($no, $dataArr) || $no == '1'){
-						echo "<td align='left' rowspan='".$rows2."'><b>".strtoupper($valx['lokasi'])."</b><br>".strtoupper($valx['alamat_supplier'])."<br><b>CURRENCY : ".strtoupper($valx['currency'])."</b></td>";
+						echo "<td align='left' rowspan='".$rows2."'><b>".strtoupper((string) $valx['lokasi'])."</b><br>".strtoupper((string) $valx['alamat_supplier'])."<br><b>CURRENCY : ".strtoupper((string) $valx['currency'])."</b></td>";
 					}
-					echo "<td align='left'>".strtoupper($valx['nm_barang'])."</td>";
-					echo "<td align='right'>".number_format($valx['price_ref'],2)."</td>";
-					echo "<td align='right'>".number_format($valx['price_ref_sup'],2)."</td>";
-					echo "<td align='right'>".number_format($valx['harga_idr'])."</td>";
-					echo "<td align='right'>".number_format($valx['qty'])."</td>";
-					echo "<td align='center'>".number_format($valx['moq'])."</td>";
-					echo "<td align='center'>".number_format($valx['lead_time'])."</td>";
-					echo "<td align='center'>".date('d-m-Y', strtotime($valx['tgl_dibutuhkan']))."</td>";
-					echo "<td align='right'>".number_format($valx['total_harga'])."</td>";
+					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";
+					echo "<td align='right'>".number_format((float) $valx['price_ref'],2)."</td>";
+					echo "<td align='right'>".number_format((float) $valx['price_ref_sup'],2)."</td>";
+					echo "<td align='right'>".number_format((float) $valx['harga_idr'])."</td>";
+					echo "<td align='right'>".number_format((float) $valx['qty'])."</td>";
+					echo "<td align='center'>".number_format((float) $valx['moq'])."</td>";
+					echo "<td align='center'>".number_format((float) $valx['lead_time'])."</td>";
+					echo "<td align='center'>".date('d-m-Y', strtotime((string) $valx['tgl_dibutuhkan']))."</td>";
+					echo "<td align='right'>".number_format((float) $valx['total_harga'])."</td>";
 				echo "</tr>";
 			}
 			?>

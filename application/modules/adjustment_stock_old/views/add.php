@@ -53,7 +53,7 @@
                                 <option value="0">-- Pilih Gudang --</option>
                                 <?php foreach ($gudang as $val) : ?>
                                     <option value="<?= $val['id']; ?>">
-                                        <?= strtoupper($val['nm_gudang']); ?>
+                                        <?= strtoupper((string) $val['nm_gudang']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

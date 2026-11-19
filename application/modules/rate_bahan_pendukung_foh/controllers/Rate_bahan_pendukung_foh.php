@@ -64,7 +64,7 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
                 'before' => $old ? (array)$old : null,
                 'after'  => $data,
             ];
-            write_log('Rate BPK & FOH', $action, $action . ' Rate BPK & FOH ' . $cat_name . ' (BPK: Rp ' . number_format($bpk, 2) . '/kg, FOH: Rp ' . number_format($foh, 2) . '/kg)', $log, null, 1);
+            write_log('Rate BPK & FOH', $action, $action . ' Rate BPK & FOH ' . $cat_name . ' (BPK: Rp ' . number_format((float) $bpk, 2) . '/kg, FOH: Rp ' . number_format((float) $foh, 2) . '/kg)', $log, null, 1);
             $this->session->set_flashdata('success', 'Rate Bahan Pendukung & FOH berhasil disimpan');
         } else {
             write_log('Rate BPK & FOH', 'Save', 'Gagal simpan Rate BPK & FOH', $data, null, 0);

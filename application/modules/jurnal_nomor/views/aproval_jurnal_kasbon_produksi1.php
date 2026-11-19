@@ -75,8 +75,8 @@ width:90%;
 			<td><?= $record->no_kasbon ?></td>
 			<td><?= $record->no_pr ?></td>
 			<td><?= $record->tgl_kasbon?></td>
-			<td><?= number_format($record->nilai_kasbon)?></td>
-			<td><?= number_format($record->nilai_aktual)?></td>
+			<td><?= number_format((float) $record->nilai_kasbon)?></td>
+			<td><?= number_format((float) $record->nilai_aktual)?></td>
 			
 		</tr>
 		<?php } 

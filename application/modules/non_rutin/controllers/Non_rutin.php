@@ -163,7 +163,7 @@ class Non_rutin extends Admin_Controller
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 7, 3);
+				$urutan2		= (int)substr((string) $angkaUrut2, 7, 3);
 				$urutan2++;
 				$urut2			= sprintf('%03s', $urutan2);
 				$code_plan		= "PLN" . $ym . $urut2;
@@ -184,12 +184,12 @@ class Non_rutin extends Admin_Controller
 						$SUM_HARGA 	+= $harga * $qty;
 
 						$ArrDetail[$val]['no_pengajuan'] 	= $code_plan;
-						$ArrDetail[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
-						$ArrDetail[$val]['spec'] 			= strtolower($valx['spec']);
+						$ArrDetail[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
+						$ArrDetail[$val]['spec'] 			= strtolower((string) $valx['spec']);
 						$ArrDetail[$val]['satuan'] 			= $valx['satuan'];
 						$ArrDetail[$val]['qty'] 			= $qty;
 						$ArrDetail[$val]['harga'] 			= $harga;
-						$ArrDetail[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+						$ArrDetail[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 						$ArrDetail[$val]['tanggal'] 		= $valx['tanggal'];
 						$ArrDetail[$val]['created_by'] 		= $this->auth->user_id();
 						$ArrDetail[$val]['created_date'] 	= $dateTime;
@@ -272,7 +272,7 @@ class Non_rutin extends Admin_Controller
 					$numrowIPP		= $this->db->query($qIPP)->num_rows();
 					$resultIPP		= $this->db->query($qIPP)->result_array();
 					$angkaUrut2		= $resultIPP[0]['maxP'];
-					$urutan2		= (int)substr($angkaUrut2, 7, 4);
+					$urutan2		= (int)substr((string) $angkaUrut2, 7, 4);
 					$urutan2++;
 					$urut2			= sprintf('%04s', $urutan2);
 					$no_pr			= "PRN" . $Ym . $urut2;
@@ -327,7 +327,7 @@ class Non_rutin extends Admin_Controller
 						$ArrDetailPR[$val]['tgl_dibutuhkan'] = $valx['tanggal'];
 						$ArrDetailPR[$val]['satuan']		= $valx['satuan'];
 						$ArrDetailPR[$val]['app_status'] 	= 'Y';
-						$ArrDetailPR[$val]['app_reason']	= strtolower($valx['keterangan']);
+						$ArrDetailPR[$val]['app_reason']	= strtolower((string) $valx['keterangan']);
 						$ArrDetailPR[$val]['app_by'] = $this->auth->user_id();
 						$ArrDetailPR[$val]['app_date'] = $dateTime;
 						$ArrDetailPR[$val]['created_by'] 	= $this->auth->user_id();
@@ -555,7 +555,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$get_coa_pr_dept = $this->db->get_where('coa_expense', ['jenis_pengeluaran' => 'PR Department'])->row();
-			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', $get_coa_pr_dept->coa)) : [];
+			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', (string) $get_coa_pr_dept->coa)) : [];
 
 			$title_tingkat = '';
 			if ($tingkat_approval == '1') :
@@ -586,7 +586,7 @@ class Non_rutin extends Admin_Controller
 
 			$data = array(
 				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'detail'		=> $detail,
 				'datacoa'		=> $datacoa,
@@ -644,7 +644,7 @@ class Non_rutin extends Admin_Controller
 				$numrowMtr		= $this->db->query($srcMtr)->num_rows();
 				$resultMtr		= $this->db->query($srcMtr)->result_array();
 				$angkaUrut2		= $resultMtr[0]['maxP'];
-				$urutan2		= (int)substr($angkaUrut2, 7, 3);
+				$urutan2		= (int)substr((string) $angkaUrut2, 7, 3);
 				$urutan2++;
 				$urut2			= sprintf('%03s', $urutan2);
 				$code_plan		= "PLN" . $ym . $urut2;
@@ -665,12 +665,12 @@ class Non_rutin extends Admin_Controller
 						$SUM_HARGA 	+= $harga * $qty;
 
 						$ArrDetail[$val]['no_pengajuan'] 	= $code_plan;
-						$ArrDetail[$val]['nm_barang'] 		= strtolower($valx['nm_barang']);
-						$ArrDetail[$val]['spec'] 			= strtolower($valx['spec']);
+						$ArrDetail[$val]['nm_barang'] 		= strtolower((string) $valx['nm_barang']);
+						$ArrDetail[$val]['spec'] 			= strtolower((string) $valx['spec']);
 						$ArrDetail[$val]['satuan'] 			= $valx['satuan'];
 						$ArrDetail[$val]['qty'] 			= $qty;
 						$ArrDetail[$val]['harga'] 			= $harga;
-						$ArrDetail[$val]['keterangan'] 		= strtolower($valx['keterangan']);
+						$ArrDetail[$val]['keterangan'] 		= strtolower((string) $valx['keterangan']);
 						$ArrDetail[$val]['tanggal'] 		= $valx['tanggal'];
 						$ArrDetail[$val]['created_by'] 		= $this->auth->user_id();
 						$ArrDetail[$val]['created_date'] 	= $dateTime;
@@ -788,7 +788,7 @@ class Non_rutin extends Admin_Controller
 						$ArrDetailPR[$val]['tgl_dibutuhkan'] = $valx['tanggal'];
 						$ArrDetailPR[$val]['satuan']		= $valx['satuan'];
 						$ArrDetailPR[$val]['app_status'] 	= 'Y';
-						$ArrDetailPR[$val]['app_reason']	= strtolower($valx['keterangan']);
+						$ArrDetailPR[$val]['app_reason']	= strtolower((string) $valx['keterangan']);
 						$ArrDetailPR[$val]['app_by'] = $this->auth->user_id();
 						$ArrDetailPR[$val]['app_date'] = $dateTime;
 						$ArrDetailPR[$val]['created_by'] 	= $this->auth->user_id();
@@ -985,7 +985,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$get_coa_pr_dept = $this->db->get_where('coa_expense', ['jenis_pengeluaran' => 'PR Department'])->row();
-			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', $get_coa_pr_dept->coa)) : [];
+			$coa_pr_dept = (!empty($get_coa_pr_dept->coa)) ? array_filter(explode(';', (string) $get_coa_pr_dept->coa)) : [];
 
 			$title_tingkat = 'Finance';
 			// if ($tingkat_approval == '1') :
@@ -1016,7 +1016,7 @@ class Non_rutin extends Admin_Controller
 
 			$data = array(
 				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
-				'action'		=> strtolower($tanda),
+				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'detail'		=> $detail,
 				'datacoa'		=> $datacoa,
@@ -1128,7 +1128,7 @@ class Non_rutin extends Admin_Controller
 		$datacoa 	= $this->db->query("SELECT * FROM coa_category WHERE tipe='NONRUTIN' ")->result_array();
 
 		$data_url		= base_url();
-		$Split_Beda		= explode('/', $data_url);
+		$Split_Beda		= explode('/', (string) $data_url);
 		$Jum_Beda		= count($Split_Beda);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
@@ -1280,7 +1280,7 @@ class Non_rutin extends Admin_Controller
 			} else {
 				$hasil .= '<td><span class="text-red">' . $item->no_pengajuan . '</span></td>';
 			}
-			$hasil .= '<td>' . strtoupper($item->nama) . '</td>';
+			$hasil .= '<td>' . strtoupper((string) $item->nama) . '</td>';
 
 			$list_barang    = $this->db->get_where('rutin_non_planning_detail', array('no_pengajuan' => $item->no_pengajuan))->result_array();
 			$arr_nmbarang = array();
@@ -1290,13 +1290,13 @@ class Non_rutin extends Admin_Controller
 			$arr_ket = array();
 			foreach ($list_barang as $val => $valx) {
 				$get_satuan = $this->db->get_where('ms_satuan', array('id' => $valx['satuan']))->result();
-				$nm_satuan = (!empty($get_satuan)) ? strtolower($get_satuan[0]->code) : '';
-				$arr_nmbarang[$val] = "&bull; " . strtoupper($valx['nm_barang']);
-				$arr_spec[$val] = "&bull; " . strtoupper($valx['spec']);
+				$nm_satuan = (!empty($get_satuan)) ? strtolower((string) $get_satuan[0]->code) : '';
+				$arr_nmbarang[$val] = "&bull; " . strtoupper((string) $valx['nm_barang']);
+				$arr_spec[$val] = "&bull; " . strtoupper((string) $valx['spec']);
 				$arr_qty[$val] = "&bull; " . floatval($valx['qty']) . ' ' . $nm_satuan;
-				$tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime($valx['tanggal'])) : 'not set';
+				$tgl_dibutuhkan = ($valx['tanggal'] <> '0000-00-00' and $valx['tanggal'] != NULL) ? date('d-M-Y', strtotime((string) $valx['tanggal'])) : 'not set';
 				$arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
-				$arr_ket[$val] = "&bull; " . strtoupper($valx['keterangan']);
+				$arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
 			}
 			$dt_nama_barang    = implode("<br>", $arr_nmbarang);
 			$dt_spec    = implode("<br>", $arr_spec);

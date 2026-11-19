@@ -5,7 +5,7 @@
 		<div class='form-group row'>
             <label class='label-control col-sm-2'><b>Tanggal Dibutuhkan <span class='text-red'>*</span></b></label>
             <div class='col-sm-4'>              
-                <input type="text" id='tanggal_dibutuhkan' name='tanggal_dibutuhkan' class='form-control input-md datepicker' readonly value='<?=date('d-F-Y',strtotime($header[0]['tgl_dibutuhkan']))?>'>
+                <input type="text" id='tanggal_dibutuhkan' name='tanggal_dibutuhkan' class='form-control input-md datepicker' readonly value='<?=date('d-F-Y',strtotime((string) $header[0]['tgl_dibutuhkan']))?>'>
             </div>
         </div>
 		<table id="my-grid" class="table table-striped table-bordered table-hover table-condensed" width="100%">
@@ -35,12 +35,12 @@
 							echo "<input type='hidden' name='detail[".$no."][id]' value='".$valx['id']."'>";
 							echo "<input type='hidden' class='total_harga_val' name='detail[".$no."][total_price]' value='".$valx['total_price']."'>";
 						echo "</td>";
-						echo "<td class='vmiddle' align='left'><input name='detail[".$no."][nm_barang]' id='nm_barang_".$no."' class='form-control input-md' value='".strtoupper($valx['nm_barang'])."' ></td>";
-						echo "<td class='vmiddle' align='center'>".number_format($valx['moq'],2)."</td>";
-						echo "<td class='vmiddle' align='center'>".number_format($valx['lead_time'],2)."</td>";
-						echo "<td class='vmiddle' align='right'><span class='harga_idr'>".number_format($valx['net_price'],2)."</span> <span class='text-primary text-bold'>".strtoupper($valx['currency'])."</span></td>";
+						echo "<td class='vmiddle' align='left'><input name='detail[".$no."][nm_barang]' id='nm_barang_".$no."' class='form-control input-md' value='".strtoupper((string) $valx['nm_barang'])."' ></td>";
+						echo "<td class='vmiddle' align='center'>".number_format((float) $valx['moq'],2)."</td>";
+						echo "<td class='vmiddle' align='center'>".number_format((float) $valx['lead_time'],2)."</td>";
+						echo "<td class='vmiddle' align='right'><span class='harga_idr'>".number_format((float) $valx['net_price'],2)."</span> <span class='text-primary text-bold'>".strtoupper((string) $valx['currency'])."</span></td>";
 						echo "<td class='vmiddle' align='right'><input type='text' class='form-control input-md text-center autoNumeric qty_po' name='detail[".$no."][qty_purchase]' value='".$valx['qty_purchase']."'></td>";
-						echo "<td class='vmiddle total_harga' align='right'>".number_format($valx['total_price'],2)."</td>";
+						echo "<td class='vmiddle total_harga' align='right'>".number_format((float) $valx['total_price'],2)."</td>";
 						echo "<td class='vmiddle' align='center'><button type='button' class='btn btn-sm btn-danger delete_sebagian_po' data-id='".$valx['id']."' title='Hapus Sebagian PO'><i class='fa fa-trash'></i></button></td>";
 					echo "</tr>";
 				}

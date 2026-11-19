@@ -39,9 +39,9 @@
 									echo '<tr>';
 									echo '<td class="text-center">' . $item->id_payment . '</td>';
 									echo '<td class="text-center">' . $item->no_doc . '</td>';
-									echo '<td class="text-center">' . date('d F Y', strtotime($item->tgl_bayar)) . '</td>';
+									echo '<td class="text-center">' . date('d F Y', strtotime((string) $item->tgl_bayar)) . '</td>';
 									echo '<td class="text-center">' . $nm_supplier . '</td>';
-									echo '<td class="text-right">' . number_format($item->payment_bank, 2) . '</td>';
+									echo '<td class="text-right">' . number_format((float) $item->payment_bank, 2) . '</td>';
 									echo '<td class="text-left">' . $item->keterangan_pembayaran . '</td>';
 									echo '<td>';
 									echo '<a href="' . base_url('pembayaran_material/view_payment_new/' . $item->id_payment) . '" target="_blank" class="btn btn-sm btn-info view" title="View Request Payment"><i class="fa fa-eye"></i></a>';
@@ -84,9 +84,9 @@
 									echo '<tr>';
 									echo '<td class="text-center">' . $item->id_payment . '</td>';
 									echo '<td class="text-center">' . $item->no_doc . '</td>';
-									echo '<td class="text-center">' . date('d F Y', strtotime($item->tgl_bayar)) . '</td>';
+									echo '<td class="text-center">' . date('d F Y', strtotime((string) $item->tgl_bayar)) . '</td>';
 									echo '<td class="text-center">' . $item->created_by . '</td>';
-									echo '<td class="text-right">' . number_format($item->payment_bank, 2) . '</td>';
+									echo '<td class="text-right">' . number_format((float) $item->payment_bank, 2) . '</td>';
 									echo '<td class="text-left">' . $item->keterangan_pembayaran . '</td>';
 									echo '<td>';
 									echo '<a href="' . base_url('pembayaran_material/view_payment_new/' . $item->id_payment) . '" target="_blank" class="btn btn-sm btn-info view" title="View Request Payment"><i class="fa fa-eye"></i></a>';

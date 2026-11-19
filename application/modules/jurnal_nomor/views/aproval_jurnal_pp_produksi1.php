@@ -77,8 +77,8 @@ width:90%;
 			<td><?= $record->no_pr ?></td>
 			<td><?= $record->tgl_pp?></td>
 			<td><?= $record->created_on?></td>
-			<td><?= number_format($record->nilai_request)?></td>
-			<td><?= number_format($record->nilai_bayar)?></td>
+			<td><?= number_format((float) $record->nilai_request)?></td>
+			<td><?= number_format((float) $record->nilai_bayar)?></td>
 			<td><?= $vendor->nama?></td>
 		</tr>
 		<?php } 

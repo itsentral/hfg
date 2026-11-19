@@ -1,5 +1,5 @@
 <?php
-require_once APPPATH."/third_party/PHPExcel.php"; 
+require_once APPPATH . "libraries/PHPExcel.php";
   
 class Libexcel extends PHPExcel { 
     public function __construct() { 
@@ -142,7 +142,7 @@ class Libexcel extends PHPExcel {
     }
     function createColumnsArray($end_column, $first_letters = ''){
           $columns = array();
-          $length = strlen($end_column);
+          $length = strlen((string) $end_column);
           $letters = range('A', 'Z');
  
         // Iterate over 26 letters.
@@ -152,7 +152,7 @@ class Libexcel extends PHPExcel {
           // Add the column to the final array.
           $columns[] = $column;
           // If it was the end column that was added, return the columns.
-          if ($column == strtoupper($end_column))
+          if ($column == strtoupper((string) $end_column))
               return $columns;
           }
  
@@ -160,8 +160,8 @@ class Libexcel extends PHPExcel {
           foreach ($columns as $column) {
           // Don't itterate if the $end_column was already set in a previous itteration.
           // Stop iterating if you've reached the maximum character length.
-          if (!in_array(strtoupper($end_column), $columns) && strlen($column) < $length) {
-          $new_columns = $this->createColumnsArray(strtoupper($end_column), $column);
+          if (!in_array(strtoupper((string) $end_column), $columns) && strlen((string) $column) < $length) {
+          $new_columns = $this->createColumnsArray(strtoupper((string) $end_column), $column);
           // Merge the new columns which were created with the final columns array.
           $columns = array_merge($columns, $new_columns);
           }

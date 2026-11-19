@@ -80,7 +80,7 @@ class Unit extends Admin_Controller
 					'pesan'		=> 'Process Failed !',
 					'status'	=> 0
 				);
-				write_log('Unit', $field_hist, 'Gagal ' . strtolower($field_hist) . ' unit: ' . $code, $logPayload, null, 0);
+				write_log('Unit', $field_hist, 'Gagal ' . strtolower((string) $field_hist) . ' unit: ' . $code, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(

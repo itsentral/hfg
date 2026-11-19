@@ -41,7 +41,7 @@
                     <?php foreach ($stok_list as $i => $stok): ?>
                     <tr>
                         <td class="text-center"><?= $i + 1 ?></td>
-                        <td><strong class="text-primary"><?= htmlspecialchars($stok->produk_fg) ?></strong></td>
+                        <td><strong class="text-primary"><?= htmlspecialchars((string) $stok->produk_fg) ?></strong></td>
                         <td><?= htmlspecialchars($stok->nm_produk_fg ? $stok->nm_produk_fg : '-') ?></td>
                         <td class="text-end">
                             <?php if ((float) $stok->qty_stok <= 0): ?>
@@ -71,10 +71,10 @@
                             Rp <?= number_format((float) $stok->total_nilai, 2) ?>
                         </td>
                         <td class="text-center">
-                            <small class="text-muted"><?= $stok->last_update ? date('d-m-Y H:i', strtotime($stok->last_update)) : '-' ?></small>
+                            <small class="text-muted"><?= $stok->last_update ? date('d-m-Y H:i', strtotime((string) $stok->last_update)) : '-' ?></small>
                         </td>
                         <td class="text-center">
-                            <a href="<?= base_url('fg_warehouse/kartu_stok/' . urlencode($stok->produk_fg)) ?>"
+                            <a href="<?= base_url('fg_warehouse/kartu_stok/' . urlencode((string) $stok->produk_fg)) ?>"
                                class="btn btn-sm btn-info text-white" title="Lihat Kartu Stok">
                                 <i class="fa fa-history me-1"></i> Kartu Stok
                             </a>

@@ -22,10 +22,10 @@ $ENABLE_VIEW   = has_permission('Approval_mutation.View');
                 <tr>
                     <td><?= $i + 1 ?></td>
                     <td><strong><?= $row['mutation_number'] ?></strong></td>
-                    <td><?= date('d/m/Y', strtotime($row['mutation_date'])) ?></td>
+                    <td><?= date('d/m/Y', strtotime((string) $row['mutation_date'])) ?></td>
                     <td>
-                        <?= htmlspecialchars($row['create_by']) ?><br>
-                        <small class="text-muted"><i><?= date('d/m/Y H:i', strtotime($row['create_date'])) ?></i></small>
+                        <?= htmlspecialchars((string) $row['create_by']) ?><br>
+                        <small class="text-muted"><i><?= date('d/m/Y H:i', strtotime((string) $row['create_date'])) ?></i></small>
                     </td>
                     <td><?= $row['nm_gudang_from'] ?></td>
                     <td><?= $row['nm_gudang_to'] ?></td>

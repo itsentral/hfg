@@ -4,7 +4,7 @@
 		<p>
 			<strong>Info!</strong><br> 
 			Kurs sesuai <?=$data_rfq[0]->no_rfq;?>, yang diinput di table perbandingan<br>
-			<span style='color:green;font-size: 18px;'><b>1 USD = <?=number_format($data_rfq[0]->kurs,2);?> IDR</b></span><br>
+			<span style='color:green;font-size: 18px;'><b>1 USD = <?=number_format((float) $data_rfq[0]->kurs,2);?> IDR</b></span><br>
 		</p>
 	</div>
 	<br>
@@ -13,13 +13,13 @@
 		<label class='label-control col-sm-1'><b>Incoterms</b></label>
 		<div class='col-sm-3'>
 			<?php
-			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','readonly'=>'readonly','placeholder'=>'Incoterms'), strtoupper($data[0]->incoterms));
+			 echo form_input(array('id'=>'incoterms','name'=>'incoterms','class'=>'form-control input-md','readonly'=>'readonly','placeholder'=>'Incoterms'), strtoupper((string) $data[0]->incoterms));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Request Date</b></label>
 		<div class='col-sm-3'>
 			<?php
-			 echo form_input(array('id'=>'request_date','name'=>'request_date','class'=>'form-control input-md','placeholder'=>'Request Date','readonly'=>'readonly'), strtoupper($data[0]->request_date));
+			 echo form_input(array('id'=>'request_date','name'=>'request_date','class'=>'form-control input-md','placeholder'=>'Request Date','readonly'=>'readonly'), strtoupper((string) $data[0]->request_date));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Harga Pembelian</b></label>
@@ -29,7 +29,7 @@
 				$kurs_mata_uang = (!empty($data[0]->mata_uang))?$data[0]->mata_uang:$data_rfq[0]->currency;
 				foreach(get_list_kurs() AS $val => $valx){
 					$sel = ($valx['kode_dari'] == $kurs_mata_uang)?'selected':'';
-					echo "<option value='".$valx['kode_dari']."' ".$sel.">".$valx['kode_dari']." - ".strtoupper($valx['negara'])."</option>";
+					echo "<option value='".$valx['kode_dari']."' ".$sel.">".$valx['kode_dari']." - ".strtoupper((string) $valx['negara'])."</option>";
 				}
 				?>
 			</select>
@@ -40,19 +40,19 @@
 		<label class='label-control col-sm-1'><b>Tax (%)</b></label>
 		<div class='col-sm-3'>
 			<?php
-			 echo form_input(array('id'=>'tax','name'=>'tax','readonly'=>'readonly','class'=>'form-control input-md ','placeholder'=>'Tax (%)'),number_format($data[0]->tax));
+			 echo form_input(array('id'=>'tax','name'=>'tax','readonly'=>'readonly','class'=>'form-control input-md ','placeholder'=>'Tax (%)'),number_format((float) $data[0]->tax));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Term Of Payment</b></label>
 		<div class='col-sm-3'>
 		<?php
-			 echo form_input(array('id'=>'top','name'=>'top','readonly'=>'readonly','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper($data[0]->top));
+			 echo form_input(array('id'=>'top','name'=>'top','readonly'=>'readonly','class'=>'form-control input-md','placeholder'=>'Term Of Payment'), strtoupper((string) $data[0]->top));
 			?>
 		</div>
 		<label class='label-control col-sm-1'><b>Remarks</b></label>
 		<div class='col-sm-3'>
 			<?php
-			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','readonly'=>'readonly','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper($data[0]->remarks));
+			 echo form_textarea(array('id'=>'remarks','name'=>'remarks','readonly'=>'readonly','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Remarks'), strtoupper((string) $data[0]->remarks));
 			?>
 		</div>
 	</div>
@@ -60,7 +60,7 @@
 		<label class='label-control col-sm-1'><b>Buyer</b></label>
 		<div class='col-sm-3'>
 			<?php
-			$buyer = (!empty($data[0]->buyer))?strtoupper($data[0]->buyer):strtoupper(get_name('users','nm_lengkap','username',$data[0]->updated_by));
+			$buyer = (!empty($data[0]->buyer))?strtoupper((string) $data[0]->buyer):strtoupper(get_name('users','nm_lengkap','username',$data[0]->updated_by));
 			 echo form_input(array('id'=>'buyer','name'=>'buyer','readonly'=>'readonly','class'=>'form-control input-md','placeholder'=>'Buyer'), $buyer);
 			?>
 		</div>
@@ -86,12 +86,12 @@
 						$qty_p = (!empty($valx['qty_po']))?$valx['qty_po']:$valx['qty_purchase'];
 						$SUM += $qty_p * $valx['price_ref_sup'];
 						echo "<tr>";
-							echo "<td align='left'>".strtoupper($valx['nm_barang'])."
+							echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."
 									<input type='hidden' name='detail[".$no."][id]' id='id_".$no."' value='".$valx['id']."'>
 									<input type='hidden' name='detail[".$no."][price]' id='price_".$no."' value='".$valx['price_ref_sup']."'>
 									</td>";
-							echo "<td align='right'><input name='detail[".$no."][qty]' id='qty_".$no."' class='form-control text-right input-md  ch_qty' value='".number_format($qty_p,2)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
-							echo "<td align='right'>".number_format($valx['price_ref_sup'],2)."</td>";
+							echo "<td align='right'><input name='detail[".$no."][qty]' id='qty_".$no."' class='form-control text-right input-md  ch_qty' value='".number_format((float) $qty_p,2)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly></td>";
+							echo "<td align='right'>".number_format((float) $valx['price_ref_sup'],2)."</td>";
 							echo "<td align='right'><div id='qtytot_".$no."' class='sum_tot'>".number_format($qty_p * $valx['price_ref_sup'],2)."</div></td>";
 						echo "</tr>";
 					}
@@ -106,37 +106,37 @@
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->total_po,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->total_po,2);?></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>DISCOUNT (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->discount,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->discount,2);?></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>NET PRICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><div id="total"><?=number_format($data[0]->net_price,2);?></div></td>
+						<td class='text-right mid text-bold'><div id="total"><?=number_format((float) $data[0]->net_price,2);?></div></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>TAX (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->tax,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->tax,2);?></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>NET PRICE + TAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->net_plus_tax,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->net_plus_tax,2);?></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>DELIVERY COST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->delivery_cost,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->delivery_cost,2);?></td>
 					</tr>
 					<tr>
 						<td align='left' colspan='2'></td>					
 						<td class='text-right'><b>GRAND TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-						<td class='text-right mid text-bold'><?=number_format($data[0]->total_price,2);?></td>
+						<td class='text-right mid text-bold'><?=number_format((float) $data[0]->total_price,2);?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -171,17 +171,17 @@
 										echo "<option value='0'>Select Group TOP</option>";
 										foreach($payment AS $val2 => $valx2){
 											$sel = ($valx2['name'] == $valx['group_top'])?'selected':'';
-											echo "<option value='".$valx2['name']."' ".$sel.">".strtoupper($valx2['name'])."</option>";
+											echo "<option value='".$valx2['name']."' ".$sel.">".strtoupper((string) $valx2['name'])."</option>";
 										}
 									echo "</select>";
 									echo "<input type='hidden' name='detail_po[".$id."][term]' class='form-control text-center input-md' value='".$valx['term']."' ".$styledisabled.">"; 
 								echo "</td>";
 								echo "<td align='left'><input type='text' id='progress_".$id."' name='detail_po[".$id."][progress]' value='".$valx['progress']."' class='form-control input-md text-center maskM progress_term' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' ".$styledisabled."></td>";
-								echo "<td align='left' class='hidden'><input type='text' id='usd_".$id."' name='detail_po[".$id."][value_usd]' value='".number_format($valx['value_usd'],2)."' class='form-control input-md text-right maskM sum_tot_usd' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly ".$styledisabled."></td>";
-								echo "<td align='left'><input type='text' id='idr_".$id."' name='detail_po[".$id."][value_idr]' value='".number_format($valx['value_idr'],2)."' class='form-control input-md text-right maskM sum_tot_idr' tabindex='-1' readonly ".$styledisabled."></td>";
-								echo "<td align='left'><input type='text' id='total_harga_".$id."' name='detail_po[".$id."][keterangan]' value='".strtoupper($valx['keterangan'])."' class='form-control input-md text-left' ".$styledisabled."></td>";
+								echo "<td align='left' class='hidden'><input type='text' id='usd_".$id."' name='detail_po[".$id."][value_usd]' value='".number_format((float) $valx['value_usd'],2)."' class='form-control input-md text-right maskM sum_tot_usd' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero='' readonly ".$styledisabled."></td>";
+								echo "<td align='left'><input type='text' id='idr_".$id."' name='detail_po[".$id."][value_idr]' value='".number_format((float) $valx['value_idr'],2)."' class='form-control input-md text-right maskM sum_tot_idr' tabindex='-1' readonly ".$styledisabled."></td>";
+								echo "<td align='left'><input type='text' id='total_harga_".$id."' name='detail_po[".$id."][keterangan]' value='".strtoupper((string) $valx['keterangan'])."' class='form-control input-md text-left' ".$styledisabled."></td>";
 								echo "<td align='left'><input type='text' name='detail_po[".$id."][jatuh_tempo]' value='".$valx['jatuh_tempo']."' class='form-control input-md text-center datepicker' readonly></td>";
-								echo "<td align='left'><input type='text' name='detail_po[".$id."][syarat]' value='".strtoupper($valx['syarat'])."' class='form-control input-md' ".$styledisabled."></td>";
+								echo "<td align='left'><input type='text' name='detail_po[".$id."][syarat]' value='".strtoupper((string) $valx['syarat'])."' class='form-control input-md' ".$styledisabled."></td>";
 								echo "<td align='center' nowrap>";
 								if($styledisabled==""){
 								  if($valx['invoice_no']==""){

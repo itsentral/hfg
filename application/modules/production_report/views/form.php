@@ -431,7 +431,7 @@
   <div class="pr-page-header">
     <div>
       <h1>Input Laporan Produksi</h1>
-      <p>SPK: <strong><?= htmlspecialchars($spk['spk_no']); ?></strong> &bull; Tgl SPK: <?= date('d/m/Y', strtotime($spk['tgl_spk'])); ?></p>
+      <p>SPK: <strong><?= htmlspecialchars((string) $spk['spk_no']); ?></strong> &bull; Tgl SPK: <?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></p>
     </div>
     <div class="d-flex align-items-center gap-2">
       <span class="badge bg-secondary px-3 py-2 fs-6" id="docStatus">Draft</span>
@@ -442,7 +442,7 @@
   </div>
 
   <form id="prodForm" novalidate>
-    <input type="hidden" name="spk_no" value="<?= htmlspecialchars($spk['spk_no']); ?>">
+    <input type="hidden" name="spk_no" value="<?= htmlspecialchars((string) $spk['spk_no']); ?>">
     <input type="hidden" name="id_tr_spk_detail" value="<?= !empty($spk['primary_spk_detail_id']) ? $spk['primary_spk_detail_id'] : ''; ?>">
     <input type="hidden" name="report_id" id="reportId" value="<?= !empty($draft['header']['id']) ? $draft['header']['id'] : ''; ?>">
 
@@ -458,11 +458,11 @@
         <div class="meta-strip-spk">
           <div class="meta-item">
             <span class="meta-label">Nomor SPK</span>
-            <span class="meta-value"><?= htmlspecialchars($spk['spk_no']); ?></span>
+            <span class="meta-value"><?= htmlspecialchars((string) $spk['spk_no']); ?></span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Tanggal SPK</span>
-            <span class="meta-value"><?= date('d/m/Y', strtotime($spk['tgl_spk'])); ?></span>
+            <span class="meta-value"><?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Total Target Qty</span>
@@ -470,7 +470,7 @@
           </div>
           <div class="meta-item">
             <span class="meta-label">Catatan SPK</span>
-            <span class="meta-value text-muted"><?= !empty($spk['catatan']) ? htmlspecialchars($spk['catatan']) : '-'; ?></span>
+            <span class="meta-value text-muted"><?= !empty($spk['catatan']) ? htmlspecialchars((string) $spk['catatan']) : '-'; ?></span>
           </div>
         </div>
 
@@ -484,15 +484,15 @@
             <select class="form-select form-select-sm select2" id="id_asset_machine" name="id_asset_machine" required>
               <option value="">-- Pilih Mesin --</option>
               <?php foreach ($machines as $m): ?>
-                <option value="<?= $m['id']; ?>"><?= htmlspecialchars($m['nm_asset']); ?> (<?= htmlspecialchars($m['kd_asset']); ?>)</option>
+                <option value="<?= $m['id']; ?>"><?= htmlspecialchars((string) $m['nm_asset']); ?> (<?= htmlspecialchars((string) $m['kd_asset']); ?>)</option>
               <?php endforeach; ?>
             </select>
           </div>
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Helper Name <span class="text-danger">*</span></label>
             <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Pilih 1 atau Lebih Helper --" required>
-              <?php foreach ($employees as $e): ?>
-                <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
+              <?php foreach ($helpers as $e): ?>
+                <option value="<?= htmlspecialchars((string) $e['nm_karyawan']); ?>"><?= htmlspecialchars((string) $e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
             <div class="form-text small text-muted" style="font-size: 11px;">Bisa pilih lebih dari 1 helper</div>
@@ -501,8 +501,8 @@
             <label class="form-label fw-semibold small">Setter Name <span class="text-danger">*</span></label>
             <select class="form-select form-select-sm select2" id="employee_setter" name="employee_setter" required>
               <option value="">-- Pilih Setter --</option>
-              <?php foreach ($employees as $e): ?>
-                <option value="<?= htmlspecialchars($e['nm_karyawan']); ?>"><?= htmlspecialchars($e['nm_karyawan']); ?></option>
+              <?php foreach ($setters as $e): ?>
+                <option value="<?= htmlspecialchars((string) $e['nm_karyawan']); ?>"><?= htmlspecialchars((string) $e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -2658,6 +2658,16 @@
             }).then(function() {
               window.location.href = BASE_MODULE_URL;
             });
+          } else if (response.status == 2) {
+            // Laporan tersimpan, tetapi jurnal GL Interface gagal dibuat
+            Swal.fire({
+              icon: 'warning',
+              title: 'Tersimpan dengan Catatan',
+              text: response.message,
+              confirmButtonText: 'OK'
+            }).then(function() {
+              window.location.href = BASE_MODULE_URL;
+            });
           } else {
             Swal.fire('Gagal', response.message || 'Terjadi kesalahan sistem.', 'error');
           }
@@ -3061,9 +3071,20 @@
       var helpers = Array.isArray(h.employee_helper) 
         ? h.employee_helper 
         : String(h.employee_helper).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+      // Nama draft yang kini tidak ada di daftar role (role berubah / nonaktif) tetap ditampilkan agar tidak hilang diam-diam
+      helpers.forEach(function(n) {
+        if ($('#employee_helper option').filter(function() { return this.value === n; }).length === 0) {
+          $('#employee_helper').append(new Option(n, n, false, false));
+        }
+      });
       $('#employee_helper').val(helpers).trigger('change.select2');
     }
-    if (h.employee_setter) $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    if (h.employee_setter) {
+      if ($('#employee_setter option').filter(function() { return this.value === h.employee_setter; }).length === 0) {
+        $('#employee_setter').append(new Option(h.employee_setter, h.employee_setter, false, false));
+      }
+      $('#employee_setter').val(h.employee_setter).trigger('change.select2');
+    }
     if (h.start_time) $('#startTime').val(h.start_time.substring(0, 5));
     if (h.finished_time) $('#finishedTime').val(h.finished_time.substring(0, 5));
 

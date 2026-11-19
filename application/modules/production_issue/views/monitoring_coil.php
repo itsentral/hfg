@@ -52,8 +52,8 @@
                             <tr>
                                 <td class="text-center"><?= $i + 1 ?></td>
                                 <td>
-                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode($c->no_coil)) ?>">
-                                        <strong><?= htmlspecialchars($c->no_coil) ?></strong>
+                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode((string) $c->no_coil)) ?>">
+                                        <strong><?= htmlspecialchars((string) $c->no_coil) ?></strong>
                                     </a>
                                 </td>
                                 <td>
@@ -63,17 +63,17 @@
                                 </td>
                                 <td><?= htmlspecialchars($c->nm_produk_fg ?: '-') ?></td>
                                 <td><?= htmlspecialchars($c->nm_material ?: '-') ?></td>
-                                <td class="text-end"><?= $c->net_weight ? number_format($c->net_weight, 3) : '-' ?></td>
+                                <td class="text-end"><?= $c->net_weight ? number_format((float) $c->net_weight, 3) : '-' ?></td>
                                 <td><?= htmlspecialchars($c->from_gudang ?: '-') ?></td>
                                 <td><?= htmlspecialchars($c->to_gudang ?: '-') ?></td>
                                 <td class="text-center">
-                                    <?= $c->move_time ? date('d/m/Y H:i', strtotime($c->move_time)) : '-' ?>
+                                    <?= $c->move_time ? date('d/m/Y H:i', strtotime((string) $c->move_time)) : '-' ?>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-<?= $color ?>"><?= htmlspecialchars($c->status_spk ?: '-') ?></span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode($c->no_coil)) ?>"
+                                    <a href="<?= base_url('production_issue/histori_coil/' . urlencode((string) $c->no_coil)) ?>"
                                        class="btn btn-xs btn-info" title="Lihat Histori">
                                         <i class="fa fa-history"></i>
                                     </a>

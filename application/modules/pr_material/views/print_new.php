@@ -124,7 +124,7 @@
             <table>
                 <tr>
                     <td>Request Date : <br>
-                        <?= date('d M Y', strtotime($header->tgl_so)) ?></td>
+                        <?= date('d M Y', strtotime((string) $header->tgl_so)) ?></td>
                     <td>Request Number : <br>
                         <?= $header->so_number ?></td>
                 </tr>
@@ -149,10 +149,10 @@
             foreach ($detail as $det):
                 $product_name = !empty($det->product) ? $det->product : (!empty($det->material) ? $det->material : (!empty($det->nama) ? $det->nama : ''));
                 $berat = (!empty($det->berat)) ? $det->berat . ' Kg,' : '';
-                $harga = (!empty($det->harga)) ? '(Price Rp. ' . number_format($det->harga) . ')' : '';
+                $harga = (!empty($det->harga)) ? '(Price Rp. ' . number_format((float) $det->harga) . ')' : '';
                 $item_code = !empty($det->item) ? $det->item : (!empty($det->code_material) ? $det->code_material : (!empty($det->id_material) ? $det->id_material : '-'));
-                $satuan_text = !empty($det->satuan) ? strtoupper($det->satuan) : '-';
-                $tgl_app = (!empty($det->app_date) && $det->app_date != '0000-00-00 00:00:00') ? date('d M Y', strtotime($det->app_date)) : '-';
+                $satuan_text = !empty($det->satuan) ? strtoupper((string) $det->satuan) : '-';
+                $tgl_app = (!empty($det->app_date) && $det->app_date != '0000-00-00 00:00:00') ? date('d M Y', strtotime((string) $det->app_date)) : '-';
             ?>
                 <tr>
                     <td class="text-center"><?= $item_code ?></td>

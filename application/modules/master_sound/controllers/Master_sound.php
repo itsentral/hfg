@@ -33,7 +33,7 @@ class Master_sound extends Admin_Controller
     public function data_side()
     {
         $requestData = $_REQUEST;
-        $search      = isset($requestData['search']['value']) ? trim($requestData['search']['value']) : '';
+        $search      = isset($requestData['search']['value']) ? trim((string) $requestData['search']['value']) : '';
         $col_order   = isset($requestData['order'][0]['column']) ? (int) $requestData['order'][0]['column'] : 1;
         $col_dir     = isset($requestData['order'][0]['dir']) ? $requestData['order'][0]['dir'] : 'asc';
         $start       = isset($requestData['start']) ? (int) $requestData['start'] : 0;
@@ -82,10 +82,10 @@ class Master_sound extends Admin_Controller
             $nestedData[] = "<div class='text-center'>{$nomor}</div>";
 
             // 1: Nama Sound
-            $nestedData[] = "<div class='fw-bold text-dark'>" . htmlspecialchars($row['sound_name']) . "</div>";
+            $nestedData[] = "<div class='fw-bold text-dark'>" . htmlspecialchars((string) $row['sound_name']) . "</div>";
 
             // 2: Kode Event
-            $nestedData[] = "<code>" . htmlspecialchars($row['sound_code']) . "</code>";
+            $nestedData[] = "<code>" . htmlspecialchars((string) $row['sound_code']) . "</code>";
 
             // 3: Level Vibrate
             $vib_level = (int) $row['vibrate_level'];
@@ -94,7 +94,7 @@ class Master_sound extends Admin_Controller
 
             // 4: File Original Name & Audio Player (Dirapikan)
             $file_orig = !empty($row['file_original_name'])
-                ? htmlspecialchars($row['file_original_name'])
+                ? htmlspecialchars((string) $row['file_original_name'])
                 : '<span class="text-muted fst-italic">Tidak ada file</span>';
 
             $audio_player = '';
@@ -118,7 +118,7 @@ class Master_sound extends Admin_Controller
             // 6: Last Update
             $last_by   = !empty($row['updated_by']) ? $row['updated_by'] : $row['created_by'];
             $last_date = !empty($row['updated_date']) ? $row['updated_date'] : $row['created_date'];
-            $last_str  = !empty($last_date) ? date('d-M-Y H:i', strtotime($last_date)) : '-';
+            $last_str  = !empty($last_date) ? date('d-M-Y H:i', strtotime((string) $last_date)) : '-';
             $nestedData[] = "<div class='text-center small'>{$last_str}<br><span class='text-muted'>by {$last_by}</span></div>";
 
             // 7: Aksi (Menggunakan btn-group & pengecekan permission jika diperlukan)
@@ -129,7 +129,7 @@ class Master_sound extends Admin_Controller
 
             $delete_btn = '';
             if ($ENABLE_DELETE) {
-                $delete_btn = "<button type='button' class='btn btn-sm btn-danger btn-delete-sound' data-id='{$row['id']}' data-name='" . htmlspecialchars($row['sound_name'], ENT_QUOTES) . "' title='Hapus'><i class='fa fa-trash'></i></button>";
+                $delete_btn = "<button type='button' class='btn btn-sm btn-danger btn-delete-sound' data-id='{$row['id']}' data-name='" . htmlspecialchars((string) $row['sound_name'], ENT_QUOTES) . "' title='Hapus'><i class='fa fa-trash'></i></button>";
             }
 
             $nestedData[] = "<div class='text-center'>

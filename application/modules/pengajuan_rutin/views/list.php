@@ -40,7 +40,7 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                                     <li>
                                         <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" href="javascript:void(0)" onclick="new_data('<?= $key ?>')">
                                             <i class="fa fa-arrow-right text-muted small"></i>
-                                            <span><?= htmlspecialchars($val) ?></span>
+                                            <span><?= htmlspecialchars((string) $val) ?></span>
                                         </a>
                                     </li>
                                 <?php endforeach; ?>

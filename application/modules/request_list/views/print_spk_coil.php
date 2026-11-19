@@ -235,7 +235,7 @@
             <tr>
                 <td class="info-label">Tanggal</td>
                 <td class="info-separator">:</td>
-                <td><?php echo date('d-m-Y', strtotime($request['request_date'])); ?></td>
+                <td><?php echo date('d-m-Y', strtotime((string) $request['request_date'])); ?></td>
             </tr>
             <tr>
                 <td class="info-label">Status</td>
@@ -264,10 +264,10 @@
                     <?php $total_net_weight += $net_weight; ?>
                     <tr>
                         <td class="text-center" style="color: #718096;"><?php echo $idx + 1; ?></td>
-                        <td style="font-weight: 500;"><?php echo htmlspecialchars($coil['kode_internal']); ?></td>
-                        <td><?php echo htmlspecialchars($coil['no_coil']); ?></td>
-                        <td><?php echo htmlspecialchars($coil['nm_material']); ?></td>
-                        <td class="text-right"><?php echo number_format($net_weight, 3, ',', '.'); ?></td>
+                        <td style="font-weight: 500;"><?php echo htmlspecialchars((string) $coil['kode_internal']); ?></td>
+                        <td><?php echo htmlspecialchars((string) $coil['no_coil']); ?></td>
+                        <td><?php echo htmlspecialchars((string) $coil['nm_material']); ?></td>
+                        <td class="text-right"><?php echo number_format((float) $net_weight, 3, ',', '.'); ?></td>
                         <td class="text-center">
                             <?php
                             if ($coil['id_gudang_sumber'] == 1) {
@@ -285,7 +285,7 @@
             <tfoot>
                 <tr style="font-weight: bold; background-color: #edf2f7;">
                     <td colspan="4" class="text-right" style="border: 1px solid #cbd5e0; padding: 7px 10px;">TOTAL</td>
-                    <td class="text-right" style="border: 1px solid #cbd5e0; padding: 7px 10px;"><?php echo number_format($total_net_weight, 3, ',', '.'); ?></td>
+                    <td class="text-right" style="border: 1px solid #cbd5e0; padding: 7px 10px;"><?php echo number_format((float) $total_net_weight, 3, ',', '.'); ?></td>
                     <td style="border: 1px solid #cbd5e0; padding: 7px 10px;"></td>
                 </tr>
             </tfoot>
@@ -308,7 +308,7 @@
                     <div class="signature-box">
                         <span class="signature-title">Dibuat oleh,</span>
                         <span class="signature-name">&nbsp;</span>
-                        <span class="signature-date"><?php echo date('d-m-Y', strtotime($request['request_date'])); ?></span>
+                        <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $request['request_date'])); ?></span>
                     </div>
                 </td>
             </tr>

@@ -21,7 +21,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Kurs</label>
-            <input type="text" name="kurs" id="" class="form-control form-control-sm text-right auto_num" value="<?= number_format($data_invoice['kurs'], 2) ?>" readonly>
+            <input type="text" name="kurs" id="" class="form-control form-control-sm text-right auto_num" value="<?= number_format((float) $data_invoice['kurs'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -45,7 +45,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Value DP</label>
-            <input type="text" name="value_dp" id="" class="form-control form-control-sm text-right value_dp" value="<?= number_format($data_invoice['value_dp'], 2) ?>" readonly>
+            <input type="text" name="value_dp" id="" class="form-control form-control-sm text-right value_dp" value="<?= number_format((float) $data_invoice['value_dp'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -57,31 +57,31 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Total Incoming</label>
-            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format($data_invoice['total_pembelian'], 2) ?>" readonly>
+            <input type="text" name="total_pembelian" id="" class="form-control form-control-sm text-right total_pembelian" value="<?= number_format((float) $data_invoice['total_pembelian'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Nilai Disc</label>
-            <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right nilai_disc auto_num" value="<?= number_format($data_invoice['nilai_disc'], 2) ?>" readonly>
+            <input type="text" name="nilai_disc" id="" class="form-control form-control-sm text-right nilai_disc auto_num" value="<?= number_format((float) $data_invoice['nilai_disc'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Nilai PPN</label>
-            <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right nilai_ppn auto_num" value="<?= number_format($data_invoice['nilai_ppn'], 2) ?>" readonly>
+            <input type="text" name="nilai_ppn" id="" class="form-control form-control-sm text-right nilai_ppn auto_num" value="<?= number_format((float) $data_invoice['nilai_ppn'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Total Invoice</label>
-            <input type="text" name="total_invoice" id="" class="form-control form-control-sm text-right total_invoice auto_num" value="<?= number_format($data_invoice['total_invoice'], 2) ?>" readonly>
+            <input type="text" name="total_invoice" id="" class="form-control form-control-sm text-right total_invoice auto_num" value="<?= number_format((float) $data_invoice['total_invoice'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label for="">Request Payment PO</label>
-            <input type="text" name="req_payment_po" id="" class="form-control form-control-sm text-right req_payment_po auto_num" value="<?= number_format($data_invoice['req_payment_po'], 2) ?>" readonly>
+            <input type="text" name="req_payment_po" id="" class="form-control form-control-sm text-right req_payment_po auto_num" value="<?= number_format((float) $data_invoice['req_payment_po'], 2) ?>" readonly>
         </div>
     </div>
     <div class="col-md-6">
@@ -199,9 +199,9 @@
                         echo '<td class="text-center">' . $no . '</td>';
                         echo '<td class="text-center">' . $item->no_surat . '</td>';
                         echo '<td class="text-center">' . $item->nm_material . '</td>';
-                        echo '<td class="text-center">' . number_format($item->qty_po) . '</td>';
-                        echo '<td class="text-center">' . number_format($item->qty_order) . '</td>';
-                        echo '<td class="text-center">' . number_format($item->hargasatuan) . '</td>';
+                        echo '<td class="text-center">' . number_format((float) $item->qty_po) . '</td>';
+                        echo '<td class="text-center">' . number_format((float) $item->qty_order) . '</td>';
+                        echo '<td class="text-center">' . number_format((float) $item->hargasatuan) . '</td>';
                         echo '<td class="text-center">' . number_format($item->qty_order * $item->hargasatuan) . '</td>';
                         echo '</tr>';
                         $no++;

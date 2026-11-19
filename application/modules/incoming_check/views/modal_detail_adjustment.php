@@ -18,13 +18,13 @@
 			<tr>
 				<td class="text-left" style='vertical-align:middle;'>Tanggal Penerimaan</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
-				<td class="text-left" style='vertical-align:middle;'><?= date('d F Y', strtotime($result_header['created_date'])); ?></td>
+				<td class="text-left" style='vertical-align:middle;'><?= date('d F Y', strtotime((string) $result_header['created_date'])); ?></td>
 				<td colspan="3"></td>
 			</tr>
 		</thead>
 	</table><br>
 	<?php
-	$exp_no_ipp = explode(',', $result_header['no_ipp']);
+	$exp_no_ipp = explode(',', (string) $result_header['no_ipp']);
 	foreach ($exp_no_ipp as $no_ipp) {
 
 		$this->db->select('a.*, b.no_surat, c.konversi, d.code as satuan, e.code as packing');
@@ -90,10 +90,10 @@
 					echo '<td class="text-center">' . $No . '</td>';
 					echo '<td class="text-center">' . $get_no_surat->no_surat . '</td>';
 					echo '<td class="text-center">' . $valx['nm_material'] . '</td>';
-					echo '<td class="text-center">' . number_format($valx['qty_order'], 2) . '</td>';
-					echo '<td class="text-center">' . strtoupper($valx['satuan']) . '</td>';
-					echo '<td class="text-center">' . number_format($valx['konversi'], 2) . '</td>';
-					echo '<td class="text-center">' . number_format($packing, 2) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $valx['qty_order'], 2) . '</td>';
+					echo '<td class="text-center">' . strtoupper((string) $valx['satuan']) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $valx['konversi'], 2) . '</td>';
+					echo '<td class="text-center">' . number_format((float) $packing, 2) . '</td>';
 					echo '<td class="text-center">' . $valx['packing'] . '</td>';
 					echo '<td class="text-center">-</td>';
 					echo '<td class="text-center">-</td>';
@@ -110,10 +110,10 @@
 
 						echo '<tr>';
 						echo '<td colspan="8"></td>';
-						echo '<td class="text-center">' . number_format($checked_incoming['qty_ng'], 2) . '</td>';
-						echo '<td class="text-center">' . number_format($checked_incoming['qty_oke'], 2) . '</td>';
-						echo '<td class="text-center">' . number_format($checked_incoming['qty_pack'], 2) . '</td>';
-						echo '<td class="text-center">' . date('d F Y', strtotime($checked_incoming['expired_date'])) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_ng'], 2) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_oke'], 2) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $checked_incoming['qty_pack'], 2) . '</td>';
+						echo '<td class="text-center">' . date('d F Y', strtotime((string) $checked_incoming['expired_date'])) . '</td>';
 						echo '<td class="text-center">';
 						if (file_exists($checked_incoming['uploaded_file'])) {
 							echo '<a href="' . base_url($checked_incoming['uploaded_file']) . '" class="btn btn-sm btn-primary" target="_blank">Download File</a>';
@@ -153,9 +153,9 @@
 						echo '<tr>';
 						echo '<td class="text-center">' . $no . '</td>';
 						echo '<td class="text-center">' . $summ['nm_material'] . '</td>';
-						echo '<td class="text-center">' . number_format($summ['qty_order']) . '</td>';
-						echo '<td class="text-center">' . number_format($summ['ttl_qty_ng']) . '</td>';
-						echo '<td class="text-center">' . number_format($summ['ttl_qty_oke']) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $summ['qty_order']) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $summ['ttl_qty_ng']) . '</td>';
+						echo '<td class="text-center">' . number_format((float) $summ['ttl_qty_oke']) . '</td>';
 						echo '</tr>';
 						$no++;
 
@@ -168,10 +168,10 @@
 					<tr>
 						<td colspan="3" class="text-right">Masuk ke Stock</td>
 						<td class="text-center">
-							<span style="color: red;"><?= number_format($stok_tidak_masuk) ?></span>
+							<span style="color: red;"><?= number_format((float) $stok_tidak_masuk) ?></span>
 						</td>
 						<td class="text-center">
-							<span style="color: green;"><?= number_format($stok_masuk) ?></span>
+							<span style="color: green;"><?= number_format((float) $stok_masuk) ?></span>
 						</td>
 					</tr>
 				</tbody>
@@ -183,7 +183,7 @@
 	// echo ($file_incoming_material);
 	if ($result_header['file_incoming_material'] !== '' && $result_header['file_incoming_material'] !== null) {
 		echo '<span>Incoming Material File</span> <br>';
-		$exp_file_incoming_material = explode('|', $result_header['file_incoming_material']);
+		$exp_file_incoming_material = explode('|', (string) $result_header['file_incoming_material']);
 		foreach ($exp_file_incoming_material as $exp_material) {
 			if (file_exists($exp_material)) {
 				echo '<a href="' . base_url($exp_material) . '" class="" style="margin-top: 2vh;margin-left: 1vh;"><i class="fa fa-download"></i> ' . $exp_material . '</a> <br>';
@@ -192,7 +192,7 @@
 	}
 	if ($result_header['file_incoming_check'] !== '' && $result_header['file_incoming_check'] !== null) {
 		echo '<span>Incoming Check File</span> <br>';
-		$exp_file_incoming_check = explode('|', $result_header['file_incoming_check']);
+		$exp_file_incoming_check = explode('|', (string) $result_header['file_incoming_check']);
 		foreach ($exp_file_incoming_check as $exp_incoming) {
 			if (file_exists($exp_incoming)) {
 				echo '<a href="' . base_url($exp_incoming) . '" class="" style="margin-top: 2vh;margin-left: 1vh;"><i class="fa fa-download"></i> ' . $exp_incoming . '</a> <br>';

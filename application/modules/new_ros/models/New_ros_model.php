@@ -23,7 +23,7 @@ class New_ros_model extends BF_Model
         $row = $this->db->query("SELECT MAX(id) AS max_id FROM tr_ros_header WHERE id LIKE '%" . $prefix . "%'")->row();
         $urutan = 0;
         if ($row && $row->max_id) {
-            $urutan = (int) substr($row->max_id, 11, 6);
+            $urutan = (int) substr((string) $row->max_id, 11, 6);
         }
         $urutan++;
         return $prefix . '-' . sprintf("%06d", $urutan);
@@ -309,7 +309,7 @@ class New_ros_model extends BF_Model
         $row = $this->db->query($sql)->row();
         $urutan = 0;
         if ($row && $row->max_code) {
-            $parts = explode('-', $row->max_code);
+            $parts = explode('-', (string) $row->max_code);
             $last_part = end($parts);
             $urutan = (int) $last_part;
         }

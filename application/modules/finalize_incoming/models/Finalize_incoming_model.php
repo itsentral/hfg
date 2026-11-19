@@ -28,7 +28,7 @@ class Finalize_incoming_model extends BF_Model
         $row = $query->row();
 
         if ($row && $row->max_id != null) {
-            $urutan = (int) substr($row->max_id, -6);
+            $urutan = (int) substr((string) $row->max_id, -6);
         } else {
             $urutan = 0;
         }

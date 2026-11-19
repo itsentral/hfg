@@ -46,7 +46,7 @@
                 $no = 1;
                 foreach ($list_inc as $item) {
 
-                    $exp_no_po = explode(',', $item['no_po']);
+                    $exp_no_po = explode(',', (string) $item['no_po']);
 
                     $nm_supplier = [];
 
@@ -76,7 +76,7 @@
                     $this->db->select('b.nama as nm_supplier');
                     $this->db->from('tr_purchase_order a');
                     $this->db->join('new_supplier b', 'b.kode_supplier = a.id_suplier', 'left');
-                    $this->db->where_in('a.no_po', explode(',', $no_ipp));
+                    $this->db->where_in('a.no_po', explode(',', (string) $no_ipp));
                     $this->db->group_by('b.nama');
                     $get_nm_supplier = $this->db->get()->result();
                     foreach ($get_nm_supplier as $item_nm_supplier) {
@@ -152,9 +152,9 @@
                     echo '<td style="text-align: center;">' . $item['no_incoming'] . '</td>';
                     echo '<td style="text-align: center;">' . $item['invoice_no'] . '</td>';
                     echo '<td style="text-align: center;">' . $no_payment . '</td>';
-                    echo '<td style="text-align: center;">' . date('d F Y', strtotime($item['invoice_date'])) . '</td>';
+                    echo '<td style="text-align: center;">' . date('d F Y', strtotime((string) $item['invoice_date'])) . '</td>';
                     echo '<td>' . $item['nm_supplier'] . '</td>';
-                    echo '<td style="text-align: right">' . number_format($item['total_invoice'], 2) . '</td>';
+                    echo '<td style="text-align: right">' . number_format((float) $item['total_invoice'], 2) . '</td>';
                     echo '<td style="text-align: center;">' . $status . '</td>';
                     echo '<td style="text-align: center;">' . $view . '</td>';
                     echo '</tr>';

@@ -26,7 +26,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 <select name="level1" id="level1" class="form-select select2">
                     <option value="0">ALL PRODUCT TYPE</option>
                     <?php foreach ($get_level_1 as $value) : ?>
-                        <option value="<?= $value['code_lv1']; ?>"><?= strtoupper($value['nama']); ?></option>
+                        <option value="<?= $value['code_lv1']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -34,7 +34,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 <select name="level2" id="level2" class="form-select select2">
                     <option value="0">ALL PRODUCT CATEGORY</option>
                     <?php foreach ($get_level_2 as $value) : ?>
-                        <option value="<?= $value['code_lv2']; ?>"><?= strtoupper($value['nama']); ?></option>
+                        <option value="<?= $value['code_lv2']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -42,7 +42,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 <select name="level3" id="level3" class="form-select select2">
                     <option value="0">ALL PRODUCT JENIS</option>
                     <?php foreach ($get_level_3 as $value) : ?>
-                        <option value="<?= $value['code_lv3']; ?>"><?= strtoupper($value['nama']); ?></option>
+                        <option value="<?= $value['code_lv3']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -256,7 +256,10 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 confirmButtonText: "Ya, Simpan!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 var form_data = new FormData($('#data_form_master_product')[0]);
                 $.ajax({
                     type: 'POST',
@@ -308,7 +311,10 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 confirmButtonText: "Ya, Hapus!",
                 cancelButtonText: "Batal",
                 closeOnConfirm: false
-            }, function() {
+            }, function(isConfirm) {
+                if (!isConfirm) {
+                    return;
+                }
                 $.ajax({
                     type: 'POST',
                     url: base_url + active_controller + 'delete',

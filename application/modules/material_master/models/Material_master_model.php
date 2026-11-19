@@ -23,7 +23,7 @@ class Material_master_model extends CI_Model
         $Query            = "SELECT MAX(" . $this->code . ") as maxP FROM " . $this->table_name . " WHERE " . $this->code . " LIKE '" . $kode . "%' ";
         $resultIPP        = $this->db->query($Query)->result_array();
         $angkaUrut2        = $resultIPP[0]['maxP'];
-        $urutan2        = (int)substr($angkaUrut2, 4, 6);
+        $urutan2        = (int)substr((string) $angkaUrut2, 4, 6);
         $urutan2++;
         $urut2            = sprintf('%06s', $urutan2);
         $kode_id        = $kode . $urut2;
@@ -93,10 +93,10 @@ class Material_master_model extends CI_Model
 
             $nestedData = array();
             $nestedData[] = $nomor;
-            $nestedData[] = strtoupper($material_type);
-            $nestedData[] = strtoupper($material_category);
-            $nestedData[] = strtoupper($material_jenis);
-            $nestedData[] = strtoupper($row['nama']);
+            $nestedData[] = strtoupper((string) $material_type);
+            $nestedData[] = strtoupper((string) $material_category);
+            $nestedData[] = strtoupper((string) $material_jenis);
+            $nestedData[] = strtoupper((string) $row['nama']);
 
             // ===== STATUS (pakai toggle switch seperti index baru) =====
             $checked = ($row['status'] == '1') ? 'checked' : '';
@@ -301,15 +301,25 @@ class Material_master_model extends CI_Model
         }
 
         // 5. Validasi QC Incoming
-        $incoming_check = $this->db->from('tr_incoming_check_detail')
-            ->where('id_material', $code_lv4)
-            ->where('status_action', 'WAITING')
-            ->count_all_results();
-        if ($incoming_check > 0) {
+        // Status ada di header tr_incoming_check: checked 'N' dan belum dibatalkan (deleted_date kosong) = WAITING CONFIRMATION
+        $incoming_check = $this->db->distinct()
+            ->select('h.kode_trans')
+            ->from('tr_incoming_check_detail d')
+            ->join('tr_incoming_check h', 'h.kode_trans = d.kode_trans')
+            ->where('d.id_material', $code_lv4)
+            ->where('h.checked', 'N')
+            ->where('h.deleted_date IS NULL', null, false)
+            ->get()->result_array();
+        if (!empty($incoming_check)) {
+            $docs = array_column($incoming_check, 'kode_trans');
+            $docList = implode(', ', array_slice($docs, 0, 3));
+            if (count($docs) > 3) {
+                $docList .= ' dan ' . (count($docs) - 3) . ' dokumen lainnya';
+            }
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena sedang dalam proses QC / Incoming penerimaan.',
-                'details' => ['incoming_check' => $incoming_check]
+                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena sedang dalam proses QC / Incoming penerimaan (' . $docList . ').',
+                'details' => ['incoming_check' => $docs]
             ];
         }
 

@@ -44,9 +44,9 @@
                     $qty_rusak_raw   = isset($valx['qty_rusak']) ? floatval($valx['qty_rusak']) : 0;
                     $keterangan_raw  = isset($valx['keterangan']) ? $valx['keterangan'] : null;
 
-                    $qty_oke         = number_format($qty_oke_raw, 4);
-                    $qty_rusak       = number_format($qty_rusak_raw, 4);
-                    $keterangan      = (!empty($keterangan_raw)) ? ucfirst($keterangan_raw) : '-';
+                    $qty_oke         = number_format((float) $qty_oke_raw, 4);
+                    $qty_rusak       = number_format((float) $qty_rusak_raw, 4);
+                    $keterangan      = (!empty($keterangan_raw)) ? ucfirst((string) $keterangan_raw) : '-';
                     $qty_kurang      = number_format($qty_order - $qty_oke_raw, 4);
 
                     if ($tanda === 'check' && $checked === 'Y') {
@@ -54,9 +54,9 @@
                         $check_qty_rusak  = isset($valx['check_qty_rusak']) ? floatval($valx['check_qty_rusak']) : 0;
                         $check_keterangan = isset($valx['check_keterangan']) ? $valx['check_keterangan'] : null;
 
-                        $qty_oke     = number_format($check_qty_oke, 4);
-                        $qty_rusak   = number_format($check_qty_rusak, 4);
-                        $keterangan  = (!empty($check_keterangan)) ? ucfirst($check_keterangan) : '-';
+                        $qty_oke     = number_format((float) $check_qty_oke, 4);
+                        $qty_rusak   = number_format((float) $check_qty_rusak, 4);
+                        $keterangan  = (!empty($check_keterangan)) ? ucfirst((string) $check_keterangan) : '-';
                         $qty_kurang  = number_format($qty_order - $check_qty_oke, 4);
                     }
 
@@ -64,11 +64,11 @@
                     echo "<td align='center'>" . $No . "</td>";
                     echo "<td align='center'>" . $valx['code_material'] . "</td>";
                     echo "<td align='center'>" . $valx['namamaterial'] . "</td>";
-                    echo "<td align='center'>" . ucfirst($valx['unit_measure']) . "</td>";
-                    echo "<td align='center'>" . number_format($valx['qty'], 2) . "</td>";
-                    echo "<td align='center'>" . number_format($valx['qty_order'], 2) . "</td>";
+                    echo "<td align='center'>" . ucfirst((string) $valx['unit_measure']) . "</td>";
+                    echo "<td align='center'>" . number_format((float) $valx['qty'], 2) . "</td>";
+                    echo "<td align='center'>" . number_format((float) $valx['qty_order'], 2) . "</td>";
                     echo "<td align='center'>" . number_format($valx['qty_order'] / (($valx['konversi'] <= 0) ? 1 : $valx['konversi']), 2) . "</td>";
-                    echo "<td align='center'>" . ucfirst($valx['unit_packing']) . "</td>";
+                    echo "<td align='center'>" . ucfirst((string) $valx['unit_packing']) . "</td>";
                     echo "<td align='left'>" . $valx['keterangan_check'] . "</td>";
                     // echo "<td><a href='" . base_url('warehouse/print_qrcode/' . $valx['id']) . "' target='_blank' class='btn btn-xs btn-default'>QR</a></td>";
                     echo "</tr>";
@@ -80,7 +80,7 @@
         <?php
         if ($file_incoming_material !== '' && $file_incoming_material !== null) {
             echo '<span>Incoming Material File</span> <br>';
-            $exp_file_incoming_check = explode('|', $file_incoming_material);
+            $exp_file_incoming_check = explode('|', (string) $file_incoming_material);
             foreach ($exp_file_incoming_check as $exp_incoming) {
                 if (file_exists($exp_incoming)) {
                     echo '<a href="' . base_url($exp_incoming) . '" class="" style="margin-top: 2vh;margin-left: 1vh;"><i class="fa fa-download"></i> ' . $exp_incoming . '</a> <br>';

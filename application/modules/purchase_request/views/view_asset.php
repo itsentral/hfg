@@ -44,7 +44,7 @@ foreach ($results['header'] as $header) {
 										<label for="customer">Tanggal Dibutuhkan</label>
 									</div>
 									<div class="col-md-8">
-										<?= date('d F Y', strtotime($header->tgl_dibutuhkan)) ?>
+										<?= date('d F Y', strtotime((string) $header->tgl_dibutuhkan)) ?>
 									</div>
 								</div>
 							</div>
@@ -110,18 +110,18 @@ foreach ($results['header'] as $header) {
 												$konversi = ($get_barang->konversi > 0) ? $get_barang->konversi : 1;
 
 												$qty_pack = $value['propose_purchase'];
-												$unit_pack = strtoupper($value['satuan_packing']);
+												$unit_pack = strtoupper((string) $value['satuan_packing']);
 												$qty = ($value['propose_purchase'] * $konversi);
-												$unit_meas = strtoupper($value['unit_measure']);
+												$unit_meas = strtoupper((string) $value['unit_measure']);
 											} else {
 												$get_barang = $this->db->get_where('new_inventory_4', ['code_lv4' => $value['id_material']])->row();
 
 												$konversi = ($get_barang->konversi > 0) ? $get_barang->konversi : 1;
 
 												$qty_pack = ($value['propose_purchase'] / $konversi);
-												$unit_pack = strtoupper($value['satuan_packing']);
+												$unit_pack = strtoupper((string) $value['satuan_packing']);
 												$qty = $value['propose_purchase'];
-												$unit_meas = strtoupper($value['unit_measure']);
+												$unit_meas = strtoupper((string) $value['unit_measure']);
 											}
 
 											echo "<tr>";
@@ -130,12 +130,12 @@ foreach ($results['header'] as $header) {
 											<input type='hidden' name='detail[" . $key . "][id]' value='" . $value['id'] . "'>
 											</td>";
 											echo "	<td class='text-left'>" . $value['code_material'] . "</td>";
-											echo "<td class='text-right min_stok'>" . number_format($value['min_stok'], 2) . "</td>";
-											echo "<td class='text-right max_stok'>" . number_format($value['max_stok'], 2) . "</td>";
+											echo "<td class='text-right min_stok'>" . number_format((float) $value['min_stok'], 2) . "</td>";
+											echo "<td class='text-right max_stok'>" . number_format((float) $value['max_stok'], 2) . "</td>";
 											echo "<td class='text-right min_order'>" . number_format(0, 2) . "</td>";
-											echo "<td class='text-right'>" . number_format($qty_pack, 2) . "</td>";
+											echo "<td class='text-right'>" . number_format((float) $qty_pack, 2) . "</td>";
 											echo "<td class='text-center'>" . $unit_pack . "</td>";
-											echo "<td class='text-right'>" . number_format($qty, 2) . "</td>";
+											echo "<td class='text-right'>" . number_format((float) $qty, 2) . "</td>";
 											echo "<td class='text-center'>" . $unit_meas . "</td>";
 											echo "<td class='text-center'>" . $status . "</td>";
 											echo "<td class='text-center'></td>";
