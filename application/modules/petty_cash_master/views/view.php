@@ -26,7 +26,7 @@
             <h6 class="mb-0 fw-bold text-dark">Rincian Alokasi COA & Budget</h6>
         </div>
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill">
-            <?= (isset($details) && is_array($details)) ? count($details) : 0 ?> Alokasi Akun
+            <?= (isset($details) && is_array($details)) ? count($details ?? []) : 0 ?> Alokasi Akun
         </span>
     </div>
     <div class="table-responsive">

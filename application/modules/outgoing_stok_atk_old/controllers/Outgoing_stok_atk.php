@@ -300,12 +300,12 @@ class Outgoing_stok_atk extends Admin_Controller
           $ttl_qty_prod = 0;
           $ttl_qty_pusat = 0;
 
-          $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub)) . "')")->row();
+          $get_ttl_qty_sub = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_sub FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_sub ?? [])) . "')")->row();
           if (!empty($get_ttl_qty_sub)) {
             $ttl_qty_sub = $get_ttl_qty_sub->ttl_qty_sub;
           }
 
-          $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod)) . "')")->row();
+          $get_ttl_qty_prod = $this->db->query("SELECT SUM(qty_stock) as ttl_qty_prod FROM warehouse_stock WHERE id_material = '" . $item_detail->id_material . "' AND id_gudang IN ('" . str_replace(",", "','", implode(',', $arr_warehouse_prod ?? [])) . "')")->row();
           if (!empty($get_ttl_qty_prod)) {
             $ttl_qty_prod = $get_ttl_qty_prod->ttl_qty_prod;
           }
@@ -375,7 +375,7 @@ class Outgoing_stok_atk extends Admin_Controller
           'nm_comp' => 'PT HARAPAN FAJAR GEMILANG'
         ];
       }
-      $listDepartment = array_values($listDepartment);
+      $listDepartment = array_values($listDepartment ?? []);
 
       $data = [
         'listGudang' => $listGudang,
@@ -512,7 +512,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
     $data_url    = base_url();
     $Split_Beda    = explode('/', (string) $data_url);
-    $Jum_Beda    = count($Split_Beda);
+    $Jum_Beda    = count($Split_Beda ?? []);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
     $getData = $this->db->get_where('warehouse_adjustment a', array(
@@ -675,7 +675,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
     $data_url    = base_url();
     $Split_Beda    = explode('/', (string) $data_url);
-    $Jum_Beda    = count($Split_Beda);
+    $Jum_Beda    = count($Split_Beda ?? []);
     $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
     $getData = $this->db

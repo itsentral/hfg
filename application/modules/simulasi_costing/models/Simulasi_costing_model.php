@@ -658,7 +658,7 @@ class Simulasi_costing_model extends CI_Model
         }
 
         if (!$target->is_lengkap) {
-            $gaps_text = implode(', ', $target->gaps);
+            $gaps_text = implode(', ', $target->gaps ?? []);
             return [
                 'status' => 0,
                 'pesan'  => "Tidak dapat mengajukan ke Draft Pricelist karena parameter belum lengkap: {$gaps_text}."

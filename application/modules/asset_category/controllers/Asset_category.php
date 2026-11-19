@@ -89,7 +89,7 @@ class Asset_category extends Admin_Controller
                     'pesan'  => $TandaI . ' data success. Thanks ...',
                     'status' => 1
                 );
-                $log_payload = (!empty($id) && $old_cat_data) ? array('old' => $old_cat_data, 'new' => array_merge($old_cat_data, $ArrHeader)) : $data;
+                $log_payload = (!empty($id) && $old_cat_data) ? array('old' => $old_cat_data, 'new' => array_merge($old_cat_data ?? [], $ArrHeader ?? [])) : $data;
                 write_log('Asset Category', 'Save Category Asset', $TandaI . ' Category Asset success: ' . $id . ' / ' . $nm_category, $log_payload, null, 1);
             }
 

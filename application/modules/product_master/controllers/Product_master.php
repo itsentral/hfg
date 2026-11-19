@@ -255,7 +255,7 @@ class Product_master extends Admin_Controller
       }
       if (!empty($errors)) {
         echo json_encode([
-          'pesan'  => implode(' ', $errors),
+          'pesan'  => implode(' ', $errors ?? []),
           'status' => 0,
         ]);
         return;
@@ -315,7 +315,7 @@ class Product_master extends Admin_Controller
         $dataProcess2 = ['file_msds' => $link_url];
       }
 
-      $dataProcess = array_merge($dataProcess1, $dataProcess2);
+      $dataProcess = array_merge($dataProcess1 ?? [], $dataProcess2 ?? []);
 
       $oldData = (!empty($id)) ? $this->db->get_where('product_lvl_4', ['id' => $id])->row_array() : null;
 
@@ -338,7 +338,7 @@ class Product_master extends Admin_Controller
 
       $this->db->trans_complete();
 
-      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)] : $dataProcess;
+      $logPayload = (!empty($id) && !empty($oldData)) ? ['old' => $oldData, 'new' => array_merge($oldData ?? [], $dataProcess ?? [])] : $dataProcess;
 
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();

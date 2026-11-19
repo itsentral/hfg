@@ -23,7 +23,7 @@
 			</thead>
 			<tbody>
 				<?php
-				$jumlah = count($result);
+				$jumlah = count($result ?? []);
 				$no  = 0;
 				$SUM_PO = 0;
 				foreach($result AS $val => $valx){ $no++;

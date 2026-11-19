@@ -40,7 +40,7 @@
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3">
         <h6 class="mb-0 fw-bold text-secondary">
-            <i class="fa fa-list me-2"></i> Daftar Varian Tebal (<?= count($details) ?> item)
+            <i class="fa fa-list me-2"></i> Daftar Varian Tebal (<?= count($details ?? []) ?> item)
         </h6>
     </div>
     <div class="card-body p-0">

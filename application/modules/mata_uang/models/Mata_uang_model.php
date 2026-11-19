@@ -132,13 +132,13 @@ class Mata_uang_model extends CI_Model
 
         foreach ($existing as $row) {
             $row_clean = $this->clean_name($row->negara);
-            if (in_array($row_clean, $aliases_to_check)) {
+            if (in_array($row_clean, $aliases_to_check ?? [])) {
                 return true;
             }
             $row_lower = strtolower(trim((string) $row->negara));
             if (isset($this->country_aliases[$row_lower])) {
                 foreach ($this->country_aliases[$row_lower] as $row_al) {
-                    if (in_array($this->clean_name($row_al), $aliases_to_check)) {
+                    if (in_array($this->clean_name($row_al), $aliases_to_check ?? [])) {
                         return true;
                     }
                 }

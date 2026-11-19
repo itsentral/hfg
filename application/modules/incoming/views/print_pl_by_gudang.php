@@ -386,8 +386,8 @@
                         $mat_summary[$mat_key]['coil_count']++;
                     }
 
-                    $pack_nw = array_sum(array_column($items, 'berat_bersih'));
-                    $pack_gw = array_sum(array_column($items, 'berat_kotor'));
+                    $pack_nw = array_sum(array_column($items ?? [], 'berat_bersih'));
+                    $pack_gw = array_sum(array_column($items ?? [], 'berat_kotor'));
                     ?>
 
                     <div style="margin-bottom: 16px;">

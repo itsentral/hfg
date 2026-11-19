@@ -70,7 +70,7 @@ if ($tanda != 'request') { ?>
                         echo "<tr>";
 
                         if ($index === 0) {
-                            $rowspan = count($rows);
+                            $rowspan = count($rows ?? []);
                             echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>$no</td>";
                             echo "<td align='left' rowspan='$rowspan' style='vertical-align:middle;'>
                         <b>{$valx['nm_barang']}</b><br>

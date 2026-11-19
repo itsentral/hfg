@@ -337,7 +337,7 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
-            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po'] ?? []) : $post['no_po'];
             $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
             $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
@@ -393,7 +393,7 @@ class Ros extends Admin_Controller
 
             $this->db->insert('tr_ros', [
                 'id'               => $no_ros,
-                'no_po'            => implode(',', $no_po_array),
+                'no_po'            => implode(',', $no_po_array ?? []),
                 'no_surat'         => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
@@ -429,7 +429,7 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
-            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po'] ?? []) : $post['no_po'];
             $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
             $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
@@ -481,7 +481,7 @@ class Ros extends Admin_Controller
             }
 
             $this->db->update('tr_ros', [
-                'no_po'    => implode(',', $no_po_array),
+                'no_po'    => implode(',', $no_po_array ?? []),
                 'no_surat' => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
@@ -746,7 +746,7 @@ class Ros extends Admin_Controller
         if (!empty($groups)) {
             $no = 1;
             foreach ($groups as $id_po => $coils) {
-                $rowspan = count($coils);
+                $rowspan = count($coils ?? []);
                 foreach ($coils as $index => $coil) {
                     $html .= '<tr>';
 

@@ -29,7 +29,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
 
                     $prods = array_filter(array_map('trim', explode(',', (string) $r->product_names)));
                     $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
-                    $more_count = count($prods) - 1;
+                    $more_count = count($prods ?? []) - 1;
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>

@@ -611,7 +611,7 @@ if (!empty($data->no_coa) || !empty($data->nm_coa)) {
 
 	<!-- Preview Gambar Lampiran di Lembar Tambahan jika dicetak -->
 	<?php
-	$image_attachments = array_filter($all_files, function ($af) {
+	$image_attachments = array_filter($all_files ?? [], function ($af) {
 		return in_array($af['ext'], ['jpg', 'jpeg', 'png', 'webp', 'gif']);
 	});
 	if (!empty($image_attachments)) :

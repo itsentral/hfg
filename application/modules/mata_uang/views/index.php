@@ -15,7 +15,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
         </div>
         <div class="d-flex align-items-center gap-2">
             <span class="badge bg-light-primary text-primary fw-semibold px-3 py-2">
-                Total: <?= !empty($results) ? count($results) : 0; ?> Mata Uang
+                Total: <?= !empty($results) ? count($results ?? []) : 0; ?> Mata Uang
             </span>
             <?php if ($ENABLE_ADD) : ?>
                 <a class="btn btn-primary add" href="javascript:void(0)" title="Tambah Mata Uang">

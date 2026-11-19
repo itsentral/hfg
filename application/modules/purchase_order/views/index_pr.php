@@ -96,7 +96,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									$get_checked_pr = $this->db->get_where('tr_po_checked_pr', ['no_pr' => $record->so_number, 'id_user' => $this->auth->user_id()])->result();
 
 									$checked = '';
-									if (count($get_checked_pr) > 0) {
+									if (count($get_checked_pr ?? []) > 0) {
 										$checked = 'checked';
 									}
 
@@ -132,7 +132,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									$get_checked_pr = $this->db->get_where('tr_po_checked_pr', ['no_pr' => $record->so_number, 'id_user' => $this->auth->user_id()])->result();
 
 									$checked = '';
-									if (count($get_checked_pr) > 0) {
+									if (count($get_checked_pr ?? []) > 0) {
 										$checked = 'checked';
 									}
 									?>

@@ -120,9 +120,9 @@
             $codeArr = array();
             
             foreach ($bitFrame as $line)
-                $codeArr[] = join('', $line);
+                $codeArr[] = join('', $line ?? []);
                 
-            return gzcompress(join("\n", $codeArr), 9);
+            return gzcompress(join("\n", $codeArr ?? []), 9);
         }
         
         //----------------------------------------------------------------------
@@ -294,9 +294,9 @@
             
                 $howManuOut = 8-(QR_FIND_FROM_RANDOM % 9);
                 for ($i = 0; $i <  $howManuOut; $i++) {
-                    $remPos = rand (0, count($checked_masks)-1);
+                    $remPos = rand (0, count($checked_masks ?? [])-1);
                     unset($checked_masks[$remPos]);
-                    $checked_masks = array_values($checked_masks);
+                    $checked_masks = array_values($checked_masks ?? []);
                 }
             
             }

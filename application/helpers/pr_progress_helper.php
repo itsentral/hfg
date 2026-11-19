@@ -93,7 +93,7 @@ if (!function_exists('render_pr_progress_cell')) {
         $doc_meta     = $stages_info['doc_meta'];
         $reason       = $stages_info['reason'];
 
-        $total_stages = count($stages);
+        $total_stages = count($stages ?? []);
         if ($current_stage > $total_stages) {
             $current_stage = $total_stages;
         }

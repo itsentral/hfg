@@ -45,14 +45,14 @@ class Production_planning_model extends CI_Model
         $this->db->trans_start();
 
         $plan_no = $this->generate_plan_no();
-        $this->db->insert('tr_production_plan', array_merge($data, [
+        $this->db->insert('tr_production_plan', array_merge($data ?? [], [
             'plan_no'    => $plan_no,
             'status'     => 'Draft',
             'created_at' => date('Y-m-d H:i:s'),
         ]));
 
         foreach ($details as $detail) {
-            $this->db->insert('tr_production_plan_detail', array_merge($detail, ['plan_no' => $plan_no]));
+            $this->db->insert('tr_production_plan_detail', array_merge($detail ?? [], ['plan_no' => $plan_no]));
             $this->db->insert('tr_production_plan_coil_alloc', [
                 'plan_no'      => $plan_no,
                 'no_coil'      => $detail['no_coil'],
@@ -76,7 +76,7 @@ class Production_planning_model extends CI_Model
         $this->db->where('plan_no', $plan_no)->delete('tr_production_plan_coil_alloc');
 
         foreach ($details as $detail) {
-            $this->db->insert('tr_production_plan_detail', array_merge($detail, ['plan_no' => $plan_no]));
+            $this->db->insert('tr_production_plan_detail', array_merge($detail ?? [], ['plan_no' => $plan_no]));
             $this->db->insert('tr_production_plan_coil_alloc', [
                 'plan_no'      => $plan_no,
                 'no_coil'      => $detail['no_coil'],
@@ -160,7 +160,7 @@ class Production_planning_model extends CI_Model
             ->where('h.id_produk', $id_produk_fg)
             ->get()->result();
 
-        $material_ids = array_map(function($r) { return $r->id_material; }, $bom);
+        $material_ids = array_map(function($r) { return $r->id_material; }, $bom ?? []);
 
         // Query coil dari warehouse_stock_coil yang materialnya sesuai BOM
         $this->db->select('

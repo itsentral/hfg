@@ -12,7 +12,7 @@ $badge_class = isset($status_badges[$spk['status']]) ? $status_badges[$spk['stat
 
 // Determine editability
 $editable_statuses = ['Material Requested', 'Material Confirmed'];
-$is_editable = in_array($spk['status'], $editable_statuses);
+$is_editable = in_array($spk['status'], $editable_statuses ?? []);
 ?>
 
 <style>

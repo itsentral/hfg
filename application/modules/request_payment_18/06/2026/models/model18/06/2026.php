@@ -475,7 +475,7 @@ class Request_payment_model extends BF_Model
             if ($item->kategori == 'Kasbon') {
                 $get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $item->no_dokumen))->row();
                 $check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item->no_dokumen])->result();
-                if (count($check_detail)) {
+                if (count($check_detail ?? [])) {
                     if ($get_kasbon->tipe_pr == 'pr departemen') {
                         $this->db->select('b.nm_lengkap');
                         $this->db->from('rutin_non_planning_header a');
@@ -500,7 +500,7 @@ class Request_payment_model extends BF_Model
 
             $check_added = $this->db->get_where('tr_added_req_payment', ['no_doc' => $item->no_dokumen])->result();
 
-            $checked = (count($check_added) > 0) ? 'checked' : '';
+            $checked = (count($check_added ?? []) > 0) ? 'checked' : '';
 
             $input_tanggal_pembayaran = '<input type="date" class="form-control form-control-sm" name="tanggal_pembayaran_' . $item->no_dokumen . '">';
 
@@ -758,7 +758,7 @@ class Request_payment_model extends BF_Model
                     $arr_keperluan[] = $itemm['keperluan'];
                 }
 
-                $keperluan = implode(', ', $arr_keperluan);
+                $keperluan = implode(', ', $arr_keperluan ?? []);
 
 
                 $ArrDetail[]         = [

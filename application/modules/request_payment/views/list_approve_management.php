@@ -37,7 +37,7 @@ foreach ($data as $item) :
     if (in_array($item->tipe, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
         $count_pembayaran_po += 1;
     }
-    if (in_array($item->tipe, $ros_payment_types)) {
+    if (in_array($item->tipe, $ros_payment_types ?? [])) {
         $count_document_import += 1;
     }
 endforeach;
@@ -485,7 +485,7 @@ endforeach;
                                         foreach ($get_po_note as $item_po_note) {
                                             $po_note[] = $item_po_note->note;
                                         }
-                                        $po_note = implode(', ', $po_note);
+                                        $po_note = implode(', ', $po_note ?? []);
                             ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?= $item_expense->no_doc ?></td>
@@ -589,7 +589,7 @@ endforeach;
                         </thead>
                         <tbody>
                             <?php foreach ($data as $item_ros) :
-                                if (in_array($item_ros->tipe, $ros_payment_types)) :
+                                if (in_array($item_ros->tipe, $ros_payment_types ?? [])) :
                                     $tipe_label = str_replace(
                                         ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'],
                                         ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],

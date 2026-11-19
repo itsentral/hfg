@@ -366,10 +366,10 @@
                     }
 
                     $detail_code = str_split($detail->code, 35);
-                    $final_detail_code = implode("<br>", $detail_code);
+                    $final_detail_code = implode("<br>", $detail_code ?? []);
 
                     $detail_nama = str_split($detail->nama, 35);
-                    $final_detail_nama = implode("<br>", $detail_nama);
+                    $final_detail_nama = implode("<br>", $detail_nama ?? []);
 
                     if ($jumlahdata <= '30') {
                         $konversi = ($detail->konversi > 0) ? $detail->konversi : 1;

@@ -109,7 +109,7 @@ class Price_reference_model extends CI_Model
             $this->db->select('h.*, po.no_surat, po.loi');
             $this->db->from($this->table_history . ' h');
             $this->db->join('tr_purchase_order po', 'po.no_po = h.id_purchase_order', 'left');
-            if (count($identifiers) > 1) {
+            if (count($identifiers ?? []) > 1) {
                 $this->db->where_in('h.id_material', $identifiers);
             } else {
                 $this->db->where('h.id_material', reset($identifiers));
@@ -156,7 +156,7 @@ class Price_reference_model extends CI_Model
         ');
         $this->db->from($this->table_header . ' h');
         $this->db->join($this->table_detail . ' d', 'd.id_price_reference_header = h.id', 'left');
-        if (count($identifiers) > 1) {
+        if (count($identifiers ?? []) > 1) {
             $this->db->where_in('h.id_material', $identifiers);
         } else {
             $this->db->where('h.id_material', reset($identifiers));

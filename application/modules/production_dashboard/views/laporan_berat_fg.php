@@ -94,7 +94,7 @@
             </table>
         </div>
         <?php if (!empty($data_laporan)): ?>
-            <div class="text-muted small mt-2">Total: <?= count($data_laporan) ?> record</div>
+            <div class="text-muted small mt-2">Total: <?= count($data_laporan ?? []) ?> record</div>
         <?php endif; ?>
     </div>
 </div>

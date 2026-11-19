@@ -98,7 +98,7 @@ $disabled3        = 'readonly';
 
                     $status = '<div class="badge bg-red">PO Not Created</div>';
                     $check_po_created = $this->db->get_where('dt_trans_po', ['idpr' => $valx['id'], 'tipe' => 'pr depart'])->result();
-                    if (count($check_po_created) > 0) {
+                    if (count($check_po_created ?? []) > 0) {
                         $status = '<div class="badge bg-green">PO Created</div>';
                     }
 

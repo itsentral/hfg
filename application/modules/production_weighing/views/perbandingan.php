@@ -20,7 +20,7 @@
 
             <!-- Ringkasan -->
             <?php
-            $total_coil     = count($rows);
+            $total_coil     = count($rows ?? []);
             $total_exception = 0;
             $total_net_pl   = 0;
             $total_net_timbang = 0;

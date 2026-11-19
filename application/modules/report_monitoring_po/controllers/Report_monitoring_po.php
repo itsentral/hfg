@@ -198,7 +198,7 @@ class Report_monitoring_po extends Admin_Controller
         $sumSisa = 0;
 
         foreach ($data as $item) {
-            $materials = !empty($item->materials_arr) ? implode(", ", $item->materials_arr) : '-';
+            $materials = !empty($item->materials_arr) ? implode(", ", $item->materials_arr ?? []) : '-';
             $pr_text   = $item->pr_text ?? '-';
 
             $sheet1->setCellValue('A' . $rowNum1, $no1);
@@ -328,7 +328,7 @@ class Report_monitoring_po extends Admin_Controller
                 $sheet2->setCellValue('B' . $rowNum2, $item->no_surat ?? $item->no_po);
                 $sheet2->setCellValue('C' . $rowNum2, $item->nm_supplier ?? '-');
                 $sheet2->setCellValue('D' . $rowNum2, $pr_text);
-                $sheet2->setCellValue('E' . $rowNum2, !empty($item->materials_arr) ? implode(", ", $item->materials_arr) : '-');
+                $sheet2->setCellValue('E' . $rowNum2, !empty($item->materials_arr) ? implode(", ", $item->materials_arr ?? []) : '-');
                 $sheet2->setCellValue('F' . $rowNum2, '-');
                 $sheet2->setCellValue('G' . $rowNum2, '-');
                 $sheet2->setCellValue('H' . $rowNum2, 0);

@@ -513,7 +513,7 @@ class Approval_mutasi_model extends BF_Model
         // ═══════════════════════════════════════════════════
         $pack_ids_moved = [];
         foreach ($mutation['details'] as $detail) {
-            if (!empty($detail['id_warehouse_pack']) && !in_array($detail['id_warehouse_pack'], $pack_ids_moved)) {
+            if (!empty($detail['id_warehouse_pack']) && !in_array($detail['id_warehouse_pack'], $pack_ids_moved ?? [])) {
                 $this->db->update('warehouse_pack', [
                     'id_gudang' => $id_gudang_to,
                     'kd_gudang' => $kd_gudang_to,
@@ -565,7 +565,7 @@ class Approval_mutasi_model extends BF_Model
                 'id_material' => $id_material,
                 'nm_material' => $nm_material,
                 'id_gudang'   => $id_gudang,
-            ], $snap_data));
+            ], $snap_data ?? []));
         } else {
             $this->db->update('warehouse_stock_per_day', $snap_data, ['id' => $snap->id]);
         }
@@ -613,7 +613,7 @@ class Approval_mutasi_model extends BF_Model
                 'id_material' => $id_material,
                 'id_gudang'   => $id_gudang,
                 'no_coil'     => $no_coil,
-            ], $coil_snap_data));
+            ], $coil_snap_data ?? []));
         } else {
             $this->db->update('warehouse_coil_per_day', $coil_snap_data, ['id' => $coil_snap->id]);
         }

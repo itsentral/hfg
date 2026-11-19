@@ -144,7 +144,7 @@ class Flow_process extends Admin_Controller
 		$details       = [];
 		$sum_cycletime = 0.0;
 		$sum_man_hour  = 0.0;
-		$jumlah        = max(count($areas), count($names), count($machines), count($cts), count($mps));
+		$jumlah        = max(count($areas ?? []), count($names ?? []), count($machines ?? []), count($cts ?? []), count($mps ?? []));
 		for ($i = 0; $i < $jumlah; $i++) {
 			$area    = isset($areas[$i]) ? trim((string) $areas[$i]) : '';
 			$name    = isset($names[$i]) ? trim((string) $names[$i]) : '';
@@ -156,7 +156,7 @@ class Flow_process extends Admin_Controller
 			if ($area === '' && $name === '' && $machine === '' && $ct_txt === '' && $mp_txt === '') {
 				continue;
 			}
-			$no = count($details) + 1;
+			$no = count($details ?? []) + 1;
 
 			if ($name === '') {
 				$errors[] = 'Proses #' . $no . ': Process Name wajib diisi.';
@@ -192,7 +192,7 @@ class Flow_process extends Admin_Controller
 		}
 
 		if (!empty($errors)) {
-			echo json_encode(['pesan' => implode(' ', $errors), 'status' => 0]);
+			echo json_encode(['pesan' => implode(' ', $errors ?? []), 'status' => 0]);
 			return;
 		}
 
@@ -213,7 +213,7 @@ class Flow_process extends Admin_Controller
 		if (!empty($id)) {
 			$logPayload = [
 				'old'            => $oldHeader,
-				'new'            => array_merge($oldHeader, $header),
+				'new'            => array_merge($oldHeader ?? [], $header ?? []),
 				'detail_changes' => $this->build_detail_changes($oldDetails, $details),
 			];
 		} else {
@@ -225,7 +225,7 @@ class Flow_process extends Admin_Controller
 			write_log('Flow Process', $label, 'Gagal ' . strtolower((string) $label) . ' flow process: ' . $nama_kategori, $logPayload, null, 0);
 		} else {
 			$result = ['pesan' => 'Success process data!', 'status' => 1];
-			write_log('Flow Process', $label, $label . ' flow process: ' . $nama_kategori . ' (' . count($details) . ' proses, total man hour ' . $header['total_man_hour'] . ')', $logPayload, null, 1);
+			write_log('Flow Process', $label, $label . ' flow process: ' . $nama_kategori . ' (' . count($details ?? []) . ' proses, total man hour ' . $header['total_man_hour'] . ')', $logPayload, null, 1);
 		}
 
 		echo json_encode($result);
@@ -248,7 +248,7 @@ class Flow_process extends Admin_Controller
 
 		if ($this->Flow_process_model->delete_flow($id)) {
 			$result = ['pesan' => 'Success process data!', 'status' => 1];
-			write_log('Flow Process', 'Delete', 'Hapus flow process: ' . $nama . ' (' . count($details) . ' proses)', $snapshot, null, 1);
+			write_log('Flow Process', 'Delete', 'Hapus flow process: ' . $nama . ' (' . count($details ?? []) . ' proses)', $snapshot, null, 1);
 		} else {
 			$result = ['pesan' => 'Failed process data!', 'status' => 0];
 			write_log('Flow Process', 'Delete', 'Gagal hapus flow process: ' . $nama, $snapshot, null, 0);
@@ -265,7 +265,7 @@ class Flow_process extends Admin_Controller
 		$fields  = ['costcentre_area', 'process_name', 'machine', 'cycletime', 'man_power', 'total_man_hour'];
 		$numeric = ['cycletime', 'man_power', 'total_man_hour'];
 		$changes = [];
-		$jumlah  = max(count($oldDetails), count($newDetails));
+		$jumlah  = max(count($oldDetails ?? []), count($newDetails ?? []));
 		for ($i = 0; $i < $jumlah; $i++) {
 			$old = isset($oldDetails[$i]) ? $oldDetails[$i] : null;
 			$new = isset($newDetails[$i]) ? $newDetails[$i] : null;
@@ -287,7 +287,7 @@ class Flow_process extends Admin_Controller
 			foreach ($fields as $f) {
 				$a = $old[$f];
 				$b = $new[$f];
-				$sama = in_array($f, $numeric)
+				$sama = in_array($f, $numeric ?? [])
 					? (abs((float) $a - (float) $b) < 1e-9)
 					: ((string) $a === (string) $b);
 				if (!$sama) {

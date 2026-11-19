@@ -16,7 +16,7 @@ class Libexcel extends PHPExcel {
                 echo "Definisi Kolom tidak ada!";
                 die();
             }else{
-                $jumlahKolom = count($col);
+                $jumlahKolom = count($col ?? []);
                 if($jumlahKolom==0){
                     echo "Definisi Kolom tidak ada!";
                     die();
@@ -160,10 +160,10 @@ class Libexcel extends PHPExcel {
           foreach ($columns as $column) {
           // Don't itterate if the $end_column was already set in a previous itteration.
           // Stop iterating if you've reached the maximum character length.
-          if (!in_array(strtoupper((string) $end_column), $columns) && strlen((string) $column) < $length) {
+          if (!in_array(strtoupper((string) $end_column), $columns ?? []) && strlen((string) $column) < $length) {
           $new_columns = $this->createColumnsArray(strtoupper((string) $end_column), $column);
           // Merge the new columns which were created with the final columns array.
-          $columns = array_merge($columns, $new_columns);
+          $columns = array_merge($columns ?? [], $new_columns ?? []);
           }
           }
  

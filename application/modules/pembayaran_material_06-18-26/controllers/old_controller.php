@@ -223,7 +223,7 @@ class Pembayaran_material extends Admin_Controller
 		$get_bank = $this->db->get()->result();
 
 		$data = [
-			'id_payment' => implode(',', $id_payment),
+			'id_payment' => implode(',', $id_payment ?? []),
 			'result_payment' => $get_payment,
 			'list_supplier' => $get_supplier,
 			'list_bank' => $get_bank,
@@ -731,7 +731,7 @@ class Pembayaran_material extends Admin_Controller
 		foreach ($get_id_payment as $item_id_payment) {
 			$list_id_payment[] = $item_id_payment->id;
 		}
-		$list_id_payment = implode(';', $list_id_payment);
+		$list_id_payment = implode(';', $list_id_payment ?? []);
 
 		$id_payment = explode(';', (string) $list_id_payment);
 
@@ -775,7 +775,7 @@ class Pembayaran_material extends Admin_Controller
 		}
 
 		$data = [
-			'id_payment' => implode(',', $id_payment),
+			'id_payment' => implode(',', $id_payment ?? []),
 			'result_header' => $get_payment_header,
 			'result_payment' => $get_payment,
 			'list_supplier' => $get_supplier,
@@ -1261,8 +1261,8 @@ class Pembayaran_material extends Admin_Controller
 		}
 
 		echo json_encode([
-			'count_choosed_payment' => count($get_choosed_payment),
-			'arr_choosed_payment' => implode(';', $arr_choosed_payment)
+			'count_choosed_payment' => count($get_choosed_payment ?? []),
+			'arr_choosed_payment' => implode(';', $arr_choosed_payment ?? [])
 		]);
 	}
 
@@ -1322,7 +1322,7 @@ class Pembayaran_material extends Admin_Controller
 				'mata_uang' => $post['mata_uang'],
 				'payment_bank' => str_replace(',', '', $post['payment_bank']),
 				'total_payment' => $post['total_payment'],
-				'selisih' => ($post['total_payment'] - str_replace(',', '', $post['payment_bank'])),
+				'selisih' => ($post['total_payment'] - (float) str_replace(',', '', $post['payment_bank'])),
 				'status' => 2,
 				'link_doc' => $filenames,
 				'id_supplier' => $post['supplier_input'],
@@ -1400,12 +1400,12 @@ class Pembayaran_material extends Admin_Controller
 				$jenis_jurnal = 'BUK001';
 				$kurs         = 1;
 				$selisih      = 0;
-				$hutang       = (str_replace(',', '', $post['total_payment']) * $kurs) + (str_replace(',', '', $detail['nilai_ppn']) * $kurs);
+				$hutang       = ((float) str_replace(',', '', $post['total_payment']) * $kurs) + ((float) str_replace(',', '', $detail['nilai_ppn']) * $kurs);
 			} else {
 				$jenis_jurnal = 'BUK004';
 				$kurs         = str_replace(',', '', $post['kurs_payment']);
 				$selisih      = $kurs - $kurs_invoice;
-				$hutang       = (str_replace(',', '', $post['total_payment']) * $kurs_invoice) + (str_replace(',', '', $detail['nilai_ppn']) * $kurs_invoice);
+				$hutang       = ((float) str_replace(',', '', $post['total_payment']) * $kurs_invoice) + ((float) str_replace(',', '', $detail['nilai_ppn']) * $kurs_invoice);
 			}
 
 			$bank_coa     = $post['bank'];

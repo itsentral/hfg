@@ -4,7 +4,7 @@
 			<tr>
 				<td class="text-left" style='vertical-align:middle;' width='15%'>No PO</td>
 				<td class="text-left" style='vertical-align:middle;' width='2%'>:</td>
-				<td class="text-left" style='vertical-align:middle;'><?= is_array($no_surat) ? implode(', ', $no_surat) : $no_surat ?></td>
+				<td class="text-left" style='vertical-align:middle;'><?= is_array($no_surat) ? implode(', ', $no_surat ?? []) : $no_surat ?></td>
 				<td class="text-left" style='vertical-align:middle;' width='15%'>No PR</td>
 				<td class="text-left" style='vertical-align:middle;' width='2%'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= $no_pr; ?></td>

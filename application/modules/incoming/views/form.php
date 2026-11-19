@@ -125,7 +125,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                         ?>
                                     <tr>
                                         <?php if ($idx === 0):
-                                            $rowspan = count($rows); ?>
+                                            $rowspan = count($rows ?? []); ?>
                                             <td class="text-center" rowspan="<?= $rowspan ?>" style="vertical-align:middle;"><?= $no ?></td>
                                             <td rowspan="<?= $rowspan ?>" style="vertical-align:middle;">
                                                 <b><?= htmlspecialchars($row['nm_material'] ?? $row['nm_barang'] ?? '-') ?></b><br>
@@ -325,7 +325,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                             </thead>
                             <tbody id="list-item-coil">
                                 <tr>
-                                    <td colspan="<?= 7 + count($list_gudang) ?>" class="text-center">
+                                    <td colspan="<?= 7 + count($list_gudang ?? []) ?>" class="text-center">
                                         <i class="fa fa-spinner fa-spin"></i> Loading pack data...
                                     </td>
                                 </tr>

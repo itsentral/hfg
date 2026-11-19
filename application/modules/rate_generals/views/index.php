@@ -18,7 +18,7 @@ foreach ($elements as $el) {
         </div>
         <div>
             <span class="badge bg-light text-dark border px-3 py-2 me-2">
-                Total: <strong><?= count($elements) ?></strong> Elemen Costing
+                Total: <strong><?= count($elements ?? []) ?></strong> Elemen Costing
             </span>
             <?php if ($ENABLE_MANAGE): ?>
                 <button type="button" class="btn btn-outline-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-batch-edit">

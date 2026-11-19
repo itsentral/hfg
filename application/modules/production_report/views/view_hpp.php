@@ -246,6 +246,11 @@
       <p class="text-muted small mb-0">Rincian Komponen Biaya Produksi (Read-Only).</p>
     </div>
     <div class="d-flex gap-2">
+      <?php if (!empty($h['status_draft'])): ?>
+        <button type="button" class="btn btn-outline-primary btn-sm" id="btnRefreshCosting" data-id="<?= $h['id']; ?>">
+          <i class="fa fa-refresh me-1"></i> Tarik Rate Costing Terkini
+        </button>
+      <?php endif; ?>
       <a href="<?= site_url('production_report/view/' . $h['id']); ?>" class="btn btn-outline-secondary btn-sm">
         <i class="fa fa-file-text-o me-1"></i> Lihat Laporan Produksi
       </a>
@@ -254,6 +259,25 @@
       </a>
     </div>
   </div>
+
+  <?php if (!empty($h['status_draft']) && !empty($costing_check) && !$costing_check['is_all_available']): ?>
+    <!-- BANNER PERINGATAN KETERSEDIAAN COSTING (DRAFT) -->
+    <div class="alert alert-warning border-warning shadow-sm mb-4 d-flex align-items-center justify-content-between p-3">
+      <div class="d-flex align-items-center gap-3">
+        <i class="fa fa-exclamation-triangle fs-3 text-warning"></i>
+        <div>
+          <h6 class="fw-bold mb-1 text-dark">Data Product Costing Belum Lengkap (FR-48, FR-74)</h6>
+          <div class="small text-dark">
+            Laporan ini masih berstatus <strong>Draft</strong> dan terdapat produk yang belum di-update di modul <strong>Simulasi Costing</strong> (komponen biaya bernilai Rp 0).
+            Lakukan <em>Update Costing</em> di modul Simulasi Costing, lalu klik tombol <strong>"Tarik Rate Costing Terkini"</strong> sebelum men-submit laporan ke Accounting.
+          </div>
+        </div>
+      </div>
+      <a href="<?= site_url('simulasi_costing'); ?>" target="_blank" class="btn btn-warning btn-sm text-nowrap fw-bold ms-3">
+        <i class="fa fa-calculator me-1"></i> Buka Simulasi Costing <i class="fa fa-external-link ms-1"></i>
+      </a>
+    </div>
+  <?php endif; ?>
 
   <!-- Meta Strip -->
   <div class="meta-strip mb-4">
@@ -362,6 +386,14 @@
                   <strong><?= htmlspecialchars($it['nama_product_custom'] ?? '-'); ?></strong> <?= ($it['category_type'] === 'stok_bebas') ? '<span class="badge bg-warning text-dark small ms-1">Bebas</span>' : ''; ?>
                   <?php if (!empty($it['no_uniq_id'])): ?>
                     <br><span class="badge bg-light text-primary border mt-1"><i class="fa fa-tag me-1"></i><?= htmlspecialchars((string) $it['no_uniq_id']); ?></span>
+                  <?php endif; ?>
+                  <?php
+                    $is_costing_zero = ((float)$it['main_power_cost_per_pcs'] == 0 && (float)$it['foh_cost_per_pcs'] == 0 && (float)$it['bahan_pendukung_cost_per_pcs'] == 0);
+                  ?>
+                  <?php if ($is_costing_zero): ?>
+                    <br><span class="badge bg-danger-subtle text-danger border border-danger mt-1 small" title="Komponen Biaya Rp 0 (Belum Update Costing)"><i class="fa fa-exclamation-triangle me-1"></i>Costing 0</span>
+                  <?php else: ?>
+                    <br><span class="badge bg-success-subtle text-success border border-success mt-1 small" title="Komponen Biaya Terisi dari Simulasi Costing"><i class="fa fa-check me-1"></i>Costing OK</span>
                   <?php endif; ?>
                 </td>
                 <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
@@ -701,3 +733,58 @@
     </div>
   </div>
 </div>
+
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+  $('#btnRefreshCosting').on('click', function() {
+    var reportId = $(this).data('id');
+    Swal.fire({
+      title: 'Tarik Rate Costing Terkini?',
+      text: 'Sistem akan membaca kembali komponen biaya Rp/Kg dari hasil Simulasi Costing terbaru dan menghitung ulang seluruh nilai HPP draft ini.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Tarik Rate',
+      cancelButtonText: 'Batal'
+    }).then(function(res) {
+      if (!res.isConfirmed) return;
+
+      Swal.fire({
+        title: 'Menghitung Ulang HPP...',
+        allowOutsideClick: false,
+        didOpen: function() {
+          Swal.showLoading();
+        }
+      });
+
+      $.ajax({
+        url: '<?= site_url("production_report/refresh_costing/"); ?>' + reportId,
+        type: 'POST',
+        dataType: 'json',
+        success: function(response) {
+          Swal.close();
+          if (response.status === 1) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: response.message || 'Rate costing berhasil diperbarui!',
+              timer: 1500,
+              showConfirmButton: false
+            }).then(function() {
+              window.location.reload();
+            });
+          } else {
+            Swal.fire('Gagal', response.message || 'Gagal memperbarui rate costing.', 'warning');
+          }
+        },
+        error: function() {
+          Swal.close();
+          Swal.fire('Error', 'Terjadi kesalahan sistem saat menghubungi server.', 'error');
+        }
+      });
+    });
+  });
+});
+</script>

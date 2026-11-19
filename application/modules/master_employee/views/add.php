@@ -54,32 +54,32 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
         <div class="card-body">
             <div class="row g-3">
 
-                <input type="hidden" name="id" value="<?= $id ?>">
-                <input type="hidden" name="nik" value="<?= $nik ?>">
+                <input type="hidden" name="id" value="<?= (int) $id ?>">
+                <input type="hidden" name="nik" value="<?= html_escape($nik) ?>">
 
                 <div class="col-md-6">
                     <label class="form-label">Employee Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="nm_karyawan" value="<?= $nm_karyawan ?>">
+                    <input type="text" class="form-control" id="nm_karyawan" name="nm_karyawan" maxlength="40" value="<?= html_escape($nm_karyawan) ?>">
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">ID Number</label>
-                    <input type="text" class="form-control" name="no_ktp" value="<?= $no_ktp ?>">
+                    <label class="form-label">ID Number <small class="text-muted">(No. KTP, 16 digit)</small></label>
+                    <input type="text" class="form-control numberOnly" id="no_ktp" name="no_ktp" maxlength="16" inputmode="numeric" value="<?= html_escape($no_ktp) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Place of Birth</label>
-                    <input type="text" class="form-control" name="tmp_lahir" value="<?= $tmp_lahir ?>">
+                    <input type="text" class="form-control" id="tmp_lahir" name="tmp_lahir" maxlength="30" value="<?= html_escape($tmp_lahir) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Date of Birth</label>
-                    <input type="text" class="form-control flatpickr-date" name="tgl_lahir" value="<?= $tgl_lahir ?>" placeholder="YYYY-MM-DD">
+                    <input type="text" class="form-control flatpickr-date" id="tgl_lahir" name="tgl_lahir" value="<?= html_escape($tgl_lahir) ?>" placeholder="YYYY-MM-DD">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Religion</label>
-                    <select name="agama" class="form-select">
+                    <select name="agama" id="agama" class="form-select">
                         <option value="">Select Religion</option>
                         <?php foreach ($agamax as $v): ?>
                             <option value="<?= $v['name'] ?>" <?= ($v['name'] == $agama ? 'selected' : '') ?>>
@@ -91,7 +91,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                 <div class="col-md-6">
                     <label class="form-label">Gender</label>
-                    <select name="gender" class="form-select">
+                    <select name="gender" id="gender" class="form-select">
                         <option value="">Select Gender</option>
                         <?php foreach ($genderx as $v): ?>
                             <option value="<?= $v['name'] ?>" <?= ($v['name'] == $gender ? 'selected' : '') ?>>
@@ -104,7 +104,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 <div class='col-sm-6'>
                     <label class='form-label'>Department</label>
                     <select name='department' id='department' class='form-select'>
-                        <option value='0'>Select An Department</option>
+                        <option value=''>Select An Department</option>
                         <?php
                         foreach ($departmentx as $val => $valx) {
                             $selected = ($valx['id'] == $department) ? 'selected' : '';
@@ -126,7 +126,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 <div class="col-md-6">
                     <label class="form-label">Last Education</label>
                     <select name='pendidikan' id='pendidikan' class='form-control input-md'>
-                        <option value='0'>Select An Last Education</option>
+                        <option value=''>Select An Last Education</option>
                         <?php
                         foreach ($pendidikanx as $val => $valx) {
                             $selected = ($valx['name'] == $pendidikan) ? 'selected' : '';
@@ -146,35 +146,35 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                 <div class="col-md-6">
                     <label class="form-label">ID Card Address</label>
-                    <textarea class="form-control" rows="3" name="ktp_alamat"><?= $ktp_alamat ?></textarea>
+                    <textarea class="form-control" rows="3" id="ktp_alamat" name="ktp_alamat" maxlength="255"><?= html_escape($ktp_alamat) ?></textarea>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Domicile Address</label>
-                    <textarea class="form-control" rows="3" name="domisili_alamat"><?= $domisili_alamat ?></textarea>
+                    <textarea class="form-control" rows="3" id="domisili_alamat" name="domisili_alamat" maxlength="255"><?= html_escape($domisili_alamat) ?></textarea>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">ID Card Postcode</label>
-                    <input type="text" class="form-control numberOnly" name="ktp_kode_pos" value="<?= $ktp_kode_pos ?>">
+                    <input type="text" class="form-control numberOnly" id="ktp_kode_pos" name="ktp_kode_pos" maxlength="5" inputmode="numeric" value="<?= html_escape($ktp_kode_pos) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Domicile Postcode</label>
-                    <input type="text" class="form-control numberOnly" name="domisili_kode_pos" value="<?= $domisili_kode_pos ?>">
+                    <input type="text" class="form-control numberOnly" id="domisili_kode_pos" name="domisili_kode_pos" maxlength="5" inputmode="numeric" value="<?= html_escape($domisili_kode_pos) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Contact Number</label>
                     <?php
-                    echo form_input(array('id' => 'no_ponsel', 'name' => 'no_ponsel', 'class' => 'form-control numberOnly', 'placeholder' => 'Contact Number'), $no_ponsel);
+                    echo form_input(array('id' => 'no_ponsel', 'name' => 'no_ponsel', 'class' => 'form-control numberOnly', 'placeholder' => 'Contoh: 081234567890', 'maxlength' => '16', 'inputmode' => 'tel'), $no_ponsel);
                     ?>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Email</label>
                     <?php
-                    echo form_input(array('id' => 'email', 'name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email'), $email);
+                    echo form_input(array('id' => 'email', 'name' => 'email', 'type' => 'email', 'class' => 'form-control', 'placeholder' => 'nama@contoh.com', 'maxlength' => '45'), $email);
                     ?>
                 </div>
 
@@ -189,18 +189,18 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                 <div class="col-md-6">
                     <label class="form-label">NPWP</label>
-                    <input type="text" class="form-control numberOnly" name="npwp" value="<?= $npwp ?>">
+                    <input type="text" class="form-control numberOnly" id="npwp" name="npwp" maxlength="16" inputmode="numeric" value="<?= html_escape($npwp) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">BPJS</label>
-                    <input type="text" class="form-control" name="bpjs" value="<?= $bpjs ?>">
+                    <input type="text" class="form-control numberOnly" id="bpjs" name="bpjs" maxlength="20" inputmode="numeric" value="<?= html_escape($bpjs) ?>">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Account Bank</label>
                     <select name="bank_account" id="bank_account" class="form-control select">
-                        <option value='0'>Select An Account Bank</option>
+                        <option value=''>Select An Account Bank</option>
                         <?php
                         foreach ($bankx as $val => $valx) {
                             $selected = ($valx['code'] == $bank_account) ? 'selected' : '';
@@ -213,14 +213,14 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 <div class="col-md-6">
                     <label class="form-label">Account Number</label>
                     <?php
-                    echo form_input(array('id' => 'rek_number', 'name' => 'rek_number', 'class' => 'form-control', 'placeholder' => 'Account Number'), $rek_number);
+                    echo form_input(array('id' => 'rek_number', 'name' => 'rek_number', 'class' => 'form-control numberOnly', 'placeholder' => 'Account Number', 'maxlength' => '30', 'inputmode' => 'numeric'), $rek_number);
                     ?>
                 </div>
 
                 <div class="col-md-6">
                     <label class='form-label'>Employee Status</label>
                     <select name='sts_karyawan' id='sts_karyawan' class='form-control select'>
-                        <option value='0'>Select An Employee Status</option>
+                        <option value=''>Select An Employee Status</option>
                         <?php
                         foreach ($sts_karyawanx as $val => $valx) {
                             $selected = ($valx['name'] == $sts_karyawan) ? 'selected' : '';
@@ -233,7 +233,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 <div class="col-md-6">
                     <label class='form-label'>Status</label>
                     <select name='status' id='status' class='form-control select'>
-                        <option value='0'>Select An Status</option>
+                        <option value=''>Select An Status</option>
                         <?php
                         foreach ($statusx as $val => $valx) {
                             $selected = ($valx['name'] == $status) ? 'selected' : '';
@@ -245,12 +245,12 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                 <div class="col-md-6">
                     <label class="form-label">Join Date</label>
-                    <input type="text" class="form-control flatpickr-date" name="tgl_join" value="<?= $tgl_join ?>" placeholder="YYYY-MM-DD">
+                    <input type="text" class="form-control flatpickr-date" id="tgl_join" name="tgl_join" value="<?= html_escape($tgl_join) ?>" placeholder="YYYY-MM-DD">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">End Date</label>
-                    <input type="text" class="form-control flatpickr-date" name="tgl_end" value="<?= $tgl_end ?>" placeholder="YYYY-MM-DD">
+                    <input type="text" class="form-control flatpickr-date" id="tgl_end" name="tgl_end" value="<?= html_escape($tgl_end) ?>" placeholder="YYYY-MM-DD">
                 </div>
 
                 <div class="col-md-12">
@@ -282,7 +282,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                         <!-- hint -->
                         <small class="text-muted">
-                            Allowed: JPG/JPEG/PNG.
+                            Allowed: JPG/JPEG/PNG, maksimal 2 MB.
                         </small>
 
                         <!-- warning jika belum ada file existing -->
@@ -418,114 +418,166 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
         window.location.href = base_url + active_controller
     });
 
+    // ---------------------------------------------------------------
+    // VALIDASI & SIMPAN
+    // ---------------------------------------------------------------
+    // Hanya angka (dan tombol kontrol) untuk isian nomor
+    $(document).on('input', '.numberOnly', function() {
+        var allowPlus = $(this).is('#no_ponsel');
+        var v = this.value;
+        var clean = allowPlus ? v.replace(/(?!^\+)[^\d]/g, '') : v.replace(/\D/g, '');
+        if (v !== clean) this.value = clean;
+    });
+
+    function fieldOf(name) {
+        return $('#form_employee [name="' + name + '"]');
+    }
+
+    function clearFieldError(name) {
+        var $f = fieldOf(name);
+        $f.removeClass('is-invalid');
+        $f.closest('.col-md-6, .col-sm-6, .col-md-12').find('.invalid-feedback.js-err').remove();
+    }
+
+    function setFieldError(name, msg) {
+        var $f = fieldOf(name);
+        if (!$f.length) return;
+        clearFieldError(name);
+        $f.addClass('is-invalid');
+        var $anchor = $f.hasClass('select2-hidden-accessible') ? $f.next('.select2') : $f;
+        if (name === 'tanda_tangan') $anchor = $('#ttdFileName');
+        $('<div class="invalid-feedback js-err d-block"></div>').text(msg).insertAfter($anchor);
+    }
+
+    function clearAllErrors() {
+        $('#form_employee .is-invalid').removeClass('is-invalid');
+        $('#form_employee .invalid-feedback.js-err').remove();
+    }
+
+    $(document).on('input change', '#form_employee input, #form_employee select, #form_employee textarea', function() {
+        if (this.name) clearFieldError(this.name);
+    });
+
+    // Aturan sama dengan validasi server (Master_employee::_validate_employee)
+    function validateEmployeeForm() {
+        var err = {};
+        var val = function(n) {
+            return $.trim(fieldOf(n).val() || '');
+        };
+        var digits = function(n) {
+            return val(n).replace(/[\s.\-]/g, '');
+        };
+        var isDate = function(s) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+            var d = new Date(s + 'T00:00:00');
+            return !isNaN(d) && d.toISOString().slice(0, 10) === s;
+        };
+
+        if (val('nm_karyawan') === '') err.nm_karyawan = 'Nama karyawan wajib diisi.';
+        if (digits('no_ktp') !== '' && !/^\d{16}$/.test(digits('no_ktp'))) err.no_ktp = 'No. KTP harus 16 digit angka.';
+        if (digits('npwp') !== '' && !/^\d{15,16}$/.test(digits('npwp'))) err.npwp = 'NPWP harus 15 atau 16 digit angka.';
+        if (digits('bpjs') !== '' && !/^\d{8,20}$/.test(digits('bpjs'))) err.bpjs = 'No. BPJS harus 8-20 digit angka.';
+        if (digits('rek_number') !== '' && !/^\d{5,30}$/.test(digits('rek_number'))) err.rek_number = 'No. rekening harus 5-30 digit angka.';
+        ['ktp_kode_pos', 'domisili_kode_pos'].forEach(function(n) {
+            if (val(n) !== '' && !/^\d{5}$/.test(val(n))) err[n] = 'Kode pos harus 5 digit angka.';
+        });
+        var hp = val('no_ponsel').replace(/[\s.\-()]/g, '');
+        if (hp !== '' && !/^\+?\d{8,15}$/.test(hp)) err.no_ponsel = 'No. HP harus 8-15 digit angka (boleh diawali +).';
+        if (val('email') !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) err.email = 'Format email tidak valid.';
+
+        var today = new Date().toISOString().slice(0, 10);
+        ['tgl_lahir', 'tgl_join', 'tgl_end'].forEach(function(n) {
+            if (val(n) !== '' && !isDate(val(n))) err[n] = 'Tanggal tidak valid (format YYYY-MM-DD).';
+        });
+        if (!err.tgl_lahir && val('tgl_lahir') !== '' && val('tgl_lahir') > today) err.tgl_lahir = 'Tanggal lahir tidak boleh melebihi hari ini.';
+        if (!err.tgl_join && !err.tgl_lahir && val('tgl_join') !== '' && val('tgl_lahir') !== '' && val('tgl_join') <= val('tgl_lahir')) err.tgl_join = 'Tanggal join harus setelah tanggal lahir.';
+        if (!err.tgl_end && !err.tgl_join && val('tgl_end') !== '' && val('tgl_join') !== '' && val('tgl_end') < val('tgl_join')) err.tgl_end = 'Tanggal berakhir tidak boleh sebelum tanggal join.';
+
+        var file = $('#tanda_tangan')[0];
+        if (file && file.files && file.files.length) {
+            var f = file.files[0];
+            if (!/\.(jpe?g|png)$/i.test(f.name)) err.tanda_tangan = 'File harus berupa gambar JPG/JPEG/PNG.';
+            else if (f.size > 2097152) err.tanda_tangan = 'Ukuran file terlalu besar (maksimal 2 MB).';
+        }
+        return err;
+    }
+
+    function showErrors(errors) {
+        var names = Object.keys(errors || {});
+        names.forEach(function(n) {
+            setFieldError(n, errors[n]);
+        });
+        if (names.length) {
+            var $first = fieldOf(names[0]);
+            var $target = $first.hasClass('select2-hidden-accessible') ? $first.next('.select2') : $first;
+            if (names[0] === 'tanda_tangan') $target = $('#ttdFileName');
+            if ($target.length) $('html, body').animate({
+                scrollTop: $target.offset().top - 120
+            }, 200);
+        }
+        return names.length;
+    }
+
     $('#saved').click(function(e) {
         e.preventDefault();
-        //Customer
-        var nm_karyawan = $("#nm_karyawan").val();
-        var tmp_lahir = $("#tmp_lahir").val();
-        var tgl_lahir = $("#tgl_lahir").val();
-        var department = $("#department").val();
-        var gender = $("#gender").val();
-        var agama = $("#agama").val();
-        var pendidikan = $("#pendidikan").val();
-        var ktp_kode_pos = $("#ktp_kode_pos").val();
-        var ktp_alamat = $("#ktp_alamat").val();
-        var domisili_kode_pos = $("#domisili_kode_pos").val();
-        var domisili_alamat = $("#domisili_alamat").val();
-        var no_ponsel = $("#no_ponsel").val();
-        var email = $("#email").val();
-        var npwp = $("#npwp").val();
-        var bpjs = $("#bpjs").val();
-        var no_ktp = $("#no_ktp").val();
-        var tgl_join = $("#tgl_join").val();
-        var tgl_end = $("#tgl_end").val();
-        var sts_karyawan = $("#sts_karyawan").val();
-        var rek_number = $("#rek_number").val();
-        var bank_account = $("#bank_account").val();
-        var status = $("#status").val();
-
-        if (nm_karyawan == '') {
-            swal({
-                title: "Error Message!",
-                text: 'Employee name is empty, please input first ...',
-                type: "warning"
+        clearAllErrors();
+        var nErr = showErrors(validateEmployeeForm());
+        if (nErr) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data belum lengkap',
+                text: 'Ada ' + nErr + ' isian yang perlu diperbaiki (ditandai merah).'
             });
-            $('#simpan-bro').prop('disabled', false);
             return false;
         }
 
-        // if(nm_customer=='' || nm_customer==null || nm_customer=='-' || nm_customer=='0'){
-        //     swal({
-        //         title	: "Error Message!",
-        //         text	: 'Customer Name in master customer tab is empty, please input first ...',
-        //         type	: "warning"
-        //     });
-        //     return false;
-        // }
-        // $('#saved').prop('disabled',false);
-
-        swal({
-                title: "Are you sure?",
-                text: "You will not be able to process again this data!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes, Process it!",
-                cancelButtonText: "No, cancel process!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-            function(isConfirm) {
-                if (isConfirm) {
-                    // loading_spinner();
-                    var formData = new FormData($('#form_employee')[0]);
-                    var baseurl = base_url + active_controller + '/add';
-                    $.ajax({
-                        url: baseurl,
-                        type: "POST",
-                        data: formData,
-                        cache: false,
-                        dataType: 'json',
-                        processData: false,
-                        contentType: false,
-                        beforeSend: function() {
-                            $(this).prop('disabled', true);
-                        },
-                        success: function(data) {
-                            if (data.status == 1) {
-                                swal({
-                                    title: "Save Success!",
-                                    text: data.pesan,
-                                    type: "success",
-                                    timer: 7000
-                                });
-                                window.location.href = base_url + active_controller;
-                            } else {
-                                swal({
-                                    title: "Save Failed!",
-                                    text: data.pesan,
-                                    type: "warning",
-                                    timer: 7000
-                                });
-                            }
-                            $('#saved').prop('disabled', false);
-                        },
-                        error: function() {
-
-                            swal({
-                                title: "Error Message !",
-                                text: 'An Error Occured During Process. Please try again..',
-                                type: "warning",
-                                timer: 7000
-                            });
-                            $('#saved').prop('disabled', false);
-                        }
+        Swal.fire({
+            icon: 'question',
+            title: 'Simpan data karyawan?',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, simpan',
+            cancelButtonText: 'Batal'
+        }).then(function(r) {
+            if (!r.isConfirmed) return;
+            var $btn = $('#saved').prop('disabled', true);
+            $.ajax({
+                url: base_url + active_controller + '/add',
+                type: 'POST',
+                data: new FormData($('#form_employee')[0]),
+                cache: false,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    if (data.status == 1) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: data.pesan,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(function() {
+                            window.location.href = base_url + active_controller;
+                        });
+                        return;
+                    }
+                    showErrors(data.errors);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Gagal menyimpan',
+                        text: data.pesan || 'Periksa kembali isian Anda.'
                     });
-                } else {
-                    swal("Cancelled", "Data can be process again :)", "error");
-                    $('#saved').prop('disabled', false);
-                    return false;
+                    $btn.prop('disabled', false);
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat memproses data. Silakan coba lagi.'
+                    });
+                    $btn.prop('disabled', false);
                 }
             });
+        });
     });
 </script>

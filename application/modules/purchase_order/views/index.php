@@ -84,7 +84,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 								$no_pr[] = $item_pr->no_pr;
 							}
 
-							$no_pr = implode(', ', $no_pr);
+							$no_pr = implode(', ', $no_pr ?? []);
 						?>
 							<tr>
 								<td><?= $numb; ?></td>

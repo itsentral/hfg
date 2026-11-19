@@ -50,7 +50,7 @@ class Simulasi_costing extends Admin_Controller
         if ($res['entries'] > 0) $msg_parts[] = $res['entries'] . ' perubahan dicatat di History Costing';
         if ($res['notif'] > 0) $msg_parts[] = $res['notif'] . ' notifikasi Bottom Price baru untuk Sales';
 
-        $text = !empty($msg_parts) ? 'Costing berhasil diperbarui: ' . implode('; ', $msg_parts) . '.' : 'Semua costing sudah mutakhir. Tidak ada perubahan nilai.';
+        $text = !empty($msg_parts) ? 'Costing berhasil diperbarui: ' . implode('; ', $msg_parts ?? []) . '.' : 'Semua costing sudah mutakhir. Tidak ada perubahan nilai.';
 
         echo json_encode([
             'status'  => 1,

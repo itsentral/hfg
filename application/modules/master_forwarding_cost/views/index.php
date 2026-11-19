@@ -23,7 +23,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 		</div>
 		<div class="card-body p-4">
 			<div id="btnAddWrapper" class="mb-3 text-end">
-				<?php if ($ENABLE_ADD && count($forwarding_cost) < 2): ?>
+				<?php if ($ENABLE_ADD && count($forwarding_cost ?? []) < 2): ?>
 					<button type="button" class="btn btn-success" id="btnTambah">
 						<i class="fa fa-plus me-1"></i> Tambah Forwarding Cost
 					</button>

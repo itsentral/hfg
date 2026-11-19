@@ -66,7 +66,7 @@ class Incoming_model extends BF_Model
                 $no_surat[] = $item->no_surat;
             }
 
-            $no_surat = implode(', ', $no_surat);
+            $no_surat = implode(', ', $no_surat ?? []);
 
             $no_pr = [];
             if (!empty($no_surat)) {
@@ -103,7 +103,7 @@ class Incoming_model extends BF_Model
             }
 
             if (!empty($no_pr)) {
-                $no_pr = implode(', ', $no_pr);
+                $no_pr = implode(', ', $no_pr ?? []);
             } else {
                 $no_pr = '';
             }

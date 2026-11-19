@@ -20,7 +20,7 @@ $ENABLE_DELETE  = has_permission('Supplier.Delete');
             </div>
         </div>
     </div>
-    <?php if (isset($results) && is_array($results) && count($results)) : ?>
+    <?php if (isset($results) && is_array($results) && count($results ?? [])) : ?>
         <div class="box-body table-responsive no-padding">
             <table class="table table-hover table-striped">
                 <thead>

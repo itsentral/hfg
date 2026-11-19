@@ -124,7 +124,7 @@ class Material_master extends Admin_Controller
       }
       if (!empty($errors)) {
         echo json_encode([
-          'pesan'  => implode(' ', $errors),
+          'pesan'  => implode(' ', $errors ?? []),
           'status' => 0
         ]);
         return;
@@ -187,7 +187,7 @@ class Material_master extends Admin_Controller
         // }
       }
 
-      $dataProcess = array_merge($dataProcess1, $dataProcess2);
+      $dataProcess = array_merge($dataProcess1 ?? [], $dataProcess2 ?? []);
 
       $ArrGudangNew = [
         'id_material' => $code_lv4,
@@ -228,7 +228,7 @@ class Material_master extends Admin_Controller
       // Siapkan payload log (jika update, sertakan data old & new serta rincian sinkronisasi)
       $logPayload = (!empty($id) && !empty($oldData)) ? [
         'old'           => $oldData,
-        'new'           => array_merge($oldData, $dataProcess),
+        'new'           => array_merge($oldData ?? [], $dataProcess ?? []),
         'sync_affected' => $syncAffected
       ] : $dataProcess;
 
@@ -320,7 +320,7 @@ class Material_master extends Admin_Controller
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
     $logPayload = !empty($oldData)
-      ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)]
+      ? ['old' => $oldData, 'new' => array_merge($oldData ?? [], $dataProcess ?? [])]
       : ['id' => $id, 'new_status' => $new_status];
     write_log('Material Master', 'Update Status', $keterangan, $logPayload, $sql, $status);
 

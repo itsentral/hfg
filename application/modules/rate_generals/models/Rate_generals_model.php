@@ -175,7 +175,7 @@ class Rate_generals_model extends CI_Model
             'rate_other_cost_profit',
         ];
 
-        if (!in_array($key, $allowed)) {
+        if (!in_array($key, $allowed ?? [])) {
             return false;
         }
 
@@ -195,7 +195,7 @@ class Rate_generals_model extends CI_Model
             'rate_other_cost_profit',
         ];
 
-        if (in_array($key, $other_cost_keys) && $new_label !== null && trim((string) $new_label) !== '') {
+        if (in_array($key, $other_cost_keys ?? []) && $new_label !== null && trim((string) $new_label) !== '') {
             $row = $this->db->select('other_cost_labels')->where('id', 1)->get('rate_generals')->row();
             $labels = [];
             if ($row && !empty($row->other_cost_labels)) {

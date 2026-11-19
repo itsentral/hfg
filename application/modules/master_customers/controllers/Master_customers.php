@@ -141,7 +141,7 @@ class Master_customers extends Admin_Controller
 			// 'facility' => $post['facility'],
 			'kategori_cust' => $post['kategori_cust'],
 			'kategori_toko' => $post['kategori_toko'],
-			'chanel_pemasaran' => implode(', ', $chanel),
+			'chanel_pemasaran' => implode(', ', $chanel ?? []),
 			'persentase' => $post['persentase'],
 			'tahun_mulai' => $post['tahun_mulai'],
 			'name_bank' => $post['name_bank'],
@@ -201,7 +201,7 @@ class Master_customers extends Admin_Controller
 
 		if (isset($post['data1'])) {
 			foreach ($post['data1'] as $d1) {
-				$this->db->insert('child_customer_pic', array_merge($d1, ['id_customer' => $code]));
+				$this->db->insert('child_customer_pic', array_merge($d1 ?? [], ['id_customer' => $code]));
 			}
 		}
 
@@ -216,7 +216,7 @@ class Master_customers extends Admin_Controller
 
 		if (isset($post['data3'])) {
 			foreach ($post['data3'] as $d3) {
-				$this->db->insert('child_customer_existing', array_merge($d3, ['id_customer' => $code]));
+				$this->db->insert('child_customer_existing', array_merge($d3 ?? [], ['id_customer' => $code]));
 			}
 		}
 
@@ -235,10 +235,10 @@ class Master_customers extends Admin_Controller
 		if ($isUpdate && !empty($oldData)) {
 			// Bandingkan PIC customer lama vs baru
 			$newPic = isset($post['data1']) && is_array($post['data1']) ? $post['data1'] : [];
-			if (count($oldPic) !== count($newPic)) {
+			if (count($oldPic ?? []) !== count($newPic ?? [])) {
 				$detail_changes['Daftar PIC Customer'] = [
-					'old' => count($oldPic) . ' PIC terdaftar',
-					'new' => count($newPic) . ' PIC terdaftar'
+					'old' => count($oldPic ?? []) . ' PIC terdaftar',
+					'new' => count($newPic ?? []) . ' PIC terdaftar'
 				];
 			}
 		}
@@ -922,7 +922,7 @@ class Master_customers extends Admin_Controller
 			'facility'		   		=> $post['facility'],
 			'kategori_cust'			=> $post['kategori_cust'],
 			'kategori_toko'			=> $post['kategori_toko'],
-			'chanel_pemasaran' 		=> implode(', ', $chanel),
+			'chanel_pemasaran' 		=> implode(', ', $chanel ?? []),
 			'persentase'       		=> $post['persentase'],
 			'tahun_mulai'		   	=> $post['tahun_mulai'],
 			'name_bank'		    	=> $post['name_bank'],
@@ -1179,7 +1179,7 @@ class Master_customers extends Admin_Controller
 			'facility'		   		=> $post['facility'],
 			'kategori_cust'			=> $post['kategori_cust'],
 			'kategori_toko'			=> $post['kategori_toko'],
-			'chanel_pemasaran' 		=> implode(', ', $chanel),
+			'chanel_pemasaran' 		=> implode(', ', $chanel ?? []),
 			'persentase'       		=> $post['persentase'],
 			'tahun_mulai'		   	=> $post['tahun_mulai'],
 			'name_bank'		    	=> $post['name_bank'],

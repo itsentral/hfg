@@ -899,7 +899,7 @@ class Request_payment extends Admin_Controller
 			$id_detail++;
 		}
 
-		$header['jumlah'] 	= array_sum($Harga);
+		$header['jumlah'] 	= array_sum($Harga ?? []);
 		$header['status'] = '1';
 
 		$this->db->trans_begin();
@@ -1445,7 +1445,7 @@ class Request_payment extends Admin_Controller
 		$data_session	= $this->session->userdata;
 
 		$this->db->trans_begin();
-		for ($i = 0; $i < count($id); $i++) {
+		for ($i = 0; $i < count($id ?? []); $i++) {
 			$dataheader =  array(
 				'stspos' => "1",
 				'no_perkiraan' => $no_perkiraan[$i],
@@ -1782,7 +1782,7 @@ class Request_payment extends Admin_Controller
 						$nm_supplier[] = $item_supplier->nm_supplier;
 					}
 				}
-				$nm_supplier = implode(',', $nm_supplier);
+				$nm_supplier = implode(',', $nm_supplier ?? []);
 			}
 
 			if ($actived_tab == 'pembayaran_po') {
@@ -2060,7 +2060,7 @@ class Request_payment extends Admin_Controller
 						$nm_supplier[] = $item_supplier->nm_supplier;
 					}
 				}
-				$nm_supplier = implode(',', $nm_supplier);
+				$nm_supplier = implode(',', $nm_supplier ?? []);
 			}
 
 			if ($tab == 'pembayaran_po') {
@@ -2428,7 +2428,7 @@ class Request_payment extends Admin_Controller
 
 
 
-		$header['jumlah'] 	= array_sum($Harga);
+		$header['jumlah'] 	= array_sum($Harga ?? []);
 		$header['status'] 	= '1';
 
 		$this->db->trans_begin();
@@ -2885,7 +2885,7 @@ class Request_payment extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		if (count($list_added_req_payment) > 0) {
+		if (count($list_added_req_payment ?? []) > 0) {
 			foreach ($list_added_req_payment as $item) {
 				if ($item->tipe == 'Kasbon') {
 					$data_reject = [
@@ -3009,7 +3009,7 @@ class Request_payment extends Admin_Controller
 			if ($item->kategori == 'Kasbon') {
 				$get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $item->no_dokumen))->row();
 				$check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item->no_dokumen])->result();
-				if (count($check_detail) > 0 && !empty($get_kasbon)) {
+				if (count($check_detail ?? []) > 0 && !empty($get_kasbon)) {
 					if ($get_kasbon->tipe_pr == 'pr departemen') {
 						$this->db->select('b.nm_lengkap');
 						$this->db->from('rutin_non_planning_header a');

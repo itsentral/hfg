@@ -289,7 +289,7 @@ class Expense_petty_cash_model extends BF_Model
 
             $existing_detail_ids = array_map(function ($d) {
                 return $d->id;
-            }, $existing_details);
+            }, $existing_details ?? []);
 
             // Delete existing evidence records for this pencatatan's details
             if (!empty($existing_detail_ids)) {
@@ -419,7 +419,7 @@ class Expense_petty_cash_model extends BF_Model
 
         $detail_id_array = array_map(function ($d) {
             return $d->id;
-        }, $detail_ids);
+        }, $detail_ids ?? []);
 
         // Step 5b: Delete evidence records
         if (!empty($detail_id_array)) {

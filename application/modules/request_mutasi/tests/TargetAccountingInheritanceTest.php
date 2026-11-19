@@ -159,7 +159,7 @@ if (!function_exists('assertIsArray')) {
 if (!function_exists('assertArrayHasKey')) {
     function assertArrayHasKey($key, $array, string $message = ''): void
     {
-        if (!is_array($array) || !array_key_exists($key, $array)) {
+        if (!is_array($array) || !array_key_exists($key, $array ?? [])) {
             throw new AssertionError($message ?: "Expected array to have key '{$key}'");
         }
     }
@@ -202,7 +202,7 @@ class ParentRecordFactory
             'created_on'        => date('Y-m-d H:i:s'),
         ];
 
-        $data = array_merge($defaults, $overrides);
+        $data = array_merge($defaults ?? [], $overrides ?? []);
         return (object) $data;
     }
 
@@ -492,7 +492,7 @@ class TargetAccountingInheritanceTest
 
         for ($i = 0; $i < $iterations; $i++) {
             // Pick a random "empty" value (null, empty string, etc.)
-            $empty_val = $empty_values[mt_rand(0, count($empty_values) - 1)];
+            $empty_val = $empty_values[mt_rand(0, count($empty_values ?? []) - 1)];
 
             $parent = ParentRecordFactory::create($empty_val, [
                 'nilai'      => (string) mt_rand(100000, 999999999),
@@ -550,19 +550,19 @@ class TargetAccountingInheritanceTest
 
             // Randomize all non-target fields
             $parent = ParentRecordFactory::create($target, [
-                'bank_asal'         => $banks[mt_rand(0, count($banks) - 1)],
-                'bank_tujuan'       => $banks[mt_rand(0, count($banks) - 1)],
-                'nama_bank_asal'    => $names[mt_rand(0, count($names) - 1)],
-                'nama_bank_tujuan'  => $names[mt_rand(0, count($names) - 1)],
-                'mata_uang'         => $currencies[mt_rand(0, count($currencies) - 1)],
+                'bank_asal'         => $banks[mt_rand(0, count($banks ?? []) - 1)],
+                'bank_tujuan'       => $banks[mt_rand(0, count($banks ?? []) - 1)],
+                'nama_bank_asal'    => $names[mt_rand(0, count($names ?? []) - 1)],
+                'nama_bank_tujuan'  => $names[mt_rand(0, count($names ?? []) - 1)],
+                'mata_uang'         => $currencies[mt_rand(0, count($currencies ?? []) - 1)],
                 'nilai'             => (string) mt_rand(1, 9999999999),
                 'keterangan'        => 'Keterangan random ' . mt_rand(1, 10000),
             ]);
 
             // Randomize POST data too
             $postData = [
-                'dari'       => $banks[mt_rand(0, count($banks) - 1)],
-                'ke'         => $banks[mt_rand(0, count($banks) - 1)],
+                'dari'       => $banks[mt_rand(0, count($banks ?? []) - 1)],
+                'ke'         => $banks[mt_rand(0, count($banks ?? []) - 1)],
                 'rupiah'     => (string) mt_rand(1, 9999999999),
                 'kurs'       => (string) (mt_rand(1, 15000)),
                 'keterangan' => 'Post keterangan ' . mt_rand(1, 10000),
@@ -610,7 +610,7 @@ class TargetAccountingInheritanceTest
 
             // POST data might try to submit a DIFFERENT target
             $postTargets = array_diff(self::$VALID_TARGET_ACCOUNTING, [$parentTarget]);
-            $postTarget = array_values($postTargets)[mt_rand(0, count($postTargets) - 1)];
+            $postTarget = array_values($postTargets ?? [])[mt_rand(0, count($postTargets ?? []) - 1)];
 
             $postData = [
                 'target_accounting' => $postTarget, // This should be IGNORED

@@ -160,7 +160,7 @@
         //----------------------------------------------------------------------
         public static function binarize($frame)
         {
-            $len = count($frame);
+            $len = count($frame ?? []);
             foreach ($frame as &$frameLine) {
                 
                 for($i=0; $i<$len; $i++) {
@@ -181,12 +181,12 @@
                 
             $eccLevel = 'L';
                 
-            if (count($mode) > 1) {
+            if (count($mode ?? []) > 1) {
                 $eccLevel = $mode[1];
             }
                 
             $qrTab = QRcode::text($code, false, $eccLevel);
-            $size = count($qrTab);
+            $size = count($qrTab ?? []);
                 
             $barcode_array['num_rows'] = $size;
             $barcode_array['num_cols'] = $size;
@@ -221,7 +221,7 @@
                     QRimage::png(self::binarize($frame), $fileName, 1, 0);
                 }
 				
-				$width = count($frame);
+				$width = count($frame ?? []);
 				$bitMask = array_fill(0, $width, array_fill(0, $width, 0));
 				for ($maskNo=0; $maskNo<8; $maskNo++)
 					$mask->makeMaskNo($maskNo, $width, $frame, $bitMask, true);
@@ -247,7 +247,7 @@
         //----------------------------------------------------------------------
         public static function dumpMask($frame) 
         {
-            $width = count($frame);
+            $width = count($frame ?? []);
             for($y=0;$y<$width;$y++) {
                 for($x=0;$x<$width;$x++) {
                     echo ord($frame[$y][$x]).',';
@@ -537,7 +537,7 @@
         
         public static function getEccSpec($version, $level, array &$spec)
         {
-            if (count($spec) < 5) {
+            if (count($spec ?? []) < 5) {
                 $spec = array(0,0,0,0,0);
             }
 
@@ -812,7 +812,7 @@
                 </style>
                 <?php
                     echo '<pre><tt><br/ ><br/ ><br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                    echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame);
+                    echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame ?? []);
                     echo '</tt></pre><br/ ><br/ ><br/ ><br/ ><br/ ><br/ >';
             
             } else {
@@ -844,7 +844,7 @@
                 </style>
                 <?php
                 echo "<pre><tt>";
-                echo join("<br/ >", $frame);
+                echo join("<br/ >", $frame ?? []);
                 echo "</tt></pre>";
             
             }
@@ -853,7 +853,7 @@
         //----------------------------------------------------------------------
         public static function serial($frame)
         {
-            return gzcompress(join("\n", $frame), 9);
+            return gzcompress(join("\n", $frame ?? []), 9);
         }
         
         //----------------------------------------------------------------------
@@ -976,7 +976,7 @@
         //----------------------------------------------------------------------
         private static function image($frame, $pixelPerPoint = 4, $outerFrame = 4) 
         {
-            $h = count($frame);
+            $h = count($frame ?? []);
             $w = strlen((string) $frame[0]);
             
             $imgW = $w + 2*$outerFrame;
@@ -1050,14 +1050,14 @@
 
         public function __construct($mode, $size, $data, $bstream = null) 
         {
-            $setData = array_slice($data, 0, $size);
+            $setData = array_slice($data ?? [], 0, $size);
             
-            if (count($setData) < $size) {
-                $setData = array_merge($setData, array_fill(0,$size-count($setData),0));
+            if (count($setData ?? []) < $size) {
+                $setData = array_merge($setData ?? [], array_fill(0,$size-count($setData ?? []),0));
             }
         
             if(!QRinput::check($mode, $size, $setData)) {
-                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData));
+                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData ?? []));
                 return null;
             }
             
@@ -1849,7 +1849,7 @@
                 return 0;
             }
             
-            $this->data = array_values(array_merge($this->data, $arg->data));
+            $this->data = array_values(array_merge($this->data, $arg->data ?? []));
 
             return 0;
         }
@@ -2592,9 +2592,9 @@
             $codeArr = array();
             
             foreach ($bitFrame as $line)
-                $codeArr[] = join('', $line);
+                $codeArr[] = join('', $line ?? []);
                 
-            return gzcompress(join("\n", $codeArr), 9);
+            return gzcompress(join("\n", $codeArr ?? []), 9);
         }
         
         //----------------------------------------------------------------------
@@ -2766,9 +2766,9 @@
             
                 $howManuOut = 8-(QR_FIND_FROM_RANDOM % 9);
                 for ($i = 0; $i <  $howManuOut; $i++) {
-                    $remPos = rand (0, count($checked_masks)-1);
+                    $remPos = rand (0, count($checked_masks ?? [])-1);
                     unset($checked_masks[$remPos]);
-                    $checked_masks = array_values($checked_masks);
+                    $checked_masks = array_values($checked_masks ?? []);
                 }
             
             }
@@ -2905,7 +2905,7 @@
             for($i=0; $i<QRspec::rsBlockNum1($spec); $i++) {
                 $ecc = array_slice($this->ecccode,$eccPos);
                 $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el,  $ecc, $rs);
-                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
+                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc ?? []);
                 
                 $dataPos += $dl;
                 $eccPos += $el;
@@ -2924,7 +2924,7 @@
             for($i=0; $i<QRspec::rsBlockNum2($spec); $i++) {
                 $ecc = array_slice($this->ecccode,$eccPos);
                 $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el, $ecc, $rs);
-                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
+                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc ?? []);
                 
                 $dataPos += $dl;
                 $eccPos += $el;
@@ -3297,7 +3297,7 @@
                 if ($err != '')
                     QRtools::log($outfile, $err);
                 
-                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab ?? [])+2*$this->margin));
                 
                 QRimage::png($tab, $outfile, min(max(1, $this->size), $maxSize), $this->margin,$saveandprint);
             

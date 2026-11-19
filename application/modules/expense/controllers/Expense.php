@@ -175,7 +175,7 @@ class Expense extends Admin_Controller
 		// Tangani multiple file upload native move_uploaded_file (aman & tidak menimpa)
 		if (!empty($_FILES['doc_file']['name'])) {
 			if (is_array($_FILES['doc_file']['name'])) {
-				$count_files = count($_FILES['doc_file']['name']);
+				$count_files = count($_FILES['doc_file']['name'] ?? []);
 				for ($i = 0; $i < $count_files; $i++) {
 					if (!empty($_FILES['doc_file']['name'][$i]) && isset($_FILES['doc_file']['error'][$i]) && $_FILES['doc_file']['error'][$i] === 0) {
 						$orig_name = $_FILES['doc_file']['name'][$i];
@@ -244,7 +244,7 @@ class Expense extends Admin_Controller
 		if (!empty($arr_uploaded_files)) {
 			if (empty($filenames)) {
 				$filenames = $arr_uploaded_files[0];
-				if (count($arr_uploaded_files) > 1 && empty($filenames2)) {
+				if (count($arr_uploaded_files ?? []) > 1 && empty($filenames2)) {
 					$filenames2 = $arr_uploaded_files[1];
 				}
 			} else if (empty($filenames2)) {
@@ -1834,7 +1834,7 @@ class Expense extends Admin_Controller
 					}
 				}
 			}
-			$bonBukti = implode(";", $pathBonBukti);
+			$bonBukti = implode(";", $pathBonBukti ?? []);
 
 			if (!empty($_FILES['bukti_pengembalian']['name'][0])) {
 				foreach ($_FILES['bukti_pengembalian']['name'] as $index => $name) {
@@ -1850,7 +1850,7 @@ class Expense extends Admin_Controller
 			}
 
 			if ($pengembalian == 2) {
-				$buktiPengembalian = implode(";", $pathBuktiPengembalian);
+				$buktiPengembalian = implode(";", $pathBuktiPengembalian ?? []);
 			} else {
 				$buktiPengembalian = null;
 			}
@@ -3130,11 +3130,11 @@ class Expense extends Admin_Controller
 		$valid = 1;
 		$hasil = '';
 		$grand_total = 0;
-		if (count($get_detail_pr_stok_material) < 1 && count($get_detail_pr_departemen) < 1 && count($get_detail_pr_asset) < 1) {
+		if (count($get_detail_pr_stok_material ?? []) < 1 && count($get_detail_pr_departemen ?? []) < 1 && count($get_detail_pr_asset ?? []) < 1) {
 			$valid = 0;
 		} else {
 			$no = 1;
-			if (count($get_detail_pr_stok_material) > 0) {
+			if (count($get_detail_pr_stok_material ?? []) > 0) {
 				foreach ($get_detail_pr_stok_material as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3157,7 +3157,7 @@ class Expense extends Admin_Controller
 				endforeach;
 			}
 
-			if (count($get_detail_pr_departemen) > 0) {
+			if (count($get_detail_pr_departemen ?? []) > 0) {
 				foreach ($get_detail_pr_departemen as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3178,7 +3178,7 @@ class Expense extends Admin_Controller
 				endforeach;
 			}
 
-			if (count($get_detail_pr_asset)) {
+			if (count($get_detail_pr_asset ?? [])) {
 				foreach ($get_detail_pr_asset as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3743,7 +3743,7 @@ class Expense extends Admin_Controller
 			$nmuser = $item['nmuser'];
 
 			$check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item['no_doc']])->result();
-			if (count($check_detail)) {
+			if (count($check_detail ?? [])) {
 				if ($item['tipe_pr'] == 'pr departemen') {
 					$this->db->select('b.nm_lengkap');
 					$this->db->from('rutin_non_planning_header a');
@@ -3884,7 +3884,7 @@ class Expense extends Admin_Controller
 			$nmuser = $item['nmuser'];
 
 			$check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item['no_doc']])->result();
-			if (count($check_detail)) {
+			if (count($check_detail ?? [])) {
 				if ($item['tipe_pr'] == 'pr departemen') {
 					$this->db->select('b.nm_lengkap');
 					$this->db->from('rutin_non_planning_header a');

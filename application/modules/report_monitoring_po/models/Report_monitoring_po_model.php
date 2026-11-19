@@ -135,7 +135,7 @@ class Report_monitoring_po_model extends CI_Model
             $row->status_desc    = $status_desc;
             $row->materials_arr  = $materials_arr;
             $row->pr_arr         = $pr_arr;
-            $row->pr_text        = !empty($pr_strings) ? implode(", ", $pr_strings) : '-';
+            $row->pr_text        = !empty($pr_strings) ? implode(", ", $pr_strings ?? []) : '-';
 
             $data[] = $row;
         }
@@ -151,7 +151,7 @@ class Report_monitoring_po_model extends CI_Model
         $all = $this->get_monitoring_data();
 
         $summary = [
-            'total_po'             => count($all),
+            'total_po'             => count($all ?? []),
             'total_qty_po'         => 0,
             'total_diterima'       => 0,
             'total_sisa'           => 0,
@@ -288,7 +288,7 @@ class Report_monitoring_po_model extends CI_Model
         return [
             'header'            => $header,
             'po_materials'      => $po_materials,
-            'pr_summary'        => !empty($pr_list_arr) ? implode(', ', $pr_list_arr) : '-',
+            'pr_summary'        => !empty($pr_list_arr) ? implode(', ', $pr_list_arr ?? []) : '-',
             'incoming_history'  => $incoming_history,
             'total_qty_po'      => $total_qty_po,
             'total_diterima'    => $total_diterima,
