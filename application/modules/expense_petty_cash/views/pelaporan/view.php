@@ -1,7 +1,7 @@
 <?php
 $header = isset($pelaporan->header) ? $pelaporan->header : $pelaporan;
 $pencatatan_list = isset($pelaporan->pencatatan_list) ? $pelaporan->pencatatan_list : [];
-$jumlah_item = count($pencatatan_list);
+$jumlah_item = count($pencatatan_list ?? []);
 
 $periode_start_fmt = date('d/m/Y', strtotime((string) $header->periode_start));
 $periode_end_fmt   = date('d/m/Y', strtotime((string) $header->periode_end));
@@ -143,7 +143,7 @@ function get_pelaporan_status_badge($status) {
                                     <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars((string) $pItem->request_by) ?></span>
                                 </div>
                                 <div>
-                                    <span class="badge bg-white text-dark border me-2"><?= count($pItems) ?> item</span>
+                                    <span class="badge bg-white text-dark border me-2"><?= count($pItems ?? []) ?> item</span>
                                     <span class="fw-bold text-success">Rp <?= number_format((float) $pItem->grand_total, 0, ',', '.') ?></span>
                                 </div>
                             </div>

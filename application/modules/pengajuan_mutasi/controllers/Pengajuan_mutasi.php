@@ -357,7 +357,7 @@ class Pengajuan_mutasi extends Admin_Controller
         $result = $this->pengajuan_mutasi_model->submit_mutation($id, $this->username);
 
         if ($result) {
-            $new_mutation = $old_mutation ? array_merge($old_mutation, array('status' => 1)) : array('id' => $id, 'status' => 1);
+            $new_mutation = $old_mutation ? array_merge($old_mutation ?? [], array('status' => 1)) : array('id' => $id, 'status' => 1);
             write_log('Pengajuan Mutasi', 'Submit Mutasi', 'Mutation submitted successfully: ' . $id, array('old' => $old_mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation submitted successfully.']);
         }
@@ -382,7 +382,7 @@ class Pengajuan_mutasi extends Admin_Controller
         $result = $this->pengajuan_mutasi_model->cancel_mutation($id, $this->username, $reject_reason);
 
         if ($result) {
-            $new_mutation = $old_mutation ? array_merge($old_mutation, array('status' => 5, 'reject_reason' => $reject_reason)) : array('id' => $id, 'status' => 5, 'reason' => $reject_reason);
+            $new_mutation = $old_mutation ? array_merge($old_mutation ?? [], array('status' => 5, 'reject_reason' => $reject_reason)) : array('id' => $id, 'status' => 5, 'reason' => $reject_reason);
             write_log('Pengajuan Mutasi', 'Cancel Mutasi', 'Mutation cancelled successfully: ' . $id . ' (' . $reject_reason . ')', array('old' => $old_mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation cancelled successfully.']);
         }
@@ -420,7 +420,7 @@ class Pengajuan_mutasi extends Admin_Controller
                 ];
             }
             $mat_name = $detail['trade_name'] ?: $detail['nm_material'];
-            if ($mat_name && !in_array($mat_name, $pack_groups[$pk]['materials'])) {
+            if ($mat_name && !in_array($mat_name, $pack_groups[$pk]['materials'] ?? [])) {
                 $pack_groups[$pk]['materials'][] = $mat_name;
             }
 
@@ -479,7 +479,7 @@ class Pengajuan_mutasi extends Admin_Controller
         $allowed   = ['pdf', 'jpg', 'jpeg', 'png'];
         $ext       = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-        if (!in_array($ext, $allowed)) {
+        if (!in_array($ext, $allowed ?? [])) {
             return ['status' => false, 'message' => 'Format file tidak didukung. Gunakan PDF, JPG, atau PNG.'];
         }
 

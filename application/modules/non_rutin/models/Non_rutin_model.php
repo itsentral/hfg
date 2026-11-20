@@ -62,11 +62,11 @@ class Non_rutin_model extends BF_Model
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
                 $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
-            $dt_nama_barang    = implode("<br>", $arr_nmbarang);
-            $dt_spec    = implode("<br>", $arr_spec);
-            $dt_qty    = implode("<br>", $arr_qty);
-            $dt_tanggal    = implode("<br>", $arr_tanggal);
-            $dt_ket    = implode("<br>", $arr_ket);
+            $dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+            $dt_spec    = implode("<br>", $arr_spec ?? []);
+            $dt_qty    = implode("<br>", $arr_qty ?? []);
+            $dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+            $dt_ket    = implode("<br>", $arr_ket ?? []);
 
             $nestedData[]    = "<div align='left'>" . $dt_nama_barang . "</div>";
             $nestedData[]    = "<div align='left'>" . $dt_spec . "</div>";
@@ -216,11 +216,11 @@ class Non_rutin_model extends BF_Model
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
                 $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
-            $dt_nama_barang    = implode("<br>", $arr_nmbarang);
-            $dt_spec    = implode("<br>", $arr_spec);
-            $dt_qty    = implode("<br>", $arr_qty);
-            $dt_tanggal    = implode("<br>", $arr_tanggal);
-            $dt_ket    = implode("<br>", $arr_ket);
+            $dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+            $dt_spec    = implode("<br>", $arr_spec ?? []);
+            $dt_qty    = implode("<br>", $arr_qty ?? []);
+            $dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+            $dt_ket    = implode("<br>", $arr_ket ?? []);
 
             $nestedData[]    = "<div align='left'>" . $dt_nama_barang . "</div>";
             $nestedData[]    = "<div align='left'>" . $dt_spec . "</div>";
@@ -358,11 +358,11 @@ class Non_rutin_model extends BF_Model
                 $arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
                 $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
-            $dt_nama_barang    = implode("<br>", $arr_nmbarang);
-            $dt_spec    = implode("<br>", $arr_spec);
-            $dt_qty    = implode("<br>", $arr_qty);
-            $dt_tanggal    = implode("<br>", $arr_tanggal);
-            $dt_ket    = implode("<br>", $arr_ket);
+            $dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+            $dt_spec    = implode("<br>", $arr_spec ?? []);
+            $dt_qty    = implode("<br>", $arr_qty ?? []);
+            $dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+            $dt_ket    = implode("<br>", $arr_ket ?? []);
 
             $nestedData[]    = "<div align='left'>" . $dt_nama_barang . "</div>";
             $nestedData[]    = "<div align='left'>" . $dt_spec . "</div>";
@@ -503,11 +503,11 @@ class Non_rutin_model extends BF_Model
                 $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime((string) $valx['created_date']));
                 $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
-            $dt_nama_barang    = implode("<br>", $arr_nmbarang);
-            $dt_spec    = implode("<br>", $arr_spec);
-            $dt_qty    = implode("<br>", $arr_qty);
-            $dt_tanggal    = implode("<br>", $arr_tanggal);
-            $dt_ket    = implode("<br>", $arr_ket);
+            $dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+            $dt_spec    = implode("<br>", $arr_spec ?? []);
+            $dt_qty    = implode("<br>", $arr_qty ?? []);
+            $dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+            $dt_ket    = implode("<br>", $arr_ket ?? []);
 
             $nestedData[]    = "<div align='left'>" . $row['project_name'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
@@ -909,11 +909,11 @@ class Non_rutin_model extends BF_Model
                 $arr_tanggal[$val] = "&bull; " . date('d F Y H:i:s', strtotime((string) $valx['created_date']));
                 $arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
             }
-            $dt_nama_barang    = implode("<br>", $arr_nmbarang);
-            $dt_spec    = implode("<br>", $arr_spec);
-            $dt_qty    = implode("<br>", $arr_qty);
-            $dt_tanggal    = implode("<br>", $arr_tanggal);
-            $dt_ket    = implode("<br>", $arr_ket);
+            $dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+            $dt_spec    = implode("<br>", $arr_spec ?? []);
+            $dt_qty    = implode("<br>", $arr_qty ?? []);
+            $dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+            $dt_ket    = implode("<br>", $arr_ket ?? []);
 
             $nestedData[]    = "<div align='left'>" . $row['project_name'] . "</div>";
             $nestedData[]    = "<div align='left'>" . $row['nm_lengkap'] . "</div>";
@@ -1161,7 +1161,7 @@ class Non_rutin_model extends BF_Model
         }
 
         $buttons = array_filter([$view, $edit, $approve, $cancel, $print, $close]);
-        return '<div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $buttons) . '</div>';
+        return '<div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $buttons ?? []) . '</div>';
     }
 
     public function get_tingkat_pr($data)

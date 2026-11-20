@@ -86,7 +86,7 @@ class Incoming_stok_model extends BF_Model
       foreach ($get_no_kasbon as $item) {
         $no_po[] = $item->no_doc;
       }
-      $no_po = implode(', ', $no_po);
+      $no_po = implode(', ', $no_po ?? []);
 
       $no_pr = [];
       $get_no_pr = $this->db->query("
@@ -115,7 +115,7 @@ class Incoming_stok_model extends BF_Model
       }
 
       if (!empty($no_pr)) {
-        $no_pr = implode(', ', $no_pr);
+        $no_pr = implode(', ', $no_pr ?? []);
       } else {
         $no_pr = '';
       }

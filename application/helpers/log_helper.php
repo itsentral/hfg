@@ -76,11 +76,11 @@ if (!function_exists('calculate_log_diff')) {
         ];
 
         foreach ($new as $key => $newVal) {
-            if (in_array(strtolower((string) $key), $ignoredKeys, true)) {
+            if (in_array(strtolower((string) $key), $ignoredKeys ?? [], true)) {
                 continue;
             }
 
-            if (array_key_exists($key, $old)) {
+            if (array_key_exists($key, $old ?? [])) {
                 $oldVal = $old[$key];
 
                 // Jika tipe array (misal nested / items), biarkan logika pemroses lain atau compare langsung
@@ -228,7 +228,7 @@ if (!function_exists('write_log')) {
                     $poCandidates[] = trim((string) $matches[1]);
                 }
 
-                foreach (array_unique($poCandidates) as $candidatePo) {
+                foreach (array_unique($poCandidates ?? []) as $candidatePo) {
                     $noSurat = get_po_no_surat($candidatePo);
                     if (!empty($noSurat) && $noSurat !== $candidatePo) {
                         $message = str_replace($candidatePo, $noSurat, $message);
@@ -242,7 +242,7 @@ if (!function_exists('write_log')) {
                 if (is_array($item) || is_object($item)) {
                     $arr = (array) $item;
                     foreach ($arr as $k => $v) {
-                        if (in_array(strtolower((string) $k), $sensitive_keys, true)) {
+                        if (in_array(strtolower((string) $k), $sensitive_keys ?? [], true)) {
                             $arr[$k] = '******';
                         } elseif (is_array($v) || is_object($v)) {
                             $arr[$k] = $maskSensitive($v);
@@ -259,7 +259,7 @@ if (!function_exists('write_log')) {
                 $data_array = (array) $data;
 
                 // Cek apakah data bertipe komparasi Before-After (mengandung key 'old' dan 'new')
-                if (array_key_exists('old', $data_array) && array_key_exists('new', $data_array)) {
+                if (array_key_exists('old', $data_array ?? []) && array_key_exists('new', $data_array ?? [])) {
                     $oldClean = $maskSensitive($data_array['old']);
                     $newClean = $maskSensitive($data_array['new']);
 
@@ -274,7 +274,7 @@ if (!function_exists('write_log')) {
 
                     $structuredData = [
                         'type'          => 'diff',
-                        'total_changes' => count($changes),
+                        'total_changes' => count($changes ?? []),
                         'changes'       => $changes,
                         'before'        => $oldClean,
                         'after'         => $newClean

@@ -71,7 +71,7 @@ class Budget extends Admin_Controller {
         $divisi     	= $this->input->post('divisi');
         $tipe_pr       	= $this->input->post('tipe_pr');
 		if(is_array($tipe_pr)){
-			$tipe_pr = implode(",",$tipe_pr);
+			$tipe_pr = implode(",",$tipe_pr ?? []);
 		}
 		for($i=1;$i<=12;$i++){
 			${"bulan_".$i} = $this->input->post('bulan_'.$i);

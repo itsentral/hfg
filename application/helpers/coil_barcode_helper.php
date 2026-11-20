@@ -37,7 +37,7 @@ if (!function_exists('coil_barcode_parse')) {
         // Asumsi: 2 bagian terakhir adalah nomor_heat dan kode_supplier
         $parts = explode('-', (string) $barcode_string);
 
-        if (count($parts) < 3) {
+        if (count($parts ?? []) < 3) {
             return [
                 'success' => false,
                 'data'    => null,
@@ -49,7 +49,7 @@ if (!function_exists('coil_barcode_parse')) {
         // Ambil 2 bagian terakhir sebagai nomor_heat dan kode_supplier
         $kode_supplier = array_pop($parts);
         $nomor_heat    = array_pop($parts);
-        $kode_coil     = implode('-', $parts);
+        $kode_coil     = implode('-', $parts ?? []);
 
         if (empty($kode_coil) || empty($nomor_heat) || empty($kode_supplier)) {
             return [

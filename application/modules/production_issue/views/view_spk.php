@@ -164,7 +164,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0">Log Scan Barcode</h6>
-        <span class="badge bg-secondary"><?= count($logs) ?> entri</span>
+        <span class="badge bg-secondary"><?= count($logs ?? []) ?> entri</span>
     </div>
     <div class="card-body">
         <div class="table-responsive">

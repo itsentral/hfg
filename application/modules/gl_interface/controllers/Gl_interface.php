@@ -221,7 +221,7 @@ class Gl_interface extends Admin_Controller
     public function get_jenis_list()
     {
         $rows = $this->Gl_interface_model->get_jenis_transaksi_list();
-        $list = array_column($rows, 'jenis_transaksi');
+        $list = array_column($rows ?? [], 'jenis_transaksi');
         echo json_encode($list);
     }
 
@@ -263,8 +263,8 @@ class Gl_interface extends Admin_Controller
 
         // Balance check & auto-adjust untuk JV (unbill)
         if ($jenis === 'JV') {
-            $total_debet  = array_sum(array_column($details, 'debet'));
-            $total_kredit = array_sum(array_column($details, 'kredit'));
+            $total_debet  = array_sum(array_column($details ?? [], 'debet'));
+            $total_kredit = array_sum(array_column($details ?? [], 'kredit'));
             $selisih      = round($total_debet) - round($total_kredit);
 
             if ($selisih != 0) {
@@ -288,7 +288,7 @@ class Gl_interface extends Admin_Controller
             $this->db->insert(DBACC . '.javh', [
                 'nomor'      => $nomor,
                 'tgl'        => $header['tgl'],
-                'jml'        => $header['jml'] ?? array_sum(array_column($details, 'debet')),
+                'jml'        => $header['jml'] ?? array_sum(array_column($details ?? [], 'debet')),
                 'kdcab'      => $header['kdcab'],
                 'jenis'      => 'JV',
                 'keterangan' => $header['keterangan'],
@@ -298,7 +298,7 @@ class Gl_interface extends Admin_Controller
             ]);
         } else {
             // BUK → japh
-            $total_debet = array_sum(array_column($details, 'debet'));
+            $total_debet = array_sum(array_column($details ?? [], 'debet'));
             $this->db->insert(DBACC . '.japh', [
                 'nomor'        => $nomor,
                 'tgl'          => $header['tgl'],

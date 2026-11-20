@@ -472,7 +472,7 @@ class New_ros extends Admin_Controller
         $loi_type = ($po && strtolower((string) $po->loi) === 'lokal') ? 'lokal' : 'import';
         $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
         $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
-        $total_po_value = array_sum(array_column($result, 'total_value_usd'));
+        $total_po_value = array_sum(array_column($result ?? [], 'total_value_usd'));
 
         echo json_encode([
             'status'          => 1,
@@ -806,7 +806,7 @@ class New_ros extends Admin_Controller
                             $physical_coil_count++; // normal coil (tanpa baby)
                         }
                     }
-                    $physical_coil_count += count($baby_coils_save);
+                    $physical_coil_count += count($baby_coils_save ?? []);
                     $price_per_coil_physical = ($physical_coil_count > 0) ? $total_nilai_inventory / $physical_coil_count : 0;
 
                     // Mapping no_coil mother → inserted ID
@@ -1055,7 +1055,7 @@ class New_ros extends Admin_Controller
             $nm_alias  = isset($mat['nm_alias'])  ? $mat['nm_alias']  : '';
             $nm_barang = isset($mat['nm_barang']) ? $mat['nm_barang'] : '';
             $count     = isset($mat['count'])     ? max(1, (int) $mat['count']) : 1;
-            $bgColor   = $matColors[$colorIdx % count($matColors)];
+            $bgColor   = $matColors[$colorIdx % count($matColors ?? [])];
 
             // Style khusus per material group (warna berbeda)
             $matStyle = array(
@@ -1088,7 +1088,7 @@ class New_ros extends Admin_Controller
             }
 
             // Baris kosong pemisah antar material (kecuali material terakhir)
-            if ($colorIdx < count($materials_coil) - 1) {
+            if ($colorIdx < count($materials_coil ?? []) - 1) {
                 $sheet->getRowDimension($row)->setRowHeight(18);
                 $row++;
             }
@@ -1311,9 +1311,9 @@ class New_ros extends Admin_Controller
 
         echo json_encode([
             'status'        => 1,
-            'msg'           => 'Successfully read ' . count($coils) . ' coil rows.',
+            'msg'           => 'Successfully read ' . count($coils ?? []) . ' coil rows.',
             'coils'         => $coils,
-            'total'         => count($coils),
+            'total'         => count($coils ?? []),
             'file_original' => $original_name,
             'file_hash'     => $hash_name,
         ]);
@@ -1615,7 +1615,7 @@ class New_ros extends Admin_Controller
         $this->db->order_by('t.id', 'ASC');
         $data = $this->db->get()->result_array();
 
-        echo json_encode(['status' => 1, 'data' => $data, 'total' => count($data)]);
+        echo json_encode(['status' => 1, 'data' => $data, 'total' => count($data ?? [])]);
     }
 
     // ─── AJAX: Konfirmasi upload → pindah dari temp ke tabel asli ────
@@ -1648,7 +1648,7 @@ class New_ros extends Admin_Controller
 
         // Ambil total_nilai_inventory per id_ros_material
         $inventory_per_mat = [];
-        foreach (array_keys($coil_count_per_mat) as $id_mat) {
+        foreach (array_keys($coil_count_per_mat ?? []) as $id_mat) {
             $mat = $this->db->get_where('tr_ros_material', ['id' => $id_mat])->row();
             $inventory_per_mat[$id_mat] = $mat ? (float) $mat->total_nilai_inventory : 0;
         }
@@ -1667,7 +1667,7 @@ class New_ros extends Admin_Controller
         // Generate tr_ros_pack untuk setiap pack_no unik dan buat mapping pack_no → id
         $pack_map = []; // pack_no => id_ros_pack
         $generated_packs = [];
-        foreach (array_keys($pack_nos) as $pack_no) {
+        foreach (array_keys($pack_nos ?? []) as $pack_no) {
             $pack_code = $this->New_ros_model->generate_pack_code($generated_packs);
             $generated_packs[] = $pack_code;
             $this->db->insert('tr_ros_pack', [
@@ -1850,7 +1850,7 @@ class New_ros extends Admin_Controller
         if (!empty($groups)) {
             $no = 1;
             foreach ($groups as $id_mat => $rows) {
-                $rowspan = count($rows);
+                $rowspan = count($rows ?? []);
                 foreach ($rows as $idx => $coil) {
                     $html .= '<tr>';
                     if ($idx === 0) {
@@ -2192,7 +2192,7 @@ class New_ros extends Admin_Controller
         $this->db->order_by('c.id', 'ASC');
         $coils = $this->db->get()->result_array();
 
-        echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils)]);
+        echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils ?? [])]);
     }
 
     public function close_ros()
@@ -2467,7 +2467,7 @@ class New_ros extends Admin_Controller
         $total_gw   = 0;
         foreach ($materials as $mat) {
             if (!empty($mat['coils'])) {
-                $total_coil += count($mat['coils']);
+                $total_coil += count($mat['coils'] ?? []);
                 foreach ($mat['coils'] as $coil) {
                     $total_nw += (float) $coil['berat_bersih'];
                     $total_gw += (float) $coil['berat_kotor'];

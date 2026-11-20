@@ -71,7 +71,7 @@ class Spk_material extends Admin_Controller
 
         // Validate editable status
         $editable_statuses = ['Material Requested', 'Material Confirmed'];
-        if (!in_array($spk['status'], $editable_statuses)) {
+        if (!in_array($spk['status'], $editable_statuses ?? [])) {
             $this->session->set_flashdata('error', 'SPK tidak dapat diedit karena status: ' . $spk['status']);
             redirect('spk_material/view/' . $spk_no);
         }
@@ -159,7 +159,7 @@ class Spk_material extends Admin_Controller
             }
 
             // Check duplicate product
-            if (in_array($prod['id_produk_fg'], $product_ids)) {
+            if (in_array($prod['id_produk_fg'], $product_ids ?? [])) {
                 return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk ini sudah dipilih di baris lain."]);
             }
             $product_ids[] = $prod['id_produk_fg'];
@@ -171,7 +171,7 @@ class Spk_material extends Admin_Controller
         }
 
         if (!empty($no_bom_products)) {
-            return $this->_json(['status' => 0, 'message' => 'BOM belum dibuat untuk produk: ' . implode(', ', $no_bom_products)]);
+            return $this->_json(['status' => 0, 'message' => 'BOM belum dibuat untuk produk: ' . implode(', ', $no_bom_products ?? [])]);
         }
 
         // Validasi edit: cek SPK exist dan editable SEBELUM transaction
@@ -349,7 +349,7 @@ class Spk_material extends Admin_Controller
                 $actions[] = '<button type="button" class="btn btn-sm btn-success btn-release-spk text-nowrap" data-spk="'.$display_spk_no.'" title="Release SPK"><i class="fa fa-check-circle me-1"></i> Release</button>';
             }
 
-            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">' . implode('', $actions) . '</div>';
+            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">' . implode('', $actions ?? []) . '</div>';
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
@@ -498,7 +498,7 @@ class Spk_material extends Admin_Controller
 
         // Terminal states - no transition allowed
         $terminal = ['Released', 'Cancelled'];
-        if (in_array($current_status, $terminal)) {
+        if (in_array($current_status, $terminal ?? [])) {
             return $this->_json(['status' => 0, 'message' => 'SPK sudah berstatus akhir (' . $current_status . '), tidak dapat diubah.']);
         }
 
@@ -508,7 +508,7 @@ class Spk_material extends Admin_Controller
             'Material Confirmed' => ['Released', 'Cancelled'],
         ];
 
-        if (!isset($allowed[$current_status]) || !in_array($new_status, $allowed[$current_status])) {
+        if (!isset($allowed[$current_status]) || !in_array($new_status, $allowed[$current_status] ?? [])) {
             return $this->_json(['status' => 0, 'message' => 'Transisi status dari "' . $current_status . '" ke "' . $new_status . '" tidak diizinkan.']);
         }
 

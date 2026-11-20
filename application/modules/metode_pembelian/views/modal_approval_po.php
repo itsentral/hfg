@@ -53,7 +53,7 @@
         </thead>
         <tbody>
             <?php
-            $jumlah = count($result);
+            $jumlah = count($result ?? []);
             $no  = 0;
             $SUM = 0;
             foreach($result AS $val => $valx){ $no++;

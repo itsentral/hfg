@@ -71,7 +71,7 @@ $ENABLE_DELETE  = has_permission('Closed_PO.Delete');
 							$no_pr[] = $item_pr->no_pr;
 						}
 
-						$no_pr = implode(', ', $no_pr);
+						$no_pr = implode(', ', $no_pr ?? []);
 
 				?>
 						<tr>

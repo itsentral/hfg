@@ -616,7 +616,7 @@
 <script type="application/json" id="countries-data">
     <?= json_encode(array_map(function ($c) {
         return ['id' => $c->id, 'country_code' => $c->country_code, 'name' => $c->name];
-    }, $countries)); ?>
+    }, $countries ?? [])); ?>
 </script>
 
 <script>

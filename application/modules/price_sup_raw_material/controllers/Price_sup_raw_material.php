@@ -103,7 +103,7 @@ class Price_sup_raw_material extends Admin_Controller
         // }
       }
 
-      $dataProcess = array_merge($dataProcess1, $dataProcess2);
+      $dataProcess = array_merge($dataProcess1 ?? [], $dataProcess2 ?? []);
 
       // print_r($dataProcess);
       // exit;

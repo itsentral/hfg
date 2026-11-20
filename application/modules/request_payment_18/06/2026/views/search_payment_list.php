@@ -26,7 +26,7 @@
             if ($record->tipe == 'kasbon') {
                 $get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $record->no_doc))->row();
                 $check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $record->no_doc])->result();
-                if (count($check_detail)) {
+                if (count($check_detail ?? [])) {
                     if ($get_kasbon->tipe_pr == 'pr departemen') {
                         $this->db->select('b.nm_lengkap');
                         $this->db->from('rutin_non_planning_header a');

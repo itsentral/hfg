@@ -32,7 +32,7 @@ class Rate_bahan_pendukung_foh_model extends CI_Model
     public function get_available_categories()
     {
         $used = $this->db->select('code_lv2')->get('rate_bahan_pendukung_foh')->result();
-        $used_codes = array_map(function($x) { return $x->code_lv2; }, $used);
+        $used_codes = array_map(function($x) { return $x->code_lv2; }, $used ?? []);
 
         $q = $this->db->select('code_lv2, nama')
             ->from('product_lvl_2')

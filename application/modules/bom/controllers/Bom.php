@@ -146,7 +146,7 @@ class Bom extends Admin_Controller
         $uniq_set = [];
         foreach ($details_raw as $d) {
             if (!empty($d['id_material'])) {
-                if (in_array($d['id_material'], $material_set)) {
+                if (in_array($d['id_material'], $material_set ?? [])) {
                     $this->session->set_flashdata('error', 'Material yang sama tidak boleh dipakai dua kali pada produk ini.');
                     redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                 }
@@ -160,7 +160,7 @@ class Bom extends Admin_Controller
                 }
                 $uniq = !empty($d['no_uniq_id']) ? trim((string) $d['no_uniq_id']) : '';
                 if (!empty($uniq)) {
-                    if (in_array($uniq, $uniq_set)) {
+                    if (in_array($uniq, $uniq_set ?? [])) {
                         $this->session->set_flashdata('error', "No. Uniq ID (Varian BOM) '{$uniq}' tidak boleh duplikat pada produk yang sama.");
                         redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                     }
@@ -194,28 +194,28 @@ class Bom extends Admin_Controller
             foreach ($this->Bom_model->get_bom_details($result) as $nd) {
                 $newBpm[$nd->id_material] = (float) $nd->berat_per_meter;
                 $label = 'Varian [' . $nd->no_uniq_id . ' ' . $nd->id_material . '] - Berat/Meter';
-                if (!array_key_exists($nd->id_material, $oldBpm)) {
+                if (!array_key_exists($nd->id_material, $oldBpm ?? [])) {
                     $detailChanges[$label] = ['old' => null, 'new' => (float) $nd->berat_per_meter];
                 } elseif (abs($oldBpm[$nd->id_material] - (float) $nd->berat_per_meter) > 0.0000005) {
                     $detailChanges[$label] = ['old' => $oldBpm[$nd->id_material], 'new' => (float) $nd->berat_per_meter];
                 }
             }
             foreach ($oldBpm as $mat => $val) {
-                if (!array_key_exists($mat, $newBpm)) {
+                if (!array_key_exists($mat, $newBpm ?? [])) {
                     $detailChanges['Varian [' . $mat . '] - Berat/Meter'] = ['old' => $val, 'new' => null];
                 }
             }
             $logPayload = [
                 'id_produk'     => $id_produk,
                 'nm_produk'     => $nm_produk,
-                'total_varian'  => count($details),
+                'total_varian'  => count($details ?? []),
                 'daftar_varian' => array_map(function($x) {
                     return [
                         'no_uniq_id'      => $x['no_uniq_id'] ?? '',
                         'id_material'     => $x['id_material'] ?? '',
                         'berat_per_meter' => $x['berat_per_meter'] ?? 0,
                     ];
-                }, $details),
+                }, $details ?? []),
             ];
             if ($existing) {
                 // Edit: format Before-After agar detail_changes (perubahan Berat/Meter) tampil di Activity Log
@@ -223,12 +223,12 @@ class Bom extends Admin_Controller
                     'old' => [
                         'id_produk'    => $existing->id_produk,
                         'nm_produk'    => $existing->nm_produk,
-                        'total_varian' => count($oldDetails),
+                        'total_varian' => count($oldDetails ?? []),
                     ],
                     'new' => [
                         'id_produk'    => $id_produk,
                         'nm_produk'    => $nm_produk,
-                        'total_varian' => count($details),
+                        'total_varian' => count($details ?? []),
                     ],
                     'detail_changes' => $detailChanges,
                 ];

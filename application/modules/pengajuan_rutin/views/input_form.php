@@ -206,7 +206,7 @@ if (isset($data->status)) {
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-header bg-white py-3 border-bottom">
                 <h5 class="card-title mb-0 fw-bold text-dark">
-                    <i class="fa fa-paperclip text-primary me-2"></i>Lampiran Dokumen Bukti (<?= count($lampiran_list) ?>)
+                    <i class="fa fa-paperclip text-primary me-2"></i>Lampiran Dokumen Bukti (<?= count($lampiran_list ?? []) ?>)
                 </h5>
             </div>
             <div class="card-body p-3 p-md-4">

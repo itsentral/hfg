@@ -105,25 +105,25 @@
             <li class="nav-item">
                 <a class="nav-link active fw-bold" id="tab-kw1-tab" data-bs-toggle="tab" href="#tab-kw1" role="tab">
                     <i class="fa fa-star text-primary me-1"></i> Finish Good KW 1
-                    <span class="badge bg-primary ms-1"><?= count($stok_kw1) ?></span>
+                    <span class="badge bg-primary ms-1"><?= count($stok_kw1 ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-kw2-tab" data-bs-toggle="tab" href="#tab-kw2" role="tab">
                     <i class="fa fa-cubes text-warning me-1"></i> Finish Good KW 2
-                    <span class="badge bg-warning text-dark ms-1"><?= count($stok_kw2) ?></span>
+                    <span class="badge bg-warning text-dark ms-1"><?= count($stok_kw2 ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-tong-coil-tab" data-bs-toggle="tab" href="#tab-tong-coil" role="tab">
                     <i class="fa fa-circle-o text-info me-1"></i> Tong Coil
-                    <span class="badge bg-info text-dark ms-1"><?= count($stok_tong_coil) ?></span>
+                    <span class="badge bg-info text-dark ms-1"><?= count($stok_tong_coil ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-scrap-tab" data-bs-toggle="tab" href="#tab-scrap" role="tab">
                     <i class="fa fa-trash text-danger me-1"></i> Scrap / Waste
-                    <span class="badge bg-danger ms-1"><?= count($stok_scrap) ?></span>
+                    <span class="badge bg-danger ms-1"><?= count($stok_scrap ?? []) ?></span>
                 </a>
             </li>
         </ul>

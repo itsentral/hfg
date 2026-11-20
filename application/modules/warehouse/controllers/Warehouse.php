@@ -291,7 +291,7 @@ class Warehouse extends Admin_Controller
             $pack_groups[$pk]['total_nw'] += (float) $c['net_weight'];
             $pack_groups[$pk]['total_gw'] += (float) $c['gross_weight'];
             $mat_name = $c['trade_name'] ?: $c['nm_material'];
-            if (!in_array($mat_name, $pack_groups[$pk]['materials'])) {
+            if (!in_array($mat_name, $pack_groups[$pk]['materials'] ?? [])) {
                 $pack_groups[$pk]['materials'][] = $mat_name;
             }
         }
@@ -328,7 +328,7 @@ class Warehouse extends Admin_Controller
         $pack_no = 0;
         foreach ($pack_groups as $pk => $pg) {
             $pack_no++;
-            $mat_count = count($pg['materials']);
+            $mat_count = count($pg['materials'] ?? []);
             $nw_per = $pg['roll_count'] > 0 ? $pg['total_nw'] / $pg['roll_count'] : 0;
             $gw_per = $pg['roll_count'] > 0 ? $pg['total_gw'] / $pg['roll_count'] : 0;
             $gudang = $pg['kd_gudang'] ?? '';

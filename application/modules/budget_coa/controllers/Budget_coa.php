@@ -138,7 +138,7 @@ class Budget_coa extends Admin_Controller
 */
 		$this->db->trans_start();
 		if ($type == "edit") {
-			for ($x = 0; $x < count($coa); $x++) {
+			for ($x = 0; $x < count($coa ?? []); $x++) {
 				if (!isset($finance_tahun[$x]) || $finance_tahun[$x] == '') $finance_tahun[$x] = 0;
 				if (!isset($finance_bulan[$x]) || $finance_bulan[$x] == '') $finance_bulan[$x] = 0;
 				//			  if($finance_tahun[$x]>0){
@@ -209,7 +209,7 @@ class Budget_coa extends Admin_Controller
 			simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
 			$result			= TRUE;
 		} else {
-			for ($x = 0; $x < count($coa); $x++) {
+			for ($x = 0; $x < count($coa ?? []); $x++) {
 				if (isset($finance_tahun[$x]) && $finance_tahun[$x] == '') $finance_tahun[$x] = 0;
 				if (isset($finance_bulan[$x]) && $finance_bulan[$x] == '') $finance_bulan[$x] = 0;
 				//			  if($finance_tahun[$x]>0){
@@ -455,7 +455,7 @@ class Budget_coa extends Admin_Controller
 		}
 		$this->db->trans_start();
 		if ($type == "edit") {
-			for ($x = 0; $x < count($id); $x++) {
+			for ($x = 0; $x < count($id ?? []); $x++) {
 				if ($jenis[$x] == 'FIX COST BULANAN') {
 					$data =  array(
 						'jenis' => $jenis[$x],
@@ -725,7 +725,7 @@ class Budget_coa extends Admin_Controller
 		}
 		$this->db->trans_start();
 		if ($type == "edit") {
-			for ($x = 0; $x < count($coa); $x++) {
+			for ($x = 0; $x < count($coa ?? []); $x++) {
 				$cleaned_total = str_replace(',', '', str_replace('.', '', $total[$x]));
 				if ($cleaned_total > 0) {
 					if ($id[$x] != '') {

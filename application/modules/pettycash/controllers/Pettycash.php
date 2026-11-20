@@ -81,7 +81,7 @@ class Pettycash extends Admin_Controller
         $pengelola    = $this->input->post("pengelola");
         $keterangan    = $this->input->post("keterangan");
         $coadata    = $this->input->post("coa");
-        $coa = implode(';', $coadata);
+        $coa = implode(';', $coadata ?? []);
         $budget    = $this->input->post("budget");
         $approval    = $this->input->post("approval");
         if ($id != "") {

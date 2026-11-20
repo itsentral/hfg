@@ -60,7 +60,7 @@ class Menu_generator
         </li>
     ";
 
-		if (is_array($menu) && count($menu)) {
+		if (is_array($menu) && count($menu ?? [])) {
 			foreach ($menu as $rw) {
 				$id        = $rw->id;
 				$title     = $rw->title;
@@ -88,11 +88,11 @@ class Menu_generator
 				// ============================
 				// MENU TANPA SUBMENU
 				// ============================
-				if (count($submenu) == 0) {
+				if (count($submenu ?? []) == 0) {
 
 					// skip kalau tidak punya auth
 					if ($link != "#") {
-						if (!in_array($rw->permission_id, $auth) && $this->is_admin == FALSE) {
+						if (!in_array($rw->permission_id, $auth ?? []) && $this->is_admin == FALSE) {
 							continue;
 						}
 
@@ -167,9 +167,9 @@ class Menu_generator
 					// ============================
 					// SUBMENU LEVEL 2 TANPA LEVEL 3
 					// ============================
-					if (count($submenusub) == 0) {
+					if (count($submenusub ?? []) == 0) {
 						if ($sublink != "#") {
-							if (!in_array($sub->permission_id, $auth) && $this->is_admin == FALSE) {
+							if (!in_array($sub->permission_id, $auth ?? []) && $this->is_admin == FALSE) {
 								continue;
 							}
 
@@ -283,7 +283,7 @@ class Menu_generator
 	                            </a>
 	                        </li>";
 
-			if (is_array($menu) && count($menu)) {
+			if (is_array($menu) && count($menu ?? [])) {
 				foreach ($menu as $rw) {
 					$id 		= $rw->id;
 					$title 		= $rw->title;
@@ -304,9 +304,9 @@ class Menu_generator
 						->get()
 						->result();
 					//Jump to end_for point
-					if (count($submenu) == 0) {
+					if (count($submenu ?? []) == 0) {
 						if ($link != "#") {
-							if (!in_array($rw->permission_id, $auth) && $this->is_admin == FALSE) {
+							if (!in_array($rw->permission_id, $auth ?? []) && $this->is_admin == FALSE) {
 								goto end_for;
 							}
 							$active = "";
@@ -401,7 +401,7 @@ class Menu_generator
 		$merge = array();
 		if ($role_permissions) {
 			foreach ($role_permissions as $key => $rp) {
-				if (!in_array($rp->id_permission, $merge)) {
+				if (!in_array($rp->id_permission, $merge ?? [])) {
 					$merge[] = $rp->id_permission;
 				}
 			}
@@ -409,7 +409,7 @@ class Menu_generator
 
 		if ($user_permissions) {
 			foreach ($user_permissions as $key => $up) {
-				if (!in_array($up->id_permission, $merge)) {
+				if (!in_array($up->id_permission, $merge ?? [])) {
 					$merge[] = $up->id_permission;
 				}
 			}

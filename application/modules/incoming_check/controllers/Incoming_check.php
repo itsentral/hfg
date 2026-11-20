@@ -260,7 +260,7 @@ class Incoming_check extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -719,7 +719,7 @@ class Incoming_check extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$GET_SO_NUMBER = $this->db->get('so_number')->result_array();
@@ -1117,7 +1117,7 @@ class Incoming_check extends Admin_Controller
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
 									if ($value2['kebutuhan'] > 0) {
-										$total_act 	= ($total_est / str_replace(',', '', $value2['kebutuhan'])) * str_replace(',', '', $value2['terpakai']);
+										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'])) * (float) str_replace(',', '', $value2['terpakai']);
 									}
 									$SUM_MAT 	+= $total_act;
 									$unit_act 	= $total_act / $QTY_INP;
@@ -1180,7 +1180,7 @@ class Incoming_check extends Admin_Controller
 		$grouping_temp = [];
 		foreach ($ArrUpdateStock as $value) {
 			if ($value['qty'] > 0) {
-				if (!array_key_exists($value['id'], $temp)) {
+				if (!array_key_exists($value['id'], $temp ?? [])) {
 					$temp[$value['id']] = 0;
 				}
 				$temp[$value['id']] += $value['qty'];
@@ -1247,7 +1247,7 @@ class Incoming_check extends Admin_Controller
 		//ENd Mengurangi Booking
 
 		foreach ($ArrUpdateStock as $value) {
-			if (!array_key_exists($value['id'], $tempx)) {
+			if (!array_key_exists($value['id'], $tempx ?? [])) {
 				$tempx[$value['id']]['good'] = 0;
 			}
 			$tempx[$value['id']]['good'] += $value['qty'];
@@ -1558,7 +1558,7 @@ class Incoming_check extends Admin_Controller
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
 									if ($value2['kebutuhan'] > 0) {
-										$total_act 	= ($total_est / str_replace(',', '', $value2['kebutuhan'])) * str_replace(',', '', $value2['terpakai']);
+										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'])) * (float) str_replace(',', '', $value2['terpakai']);
 									}
 									$SUM_MAT 	+= $total_act;
 									$unit_act 	= $total_act / $QTY_INP;
@@ -1614,7 +1614,7 @@ class Incoming_check extends Admin_Controller
 		$grouping_temp = [];
 		foreach ($ArrUpdateStock as $value) {
 			if ($value['qty'] > 0) {
-				if (!array_key_exists($value['id'], $temp)) {
+				if (!array_key_exists($value['id'], $temp ?? [])) {
 					$temp[$value['id']] = 0;
 				}
 				$temp[$value['id']] += $value['qty'];
@@ -1681,7 +1681,7 @@ class Incoming_check extends Admin_Controller
 		//ENd Mengurangi Booking
 
 		foreach ($ArrUpdateStock as $value) {
-			if (!array_key_exists($value['id'], $tempx)) {
+			if (!array_key_exists($value['id'], $tempx ?? [])) {
 				$tempx[$value['id']]['good'] = 0;
 			}
 			$tempx[$value['id']]['good'] += $value['qty'];
@@ -2917,7 +2917,7 @@ class Incoming_check extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$GET_SO_NUMBER = $this->db->get('so_number')->result_array();
@@ -3625,7 +3625,7 @@ class Incoming_check extends Admin_Controller
 			$arr_no_pr[] = $pr['no_pr'];
 		endforeach;
 
-		$no_pr = implode(', ', $arr_no_pr);
+		$no_pr = implode(', ', $arr_no_pr ?? []);
 
 		$no_po = [];
 		$get_no_surat = $this
@@ -3643,7 +3643,7 @@ class Incoming_check extends Admin_Controller
 			$no_po[] = $item->no_surat;
 		}
 
-		$no_po = implode(',', $no_po);
+		$no_po = implode(',', $no_po ?? []);
 
 
 
@@ -3687,7 +3687,7 @@ class Incoming_check extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		//update status qc

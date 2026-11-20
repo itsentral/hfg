@@ -20,7 +20,7 @@
 		</thead>
 		<tbody>
 			<?php
-			$jumlah = count($result);
+			$jumlah = count($result ?? []);
 			$rows2 = $jumlah / $num_rows;
 			$no  = 0;
 			$no2 = 1;
@@ -34,10 +34,10 @@
 					if($no == '1'){
 						echo "<td align='center' rowspan='".$jumlah."'>".$valx['no_rfq']."</td>";
 					}
-					if(in_array($no, $dataArr) || $no == '1'){
+					if(in_array($no, $dataArr ?? []) || $no == '1'){
 						echo "<td align='left' rowspan='".$rows2."'>".$valx['nm_supplier']."</td>";
 					}
-					if(in_array($no, $dataArr) || $no == '1'){
+					if(in_array($no, $dataArr ?? []) || $no == '1'){
 						echo "<td align='left' rowspan='".$rows2."'><b>".strtoupper((string) $valx['lokasi'])."</b><br>".strtoupper((string) $valx['alamat_supplier'])."<br><b>CURRENCY : ".strtoupper((string) $valx['currency'])."</b></td>";
 					}
 					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";

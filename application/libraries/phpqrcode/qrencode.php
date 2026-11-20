@@ -97,7 +97,7 @@
             for($i=0; $i<QRspec::rsBlockNum1($spec); $i++) {
                 $ecc = array_slice($this->ecccode,$eccPos);
                 $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el,  $ecc, $rs);
-                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
+                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc ?? []);
                 
                 $dataPos += $dl;
                 $eccPos += $el;
@@ -116,7 +116,7 @@
             for($i=0; $i<QRspec::rsBlockNum2($spec); $i++) {
                 $ecc = array_slice($this->ecccode,$eccPos);
                 $this->rsblocks[$blockNo] = new QRrsblock($dl, array_slice($this->datacode, $dataPos), $el, $ecc, $rs);
-                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc);
+                $this->ecccode = array_merge(array_slice($this->ecccode,0, $eccPos), $ecc ?? []);
                 
                 $dataPos += $dl;
                 $eccPos += $el;
@@ -489,7 +489,7 @@
                 if ($err != '')
                     QRtools::log($outfile, $err);
                 
-                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab)+2*$this->margin));
+                $maxSize = (int)(QR_PNG_MAXIMUM_SIZE / (count($tab ?? [])+2*$this->margin));
                 
                 QRimage::png($tab, $outfile, min(max(1, $this->size), $maxSize), $this->margin,$saveandprint);
             

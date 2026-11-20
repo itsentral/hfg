@@ -330,7 +330,7 @@ class Finalize_incoming extends Admin_Controller
         echo json_encode([
             'status' => 1,
             'header' => $header,
-            'packs'  => array_values($packs),
+            'packs'  => array_values($packs ?? []),
         ]);
     }
 
@@ -935,7 +935,7 @@ class Finalize_incoming extends Admin_Controller
                 'id_material' => $id_material,
                 'nm_material' => $nm_material,
                 'id_gudang'   => $id_gudang,
-            ], $snap_data));
+            ], $snap_data ?? []));
         } else {
             $this->db->update('warehouse_stock_per_day', $snap_data, ['id' => $snap->id]);
         }
@@ -969,7 +969,7 @@ class Finalize_incoming extends Admin_Controller
                 'id_material' => $id_material,
                 'id_gudang'   => $id_gudang,
                 'no_coil'     => $no_coil,
-            ], $coil_snap_data));
+            ], $coil_snap_data ?? []));
         } else {
             $this->db->update('warehouse_coil_per_day', $coil_snap_data, ['id' => $coil_snap->id]);
         }
@@ -1112,7 +1112,7 @@ class Finalize_incoming extends Admin_Controller
 
             if ($total_berat <= 0) {
                 // Fallback: kalau berat 0 semua, bagi rata per pack
-                $n = count($by_pack);
+                $n = count($by_pack ?? []);
                 $equal = round($total_nilai / $n, 2);
                 $i = 0;
                 $sisa = $total_nilai;
@@ -1162,7 +1162,7 @@ class Finalize_incoming extends Admin_Controller
             // Jika sisa_sen masih > 0 (kasus ekstrem/pembulatan ganda),
             // lempar semua ke pack pertama supaya total tetap presisi.
             if ($sisa_sen > 0) {
-                $first_pack_id = array_key_first($floors);
+                $first_pack_id = array_key_first($floors ?? []);
                 $floors[$first_pack_id] += $sisa_sen / 100;
             }
 
@@ -1270,7 +1270,7 @@ class Finalize_incoming extends Admin_Controller
             $kd_g = strtoupper(trim($c['kd_gudang_ke'] ?? ''));
 
             // PROTEKSI 1: Whitelist Gudang Tujuan (Hanya Gudang Produksi dan Slitting)
-            if (!in_array($id_g, $allowed_gudang_id) || (!empty($kd_g) && !in_array($kd_g, $allowed_gudang_kd))) {
+            if (!in_array($id_g, $allowed_gudang_id ?? []) || (!empty($kd_g) && !in_array($kd_g, $allowed_gudang_kd ?? []))) {
                 echo json_encode([
                     'status' => 0,
                     'pesan'  => "Penyimpanan Incoming Material hanya diizinkan untuk Gudang Produksi (PRO) atau Gudang Slitting (SLI). Ditemukan coil [{$c['no_coil']}] yang dialokasikan ke gudang lain ({$c['kd_gudang_ke']})."
@@ -1349,7 +1349,7 @@ class Finalize_incoming extends Admin_Controller
         }
 
         if (!empty($duplicate_coils)) {
-            $dup_list = implode(', ', array_unique($duplicate_coils));
+            $dup_list = implode(', ', array_unique($duplicate_coils ?? []));
             ob_clean();
             header('Content-Type: application/json');
             echo json_encode([

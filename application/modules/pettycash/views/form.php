@@ -52,7 +52,7 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 							foreach ($datacoa as $key => $val) {
 								$selected = '';
 								if (isset($data->coa)) {
-									if (in_array($key, $arraycoa)) {
+									if (in_array($key, $arraycoa ?? [])) {
 										$selected = ' selected';
 									}
 								}

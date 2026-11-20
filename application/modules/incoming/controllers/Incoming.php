@@ -699,7 +699,7 @@ class Incoming extends Admin_Controller
         $data = [
             'page_mode'              => 'view',
             'detail_ros'             => $detail_ros,
-            'no_surat'               => implode(', ', $no_surat_list),
+            'no_surat'               => implode(', ', $no_surat_list ?? []),
             'tanggal'                => $get_incoming ? date('d F Y', strtotime((string) $get_incoming->tanggal)) : '-',
             // 4. Sesuaikan nama kolom file upload
             'file_incoming_material' => $get_incoming->file_dokumen ?? '',
@@ -796,7 +796,7 @@ class Incoming extends Admin_Controller
         }
 
         $this->db->trans_commit();
-        $new_ros_header = array_merge($old_ros_header ?: [], $update_ros_header);
+        $new_ros_header = array_merge($old_ros_header ?: [], $update_ros_header ?? []);
         write_log('Incoming', 'Save Draft Incoming', 'Save draft incoming success ROS: ' . $no_ros, ['old' => $old_ros_header, 'new' => $new_ros_header], null, 1);
 
         // Jika flag submit_after_save, langsung ajukan
@@ -1197,7 +1197,7 @@ class Incoming extends Admin_Controller
         $coa_map = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
-            echo json_encode(['status' => 3, 'pesan' => 'COA belum terdaftar: ' . implode(', ', $coa_check['not_found'])]);
+            echo json_encode(['status' => 3, 'pesan' => 'COA belum terdaftar: ' . implode(', ', $coa_check['not_found'] ?? [])]);
             return;
         }
 
@@ -1414,7 +1414,7 @@ class Incoming extends Admin_Controller
         $coa_map   = ['produksi' => '1105-01-01', 'slitting' => '1105-01-02', 'intransit' => '1105-01-03'];
         $coa_check = $this->_validate_and_get_coa_names($coa_map);
         if (!$coa_check['valid']) {
-            throw new Exception('COA not found: ' . implode(', ', $coa_check['not_found']));
+            throw new Exception('COA not found: ' . implode(', ', $coa_check['not_found'] ?? []));
         }
         $coa_names = $coa_check['names'];
 
@@ -1804,7 +1804,7 @@ class Incoming extends Admin_Controller
                 'id_material' => $id_material,
                 'nm_material' => $nm_material,
                 'id_gudang'   => $id_gudang,
-            ], $snap_data));
+            ], $snap_data ?? []));
         } else {
             $this->db->update('warehouse_stock_per_day', $snap_data, ['id' => $snap->id]);
         }
@@ -1838,7 +1838,7 @@ class Incoming extends Admin_Controller
                 'id_material' => $id_material,
                 'id_gudang'   => $id_gudang,
                 'no_coil'     => $no_coil,
-            ], $coil_snap_data));
+            ], $coil_snap_data ?? []));
         } else {
             $this->db->update('warehouse_coil_per_day', $coil_snap_data, ['id' => $coil_snap->id]);
         }
@@ -2021,7 +2021,7 @@ class Incoming extends Admin_Controller
                     $total_gw += (float) $c['berat_kotor'];
                 }
                 $mat_name = $c['nm_alias'] ?: $c['nm_erp'];
-                if ($mat_name && !in_array($mat_name, $materials)) {
+                if ($mat_name && !in_array($mat_name, $materials ?? [])) {
                     $materials[] = $mat_name;
                 }
                 // Collect thickness per material (1 thickness per material, bukan unique)
@@ -2163,7 +2163,7 @@ class Incoming extends Admin_Controller
         }
 
         // Convert to indexed array
-        $result = array_values($packs);
+        $result = array_values($packs ?? []);
 
         echo json_encode($result);
     }
@@ -2327,7 +2327,7 @@ class Incoming extends Admin_Controller
 
         // Update status ROS → '1' (Closed) di tabel baru
         if (!empty($list_ros)) {
-            $this->db->where_in('id', array_unique($list_ros));
+            $this->db->where_in('id', array_unique($list_ros ?? []));
             $this->db->update('tr_ros_header', ['status' => '1']);
         }
 
@@ -2604,8 +2604,8 @@ class Incoming extends Admin_Controller
         if (empty($details)) return;
 
         // Balance debet vs kredit, selisih diadjust ke unbill
-        $total_debet  = array_sum(array_column($details, 'debet'));
-        $total_kredit = array_sum(array_column($details, 'kredit'));
+        $total_debet  = array_sum(array_column($details ?? [], 'debet'));
+        $total_kredit = array_sum(array_column($details ?? [], 'kredit'));
         $selisih      = round($total_debet) - round($total_kredit);
         if ($selisih != 0) {
             foreach ($details as &$line) {
@@ -2738,7 +2738,7 @@ class Incoming extends Admin_Controller
             }
         }
 
-        return !empty($uploaded_paths) ? implode('|', $uploaded_paths) : '';
+        return !empty($uploaded_paths) ? implode('|', $uploaded_paths ?? []) : '';
     }
 
     public function _generate_nomor_jv()

@@ -42,7 +42,7 @@
                                      style="width: 36px; height: 36px; font-size: 14px;">
                                     <?= $i + 1 ?>
                                 </div>
-                                <?php if ($i < count($history) - 1): ?>
+                                <?php if ($i < count($history ?? []) - 1): ?>
                                     <div style="width: 2px; height: 30px; background: #dee2e6; margin: 4px auto;"></div>
                                 <?php endif; ?>
                             </div>

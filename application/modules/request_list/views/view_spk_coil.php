@@ -81,7 +81,7 @@ if (!empty($scan_pack_history)) {
 <!-- Card Detail Produk -->
 <div class="card mt-3">
     <div class="card-header">
-        <h6 class="mb-0"><i class="fa fa-cubes"></i> Detail Produk (<?= count($details) ?> item)</h6>
+        <h6 class="mb-0"><i class="fa fa-cubes"></i> Detail Produk (<?= count($details ?? []) ?> item)</h6>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -134,7 +134,7 @@ if (!empty($scan_pack_history)) {
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0">
             <i class="fa fa-qrcode text-primary me-1"></i>
-            Riwayat Scan Pack ke WRH. Production 2 (<?= count($scan_pack_history) ?> coil)
+            Riwayat Scan Pack ke WRH. Production 2 (<?= count($scan_pack_history ?? []) ?> coil)
         </h6>
         <span class="badge bg-light text-dark border">Read-Only</span>
     </div>

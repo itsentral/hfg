@@ -71,7 +71,7 @@ if ($tanda != 'request') { ?>
 
                         if ($index === 0) {
                             // Kolom yang hanya muncul di baris pertama tiap grup material (Parent)
-                            $rowspan = count($rows);
+                            $rowspan = count($rows ?? []);
                             echo "<td align='center' rowspan='$rowspan' style='vertical-align:middle;'>$no</td>";
                             echo "<td align='left' rowspan='$rowspan' style='vertical-align:middle;'>
                                     <b>{$valx['nm_barang']}</b><br>

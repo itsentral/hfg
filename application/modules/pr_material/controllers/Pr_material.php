@@ -545,7 +545,7 @@ class Pr_material extends Admin_Controller
         }
 
         $oldHeader = (array)$get_pr;
-        $newHeader = array_merge($oldHeader, [
+        $newHeader = array_merge($oldHeader ?? [], [
             'no_rev'         => ($get_pr->no_rev + 1),
             'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
             'tingkat_pr'     => $data['tingkat_pr'],
@@ -633,7 +633,7 @@ class Pr_material extends Admin_Controller
 
         $data_url    = base_url();
         $Split_Beda    = explode('/', (string) $data_url);
-        $Jum_Beda    = count($Split_Beda);
+        $Jum_Beda    = count($Split_Beda ?? []);
         $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
         $getData        = $this->db->get_where('material_planning_base_on_produksi', array('so_number' => $kode))->result_array();

@@ -63,7 +63,7 @@
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
                                                 $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
-                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
+                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc ?? []));
                                             } else {
                                                 echo '-';
                                             }
@@ -114,7 +114,7 @@
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
                                                 $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
-                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
+                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc ?? []));
                                             } else {
                                                 echo '-';
                                             }

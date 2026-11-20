@@ -207,7 +207,7 @@ class Closed_po extends Admin_Controller
         $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
         $this->db->where('a.no_po', $no_po);
         $list_top = $this->db->get()->result();
-        $num_top = count($list_top);
+        $num_top = count($list_top ?? []);
 
         $nm_depart = [];
         $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
@@ -217,7 +217,7 @@ class Closed_po extends Admin_Controller
             }
         }
 
-        $nm_depart = !empty($nm_depart) ? implode(', ', $nm_depart) : '';
+        $nm_depart = !empty($nm_depart) ? implode(', ', $nm_depart ?? []) : '';
 
         $data = [
             'customers'       => $customers,

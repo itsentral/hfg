@@ -65,7 +65,7 @@
         //----------------------------------------------------------------------
         private static function image($frame, $pixelPerPoint = 4, $outerFrame = 4) 
         {
-            $h = count($frame);
+            $h = count($frame ?? []);
             $w = strlen((string) $frame[0]);
             
             $imgW = $w + 2*$outerFrame;

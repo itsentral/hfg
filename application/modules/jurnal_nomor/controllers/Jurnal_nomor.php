@@ -54,7 +54,7 @@ class Jurnal_nomor extends CI_Controller {
 		
 		}
 		
-		$invc =  implode($separator, $allinv);
+		$invc =  implode($separator, $allinv ?? []);
 
         $Tgl_Invoice = date('Y-m-d');
 

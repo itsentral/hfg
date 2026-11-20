@@ -100,7 +100,7 @@
                 return 0;
             }
             
-            $this->data = array_values(array_merge($this->data, $arg->data));
+            $this->data = array_values(array_merge($this->data, $arg->data ?? []));
 
             return 0;
         }

@@ -2021,7 +2021,7 @@ class Purchase_order_payment extends Admin_Controller
 				'nm_acc_bank'         => $post['nm_acc_bank'] ?? '',
 				'nilai_disc'          => str_replace(',', '', $post['nilai_disc']),
 				'nilai_ppn'           => str_replace(',', '', $post['nilai_ppn']),
-				'total_invoice'       => str_replace(',', '', $post['nilai_ppn']) + str_replace(',', '', $post['total_pembelian']),
+				'total_invoice'       => (float) str_replace(',', '', $post['nilai_ppn']) + (float) str_replace(',', '', $post['total_pembelian']),
 				'kurs'                => $kurs,
 				'created_by'          => $this->auth->user_id(),
 				'created_date'        => date('Y-m-d H:i:s'),
@@ -2078,7 +2078,7 @@ class Purchase_order_payment extends Admin_Controller
 
 			// ---- UPDATE tr_purchase_order (hanya untuk DP dan Progress) ----
 			if (in_array($group_top, [76, 77])) {
-				$dpp_idr = str_replace(',', '', $post['total_pembelian']) * $kurs;
+				$dpp_idr = (float) str_replace(',', '', $post['total_pembelian']) * $kurs;
 				$dpp     = str_replace(',', '', $post['total_pembelian']);
 				$this->db->update('tr_purchase_order', [
 					'uang_muka_idr'     => $dpp_idr,
@@ -2093,8 +2093,8 @@ class Purchase_order_payment extends Admin_Controller
 
 			// ---- JURNAL: DP/Pro/Ret pakai JV083/JV084 ----
 			$jenis_jurnal  = ($currency === 'IDR') ? 'JV083' : 'JV084';
-			$nilai_invoice = str_replace(',', '', $post['total_pembelian']) * $kurs;
-			$nilai_ppn     = str_replace(',', '', $post['nilai_ppn']) * $kurs;
+			$nilai_invoice = (float) str_replace(',', '', $post['total_pembelian']) * $kurs;
+			$nilai_ppn     = (float) str_replace(',', '', $post['nilai_ppn']) * $kurs;
 			$kode_supplier = $get_supplier->kode_supplier;
 			$nama          = $get_supplier->nama;
 
@@ -2127,8 +2127,8 @@ class Purchase_order_payment extends Admin_Controller
 				}
 			}
 
-			$nm_supplier_str  = implode(', ', $arr_nm_supplier);
-			$kode_supplier_str = implode(', ', $arr_id_suplier);
+			$nm_supplier_str  = implode(', ', $arr_nm_supplier ?? []);
+			$kode_supplier_str = implode(', ', $arr_id_suplier ?? []);
 
 			// ---- INSERT tr_invoice_po ----
 			$insert_invoice = $this->db->insert('tr_invoice_po', [
@@ -2166,7 +2166,7 @@ class Purchase_order_payment extends Admin_Controller
 
 			// ---- UPDATE kurs di PO atau rutin_non_planning ----
 			$check_po = $this->db->get_where('tr_purchase_order', ['no_surat' => $no_po])->result();
-			if (count($check_po) < 1) {
+			if (count($check_po ?? []) < 1) {
 				$this->db->update('rutin_non_planning_header', ['kurs_terima_invoice_progress' => $kurs], ['no_pr' => $no_po]);
 			} else {
 				$this->db->update('tr_purchase_order', ['kurs_terima_invoice_progress' => $kurs], ['no_surat' => $no_po]);
@@ -2233,8 +2233,8 @@ class Purchase_order_payment extends Admin_Controller
 
 			// ---- JURNAL: Incoming pakai JV003/JV006 ----
 			$jenis_jurnal  = ($currency === 'IDR') ? 'JV003' : 'JV006';
-			$nilai_invoice = str_replace(',', '', $post['total_invoice'] ?? '0') * $kurs;
-			$nilai_ppn     = str_replace(',', '', $post['nilai_ppn'] ?? '0') * $kurs;
+			$nilai_invoice = (float) str_replace(',', '', $post['total_invoice'] ?? '0') * $kurs;
+			$nilai_ppn     = (float) str_replace(',', '', $post['nilai_ppn'] ?? '0') * $kurs;
 			$kode_supplier = $kode_supplier_str;
 			$nama          = $nm_supplier_str;
 		}
@@ -2484,7 +2484,7 @@ class Purchase_order_payment extends Admin_Controller
 				}
 
 				if (!empty($list_no_po)) {
-					$list_no_po = implode(', ', $list_no_po);
+					$list_no_po = implode(', ', $list_no_po ?? []);
 
 					$no_po[$item['kode_trans']] = $list_no_po;
 				} else {
@@ -2528,8 +2528,8 @@ class Purchase_order_payment extends Admin_Controller
 			foreach ($get_no_ipp_ware as $item_ipp_ware) {
 				$no_ipp[] = $item_ipp_ware->no_ipp;
 			}
-			if (count($no_ipp) > 0) {
-				$no_ipp = implode(',', $no_ipp);
+			if (count($no_ipp ?? []) > 0) {
+				$no_ipp = implode(',', $no_ipp ?? []);
 			} else {
 				$no_ipp = '';
 			}
@@ -2544,8 +2544,8 @@ class Purchase_order_payment extends Admin_Controller
 				$nm_supplier[] = $item_nm_supplier->nm_supplier;
 			}
 
-			if (count($nm_supplier) > 0) {
-				$nm_supplier = implode(', ', $nm_supplier);
+			if (count($nm_supplier ?? []) > 0) {
+				$nm_supplier = implode(', ', $nm_supplier ?? []);
 			} else {
 				$nm_supplier = '';
 			}
@@ -2553,7 +2553,7 @@ class Purchase_order_payment extends Admin_Controller
 			$status = '<div class="badge bg-yellow">Waiting</div>';
 			// if($id_rec_invoice !== ''){
 			$get_invoice_payment = $this->db->get_where('payment_approve', ['no_doc' => $item['id'], 'status' => 2])->result();
-			if (count($get_invoice_payment) > 0) {
+			if (count($get_invoice_payment ?? []) > 0) {
 				$complete = 1;
 				$status = '<div class="badge bg-green">Complete</div>';
 			}
@@ -2893,13 +2893,13 @@ class Purchase_order_payment extends Admin_Controller
 			}
 
 			if (!empty($no_purchase_invoice)) {
-				$no_purchase_invoice = implode(', ', $no_purchase_invoice);
+				$no_purchase_invoice = implode(', ', $no_purchase_invoice ?? []);
 			} else {
 				$no_purchase_invoice = '';
 			}
 
 			if (!empty($no_invoice)) {
-				$no_invoice = implode(', ', $no_invoice);
+				$no_invoice = implode(', ', $no_invoice ?? []);
 			} else {
 				$no_invoice = '';
 			}
@@ -3060,13 +3060,13 @@ class Purchase_order_payment extends Admin_Controller
 			}
 
 			if (!empty($no_purchase_invoice)) {
-				$no_purchase_invoice = implode(', ', $no_purchase_invoice);
+				$no_purchase_invoice = implode(', ', $no_purchase_invoice ?? []);
 			} else {
 				$no_purchase_invoice = '';
 			}
 
 			if (!empty($no_invoice)) {
-				$no_invoice = implode(', ', $no_invoice);
+				$no_invoice = implode(', ', $no_invoice ?? []);
 			} else {
 				$no_invoice = '';
 			}
@@ -3153,7 +3153,7 @@ class Purchase_order_payment extends Admin_Controller
 				}
 
 				if (!empty($list_no_po)) {
-					$list_no_po = implode(', ', $list_no_po);
+					$list_no_po = implode(', ', $list_no_po ?? []);
 
 					$no_po[$item['kode_trans']] = $list_no_po;
 				} else {
@@ -3209,7 +3209,7 @@ class Purchase_order_payment extends Admin_Controller
 		$this->db->trans_start();
 		if ($tipe == 1) {
 			$checked_invoice = $this->db->get_where('tr_check_invoice', ['kode_trans' => $kode_trans, 'id_user' => $this->auth->user_id()])->result();
-			if (count($checked_invoice) < 1) {
+			if (count($checked_invoice ?? []) < 1) {
 				$insert_check_invoice = $this->db->insert('tr_check_invoice', [
 					'kode_trans' => $kode_trans,
 					'id_user' => $this->auth->user_id()
@@ -3258,7 +3258,7 @@ class Purchase_order_payment extends Admin_Controller
 	{
 		$get_checked_invoice = $this->db->get_where('tr_check_invoice', ['id_user' => $this->auth->user_id()])->result();
 
-		echo count($get_checked_invoice);
+		echo count($get_checked_invoice ?? []);
 	}
 
 	public function rec_invoice_btn()

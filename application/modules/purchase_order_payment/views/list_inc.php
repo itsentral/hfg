@@ -67,8 +67,8 @@
                         $no_ipp[] = $item_ipp_ware->no_ipp;
                     }
 
-                    if (count($no_ipp) > 0) {
-                        $no_ipp = implode(',', $no_ipp);
+                    if (count($no_ipp ?? []) > 0) {
+                        $no_ipp = implode(',', $no_ipp ?? []);
                     } else {
                         $no_ipp = '';
                     }
@@ -83,8 +83,8 @@
                         $nm_supplier[] = $item_nm_supplier->nm_supplier;
                     }
 
-                    if (count($nm_supplier) > 0) {
-                        $nm_supplier = implode(', ', $nm_supplier);
+                    if (count($nm_supplier ?? []) > 0) {
+                        $nm_supplier = implode(', ', $nm_supplier ?? []);
                     } else {
                         $nm_supplier = '';
                     }
@@ -92,13 +92,13 @@
                     $status = '<div class="badge rounded-pill bg-warning">Belum Lunas</div>';
                     // if($id_rec_invoice !== ''){
                     $get_invoice_payment = $this->db->get_where('payment_approve', ['no_doc' => $item['id'], 'status' => 2])->result();
-                    if (count($get_invoice_payment) > 0) {
+                    if (count($get_invoice_payment ?? []) > 0) {
                         // $complete = 1;
                         // $status = '<div class="badge bg-green">Complete</div>';
 
                         $check_payment_approve = $this->db->get_where('payment_approve', ['no_doc' => $item['id'], 'status' => 2])->result();
 
-                        if (count($check_payment_approve) > 0) {
+                        if (count($check_payment_approve ?? []) > 0) {
                             $status = '<div class="badge rounded-pill bg-success">Lunas</div>';
                             $complete = 1;
                         }
@@ -132,7 +132,7 @@
                         $no_po[] = $item_no_po->no_surat;
                     }
 
-                    $no_po = implode(', ', $no_po);
+                    $no_po = implode(', ', $no_po ?? []);
 
                     $view = '<button type="button" class="btn btn-sm btn-info view_inc" data-id="' . $item['id'] . '"><i class="fa fa-eye"></i></button>';
                     // }
@@ -143,7 +143,7 @@
                         $no_payment[] = $item_no_payment->id_payment;
                     }
 
-                    $no_payment = implode(', ', $no_payment);
+                    $no_payment = implode(', ', $no_payment ?? []);
 
                     echo '<tr>';
                     echo '<td style="text-align: center;">' . $no . '</td>';

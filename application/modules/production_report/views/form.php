@@ -441,6 +441,34 @@
     </div>
   </div>
 
+  <?php if (!empty($costing_check) && !$costing_check['is_all_available']): ?>
+    <!-- BANNER PERINGATAN KETERSEDIAAN PRODUCT COSTING (FR-48, FR-74) -->
+    <div class="alert alert-warning border-warning shadow-sm mb-3 d-flex align-items-center justify-content-between p-3" id="costingWarningBanner">
+      <div class="d-flex align-items-start gap-3">
+        <div class="fs-3 text-warning lh-1 mt-1">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold mb-1 text-dark">Data Product Costing Belum Lengkap (FR-48, FR-74)</h6>
+          <p class="mb-1 small text-dark">
+            Produk berikut belum memiliki hasil kalkulasi biaya di modul <strong>Simulasi Costing</strong>:
+            <strong class="text-danger">
+              <?= htmlspecialchars(implode(', ', array_unique(array_column($costing_check['missing_products'] ?? [], 'nm_produk')))); ?>
+            </strong>.
+          </p>
+          <div class="small text-muted">
+            <i class="fa fa-info-circle me-1"></i> Anda tetap dapat menyimpan laporan ini sebagai <strong>Draft</strong>. Namun tombol <strong>Simpan &amp; Submit Laporan</strong> ke Accounting akan dikunci sampai dilakukan <em>Update Costing</em> pada varian terkait.
+          </div>
+        </div>
+      </div>
+      <div class="ms-3 text-nowrap">
+        <a href="<?= site_url('simulasi_costing'); ?>" target="_blank" class="btn btn-warning btn-sm fw-bold">
+          <i class="fa fa-calculator me-1"></i> Buka Simulasi Costing <i class="fa fa-external-link ms-1"></i>
+        </a>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <form id="prodForm" novalidate>
     <input type="hidden" name="spk_no" value="<?= htmlspecialchars((string) $spk['spk_no']); ?>">
     <input type="hidden" name="id_tr_spk_detail" value="<?= !empty($spk['primary_spk_detail_id']) ? $spk['primary_spk_detail_id'] : ''; ?>">
@@ -969,6 +997,8 @@
   var SPK_PRODUCTS = <?= json_encode($spk_products); ?>;
   var ALL_PRODUCTS = <?= json_encode($all_products); ?>;
   var DRAFT_DATA = <?= !empty($draft) ? json_encode($draft) : 'null'; ?>;
+  var COSTING_CHECK = <?= json_encode(!empty($costing_check) ? $costing_check : ['is_all_available' => true, 'missing_products' => []]); ?>;
+  var SIMULASI_COSTING_URL = "<?= site_url('simulasi_costing'); ?>";
   var CURRENT_USER = {
     name: <?= json_encode($this->auth->user_name()); ?>,
     role: "User"
@@ -1811,11 +1841,16 @@
       $('#tolNote').text('Toleransi ± ' + TOLERANCE + '% terhadap Net Weight Produksi.');
     }
 
-    // Gate: Hold Coil check (FR-18, FR-98)
+    // Gate: Hold Coil check (FR-18, FR-98) & Costing check (FR-48, FR-74)
     var hasHold = (state.hold.length > 0);
+    var missingCosting = (COSTING_CHECK && !COSTING_CHECK.is_all_available);
+
     if (hasHold) {
       $('#holdNote').show();
       $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> Ada Hold Coil — Simpan sebagai <strong>Draft</strong>. Submit menunggu keputusan Purchasing.</span>');
+    } else if (missingCosting) {
+      $('#holdNote').hide();
+      $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> Costing Belum Lengkap — Simpan sebagai <strong>Draft</strong> aktif. Submit dikunci hingga Update Costing.</span>');
     } else {
       $('#holdNote').hide();
       $('#gateMsg').text('Simpan Draft atau Submit Laporan.');
@@ -2250,6 +2285,33 @@
 
     var calcRes = recalc();
 
+    // ── SUBMIT LOCK JIKA DATA PRODUCT COSTING BELUM LENGKAP (FR-48, FR-74) ──
+    if (!isDraft && COSTING_CHECK && !COSTING_CHECK.is_all_available) {
+      var missingList = (COSTING_CHECK.missing_products || []).map(function(p) {
+        return '<li><strong>' + (p.nm_produk || 'Produk') + '</strong> (Varian: ' + (p.no_uniq_id || '-') + ')</li>';
+      }).join('');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Submit Laporan Dikunci',
+        html: '<div class="text-start">' +
+              '<p>Laporan Produksi tidak dapat disubmit ke Accounting karena data <strong>Product Costing</strong> untuk produk berikut belum di-update:</p>' +
+              '<ul>' + missingList + '</ul>' +
+              '<p class="mb-0 text-muted small"><i class="fa fa-info-circle me-1"></i> Anda dapat menyimpan laporan sebagai <strong>Draft</strong> terlebih dahulu dengan menekan tombol <strong>Save Draft</strong>, atau klik tombol di bawah untuk membuka modul Simulasi Costing.</p>' +
+              '</div>',
+        showCancelButton: true,
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="fa fa-external-link me-1"></i> Buka Simulasi Costing',
+        cancelButtonText: 'Tutup'
+      }).then(function(res) {
+        if (res.isConfirmed) {
+          window.open(SIMULASI_COSTING_URL, '_blank');
+        }
+      });
+      return;
+    }
+
     // ── SUBMIT LOCK JIKA ADA HOLD COIL (FR-18, FR-98) ──
     if (!isDraft && state.hold.length > 0) {
       Swal.fire({
@@ -2667,6 +2729,20 @@
               confirmButtonText: 'OK'
             }).then(function() {
               window.location.href = BASE_MODULE_URL;
+            });
+          } else if (response.costing_missing) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Product Costing Belum Lengkap',
+              html: response.message,
+              showCancelButton: true,
+              confirmButtonColor: '#f59e0b',
+              confirmButtonText: '<i class="fa fa-external-link me-1"></i> Buka Simulasi Costing',
+              cancelButtonText: 'Tutup'
+            }).then(function(res) {
+              if (res.isConfirmed) {
+                window.open(SIMULASI_COSTING_URL, '_blank');
+              }
             });
           } else {
             Swal.fire('Gagal', response.message || 'Terjadi kesalahan sistem.', 'error');

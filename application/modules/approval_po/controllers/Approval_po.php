@@ -437,7 +437,7 @@ class Approval_po extends Admin_Controller
     $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
     $this->db->where('a.no_po', $no_po);
     $list_top = $this->db->get()->result();
-    $num_top = count($list_top);
+    $num_top = count($list_top ?? []);
 
     // $matauang = $this->db->get_where('matauang')->result();
 
@@ -453,7 +453,7 @@ class Approval_po extends Admin_Controller
     }
 
     if (!empty($nm_depart)) {
-      $nm_depart = implode(', ', $nm_depart);
+      $nm_depart = implode(', ', $nm_depart ?? []);
     } else {
       $nm_depart = '';
     }

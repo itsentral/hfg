@@ -439,7 +439,7 @@ class Spk_material_model extends BF_Model
             'message'     => 'SPK ' . $spk_no . ' berhasil di-Release.',
             'log_payload' => [
                 'old' => $old,
-                'new' => array_merge($old, $update_data),
+                'new' => array_merge($old ?? [], $update_data ?? []),
             ],
             'counts'      => $this->get_status_counts(),
         ];

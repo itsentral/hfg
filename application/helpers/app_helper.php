@@ -67,7 +67,7 @@ function get_incoming_sum_material($kode_trans){
 function check_method($item, $class_only = false)
 {
   $items = is_array($item) ? $item : array($item);
-  if (in_array(get_instance()->router->method, $items)) {
+  if (in_array(get_instance()->router->method, $items ?? [])) {
     return $class_only ? 'active' : 'class="active"';
   }
 

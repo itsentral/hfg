@@ -201,7 +201,7 @@ class Template
 		is_array($data) OR $data = (array) $data;
 
 		// Merge in what we already have with the specific data
-		$this->_data = array_merge($this->_data, $data);
+		$this->_data = array_merge($this->_data, $data ?? []);
 
 		// We don't need you any more buddy
 		unset($data);
@@ -289,7 +289,7 @@ class Template
 		if (func_num_args() >= 1)
 		{
 			$title_segments = func_get_args();
-			$this->_title = implode($this->_title_separator, $title_segments);
+			$this->_title = implode($this->_title_separator, $title_segments ?? []);
 		}
 
 		return $this;
@@ -790,19 +790,19 @@ class Template
 		}
 
 		// Make sure controller name is not the same as the method name
-		if ( ! in_array($this->_controller, $title_parts))
+		if ( ! in_array($this->_controller, $title_parts ?? []))
 		{
 			$title_parts[] = $this->_controller;
 		}
 
 		// Is there a module? Make sure it is not named the same as the method or controller
-		if ( ! empty($this->_module) AND ! in_array($this->_module, $title_parts))
+		if ( ! empty($this->_module) AND ! in_array($this->_module, $title_parts ?? []))
 		{
 			$title_parts[] = $this->_module;
 		}
 
 		// Glue the title pieces together using the title separator setting
-		$title = humanize(implode($this->_title_separator, $title_parts));
+		$title = humanize(implode($this->_title_separator, $title_parts ?? []));
 
 		return $title;
 	}

@@ -164,7 +164,7 @@ class Petty_cash_master extends Admin_Controller
         }
 
         // Validate detail rows exist
-        if (empty($detail) || !is_array($detail) || count($detail) < 1) {
+        if (empty($detail) || !is_array($detail) || count($detail ?? []) < 1) {
             echo json_encode(['status' => 0, 'msg' => 'Detail COA harus diisi minimal 1 baris']);
             return;
         }

@@ -311,8 +311,8 @@ class Expense_petty_cash extends Admin_Controller
         }
 
         // Clean IDs (ensure integers)
-        $pencatatan_ids = array_map('intval', $pencatatan_ids);
-        $pencatatan_ids = array_filter($pencatatan_ids, function ($id) {
+        $pencatatan_ids = array_map('intval', $pencatatan_ids ?? []);
+        $pencatatan_ids = array_filter($pencatatan_ids ?? [], function ($id) {
             return $id > 0;
         });
 
@@ -333,7 +333,7 @@ class Expense_petty_cash extends Admin_Controller
         $query = $this->db->get();
         $pencatatan_records = $query->result();
 
-        if (count($pencatatan_records) !== count($pencatatan_ids)) {
+        if (count($pencatatan_records ?? []) !== count($pencatatan_ids ?? [])) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'Beberapa pencatatan tidak ditemukan'
@@ -374,7 +374,7 @@ class Expense_petty_cash extends Admin_Controller
 
             echo json_encode([
                 'status'  => false,
-                'message' => 'Pencatatan berikut sudah masuk dalam pelaporan aktif: ' . implode(', ', $existing_ids)
+                'message' => 'Pencatatan berikut sudah masuk dalam pelaporan aktif: ' . implode(', ', $existing_ids ?? [])
             ]);
             return;
         }
@@ -384,9 +384,9 @@ class Expense_petty_cash extends Admin_Controller
         // =====================================================================
         $companies = array_unique(array_map(function ($record) {
             return $record->company;
-        }, $pencatatan_records));
+        }, $pencatatan_records ?? []));
 
-        if (count($companies) > 1) {
+        if (count($companies ?? []) > 1) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'Pelaporan hanya dapat berisi pencatatan dari satu company yang sama'
@@ -1175,7 +1175,7 @@ class Expense_petty_cash extends Admin_Controller
 
         // Validate extension
         $allowed_types = ['png', 'jpg', 'jpeg', 'pdf', 'xlsx', 'xls'];
-        if (!in_array($extension, $allowed_types)) {
+        if (!in_array($extension, $allowed_types ?? [])) {
             echo json_encode([
                 'status'  => false,
                 'message' => 'Format file tidak valid. Hanya diizinkan: png, jpg, pdf, xlsx, xls'
@@ -1299,7 +1299,7 @@ class Expense_petty_cash extends Admin_Controller
 
         // Validate company
         $valid_companies = ['STM', 'VUCA', 'SUSTAIN'];
-        if (empty($company) || !in_array($company, $valid_companies)) {
+        if (empty($company) || !in_array($company, $valid_companies ?? [])) {
             $errors['company'] = 'Company wajib dipilih (STM, VUCA, atau SUSTAIN)';
         }
 
@@ -1311,7 +1311,7 @@ class Expense_petty_cash extends Admin_Controller
         }
 
         // Validate at least 1 detail row
-        if (empty($details_post) || !is_array($details_post) || count($details_post) === 0) {
+        if (empty($details_post) || !is_array($details_post) || count($details_post ?? []) === 0) {
             $errors['details'] = 'Detail item harus diisi minimal 1 baris';
         } else {
             // Validate each detail row
@@ -1328,7 +1328,7 @@ class Expense_petty_cash extends Admin_Controller
                 }
 
                 // Validasi evidence wajib diupload
-                if (empty($evidences_post[$idx]) || !is_array($evidences_post[$idx]) || count($evidences_post[$idx]) === 0) {
+                if (empty($evidences_post[$idx]) || !is_array($evidences_post[$idx]) || count($evidences_post[$idx] ?? []) === 0) {
                     $errors['details_' . $idx . '_evidence'] = "Baris {$row_num}: Evidence wajib diupload";
                 }
             }

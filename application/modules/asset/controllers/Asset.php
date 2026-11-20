@@ -235,7 +235,7 @@ class Asset extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-                $log_payload = (!empty($id) && $old_asset_data) ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrHeader)) : $data;
+                $log_payload = (!empty($id) && $old_asset_data) ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrHeader ?? [])) : $data;
                 write_log('Asset', 'Save Asset', $tanda . ' asset success: ' . $tanda2, $log_payload, null, 1);
             }
 
@@ -304,7 +304,7 @@ class Asset extends Admin_Controller
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
-            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrUpHeader)) : $data;
+            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrUpHeader ?? [])) : $data;
             write_log('Asset', 'Update Asset', 'Update asset success: ' . $kd_asset, $log_payload, null, 1);
         }
 
@@ -354,7 +354,7 @@ class Asset extends Admin_Controller
         } else {
             $this->db->trans_commit();
             $Arr_Data = array('pesan' => 'Asset berhasil dipindahkan. Thanks ...', 'status' => 1);
-            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data, $ArrUpHeader)) : $data;
+            $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrUpHeader ?? [])) : $data;
             write_log('Asset', 'Move Asset', 'Move asset success: ' . $kd_asset, $log_payload, null, 1);
         }
 

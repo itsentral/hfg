@@ -135,7 +135,7 @@ class Budget_periodik extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		$delid = !empty($detail_id) ? implode("','", array_filter($detail_id)) : '';
+		$delid = !empty($detail_id) ? implode("','", array_filter($detail_id ?? [])) : '';
 		if (!empty($delid)) {
 			$this->All_model->dataDelete('ms_budget_rutin', "id not in ('" . $delid . "') and departement='" . $departement . "'");
 		} else {
@@ -143,7 +143,7 @@ class Budget_periodik extends Admin_Controller
 		}
 
 		if (!empty($detail_id)) {
-			for ($x = 0; $x < count($detail_id); $x++) {
+			for ($x = 0; $x < count($detail_id ?? []); $x++) {
 				if (isset($tipe[$x]) && $tipe[$x] == 'bulan') {
 					$tanggal = isset($bln[$x]) ? $bln[$x] : '';
 				} else {
@@ -202,7 +202,7 @@ class Budget_periodik extends Admin_Controller
 		$nilai_alokasi	= $this->input->post("nilai_alokasi");
 		$this->All_model->dataDelete('ms_budget_rutin_alokasi', array('departement' => $departement));
 		if (isset($kode_detail) && is_array($kode_detail)) {
-			for ($x = 0; $x < count($kode_detail); $x++) {
+			for ($x = 0; $x < count($kode_detail ?? []); $x++) {
 				$val_alok = isset($nilai_alokasi[$x]) ? $nilai_alokasi[$x] : 0;
 				$clean_alok = str_replace(',', '', str_replace('.', '', $val_alok));
 				$dataalokasi = array(
@@ -222,7 +222,7 @@ class Budget_periodik extends Admin_Controller
 			$status         = 1;
 			$nm_hak_akses   = $this->addPermission;
 			$kode_universal = 'SavePeriodik';
-			$jumlah         = isset($detail_id) ? count($detail_id) : 0;
+			$jumlah         = isset($detail_id) ? count($detail_id ?? []) : 0;
 			$sql            = $this->db->last_query();
 			$result         = TRUE;
 		} else {

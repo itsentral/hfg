@@ -723,7 +723,7 @@ class Request_payment_model extends BF_Model
                     $arr_keperluan[] = $itemm['keperluan'];
                 }
 
-                $keperluan = implode(', ', $arr_keperluan);
+                $keperluan = implode(', ', $arr_keperluan ?? []);
 
 
                 $ArrDetail[]         = [
