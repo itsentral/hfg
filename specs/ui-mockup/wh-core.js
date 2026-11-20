@@ -38,9 +38,9 @@
   function dialog(cfg) {
     return new Promise((resolve) => {
       const h = $("#pcDialog"); h.hidden = false;
-      const sym = { warning: "!", success: "&#10003;", error: "&#10005;" }[cfg.icon || "warning"];
+      const sym = { warning: "!", success: "&#10003;", error: "&#10005;", question: "?" }[cfg.icon || "warning"], icn = cfg.icon === "question" ? "warning" : (cfg.icon || "warning");
       const fin = (v) => { h.hidden = true; h.innerHTML = ""; resolve(v); };
-      h.innerHTML = `<div class="ap-dlg__overlay"></div><div class="ap-dlg" role="alertdialog"><div class="ap-dlg__icon ap-dlg__icon--${cfg.icon || "warning"}">${sym}</div><h3>${esc(cfg.title)}</h3>${cfg.text ? `<p>${esc(cfg.text)}</p>` : ""}${cfg.html || ""}<div class="ap-dlg__btns">${cfg.cancel ? `<button type="button" class="ap-btn ap-btn--secondary" data-d="0">${esc(cfg.cancel)}</button>` : ""}<button type="button" class="ap-btn ap-btn--primary" data-d="1">${esc(cfg.ok || "OK")}</button></div></div>`;
+      h.innerHTML = `<div class="ap-dlg__overlay"></div><div class="ap-dlg" role="alertdialog"><div class="ap-dlg__icon ap-dlg__icon--${icn}">${sym}</div><h3>${esc(cfg.title)}</h3>${cfg.text ? `<p>${esc(cfg.text)}</p>` : ""}${cfg.html || ""}<div class="ap-dlg__btns">${cfg.cancel ? `<button type="button" class="ap-btn ap-btn--secondary" data-d="0">${esc(cfg.cancel)}</button>` : ""}<button type="button" class="ap-btn ap-btn--primary" data-d="1">${esc(cfg.ok || "OK")}</button></div></div>`;
       h.querySelectorAll("[data-d]").forEach((b) => b.addEventListener("click", () => fin(b.dataset.d === "1")));
     });
   }
@@ -116,10 +116,10 @@
     const role = page.role.split(/[ /(]/)[0];
     document.body.dataset.user = USERS[role] || "Budi S.";
     document.body.dataset.role = page.role;
-    document.title = page.title + " — Gudang Coil";
+    document.title = page.title + " — " + (page.app || "Gudang Coil");
     Object.assign(ui, page.ui || {});
     document.body.insertAdjacentHTML("afterbegin", `<main class="page"><div class="page__header"><div><h1>${esc(page.title)}</h1><p class="muted">${esc(page.hint)}</p><p class="muted"><span class="badge badge--note">${esc(page.mod)}</span> Dipakai oleh: <strong>${esc(page.role)}</strong></p></div></div><div id="whBody"></div></main>
-      <div class="actionbar"><div class="actionbar__note"><span class="muted">Mockup Gudang Coil: dibuat dari modul aplikasi yang sudah ada (referensi baca-saja). Angka contoh, bukan data klien; data tersimpan di localStorage browser.</span></div><div class="actionbar__btns"><button type="button" class="btn btn--ghost" id="btnReset">Reset ke Data Contoh</button></div></div>
+      <div class="actionbar"><div class="actionbar__note"><span class="muted">Mockup ${esc(page.app || "Gudang Coil")}: dibuat dari modul aplikasi yang sudah ada (referensi baca-saja). Angka contoh, bukan data klien; data tersimpan di localStorage browser.</span></div><div class="actionbar__btns"><button type="button" class="btn btn--ghost" id="btnReset">Reset ke Data Contoh</button></div></div>
       <div class="toast" id="toast" hidden></div><div class="pc-modal" id="pcModal" hidden></div><div class="pc-modal pc-modal--dlg" id="pcDialog" hidden></div><div class="pc-print" id="pcPrint" hidden></div>`);
     render();
     document.addEventListener("click", (e) => {
@@ -158,7 +158,7 @@
     document.addEventListener("input", onField);
     document.addEventListener("change", (e) => { const t = e.target; if (t.tagName === "SELECT" || t.type === "date" || t.type === "checkbox") onField(e); });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.target.dataset && e.target.dataset.enter) { e.preventDefault(); const m = topModal(); if (m && m.act && m.act[e.target.dataset.enter]) m.act[e.target.dataset.enter]({}, e.target); return; }
+      if (e.key === "Enter" && e.target.dataset && e.target.dataset.enter) { e.preventDefault(); const m = topModal(), k = e.target.dataset.enter; if (m && m.act && m.act[k]) m.act[k]({}, e.target); else if (!m && page.act && page.act[k]) page.act[k]({}, e.target); return; }
       if (e.key !== "Escape") return;
       if (!$("#pcDialog").hidden) return;
       if (!$("#pcPrint").hidden) { $("#pcPrint").hidden = true; $("#pcPrint").innerHTML = ""; return; }

@@ -123,3 +123,6 @@ gives the age. Past roughly a dozen entries, or a month, it is worth a pass.
 ## Entries
 
 _Empty. Append below._
+
+- 2026-11-20 `type: gotcha` Windows: `python`/`python3` on PATH is the Microsoft Store stub; the working interpreter is `C:/Users/sensi/AppData/Local/Python/bin/python3.exe` (3.14, openpyxl installed). `drawio` is not on PATH; use `"C:/Program Files/draw.io/draw.io.exe" -x -f png -p <1-based page> ...` (the Subkont ERD is page 3). **Why:** both cost a failed run each when editing `docs/workbook.xlsx` and checking `erd-revisi.drawio`.
+- 2026-11-20 `type: gotcha` Edit dokumen lewat skrip Python: JANGAN `open(p,'w').write(fn(s))` — `open('w')` memotong file sebelum `fn` jalan, jadi error di `fn` mengosongkan file (terjadi pada `docs/fr-nfr.md`, isi belum di-commit; dipulihkan dari git HEAD + memutar ulang perintah dari transkrip). Hitung `new=fn(s)` dulu lalu tulis; untuk dokumen penting salin cadangan ke scratchpad dulu. **Why:** file spec sering belum di-commit dan file-history Claude tidak mencakup edit via skrip.

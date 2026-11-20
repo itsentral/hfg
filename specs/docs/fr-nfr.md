@@ -28,6 +28,9 @@ mock-up sheet with explicit input/database/formula concepts per column.
 - Keputusan user 2026-10-07 (percakapan, belum ada dokumen): lihat "Keputusan 2026-10-07" di
   bagian Product Costing di bawah.
 
+- `input/Production Planning/` — BPMN To Be Prod.Plan (D02) dan Subkont (D002), workbook "3. Rev.2 Konsep & Simulasi Laporan Slitting
+  Subkont.xlsx", dan `notes.md` (15 jawaban user 2026-11-20): Proses Subkont, FEAT-12 (2026-11-20)
+
 ## Re-Confirm
 
 - **Kepemilikan Product Costing — REVERSAL 2026-10-07.** Entri 2026-09-21 di bawah menyatakan
@@ -1146,6 +1149,210 @@ tercatat di "Revisi Rev.1"; berikut yang masih terbuka dari pembacaan Use Case:
   Man Power per meter; sheet Simulasi Program sudah memperbaikinya (× Man Hour = Rp39,45/meter).
   Jangan dipakai sebagai acuan.
 
+### Proses Subkont (SPK Subkont → Surat Jalan → Portal Vendor → Incoming) — 2026-11-20
+
+Sumber: BPMN To Be `input/Production Planning/Prod.Plan To Be D02-PTHFG.png` dan `Subkont To Be D002-PTHFG.png`, workbook
+`input/Production Planning/3. Rev.2 Konsep & Simulasi Laporan Slitting Subkont.xlsx` (5 sheet), dan jawaban user 2026-11-20
+(`input/Production Planning/notes.md`, 15 jawaban). Fitur FEAT-12. **Nama tabel dan kolom di bagian ini adalah usulan** dan digambar di
+`erd-revisi.drawio` halaman "Subkont ERD" (NFR-15 berlaku saat ERD disinkronkan). Nama tampilan UI mengikuti workbook; label kolom pada
+mockup mengikuti nama kolom (aturan penamaan seragam). Peran: PPIC, Staf Gudang, Vendor (pengguna portal), Purchasing (mengelola Link Portal Vendor, FR-125), Accounting.
+
+**Dua jenis SPK Subkont:** **SPK Subkont Material** (material slitting; satuan **Pack**; tujuan incoming Warehouse Material) dan **SPK Subkont
+Finish Good** (tambah pasir; satuan **pcs**; tujuan incoming Warehouse Finish Good; hasil berupa **kode FG baru**).
+
+- **FR-99** (jawaban user 1, 2, 6) — **Ruang lingkup dan posisi modul.** SPK Subkont adalah perluasan modul `production_planning`; Surat Jalan
+  Subkont adalah perluasan modul `delivery_fg` (menu Delivery, tombol **+ Delivery Subkont**); stok memakai Gudang Material / Warehouse
+  Finish Good (`fg_stock`) yang sudah ada. Langkah lain pada BPMN Prod.Plan (hitung total kebutuhan produksi dan jual material dari SO, Stok
+  FG, Stok Material, Plan Delivery dan Forecast; "Apakah perlu proses Subkont?"; Tentukan Tujuan Material; SPM; SPK Produksi) **hanya
+  dicatat sebagai flow** dan tidak dispesifikasikan di sini. **SPK Subkont tidak terhubung ke PO**: PO jasa subkont adalah dokumen terpisah
+  (modul `purchase_order`); nilai biaya proses (Price/Kg atau Lot) diinput PPIC HFG pada saat Incoming/Laporan Nilai Slitting (FR-120).
+- **FR-100** (sheet "Prod. Plan"; BPMN: Buat SPK Subkont) — **Header SPK Subkont** (PPIC). Field: **Jenis Subkont** (pilih SPK Subkont
+  Material / SPK Subkont FG), **No. SPK** (otomatis, contoh `SPK-Sub-001`), **Tgl SPK** (pilih tanggal), **Proses diSubkont** (teks bebas,
+  contoh "Proses Slitting Material"), **Tujuan Incoming** (otomatis dari Jenis: Warehouse Material atau Warehouse Finish Good, tidak
+  dapat diubah), **Catatan**. **Vendor tidak dipilih di SPK** (jawaban user 8); vendor ditentukan saat Surat Jalan (FR-106). Tidak ada
+  field No. PO Reference pada SPK (revisi atas konsep sheet "Prod. Plan" baris 28; jawaban user 6).
+- **FR-101** (sheet "Prod. Plan" baris 33–38; jawaban user 5) — **Detail SPK Subkont.** Tombol **ADD Item**: untuk Material, item dipilih dari
+  stok **Warehouse Material** (pack di gudang PRO / Production 1); untuk FG, dari stok **Gudang Finish Good** (`fg_stock` KW 1). Kolom:
+  No, Kode Barang, Nama Barang, **Stok Saat Ini** (dari database stok, Pack atau pcs), **Qty diSubkont** (input; **Pack utuh** untuk
+  Material, **pcs** untuk FG; tidak boleh melebihi stok), Keterangan (teks bebas). Satu barang hanya satu baris per SPK.
+- **FR-102** (jawaban user 3) — **Status SPK Subkont:** **Draft** → **Requested** (setelah Request Item to Warehouse, FR-103) → **Dikirim
+  Sebagian** (Surat Jalan pertama Confirmed, qty terkirim < diminta) → **Dikirim Penuh** (total qty terkirim = qty diminta) →
+  **Incoming** (minimal satu Incoming dicatat, FR-118; boleh terjadi saat status masih Dikirim Sebagian) → **Closed** (status Dikirim Penuh
+  dan seluruh barang yang dikirim sudah di-Konfirmasi, FR-121), ditambah **Cancelled** (hanya dari Draft atau Requested tanpa barang di
+  Tampungan). Edit hanya pada Draft.
+- **FR-103** (sheet "Prod. Plan" tombol "Request Item to Warehouse"; BPMN: Request Material/FG untuk Subkont) — **Request Item to Warehouse.**
+  Tombol pada SPK Draft mengubah status menjadi Requested dan mengirim permintaan ke Warehouse Material (jenis Material) atau Warehouse
+  Finish Good (jenis FG) untuk menyiapkan barang. Tombol **Cancel** membatalkan SPK Draft atau Requested yang belum punya barang di Tampungan (FR-102). Permintaan tidak mengubah stok.
+- **FR-104** (jawaban user 4; sheet "Surat Jalan" bagian 3) — **Tampungan Siap Kirim.** Staf Gudang menyiapkan barang SPK Requested dengan
+  memindahkan pack (Material) atau qty FG ke **Tampungan Siap Kirim**: gudang logis/pemisahan fisik; **akunnya tetap Inventory** (tidak ada
+  jurnal pada tahap ini). Berlaku sama untuk Material dan FG. **Gudang boleh menyiapkan sebagian** (qty yang disiapkan boleh lebih kecil
+  dari yang diminta; sisa menyusul). Pack dipilih dengan **scan QR** atau pilih dari daftar; setiap baris Tampungan membawa SPK,
+  barang, Qty (Pack/pcs), N.W. (kg), dan status **Siap Kirim** / **Terkunci di Surat Jalan** / **Terkirim**. Qty tersiap tidak boleh
+  melebihi qty diminta SPK.
+- **FR-105** (sheet "Surat Jalan" bagian 1) — **Daftar Surat Jalan (menu Delivery).** Kolom: Kode Delivery (otomatis, contoh `DV-SUB-001`),
+  No. Surat Jalan, Vendor, Tgl Kirim, No. SPK Subkont (dapat lebih dari satu), Jenis Subkont (Material / Finish Good / Material + Finish Good bila campur), **Total Net Weight (kg, barang SPK Material)
+  dan Total Qty Pcs (barang SPK FG)**, Status (**Draft / Confirmed**), Option. Tombol **+ Delivery Subkont**. Option: **Edit, Print, Confirm Surat Jalan** hanya
+  aktif saat Draft; setelah Confirmed hanya **Print**.
+- **FR-106** (sheet "Surat Jalan" bagian 2; jawaban user 8) — **Header Surat Jalan Subkont.** No. Surat Jalan (teks bebas, contoh
+  `SJ/30/09/2026/Sub`), Tgl Kirim, **Vendor Subkont** (pilih dari Master Supplier, FR-125; terhubung ke Portal Vendor dan jurnal
+  per vendor), Alamat Vendor (otomatis dari Master Supplier), Nopol / Sopir (teks bebas), Catatan. **Satu Surat Jalan boleh berisi beberapa SPK Subkont** (keputusan user 2026-11-20, agar fleksibel), **boleh campur SPK Material dan SPK FG**, tetapi
+  **satu vendor per Surat Jalan**; **satu SPK juga boleh dikirim lewat beberapa Surat Jalan** dan vendor boleh berbeda antar Surat Jalan. SPK ditambahkan di bagian detail
+  (tombol **+ Tambah SPK**: pilih SPK yang masih punya barang di Tampungan Siap Kirim); Jenis Subkont / Proses diSubkont / Tujuan Incoming ditampilkan per SPK (otomatis dari SPK).
+  Setiap baris detail menyimpan `spk_no` (tabel `tr_subkont_delivery_detail`); header hanya `total_net_weight` dan `total_qty_pcs`.
+- **FR-107** (sheet "Surat Jalan" bagian 3) — **Detail Surat Jalan (Material).** Add item dari Tampungan Siap Kirim dengan **Scan QR** atau
+  **Pilih dari Stok Siap Kirim**. Sistem **hanya menerima coil/pack yang berada di Tampungan untuk SPK yang sudah ditambahkan ke Surat Jalan ini**; yang lain ditolak (pesan menyebut SPK pemilik pack). Pack
+  yang sudah masuk Surat Jalan lain (Draft atau Confirmed) tidak dapat ditambahkan lagi. Ringkasan per SPK: **Diminta SPK (Pack)**, **Sudah
+  Dikirim Sebelumnya (Pack)** (dari Surat Jalan Confirmed), **Dipilih Sekarang (Pack)**, **Sisa Belum Dikirim (Pack)** = Diminta −
+  Sudah Dikirim − Dipilih. Kolom detail: No, Pack, Material, Qty (Pack), N.W. (kg), **Costbook (Rp/kg)**, **Nilai (Rp)** = N.W. × Costbook,
+  Sumber (Scan QR / Tampungan), Aksi (Hapus). **Costbook Material diambil dari Stock Value (Purchase Price (Avg) per kg material) dan costbook FG dari `fg_stock` saat Surat Jalan di-Confirm** (bukan saat
+  Save). **Save** menyimpan Surat Jalan berstatus Draft: barang **terkunci** untuk Surat Jalan ini, stok belum berkurang.
+- **FR-108** (sheet "Surat Jalan" bagian 4; BPMN: Buat Surat Jalan Kirim ke Vendor) — **Confirm Surat Jalan** (material fix keluar dari
+  gudang). Layar konfirmasi menampilkan data Surat Jalan dan detail berstatus **Siap Keluar**. Setelah Confirm: (1) barang keluar dari
+  Tampungan Siap Kirim (Inventory berkurang); (2) jurnal otomatis (FR-109); (3) status Surat Jalan **Confirmed** (Edit dan Confirm nonaktif,
+  Print aktif); (4) daftar coil yang dikirim muncul di **Portal Vendor** sebagai dasar input LHP (FR-114); (5) **Saldo Material In
+  Supplier** tercatat per Vendor + No. SPK Subkont (FR-112; satu baris Kirim per SPK dalam Surat Jalan); (6) status **tiap SPK** di dalamnya menjadi Dikirim Sebagian atau Dikirim Penuh (FR-102).
+- **FR-109** (sheet "Surat Jalan" bagian 5 dan 7; jawaban user 7) — **Jurnal Confirm Surat Jalan.** **SPK Material:** Db **Material In
+  Supplier** / Cr **Inventory (Persediaan Bahan Baku)** sebesar Total Nilai (contoh: 3.798 kg × 10.000 = Rp 37.980.000; jurnal seimbang).
+  **SPK FG:** Db **Material In Supplier** / Cr **Inventory (Persediaan Barang Jadi)** sebesar Total Nilai (qty × costbook Rp/pcs).
+  **Satu jurnal per Surat Jalan** (satu `gl_interface`): bila Surat Jalan campur, Debit Material In Supplier = total nilai seluruh barang, Credit dipecah menjadi Persediaan Bahan Baku
+  (nilai barang SPK Material) dan Persediaan Barang Jadi (nilai barang SPK FG); jurnal tetap seimbang (contoh uji: Material 37.980.000 + FG 14.500.000 = Db 52.480.000).
+  Tampungan Siap Kirim hanya pemisahan fisik, jadi kredit langsung ke Inventory. Akun Debit harus sama dengan akun yang dikredit saat
+  incoming (FR-122). Kode akun sementara; penetapan oleh BA (OQ-S9, disetujui user). Posting lewat `gl_interface` dan Master Jurnal Mapping (menu
+  `subkont`, action `confirm_surat_jalan`).
+- **FR-110** (sheet "Surat Jalan" bagian 6) — **Print Surat Jalan Subkont** (dokumen untuk vendor): judul SURAT JALAN SUBKONT, logo dan
+  nama perusahaan HFG, No. Surat Jalan, Tanggal, Kepada (vendor), Alamat, No. SPK Subkont (semua SPK, dipisah koma), Proses, tabel No / **No. SPK** / Pack atau Kode FG / Material atau Nama FG / Qty (Pack atau pcs) /
+  N.W. (kg) / Keterangan (teks bebas) + Total (Pack + pcs dan N.W.), Nopol / Sopir, tanda tangan **Dibuat (PPIC), Diperiksa (Gudang), Sopir, Diterima
+  (Vendor)** dengan nama dan tanggal. **Costbook dan Nilai tidak dicetak** (data internal).
+- **FR-111** (sheet "Surat Jalan" bagian 7) — **Varian Surat Jalan SPK Subkont FG** (satuan pcs). Alur sama dengan Material: Add Item dari
+  Tampungan Siap Kirim Gudang Finish Good; kolom Kode FG, Nama FG, Qty (pcs), **Costbook (Rp/pcs)** dari `fg_stock`, Nilai = Qty × Costbook,
+  Sumber, Aksi; tujuan incoming Warehouse Finish Good; Total Qty Pcs pada daftar = pcs. Baris FG dan Material dapat berada dalam satu Surat Jalan (FR-106).
+- **FR-112** (sheet "Surat Jalan" Setelah Confirm butir 5; BPMN jurnal) — **Saldo Material In Supplier** dicatat sebagai **ledger per
+  Vendor + No. SPK Subkont + Kode Delivery** (kartu stok model, bukan snapshot): baris **Kirim** (Confirm Surat Jalan, bertambah) dan
+  **Terima** (Konfirmasi Hasil Incoming, berkurang) dengan Qty, N.W. dan Nilai; saldo dipakai kembali saat incoming (nilai kredit
+  Material In Supplier, FR-122). Dilihat Accounting lewat UC-N38 (baca saja).
+- **FR-113** (keputusan user 2026-11-20; menggantikan jawaban user 9 "gaya E-Procurement") — **Portal Vendor (akses lewat link unik).** Aplikasi web terpisah dari
+  antarmuka HFG. **Vendor tidak mendaftar, tidak punya akun, tidak login, dan tidak diverifikasi:** pengguna HFG (Purchasing) melihat vendor pada daftar **Master
+  Supplier** lalu **membuat Link Portal Vendor** dan memberikannya ke vendor. Link berisi **token acak unik per supplier** (`ms_vendor_portal_link.token_link`); vendor
+  cukup membuka link. **Link yang tidak valid, dinonaktifkan, atau sudah digantikan ditolak.** Setelah dibuka, vendor hanya melihat data miliknya (Surat Jalan
+  Confirmed yang dikirim ke supplier itu dan Laporan Subkont-nya). Waktu akses terakhir dicatat (`last_access_at`). **Vendor tidak boleh melihat costbook, nilai,
+  maupun biaya jasa** (NFR-18).
+- **FR-114** (sheet "Laporan Subkont"; BPMN: Vendor login portal & Input data LHP) — **Daftar Laporan Subkont (portal).** Daftar baca/aksi per
+  material **per SPK** dari Surat Jalan Confirmed (satu Surat Jalan dengan beberapa SPK menghasilkan beberapa baris/Laporan): kolom No, **No. PO** (referensi PO jasa berupa teks yang diisi vendor sesuai dokumen kirimnya; hanya referensi, tidak terhubung ke SPK maupun ke PO, FR-99),
+  Material, **Nett Weight Before** (dari Surat Jalan), **Nett Weight After**, **Total Roll**, Action: **Input Laporan, View Detail, Edit,
+  Close Laporan**. Edit hanya saat laporan Draft atau dibuka kembali (FR-117).
+- **FR-115** (sheet "Laporan Subkont" bagian 2–4; jawaban user 12) — **Input Laporan Subkont Material (slitting).** Header per laporan:
+  Nett Weight Actual (kg, hasil slitting), **Width After** (mm), No. Surat Jalan Vendor, No. PO. Tabel pack: Pack, Material, Kode Internal,
+  **Jumlah Coil (Roll Baby Coil)** (input) dengan **View Detail**. Setelah jumlah roll diinput, **identitas baby coil terbentuk otomatis**:
+  `{Kode Internal}-BC.{n}` dan **Net Weight per Roll = Nett Weight Actual ÷ Jumlah Roll (dibagi rata**, seperti Unpack Coil; contoh 3.778 ÷ 8 =
+  472,25). **Total Scrap** (kg, input). **Summary Packing List vs Aktual:** Nett Weight Slitting + Scrap = **Total Nett Production**; Net
+  Weight Before; **Selisih (kg)** = Before − Total Nett Production; **Selisih (%)** = Selisih ÷ Before (contoh: 3.778 + 17 = 3.795; selisih 3
+  kg = 0,079%). Rumus berlaku sama pada sisi HFG (FR-118).
+- **FR-116** (jawaban user 10, OQ-S3, OQ-S5) — **Laporan Subkont FG (tambah pasir).** **Pasir dipasok vendor; HFG tidak mengirim pasir** (tidak ada
+  item pasir pada SPK maupun Surat Jalan, dan tidak ikut Material In Supplier). Vendor menginput **material tambahan lainnya** (nama material,
+  **berat pasir per pcs (Berat Tambahan, kg/pcs)**; teks, bukan dari stok HFG) dan **qty hasil (pcs) per produk**. **Revisi 2026-11-20 (user): Berat Tambahan adalah berat pasir untuk
+  per pcs.** Berat/pcs produk bertambah dari pasir: **Berat/Pcs Baru = Berat/Pcs Asal (`fg_stock.berat_referensi`) + Berat Tambahan**, dan **Total Berat (kg) =
+  Qty Pcs Hasil × Berat/Pcs Baru** (dihitung otomatis; vendor tidak menginput total kg; contoh: 34,6 + 0,5 = 35,1 kg/pcs; 24 pcs = 842,4 kg); **hasilnya menjadi kode FG baru** (bukan kode FG asal). **Kode FG
+  baru dibuat otomatis** dengan format **`Nama Produk/Kode Internal Material/No. Urut Subkont`** (No. Urut Subkont = nomor urut hasil subkont pada
+  kombinasi produk + material tersebut, `no_urut_subkont`); arti "Kode Internal Material" dikonfirmasi di OQ-S12. **Biaya jasa dihitung per Kg**
+  atas total kg hasil, atau Lot bila PO jasa berupa 1 lot (FR-120). **Costbook FG baru dihitung berdasarkan total kg hasil per produk** (FR-123).
+- **FR-117** (jawaban user 9) — **Close Laporan dan pengajuan perbaikan.** **Close Laporan** mengunci laporan terhadap edit vendor. Bila
+  vendor perlu memperbaiki, vendor **mengajukan perbaikan** (alasan wajib) ke pengguna HFG; **pengguna HFG membuka akses edit** (UC-25),
+  vendor memperbaiki dan Close lagi. Setiap pengajuan, pembukaan akses, dan perbaikan tercatat (siapa, kapan, alasan) di
+  `tr_laporan_subkont_revisi`; versi lama laporan tidak hilang (audit).
+- **FR-118** (BPMN: Incoming Material/Finish Good; sheet "Incoming&Laporan Slit Vendor"; jawaban user S8) — **Incoming Material/Finish Good dari vendor
+  (PPIC).** Header: **No. Surat Jalan Vendor** (dokumen kirim vendor, contoh `2534/KPS-DO/VI/26`), **No. PO** (PO jasa), Tgl Incoming, Vendor,
+  No. SPK Subkont. Detail Laporan Subkont (Material: pack, baby coil dan berat per roll; FG: kode FG baru) **terisi dari Laporan Subkont
+  vendor yang sudah Close**; **PPIC tidak menginput berat apa pun di Incoming** (baby coil masih terbungkus; keputusan user 2026-11-20). **Satu Incoming boleh mencakup beberapa Laporan Subkont** (keputusan user 2026-11-20, agar daftar Incoming tidak banyak): header memuat Vendor, No. Surat Jalan Vendor dan Tgl Incoming; tiap Laporan di dalamnya punya No. SPK, No. PO Jasa, tarif jasa dan hasil cek sendiri (`tr_subkont_incoming_laporan`); satu Laporan hanya boleh masuk satu Incoming. Seluruh Laporan dalam satu Incoming berasal dari vendor yang sama.
+  **Incoming boleh dicatat sebagian** (tidak harus seluruh Laporan/Surat Jalan sekaligus); SPK menjadi Closed bila seluruh barang yang
+  dikirim sudah di-Konfirmasi (FR-121).
+- **FR-119** (BPMN: Cek Material yang diterima vs Data LHP; Sesuai?; jawaban user S1 (direvisi 2026-11-20), S8) — **Cek hasil incoming vs Packing List.**
+  **Revisi keputusan user 2026-11-20: Nett Weight Baby Coil tidak diinput ulang saat Incoming karena masih terbungkus; yang divalidasi hanya Nett Weight dari
+  Supplier vs Packing List.** Untuk **SPK Material**, sistem membandingkan **Nett Weight dari Supplier = Nett Weight Actual + Total Scrap pada LHP**
+  (Total Nett Production) dengan **Nett Weight Before pada Packing List** (berat yang dikirim HFG); **Selisih (%) = (Before − (Actual + Scrap)) ÷ Before**;
+  **toleransi ± 0,7%** (acuan: FR-15/FR-16 Laporan Produksi). Hasil dihitung otomatis dari LHP (tanpa input) dan disimpan per Laporan di
+  `tr_subkont_incoming_laporan` (`nett_weight_packing_list`, `nett_weight_supplier`, `selisih_persen`, `status_cek`). Untuk **SPK FG: tanpa cek berat** (pasir menambah
+  berat; qty dan berat hasil mengikuti LHP), `status_cek` = Sesuai. **Sesuai:** lanjut ke Konfirmasi Hasil Pengecekan Incoming (FR-121). **Tidak sesuai:** PPIC
+  melakukan **klarifikasi ke supplier** (di luar sistem), dicatat sebagai temuan ketidaksesuaian (status Open), dan **LHP dikonfirmasi kembali ke vendor**:
+  akses edit laporan dibuka (FR-117, asal "Temuan Incoming"), laporan dikeluarkan dari Incoming itu (laporan lain tidak tertahan), dan vendor merevisi; setelah
+  vendor Close ulang, hasil cek dihitung ulang dari LHP yang baru. **Tidak ada batas waktu klarifikasi. Temuan ditutup oleh PPIC HFG** (status Ditutup, tercatat siapa dan
+  kapan). **Menutup temuan berarti HFG menerima selisihnya** (keputusan user 2026-11-20): Konfirmasi (FR-121) boleh dilakukan untuk Laporan yang Sesuai **atau**
+  yang temuannya sudah Ditutup. (Tabel detail cek per baby coil/produk `tr_subkont_incoming_detail` dihapus dari ERD karena tidak ada input berat.)
+- **FR-120** (sheet "Laporan Subkont" bagian Laporan Nilai Slitting; jawaban user 6, S2, S10) — **Laporan Nilai Slitting (HFG, tidak terlihat vendor).**
+  **PPIC HFG** menginput **biaya jasa subkont** di halaman Incoming bersama **No. PO jasa** (vendor tidak menginput maupun melihat biaya; No. PO jasa dapat mengacu
+  ke No. PO referensi yang diisi vendor di FR-114; tetap bukan relasi ke SPK). **Jenis Tarif**:
+  **Per Kg** (Price/Kg jasa dari PO jasa; contoh Rp 270,27) atau **Lot** (nilai total jasa, karena PO jasa dapat berupa "1 lot jasa subkont" yang tidak
+  terdefinisi per Kg; OQ-S11). Rumus **Per Kg:** **Biaya Subkont Material = Total Weight Slitting × Price/Kg Jasa** (3.778 × 270,27 = 1.021.080,06);
+  **Lot:** Biaya Subkont = nilai Lot. **Nilai Material Gudang = Total Weight Slitting × Costbook Gudang HFG** (= costbook pada Surat Jalan, bersumber dari Stock Value; 3.778 × 10.000 = 37.780.000); **Nilai Material
+  Gudang + Biaya Proses** = penjumlahan keduanya (38.801.080,06). **Komponen Scrap:** Total Weight Scrap × Costbook Material (17 × 10.000 = 170.000),
+  **100% masuk Inventory Scrap** (bukan 40/60 seperti Laporan Produksi). **Selisih Berat:** Selisih (kg) × Costbook Material (3 × 10.000 = 30.000), nilai
+  penuh. Untuk SPK FG biaya jasa per Kg = Total Kg hasil × Price/Kg jasa; Jenis Tarif **Lot** juga berlaku (FR-116).
+- **FR-121** (BPMN: Konfirmasi Hasil Pengecekan Incoming) — **Konfirmasi Hasil Pengecekan Incoming (PPIC).** Dilakukan per Incoming (seluruh Laporan di dalamnya; jurnal satu `gl_interface` per Incoming, ringkasan per Laporan). Setelah Sesuai (atau temuan Ditutup, FR-119): (1) **baby coil
+  hasil slitting masuk ke stok `warehouse_stock_coil` Gudang Produksi 2 (PRT)** menggantikan material kirim (jawaban user 12; Unpack Coil
+  tidak diperlukan lagi untuk baby coil ini), FG baru masuk `fg_stock` (KW 1); (2) Scrap masuk Inventory Scrap (`fg_stock` kategori SCRAP,
+  100%); (3) jurnal incoming (FR-122); (4) Saldo Material In Supplier berkurang (FR-112); (5) nilai costbook diperbarui (FR-123); (6) status
+  Surat Jalan/SPK maju sesuai FR-102.
+- **FR-122** (sheet "Incoming&Laporan Slit Vendor" bagian Jurnal; jawaban user 13, S4, S9) — **Jurnal Incoming.** **SPK Material:**
+
+  | Posisi | Akun | Nilai (contoh) |
+  |---|---|---|
+  | Db | Persediaan Bahan Baku | Nilai Material Gudang + Biaya Proses = 38.801.080,06 |
+  | Db | Inventory Scrap | Scrap × Costbook = 170.000 |
+  | Db | Selisih Net Weight | Selisih × Costbook = 30.000 |
+  | Cr | Material In Supplier | Nett Weight Before × Costbook = 37.980.000 |
+  | Cr | Unbill (Jasa Subcont) | Biaya Subkont Material = 1.021.080,06 |
+
+  Total Debit = Total Kredit = 39.001.080,06 (cek jurnal: selisih 0). **SPK Finish Good (S4):** pola sama, bedanya **Debit ke Inventory Finish Good**
+  (Persediaan Barang Jadi, FG hasil/kode FG baru) sebesar nilai FG kirim + biaya jasa; Credit Material In Supplier = nilai FG yang dikirim (sama
+  dengan Debit Surat Jalan, FR-109) dan Credit Unbill (Jasa Subkont) = biaya jasa; komponen scrap dan selisih (bila ada) memakai pola Material.
+  Akun **Material In Supplier** harus sama dengan Debit saat Surat Jalan (FR-109). **Unbill** menampung kewajiban jasa sampai tagihan vendor
+  diterima; **pelunasannya berdasarkan PO Jasa** (bukan per Kg; jasa dapat "1 lot"), lewat alur Receive Invoice/pembayaran PO jasa yang sudah ada
+  (jawaban user S10; PO tetap tidak dihubungkan ke SPK, FR-99). **Kode akun tetap sementara** (disetujui user S9; BA menetapkan bersama klien):
+  Persediaan Bahan Baku `1105-01-01`, Inventory Scrap `1105-03-01`, Selisih Net Weight `1936155`, Persediaan Barang Jadi `1106-03-01` (dari workbook
+  Laporan Produksi, belum dikonfirmasi untuk Subkont); Material In Supplier `9901-01-01` dan Unbill (Jasa Subkont) `9901-02-01` adalah **kode acak
+  sementara**. Jurnal COGM dan jurnal tutup bulan pada sheet "Laporan Subkont" (penuh `#REF!`) **diabaikan** (jawaban user 14).
+- **FR-123** (BPMN: Update Nilai Costbook Material; jawaban user 12, S5) — **Update Nilai Costbook.** Disimpan per Laporan di `tr_subkont_incoming_laporan`: **`costbook_baru_per_kg` hanya untuk SPK Material** dan **`costbook_baru_per_pcs` hanya untuk SPK FG** (kolom lain kosong; usulan agen, disetujui user 2026-11-20); `costbook_baru_per_pcs` diteruskan ke costbook FG di `fg_stock`. **Material (baby coil):** costbook baru = **(Nilai Material
+  Gudang + Biaya Proses) ÷ Total Weight Slitting** (contoh 38.801.080,06 ÷ 3.778 = **Rp 10.270,27/kg** = costbook asal 10.000 + Price/Kg jasa
+  270,27); menjadi `harga_beli` / nilai persediaan baby coil di Gudang Produksi 2 dan dipakai Costbook Material (HPP) sesudahnya. Scrap dan selisih
+  dinilai dengan costbook asal (10.000). **Finish Good (kode FG baru):** costbook FG baru dihitung **berdasarkan total kg hasil per produk**
+  (nilai FG kirim + biaya jasa atas total kg hasil, dibagi qty hasil per produk; Rp/pcs di `fg_stock`; penafsiran agen, OQ-S11).
+  **Sumber dan dampak costbook (keputusan user 2026-11-20):** **costbook dasar semua material berasal dari menu Stock Value** (Purchase Price (Avg) per material,
+  rata-rata bergerak dari `warehouse_stock_history`). **Confirm Surat Jalan Material** mencatat transaksi **OUT** pada harga rata-rata berjalan (harga tidak berubah).
+  **Konfirmasi Incoming Material** mencatat transaksi **IN** baby coil (qty = Total Weight Slitting) dengan harga = costbook baru di atas, sehingga **Purchase Price (Avg)
+  material di Stock Value dihitung ulang** = (saldo nilai + nilai IN) ÷ (qty + qty IN); costbook SPK/Surat Jalan berikutnya memakai harga rata-rata yang sudah berubah.
+  **Finish Good:** costbook produk asal berasal dari `fg_stock` (Gudang Finish Good); **Confirm Surat Jalan FG** mencatat **OUT** dari `fg_stock` (kartu stok) pada costbook itu;
+  **Konfirmasi Incoming FG** mencatat **IN** kode FG baru (KW 1) dengan costbook baru per pcs, sehingga mempengaruhi stok dan costbook di Gudang Finish Good.
+- **FR-124** — **Hak akses dan audit.** Permission modul: `Spk_Subkont.View/Add/Manage` (production_planning), `Delivery_Subkont.View/Add/Manage`
+  (delivery_fg), `Tampungan_Subkont.View/Manage` (gudang), `Subkont_Incoming.View/Manage` (PPIC), `Vendor_Portal_Link.View/Manage` (kelola link portal); portal
+  terpisah (FR-113). Aksi penting dicatat dengan `write_log()` modul "Subkont" (Create, Edit, Request, Scan Tampungan, Confirm Surat Jalan,
+  Close Laporan, Buka Akses Edit, Tutup Temuan, Buat/Buat Ulang/Nonaktifkan Link Portal Vendor, Konfirmasi Incoming, Jurnal) berformat before/after (AGENTS.md); aksi vendor di
+  portal dicatat pada log portal dengan identitas vendor pemilik link.
+- **FR-125** (keputusan user 2026-11-20; menggantikan jawaban user S6 "persetujuan akun") — **Link Portal Vendor dan Master Supplier.** Aksi pada daftar **Master
+  Supplier** (modul `supplier` yang sudah ada; mockup meniru modul itu; vendor Surat Jalan (FR-106) dipilih dari master ini): **Buat Link Portal** (supplier belum punya
+  link aktif; sistem membuat token unik dan menampilkan link untuk disalin dan diberikan ke vendor), **Lihat/Salin Link**, **Buat Ulang Link** (link lama langsung tidak
+  berlaku) dan **Nonaktifkan Link**. **Satu supplier hanya boleh punya satu link aktif**; riwayat link lama tetap tersimpan (siapa dan kapan membuat atau menonaktifkan).
+  Daftar menampilkan status link (Belum ada link / Link Aktif / Link Nonaktif) dan kapan terakhir dibuka vendor. Aktor: **Purchasing** (pemilik Master Supplier).
+  **Pendaftaran mandiri, verifikasi, dan persetujuan akun tidak ada** (dibatalkan oleh keputusan user 2026-11-20).
+
+### Open questions Subkont (dijawab user 2026-11-20; dua konfirmasi kecil baru)
+
+Jawaban user atas OQ-S1–OQ-S10 tercatat apa adanya di `input/Production Planning/notes.md`. Usulan agen ditandai ▶ dan **bukan keputusan**.
+
+- **OQ-S1 — RESOLVED 2026-11-20 ("Sesuai usulan"), DIREVISI 2026-11-20.** Semula: berat timbang HFG vs Data LHP per pack. **Sekarang (user):** tanpa input berat di Incoming; dasar "Sesuai?" = Nett Weight dari Supplier (LHP Actual + Scrap) vs Packing List (Before), toleransi ± 0,7%; SPK FG tanpa cek berat (FR-119).
+- **OQ-S2 — RESOLVED ("Sesuai Usulan").** PPIC HFG menginput biaya jasa di Incoming bersama No. PO jasa (FR-120).
+- **OQ-S3 — RESOLVED.** Pasir dipasok vendor; HFG tidak mengirim pasir (FR-116).
+- **OQ-S4 — RESOLVED.** Jurnal incoming SPK FG = pola Material, Debit ke Inventory Finish Good (FR-122).
+- **OQ-S5 — RESOLVED.** Kode FG baru otomatis `Nama Produk/Kode Internal Material/No. Urut Subkont`; costbook berdasarkan total kg hasil per produk (FR-116, FR-123).
+- **OQ-S6 — RESOLVED.** Akun vendor perlu persetujuan HFG dan terhubung ke master supplier; Master Supplier dimockup mengikuti modul `supplier` (FR-113, FR-125). **DIGANTI 2026-11-20:** tanpa akun dan persetujuan; HFG memberikan link portal unik per vendor dari Master Supplier (FR-113, FR-125).
+- **OQ-S7 — RESOLVED ("Setuju dengan usulan").** Satu laporan per Surat Jalan per material; satu Surat Jalan vendor boleh memuat banyak laporan.
+- **OQ-S8 — RESOLVED.** Tanpa batas waktu klarifikasi; temuan ditutup PPIC; Incoming boleh sebagian (FR-118, FR-119).
+- **OQ-S9 — RESOLVED ("Iya betul").** Kode akun tetap sementara sampai BA menetapkan bersama klien lalu mengisi Master Jurnal Mapping Subkont.
+- **OQ-S10 — RESOLVED.** Pelunasan Unbill berdasarkan PO Jasa saja (jasa dapat "1 lot", tidak per Kg); PO tidak dihubungkan ke SPK (FR-122).
+- **OQ-S11 — TERBUKA (turunan S10/S5).** Karena jasa bisa 1 lot: boleh HFG menginput biaya jasa sebagai total **Lot** selain Price/Kg? Costbook FG baru
+  = (nilai FG kirim + biaya jasa) ÷ qty hasil per produk? ▶ Ya untuk keduanya (FR-120, FR-123).
+- **OQ-S12 — TERBUKA (turunan S5/S6).** (a) [TIDAK BERLAKU 2026-11-20: akun dan persetujuan dibatalkan; Purchasing membuat Link Portal Vendor dari Master Supplier] Siapa yang menyetujui akun vendor dan bagaimana ditautkan ke Master Supplier? ▶ Purchasing (pemilik Master
+  Supplier); saat setuju pilih supplier yang ada atau buat baru. (b) "Kode Internal Material" pada kode FG baru = kode internal material dasar produk
+  (contoh `DEBDA0319-T1`)? ▶ Ya (FR-116, FR-125).
+
 ## NFR — Non-Functional Requirements
 
 Setiap NFR dicatat dengan fit criterion terukur (Volere). Yang belum bisa diberi angka pasti
@@ -1274,6 +1481,29 @@ yang sudah resolved di atas (± 0,7%).
   riwayat berumur > 1 tahun tidak tampil di halaman riwayat tetapi dapat dipulihkan dari backup; pengguna tanpa hak akses
   tanpa hak View tidak dapat membuka halaman dan tanpa hak Manage tidak dapat mengekspor atau membuka backup; setiap catatan riwayat juga terlihat di Activity Log.
 
+### NFR Proses Subkont — 2026-11-20
+
+- **NFR-18 (Portal Vendor: isolasi data dan tanpa nilai; keputusan user 2026-11-20).** Vendor (pemegang link portal) hanya dapat membaca/menulis data
+  vendornya sendiri (Surat Jalan yang ditujukan ke vendor itu dan Laporan Subkont-nya). **Costbook, nilai (Rp), Price/Kg jasa, dan jurnal tidak
+  pernah dikirim ke portal** — tidak sebagai kolom tersembunyi maupun respons API (query dan view portal tidak memuat kolom tersebut).
+  Fit criterion: uji dengan dua link vendor berbeda — vendor A tidak dapat membuka Surat Jalan/Laporan vendor B (ditolak, tercatat di log);
+  pencarian string "costbook", "nilai", "harga" pada seluruh respons halaman portal tidak menemukan data nilai; token link acak, unik, panjang (minimal 32 karakter heksadesimal dari generator acak aman), tidak tampil di log, dan link yang
+  dinonaktifkan atau dibuat ulang langsung ditolak; sesi portal terpisah dari sesi pengguna HFG.
+- **NFR-19 (Konsistensi stok dan jurnal Subkont).** Perpindahan barang memakai transaksi basis data tunggal: Confirm Surat Jalan
+  (Tampungan → keluar + jurnal + Saldo Material In Supplier) dan Konfirmasi Hasil Incoming (baby coil/FG masuk + scrap + jurnal + costbook)
+  berhasil seluruhnya atau dibatalkan seluruhnya. Fit criterion: jurnal Surat Jalan seimbang (Db = Kr) dan jurnal incoming seimbang
+  (contoh uji: Total Debit = Total Kredit = 39.001.080,06); setelah seluruh Surat Jalan dan seluruh Incoming Confirmed (Incoming boleh sebagian, FR-118), saldo Material In Supplier
+  untuk vendor + SPK tersebut bernilai 0; stok baby coil di Gudang Produksi 2 sama dengan jumlah roll Laporan × berat per roll.
+- **NFR-20 (Angka acuan uji, dari simulasi workbook 2026-11-20).** Hasil hitung program harus sama dengan sheet "Laporan Subkont" /
+  "Incoming&Laporan Slit Vendor": Net Weight per Roll 472,25 kg (3.778 ÷ 8); Total Nett Production 3.795; Selisih 3 kg (0,079%); Biaya
+  Subkont Material 1.021.080,06; Nilai Material Gudang 37.780.000; Nilai Material + Biaya Proses 38.801.080,06; Nilai Scrap 170.000; Nilai
+  Selisih 30.000; Costbook baru 10.270,27/kg; Cr Material In Supplier 37.980.000 (3.798 × 10.000). Angka diformat ribuan titik, desimal koma
+  (numfmt) pada layar HFG.
+- **NFR-21 (Penamaan dan jejak).** Nama tabel/kolom Subkont di kode dan migrasi **persis sama dengan `erd-revisi.drawio` halaman "Subkont ERD"**
+  (NFR-15); label tampilan mockup = nama kolom. Laporan Subkont yang sudah Close tidak dapat diubah kecuali lewat pembukaan akses (FR-117),
+  dan setiap pembukaan/penutupan tercatat di `tr_laporan_subkont_revisi` (siapa, kapan, alasan). Tabel baru hanya ditulis sebagai SQL migrasi
+  (tidak dieksekusi agen).
+
 ## Status
 
 Draft, diturunkan langsung dari `input/`. Titik ambigu dari pasangan sumber awal (BPMN + sheet
@@ -1358,3 +1588,7 @@ email supplier) ditunda dan Master Jurnal Claim dibuat kemudian. Tabel claim (9 
 Slitting), FR-97 (kolom Progres turunan); FR-83/FR-84 direvisi (satu SPK dan satu SJ memuat beberapa claim satu supplier); FR-87 dipertegas (baris Debit Note
 dan Jual Material; Retur dan Lanjut Produksi tidak). OQ-C10 dijawab. Tidak ada pertanyaan terbuka untuk mockup; tersisa OQ-C2 (master email, ditunda) dan Master
 Jurnal Claim (dibuat kemudian).
+
+**Pembaruan 2026-11-20 (Proses Subkont).** FR-99–FR-125, NFR-18–NFR-21 dan OQ-S1–OQ-S12 ditambahkan dari `input/Production Planning/`
+(BPMN D02/D002, workbook Rev.2, 15 jawaban user). Nama tabel/kolom masih usulan (ERD halaman "Subkont ERD"). Jawaban user (15 jawaban + OQ-S1–S10, 2026-11-20) menutup alur utama; dua konfirmasi kecil
+(OQ-S11, OQ-S12) tercatat di "Open questions Subkont". Mockup Subkont belum dibuat (menunggu dokumen disetujui; Master Supplier dimockup mengikuti modul `supplier`).
