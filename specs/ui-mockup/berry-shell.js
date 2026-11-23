@@ -24,11 +24,10 @@
 
   // Menu mengikuti struktur Menu_generator: Dashboard, grup level-2, dan level-3 (Product Costing).
   const PRODUKSI = [
-    ["beranda.html", "Daftar SPK", "ti-clipboard-list"],
-    ["index.html", "Input Produksi", "ti-forms"],
+    ["pr-daftar.html", "Laporan Produksi", "ti-clipboard-list"],
+    ["fg-stock.html", "Stock Finish Good", "ti-packages"],
     ["material.html", "Material", "ti-stack-2"],
     ["costbook.html", "Costbook", "ti-coin"],
-    ["hpp.html", "HPP", "ti-report-analytics"],
   ];
   const GUDANG = [
     ["wh-material-master.html", "Material Master", "ti-database"],
@@ -39,6 +38,16 @@
     ["wh-request-list.html", "Request List (SPK Coil)", "ti-truck-loading"],
     ["wh-stock-from-warehouse.html", "Stock From Warehouse", "ti-packages"],
     ["wh-unpack-coil.html", "Unpack Coil", "ti-package-export"],
+  ];
+  const SUBKONT = [
+    ["sk-spk.html", "SPK Subkont", "ti-file-description"],
+    ["sk-tampungan.html", "Tampungan Siap Kirim", "ti-package-import"],
+    ["sk-surat-jalan.html", "Surat Jalan Subkont", "ti-truck-loading"],
+    ["sk-laporan-vendor.html", "Laporan Subkont Vendor", "ti-report"],
+    ["sk-incoming.html", "Incoming Subkont", "ti-package-export"],
+    ["sk-nilai-slitting.html", "Laporan Nilai Slitting", "ti-calculator"],
+    ["sk-saldo-supplier.html", "Saldo Material In Supplier", "ti-scale"],
+    ["sk-master-supplier.html", "Master Supplier (Link Portal Vendor)", "ti-building-store"],
   ];
   const CLAIM = [
     ["claim-on-hold.html", "Material On Hold", "ti-hand-stop"],
@@ -84,7 +93,7 @@
 
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const chevron = '<svg class="feather feather-chevron-right" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
-  const here = () => (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const here = () => { const f = (location.pathname.split("/").pop() || "index.html").toLowerCase(); return /^pr-(input|lihat|hpp)\.html$/.test(f) ? "pr-daftar.html" : f === "fg-kartu-stok.html" ? "fg-stock.html" : f; };
   const rp2 = (n) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   // Notifikasi perubahan Bottom Price (Belum Ditinjau): dari window.PC bila dimuat, jika tidak dari penyimpanan lokal mockup.
@@ -131,6 +140,7 @@
       <li class="pc-item"><a href="beranda.html" class="pc-link"><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a></li>
       ${parent("ti-building-factory", "Produksi", PRODUKSI.map((x) => leaf(x)).join(""), prodOpen)}
       ${parent("ti-building-warehouse", "Gudang Coil", GUDANG.map((x) => leaf(x)).join(""), GUDANG.some((x) => x[0] === cur))}
+      ${parent("ti-truck-delivery", "Subkont", SUBKONT.map((x) => leaf(x)).join(""), SUBKONT.some((x) => x[0] === cur))}
       ${parent("ti-alert-triangle", "Claim Material", CLAIM.map((x) => leaf(x)).join(""), CLAIM.some((x) => x[0] === cur))}
       ${parent("ti-calculator", "Product Costing", COSTING.map((g) => parent(g.icon, g.group, g.items.map((x) => leaf(x)).join(""), pcOpen(g))).join(""), COSTING.some(pcOpen))}
     </ul>`;

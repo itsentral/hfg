@@ -6,7 +6,7 @@
 (() => {
   "use strict";
   const U = window.WHUI, W = U.W, S = () => W.state, P = window.WHP;
-  const { $, esc, num, fdate, lab, btn, tbl, card, stat, kv, row, inp, sel, txt, isNumEl, pv, tabs, toast, warn, done, confirmThen, openModal, closeModal, printDoc, ppHead, ppMeta, ppSign } = U;
+  const { $, esc, num, fdate, lab, btn, tbl, card, stat, kv, row, inp, sel, txt, isNumEl, pv, tabs, toast, warn, dialog, done, confirmThen, openModal, closeModal, printDoc, ppHead, ppMeta, ppSign } = U;
   const mn = (id) => W.matBy(id).nama || id;
   const pill = (c) => `<span class="wh-pack${c.startsWith("WIP-") ? " wh-pack--prt" : ""}">${esc(c)}</span>`;
   const excel = (what) => toast(`Download Excel "${what}" (mockup, tidak membuat berkas nyata).`);
@@ -44,24 +44,54 @@
       bomOf(d).map((b) => { const cukup = stokWip(b.mid) + stokPro(b.mid) >= b.need; return `<tr><td>${esc(mn(b.mid))}</td><td class="ap-r">${num(b.need)} Kg</td><td class="ap-r">${num(stokWip(b.mid))} Kg</td><td class="ap-r">${num(stokPro(b.mid))} Kg ${cukup ? "" : '<span class="ap-label ap-label--danger">Kurang</span>'}</td><td class="ap-r">${packAvail(b.mid)}</td></tr>`; }).join(""), "BOM belum tersedia.") + '<p class="note">Stok dibaca dari gudang: WIP (coil sisa) dan Production Warehouse. Berat Dibutuhkan = Target Qty × Berat Per Unit × rasio BOM material.</p>' });
   }
   function printSpk(s) {
-    printDoc("SPK Material", ppHead("SURAT PERINTAH KERJA", s.spk_no) + ppMeta([["Tgl SPK", fdate(s.tgl_spk)], ["Due Date", fdate(s.due_date)], ["Shift Names", esc(s.shift_names.join(", "))], ["Catatan", esc(s.catatan || "-")], ["Status", esc(s.status)]]) +
-      `<table class="pp-tbl"><thead><tr><th>No</th><th>Id Produk FG</th><th>Nama Produk FG</th><th class="pp-r">Target Qty</th><th class="pp-r">Berat Per Unit (Kg)</th><th class="pp-r">Total Weight (Kg)</th></tr></thead><tbody>${s.detail.map((d, i) => `<tr><td>${i + 1}</td><td>${esc(d.id_produk_fg)}</td><td>${esc(d.nm_produk_fg)}</td><td class="pp-r">${num(d.target_qty, 0)}</td><td class="pp-r">${num(d.berat_per_unit, 4)}</td><td class="pp-r">${num(d.total_weight)}</td></tr>`).join("")}</tbody></table>` +
-      `<table class="pp-tbl"><thead><tr><th>Nama Material</th><th class="pp-r">Qty Needed (Kg)</th></tr></thead><tbody>${needsOf(s).map((n) => `<tr><td>${esc(mn(n.mid))}</td><td class="pp-r">${num(n.need)}</td></tr>`).join("")}</tbody></table>` + ppSign(["Dibuat (PPIC)", "Disetujui", "Diterima (Produksi)"]));
+    const blank = (n, cols) => Array.from({ length: n }, (_, i) => `<tr><td>${cols[0] === "#" ? i + 1 : "&nbsp;"}</td>${cols.slice(1).map(() => "<td>&nbsp;</td>").join("")}</tr>`).join("");
+    const tb = (heads, body) => `<table class="pp-tbl"><thead><tr>${heads.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>`;
+    const sec = (t) => `<div style="background:#e9ecef;font-weight:700;padding:3px 8px;margin:10px 0 4px;font-size:12px">${t}</div>`;
+    const brk = '<div style="page-break-before:always"></div>';
+    const p1 = ppHead("SPK PRODUKSI & MATERIAL", s.spk_no) + `<div style="float:right;text-align:center;font-size:11px">${U.qrSvg(s.spk_no).replace("<svg", '<svg style="width:90px;height:90px"')}<br>${esc(s.spk_no)}</div>` +
+      ppMeta([["No. SPK", `<b>${esc(s.spk_no)}</b>`], ["Tanggal SPK", fdate(s.tgl_spk)], ["Due Date", fdate(s.due_date)], ["Shift", esc(s.shift_names.join(", ") || "-")], ["Status", `<b>${esc(s.status.toUpperCase())}</b>`], ["Catatan", esc(s.catatan || "-")]]) +
+      s.detail.map((d, i) => `${sec(`${i + 1}. ${esc(d.nm_produk_fg)}`)}<table class="pp-meta"><tr><td class="pp-k">Target Qty</td><td><b>${num(d.target_qty, 0)} Pcs</b></td><td class="pp-k">Total Weight</td><td><b>${num(d.total_weight)} Kg</b></td></tr></table>`).join("") +
+      `<p style="font-size:10px;color:#718096;font-style:italic">Dicetak pada: ${fdate(W.today())}</p>` + ppSign(["Dibuat oleh, Budi S."]);
+    const p2 = brk + '<h3 style="text-align:center">FORM SURAT PERINTAH KERJA (SPK) &amp; LAPORAN PRODUKSI HARIAN</h3>' +
+      ppMeta([["No. SPK", `<b>${esc(s.spk_no)}</b>`], ["Setter Name", "........................"], ["No. Dokumen", "........................"], ["Tgl", "........................"], ["Helper Name", "........................"], ["Revisi", "........................"], ["Mesin", "........................"], ["Jam Mulai s/d Selesai", "........................"], ["Tgl Efektif", "........................"]]) +
+      sec("1. PEMAKAIAN MATERIAL (BABY COIL - DARI UNPACK / WIP / HOLD)") + tb(["No", "Sumber Coil<br>(Unpack/WIP/Hold)", "No. Pack", "Nama Material", "No. Baby Coil", "Berat Bersih (Net Kg)", "Kondisi / Keterangan"], blank(5, ["#", 1, 1, 1, 1, 1, 1])) +
+      sec("2. HASIL PRODUKSI (FINISH GOOD KW 1) - SPK &amp; STOK BEBAS") + tb(["No", "Jenis Produksi", "Nama Produk", "Asal Baby Coil", "Qty (Pcs)", "Berat Total (Kg)", "Berat / Pcs (Kg) (Opsional)"], blank(5, ["#", 1, 1, 1, 1, 1, 1])) +
+      sec("3. HASIL PRODUKSI NON-STANDARD (KW 2)") + tb(["No", "Kategori (Internal / Supplier)", "Nama KW 2", "Size (m)", "Qty KW 2", "Berat Total (Kg)", "Keterangan (Contoh: White Rust)"], blank(3, ["#", 1, 1, 1, 1, 1, 1])) +
+      sec("4. SISA COIL &amp; HOLD COIL") + tb(["Kategori", "No. Baby Coil", "Berat (Kg)"], blank(4, [1, 1, 1]) + '<tr><td colspan="3" style="font-style:italic;font-size:10px">*Tuliskan keterangan detail di baliknya jika perlu</td></tr>') +
+      sec("5. KOMPONEN SCRAP &amp; REJECT") + tb(["Kategori Scrap", "Berat (Kg)"], ["Tong Coil", "Wrapping", "Potongan Pisau", "Reject Produk (Internal)", "Reject Produk (Supplier)", "Reject Material (Internal)", "Reject Material (Supplier)"].map((x) => `<tr><td>${x}</td><td>&nbsp;</td></tr>`).join("")) +
+      `<div class="pp-sign">${["Dibuat Oleh (Operator / Helper)", "Diperiksa Oleh (Leader / SPV Produksi)", "Diketahui Oleh (QC / Admin)"].map((n) => `<div><div>${n}</div><div class="ln">(_________________________)</div></div>`).join("")}</div>`;
+    const SOP = [["HEADER & IDENTITAS", "No. SPK, Tgl Produksi, Mesin", "Diisi sesuai dengan Surat Perintah Kerja (SPK) yang diterima dari PPIC / Admin. Harus jelas dan tidak boleh dikosongkan."], ["HEADER & IDENTITAS", "Nama Setter & Helper, Jam", "Diisi dengan nama petugas aktual yang menjalankan mesin. Jam mulai diisi saat mesin setup/running, jam selesai diisi saat batch produksi selesai."], ["1. PEMAKAIAN MATERIAL", "Sumber Coil (Unpack/WIP/Hold)", "Tulis atau beri tanda centang asal material: Unpack, WIP, atau Hold."], ["1. PEMAKAIAN MATERIAL", "No. Pack & No. Baby Coil", "WAJIB diisi sesuai label/barcode fisik pada material (traceability di ERP)."], ["1. PEMAKAIAN MATERIAL", "Berat Bersih (Net Kg)", "Diisi berat aktual hasil timbang material saat akan dimasukkan ke mesin."], ["2. HASIL PRODUKSI (KW 1)", "Jenis Produksi", "'Sesuai SPK' untuk memenuhi SPK; 'Stok Bebas' bila sisa material dijadikan produk lain di luar SPK."], ["2. HASIL PRODUKSI (KW 1)", "Qty (Pcs) & Berat Total (Kg)", "Hitung jumlah pcs, lalu timbang berat total. ERP menghitung persentase selisih terhadap standar."], ["3. HASIL PRODUKSI (KW 2)", "Kategori (Internal / Supplier)", "Internal: cacat akibat proses pabrik. Supplier: cacat bawaan bahan baku."], ["3. HASIL PRODUKSI (KW 2)", "Keterangan", "Wajib menuliskan alasan KW 2, mis. 'White Rust', 'Penyok'."], ["4. SISA COIL & HOLD COIL", "No. Baby Coil & Berat (Kg)", "Timbang material sisa / Hold dan tulis No. Baby Coil asalnya."], ["5. KOMPONEN SCRAP / REJECT", "Tong, Wrapping, Pisau, Reject", "Kumpulkan dan timbang semua scrap/reject di akhir shift."], ["6. APPROVAL / PENGESAHAN", "Tanda Tangan", "Ditandatangani Operator, diverifikasi Leader/SPV, divalidasi QC/Admin."]];
+    const p3 = brk + '<h3 style="text-align:center">INSTRUKSI KERJA (SOP) PENGISIAN FORM SPK &amp; LAPORAN PRODUKSI</h3><p style="font-size:11px">Tujuan: Memastikan Operator/Helper dapat mengisi form produksi dengan akurat sehingga data valid saat diinput Admin ke Sistem ERP. (Teks SOP diringkas di mockup.)</p>' +
+      tb(["No", "Bagian Form", "Item / Kolom", "Instruksi Pengisian (Cara Pengisian &amp; Keterangan)"], SOP.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join(""));
+    printDoc("SPK Material", p1 + p2 + p3);
   }
+
+  /* Aturan tab dan badge mengikuti spk_material (Spk_material_model::get_spk_list_filtered / get_status_counts) */
+  const WAIT3 = ["Material Requested", "Material On Load", "Material Confirmed"];
+  const inTab = (s, tab) => (tab === "waiting" ? WAIT3.includes(s.status) : tab === "released" ? s.status === "Released" && s.pr !== "final" : tab === "closed" ? s.status === "Released" && s.pr === "final" : WAIT3.concat("Released").includes(s.status));
+  const prBadge = (s) => (s.pr === "final" ? '<div><span class="ap-label ap-label--dark" title="Laporan Produksi Selesai (Final)">PR Closed</span></div>' : s.pr === "draft" ? '<div><span class="ap-label ap-label--warning" title="Laporan Produksi Draft (Sedang Berjalan)">PR In Progress</span></div>' : "");
+  const dlg = (text) => dialog({ icon: "warning", title: "Perhatian", text });
+  const field2 = (label, html, req) => `<div class="pr-f"><label class="ap-lbl">${label}${req ? ' <span class="ap-req">*</span>' : ""}</label>${html}</div>`;
   P.spk = {
-    title: "SPK Material", mod: "spk_material", role: "PPIC / Produksi", ui: { mode: "list", id: null },
-    hint: "Surat Perintah Kerja material: produk FG, target qty, kebutuhan material dari BOM, dan status SPK.",
+    title: "SPK Material", mod: "spk_material", role: "PPIC / Produksi", ui: { mode: "list", id: null, tab: "waiting", q: "" },
+    hint: "Surat Perintah Kerja material: buat SPK (produk FG + target qty), pantau status, Release ke Warehouse, dan cetak SPK.",
     render() {
       const u = U.ui;
       if (u.mode === "form") return formView();
-      if (u.mode === "view") { const s = SPK(u.id), edt = ["Material Requested", "Material Confirmed"].includes(s.status);
-        return card("View SPK — " + esc(s.spk_no), spkHeaderKv(s) + '<div class="wh-sec">Daftar Produk</div>' + prodTable(s) + '<div class="wh-sec">Kebutuhan Material (BOM)</div>' + tbl(["Nama Material", "Qty Needed (Kg)"], needsOf(s).map((n) => `<tr><td>${esc(mn(n.mid))}</td><td class="ap-r">${num(n.need)}</td></tr>`).join("")) +
-          `<div class="cl-tools" style="margin-top:12px"><button type="button" class="ap-btn ap-btn--outline-warning" data-act="back">&#8592; Kembali</button>${edt ? btn("warning", "edit", s.spk_no, "Edit") : ""}${btn("secondary", "pdf", s.spk_no, "Print PDF")}${s.status === "Material Confirmed" ? btn("success", "setst", s.spk_no, "Release", ' data-st="Released"') : ""}${edt ? btn("danger", "setst", s.spk_no, "Cancel SPK", ' data-st="Cancelled"') : ""}</div>`); }
-      const l = S().spk.slice().sort((a, b) => b.tgl_spk.localeCompare(a.tgl_spk) || b.spk_no.localeCompare(a.spk_no));
-      return `<div class="cl-sumrow">${stat(l.filter((s) => s.status === "Material Requested").length, "Material Requested")}${stat(l.filter((s) => s.status === "Material Confirmed").length, "Material Confirmed")}${stat(l.filter((s) => s.status === "Released").length, "Released")}${stat(l.filter((s) => s.status === "Cancelled").length, "Cancelled")}</div>` +
-        card("Daftar SPK Material", `<div class="cl-tools"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="add">+ Add SPK</button></span></div>` +
-          tbl(["No", "SPK No", "Tgl SPK", "Shift Names", "Status", "Jumlah Produk", "Actions"], l.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.spk_no)}</td><td>${fdate(s.tgl_spk)}</td><td>${esc(s.shift_names.join(", "))}</td><td>${lab(s.status)}</td><td class="ap-r">${s.detail.length}</td><td class="ap-act ap-act-nowrap">${btn("info", "view", s.spk_no, "View")}${btn("secondary", "pdf", s.spk_no, "PDF")}</td></tr>`).join(""))) +
-        '<p class="note">Status berikutnya (Material On Load, Material Confirmed) berubah lewat menu Request List saat pack dipilih dan dikonfirmasi. SPK berstatus Material Requested / Material Confirmed masih boleh di-edit (rule is_editable di halaman View).</p>';
+      if (u.mode === "view") {
+        const s = SPK(u.id);
+        return card("Detail SPK Material", `<div class="wh-grid2"><div>${kv([["SPK No", esc(s.spk_no)], ["Tgl SPK", fdate(s.tgl_spk)], ["Due Date", fdate(s.due_date)], ["Shift Names", esc(s.shift_names.join(", ") || "-")], ["Status", lab(s.status)]])}</div><div>${kv([["Catatan", esc(s.catatan || "-")], ["Created By", "Budi S."], ["Created At", fdate(s.tgl_spk) + " 08:00"]])}</div></div>` +
+          '<div class="wh-sec">Detail Produk</div>' + tbl(["Urut", "Nama Produk FG", "Target Qty", "Total Weight (Kg)"], s.detail.map((d, i) => `<tr><td>${i + 1}</td><td>${esc(d.nm_produk_fg)}</td><td class="ap-r">${num(d.target_qty, 0)}</td><td class="ap-r">${num(d.total_weight)}</td></tr>`).join(""), "Tidak ada detail produk.") +
+          `<div class="cl-tools" style="margin-top:12px"><button type="button" class="ap-btn ap-btn--outline-warning" data-act="back">&#8592; Kembali</button>${btn("secondary", "pdf", s.spk_no, "Print PDF")}</div>`);
+      }
+      const all = S().spk, cnt = (t) => all.filter((s) => inTab(s, t)).length, q = (u.q || "").toLowerCase();
+      const l = all.filter((s) => inTab(s, u.tab) && (!q || (s.spk_no + " " + s.shift_names.join(", ") + " " + s.status).toLowerCase().includes(q))).sort((a, b) => b.tgl_spk.localeCompare(a.tgl_spk) || b.spk_no.localeCompare(a.spk_no));
+      const tabBtn = (id, label) => `<a class="${u.tab === id ? "is-on" : "is-off"}" data-act="tab" data-id="${id}" data-key="tab">${label} <span class="wh-tabs-count">${cnt(id)}</span></a>`;
+      return card("Daftar SPK Material", `<div class="cl-tabs">${tabBtn("waiting", "Menunggu Rilis")}${tabBtn("released", "Released")}${tabBtn("closed", "Closed Produksi")}${tabBtn("all", "Semua SPK")}</div>
+          <div class="cl-tools"><input class="ap-in" data-u="q" placeholder="Search..." value="${esc(u.q)}"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="add">+ Create SPK</button></span></div>` +
+        tbl(["No", "SPK No", "Tgl SPK", "Shift Names", "Status", "Jumlah Produk", "Actions"], l.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.spk_no)}</td><td>${fdate(s.tgl_spk)}</td><td>${esc(s.shift_names.join(", "))}</td><td style="text-align:center">${lab(s.status)}${prBadge(s)}</td><td style="text-align:center">${s.detail.length}</td>
+          <td class="ap-act ap-act-nowrap">${btn("info", "view", s.spk_no, "View")}${btn("secondary", "pdf", s.spk_no, "Print PDF")}${WAIT3.includes(s.status) ? btn("success", "release", s.spk_no, "Release") : ""}</td></tr>`).join(""), "No data available in table")) +
+        '<p class="note">Tab: Menunggu Rilis = Material Requested / On Load / Confirmed; Released = sudah Released tanpa laporan produksi final; Closed Produksi = Released dan laporan produksi sudah final. Status Material On Load dan Material Confirmed berubah lewat Request List. Release bisa dilakukan dari status mana pun di tab Menunggu Rilis (Spk_material_model::release_spk). Badge PR berasal dari modul Laporan Produksi.</p>';
     },
     onField(el) {
       const k = el.dataset.f, i = +el.dataset.i;
@@ -74,251 +104,273 @@
       back() { U.ui.mode = "list"; U.render(); }, cancel() { U.ui.mode = "list"; U.render(); },
       view(d) { U.ui.mode = "view"; U.ui.id = d.id; U.render(); },
       pdf: (d) => printSpk(SPK(d.id)),
-      setst(d, b) { const s = SPK(d.id), st = b.dataset.st; confirmThen({ title: st === "Released" ? "Release SPK?" : "Cancel SPK?", text: "Status SPK " + s.spk_no + " berubah dari " + s.status + " menjadi " + st + ". Status akhir tidak dapat diubah lagi." + (st === "Cancelled" && s.spkc ? " SPK Coil yang sudah dibuat tidak ikut berubah posisi stoknya." : ""), ok: "Ya, " + (st === "Released" ? "Release" : "Cancel") }, () => { s.status = st; W.save(); U.render(); toast("Status SPK menjadi " + st + ".", "ok"); }); },
+      release(d) {
+        confirmThen({ icon: "question", title: "Release SPK " + d.id + "?", text: "Setelah berstatus Released, SPK ini akan diteruskan ke Warehouse (Request List) dan dapat dibuat Laporan Produksi.", ok: "Ya, Release SPK", cancel: "Batal" }, () => {
+          const s = SPK(d.id); s.status = "Released"; W.save(); U.render(); done("SPK " + s.spk_no + " berhasil di-Release.");
+        });
+      },
       add() { ff = { id: null, tgl_spk: W.today(), due_date: "", shifts: [], catatan: "", detail: [newDetail()] }; U.ui.mode = "form"; U.render(); },
-      edit(d) { const s = SPK(d.id); ff = { id: s.spk_no, tgl_spk: s.tgl_spk, due_date: s.due_date || "", shifts: s.shift_names.slice(), catatan: s.catatan, detail: s.detail.map((x) => ({ id_produk_fg: x.id_produk_fg, target_qty: x.target_qty })) }; U.ui.mode = "form"; U.render(); },
-      addrow() { ff.detail.push(newDetail()); U.render(); },
-      delrow(d) { if (ff.detail.length === 1) { warn("Minimal satu produk."); return; } ff.detail.splice(+d.id, 1); U.render(); },
-      bom(d) { bomModal(ff.detail[+d.id]); },
+      addrow() { if (ff.detail.length >= 100) { dlg("Maksimal 100 baris produk dalam satu SPK."); return; } ff.detail.push(newDetail()); U.render(); },
+      delrow(d) { if (ff.detail.length === 1) { dlg("Minimal harus ada 1 baris produk."); return; } ff.detail.splice(+d.id, 1); U.render(); },
       save() {
-        if (!ff.tgl_spk) { warn("Tanggal SPK wajib diisi."); return; }
-        if (!ff.shifts.length) { warn("Shift wajib dipilih (minimal satu)."); return; }
+        const bad = (m) => dialog({ icon: "error", title: "Validasi Gagal", text: "Periksa form dan lengkapi data yang diperlukan. (" + m + ")" });
+        if (!ff.tgl_spk) { bad("Tanggal SPK wajib diisi"); return; }
+        if (!ff.shifts.length) { bad("Shift wajib dipilih minimal satu"); return; }
         const det = ff.detail.map(dOf);
-        if (det.some((x) => !x || x.target_qty < 1)) { warn("Setiap baris produk wajib memilih Produk dan Target Qty minimal 1."); return; }
-        if (new Set(det.map((x) => x.id_produk_fg)).size !== det.length) { warn("Produk yang sama tidak boleh dipilih dua kali dalam satu SPK."); return; }
-        if (ff.id) { const s = SPK(ff.id); Object.assign(s, { tgl_spk: ff.tgl_spk, due_date: ff.due_date, shift_names: ff.shifts, catatan: ff.catatan, detail: det }); }
-        else S().spk.push({ spk_no: W.nextNo("spk"), tgl_spk: ff.tgl_spk, due_date: ff.due_date, shift_names: ff.shifts, catatan: ff.catatan, status: "Material Requested", detail: det, spkc: null });
-        W.save(); U.ui.mode = "list"; U.render(); done(ff.id ? "SPK berhasil diperbarui." : "SPK berhasil dibuat dengan status Material Requested.");
+        for (let i = 0; i < det.length; i++) {
+          if (!det[i]) { bad(`Baris ${i + 1}: Produk harus dipilih`); return; }
+          if (det[i].target_qty < 1 || det[i].target_qty > 999999) { bad(`Baris ${i + 1}: Target Qty harus antara 1 - 999.999`); return; }
+        }
+        if (new Set(det.map((x) => x.id_produk_fg)).size !== det.length) { bad("Produk ini sudah dipilih di baris lain"); return; }
+        confirmThen({ icon: "question", title: "Konfirmasi", text: "Apakah Anda yakin ingin membuat SPK ini?", ok: "Ya", cancel: "Batal" }, () => {
+          S().spk.push({ spk_no: W.nextNo("spk"), tgl_spk: ff.tgl_spk, due_date: ff.due_date, shift_names: ff.shifts, catatan: ff.catatan, status: "Material Requested", detail: det, spkc: null, pr: null });
+          W.save(); U.ui.mode = "list"; U.ui.tab = "waiting"; U.render(); toast("SPK berhasil dibuat.", "ok");
+        });
       },
     },
   };
   function formView() {
     const rows = ff.detail.map((x, i) => { const d = dOf(x);
-      return `<tr><td>${i + 1}</td><td><select class="ap-sel ap-in" data-f="prod" data-i="${i}"><option value="">-- Pilih Produk --</option>${W.PRODUK.filter((p) => p.aktif || p.id === x.id_produk_fg).map((p) => `<option value="${p.id}"${x.id_produk_fg === p.id ? " selected" : ""}>${esc(p.id + " — " + p.nm)}</option>`).join("")}</select></td>
-        <td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="qty" data-i="${i}" value="${esc(NumFmt.fmt(x.target_qty))}" placeholder="0"></td><td class="ap-r">${d ? num(d.berat_per_unit, 4) : "-"}</td><td class="ap-r" id="tw${i}">${d ? num(d.total_weight) : "0,00"}</td>
-        <td class="ap-act ap-act-nowrap">${btn("info", "bom", i, "Detail Material (BOM)")}${btn("danger", "delrow", i, "Hapus")}</td></tr>`; }).join("");
-    return card(ff.id ? "Edit SPK — " + esc(ff.id) : "Add SPK Material", `<div class="wh-grid2">${row("Tgl SPK", `<input class="ap-in" type="date" data-f="tgl_spk" value="${esc(ff.tgl_spk)}">`, 1)}${row("Due Date", `<input class="ap-in" type="date" data-f="due_date" value="${esc(ff.due_date)}"><div class="ap-hint">Tanggal batas penyelesaian (opsional).</div>`)}</div>` +
-      row("Shift Names", W.SHIFT.map((s) => `<label style="display:inline-block;margin-right:16px"><input type="checkbox" data-f="shift" value="${esc(s)}"${ff.shifts.includes(s) ? " checked" : ""}> ${esc(s)}</label>`).join(""), 1) +
-      row("Catatan", txt("catatan", ff.catatan, { ph: "Catatan tambahan (opsional)", rows: 2 }).replace("<textarea", "<textarea").replace('data-f="catatan"', 'data-f="catatan"')) +
-      '<div class="wh-sec">Daftar Produk</div><p class="ap-hint" style="margin:0 0 6px">Produk diambil dari <a class="ap-link" href="pc-produk.html">Product Costing &gt; Master Produk</a> (hanya produk Aktif yang sudah punya BOM material gudang).</p>' + tbl(["No", "Produk FG", "Target Qty", "Berat Per Unit (Kg)", "Total Weight (Kg)", "Action"], rows) +
-      `<div class="cl-tools" style="margin-top:10px"><button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="addrow">+ Tambah Produk</button><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--outline-warning" data-act="cancel">Batal</button> <button type="button" class="ap-btn ap-btn--success" data-act="save">${ff.id ? "Update SPK" : "Create SPK"}</button></span></div>`);
+      return `<div class="pr-fg"><div class="pr-fg__h"><b>Produk ${i + 1}</b>${btn("danger", "delrow", i, "&#10005;", ' title="Hapus baris"')}</div><div class="pr-grid4" style="grid-template-columns:5fr 2fr 2fr 3fr">
+        <div class="pr-f"><label class="ap-lbl">Nama Produk FG <span class="ap-req">*</span></label><select class="ap-sel ap-in" data-f="prod" data-i="${i}"><option value="">-- Pilih Produk --</option>${W.PRODUK.filter((p) => p.aktif || p.id === x.id_produk_fg).map((p) => `<option value="${p.id}"${x.id_produk_fg === p.id ? " selected" : ""}>${esc(p.nm)}</option>`).join("")}</select></div>
+        <div class="pr-f"><label class="ap-lbl">Target Qty <span class="ap-req">*</span></label><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="qty" data-i="${i}" value="${esc(x.target_qty ? NumFmt.fmt(x.target_qty) : "")}" placeholder="0"></div>
+        <div class="pr-f"><label class="ap-lbl">Berat Per Unit (Kg)</label><div class="ap-in ap-in--ro ap-in--num">${d ? num(d.berat_per_unit) : "0,00"}</div></div>
+        <div class="pr-f"><label class="ap-lbl">Total Weight (Kg)</label><div class="ap-in ap-in--ro ap-in--num" id="tw${i}">${d ? num(d.total_weight) : "0,00"}</div></div></div></div>`; }).join("");
+    return card("Create SPK Material", `<div class="pr-grid4">${field2("Tgl SPK", `<input class="ap-in" type="date" data-f="tgl_spk" value="${esc(ff.tgl_spk)}">`, 1)}${field2("Due Date", `<input class="ap-in" type="date" data-f="due_date" value="${esc(ff.due_date)}">`)}
+      ${field2("Shift Names", W.SHIFT.map((s) => `<label style="display:block;font-weight:400"><input type="checkbox" data-f="shift" value="${esc(s)}"${ff.shifts.includes(s) ? " checked" : ""}> ${esc(s)}</label>`).join(""), 1)}${field2("Catatan", txt("catatan", ff.catatan, { ph: "Catatan tambahan (opsional)", rows: 2 }))}</div>
+      <div class="pr-sub-h" style="margin-top:14px"><h6>Daftar Produk</h6><button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="addrow">+ Add More Product</button></div>${rows}
+      <div class="cl-tools" style="margin-top:10px;justify-content:flex-end"><button type="button" class="ap-btn ap-btn--secondary" data-act="cancel">&#8592; Kembali</button><button type="button" class="ap-btn ap-btn--primary" data-act="save">Create SPK</button></div>`);
   }
 
-  /* ======================= 6. Request List — SPK Coil (request_list) ======================= */
-  const LISTED = ["Material Requested", "Material On Load", "Material Confirmed"];
-  function viewSpkc(s) {
-    const pk = s.spkc ? s.spkc.packs.map(packInfo).filter(Boolean) : [];
-    openModal({ title: "View SPK Coil Detail — " + s.spk_no, size: "xl", hdr: "info",
-      foot: s.status === "Material On Load" ? btn("danger", "delspkc", s.spk_no, "Hapus SPK Coil") : "",
-      act: {
-        rmpack(d) { confirmThen({ title: "Hapus pack dari SPK Coil?", text: "Pack " + d.id + " dikeluarkan dari SPK Coil " + s.spkc.no + (s.spkc.packs.length === 1 ? ". Ini pack terakhir, SPK Coil ikut dihapus dan status kembali Material Requested." : "."), ok: "Ya, Hapus" }, () => {
-          s.spkc.packs = s.spkc.packs.filter((c) => c !== d.id); s.spkc.scanned = s.spkc.scanned.filter((c) => c !== d.id);
-          if (!s.spkc.packs.length) { s.spkc = null; s.status = "Material Requested"; W.save(); closeModal(); U.render(); toast("SPK Coil dihapus; status kembali Material Requested.", "ok"); return; }
-          W.save(); U.drawModal(); U.render(); toast("Pack dihapus dari SPK Coil.", "ok"); }); },
-        delspkc() { confirmThen({ title: "Hapus SPK Coil?", text: "SPK Coil " + s.spkc.no + " dihapus dan status SPK kembali Material Requested.", ok: "Ya, Hapus" }, () => { s.spkc = null; s.status = "Material Requested"; W.save(); closeModal(); U.render(); toast("SPK Coil dihapus; status kembali Material Requested.", "ok"); }); },
-      }, body: () => spkHeaderKv(s) + (s.spkc ? kv([["No. SPK Coil", esc(s.spkc.no)], ["Tgl SPK Coil", fdate(s.spkc.date)], ["Total Berat Dibutuhkan", num(needsOf(s).reduce((a, n) => a + n.need, 0)) + " Kg"]]) : '<p class="note">Belum ada SPK Coil: pack belum dipilih (Manage Request Pack).</p>') +
-      s.detail.map((d) => `<div class="wh-prod"><div class="wh-prod__h"><span>${esc(d.nm_produk_fg)}</span><span>Target ${num(d.target_qty, 0)} pcs</span></div><div class="wh-prod__b">${bomOf(d).map((b) => {
-        const mine = pk.filter((p) => p.mats.includes(b.mid));
-        return `<div class="wh-need${mine.length ? " is-ok" : ""}"><b>${esc(mn(b.mid))}</b> — kebutuhan ${num(b.need)} Kg, terpilih ${num(mine.reduce((a, p) => a + p.nw, 0))} Kg</div>` + (mine.length ? tbl(["Pack Code", "Roll", "Net Weight Total", "Gross Weight Total", "Status Scan"].concat(s.status === "Material On Load" ? ["Aksi"] : []), mine.map((p) => `<tr><td>${pill(p.code)}</td><td class="ap-r">${p.roll}</td><td class="ap-r">${num(p.nw)}</td><td class="ap-r">${num(p.gw)}</td><td>${lab(s.spkc.scanned.includes(p.code) ? "Scanned" : "Belum Scan")}</td>${s.status === "Material On Load" ? `<td>${btn("danger", "rmpack", p.code, "Hapus Pack", ` data-spk="${s.spk_no}"`)}</td>` : ""}</tr>`).join("")) : "");
-      }).join("")}</div></div>`).join("") });
-  }
-  function manageModal(s) {
-    const f = { sel: new Set(s.spkc ? s.spkc.packs : []) };
-    const packTbl = (list, titleTxt, mid) => `<h6 style="margin:10px 0 4px">${titleTxt}</h6>` + tbl(["", "Pack Code", "Roll", "Net Weight Total", "Gross Weight Total", "Detail", "Status"],
-      list.map((p) => { const used = inOtherSpkc(p.code, s.spk_no);
-        return `<tr class="${f.sel.has(p.code) ? "wh-sel" : ""}"><td><input type="checkbox" data-f="pk" value="${esc(p.code)}"${f.sel.has(p.code) ? " checked" : ""}${used ? " disabled" : ""}></td><td>${pill(p.code)}</td><td class="ap-r">${p.roll}</td><td class="ap-r">${num(p.nw)}</td><td class="ap-r">${num(p.gw)}</td><td>${p.code.startsWith("WIP-") ? "-" : btn("light", "pdet", p.code, "Detail")}</td><td>${used ? lab("Dipilih di SPK Coil") : lab("Available")}</td></tr>`; }).join(""), "Tidak ada pack tersedia.");
+  /* ======================= 6. Request List (request_list) ======================= */
+  // Alur aplikasi: scan / ketik No. Pack di daftar SPK -> popup pilih No. SPK -> pack pindah gudang PRO -> PRT.
+  // Status SPK tidak berubah oleh scan (Request_list_model::confirm_scan_pack_to_prt). Release dilakukan di SPK Material.
+  const scanCount = (s) => new Set(S().scanlog.filter((x) => x.spk_no === s.spk_no).map((x) => x.pack_code)).size;
+  const sfx = (n) => (n ? ` <span class="ap-label ap-label--light" style="color:#0d6efd;border-color:#0d6efd" title="Jumlah pack sudah di-scan ke PRT">${n} Pack PRT</span>` : "");
+  const RLBADGE = { "Material Requested": "warning", "Material On Load": "info", "Material Confirmed": "success", Released: "success", Cancelled: "danger" };
+  const rlStatus = (s) => `<span class="ap-label ap-label--${RLBADGE[s.status] || "dark"}">${esc(s.status)}</span>${sfx(scanCount(s))}${prBadge(s)}`;
+  const rlProdukSummary = (s) => s.detail.map((d) => d.nm_produk_fg + " (" + d.target_qty + " pcs)").join(", ");
+  function scanModal(chk) {
+    const coils = chk.coils, tn = coils.reduce((a, c) => a + c.net_weight, 0), st = { spk: "" };
     openModal({
-      title: "Manage Request Pack — " + s.spk_no, size: "xl", ok: "Simpan SPK Coil", okCls: "success",
-      body: () => `<p class="note" style="margin-top:0">Pilih pack dari Warehouse WIP dan Warehouse Production sesuai kebutuhan material. ${s.spkc ? "SPK Coil <b>" + esc(s.spkc.no) + "</b> sudah ada; menyimpan akan mengganti pilihan pack (hasil scan pack yang tetap dipilih dipertahankan)." : "Menyimpan akan membuat SPK Coil baru dan status SPK menjadi Material On Load."}</p>` +
-        s.detail.map((d) => `<div class="wh-prod"><div class="wh-prod__h"><span>${esc(d.nm_produk_fg)}</span><span>Target ${num(d.target_qty, 0)} pcs</span></div><div class="wh-prod__b">${bomOf(d).map((b) =>
-          `<div class="wh-need" data-calc="need" data-arg="${b.mid}|${b.need}"></div>` + packTbl(wipPacks().filter((p) => p.mats.includes(b.mid)), "Warehouse WIP", b.mid) + packTbl(W.packs("PRO").filter((p) => p.mats.includes(b.mid)), "Warehouse Production", b.mid)).join("")}</div></div>`).join(""),
-      calc: { need: (arg) => { const [mid, need] = arg.split("|"), got = [...f.sel].map(packInfo).filter((p) => p && p.mats.includes(mid)).reduce((a, p) => a + p.nw, 0), sel = Number(need);
-        return `<b>${esc(mn(mid))}</b> — kebutuhan ${num(sel)} Kg, terpilih ${num(got)} Kg ${got >= sel ? '<span class="ap-label ap-label--success">Cukup</span>' : `<span class="ap-label ap-label--warning">Kurang ${num(sel - got)} Kg</span>`}`; } },
-      onField(el) { if (el.dataset.f !== "pk") return; if (el.checked) f.sel.add(el.value); else f.sel.delete(el.value); U.drawModal(); },
-      act: { pdet(d) { const p = packInfo(d.id); openModal({ title: "Pack Detail — " + d.id, size: "lg", hdr: "info", body: () => tbl(["No", "Nama Material", "No. Coil", "Kode Internal", "Net Weight", "Gross Weight", "Length"], p.coils.map((c, i) => `<tr><td>${i + 1}</td><td>${esc(mn(c.mat))}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td></tr>`).join("")) }); } },
+      title: "Konfirmasi Scan Pack & Pilih No. SPK", size: "lg", ok: "Pindahkan Pack ke PRT", okCls: "success",
+      body: () => `<div class="wh-grid3" style="margin-bottom:10px"><div><small class="ap-hint">Pack Code</small><div><span class="wh-pack">${esc(chk.pack)}</span></div></div><div><small class="ap-hint">Asal &rarr; Tujuan Gudang</small><div><b>PRO</b> &rarr; <b style="color:#198754">PRT (Production 2)</b></div></div><div><small class="ap-hint">Ringkasan Isi Pack</small><div><b>${coils.length} Coil | ${num(tn)} Kg</b></div></div></div>
+        <div class="ap-lbl" style="font-weight:700;font-size:12px;text-transform:uppercase;color:#6c757d">Detail Coil dalam Pack</div>` +
+        tbl(["No", "Nama Material", "No. Coil", "Kode Internal", "Net Weight (Kg)"], coils.map((c, i) => `<tr><td>${i + 1}</td><td><b>${esc(mn(c.mat))}</b><br><small class="ap-hint">${esc(c.mat)}</small></td><td>${esc(c.no_coil)}</td><td><code>${esc(c.kode_internal)}</code></td><td class="ap-r">${num(c.net_weight)}</td></tr>`).join(""), "Tidak ada coil.") +
+        `<div class="pr-f" style="margin-top:10px"><label class="ap-lbl"><b>Pilih No. SPK Tujuan (Acuan No. Transaksi Kartu Material)</b> <span class="ap-req">*</span></label>
+        <select class="ap-sel ap-in" data-f="spk"><option value="">-- Pilih No. SPK --</option>${W.scannableSpk().sort((a, b) => b.tgl_spk.localeCompare(a.tgl_spk) || b.spk_no.localeCompare(a.spk_no)).map((s) => `<option value="${esc(s.spk_no)}"${st.spk === s.spk_no ? " selected" : ""}>${esc(s.spk_no + " (" + s.status + " | " + s.tgl_spk + ") - " + rlProdukSummary(s))}</option>`).join("")}</select></div>`,
+      onField(el) { st.spk = el.value; },
       onOk() {
-        if (!f.sel.size) { warn("Pilih minimal satu pack."); return; }
-        const packs = [...f.sel];
-        if (s.spkc) { s.spkc.packs = packs; s.spkc.scanned = s.spkc.scanned.filter((c) => packs.includes(c)); } else s.spkc = { no: W.nextNo("spkc"), date: W.today(), packs, scanned: [] };
-        s.status = "Material On Load"; W.save(); closeModal(); U.render(); done("SPK Coil " + s.spkc.no + " tersimpan. Status SPK: Material On Load.");
+        if (!st.spk) { dialog({ icon: "warning", title: "Perhatian", text: "Silakan pilih No. SPK terlebih dahulu." }); return; }
+        const r = W.scanMove(chk.pack, st.spk);
+        if (!r.ok) { dialog({ icon: "error", title: "Gagal Scan", text: r.message }); return; }
+        closeModal(); U.ui.scan = ""; U.render(); toast(r.message, "ok");
       },
     });
   }
-  function printPengambilan(s) {
-    const pk = s.spkc.packs.map(packInfo).filter(Boolean);
-    printDoc("SPK Pengambilan Material", ppHead("SPK PENGAMBILAN MATERIAL", s.spkc.no) + ppMeta([["No. SPK", esc(s.spk_no)], ["Tgl SPK Coil", fdate(s.spkc.date)], ["Shift Names", esc(s.shift_names.join(", "))], ["Status", esc(s.status)]]) +
-      `<table class="pp-tbl"><thead><tr><th>Material Code</th><th>Nama Material</th><th class="pp-r">Kebutuhan (Qty)</th><th>Unit</th></tr></thead><tbody>${needsOf(s).map((n) => `<tr><td>${esc(n.mid)}</td><td>${esc(mn(n.mid))}</td><td class="pp-r">${num(n.need)}</td><td>KG</td></tr>`).join("")}</tbody></table>` +
-      `<table class="pp-tbl"><thead><tr><th>No</th><th>Pack Code</th><th>Nama Material</th><th class="pp-r">Roll</th><th class="pp-r">Net Weight Total</th><th class="pp-r">Gross Weight Total</th><th>Gudang Asal</th></tr></thead><tbody>${pk.map((p, i) => `<tr><td>${i + 1}</td><td>${esc(p.code)}</td><td>${esc(p.mats.map(mn).join(", "))}</td><td class="pp-r">${p.roll}</td><td class="pp-r">${num(p.nw)}</td><td class="pp-r">${num(p.gw)}</td><td>${esc(p.gudang)}</td></tr>`).join("")}</tbody></table>` + ppSign(["Dibuat (PPIC)", "Diambil oleh (Gudang)", "Diterima (Produksi)"]));
-  }
-  function confirmModal(pre) {
-    const cf = { no: pre || "" };
-    const pend = () => S().spk.filter((s) => s.status === "Material On Load" && s.spkc);
-    const cur = () => pend().find((s) => s.spkc.no === cf.no);
-    const allScanned = () => { const s = cur(); return !!s && s.spkc.packs.every((c) => s.spkc.scanned.includes(c)); };
-    const doScan = (code) => {
-      const s = cur(); if (!s) return;
-      const c = (code || "").trim().toUpperCase(); if (!c) return;
-      if (!s.spkc.packs.includes(c)) { warn(`Pack "${c}" tidak ada di SPK Coil ${s.spkc.no}.`); return; }
-      if (s.spkc.scanned.includes(c)) { toast(`Pack ${c} sudah di-scan.`, "warn"); return; }
-      s.spkc.scanned.push(c); W.save(); U.drawModal(); toast(`Pack ${c} berhasil di-scan.`, "ok");
-    };
-    openModal({
-      title: "Confirm SPK Coil", size: "lg", ok: "Confirm SPK Coil", okCls: "success", okDisabled: () => !allScanned(),
-      body: () => { const s = cur(), pk = s ? s.spkc.packs.map(packInfo).filter(Boolean) : [];
-        return `<div class="ap-row"><div class="c3"><label class="ap-lbl">Pilih Nomor SPK Coil (Request ID)</label></div><div class="c9" style="grid-column: span 9"><select class="ap-sel ap-in" data-f="no"><option value="">-- Pilih SPK Coil --</option>${pend().map((x) => `<option value="${x.spkc.no}"${x.spkc.no === cf.no ? " selected" : ""}>${x.spkc.no} (${fdate(x.spkc.date)})</option>`).join("")}</select>${pend().length ? "" : '<div class="ap-hint">Tidak ada SPK Coil pending.</div>'}</div></div>` +
-          (s ? `<div class="wh-scanbox"><b>Scan QR Code Coil</b><br><input class="ap-in" id="scanIn" data-enter="scan" placeholder="Scan/Ketik kode pack di sini (Enter)" autocomplete="off"> <button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="scan">Scan</button></div>` +
-            tbl(["No", "Pack Code", "Roll", "Nama Material", "Status Scan"], pk.map((p, i) => `<tr><td>${i + 1}</td><td>${pill(p.code)}</td><td class="ap-r">${p.roll}</td><td>${esc(p.mats.map(mn).join(", "))}</td><td>${lab(s.spkc.scanned.includes(p.code) ? "Scanned" : "Belum Scan")} ${s.spkc.scanned.includes(p.code) ? "" : btn("light", "scanrow", p.code, "Simulasi scan")}</td></tr>`).join("")) +
-            `<p class="note">${s.spkc.scanned.length}/${s.spkc.packs.length} pack ter-scan. Tombol Confirm aktif setelah semua pack ter-scan. Tombol "Simulasi scan" hanya untuk mockup (di aplikasi dipindai dengan scanner QR).</p>` : "");
-      },
-      onField(el) { cf.no = el.value; U.drawModal(); },
-      after(h) { const i = h.querySelector("#scanIn"); if (i) i.focus(); },
-      act: { scan(d, b) { const i = $("#scanIn"); doScan(i ? i.value : ""); }, scanrow: (d) => doScan(d.id) },
-      onOk() {
-        const s = cur(); if (!allScanned()) { warn("Semua coil harus di-scan terlebih dahulu"); return; }
-        const sum = {};
-        s.spkc.packs.forEach((code) => { const p = packInfo(code); p.mats.forEach((mid) => { const k = mid + "|" + p.gudang, o = sum[k] || (sum[k] = { mid, gudang: p.gudang, n: 0, qty: 0 }); if (p.coils.length) p.coils.filter((c) => c.mat === mid).forEach((c) => { o.n++; o.qty += c.net_weight; }); else { o.n++; o.qty += p.nw; } });
-          if (p.wip) p.wip.kd = "PRT"; else S().coils.filter((c) => c.pack === code).forEach((c) => { c.gudang = "PRT"; }); });
-        Object.values(sum).filter((o) => o.gudang === "PRO" || o.gudang === "SLI").forEach((o) => W.addTrx(o.mid, W.today(), s.spkc.no, "OUT", o.n, o.qty));
-        s.status = "Material Confirmed"; W.save(); closeModal(); U.render();
-        done("SPK Coil " + s.spkc.no + " berhasil dikonfirmasi.", `<p class="note">Pack dipindah ke gudang PRT (WRH Production 2) tanpa mengubah nilai stok. Ringkasan transaksi (kode_trans ${esc(s.spkc.no)}):</p>` + tbl(["Nama Material", "Gudang Asal", "Jumlah Coil", "Qty Transaksi (Kg)"], Object.values(sum).map((o) => `<tr><td>${esc(mn(o.mid))}</td><td>${o.gudang}</td><td class="ap-r">${o.n}</td><td class="ap-r">${num(o.qty)}</td></tr>`).join("")));
-      },
-    });
+  function rlView(s) {
+    const hist = S().scanlog.filter((x) => x.spk_no === s.spk_no), tn = hist.reduce((a, h) => a + h.net_weight, 0);
+    return card("Detail SPK Material", `<div class="wh-grid2"><div>${kv([["No. SPK", `<span class="wh-pack" style="background:#212529">${esc(s.spk_no)}</span>`], ["Tanggal SPK", fdate(s.tgl_spk)], ["Due Date", fdate(s.due_date)], ["Shift", esc(s.shift_names.join(", ") || "-")]])}</div><div>${kv([["Status", lab(s.status)], ["Dibuat Oleh", "Budi S."], ["Catatan", esc(s.catatan || "-")]])}</div></div>`,
+      `<a class="ap-btn ap-btn--sm ap-btn--secondary" data-act="back">&#8592; Kembali</a>`) +
+      card(`Detail Produk (${s.detail.length} item)`, tbl(["Urut", "Nama Produk FG", "Target Qty", "Total Weight (Kg)"], s.detail.map((d, i) => `<tr><td>${i + 1}</td><td>${esc(d.nm_produk_fg)}</td><td class="ap-r">${num(d.target_qty, 0)}</td><td class="ap-r">${num(d.total_weight)}</td></tr>`).join(""), "Belum ada detail produk.")) +
+      card(`Riwayat Scan Pack ke WRH. Production 2 (${hist.length} coil)`, tbl(["No", "Pack Code", "Nama Material", "No. Coil", "Kode Internal", "Net Weight (Kg)", "Waktu Scan", "Oleh"],
+        hist.map((h, i) => `<tr><td>${i + 1}</td><td>${pill(h.pack_code)}</td><td>${esc(mn(h.mat))}<br><small class="ap-hint">${esc(h.mat)}</small></td><td>${esc(h.no_coil)}</td><td><code>${esc(h.kode_internal)}</code></td><td class="ap-r">${num(h.net_weight)}</td><td>${esc(h.waktu)}</td><td>${esc(h.oleh)}</td></tr>`).join(""), "Belum ada pack yang di-scan ke WRH. Production 2 untuk SPK ini.",
+        hist.length ? `<tr class="wh-foot"><td colspan="5" class="ap-r">Total</td><td class="ap-r">${num(tn)}</td><td colspan="2"></td></tr>` : ""), '<span class="ap-label ap-label--light">Read-Only</span>') +
+      `<div class="cl-tools"><a class="ap-btn ap-btn--secondary" data-act="pdf" data-id="${esc(s.spk_no)}">Print SPK</a></div>`;
   }
   P.request = {
-    title: "Request List", mod: "request_list", role: "Gudang / PPIC", ui: {},
-    hint: "Permintaan material dari SPK: pilih pack (SPK Coil), cetak SPK Pengambilan, scan QR saat pengambilan, lalu konfirmasi.",
+    title: "Request List", mod: "request_list", role: "Gudang / PPIC", ui: { mode: "list", id: null, tab: "waiting", q: "", scan: "" },
+    hint: "Daftar SPK untuk gudang: scan No. Pack dari WRH Production 1 (PRO), pilih SPK tujuan, lalu pack dipindahkan ke WRH Production 2 (PRT).",
     render() {
-      const l = S().spk.filter((s) => LISTED.includes(s.status)).sort((a, b) => b.tgl_spk.localeCompare(a.tgl_spk) || b.spk_no.localeCompare(a.spk_no));
-      return `<div class="cl-sumrow">${LISTED.map((st) => stat(l.filter((s) => s.status === st).length, st)).join("")}</div>` +
-        card("Daftar Request SPK", tbl(["No", "SPK No", "Tgl SPK", "Shift Names", "Status Coil", "Jumlah Produk", "Aksi"], l.map((s, i) => {
-          const it = [mi("view", s.spk_no, "View")];
-          if (["Material Requested", "Material On Load"].includes(s.status)) it.push(mi("manage", s.spk_no, "Manage Request Pack"));
-          if (s.status !== "Material Requested") it.push(mi("print", s.spk_no, "Print SPK Pengambilan"));
-          if (s.status === "Material On Load") it.push(mi("x", "", "-"), mi("confirm", s.spkc.no, "Confirm SPK Coil"), mi("close", s.spk_no, "Close SPK"));
-          return `<tr><td>${i + 1}</td><td>${esc(s.spk_no)}</td><td>${fdate(s.tgl_spk)}</td><td>${esc(s.shift_names.join(", "))}</td><td>${lab(s.status)}</td><td class="ap-r">${s.detail.length}</td><td>${menu(it)}</td></tr>`; }).join(""), "Tidak ada request."), "") +
-        `<p class="note">Alur status: <b>Material Requested</b> (SPK dibuat) → Manage Request Pack → <b>Material On Load</b> (SPK Coil dibuat, bisa dicetak) → scan semua pack + Confirm SPK Coil → <b>Material Confirmed</b> (pack pindah ke gudang PRT, lanjut ke menu Unpack Coil). Close SPK = menutup manual menjadi Material Confirmed tanpa scan.</p>`;
+      const u = U.ui;
+      if (u.mode === "view") return rlView(SPK(u.id));
+      const all = S().spk, cnt = (t) => all.filter((s) => inTab(s, t)).length, q = (u.q || "").toLowerCase();
+      const l = all.filter((s) => inTab(s, u.tab) && (!q || (s.spk_no + " " + s.shift_names.join(", ") + " " + s.status).toLowerCase().includes(q))).sort((a, b) => b.tgl_spk.localeCompare(a.tgl_spk) || b.spk_no.localeCompare(a.spk_no));
+      const tabBtn = (id, label) => `<a class="${u.tab === id ? "is-on" : "is-off"}" data-act="tab" data-id="${id}" data-key="tab">${label} <span class="wh-tabs-count">${cnt(id)}</span></a>`;
+      return card("Request List", `<div class="cl-tools" style="justify-content:space-between;border-bottom:1px solid #dee2e6;padding-bottom:8px"><span class="cl-tabs" style="border:0;margin:0">${tabBtn("waiting", "Menunggu Rilis")}${tabBtn("released", "Released")}${tabBtn("closed", "Closed Produksi")}${tabBtn("all", "Semua SPK")}</span>
+          <span style="display:flex;gap:4px"><input class="ap-in" data-enter="scan" data-f="scan" style="min-width:240px;font-weight:600" placeholder="Scan / Ketik No. Pack..." value="${esc(u.scan)}" autocomplete="off"><button type="button" class="ap-btn ap-btn--primary" data-act="scan">Scan</button><button type="button" class="ap-btn ap-btn--secondary" data-act="camera" title="Scan dengan Kamera">&#128247;</button></span></div>
+          <div class="cl-tools"><input class="ap-in" data-u="q" placeholder="Search..." value="${esc(u.q)}"></div>` +
+        tbl(["No", "SPK No", "Tgl SPK", "Shift Names", "Status", "Jumlah Produk", "Aksi"], l.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.spk_no)}</td><td>${fdate(s.tgl_spk)}</td><td>${esc(s.shift_names.join(", "))}</td><td style="text-align:center">${rlStatus(s)}</td><td style="text-align:center">${s.detail.length}</td>
+          <td class="ap-act ap-act-nowrap">${btn("info", "view", s.spk_no, "View Detail")}${btn("secondary", "pdf", s.spk_no, "Print SPK")}</td></tr>`).join(""), "No data available in table")) +
+        '<p class="note">Scan hanya menerima pack aktif dari gudang PRO; pack di PRT / gudang lain ditolak. SPK tujuan = SPK selain Cancelled yang belum punya Laporan Produksi final; scan tidak mengubah status SPK. Pack yang sudah di PRT bisa di-Unpack lewat menu Unpack Coil. Mockup tidak memakai kamera sungguhan; ketik No. Pack lalu Enter / Scan (mis. PCK-2611-001, PCK-2611-010 dari PRO; PCK-2611-004 sudah di PRT; PCK-2611-006 di SLI).</p>';
     },
+    onField(el) { if (el.dataset.f === "scan") U.ui.scan = el.value; },
     act: {
-      view: (d) => viewSpkc(SPK(d.id)), manage: (d) => manageModal(SPK(d.id)), print: (d) => { const s = SPK(d.id); if (!s.spkc) { warn("SPK Coil belum dibuat (Manage Request Pack dulu)."); return; } printPengambilan(s); },
-      confirm: (d) => confirmModal(d.id),
-      close(d) { confirmThen({ title: "Close SPK?", text: "SPK " + d.id + " ditutup manual dan statusnya menjadi Material Confirmed (tanpa scan).", ok: "Ya, Close SPK" }, () => { SPK(d.id).status = "Material Confirmed"; W.save(); U.render(); toast("SPK ditutup. Status: Material Confirmed.", "ok"); }); },
+      back() { U.ui.mode = "list"; U.render(); }, view(d) { U.ui.mode = "view"; U.ui.id = d.id; U.render(); }, pdf: (d) => printSpk(SPK(d.id)),
+      camera() { dialog({ icon: "warning", title: "Akses Kamera Membutuhkan HTTPS", text: "Browser HP/tablet memblokir kamera pada koneksi HTTP non-localhost. Gunakan HTTPS atau input manual / scanner Bluetooth." }); },
+      scan() {
+        const code = (U.ui.scan || "").trim(); if (!code) return;
+        const r = W.scanCheck(code);
+        if (!r.ok) { dialog({ icon: "error", title: "Scan Pack Ditolak", text: r.message }); return; }
+        scanModal(r);
+      },
     },
   };
 
   /* ======================= 7. Stock From Warehouse (stock_from_warehouse) ======================= */
-  const SFWT = { prt: ["PRT", "WRH. Production 2", "Coil yang sudah dikonfirmasi lewat Request List dan berada di gudang PRT (menunggu Unpack Coil)."], wip: ["WIP", "WIP (Coil Remains)", "Sisa coil hasil produksi yang masih bisa dipakai lagi (dipilih di Manage Request Pack)."], hld: ["HLD", "On Hold", "Material ditahan dari Laporan Produksi; keputusan lanjutannya di modul Claim Material."] };
-  const sfwTable = (rows, extra) => tbl(["No", "Nama Material", "No. Coil", "Kode Internal"].concat(extra ? ["Gudang Asal"] : [], ["Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)"], extra ? ["Kode Trans"] : []),
-    rows.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(mn(x.mat))}</td><td>${esc(x.no_coil)}</td><td>${esc(x.kode_internal)}</td>${extra ? `<td>${esc(x.gudang_asal)}</td>` : ""}<td class="ap-r">${num(x.net_weight)}</td><td class="ap-r">${num(x.gross_weight)}</td><td class="ap-r">${num(x.length)}</td>${extra ? `<td>${esc(x.kode_trans)}</td>` : ""}</tr>`).join(""), "Tidak ada data.",
-    `<tr class="wh-foot"><td colspan="${extra ? 5 : 4}" class="ap-r">Total</td><td class="ap-r">${num(sumNet(rows))}</td><td class="ap-r">${num(rows.reduce((a, x) => a + x.gross_weight, 0))}</td><td colspan="${extra ? 2 : 1}"></td></tr>`);
-  const sfwAll = () => S().sfw.concat(S().coils.filter((c) => c.gudang === "PRT").map((c) => { const sp = S().spk.find((x) => x.spkc && x.spkc.packs.includes(c.pack)); return { kd: "PRT", mat: c.mat, no_coil: c.no_coil, kode_internal: c.kode_internal, net_weight: c.net_weight, gross_weight: c.gross_weight, length: c.length, gudang_asal: "PRO", kode_trans: sp ? sp.spkc.no : "-" }; }));
+  // Mengikuti Stock_from_warehouse_model: 4 tab (WRH. Production 2, WIP (Coil Remains), On Hold, History Per Days),
+  // aksi "Kartu Pemakaian" per coil di tab Production 2, tab On Hold berbasis Claim Material, tanpa kartu statistik.
+  const n3 = (n) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const SFWTAB = [["prt", "WRH. Production 2"], ["wip", "WIP (Coil Remains)"], ["hld", "On Hold"], ["hist", "History Per Days"]];
+  // info claim contoh untuk coil On Hold (claim_material + claim_material_decision)
+  const HOLDINFO = {
+    "5A0003305": { no_po: "PO-2610-018", no_claim: "CLM-2611-0002", problem: "Karat putih", alasan: "Ditemukan karat putih di lapisan dalam coil", st: "Hold" },
+    "5A0008210": { no_po: "PO-2610-029", no_claim: "CLM-2611-0003", problem: "Coating mengelupas", alasan: "Hasil KW 2 cacat dari supplier", st: "Dalam Retur" },
+    "5A0010220": { no_po: "PO-2610-033", no_claim: "CLM-2611-0005", problem: "Gelombang", alasan: "Lebar tidak rata", st: "Dapat Dipakai (Release)" },
+    "5A0002215": { no_po: "PO-2610-016", no_claim: "CLM-2610-0009", problem: "Penyok", alasan: "Rusak saat bongkar", st: "Dijual (Gudang Slitting)" },
+    "5A0005120": { no_po: "PO-2610-024", no_claim: "CLM-2610-0008", problem: "Karat", alasan: "Material lembab", st: "Dikompensasi" },
+  };
+  const HOLD_CLS = { Hold: "danger", "Dapat Dipakai (Release)": "success", "Dijual (Gudang Slitting)": "info", "Dalam Retur": "warning", Dikompensasi: "primary" };
+  // ---- hasil Incoming Subkont (FEAT-12): baby coil masuk warehouse_stock_coil Gudang Produksi 2 (PRT); dibaca baca-saja dari data mockup Subkont (sk-*.html)
+  const skState = () => { try { let best = -1, k = null; for (let q = 0; q < localStorage.length; q++) { const m = /^mockSK\.data(\d+)$/.exec(localStorage.key(q) || ""); if (m && +m[1] > best) { best = +m[1]; k = localStorage.key(q); } } return k ? JSON.parse(localStorage.getItem(k)) : null; } catch (e) { return null; } };
+  const sfwSub = () => { const st = skState(); if (!st || !st.stokPRT) return []; return st.stokPRT.map((c, q) => { const lap = (st.lap || []).find((l) => l.no_laporan === c.no_laporan) || {}, kode = c.kode_barang || lap.kode_barang || "-";
+    return { id: "SK-" + q, kd: "PRT", sk: true, mat: kode, mat_name: c.nama_barang || kode, no_coil: c.no_coil, kode_internal: String(c.no_coil).split("-BC.")[0], net_weight: c.net_weight, gross_weight: null, length: null, pack: "", baby: true, no_incoming: c.no_incoming, no_laporan: c.no_laporan, spk_no: c.spk_no || lap.spk_no || "", harga_beli: c.harga_beli }; }); };
+  const nz = (v) => (v == null ? "-" : n3(v));
+  const sfwPrt = () => S().coils.filter((c) => c.gudang === "PRT").map((c) => ({ id: c.id, kd: "PRT", mat: c.mat, no_coil: c.no_coil, kode_internal: c.kode_internal, net_weight: c.net_weight, gross_weight: c.gross_weight, length: c.length, pack: c.pack, baby: !!c.baby_of, gudang_asal: "PRO" })).concat(sfwSub());
+  const sfwAll = () => sfwPrt().concat(S().sfw);
+  const trxOf = (x) => { if (x.kd !== "PRT") return x.kode_trans || "-"; const l = S().scanlog.find((s) => s.pack_code === x.pack); return l ? l.spk_no : "-"; };
+  const matCell = (x) => (x.sk ? `${esc(x.mat_name)}<br><small class="ap-hint">${esc(x.mat)}</small><br><small style="color:#fd7e14">Hasil Subkont &bull; ${esc(x.no_incoming)}</small>` : `${esc(mn(x.mat))}<br><small class="ap-hint">${esc(x.mat)}</small><br><small style="color:#0aa2c0">${esc(W.matBy(x.mat).trade || "")}</small>`);
+  const search3 = (q) => `<input class="ap-in" data-u="q" placeholder="Search..." value="${esc(q)}">`;
+  const sfwFilter = (rows, q) => (q ? rows.filter((x) => ((x.sk ? x.mat_name : mn(x.mat)) + " " + x.mat + " " + x.no_coil + " " + x.kode_internal).toLowerCase().includes(q.toLowerCase())) : rows);
+  function kartuModal(x) {
+    const l = S().scanlog.find((s) => s.pack_code === x.pack), rows = [];
+    if (l) rows.push({ no: l.spk_no, st: "in", dari: "prod. 1", ke: "prod. 2", qty: x.net_weight, awal: 0, akhir: x.net_weight });
+    if (x.sk) rows.push({ no: x.no_incoming, st: "in", dari: "vendor (Subkont)", ke: "prod. 2", qty: x.net_weight, awal: 0, akhir: x.net_weight });
+    openModal({ title: "Kartu Pemakaian Material", size: "xl", body: () => `<div class="wh-grid3" style="padding:8px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;margin-bottom:10px;grid-template-columns:2fr 1.5fr 1.5fr 1fr"><div><small class="ap-hint">Nama Material:</small><br><b>${esc(x.sk ? x.mat_name : mn(x.mat))}</b></div><div><small class="ap-hint">No. Coil:</small><br><b>${esc(x.no_coil)}</b></div><div><small class="ap-hint">Kode Internal:</small><br><b>${esc(x.kode_internal)}</b></div><div><small class="ap-hint">Berat Awal (Net):</small><br><b>${n3(x.net_weight)}</b></div></div>` +
+      tbl(["No. Trs", "Nama Material", "Kode Internal", "Status", "Dari", "Ke", "Qty Trans", "Qty Awal", "Qty Akhir"], rows.map((r) => `<tr><td>${esc(r.no)}</td><td>${esc(x.sk ? x.mat_name : mn(x.mat))}</td><td>${esc(x.kode_internal)}</td><td><span class="ap-label ap-label--${r.st === "in" ? "success" : "danger"}">${r.st}</span></td><td>${r.dari}</td><td>${r.ke}</td><td class="ap-r">${n3(r.qty)}</td><td class="ap-r">${n3(r.awal)}</td><td class="ap-r">${n3(r.akhir)}</td></tr>`).join(""), "Belum ada riwayat pemakaian untuk coil ini."), foot: "" });
+  }
   P.sfw = {
     title: "Stock From Warehouse", mod: "stock_from_warehouse", role: "Gudang / Produksi", ui: { tab: "prt", q: "", hdate: "", hsrc: "", hshown: false },
     hint: "Stok coil yang sudah keluar dari gudang utama: WRH. Production 2 (PRT), WIP (coil sisa), On Hold, dan posisi per tanggal.",
     render() {
-      const u = U.ui, nav = tabs([["prt", "WRH. Production 2"], ["wip", "WIP (Coil Remains)"], ["hld", "On Hold"], ["hist", "History Per Days"]], u.tab);
-      const stats = `<div class="cl-sumrow">${["prt", "wip", "hld"].map((k) => stat(sfwAll().filter((x) => x.kd === SFWT[k][0]).length + " coil / " + num(sumNet(sfwAll().filter((x) => x.kd === SFWT[k][0])), 0) + " Kg", SFWT[k][1])).join("")}</div>`;
+      const u = U.ui, nav = tabs(SFWTAB, u.tab), xl = (what) => `<button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl" data-what="${what}">Excel</button>`;
       if (u.tab === "hist") {
-        const rows = u.hshown ? sfwAll().filter((x) => !u.hsrc || x.kd === u.hsrc) : [];
-        return stats + nav + card("History Per Days", `<div class="cl-tools"><label>As of Date : <input class="ap-in" type="date" data-u="hdate" value="${esc(u.hdate)}"></label><label>Sumber : <select class="ap-sel ap-in" data-u="hsrc"><option value="">-- Semua Sumber --</option><option value="PRT"${u.hsrc === "PRT" ? " selected" : ""}>Production 2 (PRT)</option><option value="WIP"${u.hsrc === "WIP" ? " selected" : ""}>WIP</option><option value="HLD"${u.hsrc === "HLD" ? " selected" : ""}>On Hold (HLD)</option></select></label>
-          <button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="show">Show</button><button type="button" class="ap-btn ap-btn--sm ap-btn--secondary" data-act="reset">Reset</button>${u.hshown ? '<button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl">Excel</button>' : ""}</div>` + (u.hshown ? sfwTable(rows, true) : '<div class="ap-empty">Pilih tanggal lalu klik Show.</div>')) + '<p class="note">Mockup: posisi per tanggal memakai data stok saat ini.</p>';
+        const rows = u.hshown ? sfwFilter(sfwAll().filter((x) => !u.hsrc || x.kd === u.hsrc), u.q) : [];
+        const badge = (kd) => `<span class="ap-label ap-label--${{ PRT: "info", WIP: "warning", HLD: "danger" }[kd]}">${kd}</span>`;
+        return nav + card("History Per Days", `<div class="cl-tools"><label>Tanggal : <input class="ap-in" type="date" data-u="hdate" value="${esc(u.hdate)}"></label><label>Sumber : <select class="ap-sel ap-in" data-u="hsrc"><option value="">-- Semua Sumber --</option><option value="PRT"${u.hsrc === "PRT" ? " selected" : ""}>Production 2 (PRT)</option><option value="WIP"${u.hsrc === "WIP" ? " selected" : ""}>WIP</option><option value="HLD"${u.hsrc === "HLD" ? " selected" : ""}>On Hold (HLD)</option></select></label>
+          <button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="show">Show</button><button type="button" class="ap-btn ap-btn--sm ap-btn--secondary" data-act="reset">Reset</button>${u.hshown ? '<button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl" data-what="History">Download Excel</button>' : ""}${u.hshown ? search3(u.q) : ""}</div>` +
+          tbl(["No", "Nama Material", "No. Coil", "Kode Internal", "Gudang Asal", "Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)", "Kode Trans"], rows.map((x, i) => `<tr><td>${i + 1}</td><td>${matCell(x)}</td><td>${esc(x.no_coil)}</td><td>${esc(x.kode_internal)}</td><td style="text-align:center">${badge(x.kd)}</td><td class="ap-r">${n3(x.net_weight)}</td><td class="ap-r">${nz(x.gross_weight)}</td><td class="ap-r">${nz(x.length)}</td><td><small>${esc(trxOf(x))}</small></td></tr>`).join(""), u.hshown ? "Tidak ada data." : "Pilih tanggal lalu klik Show.")) + '<p class="note">Mockup: posisi per tanggal memakai data stok saat ini (aplikasi: transaksi warehouse_stock_transaction_detail dengan tanggal ≤ tanggal pilihan).</p>';
       }
-      const t = SFWT[u.tab], q = (u.q || "").toLowerCase(), rows = sfwAll().filter((x) => x.kd === t[0] && (!q || (mn(x.mat) + x.no_coil + x.kode_internal).toLowerCase().includes(q)));
-      return stats + nav + card(t[1], `<div class="cl-tools"><input class="ap-in" data-u="q" placeholder="Cari material / no. coil..." value="${esc(u.q)}"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl">Excel</button></span></div><div class="ap-hint" style="margin-bottom:8px">${t[2]}</div>` + sfwTable(rows, false));
+      if (u.tab === "hld") {
+        const rows = sfwFilter(S().sfw.filter((x) => x.kd === "HLD"), u.q);
+        return nav + card("On Hold", `<div class="cl-tools">${search3(u.q)}<span style="margin-left:auto">${xl("On Hold")}</span></div>` +
+          tbl(["No", "Nama Supplier", "Nama Material", "No. Coil", "No. PO", "Berat (Kg)", "Alasan / Problem", "Status Material", "Action"], rows.map((x, i) => { const h = HOLDINFO[x.no_coil] || { no_po: "-", no_claim: "", problem: "", alasan: "", st: "Hold" };
+            return `<tr><td>${i + 1}</td><td>${esc(W.matBy(x.mat).supplier || "-")}</td><td>${esc(mn(x.mat))}</td><td style="text-align:center">${esc(x.no_coil)}${h.no_claim ? `<br><span class="ap-label ap-label--light">${esc(h.no_claim)}</span>` : ""}</td><td style="text-align:center">${esc(h.no_po)}</td><td class="ap-r">${n3(x.net_weight)}</td>
+              <td>${h.problem ? `<b style="color:#dc3545">${esc(h.problem)}</b><br><small class="ap-hint">${esc(h.alasan)}</small>` : "-"}</td><td style="text-align:center"><span class="ap-label ap-label--${HOLD_CLS[h.st]}">${esc(h.st)}</span></td><td style="text-align:center"><a class="ap-btn ap-btn--sm ap-btn--light" style="border:1px solid #0d6efd;color:#0d6efd" href="claim-material.html" title="${h.no_claim ? "Buka Detail Claim di Modul Claim Material" : "Cari Claim berdasarkan No. Coil"}">${h.no_claim ? "Lihat Claim" : "Cari Claim"}</a></td></tr>`; }).join(""), "No data available in table")) +
+          '<p class="note">Status Material mengikuti keputusan claim (UC-N35): Hold, Dapat Dipakai (Release), Dijual (Gudang Slitting), Dalam Retur, Dikompensasi. Keputusan diambil di modul Claim Material.</p>';
+      }
+      const kd = u.tab === "prt" ? "PRT" : "WIP", rows = sfwFilter(sfwAll().filter((x) => x.kd === kd), u.q), isP = kd === "PRT";
+      return nav + card(isP ? "WRH. Production 2" : "WIP (Coil Remains)", `<div class="cl-tools">${search3(u.q)}<span style="margin-left:auto">${xl(isP ? "Transit" : "WIP")}</span></div>` +
+        tbl(["No", "Nama Material", "No. Coil", "Kode Internal", "Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)"].concat(isP ? ["Status", "Action"] : []),
+          rows.map((x, i) => `<tr><td>${i + 1}</td><td>${matCell(x)}</td><td style="text-align:center">${esc(x.no_coil)}</td><td style="text-align:center">${esc(x.kode_internal)}</td><td class="ap-r">${n3(x.net_weight)}</td><td class="ap-r">${nz(x.gross_weight)}</td><td class="ap-r">${nz(x.length)}</td>` +
+            (isP ? `<td style="text-align:center"><span class="ap-label ap-label--${x.sk ? "warning" : x.baby ? "info" : "primary"}">${x.sk ? "Baby Coil Subkont" : x.baby ? "Unpacked" : "In Transit (Prod. 2)"}</span></td><td style="text-align:center">${btn("light", "kartu", x.id, "Kartu Pemakaian", ' style="border:1px solid #0d6efd;color:#0d6efd" title="Lihat Kartu Pemakaian Material"')}</td>` : "") + "</tr>").join(""), "No data available in table")) +
+        (isP ? '<p class="note">Coil masuk ke sini lewat Request List (scan pack PRO &rarr; PRT). Coil hasil Unpack Coil berstatus Unpacked. <b>Baby Coil Subkont</b> = hasil Incoming Subkont (Konfirmasi Hasil Incoming); gross weight dan length tidak dicatat dari vendor. Kartu Pemakaian menampilkan riwayat transaksi coil (no. transaksi = No. SPK).</p>' : '<p class="note">Sisa coil hasil Laporan Produksi yang masuk Gudang WIP; bisa dipilih lagi sebagai sumber "Coil From WIP" di Laporan Produksi.</p>');
     },
     act: {
-      xl: () => excel("Stock From Warehouse"),
+      xl: (d) => excel("Stock From Warehouse - " + (d.what || "")),
+      kartu(d) { const x = sfwAll().find((c) => String(c.id) === String(d.id)); if (x) kartuModal(x); },
       show() { if (!U.ui.hdate) { warn("Pilih tanggal terlebih dahulu."); return; } U.ui.hshown = true; U.render(); },
-      reset() { Object.assign(U.ui, { hdate: "", hsrc: "", hshown: false }); U.render(); },
+      reset() { Object.assign(U.ui, { hdate: "", hsrc: "", hshown: false, q: "" }); U.render(); },
     },
   };
 
   /* ======================= 8. Unpack Coil (unpack_coil) ======================= */
+  // Mengikuti unpack_coil/views (index, form_add, view) + controller: status baru = Draft, aksi daftar View / Edit / Lock,
+  // berat Actual & kulit/clamp diinput di level PACK lalu dibagi rata ke seluruh baby coil (Actual per coil = Actual pack / total roll),
+  // Detail baby coil bersifat baca-saja.
   let uf = null;                                              // state form unpack
-  const sumB = (m, k) => (m.babies || []).reduce((a, b) => a + (Number(b[k]) || 0), 0);
-  const mkBabies = (m, n) => { const cur = m.babies || []; const per = n ? W.round2(m.net_weight_pl / n) : 0, perG = n ? W.round2(m.gross_weight_pl / n) : 0; const out = []; for (let i = 0; i < n; i++) out.push(cur[i] || { babycoil_code: m.kode_internal + "-BC." + (i + 1), no_coil: m.no_coil, net_weight_actual: per, gross_weight_actual: perG, net_weight_pl: per, gross_weight_pl: perG }); return out; };
   const eligiblePacks = () => W.packs("PRT").filter((p) => !S().unpack.some((u) => u.pack_code === p.code && u.status !== "Cancelled"));
-  const totalsOf = (f) => ({ nwP: f.mats.reduce((a, m) => a + m.net_weight_pl, 0), gwP: f.mats.reduce((a, m) => a + m.gross_weight_pl, 0) });
-  function babyModal(i) {
-    const m = uf.mats[i];
-    openModal({
-      title: "Detail Baby Coil — " + mn(m.id_material) + " (" + m.no_coil + ")", size: "lg", ok: "Selesai", hdr: "primary",
-      body: () => tbl(["No", "No. Coil", "Babycoil", "Net Weight Per Roll (Actual)", "Gross Weight Per Roll (Actual)", "Net Weight Per Roll (PL)", "Gross Weight Per Roll (PL)", "Hapus"],
-        m.babies.map((b, k) => `<tr><td>${k + 1}</td><td>${esc(m.no_coil)}</td><td>${esc(b.babycoil_code)}</td><td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="bn" data-k="${k}" value="${esc(NumFmt.fmt(b.net_weight_actual))}"></td><td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="bg" data-k="${k}" value="${esc(NumFmt.fmt(b.gross_weight_actual))}"></td><td class="ap-r">${num(b.net_weight_pl)}</td><td class="ap-r">${num(b.gross_weight_pl)}</td><td>${btn("danger", "bdel", k, "&#10005;")}</td></tr>`).join(""), "Jumlah coil roll belum diisi."),
-      onField(el) { const b = m.babies[+el.dataset.k]; if (!b) return; const v = pv(el) || 0; if (el.dataset.f === "bn") b.net_weight_actual = v; else b.gross_weight_actual = v; },
-      act: { bdel(d) { m.babies.splice(+d.id, 1); m.jumlah_coil_roll = m.babies.length; U.drawModal(); } },
-      onOk() { m.jumlah_coil_roll = m.babies.length; m.net_weight_actual = W.round2(sumB(m, "net_weight_actual")); m.gross_weight_actual = W.round2(sumB(m, "gross_weight_actual")); closeModal(); U.render(); },
-      onClose() { m.jumlah_coil_roll = m.babies.length; m.net_weight_actual = W.round2(sumB(m, "net_weight_actual")); m.gross_weight_actual = W.round2(sumB(m, "gross_weight_actual")); U.render(); },
-    });
+  const isMotherMat = (mid) => (W.matBy(mid).lv2 || "") === "MOTHER COIL";
+  const groupsOfPack = (code) => { const g = {}; (W.packs().find((p) => p.code === code) || { coils: [] }).coils.filter((c) => !c.baby_of).forEach((c) => { const x = g[c.mat] || (g[c.mat] = { id_material: c.mat, no_coils: [], kodes: [], net_pl: 0, gross_pl: 0 }); x.no_coils.push(c.no_coil); x.kodes.push(c.kode_internal); x.net_pl += c.net_weight; x.gross_pl += c.gross_weight; });
+    return Object.values(g).map((x) => Object.assign(x, { mother: isMotherMat(x.id_material), jumlah: isMotherMat(x.id_material) ? 1 : x.no_coils.length })); };
+  const groupsOfRec = (r) => r.mats.map((m) => ({ id_material: m.id_material, no_coils: String(m.no_coil).split(",").map((s) => s.trim()), kodes: String(m.kode_internal).split(",").map((s) => s.trim()), net_pl: m.net_weight_pl, gross_pl: m.gross_weight_pl, mother: isMotherMat(m.id_material), jumlah: m.jumlah_coil_roll }));
+  const totalRoll = (f) => f.groups.reduce((a, g) => a + (Number(g.jumlah) || 0), 0);
+  const plTot = (f) => ({ net: f.groups.reduce((a, g) => a + g.net_pl, 0), gross: f.groups.reduce((a, g) => a + g.gross_pl, 0) });
+  const perCoil = (f) => { const n = totalRoll(f), p = plTot(f), d = (v) => (n > 0 ? v / n : 0); return { net: d(f.net_weight_actual), gross: d(f.gross_weight_actual), kulit: d(Number(f.catatan_kulit) || 0), clamp: d(Number(f.catatan_clamp_ring) || 0), plNet: d(p.net), plGross: d(p.gross) }; };
+  const babiesOf = (f, g) => { const pc = perCoil(f), base = g.no_coils[0].replace(/-BC\.\d+$/i, ""), kb = g.kodes[0].replace(/-BC\.\d+$/i, ""); return Array.from({ length: Number(g.jumlah) || 0 }, (_, i) => ({ no_coil: base + "-BC." + (i + 1), babycoil_code: kb + "-BC." + (i + 1), net_weight_actual: pc.net, gross_weight_actual: pc.gross, kulit: pc.kulit, clamp_ring: pc.clamp, net_weight_pl: pc.plNet, gross_weight_pl: pc.plGross })); };
+  const sumB = (babies, k) => babies.reduce((a, b) => a + (Number(b[k]) || 0), 0);
+  const hdrCls = { a: "background:#cfe2ff", p: "background:#fff3cd", s: "background:#d1e7dd", k: "background:#cff4fc" };
+  const th = (t, c, o = "") => `<th style="${hdrCls[c] || ""}"${o}>${t}</th>`;
+  const babyTable = (rows, foot) => `<div class="ap-tablewrap"><table class="ap-table ap-table--bordered"><thead><tr><th>No</th>${rows.mat ? "<th>Nama Material</th>" : ""}<th>No Coil</th><th>Babycoil Code</th>${th("Net Weight Per Roll (Actual)", "a")}${th("Gross Weight Per Roll (Actual)", "a")}${th("Kulit (Kg)", "k")}${th("Clamp Ring (Kg)", "k")}${th("Net Weight Per Roll (PL)", "p")}${th("Gross Weight Per Roll (PL)", "p")}</tr></thead><tbody>${rows.html}</tbody><tfoot>${foot}</tfoot></table></div>`;
+  const babyRows = (list, withMat) => list.map((x, i) => `<tr><td>${i + 1}</td>${withMat ? `<td>${esc(x.mat)}</td>` : ""}<td>${esc(x.b.no_coil)}</td><td>${esc(x.b.babycoil_code)}</td><td class="ap-r">${num(x.b.net_weight_actual)}</td><td class="ap-r">${num(x.b.gross_weight_actual)}</td><td class="ap-r">${num(x.b.kulit)}</td><td class="ap-r">${num(x.b.clamp_ring)}</td><td class="ap-r">${num(x.b.net_weight_pl)}</td><td class="ap-r">${num(x.b.gross_weight_pl)}</td></tr>`).join("");
+  const babyFoot = (bs, cols) => `<tr class="wh-foot"><td colspan="${cols}" class="ap-r">Total</td>${["net_weight_actual", "gross_weight_actual", "kulit", "clamp_ring", "net_weight_pl", "gross_weight_pl"].map((k) => `<td class="ap-r">${num(sumB(bs, k))}</td>`).join("")}</tr>`;
+  function detailModal() {
+    const items = []; uf.groups.forEach((g) => babiesOf(uf, g).forEach((b) => items.push({ mat: mn(g.id_material), b }))); const all = items.map((x) => x.b);
+    openModal({ title: "Detail Baby Coil", size: "xl", body: () => babyTable({ mat: 1, html: babyRows(items, true) || '<tr><td class="ap-empty" colspan="10">Belum ada baby coil.</td></tr>' }, babyFoot(all, 4)) + '<p class="note">Kolom Actual, Kulit, dan Clamp / Ring baca-saja: nilai pack dibagi rata ke seluruh baby coil (jumlah roll semua material); PL = total PL pack dibagi jumlah roll.</p>' });
   }
+  const ringkas = (f, ro) => { const p = plTot(f), nA = Number(f.net_weight_actual) || 0, gA = Number(f.gross_weight_actual) || 0;
+    return `<div class="ap-tablewrap"><table class="ap-table ap-table--bordered" style="text-align:center"><thead><tr><th rowspan="2">Catatan Kulit</th><th rowspan="2">Catatan Clamp Ring</th>${th("Actual Weight", "a", ' colspan="2"')}${th("Packing List", "p", ' colspan="2"')}${th("Selisih Actual vs PL", "s", ' colspan="2"')}</tr><tr>${th("Net Weight", "a")}${th("Gross Weight", "a")}${th("Net Weight", "p")}${th("Gross Weight", "p")}${th("Net", "s")}${th("Gross", "s")}</tr></thead><tbody><tr>
+      <td>${ro ? esc(f.catatan_kulit || "-") : `<input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="catatan_kulit" value="${esc(NumFmt.fmt(Number(f.catatan_kulit) || 0))}">`}</td><td>${ro ? esc(f.catatan_clamp_ring || "-") : `<input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="catatan_clamp_ring" value="${esc(NumFmt.fmt(Number(f.catatan_clamp_ring) || 0))}">`}</td>
+      <td>${ro ? num(nA) : `<input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="net_weight_actual" value="${esc(NumFmt.fmt(nA))}">`}</td><td>${ro ? num(gA) : `<input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="gross_weight_actual" value="${esc(NumFmt.fmt(gA))}">`}</td>
+      <td class="ap-r">${num(p.net)}</td><td class="ap-r">${num(p.gross)}</td><td class="ap-r" id="selN">${num(nA - p.net)}</td><td class="ap-r" id="selG">${num(gA - p.gross)}</td></tr></tbody></table></div>`; };
   function unpackForm() {
-    const t = totalsOf(uf), edit = !!uf.unpack_no;
-    const matRows = uf.mats.map((m, i) => `<tr><td>${i + 1}</td><td>${pill(uf.pack)}</td><td>${esc(mn(m.id_material))}</td><td>${esc(m.no_coil)}</td><td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="roll" data-i="${i}" value="${esc(NumFmt.fmt(m.jumlah_coil_roll))}"></td>
-      <td class="ap-r">${num(m.net_weight_actual)}</td><td class="ap-r">${num(m.gross_weight_actual)}</td><td class="ap-r">${num(m.net_weight_pl)}</td><td class="ap-r">${num(m.gross_weight_pl)}</td><td>${btn("info", "baby", i, "View Detail")}</td></tr>`).join("");
-    return card(edit ? "Edit Report Unpack — " + esc(uf.unpack_no) : "Add Report Unpack", row("Pack (Material Confirmed)", edit ? `${pill(uf.pack)} <span class="ap-hint">pack tidak dapat diganti saat edit</span>` : sel("pack", uf.pack, eligiblePacks().map((p) => [p.code, p.code + " — " + p.mats.map(mn).join(", ")]), { blank: "Cari & pilih pack...", struct: 1 }).replace('data-f="pack"', 'data-f="pack"'), 1) +
-      (uf.pack ? `<h6 style="margin:14px 0 6px">Ringkasan Pack</h6><div class="ap-tablewrap"><table class="ap-table ap-table--bordered"><thead><tr><th rowspan="2">Kulit</th><th rowspan="2">Clamp / Ring</th><th colspan="2">Actual Weight</th><th colspan="2">Packing List</th><th colspan="2">Selisih Actual vs PL</th></tr><tr><th>Net Weight</th><th>Gross Weight</th><th>Net Weight</th><th>Gross Weight</th><th>Net</th><th>Gross</th></tr></thead><tbody><tr>
-          <td><input class="ap-in" data-f="catatan_kulit" value="${esc(uf.catatan_kulit)}" placeholder="Catatan kulit"></td><td><input class="ap-in" data-f="catatan_clamp_ring" value="${esc(uf.catatan_clamp_ring)}" placeholder="Catatan clamp / ring"></td>
-          <td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="nwA" value="${esc(NumFmt.fmt(uf.net_weight_actual))}"></td><td><input class="ap-in ap-in--num" inputmode="decimal" data-numfmt="1" data-f="gwA" value="${esc(NumFmt.fmt(uf.gross_weight_actual))}"></td>
-          <td class="ap-r">${num(t.nwP)}</td><td class="ap-r">${num(t.gwP)}</td><td class="ap-r" id="selN">${num(uf.net_weight_actual - t.nwP)}</td><td class="ap-r" id="selG">${num(uf.gross_weight_actual - t.gwP)}</td></tr></tbody></table></div>
-        <h6 style="margin:14px 0 6px">Material dalam Pack</h6>` + tbl(["No", "Pack Code", "Nama Material", "No. Coil", "Jumlah Coil (Roll Baby Coil)", "Net Weight Total Actual", "Gross Weight Total Actual", "Net Weight Total PL", "Gross Weight Total PL", "Aksi"], matRows) +
-        row("Catatan", txt("catatan", uf.catatan, { ph: "Opsional", rows: 2 })) : '<p class="note">Pilih pack berstatus Material Confirmed (berada di gudang PRT) untuk memulai.</p>') +
-      `<div class="cl-tools" style="margin-top:10px"><button type="button" class="ap-btn ap-btn--outline-warning" data-act="cancel">&#8592; Kembali</button>${uf.pack ? '<button type="button" class="ap-btn ap-btn--success" data-act="save">Save</button>' : ""}</div>`);
+    const edit = !!uf.unpack_no, p = plTot(uf), rs = uf.groups.length;
+    const mrows = uf.groups.map((g, i) => `<tr><td>${i + 1}</td><td>${pill(uf.pack)}</td><td>${esc(mn(g.id_material))}</td><td>${g.no_coils.map((c) => `<div><span class="ap-label ap-label--light" style="font-family:monospace">&#9679; ${esc(c)}</span></div>`).join("")}</td>
+      <td style="text-align:center"><input class="ap-in ap-in--num" style="width:70px;margin:0 auto"${g.mother ? ' disabled title="Mother Coil otomatis 1 roll"' : ""} inputmode="decimal" data-numfmt="1" data-f="jumlah" data-i="${i}" value="${esc(NumFmt.fmt(g.jumlah))}">${g.mother ? '<div><span class="ap-label ap-label--secondary" style="font-size:10px">Mother (1 Roll)</span></div>' : ""}</td>
+      ${i === 0 ? `<td class="ap-r" rowspan="${rs}" id="mA1">${num(uf.net_weight_actual)}</td><td class="ap-r" rowspan="${rs}" id="mA2">${num(uf.gross_weight_actual)}</td><td class="ap-r" rowspan="${rs}">${num(p.net)}</td><td class="ap-r" rowspan="${rs}">${num(p.gross)}</td><td rowspan="${rs}" style="text-align:center">${btn("info", "detail", "x", "Detail")}</td>` : ""}</tr>`).join("");
+    return card(edit ? "Edit Report Unpack — " + esc(uf.unpack_no) : "Add Report Unpack", row("Pilih Pack (Material Confirmed)", edit ? `${pill(uf.pack)} <span class="ap-hint">pack tidak dapat diganti saat edit</span>` : sel("pack", uf.pack, eligiblePacks().map((pk) => [pk.code, `${pk.code} (${pk.mats.length} material, ${pk.roll} coil)`]), { blank: "Cari & pilih pack..." })) +
+      (uf.pack ? `<h6 style="margin:10px 0 6px;font-weight:700">Ringkasan Pack</h6>${ringkas(uf, false)}<h6 style="margin:14px 0 6px;font-weight:700">Material dalam Pack</h6>
+        <div class="ap-tablewrap"><table class="ap-table ap-table--bordered" style="text-align:center"><thead><tr><th rowspan="2">No</th><th rowspan="2">Pack Code</th><th rowspan="2">Nama Material</th><th rowspan="2">No Coil</th><th rowspan="2">Jumlah Coil Roll</th>${th("Actual Weight", "a", ' colspan="2"')}${th("Packing List", "p", ' colspan="2"')}<th rowspan="2">Aksi</th></tr><tr>${th("Net Weight Actual", "a")}${th("Gross Weight Actual", "a")}${th("Net Weight PL", "p")}${th("Gross Weight PL", "p")}</tr></thead>
+        <tbody>${mrows || '<tr><td colspan="10" class="ap-empty">Tidak ada material dalam pack ini.</td></tr>'}</tbody></table></div>` +
+        row("Catatan", txt("catatan", uf.catatan, { ph: "Opsional", rows: 2 })) : '<div class="ap-empty">Pilih pack untuk memuat material.</div>') +
+      `<div class="cl-tools" style="margin-top:10px"><button type="button" class="ap-btn ap-btn--secondary" data-act="cancel">&#8592; Kembali</button><button type="button" class="ap-btn ap-btn--success" data-act="save">Save</button></div>`);
   }
-  const UNPACK_LABEL = { Draft: "Draft", Confirmed: "Confirmed", Cancelled: "Cancelled", Lock: "Lock" };
-  function valueSplit(u, m, b) {
-    const harga = W.matBy(m.id_material).harga_beli, nilai = m.net_weight_pl * harga, tot = sumB(m, "net_weight_actual") || 1, tv = nilai * (b.net_weight_actual / tot);
-    return { costbook: W.round2(b.net_weight_actual ? tv / b.net_weight_actual : 0), total: W.round2(tv) };
+  const UNPACK_BADGE = { Lock: "success", Draft: "warning", Cancelled: "danger" };
+  function unpackView(r) {
+    const p = { net: r.net_weight_pl, gross: r.gross_weight_pl }, f = { catatan_kulit: r.catatan_kulit, catatan_clamp_ring: r.catatan_clamp_ring, net_weight_actual: r.net_weight_actual, gross_weight_actual: r.gross_weight_actual, groups: groupsOfRec(r) };
+    return `<div class="ap-card ap-card--shadow"><div class="ap-card__body"><div class="wh-grid3" style="grid-template-columns:repeat(4,1fr)"><div><b>Unpack No</b><br>${esc(r.unpack_no)}</div><div><b>Pack Code</b><br>${pill(r.pack_code)}</div><div><b>Tgl Unpack</b><br>${esc(r.tgl_unpack.slice(8, 10) + "/" + r.tgl_unpack.slice(5, 7) + "/" + r.tgl_unpack.slice(0, 4) + " " + r.tgl_unpack.slice(11))}</div><div><b>Status</b><br><span class="ap-label ap-label--${r.status === "Confirmed" ? "success" : r.status === "Cancelled" ? "danger" : "secondary"}">${esc(r.status)}</span></div></div>
+      <div class="wh-grid3" style="grid-template-columns:1fr 1fr 2fr;margin-top:10px"><div><b>Catatan Kulit</b><br>${esc(r.catatan_kulit || "-")}</div><div><b>Catatan Clamp Ring</b><br>${esc(r.catatan_clamp_ring || "-")}</div><div><b>Catatan</b><br>${esc(r.catatan || "-")}</div></div></div></div>` +
+      card("Ringkasan Pack", ringkas(f, true)) + r.mats.map((m, i) => { const items = m.babies.map((b) => ({ b }));
+        return card(`Material #${i + 1}: ${esc(mn(m.id_material))} — ${esc(m.no_coil)} | ${esc(m.kode_internal)}`, babyTable({ html: babyRows(items, false) || '<tr><td class="ap-empty" colspan="9">Tidak ada baby coil.</td></tr>' }, babyFoot(m.babies, 3)), `<span>Jumlah Roll: <span class="ap-label ap-label--success">${m.jumlah_coil_roll}</span></span>`); }).join("") +
+      `<div class="cl-tools"><button type="button" class="ap-btn ap-btn--secondary" data-act="back">&#8592; Kembali</button></div>`;
   }
   P.unpack = {
     title: "Unpack Coil", mod: "unpack_coil", role: "Gudang / Produksi", ui: { mode: "list", id: null },
-    hint: "Report Unpack: 1 report = 1 pack berstatus Material Confirmed. Input berat actual pack, jumlah baby coil per material, lalu berat per baby coil.",
+    hint: "Report Unpack: 1 report = 1 pack di WRH Production 2 (PRT). Input berat actual pack, jumlah baby coil per material; berat dibagi rata ke baby coil.",
     render() {
       const u = U.ui;
       if (u.mode === "form") return unpackForm();
-      if (u.mode === "view") { const r = S().unpack.find((x) => x.unpack_no === u.id), edt = !["Cancelled", "Lock"].includes(r.status);
-        return card("View Report Unpack — " + esc(r.unpack_no), kv([["Unpack No", esc(r.unpack_no)], ["Tgl Unpack", fdate(r.tgl_unpack) + " " + r.tgl_unpack.slice(11)], ["Pack Code", pill(r.pack_code)], ["Status", lab(r.status)], ["Catatan Kulit", esc(r.catatan_kulit || "-")], ["Catatan Clamp Ring", esc(r.catatan_clamp_ring || "-")], ["Net Weight Actual / PL", num(r.net_weight_actual) + " / " + num(r.net_weight_pl) + " Kg"], ["Gross Weight Actual / PL", num(r.gross_weight_actual) + " / " + num(r.gross_weight_pl) + " Kg"], ["Catatan", esc(r.catatan || "-")]]) +
-          r.mats.map((m) => `<div class="wh-sec">${esc(mn(m.id_material))} — No. Coil ${esc(m.no_coil)}</div>` + tbl(["No", "Babycoil", "Net Weight Per Roll (Actual)", "Gross Weight Per Roll (Actual)", "Net Weight Per Roll (PL)", "Gross Weight Per Roll (PL)", "Costbook", "Total Nilai"],
-            m.babies.map((b, k) => { const v = valueSplit(r, m, b); return `<tr><td>${k + 1}</td><td>${esc(b.babycoil_code)}</td><td class="ap-r">${num(b.net_weight_actual)}</td><td class="ap-r">${num(b.gross_weight_actual)}</td><td class="ap-r">${num(b.net_weight_pl)}</td><td class="ap-r">${num(b.gross_weight_pl)}</td><td class="ap-r">${num(v.costbook)}</td><td class="ap-r">${num(v.total)}</td></tr>`; }).join(""), "",
-            `<tr class="wh-foot"><td colspan="2" class="ap-r">Total</td><td class="ap-r">${num(sumB(m, "net_weight_actual"))}</td><td class="ap-r">${num(sumB(m, "gross_weight_actual"))}</td><td class="ap-r">${num(sumB(m, "net_weight_pl"))}</td><td class="ap-r">${num(sumB(m, "gross_weight_pl"))}</td><td></td><td class="ap-r">${num(m.babies.reduce((a, b) => a + valueSplit(r, m, b).total, 0))}</td></tr>`)).join("") +
-          `<p class="note">Costbook per baby coil = (Net Weight PL coil induk × Harga Beli/Kg) dibagi proporsional terhadap berat actual baby coil. Rumus pembagian dan sumber harga perlu dikonfirmasi ke programmer.</p><div class="cl-tools"><button type="button" class="ap-btn ap-btn--outline-warning" data-act="back">&#8592; Kembali</button>${edt ? btn("warning", "edit", r.unpack_no, "Edit") : ""}</div>`); }
+      if (u.mode === "view") return unpackView(S().unpack.find((x) => x.unpack_no === u.id));
       const l = S().unpack.slice().sort((a, b) => b.tgl_unpack.localeCompare(a.tgl_unpack));
-      return `<div class="cl-sumrow">${stat(l.filter((r) => r.status === "Confirmed").length, "Confirmed")}${stat(l.filter((r) => r.status === "Lock").length, "Lock")}${stat(eligiblePacks().length, "Pack siap di-unpack")}</div>` +
-        card("Daftar Report Unpack", `<div class="cl-tools"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="add"${eligiblePacks().length ? "" : " disabled"}>+ Add Report Unpack</button></span></div>` +
-          tbl(["No", "Unpack No", "Pack Code", "Jumlah Material", "Jumlah Coil Roll", "Net Weight Actual", "Tgl Unpack", "Status", "Aksi"], l.map((r, i) => {
-            const it = [mi("view", r.unpack_no, "View")]; if (!["Cancelled", "Lock"].includes(r.status)) it.push(mi("edit", r.unpack_no, "Edit"), mi("x", "", "-"), mi("lock", r.unpack_no, "Lock"), mi("del", r.unpack_no, "Delete"));
-            return `<tr><td>${i + 1}</td><td>${esc(r.unpack_no)}</td><td>${pill(r.pack_code)}</td><td class="ap-r">${r.mats.length}</td><td class="ap-r">${r.mats.reduce((a, m) => a + m.babies.length, 0)}</td><td class="ap-r">${num(r.net_weight_actual)}</td><td>${fdate(r.tgl_unpack)}</td><td>${lab(UNPACK_LABEL[r.status] || r.status)}</td><td>${menu(it)}</td></tr>`; }).join(""))) +
-        '<p class="note">Report bisa di-edit ulang selama belum Lock: baby coil ditulis ulang beserta costbook proporsional dan history dicatat ulang. Setelah Lock, report tidak dapat diedit atau dihapus. Status Lock dipakai kode tetapi belum ada di ENUM migrasi (Draft / Confirmed / Cancelled) — perlu disamakan.</p>';
+      return card("Daftar Report Unpack", `<div class="cl-tools"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--success" data-act="add">+ Add Report Unpack</button></span></div>` +
+        tbl(["No", "Unpack No", "Pack Code", "Jumlah Material", "Jumlah Coil Roll", "Net Weight Actual", "Tgl Unpack", "Status", "Aksi"], l.map((r, i) => {
+          const it = [mi("view", r.unpack_no, "View")]; if (!["Cancelled", "Lock"].includes(r.status)) it.push(mi("edit", r.unpack_no, "Edit"), mi("x", "", "-"), mi("lock", r.unpack_no, "Lock"));
+          return `<tr><td>${i + 1}</td><td>${esc(r.unpack_no)}</td><td>${pill(r.pack_code)}</td><td class="ap-r">${r.mats.length}</td><td class="ap-r">${r.mats.reduce((a, m) => a + m.jumlah_coil_roll, 0)}</td><td class="ap-r">${num(r.net_weight_actual)}</td><td>${fdate(r.tgl_unpack)}</td><td style="text-align:center"><span class="ap-label ap-label--${UNPACK_BADGE[r.status] || "secondary"}">${esc(r.status)}</span></td><td style="text-align:center">${menu(it)}</td></tr>`; }).join(""), "No data available in table")) +
+        '<p class="note">Report baru berstatus Draft dan boleh di-Edit; setelah Lock tidak dapat diedit. Pack yang bisa dipilih = pack di gudang PRT (hasil scan di Request List) yang belum punya report aktif. Baby coil hasil Save langsung menggantikan coil induk di stok PRT.</p>';
     },
     onField(el) {
       const k = el.dataset.f;
       if (k === "pack") {
-        uf.pack = el.value;
-        const p = W.packs().find((x) => x.code === uf.pack);
-        uf.mats = p ? p.coils.map((c) => ({ id_material: c.mat, no_coil: c.no_coil, kode_internal: c.kode_internal, jumlah_coil_roll: 0, net_weight_actual: 0, gross_weight_actual: 0, net_weight_pl: c.net_weight, gross_weight_pl: c.gross_weight, babies: [] })) : [];
-        const t = totalsOf(uf); uf.net_weight_actual = t.nwP; uf.gross_weight_actual = t.gwP; U.render(); return;
+        uf.pack = el.value; uf.groups = uf.pack ? groupsOfPack(uf.pack) : [];
+        const p = plTot(uf); uf.net_weight_actual = 0; uf.gross_weight_actual = 0; uf.catatan_kulit = 0; uf.catatan_clamp_ring = 0; U.render(); return;
       }
-      if (k === "roll") { const m = uf.mats[+el.dataset.i], n = Math.max(0, Math.min(40, Math.floor(pv(el) || 0))); m.jumlah_coil_roll = n; m.babies = mkBabies(m, n); m.net_weight_actual = W.round2(sumB(m, "net_weight_actual")); m.gross_weight_actual = W.round2(sumB(m, "gross_weight_actual")); { const keep = el.selectionStart; U.render(); const n2 = document.querySelector(`[data-f="roll"][data-i="${el.dataset.i}"]`); if (n2) { n2.focus(); try { n2.setSelectionRange(keep, keep); } catch (e) { /* abaikan */ } } } return; }
-      if (k === "nwA" || k === "gwA") { if (k === "nwA") uf.net_weight_actual = pv(el) || 0; else uf.gross_weight_actual = pv(el) || 0; const t = totalsOf(uf); $("#selN").textContent = num(uf.net_weight_actual - t.nwP); $("#selG").textContent = num(uf.gross_weight_actual - t.gwP); return; }
+      if (k === "jumlah") { const g = uf.groups[+el.dataset.i]; if (g.mother) { g.jumlah = 1; return; } g.jumlah = Math.max(0, Math.floor(pv(el) || 0)); return; }
+      if (["net_weight_actual", "gross_weight_actual", "catatan_kulit", "catatan_clamp_ring"].includes(k)) { uf[k] = pv(el) || 0; const p = plTot(uf); $("#selN").textContent = num(uf.net_weight_actual - p.net); $("#selG").textContent = num(uf.gross_weight_actual - p.gross); const a = $("#mA1"), b = $("#mA2"); if (a) a.textContent = num(uf.net_weight_actual); if (b) b.textContent = num(uf.gross_weight_actual); return; }
       uf[k] = el.value;
     },
     act: {
       back() { U.ui.mode = "list"; U.render(); }, cancel() { U.ui.mode = "list"; U.render(); },
       view(d) { U.ui.mode = "view"; U.ui.id = d.id; U.render(); },
-      add() { uf = { unpack_no: null, pack: "", catatan_kulit: "", catatan_clamp_ring: "", net_weight_actual: 0, gross_weight_actual: 0, catatan: "", mats: [] }; U.ui.mode = "form"; U.render(); },
-      edit(d) { const r = JSON.parse(JSON.stringify(S().unpack.find((x) => x.unpack_no === d.id))); uf = { unpack_no: r.unpack_no, pack: r.pack_code, catatan_kulit: r.catatan_kulit, catatan_clamp_ring: r.catatan_clamp_ring, net_weight_actual: r.net_weight_actual, gross_weight_actual: r.gross_weight_actual, catatan: r.catatan, mats: r.mats, _r: r.unpack_no }; U.ui.mode = "form"; U.render(); },
-      baby(d) { const m = uf.mats[+d.id]; if (!(m.jumlah_coil_roll > 0)) { warn("Isi Jumlah Coil (Roll Baby Coil) terlebih dahulu."); return; } babyModal(+d.id); },
-      del(d) { confirmThen({ title: "Hapus report?", text: "Report " + d.id + " dihapus; baby coil dibuang dari stok dan coil induk dikembalikan.", ok: "Ya, Hapus" }, () => { const r = S().unpack.find((x) => x.unpack_no === d.id); if (r.status === "Lock") { warn("Report unpack sudah di-Lock dan tidak dapat dihapus."); return; } W.unpackRevert(r); S().unpack = S().unpack.filter((x) => x !== r); W.save(); U.render(); toast("Report unpack berhasil dihapus.", "ok"); }); },
-      lock(d) { confirmThen({ title: "Lock report?", text: "Report " + d.id + " tidak dapat diedit atau dihapus setelah di-Lock.", ok: "Ya, Lock" }, () => { S().unpack.find((x) => x.unpack_no === d.id).status = "Lock"; W.save(); U.render(); toast("Report unpack berhasil di-lock.", "ok"); }); },
+      add() { uf = { unpack_no: null, pack: "", catatan_kulit: 0, catatan_clamp_ring: 0, net_weight_actual: 0, gross_weight_actual: 0, catatan: "", groups: [] }; U.ui.mode = "form"; U.render(); },
+      edit(d) { const r = S().unpack.find((x) => x.unpack_no === d.id); uf = { unpack_no: r.unpack_no, pack: r.pack_code, catatan_kulit: Number(r.catatan_kulit) || 0, catatan_clamp_ring: Number(r.catatan_clamp_ring) || 0, net_weight_actual: r.net_weight_actual, gross_weight_actual: r.gross_weight_actual, catatan: r.catatan || "", groups: groupsOfRec(r) }; U.ui.mode = "form"; U.render(); },
+      detail() { if (!uf.groups.length) return; const bad = uf.groups.find((g) => !(g.jumlah > 0)); if (bad) { dialog({ icon: "warning", title: "Detail belum lengkap", text: "Isi Jumlah Coil (Roll Baby Coil) untuk material " + mn(bad.id_material) + " terlebih dahulu." }); return; } detailModal(); },
+      lock(d) { confirmThen({ title: "Lock Report Unpack?", text: "Report " + d.id + " akan dikunci dan tidak bisa diedit lagi. Lanjutkan?", ok: "Ya, Lock", cancel: "Batal" }, () => { S().unpack.find((x) => x.unpack_no === d.id).status = "Lock"; W.save(); U.render(); toast("Report unpack berhasil di-lock.", "ok"); }); },
       save() {
-        if (!uf.pack) { warn("Pack wajib dipilih."); return; }
-        const bad = uf.mats.find((m) => !(m.jumlah_coil_roll > 0) || !m.babies.length);
-        if (!uf.mats.length || bad) { warn(bad ? `Detail baby coil untuk material ${mn(bad.id_material)} belum diisi. Silakan klik "View Detail" sebelum Save.` : "Minimal 1 material harus diisi."); return; }
-        const old = uf.unpack_no ? S().unpack.find((x) => x.unpack_no === uf.unpack_no) : null; if (old) W.unpackRevert(old);
-        const t = totalsOf(uf), rec = { unpack_no: uf.unpack_no || W.nextNo("unpack"), tgl_unpack: W.today() + " 10:00", pack_code: uf.pack, catatan_kulit: uf.catatan_kulit, catatan_clamp_ring: uf.catatan_clamp_ring, net_weight_actual: uf.net_weight_actual, gross_weight_actual: uf.gross_weight_actual, net_weight_pl: t.nwP, gross_weight_pl: t.gwP, catatan: uf.catatan, status: "Confirmed", mats: uf.mats };
-        const i = S().unpack.findIndex((x) => x.unpack_no === rec.unpack_no); if (i >= 0) { rec.tgl_unpack = S().unpack[i].tgl_unpack; S().unpack[i] = rec; } else S().unpack.push(rec);
-        W.unpackApply(rec); W.save(); U.ui.mode = "list"; U.render(); done("Report unpack berhasil disimpan: " + rec.unpack_no + ". Baby coil masuk ke stok gudang PRT menggantikan coil induk.");
+        if (!uf.pack) { dialog({ icon: "warning", title: "Pilih pack dulu" }); return; }
+        if (!uf.groups.length) { dialog({ icon: "warning", title: "Belum ada material", text: "Pack ini tidak memiliki material." }); return; }
+        const bad = uf.groups.find((g) => !(g.jumlah > 0));
+        if (bad) { dialog({ icon: "warning", title: "Detail belum lengkap", text: "Detail baby coil untuk material " + bad.id_material + ' gagal dimuat. Coba klik "View Detail" secara manual.' }); return; }
+        confirmThen({ icon: "question", title: "Konfirmasi Penyimpanan", text: "Apakah data yang dimasukkan sudah betul?", ok: "Ya, Simpan", cancel: "Batal" }, () => {
+          const old = uf.unpack_no ? S().unpack.find((x) => x.unpack_no === uf.unpack_no) : null; if (old) W.unpackRevert(old);
+          const p = plTot(uf), mats = uf.groups.map((g) => { const bs = babiesOf(uf, g); return { id_material: g.id_material, no_coil: g.no_coils.join(", "), kode_internal: g.kodes.join(", "), jumlah_coil_roll: bs.length, net_weight_actual: sumB(bs, "net_weight_actual"), gross_weight_actual: sumB(bs, "gross_weight_actual"), net_weight_pl: g.net_pl, gross_weight_pl: g.gross_pl, babies: bs }; });
+          const rec = { unpack_no: uf.unpack_no || W.nextNo("unpack"), tgl_unpack: old ? old.tgl_unpack : W.today() + " 10:00", pack_code: uf.pack, catatan_kulit: String(uf.catatan_kulit || ""), catatan_clamp_ring: String(uf.catatan_clamp_ring || ""), net_weight_actual: uf.net_weight_actual, gross_weight_actual: uf.gross_weight_actual, net_weight_pl: p.net, gross_weight_pl: p.gross, catatan: uf.catatan, status: old ? old.status : "Draft", mats };
+          const i = S().unpack.findIndex((x) => x.unpack_no === rec.unpack_no); if (i >= 0) S().unpack[i] = rec; else S().unpack.push(rec);
+          W.unpackApply(rec); W.save(); U.ui.mode = "list"; U.render(); toast("Report unpack berhasil disimpan.", "ok");
+        });
       },
     },
   };
 
   U.init(P);
+  if (document.body && document.body.dataset.wpage === "sfw") window.addEventListener("focus", () => { if (window.WHUI && window.WHUI.render) window.WHUI.render(); });
 })();

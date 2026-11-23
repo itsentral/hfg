@@ -9,7 +9,7 @@
   const { $, esc, num, rp, fdate, lab, btn, tbl, card, stat, kv, row, inp, sel, txt, isNumEl, pv, tabs, toast, warn, done, confirmThen, openModal, closeModal } = U;
   const P = (window.WHP = {});
   const mn = (id) => W.matBy(id).nama || id;
-  const matsCell = (ids) => `<div class="wh-mats">${ids.map((id) => `<div><span class="ap-link">&#9679;</span> <b>${esc(mn(id))}</b> <small>(${esc(id)})</small></div>`).join("")}</div>`;
+  const matsCell = (ids) => `<div class="wh-mats">${ids.map((id) => `<div><span class="ap-link">&#9679;</span> <b>${esc(W.matBy(id).trade || mn(id))}</b> <small>(${esc(mn(id))})</small></div>`).join("")}</div>`;
   const pill = (c) => `<span class="wh-pack">${esc(c)}</span>`;
   const search = (key, ph) => `<div class="cl-tools"><input class="ap-in" data-u="${key}" placeholder="${esc(ph)}" value="${esc(U.ui[key] || "")}"></div>`;
   const excel = (what) => toast(`Download Excel "${what}" (mockup, tidak membuat berkas nyata).`);
@@ -85,13 +85,13 @@
 
   /* ======================= 2. Stock Gudang Coil (warehouse/index) ======================= */
   const packRows = (list) => list.map((p, i) => `<tr><td>${i + 1}</td><td>${pill(p.code)}</td><td>${matsCell(p.mats)}</td><td class="ap-r">${p.roll}</td><td class="ap-r">${num(p.nw)}</td><td class="ap-r">${num(p.nwRoll)}</td><td class="ap-r">${num(p.gw)}</td><td class="ap-r">${num(p.gwRoll)}</td>
-    <td class="ap-act ap-act-nowrap">${btn("info", "qr", p.code, "QR")}${btn("light", "pack", p.code, "Detail")}</td></tr>`).join("");
+    <td class="ap-act ap-act-nowrap">${btn("info", "qr", p.code, "&#9638;", ' title="QR Code Pack"')}${btn("light", "pack", p.code, "&#128065;", ' title="Pack Detail" style="border:1px solid #0d6efd;color:#0d6efd"')}</td></tr>`).join("");
   const PACKH = ["No", "Pack Code", "Nama Material", "Roll", "Net Weight Total", "Net Weight Per Roll", "Gross Weight Total", "Gross Weight Per Roll", "Action"];
   const qfilter = (list, q) => (q ? list.filter((p) => (p.code + " " + p.mats.map(mn).join(" ")).toLowerCase().includes(q.toLowerCase())) : list);
   function packModal(code) {
     const cs = S().coils.filter((c) => c.pack === code);
     openModal({ title: "Pack Detail — " + code, size: "lg", hdr: "info", body: () => tbl(["No", "Nama Material", "No. Coil", "Kode Internal", "Net Weight", "Gross Weight", "Length", "Type"],
-      cs.map((c, i) => `<tr><td>${i + 1}</td><td>${esc(mn(c.mat))}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td><td>${c.baby ? '<span class="ap-label ap-label--warning">Baby</span>' : '<span class="ap-label ap-label--secondary">Normal</span>'}</td></tr>`).join(""), "Tidak ada coil.",
+      cs.map((c, i) => `<tr><td>${i + 1}</td><td>${esc(W.matBy(c.mat).trade || mn(c.mat))}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td><td>${c.baby ? '<span class="ap-label ap-label--warning">Baby</span>' : '<span class="ap-label ap-label--secondary">Normal</span>'}</td></tr>`).join(""), "Tidak ada coil.",
       `<tr class="wh-foot"><td colspan="4" class="ap-r">Total</td><td class="ap-r">${num(cs.reduce((a, c) => a + c.net_weight, 0))}</td><td class="ap-r">${num(cs.reduce((a, c) => a + c.gross_weight, 0))}</td><td colspan="2"></td></tr>`) });
   }
   const qrModal = (code) => openModal({ title: "QR Code Pack — " + code, size: "sm", body: () => `<div class="wh-qr">${U.qrSvg(code)}</div><p class="note" style="text-align:center">${esc(code)}<br>Pola QR contoh (bukan QR sungguhan).</p>` });
@@ -108,7 +108,7 @@
           <input class="ap-in" data-u="hq" placeholder="Filter pack / material..." value="${esc(u.hq)}"></div>` +
           tbl(["No", "Pack Code", "Nama Material", "Roll", "Net Weight Total", "Net Weight Per Roll", "Gross Weight Total", "Gross Weight Per Roll", "Kode Gudang", "Status"],
             l.map((p, i) => `<tr><td>${i + 1}</td><td>${pill(p.code)}</td><td>${matsCell(p.mats)}</td><td class="ap-r">${p.roll}</td><td class="ap-r">${num(p.nw)}</td><td class="ap-r">${num(p.nwRoll)}</td><td class="ap-r">${num(p.gw)}</td><td class="ap-r">${num(p.gwRoll)}</td><td>${p.gudang}</td><td>${lab("IN")}</td></tr>`).join(""),
-            u.hshown ? "Tidak ada data pada tanggal ini." : "Pilih tanggal lalu klik Show."))}
+            u.hshown ? "No data available for this date." : "Select a date then click Show"))}
           <p class="note">Mockup: posisi per tanggal memakai data stok saat ini (tidak menghitung mundur dari riwayat transaksi). Query sebenarnya: warehouse/get_packs_perday.</p>`;
       }
       const kd = tab === "pro" ? "PRO" : "SLI", l = qfilter(W.packs(kd), u.q);
@@ -129,7 +129,7 @@
     const h = histRows(mid), m = W.matBy(mid);
     openModal({ title: "History Stok — " + m.nama, size: "xl", body: () => tbl(["No", "Date", "No. Transaksi", "Status", "Coil Count", "Qty Awal (Kg)", "Qty Transaksi (Kg)", "Qty Akhir (Kg)", "Total Harga", "Saldo Awal", "Saldo Akhir", "Harga Lama", "Harga Baru (Avg)", "Detail"],
       h.map((r, i) => `<tr><td>${i + 1}</td><td>${fdate(r.tgl)}</td><td>${esc(r.no)}</td><td>${lab(r.status)}</td><td class="ap-r">${r.coil}</td><td class="ap-r">${num(r.qty_awal)}</td><td class="ap-r">${num(r.qty_trx)}</td><td class="ap-r">${num(r.qty_akhir)}</td><td class="ap-r">${num(r.total_harga)}</td><td class="ap-r">${num(r.saldo_awal)}</td><td class="ap-r">${num(r.saldo_akhir)}</td><td class="ap-r">${num(r.harga_lama)}</td><td class="ap-r">${num(r.harga_baru)}</td><td>${btn("info", "trx", r.no, "Coil", ` data-mat="${mid}" data-n="${r.coil}"`)}</td></tr>`).join(""), "Belum ada transaksi.") +
-      '<p class="note">Harga Baru (Avg) = Saldo Akhir ÷ Qty Akhir (rata-rata bergerak) untuk transaksi IN; transaksi OUT keluar pada harga rata-rata berjalan. Baris SALDO-AWAL / PENYESUAIAN dibuat otomatis (mockup) agar saldo akhir sama dengan stok saat ini; transaksi Request List yang dikonfirmasi ikut tercatat.</p>',
+      '<p class="note">Harga Baru (Avg) = Saldo Akhir ÷ Qty Akhir (rata-rata bergerak) untuk transaksi IN; transaksi OUT keluar pada harga rata-rata berjalan. Baris SALDO-AWAL / PENYESUAIAN dibuat otomatis (mockup) agar saldo akhir sama dengan stok saat ini; transaksi Request List yang dikonfirmasi ikut tercatat. Baris berawalan DV-SUB / INC-Sub berasal dari Subkont (OUT saat Confirm Surat Jalan, IN saat Konfirmasi Incoming).</p>',
       act: { trx(d) {
         const cs = S().coils.filter((c) => c.mat === d.mat).slice(0, +d.n || 3);
         openModal({ title: "Detail Coil Transaksi — " + d.id, size: "lg", hdr: "info", body: () => tbl(["No", "No. Coil", "Kode Internal", "Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)"], cs.map((c, i) => `<tr><td>${i + 1}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td></tr>`).join(""), "Tidak ada coil.") + '<p class="note">Contoh: coil diambil dari stok material yang sama (drill-down modal-detail-coil-trx).</p>' });
@@ -137,47 +137,50 @@
   }
   function coilModal(mid, kd) {
     const cs = S().coils.filter((c) => c.mat === mid && c.gudang === kd);
-    openModal({ title: "Detail Coil — " + W.matBy(mid).nama, size: "lg", hdr: "info", body: () => tbl(["No", "Pack Code", "No. Coil", "Kode Internal", "Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)"], cs.map((c, i) => `<tr><td>${i + 1}</td><td>${pill(c.pack)}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td></tr>`).join(""), "Tidak ada coil.") });
+    openModal({ title: "Detail Roll — " + W.matBy(mid).nama, size: "lg", hdr: "info", body: () => tbl(["No", "Pack Code", "No. Coil", "Kode Internal", "Net Weight (Kg)", "Gross Weight (Kg)", "Length (M)"], cs.map((c, i) => `<tr><td>${i + 1}</td><td>${pill(c.pack)}</td><td>${esc(c.no_coil)}</td><td>${esc(c.kode_internal)}</td><td class="ap-r">${num(c.net_weight)}</td><td class="ap-r">${num(c.gross_weight)}</td><td class="ap-r">${num(c.length)}</td></tr>`).join(""), "Tidak ada coil.") });
   }
+  const n3 = (n) => Number(n || 0).toLocaleString("id-ID", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const n0 = (n) => Number(n || 0).toLocaleString("id-ID", { maximumFractionDigits: 0 });
+  const svName = (m) => esc(mn(m)) + (W.matBy(m).trade ? `<br><small class="ap-hint">${esc(W.matBy(m).trade)}</small>` : "");
+  const svFilter = (rows, q) => (q ? rows.filter((r) => (r.mat + " " + mn(r.mat)).toLowerCase().includes(q.toLowerCase())) : rows);
   const svTable = (rows, kd, grandLabel) => tbl(["No", "Material Code", "Nama Material", "Roll", "Qty Stock (Kg)", "Purchase Price (Avg)", "Total Value", "Action"],
-    rows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.mat)}</td><td>${esc(mn(r.mat))}</td><td class="ap-r">${r.roll}</td><td class="ap-r">${num(r.qty)}</td><td class="ap-r">${num(r.harga)}</td><td class="ap-r">${num(r.total)}</td><td class="ap-act ap-act-nowrap">${btn("info", "hist", r.mat, "History")}${btn("light", "coil", r.mat, "Coil", ` data-kd="${kd}"`)}</td></tr>`).join(""), "Belum ada stok.",
-    `<tr class="wh-foot"><td colspan="6" class="ap-r">${grandLabel}</td><td class="ap-r">${num(rows.reduce((a, r) => a + r.total, 0))}</td><td></td></tr>`);
+    rows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.mat)}</td><td>${svName(r.mat)}</td><td style="text-align:center"><a class="ap-link" data-act="coil" data-id="${r.mat}" data-kd="${kd}">${r.roll} roll</a></td><td class="ap-r">${n3(r.qty)}</td><td class="ap-r">${n0(r.harga)}</td><td class="ap-r">${n0(r.total)}</td><td class="ap-act ap-act-nowrap" style="text-align:center">${btn("info", "hist", r.mat, "History")}</td></tr>`).join(""), "No stock data available.",
+    `<tr class="wh-foot"><td colspan="6" class="ap-r">${grandLabel}</td><td class="ap-r">${n0(rows.reduce((a, r) => a + r.total, 0))}</td><td></td></tr>`);
   P.stockvalue = {
-    title: "Stock Value", mod: "warehouse (stock_value)", role: "Gudang / Accounting", ui: { tab: "pro", hmat: "", hdate: "", hgud: "", hshown: false },
+    title: "Stock Value", mod: "warehouse (stock_value)", role: "Gudang / Accounting", ui: { tab: "pro", svq: "", hmat: "", hdate: "", hgud: "", hshown: false },
     hint: "Nilai persediaan coil per material: Qty Stock × Purchase Price (Avg) per gudang, riwayat transaksi, dan posisi per tanggal.",
     render() {
       const u = U.ui, tab = u.tab, nav = tabs([["pro", "Production Warehouse"], ["sli", "Slitting Warehouse"], ["hist", "History Per Days"]], tab);
-      const all = svRows("PRO").concat(svRows("SLI")), tot = all.reduce((a, r) => a + r.total, 0);
-      const top = `<div class="cl-sumrow">${stat(rp(tot), "Total nilai persediaan")}${stat(num(all.reduce((a, r) => a + r.qty, 0), 0) + " Kg", "Total Qty Stock")}${stat(all.reduce((a, r) => a + r.roll, 0), "Total roll")}</div>`;
-      const xl = '<button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl">Download Excel</button>';
+      const bar = `<div class="cl-tools"><input class="ap-in" data-u="svq" placeholder="Search code / material name..." value="${esc(u.svq)}"><span style="margin-left:auto"><button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="filter">Filter</button> <button type="button" class="ap-btn ap-btn--sm ap-btn--secondary" data-act="svreset">Reset</button> <button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl">Download Excel</button></span></div>`;
       if (tab === "hist") {
         let rows = [];
         if (u.hshown) ["PRO", "SLI"].filter((k) => !u.hgud || k === u.hgud).forEach((k) => svRows(k).forEach((r) => rows.push({ ...r, kd: k })));
-        if (u.hmat) rows = rows.filter((r) => (r.mat + mn(r.mat)).toLowerCase().includes(u.hmat.toLowerCase()));
-        return `${top}${nav}${card("History Per Days", `<div class="cl-tools"><input class="ap-in" data-u="hmat" placeholder="Search Material: kode / nama..." value="${esc(u.hmat)}"><label>As of Date : <input class="ap-in" type="date" data-u="hdate" value="${esc(u.hdate)}"></label>
+        rows = svFilter(rows, u.hmat);
+        return bar + nav + card("History Per Days", `<div class="cl-tools"><label>Search Material : <input class="ap-in" data-u="hmat" placeholder="Code / material name..." value="${esc(u.hmat)}"></label><label>As of Date : <input class="ap-in" type="date" data-u="hdate" value="${esc(u.hdate)}"></label>
           <label>Gudang : <select class="ap-sel ap-in" data-u="hgud"><option value="">-- All --</option><option value="PRO"${u.hgud === "PRO" ? " selected" : ""}>Production Warehouse</option><option value="SLI"${u.hgud === "SLI" ? " selected" : ""}>Slitting Warehouse</option></select></label>
-          <button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="show">Show</button><button type="button" class="ap-btn ap-btn--sm ap-btn--secondary" data-act="reset">Reset</button>${u.hshown ? xl : ""}</div>
-          <div class="wh-total">Grand Total: <strong>${u.hshown ? num(rows.reduce((a, r) => a + r.total, 0)) : "—"}</strong></div>` +
+          <button type="button" class="ap-btn ap-btn--sm ap-btn--primary" data-act="show">Show</button><button type="button" class="ap-btn ap-btn--sm ap-btn--secondary" data-act="reset">Reset</button>${u.hshown ? '<button type="button" class="ap-btn ap-btn--sm ap-btn--success" data-act="xl">Download Excel</button>' : ""}</div>
+          <div class="wh-total">Grand Total: <strong>${u.hshown ? n0(rows.reduce((a, r) => a + r.total, 0)) : "—"}</strong></div>` +
           tbl(["No", "Material Code", "Nama Material", "Warehouse", "Date", "Coil Count", "Qty Stock (Kg)", "Purchase Price (Avg)", "Total Value", "Action"],
-            rows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.mat)}</td><td>${esc(mn(r.mat))}</td><td>${r.kd === "PRO" ? "Production" : "Slitting"}</td><td>${fdate(u.hdate)}</td><td class="ap-r">${r.roll}</td><td class="ap-r">${num(r.qty)}</td><td class="ap-r">${num(r.harga)}</td><td class="ap-r">${num(r.total)}</td><td>${btn("info", "hist", r.mat, "History")}</td></tr>`).join(""), u.hshown ? "Tidak ada data." : "Pilih tanggal lalu klik Show."))}`;
+            rows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.mat)}</td><td>${svName(r.mat)}</td><td style="text-align:center">${r.kd === "PRO" ? "Production" : "Slitting"}</td><td style="text-align:center">${fdate(u.hdate)}</td><td style="text-align:center">${r.roll}</td><td class="ap-r">${n3(r.qty)}</td><td class="ap-r">${n0(r.harga)}</td><td class="ap-r">${n0(r.total)}</td><td style="text-align:center">${btn("info", "hist", r.mat, "History")}</td></tr>`).join(""), u.hshown ? "No data available for this date." : "Select a material to view history"));
       }
       const kd = tab === "pro" ? "PRO" : "SLI";
-      return `${top}${nav}${card(tab === "pro" ? "Production Warehouse" : "Slitting Warehouse", `<div class="cl-tools"><span style="margin-left:auto">${xl}</span></div>` + svTable(svRows(kd), kd, tab === "pro" ? "GRAND TOTAL PRODUKSI" : "GRAND TOTAL SLITTING"))}
-        <p class="note">Total Value = Qty Stock (Kg) × Purchase Price (Avg). Purchase Price (Avg) adalah rata-rata bergerak per material (lihat History). Transaksi pindah gudang lewat Request List tidak mengubah nilai (hanya memindahkan posisi coil).</p>`;
+      return bar + nav + card(tab === "pro" ? "Production Warehouse" : "Slitting Warehouse", svTable(svFilter(svRows(kd), u.svq), kd, tab === "pro" ? "GRAND TOTAL PRODUKSI" : "GRAND TOTAL SLITTING")) +
+        '<p class="note">Total Value = Qty Stock (Kg) × Purchase Price (Avg). Purchase Price (Avg) adalah rata-rata bergerak per material (lihat History). Transaksi pindah gudang lewat Request List tidak mengubah nilai (hanya memindahkan posisi coil). <b>Subkont:</b> Confirm Surat Jalan = OUT pada harga rata-rata berjalan (harga tidak berubah); Konfirmasi Incoming Subkont Material = IN baby coil pada costbook baru (Nilai Material + Biaya Proses ÷ Total Weight Slitting), sehingga Purchase Price (Avg) dihitung ulang. Costbook yang dipakai Surat Jalan Subkont berasal dari harga ini.</p>';
     },
     act: {
-      hist: (d) => histModal(d.id), coil: (d) => coilModal(d.id, d.kd), xl: () => excel("Stock Value"),
+      hist: (d) => histModal(d.id), coil: (d) => coilModal(d.id, d.kd), xl: () => excel("Stock Value"), filter() { U.render(); },
+      svreset() { U.ui.svq = ""; U.render(); },
       show() { if (!U.ui.hdate) { warn("Please select a date."); return; } U.ui.hshown = true; U.render(); },
       reset() { Object.assign(U.ui, { hmat: "", hdate: "", hgud: "", hshown: false }); U.render(); },
     },
   };
 
   /* ======================= 4. Kartu Stok (warehouse/kartu_stok) ======================= */
-  const booking = (mid) => S().spk.filter((s) => s.status === "Material On Load" && s.spkc).reduce((a, s) => a + S().coils.filter((c) => s.spkc.packs.includes(c.pack) && c.mat === mid).reduce((t, c) => t + c.net_weight, 0), 0);
-  const trxType = (no) => (no.startsWith("GRN") ? "Penerimaan Barang (GRN)" : no.startsWith("SPKC") ? "Pengeluaran SPK Coil" : no.startsWith("UNPK") ? "Hasil Unpack Coil" : "Transaksi");
+  const booking = () => 0;                                    // alur SPK Coil dibuang dari konsep (keputusan BA 19-11-2026): booking belum didefinisikan
+  const trxType = (no) => (no.startsWith("GRN") ? "Penerimaan Barang (GRN)" : no.startsWith("SPKC") ? "Pemindahan ke Production 2 (Request List)" : no.startsWith("UNPK") ? "Hasil Unpack Coil" : "Transaksi");
   P.kartu = {
     title: "Kartu Stok", mod: "warehouse (kartu_stok)", role: "Gudang / PPIC", ui: { mat: "", from: "", to: "" },
-    hint: "Mutasi stok per material: saldo awal, transaksi masuk/keluar, saldo akhir, beserta booking (stok yang sudah dialokasikan ke SPK Coil).",
+    hint: "Mutasi stok per material: saldo awal, transaksi masuk/keluar, saldo akhir, beserta kolom Booking (belum dipakai: alur SPK Coil sudah dibuang dari konsep).",
     render() {
       const u = U.ui, mids = u.mat ? [u.mat] : S().mats.map((m) => m.id);
       const rows = []; mids.forEach((mid) => { const h = histRows(mid); h.forEach((r, i) => rows.push({ mid, r, last: i === h.length - 1 })); });
@@ -187,7 +190,7 @@
         card("Kartu Stok", `<div class="ap-tablewrap"><table class="ap-table ap-table--striped ap-table--bordered"><thead><tr><th rowspan="2">#</th><th rowspan="2">Transaction Date</th><th rowspan="2">Transaction No.</th><th rowspan="2">Transaction Type</th><th rowspan="2">Product ID</th><th rowspan="2">Product</th><th colspan="3">AWAL</th><th colspan="2">TRANSAKSI</th><th colspan="3">AKHIR</th></tr>
           <tr><th>Stock</th><th>Booking</th><th>Free Stock</th><th>In/Out</th><th>Booking</th><th>Stock</th><th>Booking</th><th>Free Stock</th></tr></thead><tbody>${l.length ? l.map((x, i) => { const r = x.r, bk = x.last ? booking(x.mid) : 0, io = r.status === "IN" ? r.qty_trx : -r.qty_trx;
           return `<tr><td>${i + 1}</td><td>${fdate(r.tgl)}</td><td>${esc(r.no)}</td><td>${esc(trxType(r.no))}</td><td>${esc(x.mid)}</td><td>${esc(mn(x.mid))}</td><td class="ap-r">${num(r.qty_awal)}</td><td class="ap-r">${num(0)}</td><td class="ap-r">${num(r.qty_awal)}</td><td class="ap-r">${io > 0 ? "+" : ""}${num(io)}</td><td class="ap-r">${num(0)}</td><td class="ap-r">${num(r.qty_akhir)}</td><td class="ap-r">${num(bk)}</td><td class="ap-r">${num(r.qty_akhir - bk)}</td></tr>`; }).join("") : '<tr><td class="ap-empty" colspan="14">Tidak ada transaksi.</td></tr>'}</tbody></table></div>
-          <p class="note">Satuan Kg. Booking pada baris terakhir = berat pack yang sudah dipilih di SPK Coil berstatus Material On Load tetapi belum dikonfirmasi; Free Stock = Stock − Booking. Rumus booking per baris riwayat perlu dikonfirmasi ke programmer (halaman asli memuat data via server-side grid).</p>`);
+          <p class="note">Satuan Kg. Kolom Booking selalu 0 karena alur SPK Coil (booking pack) sudah dibuang dari konsep; definisi booking yang baru menunggu keputusan BA.</p>`);
     },
     act: {},
   };

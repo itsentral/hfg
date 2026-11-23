@@ -6,7 +6,7 @@
    ============================================================ */
 (() => {
   "use strict";
-  const KEY = "mockWH.data4";
+  const KEY = "mockWH.data6";
   const deep = (o) => JSON.parse(JSON.stringify(o));
 
   /* ---------- Master Material (material_master) ---------- */
@@ -96,12 +96,12 @@
     { spk_no: "SPK-202611-0001", tgl_spk: "2026-11-02", due_date: "2026-11-07", shift_names: [SHIFT[0]], catatan: "Prioritas order proyek", status: "Material Requested", detail: [spkDet("P426000001", 1800), spkDet("P426000002", 900)], spkc: null },
     { spk_no: "SPK-202611-0002", tgl_spk: "2026-11-03", due_date: "2026-11-08", shift_names: [SHIFT[0], SHIFT[1]], catatan: "", status: "Material On Load", detail: [spkDet("P426000003", 2500)], spkc: { no: "SPKC-202611-0001", date: "2026-11-03", packs: ["PCK-2611-005"], scanned: [] } },
     { spk_no: "SPK-202611-0003", tgl_spk: "2026-11-01", due_date: "2026-11-05", shift_names: [SHIFT[1]], catatan: "Stok minus, kejar kirim", status: "Material Confirmed", detail: [spkDet("P426000004", 1200)], spkc: { no: "SPKC-202610-0007", date: "2026-11-01", packs: ["PCK-2611-004"], scanned: ["PCK-2611-004"] } },
-    { spk_no: "SPK-202610-0019", tgl_spk: "2026-10-28", due_date: "2026-11-02", shift_names: [SHIFT[0]], catatan: "", status: "Released", detail: [spkDet("P426000001", 1500)], spkc: { no: "SPKC-202610-0005", date: "2026-10-28", packs: ["PCK-2611-008"], scanned: ["PCK-2611-008"] } },
+    { spk_no: "SPK-202610-0019", tgl_spk: "2026-10-28", due_date: "2026-11-02", shift_names: [SHIFT[0]], catatan: "", status: "Released", pr: "final", detail: [spkDet("P426000001", 1500)], spkc: { no: "SPKC-202610-0005", date: "2026-10-28", packs: ["PCK-2611-008"], scanned: ["PCK-2611-008"] } },
     { spk_no: "SPK-202611-0004", tgl_spk: "2026-11-04", due_date: "2026-11-09", shift_names: [SHIFT[0], SHIFT[2]], catatan: "Order toko bangunan", status: "Material Requested", detail: [spkDet("P426000002", 600), spkDet("P426000003", 800)], spkc: null },
     { spk_no: "SPK-202611-0005", tgl_spk: "2026-11-04", due_date: "2026-11-09", shift_names: [SHIFT[1]], catatan: "Warna biru", status: "Material On Load", detail: [spkDet("P426000005", 1000)], spkc: { no: "SPKC-202611-0002", date: "2026-11-04", packs: ["PCK-2611-015"], scanned: [] } },
     { spk_no: "SPK-202611-0006", tgl_spk: "2026-11-05", due_date: "2026-11-10", shift_names: [SHIFT[0]], catatan: "", status: "Material Requested", detail: [spkDet("P426000006", 1200)], spkc: null },
     { spk_no: "SPK-202611-0007", tgl_spk: "2026-11-05", due_date: "2026-11-10", shift_names: [SHIFT[0], SHIFT[1]], catatan: "Scan baru sebagian", status: "Material On Load", detail: [spkDet("P426000001", 1800)], spkc: { no: "SPKC-202611-0003", date: "2026-11-05", packs: ["PCK-2611-010", "PCK-2611-001"], scanned: ["PCK-2611-010"] } },
-    { spk_no: "SPK-202610-0017", tgl_spk: "2026-10-24", due_date: "2026-10-29", shift_names: [SHIFT[1]], catatan: "", status: "Released", detail: [spkDet("P426000004", 900)], spkc: null },
+    { spk_no: "SPK-202610-0017", tgl_spk: "2026-10-24", due_date: "2026-10-29", shift_names: [SHIFT[1]], catatan: "", status: "Released", pr: "draft", detail: [spkDet("P426000004", 900)], spkc: null },
     { spk_no: "SPK-202610-0011", tgl_spk: "2026-10-15", due_date: "2026-10-20", shift_names: [SHIFT[0]], catatan: "Dibatalkan pelanggan", status: "Cancelled", detail: [spkDet("P426000001", 500)], spkc: null },
     { spk_no: "SPK-202610-0014", tgl_spk: "2026-10-20", due_date: "2026-10-25", shift_names: [SHIFT[2]], catatan: "Dibatalkan, order batal", status: "Cancelled", detail: [spkDet("P426000002", 700)], spkc: null },
   ];
@@ -127,7 +127,7 @@
   /* ---------- Report Unpack (tr_unpack_coil_header/material/baby) ---------- */
   const bc = (kodeInt, n, nwP) => ({ babycoil_code: kodeInt + "-BC." + n, no_coil: "", net_weight_actual: nwP, gross_weight_actual: nwP + 30, net_weight_pl: nwP, gross_weight_pl: nwP + 30 });
   const UNPACK = [
-    { unpack_no: "UNPK-202611-0001", tgl_unpack: "2026-11-04 09:12", pack_code: "PCK-2611-004", catatan_kulit: "Kulit 12 kg", catatan_clamp_ring: "Clamp 4 pcs", net_weight_actual: 14040, gross_weight_actual: 14185, net_weight_pl: 14051, gross_weight_pl: 14190, catatan: "", status: "Confirmed",
+    { unpack_no: "UNPK-202611-0001", tgl_unpack: "2026-11-04 09:12", pack_code: "PCK-2611-004", catatan_kulit: "Kulit 12 kg", catatan_clamp_ring: "Clamp 4 pcs", net_weight_actual: 14040, gross_weight_actual: 14185, net_weight_pl: 14051, gross_weight_pl: 14190, catatan: "", status: "Draft",
       mats: [{ id_material: "MTR-004", no_coil: "5A0004101", kode_internal: "DEBDA0322-T1", jumlah_coil_roll: 2, net_weight_actual: 7030, gross_weight_actual: 7090, net_weight_pl: 7040, gross_weight_pl: 7095, babies: [bc("DEBDA0322-T1", 1, 3515), bc("DEBDA0322-T1", 2, 3515)] },
              { id_material: "MTR-004", no_coil: "5A0004102", kode_internal: "DEBDA0322-T2", jumlah_coil_roll: 2, net_weight_actual: 7010, gross_weight_actual: 7095, net_weight_pl: 7011, gross_weight_pl: 7095, babies: [bc("DEBDA0322-T2", 1, 3505), bc("DEBDA0322-T2", 2, 3505)] }] },
     { unpack_no: "UNPK-202610-0003", tgl_unpack: "2026-10-30 14:40", pack_code: "PCK-2610-011", catatan_kulit: "", catatan_clamp_ring: "", net_weight_actual: 6150, gross_weight_actual: 6210, net_weight_pl: 6155, gross_weight_pl: 6215, catatan: "Dibatalkan, salah pilih pack", status: "Cancelled",
@@ -158,14 +158,25 @@
     const sum = (k) => mats.reduce((a, m) => a + m[k], 0);
     return { unpack_no: no, tgl_unpack: tgl, pack_code: pack, catatan_kulit: "Kulit 10 kg", catatan_clamp_ring: "Clamp 6 pcs", net_weight_actual: sum("net_weight_actual"), gross_weight_actual: sum("gross_weight_actual"), net_weight_pl: sum("net_weight_pl"), gross_weight_pl: sum("gross_weight_pl"), catatan: note, status, mats };
   };
-  const initial0 = () => { const coils = mkCoils(); return { mats: deep(MATS), coils, spk: deep(SPK), sfw: deep(SFW), unpack: deep(UNPACK).concat([mkU("UNPK-202610-0005", "2026-10-29 11:05", "PCK-2610-012", "Lock", coils, "Sudah di-lock Accounting"), mkU("UNPK-202611-0002", "2026-11-05 15:20", "PCK-2610-013", "Confirmed", coils, "")]), trx: {}, seq: { spk: 7, spkc: 3, unpack: 2 } }; };
+  const regroup = (rec) => { const g = {}; rec.mats.forEach((m) => { const x = g[m.id_material] || (g[m.id_material] = { id_material: m.id_material, no: [], ki: [], babies: [], net_weight_pl: 0, gross_weight_pl: 0 }); x.no.push(m.no_coil); x.ki.push(m.kode_internal); x.net_weight_pl += m.net_weight_pl; x.gross_weight_pl += m.gross_weight_pl; (m.babies || []).forEach((b) => x.babies.push(Object.assign({ kulit: 0, clamp_ring: 0 }, b))); });
+    rec.mats = Object.values(g).map((x) => ({ id_material: x.id_material, no_coil: x.no.join(", "), kode_internal: x.ki.join(", "), jumlah_coil_roll: x.babies.length, net_weight_actual: x.babies.reduce((a, b) => a + b.net_weight_actual, 0), gross_weight_actual: x.babies.reduce((a, b) => a + b.gross_weight_actual, 0), net_weight_pl: x.net_weight_pl, gross_weight_pl: x.gross_weight_pl, babies: x.babies.map((b, i, arr) => Object.assign(b, { no_coil: String(x.no[0]).replace(/-BC.d+$/i, "") + "-BC." + (i + 1), babycoil_code: String(x.ki[0]).replace(/-BC.d+$/i, "") + "-BC." + (i + 1) })) })); return rec; };
+  const initial0 = () => { const coils = mkCoils(); return { mats: deep(MATS), coils, spk: deep(SPK), sfw: deep(SFW), unpack: deep(UNPACK).map(regroup).concat([mkU("UNPK-202610-0005", "2026-10-29 11:05", "PCK-2610-012", "Lock", coils, "Sudah di-lock Accounting"), mkU("UNPK-202611-0002", "2026-11-05 15:20", "PCK-2610-013", "Draft", coils, "")].map(regroup)), trx: {}, seq: { spk: 7, spkc: 3, unpack: 2 } }; };
+  // Riwayat scan pack ke PRT per SPK (warehouse_coil_kartu_stok: no_trs = spk_no, ke = 'prod. 2')
+  const seedScan = (st) => {
+    const out = [];
+    [["PCK-2611-004", "SPK-202611-0003", "2026-11-03 10:15"], ["PCK-2611-008", "SPK-202610-0019", "2026-10-29 08:40"], ["PCK-2610-011", "SPK-202610-0017", "2026-10-27 13:05"], ["PCK-2610-012", "SPK-202610-0017", "2026-10-27 13:20"], ["PCK-2610-013", "SPK-202610-0019", "2026-10-29 08:55"]].forEach(([pk, spk, t]) => {
+      st.coils.filter((c) => c.pack === pk && c.gudang === "PRT").forEach((c) => out.push({ spk_no: spk, pack_code: pk, mat: c.mat, no_coil: c.no_coil, kode_internal: c.kode_internal, net_weight: c.net_weight, waktu: t, oleh: "Budi S." }));
+    });
+    return out;
+  };
   let state;
-  const initial = () => { const st = initial0(); state = st; st.unpack.filter((u) => u.status === "Confirmed" || u.status === "Lock").forEach((u) => unpackApply(u)); return st; };
+  const initial = () => { const st = initial0(); state = st; st.scanlog = seedScan(st); st.unpack.filter((u) => u.status !== "Cancelled").forEach((u) => unpackApply(u)); return st; };
   let storageOk = true;
   const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.mats && s.seq && s.trx) return s; } catch (e) { storageOk = false; } return initial(); };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { storageOk = false; } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { storageOk = false; } try { writePrice(); } catch (e) { /* abaikan */ } };
   state = load();
   if (!state) state = initial();
+  if (!state.scanlog) { state.scanlog = seedScan(state); save(); }
 
   const round2 = (n) => Math.round(Number(n || 0) * 100) / 100;
   const fm = (id) => (matBy(id) || state.mats.find((m) => m.id === id) || {});
@@ -173,20 +184,20 @@
 
   // posisi stok baby coil hasil unpack: coil induk diganti baby coil (gudang tetap), edit/hapus mengembalikan coil induk
   function unpackApply(rec) {
-    const pc = state.coils.filter((c) => c.pack === rec.pack_code && !c.baby_of);
-    rec.mats.forEach((m, i) => {
-      const par = pc[i]; if (!par) return;
-      m.parent = JSON.parse(JSON.stringify(par));
-      m.id_material = par.mat; m.no_coil = par.no_coil; m.kode_internal = par.kode_internal;
-      state.coils = state.coils.filter((c) => c.id !== par.id);
-      (m.babies || []).forEach((b, k) => { b.id_coil_baru = 9000 + state.coils.length + k; state.coils.push({ id: b.id_coil_baru, pack: par.pack, gudang: par.gudang, mat: par.mat, no_coil: par.no_coil, kode_internal: b.babycoil_code, net_weight: b.net_weight_actual, gross_weight: b.gross_weight_actual, length: Math.round(par.length / Math.max(1, m.babies.length)), baby: 1, baby_of: rec.unpack_no }); });
+    rec.mats.forEach((m) => {
+      const pars = state.coils.filter((c) => c.pack === rec.pack_code && !c.baby_of && c.mat === m.id_material); if (!pars.length) return;
+      m.parents = JSON.parse(JSON.stringify(pars));
+      const ids = pars.map((p) => p.id), par = pars[0], len = pars.reduce((a, p) => a + (p.length || 0), 0);
+      state.coils = state.coils.filter((c) => !ids.includes(c.id));
+      (m.babies || []).forEach((b, k) => { b.id_coil_baru = 9000 + state.coils.length + k; state.coils.push({ id: b.id_coil_baru, pack: par.pack, gudang: par.gudang, mat: par.mat, no_coil: b.no_coil || par.no_coil, kode_internal: b.babycoil_code, net_weight: b.net_weight_actual, gross_weight: b.gross_weight_actual, length: Math.round(len / Math.max(1, m.babies.length)), baby: 1, baby_of: rec.unpack_no }); });
     });
   }
   function unpackRevert(rec) {
     state.coils = state.coils.filter((c) => c.baby_of !== rec.unpack_no);
-    rec.mats.forEach((m) => { if (m.parent) { state.coils.push(m.parent); delete m.parent; } });
+    rec.mats.forEach((m) => { (m.parents || []).forEach((p) => state.coils.push(p)); delete m.parents; });
     state.coils.sort((x, y) => x.id - y.id);
   }
+  const skOutW = (mid) => (state.skRemoved || []).filter((x) => x.mat === mid).reduce((a, x) => a + x.nw, 0);   // berat pack yang sudah keluar ke vendor Subkont
   const curQty = (mid) => state.coils.filter((c) => c.mat === mid && (c.gudang === "PRO" || c.gudang === "SLI")).reduce((a, c) => a + c.net_weight, 0);
   const curRoll = (mid) => state.coils.filter((c) => c.mat === mid && (c.gudang === "PRO" || c.gudang === "SLI")).length;
   const run = (list) => {
@@ -199,14 +210,28 @@
     });
     return rows;
   };
+  /* ---------- Transaksi Subkont (FEAT-12) pada riwayat stok material: dibaca baca-saja dari data mockup Subkont (sk-*.html) ----------
+     Costbook dasar material = Purchase Price (Avg) di Stock Value. Confirm Surat Jalan Subkont = OUT pada harga rata-rata berjalan (harga tidak berubah);
+     Konfirmasi Incoming Subkont Material = IN baby coil dengan harga = costbook baru (Nilai Material + Biaya Proses) / Total Weight Slitting -> harga rata-rata dihitung ulang. */
+  const SKMAP = { "SBJ-ZGAGBA232-01-004": "MTR-002", "SBJ-ZGAGBA232-01-006": "MTR-001", "SBJ-GVBBA118-02-001": "MTR-004" };   // kode material Subkont -> material Stock Value (nama sama)
+  const skRead = () => { try { let best = -1, k = null; for (let q = 0; q < localStorage.length; q++) { const m = /^mockSK\.data(\d+)$/.exec(localStorage.key(q) || ""); if (m && +m[1] > best) { best = +m[1]; k = localStorage.key(q); } } return k ? JSON.parse(localStorage.getItem(k)) : null; } catch (e) { return null; } };
+  function skTrx(mid) {
+    const st = skRead(), out = []; if (!st) return out;
+    (st.dlv || []).filter((d) => d.status === "Confirmed").forEach((d) => { const rows = d.detail.filter((x) => x.pack_code && SKMAP[x.kode_barang] === mid); if (rows.length) out.push([d.tgl_kirim, d.kode_delivery, "OUT", rows.length, rows.reduce((a, x) => a + (x.net_weight || 0), 0), null]); });
+    (st.inc || []).filter((i) => i.status === "Confirmed").forEach((i) => i.items.forEach((it) => { const l = (st.lap || []).find((z) => z.no_laporan === it.no_laporan) || {}; if (SKMAP[l.kode_barang] === mid && it.costbook_baru_per_kg) out.push([i.tgl_incoming, i.no_incoming, "IN", (l.packs || []).reduce((a, p) => a + (p.jumlah_coil_roll || 0), 0), l.nett_weight_actual, it.costbook_baru_per_kg]); }));
+    return out;
+  }
   // riwayat stok satu material (rata-rata bergerak); baris SALDO-AWAL / PENYESUAIAN dibuat agar saldo akhir = stok saat ini
-  function history(mid) {
-    const list = (TRX[mid] || []).concat((state.trx || {})[mid] || []).map((t, i) => ({ t, i })).sort((a, b) => a.t[0].localeCompare(b.t[0]) || a.i - b.i).map((x) => x.t);
-    const fin = run(list), last = fin.length ? fin[fin.length - 1].qty_akhir : 0, delta = curQty(mid) - last;
+  function history(mid, noSk) {
+    let list = (TRX[mid] || []).concat((state.trx || {})[mid] || []).map((t, i) => ({ t, i })).sort((a, b) => a.t[0].localeCompare(b.t[0]) || a.i - b.i).map((x) => x.t);
+    const fin = run(list), last = fin.length ? fin[fin.length - 1].qty_akhir : 0, delta = curQty(mid) + skOutW(mid) - last;
     if (delta > 0.004) list.unshift(["2026-10-01", "SALDO-AWAL", "IN", curRoll(mid), delta, fm(mid).harga_beli]);
     else if (delta < -0.004) list.push([today(), "PENYESUAIAN", "OUT", 0, -delta, null]);
+    if (!noSk) { const sk = skTrx(mid); if (sk.length) list = list.concat(sk).map((t, i) => ({ t, i })).sort((a, b) => a.t[0].localeCompare(b.t[0]) || a.i - b.i).map((x) => x.t); }
     return run(list);
   }
+  // cuplikan harga per material TANPA transaksi Subkont ({q,s,h}); halaman Subkont menerapkan transaksi Subkont sendiri di atasnya (sk-data.js)
+  const writePrice = () => { try { const o = {}; MATS.forEach((m) => { const h = history(m.id, true), l = h[h.length - 1]; o[m.id] = l ? { q: l.qty_akhir, s: l.saldo_akhir, h: l.harga_baru } : { q: 0, s: 0, h: m.harga_beli }; }); localStorage.setItem("mockWH.price", JSON.stringify(o)); } catch (e) { /* abaikan */ } };
   const avgHarga = (mid) => { const h = history(mid); return h.length && h[h.length - 1].harga_baru ? h[h.length - 1].harga_baru : fm(mid).harga_beli; };
   function addTrx(mid, tgl, no, st, coil, qty) { ((state.trx[mid]) || (state.trx[mid] = [])).push([tgl, no, st, coil, qty, null]); }
   // ringkasan stok per gudang (stock_value): per material, harga = rata-rata bergerak dari riwayat
@@ -219,6 +244,32 @@
     return Object.values(out).map((o) => { const h = avgHarga(o.mat); return { ...o, harga: h, total: round2(o.qty * h) }; });
   }
 
+  /* ---------- Sinkron stok Subkont (FEAT-12) ----------
+     (1) Pack contoh Subkont (PCK-2609-xxx) ditambahkan ke stok gudang sekali saja (idempotent, tanpa menghapus data lain) supaya SPK Subkont Material memakai stok yang sama
+         dengan Stock Gudang Coil dan Stock Value.
+     (2) Pack yang sudah dikirim ke vendor (Surat Jalan Subkont Confirmed = status Tampungan Terkirim) dikeluarkan dari stok gudang. Barang di Tampungan Siap Kirim /
+         Terkunci tetap di stok (hanya pemisahan fisik, FR-104). Pengurangan nilainya tercatat sebagai transaksi OUT Subkont pada riwayat stok (skTrx). */
+  const SKPACKS = [["PCK-2609-001", "PRO", "MTR-002", 3798, "DEBDA0319-T1"], ["PCK-2609-002", "PRO", "MTR-002", 3812, "DEBDA0319-T2"], ["PCK-2609-003", "PRO", "MTR-002", 3888, "DEBDA0319-T3"], ["PCK-2609-004", "PRO", "MTR-002", 3760, "DEBDA0319-T4"], ["PCK-2609-099", "SLI", "MTR-002", 3700, "DEBDA0319-T9"],
+    ["PCK-2609-011", "PRO", "MTR-001", 6120, "DEBDA0322-T1"], ["PCK-2609-012", "PRO", "MTR-001", 5980, "DEBDA0322-T2"], ["PCK-2609-013", "PRO", "MTR-001", 6050, "DEBDA0322-T3"],
+    ["PCK-2609-021", "PRO", "MTR-004", 7020, "DEBDA0330-T1"], ["PCK-2609-022", "PRO", "MTR-004", 6900, "DEBDA0330-T2"]];
+  function skSyncStock() {
+    let ch = false;
+    if (!state.skPacksSeeded) {
+      let id = state.coils.reduce((a, c) => Math.max(a, c.id), 0);
+      SKPACKS.forEach((p, i) => { id++; state.coils.push({ id, pack: p[0], gudang: p[1], mat: p[2], no_coil: "5A" + String(9100 + i).padStart(7, "0"), kode_internal: p[4], net_weight: p[3], gross_weight: p[3] + 45, length: 1800 + i * 13, baby: 0 }); });
+      state.skPacksSeeded = true; ch = true;
+    }
+    const sk = skRead();
+    if (sk) {
+      const sent = new Set((sk.tamp || []).filter((t) => t.status === "Terkirim" && t.pack_code).map((t) => t.pack_code));
+      state.skRemoved = state.skRemoved || [];
+      const done = new Set(state.skRemoved.map((x) => x.pack)), gone = state.coils.filter((c) => sent.has(c.pack) && !done.has(c.pack));
+      if (gone.length) { gone.forEach((c) => state.skRemoved.push({ pack: c.pack, mat: c.mat, nw: c.net_weight })); state.coils = state.coils.filter((c) => !gone.includes(c)); ch = true; }
+    }
+    if (ch) save();
+  }
+  skSyncStock();
+  writePrice();
   window.WH = {
     get state() { return state; }, save, storageOk: () => storageOk,
     reset() { state = initial(); save(); },
@@ -238,5 +289,29 @@
       });
     },
     SFW_HIST,
+    // Scan pack PRO -> PRT (Request_list_model::check_pack_for_scan / confirm_scan_pack_to_prt)
+    scannableSpk: () => state.spk.filter((s) => s.status !== "Cancelled" && s.pr !== "final"),
+    scanCheck(code) {
+      const c0 = String(code || "").trim();
+      if (!c0) return { ok: false, message: "Nomor Pack wajib diisi." };
+      const cs = state.coils.filter((c) => c.pack.toUpperCase() === c0.toUpperCase());
+      if (!cs.length) return { ok: false, message: 'No. Pack "' + c0 + '" tidak ditemukan atau tidak aktif.' };
+      const pk = cs[0].pack, kd = cs[0].gudang;
+      if (kd === "PRT") return { ok: false, message: "Pack " + pk + " sudah berada di gudang WRH Production 2 (PRT)." };
+      if (kd !== "PRO") return { ok: false, message: "Pack " + pk + " berada di gudang " + kd + ". Scan hanya menerima pack dari gudang PRO (WRH Production 1)." };
+      if (!state.spk.some((s) => s.status !== "Cancelled" && s.pr !== "final")) return { ok: false, message: "Tidak ada SPK aktif yang dapat dipilih saat ini." };
+      return { ok: true, pack: pk, coils: cs };
+    },
+    scanMove(code, spkNo) {
+      const r = this.scanCheck(code); if (!r.ok) return r;
+      const s = state.spk.find((x) => x.spk_no === spkNo);
+      if (!s) return { ok: false, message: 'No. SPK "' + spkNo + '" tidak ditemukan.' };
+      if (s.status === "Cancelled") return { ok: false, message: "SPK " + spkNo + " berstatus Cancelled dan tidak dapat dipilih." };
+      if (s.pr === "final") return { ok: false, message: "SPK " + spkNo + " sudah selesai (Done) pada Production Report." };
+      const t = today() + " " + new Date().toTimeString().slice(0, 5); let w = 0;
+      r.coils.forEach((c) => { c.gudang = "PRT"; w += c.net_weight; state.scanlog.unshift({ spk_no: spkNo, pack_code: r.pack, mat: c.mat, no_coil: c.no_coil, kode_internal: c.kode_internal, net_weight: c.net_weight, waktu: t, oleh: "Budi S." }); });
+      save();
+      return { ok: true, pack: r.pack, n: r.coils.length, w, message: "Pack " + r.pack + " (" + r.coils.length + " coil, " + w.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Kg) berhasil dipindahkan ke WRH Production 2 (PRT) untuk transaksi " + spkNo + "." };
+    },
   };
 })();
