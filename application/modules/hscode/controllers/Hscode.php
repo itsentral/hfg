@@ -61,7 +61,7 @@ class Hscode extends Admin_Controller
         }
 
         foreach ($requirements as $rq) {
-            $ArrRQ[$rq['type']][] = $rq;
+            $ArrRQ[(string) ($rq['type'] ?? '')][] = $rq;
         }
 
         $this->template->set([
@@ -91,7 +91,7 @@ class Hscode extends Admin_Controller
         }
 
         foreach ($requirements as $rq) {
-            $ArrRQ[$rq['type']][] = $rq;
+            $ArrRQ[(string) ($rq['type'] ?? '')][] = $rq;
         }
 
         $this->template->set([

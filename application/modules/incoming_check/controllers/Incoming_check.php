@@ -154,7 +154,7 @@ class Incoming_check extends Admin_Controller
 		$GET_SO_NUMBER = $this->db->get('so_number')->result_array();
 		$ArrGetSO = [];
 		foreach ($GET_SO_NUMBER as $val => $value) {
-			$ArrGetSO[$value['id_bq']] = $value['so_number'];
+			$ArrGetSO[(string) ($value['id_bq'] ?? '')] = $value['so_number'];
 		}
 		$data_Group	= $this->master_model->getArray('groups', array(), 'id', 'name');
 		$data_pr	= $this->db->group_by('a.no_pr')->order_by('a.created_date', 'desc')->join('warehouse_planning_header a', 'a.no_ipp=b.no_ipp')->get('warehouse_planning_detail b')->result_array();
@@ -725,15 +725,15 @@ class Incoming_check extends Admin_Controller
 		$GET_SO_NUMBER = $this->db->get('so_number')->result_array();
 		$ArrGetSO = [];
 		foreach ($GET_SO_NUMBER as $val => $value) {
-			$ArrGetSO[$value['id_bq']] = $value['so_number'];
+			$ArrGetSO[(string) ($value['id_bq'] ?? '')] = $value['so_number'];
 		}
 
 		$GET_SPK_NUMBER = $this->db->get_where('so_detail_header', array('no_spk <>' => NULL))->result_array();
 		$ArrGetSPK = [];
 		$ArrGetIPP = [];
 		foreach ($GET_SPK_NUMBER as $val => $value) {
-			$ArrGetSPK[$value['id']] = $value['no_spk'];
-			$ArrGetIPP[$value['id']] = $value['id_bq'];
+			$ArrGetSPK[(string) ($value['id'] ?? '')] = $value['no_spk'];
+			$ArrGetIPP[(string) ($value['id'] ?? '')] = $value['id_bq'];
 		}
 
 		$data = array(
@@ -940,7 +940,7 @@ class Incoming_check extends Admin_Controller
 			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$where_in_ID[] = $value['id'];
-				$WHERE_KEY_QTY[$value['id']] 	= $QTY;
+				$WHERE_KEY_QTY[(string) ($value['id'] ?? '')] 	= $QTY;
 			}
 		}
 
@@ -1112,7 +1112,7 @@ class Incoming_check extends Admin_Controller
 								if ($value2['id_key'] == $value3['key_gudang']) {
 									$nomor 		= $value2['id_key'];
 									$ACTUAL_MAT = $value2['actual_type'];
-									$QTY_INP	= $WHERE_KEY_QTY[$value['id']];
+									$QTY_INP	= $WHERE_KEY_QTY[(string) ($value['id'] ?? '')];
 									$BERAT_UNIT = $value3['berat'] / $QTY_INP;
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
@@ -1181,9 +1181,9 @@ class Incoming_check extends Admin_Controller
 		foreach ($ArrUpdateStock as $value) {
 			if ($value['qty'] > 0) {
 				if (!array_key_exists($value['id'], $temp ?? [])) {
-					$temp[$value['id']] = 0;
+					$temp[(string) ($value['id'] ?? '')] = 0;
 				}
-				$temp[$value['id']] += $value['qty'];
+				$temp[(string) ($value['id'] ?? '')] += $value['qty'];
 			}
 		}
 
@@ -1248,12 +1248,12 @@ class Incoming_check extends Admin_Controller
 
 		foreach ($ArrUpdateStock as $value) {
 			if (!array_key_exists($value['id'], $tempx ?? [])) {
-				$tempx[$value['id']]['good'] = 0;
+				$tempx[(string) ($value['id'] ?? '')]['good'] = 0;
 			}
-			$tempx[$value['id']]['good'] += $value['qty'];
+			$tempx[(string) ($value['id'] ?? '')]['good'] += $value['qty'];
 
-			$grouping_temp[$value['id']]['id'] 			= $value['id'];
-			$grouping_temp[$value['id']]['qty_good'] 	= $tempx[$value['id']]['good'];
+			$grouping_temp[(string) ($value['id'] ?? '')]['id'] 			= $value['id'];
+			$grouping_temp[(string) ($value['id'] ?? '')]['qty_good'] 	= $tempx[(string) ($value['id'] ?? '')]['good'];
 		}
 
 		move_warehouse($ArrUpdateStock, $id_gudang, $id_gudang_wip, $kode_trans);
@@ -1382,7 +1382,7 @@ class Incoming_check extends Admin_Controller
 			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$where_in_ID[] = $value['id'];
-				$WHERE_KEY_QTY[$value['id']] 	= $QTY;
+				$WHERE_KEY_QTY[(string) ($value['id'] ?? '')] 	= $QTY;
 			}
 		}
 
@@ -1553,7 +1553,7 @@ class Incoming_check extends Admin_Controller
 								if ($value2['id_key'] == $value3['key_gudang']) {
 									$nomor 		= $value2['id_key'];
 									$ACTUAL_MAT = $value2['actual_type'];
-									$QTY_INP	= $WHERE_KEY_QTY[$value['id']];
+									$QTY_INP	= $WHERE_KEY_QTY[(string) ($value['id'] ?? '')];
 									$BERAT_UNIT = $value3['berat'] / $QTY_INP;
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
@@ -1615,9 +1615,9 @@ class Incoming_check extends Admin_Controller
 		foreach ($ArrUpdateStock as $value) {
 			if ($value['qty'] > 0) {
 				if (!array_key_exists($value['id'], $temp ?? [])) {
-					$temp[$value['id']] = 0;
+					$temp[(string) ($value['id'] ?? '')] = 0;
 				}
-				$temp[$value['id']] += $value['qty'];
+				$temp[(string) ($value['id'] ?? '')] += $value['qty'];
 			}
 		}
 
@@ -1682,12 +1682,12 @@ class Incoming_check extends Admin_Controller
 
 		foreach ($ArrUpdateStock as $value) {
 			if (!array_key_exists($value['id'], $tempx ?? [])) {
-				$tempx[$value['id']]['good'] = 0;
+				$tempx[(string) ($value['id'] ?? '')]['good'] = 0;
 			}
-			$tempx[$value['id']]['good'] += $value['qty'];
+			$tempx[(string) ($value['id'] ?? '')]['good'] += $value['qty'];
 
-			$grouping_temp[$value['id']]['id'] 			= $value['id'];
-			$grouping_temp[$value['id']]['qty_good'] 	= $tempx[$value['id']]['good'];
+			$grouping_temp[(string) ($value['id'] ?? '')]['id'] 			= $value['id'];
+			$grouping_temp[(string) ($value['id'] ?? '')]['qty_good'] 	= $tempx[(string) ($value['id'] ?? '')]['good'];
 		}
 
 		move_warehouse($ArrUpdateStock, $id_gudang, $id_gudang_wip, $kode_trans);
@@ -2239,8 +2239,8 @@ class Incoming_check extends Admin_Controller
 				$awal_col	= 0;
 
 				if (empty($date_filter)) {
-					if (!empty($GET_COSTBOOK[$row_Cek['id_material']])) {
-						$COSTBOOK = $GET_COSTBOOK[$row_Cek['id_material']];
+					if (!empty($GET_COSTBOOK[(string) ($row_Cek['id_material'] ?? '')])) {
+						$COSTBOOK = $GET_COSTBOOK[(string) ($row_Cek['id_material'] ?? '')];
 					} else {
 						$COSTBOOK = 0;
 					}
@@ -2923,15 +2923,15 @@ class Incoming_check extends Admin_Controller
 		$GET_SO_NUMBER = $this->db->get('so_number')->result_array();
 		$ArrGetSO = [];
 		foreach ($GET_SO_NUMBER as $val => $value) {
-			$ArrGetSO[$value['id_bq']] = $value['so_number'];
+			$ArrGetSO[(string) ($value['id_bq'] ?? '')] = $value['so_number'];
 		}
 
 		$GET_SPK_NUMBER = $this->db->get_where('so_detail_header', array('no_spk <>' => NULL))->result_array();
 		$ArrGetSPK = [];
 		$ArrGetIPP = [];
 		foreach ($GET_SPK_NUMBER as $val => $value) {
-			$ArrGetSPK[$value['id']] = $value['no_spk'];
-			$ArrGetIPP[$value['id']] = $value['id_bq'];
+			$ArrGetSPK[(string) ($value['id'] ?? '')] = $value['no_spk'];
+			$ArrGetIPP[(string) ($value['id'] ?? '')] = $value['id_bq'];
 		}
 
 		$rest_data 	= $this->db->get_where('warehouse_adjustment', array('kode_trans' => $kode_trans, 'status_id' => '1'))->result_array();

@@ -87,7 +87,7 @@ class Incoming_stok extends Admin_Controller
             $ArrInsertDetail[$val]['update_by']     = $this->id_user;
             $ArrInsertDetail[$val]['update_date']   = $this->datetime;
 
-            $konversi = (!empty($GET_ACC[$valx['id_barang']]['konversi'])) ? $GET_ACC[$valx['id_barang']]['konversi'] : 1;
+            $konversi = (!empty($GET_ACC[(string) ($valx['id_barang'] ?? '')]['konversi'])) ? $GET_ACC[(string) ($valx['id_barang'] ?? '')]['konversi'] : 1;
             if ($konversi <= 0) {
               $konversi = 1;
             }

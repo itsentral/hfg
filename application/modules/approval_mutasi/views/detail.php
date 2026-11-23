@@ -12,7 +12,7 @@ $status_map = [
     5 => ['Cancelled',        'secondary'],
     6 => ['Revision',         'danger'],
 ];
-$st = $status_map[$m['status']] ?? ['-', 'secondary'];
+$st = $status_map[(string) ($m['status'] ?? '')] ?? ['-', 'secondary'];
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">

@@ -558,7 +558,7 @@ class Expense_petty_cash_model extends BF_Model
                 'coa'              => $item['coa_code'],
                 'id_company'       => $id_company,
                 'nm_company'       => $nm_company,
-                'nm_coa'           => $coa_names[$item['coa_code']],
+                'nm_coa'           => $coa_names[(string) ($item['coa_code'] ?? '')],
                 'debit'            => (int) $item['total'],
                 'kredit'           => 0,
                 'keterangan'       => $item['pengeluaran'] ?: ($header['keterangan'] ?: 'Petty Cash Expense'),

@@ -397,7 +397,7 @@ class Accessories extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $id_unit_packing   = (!empty($GET_UNIT[$vals['id_unit_gudang']]['code'])) ? $GET_UNIT[$vals['id_unit_gudang']]['code'] : '';
+        $id_unit_packing   = (!empty($GET_UNIT[(string) ($vals['id_unit_gudang'] ?? '')]['code'])) ? $GET_UNIT[(string) ($vals['id_unit_gudang'] ?? '')]['code'] : '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $id_unit_packing);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
@@ -409,7 +409,7 @@ class Accessories extends Admin_Controller
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);
 
         $awal_col++;
-        $id_unit   = (!empty($GET_UNIT[$vals['id_unit']]['code'])) ? $GET_UNIT[$vals['id_unit']]['code'] : '';
+        $id_unit   = (!empty($GET_UNIT[(string) ($vals['id_unit'] ?? '')]['code'])) ? $GET_UNIT[(string) ($vals['id_unit'] ?? '')]['code'] : '';
         $Cols       = getColsChar($awal_col);
         $sheet->setCellValue($Cols . $awal_row, $id_unit);
         $sheet->getStyle($Cols . $awal_row)->applyFromArray($tableBodyLeft);

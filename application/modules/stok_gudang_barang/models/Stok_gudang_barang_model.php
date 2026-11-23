@@ -58,7 +58,7 @@ class Stok_gudang_barang_model extends BF_Model
 			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['nama']) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper((string) $nm_gudang) . "</div>";
 
-			$unit_packing = (!empty($GET_UNIT[$row['id_unit_packing']]['code'])) ? $GET_UNIT[$row['id_unit_packing']]['code'] : '';
+			$unit_packing = (!empty($GET_UNIT[(string) ($row['id_unit_packing'] ?? '')]['code'])) ? $GET_UNIT[(string) ($row['id_unit_packing'] ?? '')]['code'] : '';
 			$nestedData[]	= "<div align='left'>" . strtoupper((string) $unit_packing) . "</div>";
 
 			$id_material = $row['code_lv4'];

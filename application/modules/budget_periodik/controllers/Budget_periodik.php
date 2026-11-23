@@ -43,7 +43,7 @@ class Budget_periodik extends Admin_Controller
 		$q_all = $this->db->select('id, nama')->from('ms_department')->get()->result_array();
 		if ($q_all) {
 			foreach ($q_all as $d) {
-				$all_dept[$d['id']] = strtoupper((string) $d['nama']);
+				$all_dept[(string) ($d['id'] ?? '')] = strtoupper((string) $d['nama']);
 			}
 		}
 

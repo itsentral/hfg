@@ -622,7 +622,7 @@ class Incoming extends Admin_Controller
 
         $draft_coils_map = [];
         foreach ($draft_coils as $c) {
-            $draft_coils_map[$c['id_ros_coil_detail']] = [
+            $draft_coils_map[(string) ($c['id_ros_coil_detail'] ?? '')] = [
                 'id_gudang_ke' => $c['id_gudang_ke'],
                 'kd_gudang_ke' => $c['kd_gudang_ke'],
                 'status_qc'    => $c['status_qc'] ?? 'OK',
@@ -1123,7 +1123,7 @@ class Incoming extends Admin_Controller
         $qc_map  = [];
         if (!empty($qc_data) && is_array($qc_data)) {
             foreach ($qc_data as $qc) {
-                $qc_map[$qc['no_coil']] = $qc['status_qc'] ?? 'OK';
+                $qc_map[(string) ($qc['no_coil'] ?? '')] = $qc['status_qc'] ?? 'OK';
             }
         }
 
@@ -1183,8 +1183,8 @@ class Incoming extends Admin_Controller
 
         // Update status_qc dari modal finalize ke tr_ros_material_coil (hanya penanda, tidak pengaruh ke stok/jurnal)
         foreach ($coils as &$c) {
-            if (isset($qc_map[$c['no_coil']])) {
-                $c['status_qc'] = $qc_map[$c['no_coil']];
+            if (isset($qc_map[(string) ($c['no_coil'] ?? '')])) {
+                $c['status_qc'] = $qc_map[(string) ($c['no_coil'] ?? '')];
                 // Simpan ke database
                 $this->db->update('tr_ros_material_coil', [
                     'status_qc' => $c['status_qc'],

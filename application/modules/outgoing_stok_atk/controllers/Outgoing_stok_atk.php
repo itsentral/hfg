@@ -74,7 +74,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
       if (!empty($data['detail'])) {
         foreach ($detail as $val => $valx) {
-          $konversi     = (!empty($GET_DETAIL_MAT[$valx['id']]['konversi'])) ? $GET_DETAIL_MAT[$valx['id']]['konversi'] : 1;
+          $konversi     = (!empty($GET_DETAIL_MAT[(string) ($valx['id'] ?? '')]['konversi'])) ? $GET_DETAIL_MAT[(string) ($valx['id'] ?? '')]['konversi'] : 1;
           if ($konversi <= 0) {
             $konversi = 1;
           }
@@ -402,7 +402,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
       if (!empty($data['detail'])) {
         foreach ($data['detail'] as $val => $valx) {
-          $konversi     = (!empty($GET_DETAIL_MAT[$valx['id_material']]['konversi'])) ? $GET_DETAIL_MAT[$valx['id_material']]['konversi'] : 0;
+          $konversi     = (!empty($GET_DETAIL_MAT[(string) ($valx['id_material'] ?? '')]['konversi'])) ? $GET_DETAIL_MAT[(string) ($valx['id_material'] ?? '')]['konversi'] : 0;
           $qty_packing   = str_replace(',', '', $valx['edit_qty'] ?? '');
           if ($qty_packing > 0) {
             $qty_berat = $qty_packing * $konversi;

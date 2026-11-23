@@ -994,15 +994,15 @@ class Incoming_check_model extends BF_Model
         $GET_SO_NUMBER = $this->db->get('so_number')->result_array();
         $ArrGetSO = [];
         foreach ($GET_SO_NUMBER as $val => $value) {
-            $ArrGetSO[$value['id_bq']] = $value['so_number'];
+            $ArrGetSO[(string) ($value['id_bq'] ?? '')] = $value['so_number'];
         }
 
         $GET_SPK_NUMBER = $this->db->get_where('so_detail_header', array('no_spk <>' => NULL))->result_array();
         $ArrGetSPK = [];
         $ArrGetIPP = [];
         foreach ($GET_SPK_NUMBER as $val => $value) {
-            $ArrGetSPK[$value['id']] = $value['no_spk'];
-            $ArrGetIPP[$value['id']] = $value['id_bq'];
+            $ArrGetSPK[(string) ($value['id'] ?? '')] = $value['no_spk'];
+            $ArrGetIPP[(string) ($value['id'] ?? '')] = $value['id_bq'];
         }
 
         history('Print Request Material ' . $kode_trans);
@@ -1404,7 +1404,7 @@ class Incoming_check_model extends BF_Model
             $nestedData[]    = "<div align='center'>" . $row['kd_gudang_dari'] . "</div>";
             $nestedData[]    = "<div align='center'>" . $row['kd_gudang_ke'] . "</div>";
             $nestedData[]    = "<div align='right'>" . number_format((float) $row['jumlah_mat'], 4) . "</div>";
-            $namaLengkap = (!empty($GET_USER[$row['created_by']]['nm_lengkap'])) ? $GET_USER[$row['created_by']]['nm_lengkap'] : $row['created_by'];
+            $namaLengkap = (!empty($GET_USER[(string) ($row['created_by'] ?? '')]['nm_lengkap'])) ? $GET_USER[(string) ($row['created_by'] ?? '')]['nm_lengkap'] : $row['created_by'];
             $nestedData[]    = "<div align='center'>" . strtoupper((string) $namaLengkap) . "</div>";
             $nestedData[]    = "<div align='center'>" . date('d-M-Y', strtotime((string) $row['created_date'])) . "</div>";
             $status = "WAITING CONFIRMATION";
@@ -1840,12 +1840,12 @@ class Incoming_check_model extends BF_Model
                 $key++;
                 if ($value['qty'] > 0) {
                     if (!array_key_exists($value['id'], $temp ?? [])) {
-                        $temp[$value['id']]['good'] = 0;
+                        $temp[(string) ($value['id'] ?? '')]['good'] = 0;
                     }
-                    $temp[$value['id']]['good'] += $value['qty'];
+                    $temp[(string) ($value['id'] ?? '')]['good'] += $value['qty'];
 
-                    $grouping_temp[$value['id']]['id']             = $value['id'];
-                    $grouping_temp[$value['id']]['qty_good']     = $temp[$value['id']]['good'];
+                    $grouping_temp[(string) ($value['id'] ?? '')]['id']             = $value['id'];
+                    $grouping_temp[(string) ($value['id'] ?? '')]['qty_good']     = $temp[(string) ($value['id'] ?? '')]['good'];
                 }
             }
 
@@ -2809,15 +2809,15 @@ class Incoming_check_model extends BF_Model
         $GET_SO_NUMBER = $this->db->get('so_number')->result_array();
         $ArrGetSO = [];
         foreach ($GET_SO_NUMBER as $val => $value) {
-            $ArrGetSO[$value['id_bq']] = $value['so_number'];
+            $ArrGetSO[(string) ($value['id_bq'] ?? '')] = $value['so_number'];
         }
 
         $GET_SPK_NUMBER = $this->db->get_where('so_detail_header', array('no_spk <>' => NULL))->result_array();
         $ArrGetSPK = [];
         $ArrGetIPP = [];
         foreach ($GET_SPK_NUMBER as $val => $value) {
-            $ArrGetSPK[$value['id']] = $value['no_spk'];
-            $ArrGetIPP[$value['id']] = $value['id_bq'];
+            $ArrGetSPK[(string) ($value['id'] ?? '')] = $value['no_spk'];
+            $ArrGetIPP[(string) ($value['id'] ?? '')] = $value['id_bq'];
         }
 
         $data    = array();
@@ -2852,10 +2852,10 @@ class Incoming_check_model extends BF_Model
                 $ArrNo_SPK = [];
                 $ArrNo_SO = [];
                 foreach ($get_detail_spk2 as $key => $value) {
-                    $SPK_SEARCH = (!empty($ArrGetSPK[$value['id_milik']])) ? $ArrGetSPK[$value['id_milik']] : '';
+                    $SPK_SEARCH = (!empty($ArrGetSPK[(string) ($value['id_milik'] ?? '')])) ? $ArrGetSPK[(string) ($value['id_milik'] ?? '')] : '';
                     $ArrNo_SPK[]     = (!empty($row['no_spk'])) ? $row['no_spk'] : $SPK_SEARCH;
 
-                    $NO_IPP         = (!empty($ArrGetIPP[$value['id_milik']])) ? $ArrGetIPP[$value['id_milik']] : $row['keterangan'];
+                    $NO_IPP         = (!empty($ArrGetIPP[(string) ($value['id_milik'] ?? '')])) ? $ArrGetIPP[(string) ($value['id_milik'] ?? '')] : $row['keterangan'];
                     $SO_SEARCH = (!empty($ArrGetSO[$NO_IPP])) ? $ArrGetSO[$NO_IPP] : '';
                     $ArrNo_SO[]     = (!empty($row['no_so'])) ? $row['no_so'] : $SO_SEARCH;
                 }
@@ -3395,7 +3395,7 @@ class Incoming_check_model extends BF_Model
                 $nomor = ($total_data - $start_dari) - $urut2;
             }
 
-            $COSTBOO_ = (!empty($GET_COSTBOOK[$row['id_material']])) ? $GET_COSTBOOK[$row['id_material']] : 0;
+            $COSTBOO_ = (!empty($GET_COSTBOOK[(string) ($row['id_material'] ?? '')])) ? $GET_COSTBOOK[(string) ($row['id_material'] ?? '')] : 0;
             $COSTBOOK = (empty($requestData['date_filter'])) ? $COSTBOO_ : $row['costbook'];
             $COSTBOOK_TOTAL = $COSTBOOK * $row['qty_stock'];
 

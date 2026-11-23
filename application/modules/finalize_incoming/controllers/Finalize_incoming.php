@@ -1197,7 +1197,7 @@ class Finalize_incoming extends Admin_Controller
         $qc_map  = [];
         if (!empty($qc_data) && is_array($qc_data)) {
             foreach ($qc_data as $qc) {
-                $qc_map[$qc['no_coil']] = $qc['status_qc'] ?? 'OK';
+                $qc_map[(string) ($qc['no_coil'] ?? '')] = $qc['status_qc'] ?? 'OK';
             }
         }
 
@@ -1281,8 +1281,8 @@ class Finalize_incoming extends Admin_Controller
 
         // Update status_qc dari modal finalize (hanya penanda)
         foreach ($coils as &$c) {
-            if (isset($qc_map[$c['no_coil']])) {
-                $c['status_qc'] = $qc_map[$c['no_coil']];
+            if (isset($qc_map[(string) ($c['no_coil'] ?? '')])) {
+                $c['status_qc'] = $qc_map[(string) ($c['no_coil'] ?? '')];
                 $this->db->update('tr_ros_material_coil', [
                     'status_qc' => $c['status_qc'],
                 ], ['id' => (int) $c['id_ros_material_coil']]);
@@ -1423,13 +1423,13 @@ class Finalize_incoming extends Admin_Controller
             $total_nilai_inc += $price_per_coil;
 
             // ★ BARU: kumpulkan data untuk alokasi nilai per pack
-            $coils_by_material_for_alloc[$c['id_ros_material']][] = [
+            $coils_by_material_for_alloc[(string) ($c['id_ros_material'] ?? '')][] = [
                 'id_ros_pack'            => $c['id_ros_pack'],
                 'berat_bersih'           => $berat_bersih,
                 'total_nilai_inventory'  => (float) $c['total_nilai_inventory'],
             ];
             if (!empty($c['id_ros_pack'])) {
-                $pack_gudang_map[$c['id_ros_pack']] = strtoupper(trim((string) $c['kd_gudang_ke']));
+                $pack_gudang_map[(string) ($c['id_ros_pack'] ?? '')] = strtoupper(trim((string) $c['kd_gudang_ke']));
             }
 
             // Insert warehouse_pack (sekali per pack_code unik)
@@ -1461,7 +1461,7 @@ class Finalize_incoming extends Admin_Controller
                 $c['kd_gudang_ke'],
                 $no_ros,
                 [
-                    'id_pack'        => isset($pack_codes_inserted[$c['pack_code']]) ? $pack_codes_inserted[$c['pack_code']] : null,
+                    'id_pack'        => isset($pack_codes_inserted[(string) ($c['pack_code'] ?? '')]) ? $pack_codes_inserted[(string) ($c['pack_code'] ?? '')] : null,
                     'qty_roll'       => (int) $c['qty_roll'],
                     'is_baby_coil'   => (int) $c['is_baby_coil'],
                     'parent_coil_id' => $c['parent_coil_id'],

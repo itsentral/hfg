@@ -148,7 +148,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                             <small class="text-muted d-block text-uppercase fw-bold" style="font-size:10px;">Status</small>
                             <?php
                             $status_badges = ['Material Requested' => 'bg-warning text-dark', 'Material Confirmed' => 'bg-info text-dark', 'Released' => 'bg-success'];
-                            $badge = isset($status_badges[$spk['status']]) ? $status_badges[$spk['status']] : 'bg-secondary';
+                            $badge = isset($status_badges[(string) ($spk['status'] ?? '')]) ? $status_badges[(string) ($spk['status'] ?? '')] : 'bg-secondary';
                             ?>
                             <span class="badge <?= $badge ?>"><?= htmlspecialchars((string) $spk['status']) ?></span>
                         </div>

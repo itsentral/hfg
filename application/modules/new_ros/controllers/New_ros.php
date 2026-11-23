@@ -837,7 +837,7 @@ class New_ros extends Admin_Controller
                         ]);
 
                         $coil_id_inserted = $this->db->insert_id();
-                        $mother_id_map_save[$coil['no_coil']] = $coil_id_inserted;
+                        $mother_id_map_save[(string) ($coil['no_coil'] ?? '')] = $coil_id_inserted;
 
                         // Collect pack_no untuk proses nanti
                         if ($coil_pack_no !== null) {
@@ -920,8 +920,8 @@ class New_ros extends Admin_Controller
                 foreach ($pack_coil_list as $pc) {
                     $this->db->update('tr_ros_material_coil', ['id_ros_pack' => $id_ros_pack], ['id' => $pc['coil_id']]);
                     // Track pack per material
-                    if (!isset($material_pack_assigned[$pc['id_ros_material']])) {
-                        $material_pack_assigned[$pc['id_ros_material']] = $id_ros_pack;
+                    if (!isset($material_pack_assigned[(string) ($pc['id_ros_material'] ?? '')])) {
+                        $material_pack_assigned[(string) ($pc['id_ros_material'] ?? '')] = $id_ros_pack;
                     }
                 }
             }
@@ -1660,7 +1660,7 @@ class New_ros extends Admin_Controller
         $pack_nos = [];
         foreach ($temp_data as $row) {
             if (!empty($row['pack_no'])) {
-                $pack_nos[$row['pack_no']] = true;
+                $pack_nos[(string) ($row['pack_no'] ?? '')] = true;
             }
         }
 
@@ -1713,8 +1713,8 @@ class New_ros extends Admin_Controller
             }
 
             $id_ros_pack = null;
-            if (!empty($row['pack_no']) && isset($pack_map[$row['pack_no']])) {
-                $id_ros_pack = $pack_map[$row['pack_no']];
+            if (!empty($row['pack_no']) && isset($pack_map[(string) ($row['pack_no'] ?? '')])) {
+                $id_ros_pack = $pack_map[(string) ($row['pack_no'] ?? '')];
             }
 
             $this->db->insert('tr_ros_material_coil', [
@@ -1734,7 +1734,7 @@ class New_ros extends Admin_Controller
                 'created_on'      => date('Y-m-d H:i:s')
             ]);
 
-            $mother_id_map[$row['no_coil']] = $this->db->insert_id();
+            $mother_id_map[(string) ($row['no_coil'] ?? '')] = $this->db->insert_id();
             $inserted++;
 
             if ($id_ros_pack && !isset($material_pack_assigned[$id_mat])) {
@@ -1750,14 +1750,14 @@ class New_ros extends Admin_Controller
             $price_per_coil = ($jumlah_coil > 0) ? $total_inv / $jumlah_coil : 0;
 
             $id_ros_pack = null;
-            if (!empty($row['pack_no']) && isset($pack_map[$row['pack_no']])) {
-                $id_ros_pack = $pack_map[$row['pack_no']];
+            if (!empty($row['pack_no']) && isset($pack_map[(string) ($row['pack_no'] ?? '')])) {
+                $id_ros_pack = $pack_map[(string) ($row['pack_no'] ?? '')];
             }
 
             // Resolve parent_coil_id dari mother_id_map
             $parent_coil_id = null;
-            if (!empty($row['parent_no_coil']) && isset($mother_id_map[$row['parent_no_coil']])) {
-                $parent_coil_id = $mother_id_map[$row['parent_no_coil']];
+            if (!empty($row['parent_no_coil']) && isset($mother_id_map[(string) ($row['parent_no_coil'] ?? '')])) {
+                $parent_coil_id = $mother_id_map[(string) ($row['parent_no_coil'] ?? '')];
             }
 
             $this->db->insert('tr_ros_material_coil', [
@@ -1827,7 +1827,7 @@ class New_ros extends Admin_Controller
         // Group by material
         $groups = [];
         foreach ($coils as $c) {
-            $groups[$c['id_ros_material']][] = $c;
+            $groups[(string) ($c['id_ros_material'] ?? '')][] = $c;
         }
 
         $html = '<div class="table-responsive">

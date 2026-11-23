@@ -323,7 +323,7 @@ class Spk_material extends Admin_Controller
                 'Released'           => 'bg-success',
                 'Cancelled'          => 'bg-danger'
             ];
-            $badge_class = isset($status_badges[$row['status']]) ? $status_badges[$row['status']] : 'bg-secondary';
+            $badge_class = isset($status_badges[(string) ($row['status'] ?? '')]) ? $status_badges[(string) ($row['status'] ?? '')] : 'bg-secondary';
 
             $pr_badge = '';
             if (isset($row['pr_status_draft']) && $row['pr_status_draft'] !== null) {

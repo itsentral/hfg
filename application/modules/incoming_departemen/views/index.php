@@ -205,8 +205,8 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                 $no = 1;
                                 foreach ($list_incoming as $item) :
                                     $supp_name = '-';
-                                    if (!empty($item['id_supplier']) && isset($list_arr_supplier[$item['id_supplier']]['nama'])) {
-                                        $supp_name = $list_arr_supplier[$item['id_supplier']]['nama'];
+                                    if (!empty($item['id_supplier']) && isset($list_arr_supplier[(string) ($item['id_supplier'] ?? '')]['nama'])) {
+                                        $supp_name = $list_arr_supplier[(string) ($item['id_supplier'] ?? '')]['nama'];
                                     }
 
                                     $print = '<a href="' . base_url('incoming_departemen/print_incoming_dept/' . $item['kode_trans']) . '" target="_blank" class="btn btn-sm btn-warning text-white" title="Print Receipt Letter"><i class="fa fa-print"></i></a>';

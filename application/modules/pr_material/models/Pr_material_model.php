@@ -54,8 +54,8 @@ class Pr_material_model extends BF_Model
         foreach ($query->result_array() as $row) {
             $nomor = $urut + $requestData['start'];
 
-            $satuan = $GET_SATUAN[$row['id_unit']]['code'] ?? '';
-            $outstanding_pr = $GET_OUTSTANDING_PR[$row['code_lv4']] ?? 0;
+            $satuan = $GET_SATUAN[(string) ($row['id_unit'] ?? '')]['code'] ?? '';
+            $outstanding_pr = $GET_OUTSTANDING_PR[(string) ($row['code_lv4'] ?? '')] ?? 0;
 
             $konversi = $row['konversi'] ?? 0;
             $qty_pack = ($konversi > 0 && $row['qty_stock'] > 0) ? $row['qty_stock'] / $konversi : 0;

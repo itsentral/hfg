@@ -81,7 +81,7 @@ class Permissions_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id']]	= $vals['title'];
+				$aMenu[(string) ($vals['id'] ?? '')]	= $vals['title'];
 			}
 		}
 		return $aMenu;
@@ -105,7 +105,7 @@ class Permissions_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id']]	= $vals['group_name'];
+				$aMenu[(string) ($vals['id'] ?? '')]	= $vals['group_name'];
 			}
 		}
 		return $aMenu;
@@ -134,7 +134,7 @@ class Permissions_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id_permission']]	= $vals['nm_permission'];
+				$aMenu[(string) ($vals['id_permission'] ?? '')]	= $vals['nm_permission'];
 			}
 		}
 		return $aMenu;
@@ -163,7 +163,7 @@ class Permissions_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['id']]	= $vals['title'];
+				$aMenu[(string) ($vals['id'] ?? '')]	= $vals['title'];
 			}
 		}
 		return $aMenu;
@@ -187,7 +187,7 @@ class Permissions_model extends BF_Model
 		$results	= $query->result_array();
 		if($results){
 			foreach($results as $key=>$vals){
-				$aMenu[$vals['title']]	= $vals['title'];
+				$aMenu[(string) ($vals['title'] ?? '')]	= $vals['title'];
 			}
 		}
 		return $aMenu;
