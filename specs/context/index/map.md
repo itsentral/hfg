@@ -454,6 +454,18 @@ uc: UC-N21..UC-N36
         Journal COA come from a Master Jurnal for the Claim process that does not exist yet (FR-93); alokasi DN attaches to the existing
         payment flow, not a new payment table (OQ-C7/C8). Open: OQ-C2 (supplier email master, deferred).
 
+uc: UC-17..UC-27, UC-N37..UC-N39
+  name: Proses Subkont (SPK Subkont → Surat Jalan → Portal Vendor → Incoming) — FEAT-12
+  user: PPIC (UC-17, 18, 20, 21, 25, 26, 27, N37), Staf Gudang (UC-19), Vendor (UC-22, 23, 24), Accounting (UC-N38), Purchasing (UC-N39)
+  entities: [tr_spk_subkont_header, tr_spk_subkont_detail, tr_subkont_tampungan, tr_subkont_delivery, tr_subkont_delivery_detail,
+             subkont_in_supplier_ledger, ms_vendor_portal_link, tr_laporan_subkont, tr_laporan_subkont_detail, tr_laporan_subkont_baby,
+             tr_laporan_subkont_fg, tr_laporan_subkont_revisi, tr_subkont_incoming, tr_subkont_incoming_laporan]
+  spec: docs/fr-nfr.md "Proses Subkont" FR-99–FR-125, NFR-18–NFR-21, OQ-S1–OQ-S12 (all answered)
+  erd: docs/diagrams/erd-revisi.drawio page 3 "Subkont ERD"
+  code: none yet (documents only; mockup and CI3 pending). Related existing modules: production_planning, delivery_fg, fg_stock, warehouse_stock_coil.
+  note: client material and the user's 15 answers in `input/Production Planning/notes.md`. SPK Subkont has no vendor and no PO (user answers 6, 8);
+        COA codes are placeholders (OQ-S9, accepted by user); vendor portal accounts need HFG approval and link to `new_supplier`, Master Supplier is mocked like the existing `supplier` module (S6); FG pasir is supplied by the vendor (S3); journal COGM/tutup bulan in the client workbook sheet 4 is ignored (`#REF!`, answer 14).
+
 ## Diagrams → what they own
 
 Which diagram is authoritative for which part of the model, so that two diagrams
