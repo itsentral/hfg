@@ -88,13 +88,13 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                 <i class="fa fa-calendar-check fs-5"></i>
             </div>
             <div>
-                <h5 class="card-title mb-0 fw-bold text-dark">Master Pembayaran Periodik</h5>
-                <small class="text-muted">Kelola master anggaran rutin & jadwal pembayaran periodik per departemen</small>
+                <h5 class="card-title mb-0 fw-bold text-dark">Periodic Payment Master</h5>
+                <small class="text-muted">Manage the routine budget master & periodic payment schedule per department</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
             <?php if ($ENABLE_MANAGE) : ?>
-                <button type="button" class="btn btn-outline-info btn-sm rounded-2 shadow-sm" title="Proses Budget ke Master" onclick="data_proses()">
+                <button type="button" class="btn btn-outline-info btn-sm rounded-2 shadow-sm" title="Process Budget to Master" onclick="data_proses()">
                     <i class="fa fa-refresh me-1"></i> Proses Budget
                 </button>
             <?php endif; ?>
@@ -107,7 +107,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                     <ul class="dropdown-menu dropdown-menu-end dept-dropdown-menu shadow border-0" aria-labelledby="dropdownNewDept">
                         <li class="dept-search-wrap">
                             <span class="dept-search-icon"><i class="fa fa-search"></i></span>
-                            <input type="text" id="dept_search" class="dept-search-input" placeholder="Cari departemen..." autocomplete="off">
+                            <input type="text" id="dept_search" class="dept-search-input" placeholder="Search department..." autocomplete="off">
                         </li>
                         <li class="dept-header">
                             <i class="fa fa-university me-1"></i> PILIH DEPARTEMEN
@@ -122,7 +122,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                             }
                             ?>
                             <li class="dept-no-result" style="display:none;">
-                                <span class="text-muted p-3 d-block"><i class="fa fa-info-circle me-1"></i> Tidak ada departemen</span>
+                                <span class="text-muted p-3 d-block"><i class="fa fa-info-circle me-1"></i> No departments</span>
                             </li>
                         </div>
                     </ul>
@@ -137,9 +137,9 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                 <thead class="table-light">
                     <tr>
                         <th width="50" class="text-center">#</th>
-                        <th>Penanggung Jawab / Departemen</th>
-                        <th width="160" class="text-center">Jumlah Post Biaya</th>
-                        <th width="180" class="text-end">Total Estimasi Nilai</th>
+                        <th>Person in Charge / Department</th>
+                        <th width="160" class="text-center">Cost Post Count</th>
+                        <th width="180" class="text-end">Total Estimated Value</th>
                         <th width="120" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -156,7 +156,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                             } elseif (isset($all_dept[$record->departement]) && !empty($all_dept[$record->departement])) {
                                 $dept_name = $all_dept[$record->departement];
                             } else {
-                                $dept_name = 'Departemen #' . $record->departement;
+                                $dept_name = 'Department #' . $record->departement;
                             }
                     ?>
                             <tr>
@@ -184,7 +184,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">
                                         <?php if ($ENABLE_VIEW) : ?>
-                                            <button type="button" class="btn btn-outline-info btn-sm view" title="Lihat Detail Budget" onclick="data_view('<?= $record->departement ?>')">
+                                            <button type="button" class="btn btn-outline-info btn-sm view" title="View Budget Detail" onclick="data_view('<?= $record->departement ?>')">
                                                 <i class="fa fa-eye"></i>
                                             </button>
                                         <?php endif; ?>
@@ -231,7 +231,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
         if (key != '') {
             $("#card-list").hide();
             $(".box").hide();
-            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir...</p></div>');
+            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading form...</p></div>');
             $("#form-data").load(url_add_def + key);
         }
     }
@@ -240,7 +240,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
         if (id != '') {
             $("#card-list").hide();
             $(".box").hide();
-            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat data edit...</p></div>');
+            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading edit data...</p></div>');
             $("#form-data").load(url_edit + id);
         }
     }
@@ -249,7 +249,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
         if (id != '') {
             $("#card-list").hide();
             $(".box").hide();
-            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat rincian...</p></div>');
+            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading details...</p></div>');
             $("#form-data").load(url_view + id);
         }
     }
@@ -262,19 +262,19 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
 
     function data_proses() {
         Swal.fire({
-            title: 'Proses Budget Periodik?',
-            text: 'Data anggaran periodik akan diproses dan diakumulasikan ke Master Budget tahun berjalan!',
+            title: 'Process Periodic Budget?',
+            text: 'The periodic budget data will be processed and accumulated into the current year Master Budget!',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Proses!',
-            cancelButtonText: '<i class="fa fa-times me-1"></i> Batal',
+            confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Process!',
+            cancelButtonText: '<i class="fa fa-times me-1"></i> Cancel',
             confirmButtonColor: '#0d6efd',
             cancelButtonColor: '#6c757d'
         }).then(function(result) {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Mohon tunggu',
+                    text: 'Please wait',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     didOpen: function() {
@@ -288,8 +288,8 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                     success: function(msg) {
                         if (msg['save'] == '1') {
                             Swal.fire({
-                                title: 'Berhasil!',
-                                text: 'Data Budget Periodik Berhasil Diproses',
+                                title: 'Success!',
+                                text: 'Periodic Budget Data Processed Successfully',
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
@@ -298,8 +298,8 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
-                                text: 'Data Gagal Diproses',
+                                title: 'Failed!',
+                                text: 'Data Failed to Process',
                                 icon: 'error'
                             });
                         }
@@ -307,7 +307,7 @@ $ENABLE_DELETE  = has_permission('Pembayaran_Periodik.Delete');
                     error: function() {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Gagal menghubungi server',
+                            text: 'Failed to contact the server',
                             icon: 'error'
                         });
                     }

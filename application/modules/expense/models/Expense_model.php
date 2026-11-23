@@ -369,18 +369,18 @@ class Expense_model extends BF_Model
 		foreach ($get_data as $item) {
 			$no++;
 
-			$status = '<span class="badge bg-warning text-dark">Baru</span>';
+			$status = '<span class="badge bg-warning text-dark">New</span>';
 			if ($item->status == '1') {
-				$status = '<span class="badge bg-success">Disetujui</span>';
+				$status = '<span class="badge bg-success">Approved</span>';
 			}
 			if ($item->status == '2') {
-				$status = '<span class="badge bg-info">Disetujui Management</span>';
+				$status = '<span class="badge bg-info">Approved by Management</span>';
 			}
 			if ($item->status == '3') {
-				$status = '<span class="badge bg-primary">Selesai</span>';
+				$status = '<span class="badge bg-primary">Done</span>';
 			}
 			if ($item->status == '9') {
-				$status = '<span class="badge bg-danger">Ditolak</span>';
+				$status = '<span class="badge bg-danger">Rejected</span>';
 			}
 
 			$action = '<div class="btn-group btn-group-sm" role="group">';
@@ -394,7 +394,7 @@ class Expense_model extends BF_Model
 			}
 
 			if (has_permission('Transportasi.Delete') && $item->status == 0) {
-				$action .= ' <button class="btn btn-outline-danger btn-sm delete" type="button" title="Hapus" onclick="data_delete(' . $item->id . ')"><i class="fa fa-trash"></i></button>';
+				$action .= ' <button class="btn btn-outline-danger btn-sm delete" type="button" title="Delete" onclick="data_delete(' . $item->id . ')"><i class="fa fa-trash"></i></button>';
 			}
 
 			$action .= '</div>';
@@ -462,14 +462,14 @@ class Expense_model extends BF_Model
 		foreach ($get_data as $item) {
 			$no++;
 
-			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i>Menunggu Approval</span>';
+			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i>Awaiting Approval</span>';
 
 			$nama_karyawan = !empty($item->nama) ? $item->nama : $item->nmuser;
 
 			$action = '<div class="btn-group btn-group-sm">';
 			if (has_permission($viewPermission)) {
-				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/transport_req_print/' . $item->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a>';
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/transport_req_view/' . $item->id . '/_fin') . '" data-id="' . $item->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
+				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/transport_req_print/' . $item->id) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a>';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/transport_req_view/' . $item->id . '/_fin') . '" data-id="' . $item->id . '" title="View Detail"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($managePermission) && $item->status == 0) {
@@ -547,18 +547,18 @@ class Expense_model extends BF_Model
 		foreach ($get_data as $item) {
 			$no++;
 
-			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Baru</span>';
+			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> New</span>';
 			if ($item->status == '1') {
-				$status = '<span class="badge bg-info text-white"><i class="fa fa-check me-1"></i> Disetujui Finance</span>';
+				$status = '<span class="badge bg-info text-white"><i class="fa fa-check me-1"></i> Approved by Finance</span>';
 			}
 			if ($item->status == '2') {
-				$status = '<span class="badge bg-primary"><i class="fa fa-check-double me-1"></i> Disetujui Management</span>';
+				$status = '<span class="badge bg-primary"><i class="fa fa-check-double me-1"></i> Approved by Management</span>';
 			}
 			if ($item->status == '3') {
-				$status = '<span class="badge bg-success"><i class="fa fa-check-circle me-1"></i> Selesai</span>';
+				$status = '<span class="badge bg-success"><i class="fa fa-check-circle me-1"></i> Done</span>';
 			}
 			if ($item->status == '9') {
-				$status = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+				$status = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Rejected</span>';
 			}
 
 			$action = '<div class="btn-group btn-group-sm" role="group">';
@@ -572,7 +572,7 @@ class Expense_model extends BF_Model
 			}
 
 			if (has_permission($deletePermission) && ($item->status == 0 || $item->status == 9)) {
-				$action .= ' <a class="btn btn-outline-danger btn-sm" href="javascript:void(0)" title="Hapus" onclick="data_delete(' . $item->id . ')"><i class="fa fa-trash"></i></a>';
+				$action .= ' <a class="btn btn-outline-danger btn-sm" href="javascript:void(0)" title="Delete" onclick="data_delete(' . $item->id . ')"><i class="fa fa-trash"></i></a>';
 			}
 			$action .= '</div>';
 
@@ -656,23 +656,23 @@ class Expense_model extends BF_Model
 			$tgl_doc = ($item->tgl_doc && $item->tgl_doc !== '0000-00-00') ? date('d M Y', strtotime((string) $item->tgl_doc)) : '-';
 			$approval_date = ($item->approved_on !== null && $item->approved_on !== '0000-00-00 00:00:00') ? date('d M Y H:i', strtotime((string) $item->approved_on)) : '-';
 
-			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Baru</span>';
+			$status = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> New</span>';
 			if ($item->status == '1') {
-				$status = '<span class="badge bg-info text-white"><i class="fa fa-check me-1"></i> Disetujui Finance</span>';
+				$status = '<span class="badge bg-info text-white"><i class="fa fa-check me-1"></i> Approved by Finance</span>';
 			}
 			if ($item->status == '2') {
-				$status = '<span class="badge bg-primary"><i class="fa fa-check-double me-1"></i> Disetujui Management</span>';
+				$status = '<span class="badge bg-primary"><i class="fa fa-check-double me-1"></i> Approved by Management</span>';
 			}
 			if ($item->status == '3') {
-				$status = '<span class="badge bg-success"><i class="fa fa-check-circle me-1"></i> Selesai</span>';
+				$status = '<span class="badge bg-success"><i class="fa fa-check-circle me-1"></i> Done</span>';
 			}
 			if ($item->status == '9') {
-				$status = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+				$status = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Rejected</span>';
 			}
 
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			$action .= '<a class="btn btn-outline-secondary btn-sm" href="' . base_url('expense/transport_req_print/' . $item->id) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a>';
-			$action .= '<a class="btn btn-outline-info btn-sm" href="javascript:void(0)" onclick="data_view(' . $item->id . ')" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
+			$action .= '<a class="btn btn-outline-info btn-sm" href="javascript:void(0)" onclick="data_view(' . $item->id . ')" title="View Detail"><i class="fa fa-eye"></i></a>';
 			$action .= '</div>';
 
 			$hasil[] = [

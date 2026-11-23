@@ -22,8 +22,8 @@
                             <th class="text-center">No</th>
                             <th class="text-center">No. PO</th>
                             <th class="text-center">No. PR</th>
-                            <th class="text-center">Harga DP PO</th>
-                            <th class="text-center">Nama Supplier</th>
+                            <th class="text-center">PO DP Price</th>
+                            <th class="text-center">Supplier Name</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,7 +57,7 @@
                         } else {
                             ?>
                             <tr>
-                                <td colspan="6" class="text-center">Tidak ada data PO dengan Group TOP 76 (DP)</td>
+                                <td colspan="6" class="text-center">There is no PO data with TOP Group 76 (DP)</td>
                             </tr>
                         <?php
                         }

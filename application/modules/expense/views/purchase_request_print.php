@@ -17,7 +17,7 @@
 		<thead>
 			<tr>
 				<td colspan=8 valign=top>No Purchase Request : <?php echo (isset($data->pr_no) ? $data->pr_no: ""); ?><br />
-				Tanggal Purchase Request : <?php echo (isset($data->pr_date) ? $data->pr_date: ""); ?><br />
+				Purchase Request Date : <?php echo (isset($data->pr_date) ? $data->pr_date: ""); ?><br />
 				Keterangan : <?php echo (isset($data->pr_info) ? $data->pr_info: ""); ?>
 				</td>
 				<td colspan=3 valign=top>
@@ -30,14 +30,14 @@
 			</tr>
 			<tr>
 			<th class="border-all">No</th>
-			<th class="border-all">Nama</th>
+			<th class="border-all">Name</th>
 			<th class="border-all">Spesifikasi</th>
 			<th class="border-all">Brand</th>
-			<th class="border-all">Max Stok</th>
-			<th class="border-all">Qty Stok</th>
-			<th class="border-all">Satuan</th>
+			<th class="border-all">Max Stock</th>
+			<th class="border-all">Stock Qty</th>
+			<th class="border-all">Unit</th>
 			<th class="border-all">Saran Qty Pembelian</th>
-			<th class="border-all">Qty Permintaan</th>
+			<th class="border-all">Requested Qty</th>
 			<th class="border-all">Price Reference</th>
 			<th class="border-all">Total Price</th>
 			</tr>

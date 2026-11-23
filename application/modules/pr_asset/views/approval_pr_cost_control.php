@@ -28,8 +28,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 					<tr class='bg-blue'>
 						<th class="text-center" width='5%'>#</th>
 						<th class="text-center" width='10%'>No PR</th>
-						<th class="text-center" width='15%'>Tanggal PR</th>
-						<th class="text-center">Nama Barang</th>
+						<th class="text-center" width='15%'>PR Date</th>
+						<th class="text-center">Item Name</th>
 						<th class="text-center" width='15%'>PR By</th>
 						<th class="text-center" width='15%'>PR Date</th>
 						<th class="text-center no-sort" width='15%'>Status</th>
@@ -104,7 +104,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 	$(document).on('click', '.detail', function(e) {
 		e.preventDefault();
 
-		$("#head_title2").html("<b>DETAIL BUDGET RUTIN [" + $(this).data('code') + "]</b>");
+		$("#head_title2").html("<b>ROUTINE BUDGET DETAIL [" + $(this).data('code') + "]</b>");
 		$.ajax({
 			type: 'POST',
 			url: base_url + active_controller + 'detail_rutin/' + $(this).data('code'),

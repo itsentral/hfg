@@ -24,7 +24,7 @@ class Warehouse extends Admin_Controller
     {
         parent::__construct();
         $this->load->model(['Warehouse/Warehouse_model', 'All/All_model']);
-        $this->template->title('Gudang');
+        $this->template->title('Warehouse');
         $this->template->page_icon('fa fa-cubes');
         date_default_timezone_set('Asia/Bangkok');
     }
@@ -39,7 +39,7 @@ class Warehouse extends Admin_Controller
 
     public function kartu_stok()
     {
-        $this->template->title('Kartu Stok');
+        $this->template->title('Stock Card');
         $this->template->page_icon('fa fa-file');
         $this->template->render('kartu_stok');
     }
@@ -192,7 +192,9 @@ class Warehouse extends Admin_Controller
 
     public function data_side_stock_value_produksi()
     {
-        $this->Warehouse_model->get_json_stock_value(self::GUDANG_PRODUKSI);
+        $code = $this->input->post('kd_gudang');
+        if (!in_array($code, ['PRO','PRT','WIP','HLD'], true)) $code = self::GUDANG_PRODUKSI;
+        $this->Warehouse_model->get_json_stock_value($code);
     }
 
     // Tab Slitting
@@ -291,7 +293,7 @@ class Warehouse extends Admin_Controller
             $pack_groups[$pk]['total_nw'] += (float) $c['net_weight'];
             $pack_groups[$pk]['total_gw'] += (float) $c['gross_weight'];
             $mat_name = $c['trade_name'] ?: $c['nm_material'];
-            if (!in_array($mat_name, $pack_groups[$pk]['materials'])) {
+            if (!in_array($mat_name, $pack_groups[$pk]['materials'] ?? [])) {
                 $pack_groups[$pk]['materials'][] = $mat_name;
             }
         }
@@ -319,7 +321,7 @@ class Warehouse extends Admin_Controller
         // ── Sheet 1: Per Pack (merge pack cells for multi-material) ──
         $sheet = $objPHPExcel->getActiveSheet();
         $sheet->setTitle('Per Pack');
-        $headers1 = ['No', 'Pack Code', 'Material', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll', 'Gudang'];
+        $headers1 = ['No', 'Pack Code', 'Material', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll', 'Warehouse'];
         foreach ($headers1 as $col => $h) { $sheet->setCellValue([$col + 1, 1], $h); }
         $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
 
@@ -328,7 +330,7 @@ class Warehouse extends Admin_Controller
         $pack_no = 0;
         foreach ($pack_groups as $pk => $pg) {
             $pack_no++;
-            $mat_count = count($pg['materials']);
+            $mat_count = count($pg['materials'] ?? []);
             $nw_per = $pg['roll_count'] > 0 ? $pg['total_nw'] / $pg['roll_count'] : 0;
             $gw_per = $pg['roll_count'] > 0 ? $pg['total_gw'] / $pg['roll_count'] : 0;
             $gudang = $pg['kd_gudang'] ?? '';
@@ -381,7 +383,7 @@ class Warehouse extends Admin_Controller
         // ── Sheet 2: Per Material per Gudang ──
         $sheet2 = $objPHPExcel->createSheet();
         $sheet2->setTitle('Per Material');
-        $headers2 = ['No', 'ID Material', 'Material Name', 'Trade Name', 'Gudang', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll'];
+        $headers2 = ['No', 'ID Material', 'Material Name', 'Trade Name', 'Warehouse', 'Roll', 'N.W. Total', 'N.W. Per Roll', 'G.W. Total', 'G.W. Per Roll'];
         foreach ($headers2 as $col => $h) { $sheet2->setCellValue([$col + 1, 1], $h); }
         $sheet2->getStyle('A1:J1')->applyFromArray($headerStyle);
 
@@ -429,7 +431,7 @@ class Warehouse extends Admin_Controller
         // ── Sheet 3: Per Coil ──
         $sheet3 = $objPHPExcel->createSheet();
         $sheet3->setTitle('Per Coil');
-        $headers3 = ['No', 'Pack Code', 'No. Coil', 'Internal Code', 'Material', 'Trade Name', 'N.W.', 'G.W.', 'Length', 'Gudang', 'Baby Coil'];
+        $headers3 = ['No', 'Pack Code', 'No. Coil', 'Internal Code', 'Material', 'Trade Name', 'N.W.', 'G.W.', 'Length', 'Warehouse', 'Baby Coil'];
         foreach ($headers3 as $col => $h) { $sheet3->setCellValue([$col + 1, 1], $h); }
         $sheet3->getStyle('A1:K1')->applyFromArray($headerStyle);
         $row = 2;
@@ -472,7 +474,7 @@ class Warehouse extends Admin_Controller
         $kd_gudang = $this->input->get('kd_gudang');
         $id_gudang = $this->input->get('id_gudang');
 
-        $where = "WHERE ws.qty_stock > 0";
+        $where = "WHERE 1 = 1";
         if (!empty($kd_gudang)) {
             $kd     = $this->db->escape($kd_gudang);
             $where .= " AND ws.kd_gudang = {$kd}";
@@ -499,6 +501,7 @@ class Warehouse extends Admin_Controller
             LEFT JOIN warehouse_stock_coil wsc
                 ON CONVERT(wsc.id_material USING utf8mb4)
                 = CONVERT(ws.code_lv4    USING utf8mb4)
+                AND wsc.id_gudang = ws.id_gudang AND wsc.kd_gudang = ws.kd_gudang AND wsc.status = 1
             {$where}
             GROUP BY ws.code_lv4, ws.id_gudang
             ORDER BY ws.nm_material ASC
@@ -531,9 +534,9 @@ class Warehouse extends Admin_Controller
         ORDER BY wsc.nm_material ASC, wsc.no_coil ASC
         ")->result_array();
 
-        $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
-        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
+        $label_gudang = 'All Warehouses';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Production Warehouse';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Slitting Warehouse';
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -554,7 +557,7 @@ class Warehouse extends Admin_Controller
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $sheet->mergeCells('A2:H2');
-        $sheet->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
+        $sheet->setCellValue('A2', 'As of Date: ' . date('d F Y'));
         $sheet->getStyle('A2')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
@@ -562,7 +565,7 @@ class Warehouse extends Admin_Controller
         $headers = [
             'A' => 'No',
             'B' => 'Kode Material',
-            'C' => 'Nama Material',
+            'C' => 'Material Name',
             'D' => 'Nama Lain (Trade Name)',
             'E' => 'Jumlah Roll',
             'F' => 'Qty Stock (Kg)',
@@ -668,16 +671,16 @@ class Warehouse extends Admin_Controller
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $sheet2->mergeCells('A2:J2');
-        $sheet2->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
+        $sheet2->setCellValue('A2', 'As of Date: ' . date('d F Y'));
         $sheet2->getStyle('A2')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         // ── Header kolom ──────────────────────────────────────────────────────
         $headers2 = [
             'A' => 'No',
-            'B' => 'Nama Material',
+            'B' => 'Material Name',
             'C' => 'Trade Name',
-            'D' => 'Kode Internal',
+            'D' => 'Internal Code',
             'E' => 'No Coil',
             'F' => 'Gross Weight (Kg)',
             'G' => 'Net Weight (Kg)',
@@ -789,7 +792,7 @@ class Warehouse extends Admin_Controller
         $objPHPExcel->setActiveSheetIndex(0);
 
         // ── Output ────────────────────────────────────────────────────────────
-        $filename  = 'Stock_Value_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';
+        $filename  = 'Stock_Value_' . str_replace(' ', '_', $label_gudang ?? '') . '_' . date('Ymd_His') . '.xls';
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
@@ -832,9 +835,9 @@ class Warehouse extends Admin_Controller
         ORDER BY ni.nama ASC, wsc.no_coil ASC
     ")->result_array();
 
-        $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
-        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
+        $label_gudang = 'All Warehouses';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Production Warehouse';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Slitting Warehouse';
 
         ini_set('memory_limit', '512M');
         $this->load->library('PHPExcel');
@@ -851,18 +854,18 @@ class Warehouse extends Admin_Controller
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $sheet->mergeCells('A2:I2');
-        $sheet->setCellValue('A2', 'Per Tanggal: ' . date('d F Y'));
+        $sheet->setCellValue('A2', 'As of Date: ' . date('d F Y'));
         $sheet->getStyle('A2')->getAlignment()
             ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         // ── Header kolom ──────────────────────────────────────────────────────
         $headers = [
             'A' => 'No',
-            'B' => 'Nama Material',
+            'B' => 'Material Name',
             'C' => 'Nama Lain (Trade Name)',
             'D' => 'Kode Material',
             'E' => 'No. Coil',
-            'F' => 'Kode Internal',
+            'F' => 'Internal Code',
             'G' => 'Nett Weight (Kg)',
             'H' => 'Gross Weight (Kg)',
             'I' => 'Length (M)',
@@ -968,7 +971,7 @@ class Warehouse extends Admin_Controller
         $sheet->getStyle('I' . $row)->getNumberFormat()->setFormatCode($fmt_decimal);
 
         // ── Output ────────────────────────────────────────────────────────────
-        $filename  = 'Stock_Coil_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';
+        $filename  = 'Stock_Coil_' . str_replace(' ', '_', $label_gudang ?? '') . '_' . date('Ymd_His') . '.xls';
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');
@@ -1002,6 +1005,7 @@ class Warehouse extends Admin_Controller
             LEFT JOIN warehouse_pack wp ON wp.id = wsc.id_pack
             WHERE wsc.id_material = ?
             AND wsc.id_gudang     = ?
+            AND wsc.status = 1
             ORDER BY wp.pack_code ASC, wsc.no_coil ASC
         ", [$id_material, $id_gudang])->result_array();
 
@@ -1020,7 +1024,7 @@ class Warehouse extends Admin_Controller
 
     public function data_side_stock_value_perday()
     {
-        $this->Warehouse_model->get_json_stock_value_perday('');
+        $this->Warehouse_model->get_json_stock_value_perday((string)$this->input->post('kd_gudang', true));
     }
 
     public function data_side_stock_value_perday_produksi()
@@ -1076,20 +1080,38 @@ class Warehouse extends Admin_Controller
     // Untuk modal drill-down coil per transaksi
     public function get_summary_detail_coil()
     {
-        $kode_trans      = $this->input->post('kode_trans');
-        $id_material = $this->input->post('id_material');
-        $id_gudang   = $this->input->post('id_gudang');
-
-        $rows = $this->db->query("
-        SELECT *
-        FROM warehouse_stock_transaction_detail
-        WHERE kode_trans  = ?
-          AND id_material = ?
-          AND id_gudang   = ?
-        ORDER BY id ASC
-        ", [$kode_trans, $id_material, $id_gudang])->result_array();
-
-        echo json_encode($rows);
+        $summary_id = (int)$this->input->post('id_summary');
+        $material = $this->input->post('id_material');
+        $warehouse = $this->input->post('id_gudang');
+        $summary = $this->db->get_where('warehouse_stock_transaction_summary', [
+            'id' => $summary_id, 'id_material' => $material, 'id_gudang' => $warehouse,
+        ])->row_array();
+        if (!$summary) {
+            echo json_encode(['status' => 0, 'message' => 'Transaction summary not found.']);
+            return;
+        }
+        if ($this->db->field_exists('id_summary', 'warehouse_stock_transaction_detail')) {
+            $rows = $this->db->get_where('warehouse_stock_transaction_detail', [
+                'id_summary' => $summary_id,
+            ])->result_array();
+            if ($rows) {
+                echo json_encode($rows);
+                return;
+            }
+        }
+        // Legacy rows have no exact link. Never combine several scans of the same SPK.
+        $count = $this->db->where('kode_trans', $summary['kode_trans'])
+            ->where('id_material', $material)->where('id_gudang', $warehouse)
+            ->count_all_results('warehouse_stock_transaction_summary');
+        if ($count !== 1) {
+            echo json_encode(['status' => 0, 'message' => 'Old history details are ambiguous. Summary link reconciliation is required.']);
+            return;
+        }
+        $this->db->where('kode_trans', $summary['kode_trans'])->where('id_material', $material)->where('id_gudang', $warehouse);
+        if ((float)$summary['qty_akhir'] !== (float)$summary['qty_awal']) {
+            $this->db->where('status_qc', (float)$summary['qty_akhir'] < (float)$summary['qty_awal'] ? 'OUT' : 'IN');
+        }
+        echo json_encode($this->db->order_by('id', 'ASC')->get('warehouse_stock_transaction_detail')->result_array());
     }
 
     public function export_excel_stock_value_history()
@@ -1100,7 +1122,7 @@ class Warehouse extends Admin_Controller
         $date_snap       = $this->input->get('date_snap')       ?? '';
 
         if (empty($date_snap)) {
-            echo 'Tanggal tidak boleh kosong.';
+            echo 'Date cannot be empty.';
             return;
         }
 
@@ -1203,9 +1225,9 @@ class Warehouse extends Admin_Controller
             ")->result_array();
 
         // ── Label ─────────────────────────────────────────────────────────────
-        $label_gudang = 'Semua Gudang';
-        if ($kd_gudang === 'PRO') $label_gudang = 'Gudang Produksi';
-        if ($kd_gudang === 'SLI') $label_gudang = 'Gudang Slitting';
+        $label_gudang = 'All Warehouses';
+        if ($kd_gudang === 'PRO') $label_gudang = 'Production Warehouse';
+        if ($kd_gudang === 'SLI') $label_gudang = 'Slitting Warehouse';
 
         $label_period = ' | Per Tanggal: ' . date('d/m/Y', strtotime((string) $date_snap));
 
@@ -1235,10 +1257,10 @@ class Warehouse extends Admin_Controller
         $headers = [
             'A' => 'No',
             'B' => 'Kode Material',
-            'C' => 'Nama Material',
+            'C' => 'Material Name',
             'D' => 'Nama Lain (Trade Name)',
             'E' => 'Gudang',
-            'F' => 'Tanggal',
+            'F' => 'Date',
             'G' => 'Jumlah Roll',
             'H' => 'Qty Stock (Kg)',
             'I' => 'Harga Beli / Costbook (Avg)',
@@ -1356,12 +1378,12 @@ class Warehouse extends Admin_Controller
         // ── Header kolom ──────────────────────────────────────────────────────
         $headers2 = [
             'A' => 'No',
-            'B' => 'Nama Material',
+            'B' => 'Material Name',
             'C' => 'Trade Name',
             'D' => 'Gudang',
             'E' => 'No Coil',
-            'F' => 'Kode Internal',
-            'G' => 'Tanggal',
+            'F' => 'Internal Code',
+            'G' => 'Date',
             'H' => 'Status',
             'I' => 'Gross Weight (Kg)',
             'J' => 'Net Weight (Kg)',
@@ -1491,7 +1513,7 @@ class Warehouse extends Admin_Controller
         $objPHPExcel->setActiveSheetIndex(0);
 
         // ── Output ────────────────────────────────────────────────────────────
-        $filename  = 'Stock_Value_History_' . str_replace(' ', '_', $label_gudang) . '_' . date('Ymd_His') . '.xls';
+        $filename  = 'Stock_Value_History_' . str_replace(' ', '_', $label_gudang ?? '') . '_' . date('Ymd_His') . '.xls';
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         ob_end_clean();
         header('Content-Type: application/vnd.ms-excel');

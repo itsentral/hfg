@@ -9,8 +9,8 @@ $tipe_btn = $tipe_btn ?? 'import';
             <th class="text-center">No. ROS</th>
             <th class="text-center">No. Invoice</th>
             <th class="text-center">No. Payment</th>
-            <th class="text-center">Nama Supplier</th>
-            <th class="text-center">Tanggal PO</th>
+            <th class="text-center">Supplier Name</th>
+            <th class="text-center">PO Date</th>
             <th class="text-center">DP Sebelumnya (IDR)</th>
             <th class="text-center">Status</th>
             <th class="text-center">Action</th>
@@ -21,7 +21,7 @@ $tipe_btn = $tipe_btn ?? 'import';
         foreach ($list_po as $item): ?>
             <?php
             if (empty($item['id_receive_il'])) {
-                $badge = '<span class="badge bg-secondary">Belum Receive</span>';
+                $badge = '<span class="badge bg-secondary">Not Received</span>';
             } else {
                 $status_enum = strtolower($item['status_receive_il'] ?? '');
                 $status_uc   = ucwords((string) $status_enum);
@@ -37,7 +37,7 @@ $tipe_btn = $tipe_btn ?? 'import';
 
             $dp_info = ((float)($item['total_dp_rupiah'] ?? 0) > 0)
                 ? '<span class="badge bg-info text-dark">Rp ' . number_format((float) $item['total_dp_rupiah'], 0) . '</span>'
-                : '<span class="badge bg-light text-dark border">Tidak Ada DP</span>';
+                : '<span class="badge bg-light text-dark border">No DP</span>';
 
             $buttons = '';
 
@@ -59,7 +59,7 @@ $tipe_btn = $tipe_btn ?? 'import';
             class="btn btn-sm btn-info btn-view-il text-white"
             data-id="'   . $item['id_receive_il'] . '"
             data-tipe="' . $tipe_btn              . '"
-            title="Lihat Invoice">
+            title="View Invoice">
             <i class="fa fa-eye"></i>
         </button>';
             }

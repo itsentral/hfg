@@ -14,7 +14,7 @@ $definisi = (!empty($header[0]->definisi)) ? $header[0]->definisi : '';
 		<label for="istilah" class="form-label mb-0">Istilah <span class="text-danger">*</span></label>
 	</div>
 	<div class="col-md-9">
-		<input type="text" class="form-control" id="istilah" name="istilah" required placeholder="Masukkan istilah" value="<?= $istilah; ?>">
+		<input type="text" class="form-control" id="istilah" name="istilah" required placeholder="Enter term" value="<?= $istilah; ?>">
 		<input type="hidden" class="form-control" id="id" name="id" value="<?= $id; ?>">
 	</div>
 </div>
@@ -24,6 +24,6 @@ $definisi = (!empty($header[0]->definisi)) ? $header[0]->definisi : '';
 		<label for="definisi" class="form-label mb-0">Definisi <span class="text-danger">*</span></label>
 	</div>
 	<div class="col-md-9">
-		<textarea class="form-control" id="definisi" name="definisi" required placeholder="Masukkan definisi" rows="4"><?= $definisi; ?></textarea>
+		<textarea class="form-control" id="definisi" name="definisi" required placeholder="Enter definition" rows="4"><?= $definisi; ?></textarea>
 	</div>
 </div>

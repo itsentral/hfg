@@ -4,7 +4,7 @@ $bulan_names = array(
     5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
     9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
 );
-$nama_bulan = isset($bulan_names[(int)$bulan]) ? $bulan_names[(int)$bulan] : 'Bulan ' . $bulan;
+$nama_bulan = isset($bulan_names[(int)$bulan]) ? $bulan_names[(int)$bulan] : 'Month ' . $bulan;
 
 $tot_bulan = 0;
 $tot_ytd = 0;
@@ -72,7 +72,7 @@ if (!empty($data)) {
         <div class="row g-3 mb-4">
             <div class="col-md-4 col-sm-6">
                 <div class="card bg-light border p-3 rounded-3">
-                    <small class="text-muted d-block fw-semibold">Alokasi Bulan <?= $nama_bulan ?></small>
+                    <small class="text-muted d-block fw-semibold">Month Allocation <?= $nama_bulan ?></small>
                     <div class="fs-5 fw-bold text-dark font-monospace mt-1">
                         Rp <?= number_format((float) $tot_bulan, 0, ',', '.') ?>
                     </div>
@@ -100,7 +100,7 @@ if (!empty($data)) {
             <div class="col-md-4 col-sm-6">
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                    <input type="text" id="quick_filter_bulan" class="form-control" placeholder="Cari kode / nama COA...">
+                    <input type="text" id="quick_filter_bulan" class="form-control" placeholder="Search COA code / name...">
                 </div>
             </div>
         </div>
@@ -111,10 +111,10 @@ if (!empty($data)) {
                     <tr class="small text-uppercase fw-semibold text-secondary text-nowrap">
                         <th width="50" class="text-center">#</th>
                         <th width="160">No Perkiraan</th>
-                        <th>Nama Perkiraan</th>
-                        <th width="180" class="text-end">Budget Bulan <?= $nama_bulan ?></th>
+                        <th>Account Name</th>
+                        <th width="180" class="text-end">Month Budget <?= $nama_bulan ?></th>
                         <th width="200" class="text-end bg-primary-subtle text-primary">Year To Date (YTD)</th>
-                        <th width="200" class="text-end bg-success-subtle text-success">Budget Tahun <?= $tahun ?></th>
+                        <th width="200" class="text-end bg-success-subtle text-success">Year Budget <?= $tahun ?></th>
                     </tr>
                 </thead>
                 <tbody id="tbody_bulan">
@@ -154,7 +154,7 @@ if (!empty($data)) {
                         ?>
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">
-                                Tidak ada data budget ditemukan.
+                                No budget data found.
                             </td>
                         </tr>
                     <?php } ?>

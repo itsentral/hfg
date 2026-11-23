@@ -58,7 +58,7 @@ class Claim_material extends Admin_Controller
     {
         $claim = $this->cm_model->get_claim_detail($id);
         if (!$claim) {
-            echo json_encode(['status' => false, 'message' => 'Claim tidak ditemukan']);
+            echo json_encode(['status' => false, 'message' => 'Claim not found']);
             return;
         }
 
@@ -75,7 +75,7 @@ class Claim_material extends Admin_Controller
     {
         $ids = $this->input->post('ids');
         if (empty($ids) || !is_array($ids)) {
-            echo json_encode(['status' => false, 'message' => 'Tidak ada claim yang dipilih']);
+            echo json_encode(['status' => false, 'message' => 'No claims selected']);
             return;
         }
 
@@ -101,7 +101,7 @@ class Claim_material extends Admin_Controller
         $email_body    = trim($this->input->post('email_body'));
 
         if (empty($claim_id) || empty($email_to)) {
-            echo json_encode(['status' => false, 'message' => 'ID Claim dan Email Supplier wajib diisi']);
+            echo json_encode(['status' => false, 'message' => 'Claim ID and Supplier Email are required']);
             return;
         }
 
@@ -125,12 +125,12 @@ class Claim_material extends Admin_Controller
         $kurs        = $this->input->post('kurs'); // array: [claim_id => float]
 
         if (empty($claim_ids) || !is_array($claim_ids)) {
-            echo json_encode(['status' => false, 'message' => 'Pilih minimal satu claim']);
+            echo json_encode(['status' => false, 'message' => 'Select at least one claim']);
             return;
         }
 
         if (empty($kesepakatan)) {
-            echo json_encode(['status' => false, 'message' => 'Kesepakatan dengan Supplier wajib dipilih']);
+            echo json_encode(['status' => false, 'message' => 'Agreement with Supplier is required']);
             return;
         }
 
@@ -144,7 +144,7 @@ class Claim_material extends Admin_Controller
 
             $claim_dec = $decisions[$cid] ?? [];
             if (empty($claim_dec)) {
-                echo json_encode(['status' => false, 'message' => 'Tentukan jalur keputusan untuk claim ' . $claim['no_claim']]);
+                echo json_encode(['status' => false, 'message' => 'Set the decision path for claim ' . $claim['no_claim']]);
                 return;
             }
 
@@ -152,7 +152,7 @@ class Claim_material extends Admin_Controller
             foreach ($claim_dec as $d) {
                 $kg = (float)($d['berat_kg'] ?? 0);
                 if ($kg <= 0) {
-                    echo json_encode(['status' => false, 'message' => 'Berat (Kg) pada claim ' . $claim['no_claim'] . ' harus lebih dari 0']);
+                    echo json_encode(['status' => false, 'message' => 'Weight (Kg) on claim ' . $claim['no_claim'] . ' must be greater than 0']);
                     return;
                 }
                 $total_kg += $kg;
@@ -161,7 +161,7 @@ class Claim_material extends Admin_Controller
             if ($total_kg > (float)$claim['berat_kg']) {
                 echo json_encode([
                     'status' => false,
-                    'message' => 'Total berat keputusan (' . number_format((float) $total_kg, 2) . ' Kg) melebihi berat claim ' . $claim['no_claim'] . ' (' . number_format((float)$claim['berat_kg'], 2) . ' Kg)'
+                    'message' => 'Total decision weight (' . number_format((float) $total_kg, 2) . ' Kg) exceeds the claim weight ' . $claim['no_claim'] . ' (' . number_format((float)$claim['berat_kg'], 2) . ' Kg)'
                 ]);
                 return;
             }
@@ -201,8 +201,8 @@ class Claim_material extends Admin_Controller
         if (!has_permission($this->viewPermission) && !has_permission('Material_Dijual_Slitting.View') && !has_permission('Gudang_Slitting.View')) {
             $this->auth->restrict($this->viewPermission);
         }
-        $this->template->title('Material Dijual — Gudang Slitting');
-        $this->template->set('page_header', 'Material Dijual (Gudang Slitting)');
+        $this->template->title('Material Sold — Slitting Warehouse');
+        $this->template->set('page_header', 'Material Sold (Slitting Warehouse)');
         $this->template->render('slitting');
     }
 
@@ -228,7 +228,7 @@ class Claim_material extends Admin_Controller
         }
         $report_data = $this->cm_model->get_report_biaya();
 
-        $this->template->title('Report Biaya Kompensasi vs Biaya Scrap');
+        $this->template->title('Compensation Cost vs Scrap Cost Report');
         $this->template->set('report_data', $report_data);
         $this->template->render('report_biaya');
     }
@@ -240,7 +240,7 @@ class Claim_material extends Admin_Controller
     {
         $claim = $this->cm_model->get_claim_detail($id);
         if (!$claim) {
-            echo json_encode(['status' => false, 'message' => 'Claim tidak ditemukan']);
+            echo json_encode(['status' => false, 'message' => 'Claim not found']);
             return;
         }
 

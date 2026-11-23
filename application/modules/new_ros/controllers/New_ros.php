@@ -165,24 +165,24 @@ class New_ros extends Admin_Controller
 
         $payment = $this->db->get_where('tr_ros_payment', ['id' => $id_payment])->row();
         if (!$payment) {
-            echo json_encode(['status' => 0, 'msg' => 'Data payment tidak ditemukan.']);
+            echo json_encode(['status' => 0, 'msg' => 'Payment data not found.']);
             return;
         }
 
         if ($payment->status !== 'belum_diajukan') {
-            echo json_encode(['status' => 0, 'msg' => 'Payment ini sudah diajukan atau sudah lunas.']);
+            echo json_encode(['status' => 0, 'msg' => 'This payment has already been submitted or paid.']);
             return;
         }
 
         if ($bank_id === '' || $accnumber === '' || $accname === '') {
-            echo json_encode(['status' => 0, 'msg' => 'Bank, No. Rekening, dan Atas Nama wajib diisi.']);
+            echo json_encode(['status' => 0, 'msg' => 'Bank, Account Number, and Account Name are required.']);
             return;
         }
 
         // Ambil header ROS untuk data supplier & no_po
         $header = $this->New_ros_model->get_header($payment->id_ros_header);
         if (!$header) {
-            echo json_encode(['status' => 0, 'msg' => 'Data ROS tidak ditemukan.']);
+            echo json_encode(['status' => 0, 'msg' => 'ROS data not found.']);
             return;
         }
 
@@ -195,7 +195,7 @@ class New_ros extends Admin_Controller
         ];
         $map      = isset($tipe_map[$payment->payment_type]) ? $tipe_map[$payment->payment_type] : null;
         if (!$map) {
-            echo json_encode(['status' => 0, 'msg' => 'Tipe payment tidak dikenali.']);
+            echo json_encode(['status' => 0, 'msg' => 'Unrecognized payment type.']);
             return;
         }
         $tipe_rp = $map['tipe'];
@@ -245,12 +245,12 @@ class New_ros extends Admin_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-            echo json_encode(['status' => 0, 'msg' => 'Gagal mengajukan payment.']);
+            echo json_encode(['status' => 0, 'msg' => 'Failed to submit payment.']);
             return;
         }
         $this->db->trans_commit();
 
-        echo json_encode(['status' => 1, 'msg' => 'Payment berhasil diajukan ke Request Payment.']);
+        echo json_encode(['status' => 1, 'msg' => 'Payment submitted successfully to Request Payment.']);
     }
 
     // ─── ADD ─────────────────────────────────────────────────────────
@@ -324,7 +324,7 @@ class New_ros extends Admin_Controller
             echo json_encode([
                 'status'      => 1,
                 'dp_required' => true,
-                'message'     => 'PO ini memiliki term DP yang belum dibayar. Silakan proses pembayaran DP terlebih dahulu.',
+                'message'     => 'This PO has an unpaid DP term. Please process the DP payment first.',
                 'link'        => base_url('purchase_order_payment/index/dp')
             ]);
         }
@@ -472,7 +472,7 @@ class New_ros extends Admin_Controller
         $loi_type = ($po && strtolower((string) $po->loi) === 'lokal') ? 'lokal' : 'import';
         $fwd_master = $this->db->get_where('master_forwarding_cost', ['tipe' => $loi_type, 'is_delete' => '0'])->row();
         $forwarding_rate = $fwd_master ? (float) $fwd_master->value_cost : 0;
-        $total_po_value = array_sum(array_column($result, 'total_value_usd'));
+        $total_po_value = array_sum(array_column($result ?? [], 'total_value_usd'));
 
         echo json_encode([
             'status'          => 1,
@@ -493,7 +493,7 @@ class New_ros extends Admin_Controller
         $this->db->insert('tr_ros_others', [
             'id_ros'     => $id_ros,
             'keterangan' => $post['keterangan'],
-            'nilai'      => str_replace(',', '', $post['nilai']),
+            'nilai'      => str_replace(',', '', $post['nilai'] ?? ''),
             'created_by' => $this->auth->user_id(),
             'created_on' => date('Y-m-d H:i:s')
         ]);
@@ -534,16 +534,16 @@ class New_ros extends Admin_Controller
         $post = $this->input->post();
         $this->db->trans_begin();
 
-        $kurs_pib          = (float) str_replace(',', '', $post['kurs_pib']);
-        $total_kg_bersih   = (float) str_replace(',', '', $post['total_kg_bersih_pib']);
-        $insurance         = (float) str_replace(',', '', $post['insurance']);
-        $biaya_ls          = (float) str_replace(',', '', $post['biaya_ls']);
+        $kurs_pib          = (float) str_replace(',', '', $post['kurs_pib'] ?? '');
+        $total_kg_bersih   = (float) str_replace(',', '', $post['total_kg_bersih_pib'] ?? '');
+        $insurance         = (float) str_replace(',', '', $post['insurance'] ?? '');
+        $biaya_ls          = (float) str_replace(',', '', $post['biaya_ls'] ?? '');
 
         // Hitung total others
         $total_others = 0;
         if (isset($post['others_nilai']) && is_array($post['others_nilai'])) {
             foreach ($post['others_nilai'] as $val) {
-                $total_others += (float) str_replace(',', '', $val);
+                $total_others += (float) str_replace(',', '', $val ?? '');
             }
         }
 
@@ -579,7 +579,7 @@ class New_ros extends Admin_Controller
 
                 echo json_encode([
                     'status' => 0,
-                    'msg'    => 'Upload file gagal: ' . $error_msg
+                    'msg'    => 'File upload failed: ' . $error_msg
                 ]);
                 return; // Berhenti di sini
             }
@@ -608,21 +608,21 @@ class New_ros extends Admin_Controller
             'no_po'              => $post['no_po'],
             'jenis_po'           => $jenis_po,
             'no_surat'           => $post['no_surat'],
-            'nilai_po_usd'       => (float) str_replace(',', '', $post['nilai_po_usd']),
+            'nilai_po_usd'       => (float) str_replace(',', '', $post['nilai_po_usd'] ?? ''),
             'kurs_pib'           => $kurs_pib,
-            'nilai_po_pib_rp'    => (float) str_replace(',', '', $post['nilai_po_pib_rp']),
-            'total_kg_kotor_pib' => (float) str_replace(',', '', $post['total_kg_kotor_pib']),
+            'nilai_po_pib_rp'    => (float) str_replace(',', '', $post['nilai_po_pib_rp'] ?? ''),
+            'total_kg_kotor_pib' => (float) str_replace(',', '', $post['total_kg_kotor_pib'] ?? ''),
             'total_kg_bersih_pib' => $total_kg_bersih,
-            'cost_bm'            => (float) str_replace(',', '', $post['cost_bm']),
-            'cost_bm_kite'       => (float) str_replace(',', '', $post['cost_bm_kite']),
-            'cost_bmt'           => (float) str_replace(',', '', $post['cost_bmt']),
-            'cost_cukai'         => (float) str_replace(',', '', $post['cost_cukai']),
-            'cost_ppn'           => (float) str_replace(',', '', $post['cost_ppn']),
-            'cost_ppnbm'         => (float) str_replace(',', '', $post['cost_ppnbm']),
-            'cost_pph_import'    => (float) str_replace(',', '', $post['cost_pph_import']),
+            'cost_bm'            => (float) str_replace(',', '', $post['cost_bm'] ?? ''),
+            'cost_bm_kite'       => (float) str_replace(',', '', $post['cost_bm_kite'] ?? ''),
+            'cost_bmt'           => (float) str_replace(',', '', $post['cost_bmt'] ?? ''),
+            'cost_cukai'         => (float) str_replace(',', '', $post['cost_cukai'] ?? ''),
+            'cost_ppn'           => (float) str_replace(',', '', $post['cost_ppn'] ?? ''),
+            'cost_ppnbm'         => (float) str_replace(',', '', $post['cost_ppnbm'] ?? ''),
+            'cost_pph_import'    => (float) str_replace(',', '', $post['cost_pph_import'] ?? ''),
             'biaya_ls'           => $biaya_ls,
-            'ppn_ls'             => (float) str_replace(',', '', $post['ppn_ls']),
-            'pph_ls'             => (float) str_replace(',', '', $post['pph_ls']),
+            'ppn_ls'             => (float) str_replace(',', '', $post['ppn_ls'] ?? ''),
+            'pph_ls'             => (float) str_replace(',', '', $post['pph_ls'] ?? ''),
             'insurance'             => $insurance,
             'no_pengajuan'          => $post['no_pengajuan'] ?? null,
             'no_billing'            => $post['no_billing'] ?? null,
@@ -667,7 +667,7 @@ class New_ros extends Admin_Controller
             foreach ($post['others_keterangan'] as $idx => $ket) {
                 // Tambahkan pengecekan isset untuk index $idx
                 $nilai_raw = isset($post['others_nilai'][$idx]) ? $post['others_nilai'][$idx] : 0;
-                $nilai_other = (float) str_replace(',', '', $nilai_raw);
+                $nilai_other = (float) str_replace(',', '', $nilai_raw ?? '');
 
                 if (!empty($ket) || $nilai_other > 0) {
                     $no_others_raw = isset($post['others_no'][$idx]) ? $post['others_no'][$idx] : null;
@@ -689,7 +689,7 @@ class New_ros extends Admin_Controller
             foreach ($post['mat'] as $mat) {
                 $ls_flag = isset($mat['ls_flag']) ? $mat['ls_flag'] : 'TIDAK';
                 if ($ls_flag == 'YA') {
-                    $total_kg_ls += (float) str_replace(',', '', $mat['kg_unit']);
+                    $total_kg_ls += (float) str_replace(',', '', $mat['kg_unit'] ?? '');
                 }
             }
         }
@@ -705,9 +705,9 @@ class New_ros extends Admin_Controller
         $all_pack_coils = []; // Collect pack_no → coil data untuk generate tr_ros_pack nanti
         if (isset($post['mat']) && is_array($post['mat'])) {
             foreach ($post['mat'] as $mat) {
-                $kg_unit         = (float) str_replace(',', '', $mat['kg_unit']);
-                $unit_price_usd  = (float) str_replace(',', '', $mat['unit_price_usd']);
-                $total_value_usd = (float) str_replace(',', '', $mat['total_value_usd']);
+                $kg_unit         = (float) str_replace(',', '', $mat['kg_unit'] ?? '');
+                $unit_price_usd  = (float) str_replace(',', '', $mat['unit_price_usd'] ?? '');
+                $total_value_usd = (float) str_replace(',', '', $mat['total_value_usd'] ?? '');
                 $total_value_rp  = $total_value_usd * $kurs_pib;
                 $bm_persen       = (float) $mat['bm_persen'];
                 $ls_flag         = isset($mat['ls_flag']) ? $mat['ls_flag'] : 'TIDAK';
@@ -780,8 +780,8 @@ class New_ros extends Admin_Controller
                     // Hitung jumlah coil valid dulu
                     $valid_coils = [];
                     foreach ($mat['coil'] as $coil) {
-                        $berat_kotor  = (float) str_replace(',', '', $coil['berat_kotor']);
-                        $berat_bersih = (float) str_replace(',', '', $coil['berat_bersih']);
+                        $berat_kotor  = (float) str_replace(',', '', $coil['berat_kotor'] ?? '');
+                        $berat_bersih = (float) str_replace(',', '', $coil['berat_bersih'] ?? '');
                         if ($berat_kotor > 0 || !empty($coil['no_coil'])) {
                             $valid_coils[] = $coil;
                         }
@@ -806,7 +806,7 @@ class New_ros extends Admin_Controller
                             $physical_coil_count++; // normal coil (tanpa baby)
                         }
                     }
-                    $physical_coil_count += count($baby_coils_save);
+                    $physical_coil_count += count($baby_coils_save ?? []);
                     $price_per_coil_physical = ($physical_coil_count > 0) ? $total_nilai_inventory / $physical_coil_count : 0;
 
                     // Mapping no_coil mother → inserted ID
@@ -823,14 +823,14 @@ class New_ros extends Admin_Controller
                         $this->db->insert('tr_ros_material_coil', [
                             'id_ros_material' => $id_ros_material,
                             'no_coil'         => $coil['no_coil'],
-                            'berat_kotor'     => (float) str_replace(',', '', $coil['berat_kotor']),
-                            'berat_bersih'    => (float) str_replace(',', '', $coil['berat_bersih']),
-                            'panjang'         => (float) str_replace(',', '', $coil['panjang']),
+                            'berat_kotor'     => (float) str_replace(',', '', $coil['berat_kotor'] ?? ''),
+                            'berat_bersih'    => (float) str_replace(',', '', $coil['berat_bersih'] ?? ''),
+                            'panjang'         => (float) str_replace(',', '', $coil['panjang'] ?? ''),
                             'qty_roll'        => $coil_qty_roll,
                             'kode_internal'   => isset($coil['kode_internal']) ? $coil['kode_internal'] : '',
                             'parent_coil_id'  => null,
                             'is_baby_coil'    => 0,
-                            'bpm'             => isset($coil['bpm']) ? (float) str_replace(',', '', $coil['bpm']) : 0,
+                            'bpm'             => isset($coil['bpm']) ? (float) str_replace(',', '', $coil['bpm'] ?? '') : 0,
                             'price_per_coil'  => $mother_price,
                             'created_by'      => $this->auth->user_id(),
                             'created_on'      => date('Y-m-d H:i:s')
@@ -870,14 +870,14 @@ class New_ros extends Admin_Controller
                         $this->db->insert('tr_ros_material_coil', [
                             'id_ros_material' => $id_ros_material,
                             'no_coil'         => $coil['no_coil'],
-                            'berat_kotor'     => (float) str_replace(',', '', $coil['berat_kotor']),
-                            'berat_bersih'    => (float) str_replace(',', '', $coil['berat_bersih']),
-                            'panjang'         => (float) str_replace(',', '', $coil['panjang']),
+                            'berat_kotor'     => (float) str_replace(',', '', $coil['berat_kotor'] ?? ''),
+                            'berat_bersih'    => (float) str_replace(',', '', $coil['berat_bersih'] ?? ''),
+                            'panjang'         => (float) str_replace(',', '', $coil['panjang'] ?? ''),
                             'qty_roll'        => 1,
                             'kode_internal'   => isset($coil['kode_internal']) ? $coil['kode_internal'] : '',
                             'parent_coil_id'  => $parent_coil_id,
                             'is_baby_coil'    => 1,
-                            'bpm'             => isset($coil['bpm']) ? (float) str_replace(',', '', $coil['bpm']) : 0,
+                            'bpm'             => isset($coil['bpm']) ? (float) str_replace(',', '', $coil['bpm'] ?? '') : 0,
                             'price_per_coil'  => $price_per_coil_physical,
                             'created_by'      => $this->auth->user_id(),
                             'created_on'      => date('Y-m-d H:i:s')
@@ -1055,7 +1055,7 @@ class New_ros extends Admin_Controller
             $nm_alias  = isset($mat['nm_alias'])  ? $mat['nm_alias']  : '';
             $nm_barang = isset($mat['nm_barang']) ? $mat['nm_barang'] : '';
             $count     = isset($mat['count'])     ? max(1, (int) $mat['count']) : 1;
-            $bgColor   = $matColors[$colorIdx % count($matColors)];
+            $bgColor   = $matColors[$colorIdx % count($matColors ?? [])];
 
             // Style khusus per material group (warna berbeda)
             $matStyle = array(
@@ -1088,7 +1088,7 @@ class New_ros extends Admin_Controller
             }
 
             // Baris kosong pemisah antar material (kecuali material terakhir)
-            if ($colorIdx < count($materials_coil) - 1) {
+            if ($colorIdx < count($materials_coil ?? []) - 1) {
                 $sheet->getRowDimension($row)->setRowHeight(18);
                 $row++;
             }
@@ -1311,9 +1311,9 @@ class New_ros extends Admin_Controller
 
         echo json_encode([
             'status'        => 1,
-            'msg'           => 'Successfully read ' . count($coils) . ' coil rows.',
+            'msg'           => 'Successfully read ' . count($coils ?? []) . ' coil rows.',
             'coils'         => $coils,
-            'total'         => count($coils),
+            'total'         => count($coils ?? []),
             'file_original' => $original_name,
             'file_hash'     => $hash_name,
         ]);
@@ -1615,7 +1615,7 @@ class New_ros extends Admin_Controller
         $this->db->order_by('t.id', 'ASC');
         $data = $this->db->get()->result_array();
 
-        echo json_encode(['status' => 1, 'data' => $data, 'total' => count($data)]);
+        echo json_encode(['status' => 1, 'data' => $data, 'total' => count($data ?? [])]);
     }
 
     // ─── AJAX: Konfirmasi upload → pindah dari temp ke tabel asli ────
@@ -1648,7 +1648,7 @@ class New_ros extends Admin_Controller
 
         // Ambil total_nilai_inventory per id_ros_material
         $inventory_per_mat = [];
-        foreach (array_keys($coil_count_per_mat) as $id_mat) {
+        foreach (array_keys($coil_count_per_mat ?? []) as $id_mat) {
             $mat = $this->db->get_where('tr_ros_material', ['id' => $id_mat])->row();
             $inventory_per_mat[$id_mat] = $mat ? (float) $mat->total_nilai_inventory : 0;
         }
@@ -1667,7 +1667,7 @@ class New_ros extends Admin_Controller
         // Generate tr_ros_pack untuk setiap pack_no unik dan buat mapping pack_no → id
         $pack_map = []; // pack_no => id_ros_pack
         $generated_packs = [];
-        foreach (array_keys($pack_nos) as $pack_no) {
+        foreach (array_keys($pack_nos ?? []) as $pack_no) {
             $pack_code = $this->New_ros_model->generate_pack_code($generated_packs);
             $generated_packs[] = $pack_code;
             $this->db->insert('tr_ros_pack', [
@@ -1850,7 +1850,7 @@ class New_ros extends Admin_Controller
         if (!empty($groups)) {
             $no = 1;
             foreach ($groups as $id_mat => $rows) {
-                $rowspan = count($rows);
+                $rowspan = count($rows ?? []);
                 foreach ($rows as $idx => $coil) {
                     $html .= '<tr>';
                     if ($idx === 0) {
@@ -2192,7 +2192,7 @@ class New_ros extends Admin_Controller
         $this->db->order_by('c.id', 'ASC');
         $coils = $this->db->get()->result_array();
 
-        echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils)]);
+        echo json_encode(['status' => 1, 'data' => $coils, 'total' => count($coils ?? [])]);
     }
 
     public function close_ros()
@@ -2467,7 +2467,7 @@ class New_ros extends Admin_Controller
         $total_gw   = 0;
         foreach ($materials as $mat) {
             if (!empty($mat['coils'])) {
-                $total_coil += count($mat['coils']);
+                $total_coil += count($mat['coils'] ?? []);
                 foreach ($mat['coils'] as $coil) {
                     $total_nw += (float) $coil['berat_bersih'];
                     $total_gw += (float) $coil['berat_kotor'];

@@ -44,12 +44,12 @@ class Incoming_material_model extends BF_Model
             }
 
             $no_surat = [];
-            $get_no_surat = $this->db->query("SELECT no_surat FROM tr_purchase_order WHERE no_po IN ('" . str_replace(",", "','", $row['no_ipp']) . "')")->result();
+            $get_no_surat = $this->db->query("SELECT no_surat FROM tr_purchase_order WHERE no_po IN ('" . str_replace(",", "','", $row['no_ipp'] ?? '') . "')")->result();
             foreach ($get_no_surat as $item) {
                 $no_surat[] = $item->no_surat;
             }
 
-            $no_surat = implode(', ', $no_surat);
+            $no_surat = implode(', ', $no_surat ?? []);
 
             $no_pr = [];
             if (!empty($no_surat)) {
@@ -62,7 +62,7 @@ class Incoming_material_model extends BF_Model
                     JOIN material_planning_base_on_produksi_detail c ON c.id = a.idpr
                     JOIN material_planning_base_on_produksi d ON d.so_number = c.so_number
                 WHERE
-                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat)) . "') AND
+                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat ?? '')) . "') AND
                     (a.tipe IS NULL OR a.tipe = '')
                 GROUP BY d.no_pr
 
@@ -75,7 +75,7 @@ class Incoming_material_model extends BF_Model
                     JOIN tr_purchase_order b ON b.no_po = a.no_po
                     JOIN rutin_non_planning_detail c ON c.id = a.idpr
                 WHERE
-                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat)) . "') AND
+                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat ?? '')) . "') AND
                     a.tipe = 'pr depart'
                 GROUP BY c.no_pr
 
@@ -88,7 +88,7 @@ class Incoming_material_model extends BF_Model
             }
 
             if (!empty($no_pr)) {
-                $no_pr = implode(', ', $no_pr);
+                $no_pr = implode(', ', $no_pr ?? []);
             } else {
                 $no_pr = '';
             }
@@ -225,7 +225,7 @@ class Incoming_material_model extends BF_Model
         foreach ($get_no_surat as $item_surat) {
             $no_surat[] = $item_surat->no_surat;
         }
-        $no_surat = implode(', ', $no_surat);
+        $no_surat = implode(', ', $no_surat ?? []);
 
 
 
@@ -285,12 +285,12 @@ class Incoming_material_model extends BF_Model
             $arr_no_pr[] = $pr['no_pr'];
         endforeach;
 
-        $no_pr = implode(', ', $arr_no_pr);
+        $no_pr = implode(', ', $arr_no_pr ?? []);
 
         $data = array(
-            'no_po' => implode(',', $arrNoPO),
+            'no_po' => implode(',', $arrNoPO ?? []),
             'no_pr' => $no_pr,
-            'no_surat' => implode(',', $list_no_surat),
+            'no_surat' => implode(',', $list_no_surat ?? []),
             'result_header' => $result_header
         );
 

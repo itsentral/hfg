@@ -96,7 +96,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									$get_checked_pr = $this->db->get_where('tr_po_checked_pr', ['no_pr' => $record->so_number, 'id_user' => $this->auth->user_id()])->result();
 
 									$checked = '';
-									if (count($get_checked_pr) > 0) {
+									if (count($get_checked_pr ?? []) > 0) {
 										$checked = 'checked';
 									}
 
@@ -132,7 +132,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 									$get_checked_pr = $this->db->get_where('tr_po_checked_pr', ['no_pr' => $record->so_number, 'id_user' => $this->auth->user_id()])->result();
 
 									$checked = '';
-									if (count($get_checked_pr) > 0) {
+									if (count($get_checked_pr ?? []) > 0) {
 										$checked = 'checked';
 									}
 									?>
@@ -202,7 +202,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 	$(document).ready(function() {
 		$('#example').dataTable();
 		$("#idcustomer").select2({
-			placeholder: "Pilih",
+			placeholder: "Select",
 			allowClear: true
 		});
 	});
@@ -240,7 +240,7 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 	$(document).on('click', '.view', function() {
 		var id = $(this).data('no_penawaran');
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Inventory</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Inventory Detail</b>");
 		$.ajax({
 			type: 'POST',
 			url: siteurl + 'penawaran/ViewHeader/' + id,

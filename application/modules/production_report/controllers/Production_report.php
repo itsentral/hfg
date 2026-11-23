@@ -18,7 +18,7 @@ class Production_report extends Admin_Controller
         $this->load->model([
             'production_report/Production_report_model' => 'pr_model'
         ]);
-        $this->template->title('Laporan Produksi');
+        $this->template->title('Production Report');
         $this->template->page_icon('fa fa-industry');
     }
 
@@ -33,7 +33,7 @@ class Production_report extends Admin_Controller
         $search = $this->input->get('q', true);
         $data = $this->pr_model->get_spk_list($search);
 
-        $total_spk = count($data);
+        $total_spk = count($data ?? []);
         $done_count = 0;
         $waiting_count = 0;
         $total_target_qty = 0;
@@ -53,7 +53,7 @@ class Production_report extends Admin_Controller
                 }
                 $waiting_count++;
             } else {
-                $row['report_status'] = 'Belum Ada';
+                $row['report_status'] = 'None Yet';
                 $waiting_count++;
             }
         }
@@ -78,7 +78,7 @@ class Production_report extends Admin_Controller
         if (empty($spk_no)) {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'danger',
-                'message' => 'Nomor SPK tidak ditemukan.'
+                'message' => 'SPK number not found.'
             ]);
             redirect('production_report');
             return;
@@ -88,7 +88,7 @@ class Production_report extends Admin_Controller
         if (!$spk_header) {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'danger',
-                'message' => 'Data SPK ' . htmlspecialchars((string) $spk_no) . ' tidak valid atau tidak ditemukan.'
+                'message' => 'Data SPK ' . htmlspecialchars((string) $spk_no) . ' is invalid or not found.'
             ]);
             redirect('production_report');
             return;
@@ -97,7 +97,7 @@ class Production_report extends Admin_Controller
         if ($spk_header['status'] !== 'Released') {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'warning',
-                'message' => 'SPK ' . htmlspecialchars((string) $spk_no) . ' masih berstatus "' . htmlspecialchars((string) $spk_header['status']) . '". Ubah status SPK menjadi Released di modul Request List terlebih dahulu.'
+                'message' => 'SPK ' . htmlspecialchars((string) $spk_no) . ' masih berstatus "' . htmlspecialchars((string) $spk_header['status']) . '". Change the SPK status to Released in the Request List module first.'
             ]);
             redirect('production_report');
             return;
@@ -110,6 +110,7 @@ class Production_report extends Admin_Controller
         $all_products = $this->pr_model->get_all_products();
 
         $draft_data = $this->pr_model->get_draft_by_spk($spk_no);
+        $costing_check = $this->pr_model->check_costing_availability_for_spk($spk_no);
 
         $data = [
             'spk' => $spk_header,
@@ -119,6 +120,7 @@ class Production_report extends Admin_Controller
             'setters' => $setters,
             'all_products' => $all_products,
             'draft' => $draft_data,
+            'costing_check' => $costing_check,
         ];
 
         $this->template->set($data);
@@ -133,7 +135,12 @@ class Production_report extends Admin_Controller
             exit;
         }
 
-        $coils = $this->pr_model->get_coils_by_source($source);
+        try {
+            $coils = $this->pr_model->get_coils_by_source($source);
+        } catch (RuntimeException $e) {
+            echo json_encode(['status' => 0, 'data' => [], 'message' => $e->getMessage()]);
+            exit;
+        }
 
         echo json_encode(['status' => 1, 'data' => $coils]);
         exit;
@@ -144,11 +151,16 @@ class Production_report extends Admin_Controller
         $coil_id   = $this->input->get('coil_id', true);
         $coil_code = $this->input->get('coil_code', true);
 
-        $info = $this->pr_model->get_coil_claim_info($coil_id, $coil_code);
+        try {
+            $info = $this->pr_model->get_coil_claim_info($coil_id, $coil_code);
+        } catch (RuntimeException $e) {
+            echo json_encode(['status' => 0, 'data' => null, 'message' => $e->getMessage()]);
+            return;
+        }
         if ($info) {
             echo json_encode(['status' => 1, 'data' => $info]);
         } else {
-            echo json_encode(['status' => 0, 'data' => null, 'message' => 'Data coil tidak ditemukan']);
+            echo json_encode(['status' => 0, 'data' => null, 'message' => 'Coil data not found']);
         }
         exit;
     }
@@ -199,20 +211,20 @@ class Production_report extends Admin_Controller
         }
 
         if (empty($payload['spk_no'])) {
-            echo json_encode(['status' => 0, 'message' => 'Nomor SPK wajib diisi!']);
+            echo json_encode(['status' => 0, 'message' => 'SPK Number is required!']);
             exit;
         }
 
         $spk_header = $this->pr_model->get_spk_header($payload['spk_no']);
         if (!$spk_header) {
-            echo json_encode(['status' => 0, 'message' => 'SPK tidak valid']);
+            echo json_encode(['status' => 0, 'message' => 'Invalid SPK']);
             exit;
         }
 
         if ($spk_header['status'] !== 'Released') {
             echo json_encode([
                 'status'  => 0,
-                'message' => 'SPK ' . $payload['spk_no'] . ' berstatus "' . $spk_header['status'] . '". Status SPK wajib Released di Request List sebelum membuat/menyimpan Laporan Produksi.'
+                'message' => 'SPK ' . $payload['spk_no'] . ' berstatus "' . $spk_header['status'] . '". The SPK status must be Released in the Request List before creating/saving a Production Report.'
             ]);
             exit;
         }
@@ -224,7 +236,7 @@ class Production_report extends Admin_Controller
             'no_spk'                            => !empty($payload['spk_no']) ? trim($payload['spk_no']) : null,
             'tgl_produksi'                      => !empty($payload['tgl_produksi']) ? $payload['tgl_produksi'] : date('Y-m-d'),
             'id_asset_machine'                  => !empty($payload['id_asset_machine']) ? $payload['id_asset_machine'] : 0,
-            'employee_helper'                   => !empty($payload['employee_helper']) ? (is_array($payload['employee_helper']) ? implode(', ', array_filter(array_map('trim', $payload['employee_helper']))) : $payload['employee_helper']) : null,
+            'employee_helper'                   => !empty($payload['employee_helper']) ? (is_array($payload['employee_helper']) ? implode(', ', array_filter(array_map('trim', $payload['employee_helper'] ?? []))) : $payload['employee_helper']) : null,
             'employee_setter'                   => !empty($payload['employee_setter']) ? $payload['employee_setter'] : null,
             'start_time'                        => !empty($payload['start_time']) ? $payload['start_time'] : null,
             'finished_time'                     => !empty($payload['finished_time']) ? $payload['finished_time'] : null,
@@ -305,14 +317,14 @@ class Production_report extends Admin_Controller
                 if (empty(trim($cl['problem'] ?? '')) || empty(trim($cl['alasan_produksi'] ?? ''))) {
                     echo json_encode([
                         'status'  => 0,
-                        'message' => 'Problem dan Alasan Produksi wajib diisi untuk setiap baris Claim Material (FR-94)!'
+                        'message' => 'Problem and Production Reason are required for every Material Claim row (FR-94)!'
                     ]);
                     exit;
                 }
-                if (empty($cl['bukti']) || !is_array($cl['bukti']) || count($cl['bukti']) < 1) {
+                if (empty($cl['bukti']) || !is_array($cl['bukti']) || count($cl['bukti'] ?? []) < 1) {
                     echo json_encode([
                         'status'  => 0,
-                        'message' => 'Bukti dokumen pendukung (foto/video/QC) wajib diunggah minimal 1 berkas per baris claim (FR-94)!'
+                        'message' => 'At least 1 supporting document (photo/video/QC) must be uploaded per claim row (FR-94)!'
                     ]);
                     exit;
                 }
@@ -330,7 +342,7 @@ class Production_report extends Admin_Controller
                 if (!empty($cl['asal']) && $cl['asal'] === 'Hold Coil') {
                     echo json_encode([
                         'status'  => 0,
-                        'message' => 'Submit ditolak: Laporan memuat material Hold Coil yang harus menunggu keputusan Purchasing (FR-18, FR-98). Silakan simpan sebagai Draft terlebih dahulu.'
+                        'message' => 'Submit rejected: The report contains Hold Coil material that must wait for a Purchasing decision (FR-18, FR-98). Please save it as a Draft first.'
                     ]);
                     exit;
                 }
@@ -342,7 +354,7 @@ class Production_report extends Admin_Controller
                 if ($pending_claim_no) {
                     echo json_encode([
                         'status'  => 0,
-                        'message' => 'Submit ditolak: Terdapat claim Hold Coil (' . $pending_claim_no . ') yang belum diputuskan oleh Purchasing (FR-18, FR-98). Silakan tunggu keputusan sebelum men-submit laporan.'
+                        'message' => 'Submit rejected: There is a Hold Coil claim (' . $pending_claim_no . ') that Purchasing has not decided yet (FR-18, FR-98). Please wait for the decision before submitting the report.'
                     ]);
                     exit;
                 }
@@ -356,6 +368,20 @@ class Production_report extends Admin_Controller
                 echo json_encode(['status' => 0, 'message' => $jurnal_check]);
                 exit;
             }
+
+            // Validasi ketersediaan Product Costing (FR-48, FR-74) sebelum submit final
+            $costing_check = $this->pr_model->check_costing_availability_for_items($items, $spk_header);
+            if (!$costing_check['is_all_available']) {
+                $missing_names = array_unique(array_column($costing_check['missing_products'] ?? [], 'nm_produk'));
+                $missing_str = implode(', ', $missing_names ?? []);
+                echo json_encode([
+                    'status'           => 0,
+                    'costing_missing'  => true,
+                    'missing_products' => $costing_check['missing_products'],
+                    'message'          => 'The Production Report cannot be submitted to Accounting because the Product Costing data for product [' . $missing_str . '] has not been updated in the Costing Simulation module. Please run Update Costing first or Save as Draft.'
+                ]);
+                exit;
+            }
         }
         // Ambil snapshot data lama untuk audit log (standar AGENTS.md)
         $old_report = null;
@@ -364,7 +390,13 @@ class Production_report extends Admin_Controller
         }
 
         $user_id   = $this->auth ? $this->auth->user_id() : 1;
-        $report_id = $this->pr_model->save_production_report($header_data, $materials, $items, $scraps, $claims, $existing_report_id, $user_id);
+        $journal_audit = [];
+        $journal_writer = function ($saved, $old) use (&$journal_audit, $payload) {
+            if ((int)$saved['status_draft'] === 0 || ($old && (int)$old['status_draft'] === 0)) {
+                $journal_audit = $this->_sync_jurnal_production_report($saved, $payload['spk_no']);
+            }
+        };
+        $report_id = $this->pr_model->save_production_report($header_data, $materials, $items, $scraps, $claims, $existing_report_id, $user_id, $journal_writer);
 
         if ($report_id) {
             // Audit Log write_log (AGENTS.md)
@@ -372,52 +404,34 @@ class Production_report extends Admin_Controller
             if ($existing_report_id && !empty($old_report)) {
                 write_log('Production Report', 'Edit', 'Update Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . ')', [
                     'old' => $old_report,
-                    'new' => $new_report
+                    'new' => $new_report,
+                    'detail_changes' => array_merge($this->pr_model->get_stock_out_changes(), $journal_audit),
                 ], null, 1);
             } else {
                 write_log('Production Report', 'Create', 'Create Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . ')', [
                     'old' => [],
-                    'new' => $new_report
+                    'new' => $new_report,
+                    'detail_changes' => array_merge($this->pr_model->get_stock_out_changes(), $journal_audit),
                 ], null, 1);
             }
 
-            // Posting jurnal ke gl_interface saat submit final (sekali per laporan)
-            $was_final    = !empty($old_report) && isset($old_report['status_draft']) && (int) $old_report['status_draft'] === 0;
-            $jurnal_error = null;
-            if ($is_submit && !$was_final) {
-                try {
-                    $id_gl = $this->_generate_jurnal_production_report($new_report, $payload['spk_no']);
-                    write_log('Production Report', 'Jurnal', 'Posting jurnal Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . ') ke gl_interface ID: ' . $id_gl, [
-                        'report_id'       => $report_id,
-                        'spk_no'          => $payload['spk_no'],
-                        'id_gl_interface' => $id_gl,
-                    ], null, 1);
-                } catch (Exception $e) {
-                    $jurnal_error = $e->getMessage();
-                    log_message('error', 'GL error production_report ' . $report_id . ': ' . $jurnal_error);
-                    write_log('Production Report', 'Jurnal', 'Gagal posting jurnal Production Report ID: ' . $report_id . ' (SPK: ' . $payload['spk_no'] . '): ' . $jurnal_error, [
-                        'report_id' => $report_id,
-                        'spk_no'    => $payload['spk_no'],
-                    ], null, 0);
-                }
-            }
-            if ($jurnal_error) {
-                echo json_encode([
-                    'status'    => 2,
-                    'message'   => 'Laporan produksi berhasil disimpan, tetapi jurnal GL Interface gagal dibuat: ' . $jurnal_error,
-                    'report_id' => $report_id
-                ]);
-                exit;
-            }
+            // Jurnal pending sudah disinkronkan di transaksi yang sama dengan laporan dan stok.
             echo json_encode([
                 'status'    => 1,
-                'message'   => 'Laporan produksi berhasil disimpan!',
+                'message'   => 'Production report saved successfully!',
                 'report_id' => $report_id
             ]);
         } else {
+            $stock_error = $this->pr_model->get_stock_out_error();
+            if ($stock_error) {
+                write_log('Production Report', 'Submit', 'Penyimpanan laporan ditolak: ' . $stock_error, [
+                    'report_id' => $existing_report_id,
+                    'spk_no' => $payload['spk_no'],
+                ], null, 0);
+            }
             echo json_encode([
                 'status'  => 0,
-                'message' => 'Gagal menyimpan laporan produksi. Silakan periksa kembali data Anda.'
+                'message' => $stock_error ?: 'Failed to save the production report. Please check your data again.'
             ]);
         }
         exit;
@@ -436,7 +450,7 @@ class Production_report extends Admin_Controller
             'action' => self::JURNAL_MAPPING_ACTION,
         ])->row();
         if (!$mapping || trim((string) $mapping->kode_master_jurnal) === '') {
-            return 'Template jurnal untuk Laporan Produksi belum dibuat. Silakan konfigurasi di Master Jurnal Mapping (menu: '
+            return 'The journal template for the Production Report has not been created. Please configure it in Master Jurnal Mapping (menu: '
                 . self::JURNAL_MAPPING_MENU . ', action: ' . self::JURNAL_MAPPING_ACTION . ').';
         }
         $db_acc     = $this->load->database('accounting', TRUE);
@@ -447,7 +461,7 @@ class Production_report extends Admin_Controller
             ->where('kode_master_jurnal', $mapping->kode_master_jurnal)
             ->count_all_results('master_oto_jurnal_detail');
         if (!$tpl_header || $tpl_detail_count === 0) {
-            return "Template jurnal '" . $mapping->kode_master_jurnal . "' untuk Laporan Produksi belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di Master Jurnal.";
+            return "Template jurnal '" . $mapping->kode_master_jurnal . "' for the Production Report is incomplete (header/detail not configured). Please complete it in Master Jurnal.";
         }
         return true;
     }
@@ -460,6 +474,52 @@ class Production_report extends Admin_Controller
      * @return int id gl_interface
      * @throws Exception
      */
+    private function _sync_jurnal_production_report(array $report, $spk_no)
+    {
+        $mapping = $this->db->get_where('ms_jurnal_mapping', [
+            'menu' => self::JURNAL_MAPPING_MENU, 'action' => self::JURNAL_MAPPING_ACTION,
+        ])->row_array();
+        if (!$mapping) throw new RuntimeException('Production journal mapping is not available yet.');
+        $acc = $this->load->database('accounting', true);
+        $template = $acc->get_where('master_oto_jurnal_header', [
+            'kode_master_jurnal' => $mapping['kode_master_jurnal'],
+        ])->row_array();
+        if (!$template) throw new RuntimeException('The production journal template is not available yet.');
+        $old = $this->db->query(
+            "SELECT * FROM gl_interface
+             WHERE jenis_transaksi = ?
+               AND JSON_UNQUOTE(JSON_EXTRACT(IF(JSON_VALID(memo),memo,'{}'),'$.no_request')) = ?
+               AND JSON_UNQUOTE(JSON_EXTRACT(IF(JSON_VALID(memo),memo,'{}'),'$.no_reff')) = ?
+             FOR UPDATE",
+            [$template['jenis_transaksi'], (string)$report['id'], $spk_no]
+        )->result_array();
+        if (count($old) > 1) throw new RuntimeException('Duplicate report journal. Journal reconciliation is required.');
+        $old_snapshot = [];
+        foreach ($old as $header) {
+            if ($header['status'] !== 'pending') {
+                throw new RuntimeException('The report journal has already been posted. Corrections cannot overwrite a posted accounting journal.');
+            }
+            $detail = $this->db->get_where('gl_interface_detail', ['id_gl_interface' => $header['id']])->result_array();
+            $old_snapshot[] = ['header' => $header, 'detail' => $detail];
+            material_stock_write($this->db->where('id_gl_interface', $header['id'])->delete('gl_interface_detail'));
+            material_stock_write($this->db->where('id', $header['id'])->delete('gl_interface'));
+        }
+        $new_snapshot = [];
+        if ((int)$report['status_draft'] === 0) {
+            try {
+                $id = $this->_generate_jurnal_production_report($report, $spk_no);
+            } catch (Exception $e) {
+                throw new RuntimeException('Production journal posting failed: ' . $e->getMessage(), 0, $e);
+            }
+            if ($id <= 0) throw new RuntimeException('Production journal posting failed.');
+            $new_snapshot = [
+                'header' => $this->db->get_where('gl_interface', ['id' => $id])->row_array(),
+                'detail' => $this->db->get_where('gl_interface_detail', ['id_gl_interface' => $id])->result_array(),
+            ];
+        }
+        return ['Report journal ' . $report['id'] => ['old' => $old_snapshot, 'new' => $new_snapshot]];
+    }
+
     private function _generate_jurnal_production_report(array $report, $spk_no)
     {
         $check = $this->_validate_jurnal_template();
@@ -470,7 +530,7 @@ class Production_report extends Admin_Controller
             'menu'   => self::JURNAL_MAPPING_MENU,
             'action' => self::JURNAL_MAPPING_ACTION,
         ])->row();
-        $data_source = array_merge($report, [
+        $data_source = array_merge($report ?? [], [
             'tanggal'               => date('Y-m-d'),
             'no_doc'                => $spk_no,
             'no_request'            => (string) $report['id'],
@@ -486,7 +546,7 @@ class Production_report extends Admin_Controller
         $this->load->model('gl_interface/Gl_interface_model');
         $id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($mapping->kode_master_jurnal, $data_source);
         if ($id_gl === false) {
-            throw new Exception("Gagal generate jurnal dari template '" . $mapping->kode_master_jurnal . "' untuk Laporan Produksi.");
+            throw new Exception("Failed to generate journal from template '" . $mapping->kode_master_jurnal . "' untuk Laporan Produksi.");
         }
         return (int) $id_gl;
     }
@@ -504,7 +564,7 @@ class Production_report extends Admin_Controller
         if (!$data['report']) {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'danger',
-                'message' => 'Laporan produksi tidak ditemukan.'
+                'message' => 'Production report not found.'
             ]);
             redirect('production_report');
             return;
@@ -527,17 +587,57 @@ class Production_report extends Admin_Controller
         if (!$data['report']) {
             $this->session->set_flashdata('alert_data', [
                 'type' => 'danger',
-                'message' => 'Laporan produksi tidak ditemukan.'
+                'message' => 'Production report not found.'
             ]);
             redirect('production_report');
             return;
         }
 
+        $spk_no = $data['report']['spk_header']['spk_no'] ?? ($data['report']['header']['no_spk'] ?? '');
+        $data['costing_check'] = $this->pr_model->check_costing_availability_for_spk($spk_no);
         $data['rates'] = $this->pr_model->get_cost_rates();
 
-        $this->template->title('Laporan HPP Produksi');
+        $this->template->title('Production HPP Report');
         $this->template->set($data);
         $this->template->render('view_hpp');
+    }
+
+    /**
+     * AJAX: Refresh / Tarik Rate Costing Terkini untuk Laporan Produksi berstatus Draft (FR-48, FR-74).
+     */
+    public function refresh_costing($report_id = null)
+    {
+        $this->auth->restrict($this->editPermission);
+
+        if (empty($report_id)) {
+            echo json_encode(['status' => 0, 'message' => 'Invalid Production Report ID.']);
+            exit;
+        }
+
+        // Ambil snapshot lama untuk audit log
+        $old_report = $this->db->get_where('production_reports', ['id' => $report_id])->row_array();
+        if (!$old_report) {
+            echo json_encode(['status' => 0, 'message' => 'Production Report not found.']);
+            exit;
+        }
+
+        if ((int)$old_report['status_draft'] !== 1) {
+            echo json_encode(['status' => 0, 'message' => 'Only Production Reports with status Draft can have their costing rate updated. Final reports are frozen.']);
+            exit;
+        }
+
+        $result = $this->pr_model->recalculate_draft_hpp($report_id);
+
+        if ($result['status'] === 1) {
+            $new_report = $this->db->get_where('production_reports', ['id' => $report_id])->row_array();
+            write_log('Production Report', 'Edit', 'Refresh Rate Costing Terkini untuk Draft Report ID: ' . $report_id, [
+                'old' => $old_report,
+                'new' => $new_report
+            ], null, 1);
+        }
+
+        echo json_encode($result);
+        exit;
     }
 
     /**
@@ -556,7 +656,7 @@ class Production_report extends Admin_Controller
         if (!$export || (int) ($export['header']['status_draft'] ?? 1) !== 0) {
             $this->session->set_flashdata('alert_data', [
                 'type'    => 'danger',
-                'message' => 'Export Report hanya tersedia untuk laporan produksi yang sudah selesai (Done).'
+                'message' => 'Export Report is only available for completed (Done) production reports.'
             ]);
             redirect('production_report');
             return;
@@ -573,7 +673,7 @@ class Production_report extends Admin_Controller
         );
 
         $objPHPExcel = $this->build_spk_export_workbook($export);
-        $clean_spk   = preg_replace('/[^A-Za-z0-9_\-]/', '_', $export['spk_no']);
+        $clean_spk   = preg_replace('/[^A-Za-z0-9_\-]/', '_', $export['spk_no'] ?? '');
         $filename    = 'Laporan_Produksi_' . $clean_spk . '_' . date('Ymd_His') . '.xls';
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
@@ -656,8 +756,8 @@ class Production_report extends Admin_Controller
 
         $groups = [
             ['B', 'F', 'Material In Packing List'],
-            ['G', 'H', 'Out Produksi (dari Gudang Produksi 1 ke Gudang Produksi 2)'],
-            ['I', 'I', 'Actual Timbang'],
+            ['G', 'H', 'Production Out (from Production Warehouse 1 to Production Warehouse 2)'],
+            ['I', 'I', 'Actual Weighing'],
             ['J', 'K', "Hasil Produksi\nKW 1"],
             ['L', 'M', "Hasil Produksi\nKW 2"],
             ['N', 'O', 'WIP (Sisa Material Produksi)'],
@@ -738,7 +838,7 @@ class Production_report extends Admin_Controller
             return $curr + 1;
         }
 
-        $totals = array_fill_keys(array_keys($numCols), 0.0);
+        $totals = array_fill_keys(array_keys($numCols ?? []), 0.0);
         foreach ($rows as $row) {
             $sheet->setCellValueExplicit('B' . $curr, (string) ($row['material'] ?? '-'), PHPExcel_Cell_DataType::TYPE_STRING);
             $sheet->setCellValueExplicit('C' . $curr, (string) ($row['kode_internal'] ?? '-'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -778,7 +878,7 @@ class Production_report extends Admin_Controller
             'C' => 'Qty Produksi',
             'D' => 'Material',
             'E' => 'Total Kg Produksi',
-            'F' => 'Berat/Pcs',
+            'F' => 'Weight/Pcs',
             'G' => 'Std/pcs',
             'H' => '%Selisih per Pcs',
             'I' => 'Aktual Kg/Meter',
@@ -851,9 +951,9 @@ class Production_report extends Admin_Controller
             'C' => 'Qty Produksi',
             'D' => 'Material',
             'E' => 'Total Kg Produksi',
-            'F' => 'Berat/Pcs',
-            'G' => 'Panjang',
-            'H' => 'Keterangan',
+            'F' => 'Weight/Pcs',
+            'G' => 'Length',
+            'H' => 'Description',
         ];
         foreach ($headers as $col => $label) {
             $sheet->setCellValue($col . $hdrRow, $label);

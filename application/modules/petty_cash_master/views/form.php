@@ -13,15 +13,15 @@ $header_id = (isset($data->id)) ? $data->id : '';
     <div class="row g-3">
         <div class="col-md-6">
             <label for="nama" class="form-label fw-bold text-dark">
-                <i class="fa fa-tag text-primary me-1"></i> Nama Master Petty Cash <span class="text-danger">*</span>
+                <i class="fa fa-tag text-primary me-1"></i> Petty Cash Master Name <span class="text-danger">*</span>
             </label>
             <input type="text" class="form-control" id="nama" name="nama" value="<?= isset($data->nama) ? htmlspecialchars((string) $data->nama) : '' ?>" placeholder="Contoh: Petty Cash Operasional HO" required>
         </div>
         <div class="col-md-6">
             <label for="keterangan" class="form-label fw-bold text-dark">
-                <i class="fa fa-info-circle text-info me-1"></i> Keterangan <span class="text-danger">*</span>
+                <i class="fa fa-info-circle text-info me-1"></i> Description <span class="text-danger">*</span>
             </label>
-            <input type="text" class="form-control" id="keterangan" name="keterangan" value="<?= isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : '' ?>" placeholder="Contoh: Kas kecil untuk kebutuhan operasional harian" required>
+            <input type="text" class="form-control" id="keterangan" name="keterangan" value="<?= isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : '' ?>" placeholder="Example: Petty cash for daily operational needs" required>
         </div>
     </div>
 </div>
@@ -31,10 +31,10 @@ $header_id = (isset($data->id)) ? $data->id : '';
     <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center">
             <i class="fa fa-list text-primary me-2"></i>
-            <h6 class="mb-0 fw-bold text-dark">Daftar Alokasi COA & Nominal Budget</h6>
+            <h6 class="mb-0 fw-bold text-dark">COA Allocation & Budget Amount List</h6>
         </div>
         <button type="button" class="btn btn-outline-primary btn-sm rounded-2" id="btn-add-row">
-            <i class="fa fa-plus me-1"></i> Tambah Baris COA
+            <i class="fa fa-plus me-1"></i> Add COA Row
         </button>
     </div>
     <div class="table-responsive">
@@ -43,7 +43,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                 <tr>
                     <th width="40" class="text-center">No</th>
                     <th width="280">Akun COA <span class="text-danger">*</span></th>
-                    <th>Jenis Pengeluaran <span class="text-danger">*</span></th>
+                    <th>Expense Type <span class="text-danger">*</span></th>
                     <th width="220" class="text-end">Nominal Budget <span class="text-danger">*</span></th>
                     <th width="60" class="text-center">Aksi</th>
                 </tr>
@@ -64,7 +64,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="detail[<?= $idx ?>][jenis_pengeluaran]" class="form-control" value="<?= htmlspecialchars((string) $detail->jenis_pengeluaran) ?>" placeholder="Jenis Pengeluaran">
+                                <input type="text" name="detail[<?= $idx ?>][jenis_pengeluaran]" class="form-control" value="<?= htmlspecialchars((string) $detail->jenis_pengeluaran) ?>" placeholder="Expense Type">
                             </td>
                             <td>
                                 <div class="input-group">
@@ -73,7 +73,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                                 </div>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>
+                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -90,7 +90,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                             </select>
                         </td>
                         <td>
-                            <input type="text" name="detail[0][jenis_pengeluaran]" class="form-control" value="" placeholder="Jenis Pengeluaran">
+                            <input type="text" name="detail[0][jenis_pengeluaran]" class="form-control" value="" placeholder="Expense Type">
                         </td>
                         <td>
                             <div class="input-group">
@@ -99,7 +99,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                             </div>
                         </td>
                         <td class="text-center">
-                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -115,7 +115,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
             <i class="fa fa-calculator fs-4"></i>
             <div>
                 <div class="fw-bold fs-6">Total Budget Petty Cash</div>
-                <small class="text-muted">Akumulasi seluruh nominal alokasi COA di atas</small>
+                <small class="text-muted">Accumulation of all COA allocation amounts above</small>
             </div>
         </div>
         <div class="fs-4 fw-bold text-success font-monospace" id="total-budget-display">Rp 0</div>
@@ -125,10 +125,10 @@ $header_id = (isset($data->id)) ? $data->id : '';
 <!-- Footer Buttons -->
 <div class="d-flex justify-content-end gap-2 pt-2 border-top">
     <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal" data-dismiss="modal">
-        <i class="fa fa-times me-1"></i> Batal
+        <i class="fa fa-times me-1"></i> Cancel
     </button>
     <button type="button" class="btn btn-primary px-4 shadow-sm" id="btn-save">
-        <i class="fa fa-save me-1"></i> Simpan Data
+        <i class="fa fa-save me-1"></i> Save Data
     </button>
 </div>
 <?= form_close() ?>
@@ -234,7 +234,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
             '</select>' +
             '</td>' +
             '<td>' +
-            '<input type="text" name="detail[' + rowCount + '][jenis_pengeluaran]" class="form-control" value="" placeholder="Jenis Pengeluaran">' +
+            '<input type="text" name="detail[' + rowCount + '][jenis_pengeluaran]" class="form-control" value="" placeholder="Expense Type">' +
             '</td>' +
             '<td>' +
             '<div class="input-group">' +
@@ -243,7 +243,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
             '</div>' +
             '</td>' +
             '<td class="text-center">' +
-            '<button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>' +
+            '<button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>' +
             '</td>' +
             '</tr>';
 
@@ -262,8 +262,8 @@ $header_id = (isset($data->id)) ? $data->id : '';
         var rowCount = $('#detail-table tbody tr').length;
         if (rowCount <= 1) {
             Swal.fire({
-                title: 'Perhatian',
-                text: 'Minimal harus ada 1 baris detail.',
+                title: 'Attention',
+                text: 'There must be at least 1 detail row.',
                 icon: 'warning',
                 confirmButtonText: 'OK'
             });
@@ -282,15 +282,15 @@ $header_id = (isset($data->id)) ? $data->id : '';
         var keterangan = $('#keterangan').val().trim();
 
         if (!nama) {
-            return 'Field Nama Master harus diisi';
+            return 'The Master Name field is required';
         }
         if (!keterangan) {
-            return 'Field Keterangan harus diisi';
+            return 'The Description field is required';
         }
 
         var rowCount = $('#detail-table tbody tr').length;
         if (rowCount < 1) {
-            return 'Detail COA harus diisi minimal 1 baris';
+            return 'COA detail requires at least 1 row';
         }
 
         var rowError = '';
@@ -301,15 +301,15 @@ $header_id = (isset($data->id)) ? $data->id : '';
             var parsed = parseNominal(nominalVal);
 
             if (!coa) {
-                rowError = 'Silakan pilih COA pada baris ke-' + (index + 1);
+                rowError = 'Please select a COA on row' + (index + 1);
                 return false;
             }
             if (!jenis) {
-                rowError = 'Jenis Pengeluaran pada baris ke-' + (index + 1) + ' harus diisi';
+                rowError = 'Expense Type on row ' + (index + 1) + ' is required';
                 return false;
             }
             if (parsed <= 0) {
-                rowError = 'Nominal pada baris ke-' + (index + 1) + ' harus lebih besar dari 0';
+                rowError = 'Amount on row ' + (index + 1) + ' must be greater than 0';
                 return false;
             }
         });
@@ -326,17 +326,17 @@ $header_id = (isset($data->id)) ? $data->id : '';
      */
     function saveData() {
         Swal.fire({
-            title: 'Simpan Data?',
-            text: 'Apakah Anda yakin ingin menyimpan master petty cash ini?',
+            title: 'Save Data?',
+            text: 'Are you sure you want to save this petty cash master?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: '<i class="fa fa-save me-1"></i> Ya, Simpan',
-            cancelButtonText: '<i class="fa fa-times me-1"></i> Batal'
+            confirmButtonText: '<i class="fa fa-save me-1"></i> Yes, Save',
+            cancelButtonText: '<i class="fa fa-times me-1"></i> Cancel'
         }).then(function(result) {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Menyimpan...',
-                    text: 'Mohon tunggu',
+                    text: 'Please wait',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     didOpen: function() {
@@ -354,7 +354,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                     success: function(response) {
                         if (response.status == 1) {
                             Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: response.msg,
                                 icon: 'success',
                                 confirmButtonText: 'OK'
@@ -366,7 +366,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: response.msg,
                                 icon: 'error',
                                 confirmButtonText: 'OK'
@@ -376,7 +376,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
                     error: function() {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Gagal menghubungi server',
+                            text: 'Failed to contact the server',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -414,7 +414,7 @@ $header_id = (isset($data->id)) ? $data->id : '';
         var error = validateForm();
         if (error) {
             Swal.fire({
-                title: 'Validasi Gagal',
+                title: 'Validation Failed',
                 text: error,
                 icon: 'warning',
                 confirmButtonText: 'OK'

@@ -59,7 +59,7 @@
 <body onload="window.print();">
     <div class="no-print" style="background: #fdfd96; padding: 10px; margin-bottom: 20px;">
         <button onclick="window.print()">Print Now</button>
-        <p><i>Pastikan printer label sudah siap. Tekan Print untuk mencetak semua label yang dipilih.</i></p>
+        <p><i>Make sure the label printer is ready. Click Print to print all selected labels.</i></p>
     </div>
 
     <?php foreach ($results as $row): ?>
@@ -77,7 +77,7 @@
                 $imageData = ob_get_contents();
                 ob_end_clean();
 
-                $base64 = base64_encode($imageData);
+                $base64 = base64_encode($imageData ?? '');
                 ?>
                 <img src="data:image/png;base64,<?= $base64 ?>" style="width: 120px; height: 120px;">
             </div>
@@ -96,7 +96,7 @@
                     <td>: <?= $row['trade_name'] ?></td>
                 </tr>
                 <tr>
-                    <td><b>Kode Internal</b></td>
+                    <td><b>Internal Code</b></td>
                     <td>: <?= $row['kode_internal'] ?></td>
                 </tr>
                 <tr>
@@ -104,7 +104,7 @@
                     <td>: <?= number_format((float) $row['berat_bersih'], 2) ?> Kg</td>
                 </tr>
                 <tr>
-                    <td><b>Kode Coil</b></td>
+                    <td><b>Coil Code</b></td>
                     <td>: <?= $row['no_coil'] ?></td>
                 </tr>
             </table>

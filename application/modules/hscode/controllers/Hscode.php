@@ -231,7 +231,7 @@ class Hscode extends Admin_Controller
         $tambah_kuota = $this->input->post('tambah_kuota');
 
         if (empty($id) || empty($tambah_kuota)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Data tidak lengkap']);
+            echo json_encode(['status' => 0, 'pesan' => 'Incomplete data']);
             return;
         }
 
@@ -255,11 +255,11 @@ class Hscode extends Admin_Controller
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             write_log('Hscode', 'Update Kuota', 'Gagal tambah kuota HS ID: ' . $id, $logPayload, null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal mengupdate kuota']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to update quota']);
         } else {
             $this->db->trans_commit();
             write_log('Hscode', 'Update Kuota', 'Tambah kuota HS ID: ' . $id . ' sebesar ' . $tambah_kuota, $logPayload, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Kuota berhasil ditambahkan']);
+            echo json_encode(['status' => 1, 'pesan' => 'Quota added successfully']);
         }
     }
 

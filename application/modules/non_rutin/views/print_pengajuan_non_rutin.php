@@ -121,7 +121,7 @@ $nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $
 		</tr>
 		<tr>
 			<td align='center'><b>
-					<h2>PR DEPARTEMEN</h2>
+					<h2>PR DEPARTMENT</h2>
 				</b></td>
 		</tr>
 	</table>
@@ -130,7 +130,7 @@ $nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $
 	<table class="gridtable2" width="100%" border='0'>
 		<thead>
 			<tr>
-				<td class="mid">No Transaksi</td>
+				<td class="mid">Transaction No.</td>
 				<td class="mid">:</td>
 				<td class="mid" colspan='4'><?= ($header[0]->no_pr == '' || $header[0]->no_pr == null) ? $header[0]->no_pengajuan : $header[0]->no_pr ?></td>
 				<td class="mid">Tingkat PR</td>
@@ -161,14 +161,14 @@ $nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $
 		<thead align='center'>
 			<tr>
 				<th class='text-center' style='width: 3%;'>#</th>
-				<th class='text-center'>Nama Barang/Jasa</th>
+				<th class='text-center'>Item/Service Name</th>
 				<th class='text-center' style='width: 15%;'>Spesifikasi</th>
 				<th class='text-center' style='width: 7%;'>Qty</th>
-				<th class='text-center' style='width: 7%;'>Satuan</th>
-				<th class='text-center' style='width: 8%;'>Est Harga</th>
-				<th class='text-center' style='width: 8%;'>Est Total Harga</th>
+				<th class='text-center' style='width: 7%;'>Unit</th>
+				<th class='text-center' style='width: 8%;'>Est. Price</th>
+				<th class='text-center' style='width: 8%;'>Est. Total Price</th>
 				<th class='text-center' style='width: 10%;'>Tgl Dibutuhkan</th>
-				<th class='text-center' style='width: 15%;'>Keterangan</th>
+				<th class='text-center' style='width: 15%;'>Description</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -203,7 +203,7 @@ $nm_department  = (!empty($get_department)) ? (!empty($get_department->nama) ? $
 			<td align='center'></td>
 			<td align='center'>Dibuat,</td>
 			<td width='5%'></td>
-			<td align='center'>Disetujui,</td>
+			<td align='center'>Approved,</td>
 			<td></td>
 		</tr>
 		<tr>

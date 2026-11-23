@@ -28,8 +28,8 @@
                                 <i class="fa fa-boxes-stacked fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Stok Gudang Barang</h5>
-                                <small class="text-muted">Monitoring ketersediaan stok fisik barang, satuan packing, dan mutasi kartu stok</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Item Warehouse Stock</h5>
+                                <small class="text-muted">Monitor physical item stock availability, packing units, and stock card mutations</small>
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                 <!-- Filter Controls Section -->
                 <div class="row g-3 align-items-end mt-2 pt-3 border-top">
                     <div class="col-md-4 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Pilih Gudang</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Select Warehouse</label>
                         <select name="id_warehouse" id="id_warehouse" class="form-select select2">
                             <?php foreach ($warehouse as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
@@ -54,9 +54,9 @@
                     </div>
 
                     <div class="col-md-4 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-tags text-primary me-1"></i> Kategori Barang</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-tags text-primary me-1"></i> Item Category</label>
                         <select name="id_category" id="id_category" class="form-select select2">
-                            <option value="0">SEMUA KATEGORI</option>
+                            <option value="0">ALL CATEGORIES</option>
                             <?php foreach ($category as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
                                     <?= strtoupper((string) $value['nm_category']); ?>
@@ -66,10 +66,10 @@
                     </div>
 
                     <div class="col-md-4 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar text-primary me-1"></i> Tanggal Stok (Histori)</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar text-primary me-1"></i> Stock Date (History)</label>
                         <div class="input-group">
-                            <input type="text" name="date_filter" id="date_filter" class="form-control text-center" placeholder="Stok Saat Ini (Klik untuk histori tanggal)">
-                            <button class="btn btn-outline-secondary" type="button" id="btn_clear_date" title="Reset ke Stok Saat Ini">
+                            <input type="text" name="date_filter" id="date_filter" class="form-control text-center" placeholder="Current Stock (Click for date history)">
+                            <button class="btn btn-outline-secondary" type="button" id="btn_clear_date" title="Reset to Current Stock">
                                 <i class="fa fa-undo"></i>
                             </button>
                         </div>
@@ -83,14 +83,14 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" width="4%">#</th>
-                                <th width="14%">Kategori</th>
-                                <th class="text-center" width="12%">Kode Stok</th>
-                                <th>Nama Barang</th>
+                                <th width="14%">Category</th>
+                                <th class="text-center" width="12%">Stock Code</th>
+                                <th>Item Name</th>
                                 <th width="13%">Warehouse</th>
                                 <th class="text-center no-sort" width="9%">Unit Packing</th>
-                                <th class="text-end no-sort" width="10%">Stok Pack</th>
+                                <th class="text-end no-sort" width="10%">Pack Stock</th>
                                 <th class="text-end no-sort" width="9%">Konversi</th>
-                                <th class="text-end no-sort" width="10%">Stok Unit</th>
+                                <th class="text-end no-sort" width="10%">Unit Stock</th>
                                 <th class="text-center no-sort" width="9%">Aksi</th>
                             </tr>
                         </thead>
@@ -115,11 +115,11 @@
             <div class="modal-body p-4" id="view">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2 mb-0">Memuat data histori mutasi...</p>
+                    <p class="text-muted mt-2 mb-0">Loading mutation history data...</p>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light py-2">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -180,8 +180,8 @@
             var gudang = $(this).data('gudang');
             var material = $(this).data('material');
 
-            $("#head_title").html('<i class="fa fa-history text-primary me-2"></i><b>RIWAYAT MUTASI KARTU STOK</b>');
-            $("#view").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Memuat riwayat transaksi mutasi...</p></div>');
+            $("#head_title").html('<i class="fa fa-history text-primary me-2"></i><b>STOCK CARD MUTATION HISTORY</b>');
+            $("#view").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Loading mutation transaction history...</p></div>');
 
             var modalEl = document.getElementById('ModalView');
             if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
@@ -202,7 +202,7 @@
                     $("#view").html(data);
                 },
                 error: function() {
-                    $("#view").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Gagal mengambil data histori mutasi dari server.</div>');
+                    $("#view").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Failed to fetch mutation history data from the server.</div>');
                 }
             });
         });
@@ -255,18 +255,18 @@
                 },
                 cache: false,
                 error: function() {
-                    $("#example1 tbody").html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Tidak ada data stok ditemukan</td></tr>');
+                    $("#example1 tbody").html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> No stock data found</td></tr>');
                 }
             },
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari nama barang / kode...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search item name / code...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Data stok tidak tersedia",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data stok...'
+                emptyTable: "Stock data is not available",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading stock data...'
             }
         });
     }

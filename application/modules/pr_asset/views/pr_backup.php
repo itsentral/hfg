@@ -28,8 +28,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 					<tr class='bg-blue'>
 						<th class="text-center" width='5%'>#</th>
 						<th class="text-center" width='10%'>No PR</th>
-						<th class="text-center" width='15%'>Tanggal PR</th>
-						<th class="text-center">Nama Barang</th>
+						<th class="text-center" width='15%'>PR Date</th>
+						<th class="text-center">Item Name</th>
 						<th class="text-center" width='15%'>PR By</th>
 						<th class="text-center" width='15%'>PR Date</th>
 						<th class="text-center no-sort" width='15%'>Status</th>
@@ -124,8 +124,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 							//detail
 							echo "<td class='prtCh_" . $no . "' align='center'></td>"; //$('.prtCh_".$no."').parent().parent().attr('height','200px');
 							echo "<td align='left'></td>";
-							echo "<td align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</td>";
-							echo "<td align='right'><b>NILAI PR</b></br>" . number_format((float) $row['nilai_pr']) . "</td>";
+							echo "<td align='right'><b>ITEM QTY</b><br>" . number_format((float) $row['qty']) . "</td>";
+							echo "<td align='right'><b>PR VALUE</b></br>" . number_format((float) $row['nilai_pr']) . "</td>";
 							echo "<td align='right'><b>TGL DIBUTUHKAN</b></br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</td>";
 							$approve = "<button type='button' class='btn btn-sm btn-success approve' title='Approve' data-id='" . $no . "' data-tipe_approve='" . $tipe_approve . "' data-role='qtip'><i class='fa fa-check'></i></button>";
 				
@@ -254,7 +254,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
 	$(document).on('click', '.detail', function(e) {
 		e.preventDefault();
 
-		$("#head_title2").html("<b>DETAIL BUDGET RUTIN [" + $(this).data('code') + "]</b>");
+		$("#head_title2").html("<b>ROUTINE BUDGET DETAIL [" + $(this).data('code') + "]</b>");
 		$.ajax({
 			type: 'POST',
 			url: base_url + active_controller + 'detail_rutin/' + $(this).data('code'),

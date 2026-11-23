@@ -71,20 +71,20 @@ class History_pricelist extends Admin_Controller
 
         fputcsv($output, [
             'No',
-            'Tanggal Disetujui',
-            'No Dokumen Pricelist',
-            'Nama Produk',
-            'Kode Produk (Lv4)',
+            'Approval Date',
+            'Pricelist Document No',
+            'Product Name',
+            'Product Code (Lv4)',
             'No Uniq ID (Varian)',
-            'Kategori Produk',
-            'Price List Lama / Meter (Rp)',
-            'Price List Baru / Meter (Rp)',
-            'Price List Baru / Kg (Rp)',
+            'Product Category',
+            'Old Price List / Meter (Rp)',
+            'New Price List / Meter (Rp)',
+            'New Price List / Kg (Rp)',
             'Selisih / Delta (Rp)',
             'Bottom Price / Meter (Rp)',
             'Extra Margin (%)',
-            'Disetujui Oleh (Approver)',
-            'Catatan',
+            'Approved By (Approver)',
+            'Notes',
         ]);
 
         $no = 1;

@@ -7,12 +7,12 @@ header("Content-Disposition: attachment; filename=Request Payment (" . date('d-m
     <thead>
         <tr>
             <th style="text-align: center">#</th>
-            <th style="text-align: center">No. Dokumen</th>
+            <th style="text-align: center">Document No.</th>
             <th style="text-align: center">Request By</th>
-            <th style="text-align: center">Tanggal</th>
+            <th style="text-align: center">Date</th>
             <th style="text-align: center">Keperluan</th>
-            <th style="text-align: center">Kategori</th>
-            <th style="text-align: center">Nilai Pengajuan</th>
+            <th style="text-align: center">Category</th>
+            <th style="text-align: center">Request Value</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@ header("Content-Disposition: attachment; filename=Request Payment (" . date('d-m
             if ($item->kategori == 'Kasbon') {
                 $get_kasbon = $this->db->get_where('tr_kasbon', array('no_doc' => $item->no_dokumen))->row();
                 $check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item->no_dokumen])->result();
-                if (count($check_detail)) {
+                if (count($check_detail ?? [])) {
                     if ($get_kasbon->tipe_pr == 'pr departemen') {
                         $this->db->select('b.nm_lengkap');
                         $this->db->from('rutin_non_planning_header a');

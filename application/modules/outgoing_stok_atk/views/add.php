@@ -28,12 +28,12 @@
 					<tr>
 						<td>From Warehouse</td>
 						<td>:</td>
-						<td><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
+						<td><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
 					</tr>
 					<tr>
 						<td>For Costcenter</td>
 						<td>:</td>
-						<td><?=strtoupper(get_name('ms_costcenter','nama_costcenter','id_costcenter',$getData[0]['id_costcenter']));?></td>
+						<td><?=strtoupper((string) get_name('ms_costcenter','nama_costcenter','id_costcenter',$getData[0]['id_costcenter']));?></td>
 					</tr>
 					<tr>
 						<td>Plan Produksi</td>
@@ -63,19 +63,19 @@
 			</div>
 		</div>
 		
-		<span id='alertLabel'><p class='text-danger text-bold'>Data sudah disimpan !</p></span>
-		<span id='alertLabelClose'><p class='text-success text-bold'>Sudah close Produksi !</p></span>
+		<span id='alertLabel'><p class='text-danger text-bold'>Data has been saved!</p></span>
+		<span id='alertLabelClose'><p class='text-success text-bold'>Production already closed!</p></span>
 		<div class="form-group row">
 			<div class="col-md-12 text-danger text-bold">
-				<input type="checkbox" name='check_close' value='1'> Close All Input Aktual Produksi Mixing <i><u>dengan checklist status produksi menjadi close</u></i>
+				<input type="checkbox" name='check_close' value='1'> Close All Actual Mixing Production Input <i><u>by setting the production status to close</u></i>
 			</div>
 		</div>
 		<div class="form-group row" id='listInput'>
         	<div class="col-md-12">
 				<table class="table table-bordered table-striped" width='100%'>
 					<tr>
-						<th class='text-center'>Nama Material</th>
-						<th class='text-right' width='15%'>Stok (kg)</th>
+						<th class='text-center'>Material Name</th>
+						<th class='text-right' width='15%'>Stock (kg)</th>
 						<th class='text-right' width='15%'>Kebutuhan (kg)</th>
 						<th class='text-center' width='15%'>Aktual (kg)</th>
 					</tr>

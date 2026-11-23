@@ -322,7 +322,7 @@ class Master_model extends CI_Model
 
 	function GetCategory()
 	{
-		$category = array('' => '', 'EXPENSE' => 'EXPENSE', 'RUTIN' => 'RUTIN', 'NON RUTIN' => 'NON RUTIN', 'PEMBAYARAN PERIODIK' => 'PEMBAYARAN PERIODIK', 'UMUM' => 'UMUM');
+		$category = array('' => '', 'EXPENSE' => 'EXPENSE', 'RUTIN' => 'ROUTINE', 'NON RUTIN' => 'NON-ROUTINE', 'PEMBAYARAN PERIODIK' => 'PERIODIC PAYMENT', 'UMUM' => 'GENERAL');
 		return $category;
 	}
 
@@ -445,12 +445,12 @@ class Master_model extends CI_Model
 	{
 		$no_so 	= $this->uri->segment(3);
 		$no_spk1 		= $this->uri->segment(4);
-		$no_spk 		= str_replace("_", ",", $no_spk1);
+		$no_spk 		= str_replace("_", ",", $no_spk1 ?? '');
 		$product1 		= $this->uri->segment(5);
-		$product 		= str_replace("_", " ", $product1);
+		$product 		= str_replace("_", " ", $product1 ?? '');
 		$kodetrans      = $this->uri->segment(6);
 		$kodetrans2      = $this->uri->segment(7);
-		$kodetrans3 		= str_replace("_", " ", $kodetrans2);
+		$kodetrans3 		= str_replace("_", " ", $kodetrans2 ?? '');
 
 
 		if (!empty($this->uri->segment(8))) {

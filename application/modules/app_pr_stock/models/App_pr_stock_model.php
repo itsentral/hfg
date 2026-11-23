@@ -91,8 +91,8 @@ class App_pr_stock_model extends BF_Model
       $nestedData[]  = "<div class='text-left'>" . date('d-M-Y', strtotime((string) $row['booking_date'])) . "</div>";
 
 
-      $warna = (COUNT($getCheck) > 0) ? 'blue' : 'green';
-      $status = (COUNT($getCheck) > 0) ? 'Waiting Approval' : 'Close';
+      $warna = (COUNT($getCheck ?? []) > 0) ? 'blue' : 'green';
+      $status = (COUNT($getCheck ?? []) > 0) ? 'Waiting Approval' : 'Close';
 
       if (($row['sts_reject1'] !== null || $row['sts_reject2'] !== null || $row['sts_reject3'] !== null) && $row['rejected'] == 1) {
         if ($row['sts_reject1'] == "1") :
@@ -124,8 +124,8 @@ class App_pr_stock_model extends BF_Model
       $nestedData[]    = "<div class='text-center'><span class='badge " . $bs_badge . " px-2 py-1'>" . $sts . "</span></div>";
 
       $approve  = "";
-      $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-info text-white shadow-sm' title='Detail PR'><i class='fa fa-eye'></i></a>";
-      if ($this->ENABLE_MANAGE and COUNT($getCheck) > 0) {
+      $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-info text-white shadow-sm' title='PR Detail'><i class='fa fa-eye'></i></a>";
+      if ($this->ENABLE_MANAGE and COUNT($getCheck ?? []) > 0) {
         $approve  = "<a href='" . site_url($this->uri->segment(1)) . '/approval_planning/' . $row['so_number'] . "/" . $tingkat_approval . "' class='btn btn-sm btn-success shadow-sm' title='Approval PR'><i class='fa fa-check'></i></a>";
       }
       $nestedData[]  = "<div class='text-center d-flex gap-1 justify-content-center'>" . $view . " " . $approve . "</div>";

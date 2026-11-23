@@ -321,7 +321,7 @@ class Ros extends Admin_Controller
         $this->load->library('upload', $config);
         $this->upload->initialize($config);
 
-        $kurs = str_replace(',', '', $post['kurs_pib']);
+        $kurs = str_replace(',', '', $post['kurs_pib'] ?? '');
         $this->db->trans_begin();
 
         $valid = 1;
@@ -337,7 +337,7 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
-            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po'] ?? []) : $post['no_po'];
             $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
             $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
@@ -358,8 +358,8 @@ class Ros extends Admin_Controller
                     $harga_satuan_idr = $harga_satuan * $kurs;
 
                     foreach ($data_per_material['berat_kotor'] as $key => $val) {
-                        $berat_kotor  = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
-                        $berat_bersih = str_replace(',', '', $data_per_material['berat_bersih'][$key]);
+                        $berat_kotor  = str_replace(',', '', $data_per_material['berat_kotor'][$key] ?? '');
+                        $berat_bersih = str_replace(',', '', $data_per_material['berat_bersih'][$key] ?? '');
                         $no_coil      = $data_per_material['no_coil'][$key];
                         $kode_internal = isset($data_per_material['kode_internal'][$key]) ? $data_per_material['kode_internal'][$key] : '';
 
@@ -375,13 +375,13 @@ class Ros extends Admin_Controller
                                 'qty_po'          => $po_detail['qty'],
                                 'berat_kotor'     => $berat_kotor,
                                 'berat_bersih'    => $berat_bersih,
-                                'length'          => str_replace(',', '', $data_per_material['length'][$key]),
-                                'price_coil'      => str_replace(',', '', $data_per_material['price_coil'][$key]),
-                                'price_coil_idr'  => str_replace(',', '', $data_per_material['price_coil_idr'][$key]),
-                                'biaya_masuk'     => str_replace(',', '', $data_per_material['biaya_masuk'][$key]),
+                                'length'          => str_replace(',', '', $data_per_material['length'][$key] ?? ''),
+                                'price_coil'      => str_replace(',', '', $data_per_material['price_coil'][$key] ?? ''),
+                                'price_coil_idr'  => str_replace(',', '', $data_per_material['price_coil_idr'][$key] ?? ''),
+                                'biaya_masuk'     => str_replace(',', '', $data_per_material['biaya_masuk'][$key] ?? ''),
                                 'kode_internal'   => $kode_internal,
-                                'forwarding_cost' => str_replace(',', '', $data_per_material['forwarding'][$key]),
-                                'total_nilai'     => str_replace(',', '', $data_per_material['total_nilai'][$key]),
+                                'forwarding_cost' => str_replace(',', '', $data_per_material['forwarding'][$key] ?? ''),
+                                'total_nilai'     => str_replace(',', '', $data_per_material['total_nilai'][$key] ?? ''),
                                 'no_coil'         => $no_coil,
                                 'created_by'      => $this->auth->user_id(),
                                 'created_on'      => date('Y-m-d H:i:s')
@@ -393,15 +393,15 @@ class Ros extends Admin_Controller
 
             $this->db->insert('tr_ros', [
                 'id'               => $no_ros,
-                'no_po'            => implode(',', $no_po_array),
+                'no_po'            => implode(',', $no_po_array ?? []),
                 'no_surat'         => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
                 'link_doc'         => $upload_pib,
                 'kurs_pib'         => $kurs,
-                'cost_bm'          => str_replace(',', '', $post['cost_bm']),
-                'cost_ppn'         => str_replace(',', '', $post['cost_ppn']),
-                'cost_pph'         => str_replace(',', '', $post['cost_pph']),
+                'cost_bm'          => str_replace(',', '', $post['cost_bm'] ?? ''),
+                'cost_ppn'         => str_replace(',', '', $post['cost_ppn'] ?? ''),
+                'cost_pph'         => str_replace(',', '', $post['cost_pph'] ?? ''),
                 // 'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
                 'awb_bl_date'      => $post['awb_bl_date'],
                 'awb_bl_number'    => $post['awb_bl_number'],
@@ -429,7 +429,7 @@ class Ros extends Admin_Controller
             }
 
             $get_supplier = $this->db->get_where('new_supplier', ['kode_supplier' => $post['supplier_name']])->row_array();
-            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po']) : $post['no_po'];
+            $no_po_raw = is_array($post['no_po']) ? implode(',', $post['no_po'] ?? []) : $post['no_po'];
             $no_po_array = array_map('trim', explode(',', (string) $no_po_raw));
             $no_surat_raw = isset($post['no_surat']) ? $post['no_surat'] : $no_po_raw;
             $no_surat_final = implode(',', array_map('trim', explode(',', (string) $no_surat_raw)));
@@ -448,7 +448,7 @@ class Ros extends Admin_Controller
                     $harga_satuan_idr = $po_detail['hargasatuan'] * $kurs;
 
                     foreach ($data_per_material['berat_kotor'] as $key => $val) {
-                        $berat_kotor = str_replace(',', '', $data_per_material['berat_kotor'][$key]);
+                        $berat_kotor = str_replace(',', '', $data_per_material['berat_kotor'][$key] ?? '');
                         $no_coil     = $data_per_material['no_coil'][$key];
                         $kode_internal = isset($data_per_material['kode_internal'][$key]) ? $data_per_material['kode_internal'][$key] : '';
 
@@ -463,14 +463,14 @@ class Ros extends Admin_Controller
                                 'price_unit_idr'  => $harga_satuan_idr,
                                 'qty_po'          => $po_detail['qty'],
                                 'berat_kotor'     => $berat_kotor,
-                                'berat_bersih'    => str_replace(',', '', $data_per_material['berat_bersih'][$key]),
-                                'length'          => str_replace(',', '', $data_per_material['length'][$key]),
-                                'price_coil'      => str_replace(',', '', $data_per_material['price_coil'][$key]),
-                                'price_coil_idr'  => str_replace(',', '', $data_per_material['price_coil_idr'][$key]),
-                                'biaya_masuk'     => str_replace(',', '', $data_per_material['biaya_masuk'][$key]),
-                                'forwarding_cost' => str_replace(',', '', $data_per_material['forwarding'][$key]),
+                                'berat_bersih'    => str_replace(',', '', $data_per_material['berat_bersih'][$key] ?? ''),
+                                'length'          => str_replace(',', '', $data_per_material['length'][$key] ?? ''),
+                                'price_coil'      => str_replace(',', '', $data_per_material['price_coil'][$key] ?? ''),
+                                'price_coil_idr'  => str_replace(',', '', $data_per_material['price_coil_idr'][$key] ?? ''),
+                                'biaya_masuk'     => str_replace(',', '', $data_per_material['biaya_masuk'][$key] ?? ''),
+                                'forwarding_cost' => str_replace(',', '', $data_per_material['forwarding'][$key] ?? ''),
                                 'kode_internal'   => $kode_internal,
-                                'total_nilai'     => str_replace(',', '', $data_per_material['total_nilai'][$key]),
+                                'total_nilai'     => str_replace(',', '', $data_per_material['total_nilai'][$key] ?? ''),
                                 'no_coil'         => $no_coil,
                                 'created_by'      => $this->auth->user_id(),
                                 'created_on'      => date('Y-m-d H:i:s')
@@ -481,15 +481,15 @@ class Ros extends Admin_Controller
             }
 
             $this->db->update('tr_ros', [
-                'no_po'    => implode(',', $no_po_array),
+                'no_po'    => implode(',', $no_po_array ?? []),
                 'no_surat' => $no_surat_final,
                 'id_supplier'      => $post['supplier_name'],
                 'nm_supplier'      => $get_supplier['nama'],
                 'link_doc'         => $upload_pib,
-                'kurs_pib'         => str_replace(',', '', $post['kurs_pib']),
-                'cost_bm'          => str_replace(',', '', $post['cost_bm']),
-                'cost_ppn'         => str_replace(',', '', $post['cost_ppn']),
-                'cost_pph'         => str_replace(',', '', $post['cost_pph']),
+                'kurs_pib'         => str_replace(',', '', $post['kurs_pib'] ?? ''),
+                'cost_bm'          => str_replace(',', '', $post['cost_bm'] ?? ''),
+                'cost_ppn'         => str_replace(',', '', $post['cost_ppn'] ?? ''),
+                'cost_pph'         => str_replace(',', '', $post['cost_pph'] ?? ''),
                 // 'freight_cost'     => str_replace(',', '', $post['freight_cost_persen']),
                 'awb_bl_date'      => $post['awb_bl_date'],
                 'awb_bl_number'    => $post['awb_bl_number'],
@@ -726,7 +726,7 @@ class Ros extends Admin_Controller
                     <tr class="bg-gray">
                         <th class="text-center" rowspan="2" style="vertical-align:middle">No</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Material</th>
-                        <th class="text-center" rowspan="2" style="vertical-align:middle">Nama Lain</th>
+                        <th class="text-center" rowspan="2" style="vertical-align:middle">Other Name</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Qty Order</th>
                         <th class="text-center" rowspan="2" style="vertical-align:middle">Uom</th>
                         <th colspan="3" class="text-center bg-info">Packing List</th>
@@ -737,8 +737,8 @@ class Ros extends Admin_Controller
                     </tr>
                     <tr class="bg-navy">
                         <th class="text-center">No. Coil</th>
-                        <th class="text-center">Berat Kotor</th>
-                        <th class="text-center">Berat Bersih</th>
+                        <th class="text-center">Gross Weight</th>
+                        <th class="text-center">Net Weight</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -746,7 +746,7 @@ class Ros extends Admin_Controller
         if (!empty($groups)) {
             $no = 1;
             foreach ($groups as $id_po => $coils) {
-                $rowspan = count($coils);
+                $rowspan = count($coils ?? []);
                 foreach ($coils as $index => $coil) {
                     $html .= '<tr>';
 
@@ -800,7 +800,7 @@ class Ros extends Admin_Controller
         $data_coil = $this->db->get()->result_array();
 
         if (empty($data_coil)) {
-            die("Data tidak ditemukan.");
+            die("Data not found.");
         }
 
         $data = [

@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar Timbang Awal Coil</h5>
+        <h5 class="mb-0">Initial Coil Weighing List</h5>
         <a href="<?= base_url('production_weighing/add') ?>" class="btn btn-success btn-sm">
             <i class="fa fa-plus"></i> Timbang Awal Baru
         </a>

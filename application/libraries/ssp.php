@@ -29,9 +29,9 @@ class SSP {
 	static function data_output ( $columns, $data )
 	{
 		$out = array();
-		for ( $i=0, $ien=count($data) ; $i<$ien ; $i++ ) {
+		for ( $i=0, $ien=count($data ?? []) ; $i<$ien ; $i++ ) {
 			$row = array();
-			for ( $j=0, $jen=count($columns) ; $j<$jen ; $j++ ) {
+			for ( $j=0, $jen=count($columns ?? []) ; $j<$jen ; $j++ ) {
 				$column = $columns[$j];
 				// Is there a formatter?
 				if ( isset( $column['formatter'] ) ) {
@@ -94,14 +94,14 @@ class SSP {
 	static function order ( $request, $columns )
 	{
 		$order = '';
-		if ( isset($request['order']) && count($request['order']) ) {
+		if ( isset($request['order']) && count($request['order'] ?? []) ) {
 			$orderBy = array();
 			$dtColumns = self::pluck( $columns, 'dt' );
-			for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
+			for ( $i=0, $ien=count($request['order'] ?? []) ; $i<$ien ; $i++ ) {
 				// Convert the column index into the column data property
 				$columnIdx = intval($request['order'][$i]['column']);
 				$requestColumn = $request['columns'][$columnIdx];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+				$columnIdx = array_search( $requestColumn['data'], $dtColumns ?? [] );
 				$column = $columns[ $columnIdx ];
 				if ( $requestColumn['orderable'] == 'true' ) {
 					$dir = $request['order'][$i]['dir'] === 'asc' ?
@@ -110,8 +110,8 @@ class SSP {
 					$orderBy[] = '`'.$column['db'].'` '.$dir;
 				}
 			}
-			if ( count( $orderBy ) ) {
-				$order = 'ORDER BY '.implode(', ', $orderBy);
+			if ( count( $orderBy ?? [] ) ) {
+				$order = 'ORDER BY '.implode(', ', $orderBy ?? []);
 			}
 		}
 		return $order;
@@ -138,9 +138,9 @@ class SSP {
 		$dtColumns = self::pluck( $columns, 'dt' );
 		if ( isset($request['search']) && $request['search']['value'] != '' ) {
 			$str = $request['search']['value'];
-			for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
+			for ( $i=0, $ien=count($request['columns'] ?? []) ; $i<$ien ; $i++ ) {
 				$requestColumn = $request['columns'][$i];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+				$columnIdx = array_search( $requestColumn['data'], $dtColumns ?? [] );
 				$column = $columns[ $columnIdx ];
 				if ( $requestColumn['searchable'] == 'true' ) {
 					$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
@@ -150,9 +150,9 @@ class SSP {
 		}
 		// Individual column filtering
 		if ( isset( $request['columns'] ) ) {
-			for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
+			for ( $i=0, $ien=count($request['columns'] ?? []) ; $i<$ien ; $i++ ) {
 				$requestColumn = $request['columns'][$i];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+				$columnIdx = array_search( $requestColumn['data'], $dtColumns ?? [] );
 				$column = $columns[ $columnIdx ];
 				$str = $requestColumn['search']['value'];
 				if ( $requestColumn['searchable'] == 'true' &&
@@ -164,13 +164,13 @@ class SSP {
 		}
 		// Combine the filters into a single string
 		$where = '';
-		if ( count( $globalSearch ) ) {
-			$where = '('.implode(' OR ', $globalSearch).')';
+		if ( count( $globalSearch ?? [] ) ) {
+			$where = '('.implode(' OR ', $globalSearch ?? []).')';
 		}
-		if ( count( $columnSearch ) ) {
+		if ( count( $columnSearch ?? [] ) ) {
 			$where = $where === '' ?
-				implode(' AND ', $columnSearch) :
-				$where .' AND '. implode(' AND ', $columnSearch);
+				implode(' AND ', $columnSearch ?? []) :
+				$where .' AND '. implode(' AND ', $columnSearch ?? []);
 		}
 		if ( $where !== '' ) {
 			$where = 'WHERE '.$where;
@@ -362,7 +362,7 @@ class SSP {
 		//echo $sql;
 		// Bind parameters
 		if ( is_array( $bindings ) ) {
-			for ( $i=0, $ien=count($bindings) ; $i<$ien ; $i++ ) {
+			for ( $i=0, $ien=count($bindings ?? []) ; $i<$ien ; $i++ ) {
 				$binding = $bindings[$i];
 				$stmt->bindValue( $binding['key'], $binding['val'], $binding['type'] );
 			}
@@ -407,7 +407,7 @@ class SSP {
 	 */
 	static function bind ( &$a, $val, $type )
 	{
-		$key = ':binding_'.count( $a );
+		$key = ':binding_'.count( $a ?? [] );
 		$a[] = array(
 			'key' => $key,
 			'val' => $val,
@@ -426,7 +426,7 @@ class SSP {
 	static function pluck ( $a, $prop )
 	{
 		$out = array();
-		for ( $i=0, $len=count($a) ; $i<$len ; $i++ ) {
+		for ( $i=0, $len=count($a ?? []) ; $i<$len ; $i++ ) {
 			$out[] = $a[$i][$prop];
 		}
 		return $out;
@@ -444,7 +444,7 @@ class SSP {
 			return '';
 		}
 		else if ( $a && is_array($a) ) {
-			return implode( $join, $a );
+			return implode( $join, $a ?? [] );
 		}
 		return $a;
 	}

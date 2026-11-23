@@ -19,7 +19,7 @@ $tanggal = date('Y-m-d');
 									</div>
 									<div class="col-md-8">
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" requi red>
-											<option value="">--Pilih--</option>
+											<option value="">--Select--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
 												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
@@ -34,7 +34,7 @@ $tanggal = date('Y-m-d');
 									</div>
 									<div class="col-md-8" id="ubahloi">
 										<select id="loi" name="loi" class="form-control select" onchange="get_kurs()" required>
-											<option value="">--Pilih--</option>
+											<option value="">--Select--</option>
 											<option value="Import">Import</option>
 											<option value="Lokal">Lokal</option>
 										</select>
@@ -64,7 +64,7 @@ $tanggal = date('Y-m-d');
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="customer">Tanggal PO</label>
+										<label for="customer">PO Date</label>
 									</div>
 									<div class="col-md-8">
 										<input type="text" class="form-control" id="tanggal" value="<?= $tanggal ?>" onkeyup required name="tanggal" placeholder="yyyy-mm-dd">
@@ -74,7 +74,7 @@ $tanggal = date('Y-m-d');
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="id_customer">Mata Uang</label>
+										<label for="id_customer">Currency</label>
 									</div>
 									<div class="col-md-8">
 										<select id="matauang" name="matauang" class='form-control input-md chosen-select' required>
@@ -132,7 +132,7 @@ $tanggal = date('Y-m-d');
 									</div>
 									<div class="col-md-8">
 										<select id="cif" name="cif" class="form-control select" required>
-											<option value="">--Pilih--</option>
+											<option value="">--Select--</option>
 											<option value="CIF">CIF</option>
 											<option value="FOB">FOB</option>
 											<option value="LOCO">LOCO</option>
@@ -163,7 +163,7 @@ $tanggal = date('Y-m-d');
 											<th width='7%' hidden>Fab Cost</th>
 											<th width='7%'>Unit Price</th>
 											<th width='6%' hidden>Disc %</th>
-											<th width='6%'>Biaya Kirim</th>
+											<th width='6%'>Shipping Cost</th>
 											<th width='9%'>Amount</th>
 											<th width='8%'>Note</th>
 											<th width='5%'>#</th>
@@ -171,7 +171,7 @@ $tanggal = date('Y-m-d');
 									</thead>
 									<tbody id="data_request">
 										<tr>
-											<td colspan='14'>Tidak ada daftar material</td>
+											<td colspan='14'>No material list</td>
 										</tr>
 									</tbody>
 								</table>
@@ -235,7 +235,7 @@ $tanggal = date('Y-m-d');
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="id_customer">Biaya Kirim</label>
+										<label for="id_customer">Shipping Cost</label>
 									</div>
 									<div class="col-md-8" id="ForTax">
 										<input readonly type="text" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
@@ -256,7 +256,7 @@ $tanggal = date('Y-m-d');
 							</div>
 						</div>
 						<center>
-							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 						</center>
 					</div>
 				</div>
@@ -337,11 +337,11 @@ $tanggal = date('Y-m-d');
 
 			var data, xhr;
 			if (expect_tanggal == '' || expect_tanggal == null || loi == '' || loi == null) {
-				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
+				swal("Warning", "Form cannot be empty.", "error");
 				return false;
 			}
 			if (pajak == '') {
-				swal("Warning", "Biaya Kirim Tidak Boleh Kosong :)", "error");
+				swal("Warning", "Shipping Cost cannot be empty.", "error");
 				return false;
 			} else {
 				swal({
@@ -436,7 +436,7 @@ $tanggal = date('Y-m-d');
 		var loi = $("#loi").val();
 		var angka = jumlah + 1;
 		if (id_suplier == '' || id_suplier == null || loi == '' || loi == null) {
-			swal("Warning", "Silahkan Pilih Supplier Terlebih Dahulu :)", "error");
+			swal("Warning", "Please select a supplier first.", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -491,7 +491,7 @@ $tanggal = date('Y-m-d');
 		var dt_ratelme = $("#dt_ratelme_" + id).val();
 		var dt_idmaterial = $("#dt_idmaterial_" + id).val();
 		if (dt_idmaterial == '' || dt_idmaterial == null) {
-			swal("Warning", "Silahkan Pilih Material Terlebih Dahulu :)", "error");
+			swal("Warning", "Please select a material first.", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -699,7 +699,7 @@ $tanggal = date('Y-m-d');
 		var diskontotal = $("#diskontotal").val();
 		var taxtotal = $("#taxtotal").val();
 		if (qty == '' || qty == null || hargasatuan == '' || hargasatuan == null) {
-			swal("Warning", "Form Tidak Boleh Kosong :)", "error");
+			swal("Warning", "Form cannot be empty.", "error");
 			return false;
 		} else {
 			$.ajax({

@@ -44,9 +44,9 @@ $bank_account  = (!empty($header[0]->bank_account)) ? $header[0]->bank_account :
 
 	<div id="indonesia-area" class="row g-3">
 		<div class="col-md-4">
-			<label class="form-label">Provinsi <span class="text-danger">*</span></label>
+			<label class="form-label">Province <span class="text-danger">*</span></label>
 			<select id="id_prov" name="id_prov" class="form-select select2" onchange="get_kota()" required <?= $disabled ?? '' ?>>
-				<option value="">--Pilih--</option>
+				<option value="">--Select--</option>
 				<?php foreach ($prov as $p): $selected = ($id_prov == $p->id_prov) ? 'selected' : ''; ?>
 					<option value="<?= $p->id_prov ?>" <?= $selected ?>><?= $p->provinsi ?></option>
 				<?php endforeach; ?>
@@ -54,20 +54,20 @@ $bank_account  = (!empty($header[0]->bank_account)) ? $header[0]->bank_account :
 		</div>
 
 		<div class="col-md-4">
-			<label class="form-label">Kabupaten/Kota <span class="text-danger">*</span></label>
+			<label class="form-label">Regency/City <span class="text-danger">*</span></label>
 			<select id="id_kabkot" name="id_kabkot" class="form-select select2" onchange="get_kec()" required <?= $disabled ?? '' ?>>
-				<option value="">--Pilih--</option>
-				<?php foreach ($kabkot as $k): $selected = ($id_kabkot == $k->id_kabkot) ? 'selected' : ''; ?>
+				<option value="">--Select--</option>
+				<?php foreach (($kabkot ?? []) as $k): $selected = ($id_kabkot == $k->id_kabkot) ? 'selected' : ''; ?>
 					<option value="<?= $k->id_kabkot ?>" <?= $selected ?>><?= $k->kabkot ?></option>
 				<?php endforeach; ?>
 			</select>
 		</div>
 
 		<div class="col-md-4">
-			<label class="form-label">Kecamatan <span class="text-danger">*</span></label>
+			<label class="form-label">District <span class="text-danger">*</span></label>
 			<select id="id_kec" name="id_kec" class="form-select select2" required <?= $disabled ?? '' ?>>
-				<option value="">--Pilih--</option>
-				<?php foreach ($kec as $kc): $selected = ($id_kec == $kc->id_kec) ? 'selected' : ''; ?>
+				<option value="">--Select--</option>
+				<?php foreach (($kec ?? []) as $kc): $selected = ($id_kec == $kc->id_kec) ? 'selected' : ''; ?>
 					<option value="<?= $kc->id_kec ?>" <?= $selected ?>><?= $kc->kecamatan ?></option>
 				<?php endforeach; ?>
 			</select>

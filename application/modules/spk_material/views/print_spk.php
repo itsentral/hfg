@@ -454,7 +454,7 @@
         QRcode::png($spk['spk_no'], null, QR_ECLEVEL_M, 3, 1);
         $imageData = ob_get_contents();
         ob_end_clean();
-        $qr_base64 = base64_encode($imageData);
+        $qr_base64 = base64_encode($imageData ?? '');
     }
     ?>
 
@@ -477,7 +477,7 @@
                 <td><strong><?php echo $spk['spk_no']; ?></strong></td>
             </tr>
             <tr>
-                <td class="info-label">Tanggal SPK</td>
+                <td class="info-label">SPK Date</td>
                 <td class="info-separator">:</td>
                 <td><?php echo date('d-m-Y', strtotime((string) $spk['tgl_spk'])); ?></td>
             </tr>
@@ -503,7 +503,7 @@
             </tr>
             <?php if (!empty($spk['catatan'])): ?>
                 <tr>
-                    <td class="info-label">Catatan</td>
+                    <td class="info-label">Notes</td>
                     <td class="info-separator">:</td>
                     <td><?php echo $spk['catatan']; ?></td>
                 </tr>
@@ -542,7 +542,7 @@
                 </td>
                 <td width="50%">
                     <div class="signature-box">
-                        <span class="signature-title">Dibuat oleh,</span>
+                        <span class="signature-title">Created by,</span>
                         <span class="signature-name"><?php echo $created_by_name; ?></span>
                         <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $spk['created_at'])); ?></span>
                     </div>
@@ -556,7 +556,7 @@
     <!-- ===================================================== -->
     <div class="page-break">
 
-        <div class="form-doc-title">FORM SURAT PERINTAH KERJA (SPK) &amp; LAPORAN PRODUKSI HARIAN</div>
+        <div class="form-doc-title">WORK ORDER (SPK) &amp; DAILY PRODUCTION REPORT FORM</div>
 
         <!-- Header Identitas -->
         <table class="form-ident-table">
@@ -569,7 +569,7 @@
                 <td class="fi-sep">:</td>
                 <td class="fi-line" style="width:20%;">&nbsp;</td>
 
-                <td class="fi-label" style="width:70px;">No. Dokumen</td>
+                <td class="fi-label" style="width:70px;">Document No.</td>
                 <td class="fi-sep">:</td>
                 <td class="fi-line">&nbsp;</td>
             </tr>
@@ -591,7 +591,7 @@
                 <td class="fi-sep">:</td>
                 <td class="fi-line">&nbsp;</td>
 
-                <td class="fi-label">Jam Mulai s/d Selesai</td>
+                <td class="fi-label">Start to End Time</td>
                 <td class="fi-sep">:</td>
                 <td class="fi-line">&nbsp;</td>
 
@@ -604,7 +604,7 @@
                 <td class="fi-sep">&nbsp;</td>
                 <td>&nbsp;</td>
 
-                <!-- <td class="fi-label">Jam Selesai</td>
+                <!-- <td class="fi-label">End Time</td>
                 <td class="fi-sep">:</td>
                 <td class="fi-line">&nbsp;</td> -->
 
@@ -615,17 +615,17 @@
         </table>
 
         <!-- Section 1: Pemakaian Material -->
-        <div class="form-section-header">1. PEMAKAIAN MATERIAL (BABY COIL - DARI UNPACK / WIP / HOLD)</div>
+        <div class="form-section-header">1. MATERIAL USAGE (BABY COIL - FROM UNPACK / WIP / HOLD)</div>
         <table class="form-table">
             <thead>
                 <tr>
                     <th style="width:28px;">No</th>
-                    <th style="width:14%;">Sumber Coil<br>(Unpack/WIP/Hold)</th>
+                    <th style="width:14%;">Coil Source<br>(Unpack/WIP/Hold)</th>
                     <th style="width:12%;">No. Pack</th>
-                    <th style="width:14%;">Nama Material</th>
+                    <th style="width:14%;">Material Name</th>
                     <th style="width:14%;">No. Baby Coil</th>
-                    <th style="width:12%;">Berat Bersih (Net Kg)</th>
-                    <th>Kondisi / Keterangan</th>
+                    <th style="width:12%;">Net Weight (Net Kg)</th>
+                    <th>Condition / Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -644,17 +644,17 @@
         </table>
 
         <!-- Section 2: Hasil Produksi KW 1 -->
-        <div class="form-section-header">2. HASIL PRODUKSI (FINISH GOOD KW 1) - SPK &amp; STOK BEBAS</div>
+        <div class="form-section-header">2. PRODUCTION OUTPUT (FINISH GOOD KW 1) - SPK &amp; FREE STOCK</div>
         <table class="form-table">
             <thead>
                 <tr>
                     <th style="width:28px;">No</th>
-                    <th style="width:14%;">Jenis Produksi</th>
-                    <th style="width:16%;">Nama Produk</th>
+                    <th style="width:14%;">Production Type</th>
+                    <th style="width:16%;">Product Name</th>
                     <th style="width:14%;">Asal Baby Coil</th>
                     <th style="width:12%;">Qty (Pcs)</th>
-                    <th style="width:12%;">Berat Total (Kg)</th>
-                    <th>Berat / Pcs (Kg) (Opsional)</th>
+                    <th style="width:12%;">Total Weight (Kg)</th>
+                    <th>Weight / Pcs (Kg) (Optional)</th>
                 </tr>
             </thead>
             <tbody>
@@ -678,12 +678,12 @@
             <thead>
                 <tr>
                     <th style="width:28px;">No</th>
-                    <th style="width:16%;">Kategori (Internal / Supplier)</th>
-                    <th style="width:16%;">Nama KW 2</th>
+                    <th style="width:16%;">Category (Internal / Supplier)</th>
+                    <th style="width:16%;">KW 2 Name</th>
                     <th style="width:12%;">Size (m)</th>
                     <th style="width:12%;">Qty KW 2</th>
-                    <th style="width:12%;">Berat Total (Kg)</th>
-                    <th>Keterangan (Contoh: White Rust)</th>
+                    <th style="width:12%;">Total Weight (Kg)</th>
+                    <th>Description (Example: White Rust)</th>
                 </tr>
             </thead>
             <tbody>
@@ -705,13 +705,13 @@
         <table class="form-two-col">
             <tr>
                 <td class="col-left">
-                    <div class="form-section-header">4. SISA COIL &amp; HOLD COIL</div>
+                    <div class="form-section-header">4. REMAINING COIL &amp; HOLD COIL</div>
                     <table class="form-table" style="margin-bottom:0;">
                         <thead>
                             <tr>
-                                <th style="width:30%;">Kategori</th>
+                                <th style="width:30%;">Category</th>
                                 <th>No. Baby Coil</th>
-                                <th style="width:26%;">Berat (Kg)</th>
+                                <th style="width:26%;">Weight (Kg)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -723,7 +723,7 @@
                                 </tr>
                             <?php endfor; ?>
                             <tr>
-                                <td colspan="3" style="font-style:italic; font-size:9px;">*Tuliskan keterangan detail di baliknya jika perlu</td>
+                                <td colspan="3" style="font-style:italic; font-size:9px;">*Write detailed notes on the back if needed</td>
                             </tr>
                         </tbody>
                     </table>
@@ -733,8 +733,8 @@
                     <table class="form-table" style="margin-bottom:0;">
                         <thead>
                             <tr>
-                                <th>Kategori Scrap</th>
-                                <th style="width:35%;">Berat (Kg)</th>
+                                <th>Scrap Category</th>
+                                <th style="width:35%;">Weight (Kg)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -765,15 +765,15 @@
         <table class="form-sign-table">
             <tr>
                 <td>
-                    <span class="form-sign-role">Dibuat Oleh (Operator / Helper)</span>
+                    <span class="form-sign-role">Created By (Operator / Helper)</span>
                     <span class="form-sign-line">(_________________________)</span>
                 </td>
                 <td>
-                    <span class="form-sign-role">Diperiksa Oleh (Leader / SPV Produksi)</span>
+                    <span class="form-sign-role">Checked By (Production Leader / SPV)</span>
                     <span class="form-sign-line">(_________________________)</span>
                 </td>
                 <td>
-                    <span class="form-sign-role">Diketahui Oleh (QC / Admin)</span>
+                    <span class="form-sign-role">Acknowledged By (QC / Admin)</span>
                     <span class="form-sign-line">(_________________________)</span>
                 </td>
             </tr>
@@ -786,10 +786,10 @@
     <!-- ===================================================== -->
     <div class="page-break">
 
-        <div class="form-doc-title">INSTRUKSI KERJA (SOP) PENGISIAN FORM SPK &amp; LAPORAN PRODUKSI</div>
+        <div class="form-doc-title">WORK INSTRUCTIONS (SOP) FOR FILLING IN THE SPK &amp; PRODUCTION REPORT FORM</div>
 
         <div class="sop-intro">
-            Tujuan: Memastikan Operator/Helper dapat mengisi form produksi dengan akurat sehingga data valid saat diinput Admin ke Sistem ERP.
+            Purpose: Ensure Operators/Helpers can fill in the production form accurately so the data is valid when Admin enters it into the ERP System.
         </div>
 
         <table class="sop-table">
@@ -798,24 +798,24 @@
                     <th style="width:26px;">No</th>
                     <th style="width:22%;">Bagian Form</th>
                     <th style="width:20%;">Item / Kolom</th>
-                    <th>Instruksi Pengisian (Cara Pengisian &amp; Keterangan)</th>
+                    <th>Filling Instructions (How to Fill &amp; Notes)</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 $sop_rows = [
-                    ['HEADER & IDENTITAS', 'No. SPK, Tgl Produksi, Mesin', 'Diisi sesuai dengan Surat Perintah Kerja (SPK) yang diterima dari PPIC / Admin. Harus jelas dan tidak boleh dikosongkan.'],
-                    ['HEADER & IDENTITAS', 'Nama Setter & Helper, Jam', 'Diisi dengan nama petugas aktual yang menjalankan mesin. Jam mulai diisi saat mesin setup/running, jam selesai diisi saat batch produksi selesai.'],
-                    ['1. PEMAKAIAN MATERIAL', 'Sumber Coil (Unpack/WIP/Hold)', 'Tulis atau beri tanda centang asal material. Pilih Unpack (Material baru buka), WIP (Sisa dari produksi sebelumnya), atau Hold (Material yang sempat ditahan QC).'],
-                    ['1. PEMAKAIAN MATERIAL', 'No. Pack & No. Baby Coil', 'WAJIB diisi sesuai dengan label/barcode fisik yang menempel pada material. Sangat krusial untuk fitur traceability (lacak jejak) di program ERP.'],
-                    ['1. PEMAKAIAN MATERIAL', 'Berat Bersih (Net Kg)', 'Diisi angka berat aktual (hasil timbang) material tersebut saat akan dimasukkan ke mesin.'],
-                    ['2. HASIL PRODUKSI (KW 1)', 'Jenis Produksi', "Pilih 'Sesuai SPK' jika hasil produksi untuk memenuhi dokumen SPK tersebut. Pilih 'Stok Bebas' jika sisa material dijadikan produk lain (di luar SPK) untuk dijadikan stok gudang."],
-                    ['2. HASIL PRODUKSI (KW 1)', 'Qty (Pcs) & Berat Total (Kg)', 'Hitung jumlah Pcs (lembar/batang) yang dihasilkan, lalu timbang berat total keseluruhannya. Sistem ERP akan otomatis menghitung persentase selisih berdasarkan data ini.'],
-                    ['3. HASIL PRODUKSI (KW 2)', 'Kategori (Internal / Supplier)', 'Internal: Cacat/KW akibat proses di pabrik (kesalahan mesin/operator). Supplier: Cacat bawaan dari bahan baku supplier sebelum diproses.'],
-                    ['3. HASIL PRODUKSI (KW 2)', 'Keterangan', "Wajib menuliskan alasan produk menjadi KW 2, contoh: 'White Rust', 'Penyok', 'Tergores Mesin', 'Gelombang', dll."],
-                    ['4. SISA COIL & HOLD COIL', 'No. Baby Coil & Berat (Kg)', 'Lakukan penimbangan pada material sisa yang belum habis atau material yang di-Hold. Pastikan menuliskan No. Baby Coil asalnya agar sistem memotong stok secara akurat.'],
-                    ['5. KOMPONEN SCRAP / REJECT', 'Tong, Wrapping, Pisau, Reject', 'Kumpulkan semua limbah (scrap) maupun material/produk reject murni (tidak bisa dijual sebagai KW 2). Timbang di akhir shift produksi dan masukkan total beratnya (Kg) pada kolom yang sesuai.'],
-                    ['6. APPROVAL / PENGESAHAN', 'Tanda Tangan', 'Setelah form diisi lengkap, wajib ditandatangani oleh Operator pembuat, diverifikasi (dicek silang aktual fisiknya) oleh Leader/SPV, dan divalidasi oleh Tim QC/Admin sebelum form diserahkan ke bagian Data Entry ERP.'],
+                    ['HEADER & IDENTITAS', 'No. SPK, Tgl Produksi, Mesin', 'Fill in according to the Work Order (SPK) received from PPIC / Admin. It must be clear and cannot be left empty.'],
+                    ['HEADER & IDENTITAS', 'Setter & Helper Name, Time', 'Fill in the name of the operator who actually runs the machine. The start time is filled in when the machine is set up/running, and the end time when the production batch is finished.'],
+                    ['1. PEMAKAIAN MATERIAL', 'Coil Source (Unpack/WIP/Hold)', 'Write or tick the material source. Select Unpack (newly opened material), WIP (remainder from previous production), or Hold (material that was held by QC).'],
+                    ['1. PEMAKAIAN MATERIAL', 'No. Pack & No. Baby Coil', 'MUST be filled in according to the physical label/barcode on the material. This is critical for the traceability feature in the ERP program.'],
+                    ['1. PEMAKAIAN MATERIAL', 'Net Weight (Net Kg)', 'Fill in the actual weight (weighing result) of the material when it is loaded into the machine.'],
+                    ['2. HASIL PRODUKSI (KW 1)', 'Production Type', "Select 'According to SPK' if the production output fulfills that SPK document. Select 'Free Stock' if the remaining material is made into another product (outside the SPK) as warehouse stock."],
+                    ['2. HASIL PRODUKSI (KW 1)', 'Qty (Pcs) & Total Weight (Kg)', 'Count the number of Pcs (sheets/bars) produced, then weigh their total weight. The ERP system will calculate the difference percentage automatically from this data.'],
+                    ['3. HASIL PRODUKSI (KW 2)', 'Category (Internal / Supplier)', 'Internal: Defects/KW caused by factory processes (machine/operator error). Supplier: Defects inherent in the supplier raw material before processing.'],
+                    ['3. HASIL PRODUKSI (KW 2)', 'Description', "The reason the product became KW 2 must be written, for example: 'White Rust', 'Dented', 'Machine Scratched', 'Wavy', etc."],
+                    ['4. REMAINING COIL & HOLD COIL', 'Baby Coil No. & Weight (Kg)', 'Weigh the remaining material that has not been used up or material that is on Hold. Make sure to write its source Baby Coil No. so the system deducts stock accurately.'],
+                    ['5. KOMPONEN SCRAP / REJECT', 'Tong, Wrapping, Pisau, Reject', 'Collect all waste (scrap) and pure reject materials/products (cannot be sold as KW 2). Weigh them at the end of the production shift and enter the total weight (Kg) in the matching column.'],
+                    ['6. APPROVAL / PENGESAHAN', 'Signature', 'After the form is completed, it must be signed by the Operator who filled it in, verified (physically cross-checked) by the Leader/SPV, and validated by the QC/Admin Team before it is handed to ERP Data Entry.'],
                 ];
                 foreach ($sop_rows as $idx => $r):
                 ?>

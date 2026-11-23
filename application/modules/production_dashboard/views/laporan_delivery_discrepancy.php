@@ -2,22 +2,22 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Laporan Selisih Delivery</h5>
+        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Delivery Difference Report</h5>
     </div>
     <div class="card-body">
         <form method="get" action="<?= base_url('production_dashboard/laporan_delivery_discrepancy') ?>">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Tanggal Delivery Dari</label>
+                    <label class="form-label">Delivery Date From</label>
                     <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Tanggal Delivery Sampai</label>
+                    <label class="form-label">Delivery Date To</label>
                     <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa fa-search"></i> Tampilkan
+                        <i class="fa fa-search"></i> Show
                     </button>
                 </div>
             </div>
@@ -27,9 +27,9 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Laporan Selisih Berat Delivery (Estimasi vs Aktual)</h5>
+        <h5 class="mb-0">Delivery Weight Difference Report (Estimate vs Actual)</h5>
         <a href="<?= base_url('production_dashboard') ?>" class="btn btn-sm btn-outline-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -41,8 +41,8 @@
                         <th>No DO</th>
                         <th>Customer</th>
                         <th class="text-center">Tgl Delivery</th>
-                        <th class="text-end">Estimasi Berat (kg)</th>
-                        <th class="text-end">Berat Aktual (kg)</th>
+                        <th class="text-end">Estimated Weight (kg)</th>
+                        <th class="text-end">Actual Weight (kg)</th>
                         <th class="text-end">Selisih (kg)</th>
                         <th class="text-end">Selisih (%)</th>
                         <th class="text-center">Tgl Timbang</th>
@@ -52,7 +52,7 @@
                 <tbody>
                     <?php if (empty($data_laporan)): ?>
                         <tr>
-                            <td colspan="10" class="text-center text-muted py-3">Tidak ada data untuk filter yang dipilih</td>
+                            <td colspan="10" class="text-center text-muted py-3">No data for the selected filter</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($data_laporan as $i => $row): ?>
@@ -99,7 +99,7 @@
             </table>
         </div>
         <?php if (!empty($data_laporan)): ?>
-            <div class="text-muted small mt-2">Total: <?= count($data_laporan) ?> record</div>
+            <div class="text-muted small mt-2">Total: <?= count($data_laporan ?? []) ?> record</div>
         <?php endif; ?>
     </div>
 </div>

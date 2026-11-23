@@ -12,7 +12,7 @@
                     <td class="text-left" style='vertical-align:middle;'><?= $no_surat; ?></td>
                 </tr>
                 <tr>
-                    <td class="text-left" style='vertical-align:middle;'>Tanggal Penerimaan</td>
+                    <td class="text-left" style='vertical-align:middle;'>Receipt Date</td>
                     <td class="text-left" style='vertical-align:middle;'>:</td>
                     <td class="text-left" style='vertical-align:middle;'><?= $tanggal; ?></td>
                 </tr>
@@ -26,10 +26,10 @@
                     <th class="text-center" style='vertical-align:middle;'>Product Name</th>
                     <th class="text-center" style='vertical-align:middle;'>Unit Measurement</th>
                     <th class="text-center" style='vertical-align:middle;'>Qty</th>
-                    <th class="text-center" style='vertical-align:middle;'>Qty Diterima</th>
+                    <th class="text-center" style='vertical-align:middle;'>Received Qty</th>
                     <th class="text-center" style='vertical-align:middle;'>Qty Pack</th>
                     <th class="text-center" style='vertical-align:middle;'>Unit Packing</th>
-                    <th class="text-center" style='vertical-align:middle;'>Keterangan</th>
+                    <th class="text-center" style='vertical-align:middle;'>Description</th>
                     <!-- <th class="text-center" style='vertical-align:middle;' width='5'>QRCode</th> -->
                 </tr>
             </thead>

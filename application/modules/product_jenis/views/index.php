@@ -22,8 +22,8 @@
                         <th>#</th>
                         <th>Product Type</th>
                         <th>Product Category</th>
-                        <th>Product Jenis</th>
-                        <th>Jenis Code</th>
+                        <th>Product Sub Category</th>
+                        <th>Type Code</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -42,9 +42,9 @@
                                 <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
-                                        <span class="badge bg-success">Aktif</span>
+                                        <span class="badge bg-success">Active</span>
                                     <?php else : ?>
-                                        <span class="badge bg-danger">Non Aktif</span>
+                                        <span class="badge bg-danger">Inactive</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -82,7 +82,7 @@
         <div class="modal-content">
             <form id="data_form" autocomplete="off">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="head_title">Product Jenis</h4>
+                    <h4 class="modal-title" id="head_title">Product Sub Category</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="ModalView">
@@ -120,7 +120,7 @@
         $(document).on('click', '.add', function () {
             var id = ($(this).data('id') === undefined) ? '' : $(this).data('id');
             let title = (id === '') ? 'Add' : 'Edit';
-            $("#head_title").html(`${title} Product Jenis`);
+            $("#head_title").html(`${title} Product Sub Category`);
 
             $.ajax({
                 type: 'POST',
@@ -165,7 +165,7 @@
             swal({
                 title: "Are you sure?", text: "Process this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Simpan!", cancelButtonText: "Batal", closeOnConfirm: false
+                confirmButtonText: "Yes, Save!", cancelButtonText: "Cancel", closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
                     return;
@@ -196,7 +196,7 @@
             swal({
                 title: "Are you sure?", text: "Delete this data", type: "warning",
                 showCancelButton: true, confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Hapus!", cancelButtonText: "Batal", closeOnConfirm: false
+                confirmButtonText: "Yes, Delete!", cancelButtonText: "Cancel", closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
                     return;

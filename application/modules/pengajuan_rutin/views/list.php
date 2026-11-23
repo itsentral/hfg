@@ -19,8 +19,8 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                         <i class="fa fa-calendar-days fs-4"></i>
                     </div>
                     <div>
-                        <h5 class="card-title fw-bold text-dark mb-0">Pengajuan Pembayaran Periodik (Rutin)</h5>
-                        <small class="text-muted">Kelola pengajuan pembayaran biaya operasional periodik / rutin departemen</small>
+                        <h5 class="card-title fw-bold text-dark mb-0">Periodic (Routine) Payment Request</h5>
+                        <small class="text-muted">Manage department periodic / routine operational payment requests</small>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                                     </li>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <li><span class="dropdown-item text-muted small">Tidak ada departemen</span></li>
+                                <li><span class="dropdown-item text-muted small">No departments</span></li>
                             <?php endif; ?>
                         </ul>
                     </div>
@@ -60,12 +60,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="40">#</th>
-                        <th>Departemen</th>
-                        <th class="text-center" width="160">No Dokumen</th>
+                        <th>Department</th>
+                        <th class="text-center" width="160">Document No.</th>
                         <th class="text-end" width="130">Nominal</th>
-                        <th class="text-center" width="120">Tanggal</th>
+                        <th class="text-center" width="120">Date</th>
                         <th class="text-center" width="140">Status</th>
-                        <th>Keterangan Reject</th>
+                        <th>Reject Description</th>
                         <th class="text-center" width="110">Aksi</th>
                     </tr>
                 </thead>
@@ -125,13 +125,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no dokumen / departemen...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search document no / department...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Tidak ada data pengajuan pembayaran periodik",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data...'
+                emptyTable: "No periodic payment requests",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             }
         });
     }
@@ -155,13 +155,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
 
     function data_add() {
         $('#card-list, .box').hide();
-        $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat formulir pengajuan baru...</div></div>');
+        $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading new request form...</div></div>');
         $('#form-data').load(url_add, function(response, status, xhr) {
             if (status == "error") {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal memuat form: ' + xhr.status + ' ' + xhr.statusText });
+                    Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load form: ' + xhr.status + ' ' + xhr.statusText });
                 } else {
-                    alert('Gagal memuat form: ' + xhr.status + ' ' + xhr.statusText);
+                    alert('Failed to load form: ' + xhr.status + ' ' + xhr.statusText);
                 }
                 list_view();
             }
@@ -171,13 +171,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
     function data_edit(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><div class="mt-2 text-muted">Memuat form edit...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><div class="mt-2 text-muted">Loading edit form...</div></div>');
             $('#form-data').load(url_edit + id, function(response, status, xhr) {
                 if (status == "error") {
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal memuat form: ' + xhr.status + ' ' + xhr.statusText });
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load form: ' + xhr.status + ' ' + xhr.statusText });
                     } else {
-                        alert('Gagal memuat form: ' + xhr.status + ' ' + xhr.statusText);
+                        alert('Failed to load form: ' + xhr.status + ' ' + xhr.statusText);
                     }
                     list_view();
                 }
@@ -188,13 +188,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
     function data_view(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian data...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading data details...</div></div>');
             $('#form-data').load(url_view + id, function(response, status, xhr) {
                 if (status == "error") {
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal memuat rincian: ' + xhr.status + ' ' + xhr.statusText });
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load details: ' + xhr.status + ' ' + xhr.statusText });
                     } else {
-                        alert('Gagal memuat rincian: ' + xhr.status + ' ' + xhr.statusText);
+                        alert('Failed to load details: ' + xhr.status + ' ' + xhr.statusText);
                     }
                     list_view();
                 }
@@ -211,9 +211,9 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                 success: function(msg) {
                     if (msg['delete'] == '1') {
                         if (typeof Swal !== 'undefined') {
-                            Swal.fire({ icon: 'success', title: 'Terhapus!', text: 'Data berhasil dihapus', timer: 1500, showConfirmButton: false });
+                            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Data deleted successfully', timer: 1500, showConfirmButton: false });
                         } else {
-                            swal({ title: 'Terhapus!', text: 'Data berhasil dihapus', type: 'success', timer: 1500, showConfirmButton: false });
+                            swal({ title: 'Deleted!', text: 'Data deleted successfully', type: 'success', timer: 1500, showConfirmButton: false });
                         }
                         if (datatables) {
                             datatables.ajax.reload(null, false);
@@ -222,17 +222,17 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
                         }
                     } else {
                         if (typeof Swal !== 'undefined') {
-                            Swal.fire({ icon: 'error', title: 'Gagal!', text: 'Data gagal dihapus' });
+                            Swal.fire({ icon: 'error', title: 'Failed!', text: 'Failed to delete data' });
                         } else {
-                            swal({ title: 'Gagal!', text: 'Data gagal dihapus', type: 'error' });
+                            swal({ title: 'Failed!', text: 'Failed to delete data', type: 'error' });
                         }
                     }
                 },
                 error: function() {
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal eksekusi penghapusan' });
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to execute deletion' });
                     } else {
-                        swal({ title: 'Error!', text: 'Gagal eksekusi penghapusan', type: 'error' });
+                        swal({ title: 'Error!', text: 'Failed to execute deletion', type: 'error' });
                     }
                 }
             });
@@ -240,14 +240,14 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: "Anda Yakin?",
-                text: "Data pengajuan periodik ini akan dihapus secara permanen!",
+                title: "Are you sure?",
+                text: "This periodic request data will be deleted permanently!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#dc3545",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     doDelete();
@@ -255,13 +255,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Pembayaran_Rutin.Delete');
             });
         } else {
             swal({
-                title: "Anda Yakin?",
-                text: "Data Akan Dihapus!",
+                title: "Are you sure?",
+                text: "The Data Will Be Deleted!",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {

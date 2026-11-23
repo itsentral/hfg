@@ -65,6 +65,7 @@
 
    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+   <script src="<?= base_url('assets/js/datatables-english.js'); ?>"></script>
 
    <!-- DataTables FixedHeader -->
    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
@@ -97,11 +98,11 @@
        else if (hour >= 15 && hour < 18) greeting = "Good Evening";
        else greeting = "Good Night";
 
-       // Nama hari + bulan (Indonesia)
-       const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+       // English day and month names
+       const hari = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
        const bulan = [
-         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+         "January", "February", "March", "April", "May", "June",
+         "July", "August", "September", "October", "November", "December"
        ];
 
        const dayName = hari[now.getDay()];

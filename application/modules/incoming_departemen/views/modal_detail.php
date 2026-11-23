@@ -13,7 +13,7 @@ $note       = isset($note) ? $note : '-';
                 <div class="col-md-6 col-12">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
-                            <td class="fw-bold text-muted" width="130">No Transaksi</td>
+                            <td class="fw-bold text-muted" width="130">Transaction No.</td>
                             <td width="10">:</td>
                             <td class="fw-bold text-primary"><?= $kode_trans; ?></td>
                         </tr>
@@ -27,20 +27,20 @@ $note       = isset($note) ? $note : '-';
                 <div class="col-md-6 col-12">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
-                            <td class="fw-bold text-muted" width="130">Tgl Penerimaan</td>
+                            <td class="fw-bold text-muted" width="130">Receipt Date</td>
                             <td width="10">:</td>
                             <td><?= $resv; ?></td>
                         </tr>
                         <?php if (!empty($pic) && $pic != '-') : ?>
                         <tr>
-                            <td class="fw-bold text-muted">PIC Penerima</td>
+                            <td class="fw-bold text-muted">Receiving PIC</td>
                             <td>:</td>
                             <td><?= ucfirst((string) $pic); ?></td>
                         </tr>
                         <?php endif; ?>
                         <?php if (!empty($note) && $note != '-') : ?>
                         <tr>
-                            <td class="fw-bold text-muted">Catatan</td>
+                            <td class="fw-bold text-muted">Notes</td>
                             <td>:</td>
                             <td><?= $note; ?></td>
                         </tr>
@@ -57,9 +57,9 @@ $note       = isset($note) ? $note : '-';
             <thead class="table-light text-nowrap">
                 <tr>
                     <th class="text-center" width="40">#</th>
-                    <th>Nama Barang / Jasa</th>
-                    <th class="text-center" width="110">Qty Diterima</th>
-                    <th width="200">Keterangan</th>
+                    <th>Item / Service Name</th>
+                    <th class="text-center" width="110">Received Qty</th>
+                    <th width="200">Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,13 +81,13 @@ $note       = isset($note) ? $note : '-';
                         </tr>
                     <?php endforeach; ?>
                     <tr class="table-light fw-bold">
-                        <td colspan="2" class="text-end">Total Diterima:</td>
+                        <td colspan="2" class="text-end">Total Received:</td>
                         <td class="text-center text-primary"><?= number_format((float) $total_qty, 2); ?></td>
                         <td></td>
                     </tr>
                 <?php else : ?>
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-3">Tidak ada data barang yang diterima.</td>
+                        <td colspan="4" class="text-center text-muted py-3">No received item data.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

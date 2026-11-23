@@ -60,17 +60,17 @@
                 <thead class="table-primary text-center">
                     <tr>
                         <th width="4%">#</th>
-                        <th>Kode Asset</th>
+                        <th>Asset Code</th>
                         <th>Asset Name</th>
                         <th width="8%">Tgl Perolehan</th>
                         <th width="10%">Category</th>
-                        <th width="15%">Kelompok Penyusutan</th>
+                        <th width="15%">Depreciation Group</th>
                         <th width="10%">Costcenter</th>
-                        <th width="6%">Depresiasi</th>
-                        <th width="10%" class="text-end">Nilai Perolehan</th>
-                        <th width="9%" class="text-end">Depresiasi /Bln</th>
-                        <th width="10%" class="text-end">Total Depresiasi</th>
-                        <th width="10%" class="text-end">Sisa Nilai</th>
+                        <th width="6%">Depreciation</th>
+                        <th width="10%" class="text-end">Acquisition Value</th>
+                        <th width="9%" class="text-end">Depreciation /Month</th>
+                        <th width="10%" class="text-end">Total Depreciation</th>
+                        <th width="10%" class="text-end">Remaining Value</th>
                     </tr>
                 </thead>
                 <tbody></tbody>

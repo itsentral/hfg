@@ -45,7 +45,7 @@ class Setting extends Admin_Controller
         if (isset($_POST['delete']) && has_permission($this->deletePermission)) {
             $checked = $this->input->post('checked');
 
-            if (is_array($checked) && count($checked)) {
+            if (is_array($checked) && count($checked ?? [])) {
                 $result = FALSE;
                 $sukses = 0;
                 foreach ($checked as $pid) {
@@ -70,7 +70,7 @@ class Setting extends Admin_Controller
                 }
 
                 if ($result) {
-                    $this->template->set_message(count($sukses) . ' ' . lang('users_del_success') . '.', 'success');
+                    $this->template->set_message(count($sukses ?? []) . ' ' . lang('users_del_success') . '.', 'success');
                 } else {
                     $this->template->set_message(lang('users_del_fail') . $this->users_model->error, 'error');
                 }

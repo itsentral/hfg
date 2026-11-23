@@ -100,7 +100,7 @@ class Supplier_model extends BF_Model
 
 			// Last By
 			$last_create = (!empty($row['updated_by'])) ? $row['updated_by'] : $row['created_by'];
-			$nestedData[] = "<div class='text-nowrap'>" . strtoupper(get_name('users', 'nm_lengkap', 'id_user', $last_create)) . "</div>";
+			$nestedData[] = "<div class='text-nowrap'>" . strtoupper((string) get_name('users', 'nm_lengkap', 'id_user', $last_create)) . "</div>";
 
 			// Last Date
 			$last_date = (!empty($row['updated_date'])) ? $row['updated_date'] : $row['created_date'];

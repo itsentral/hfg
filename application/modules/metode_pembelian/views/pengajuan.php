@@ -9,8 +9,8 @@ $this->load->view('include/side_menu');
 			<select id='category' name='category' class='form-control input-sm' style='min-width:200px;'>
 				<option value='0'>ALL CATEGORY</option>
 				<option value='asset'>ASSET</option>
-				<option value='rutin'>STOK</option>
-				<option value='non rutin'>DEPARTEMEN</option>
+				<option value='rutin'>STOCK</option>
+				<option value='non rutin'>DEPARTMENT</option>
 			</select>
 		</div>
 	</div>
@@ -145,7 +145,7 @@ $this->load->view('include/side_menu');
 		if($('.chk_personal:checked').length == 0){
 			swal({
 			  title	: "Error Message!",
-			  text	: 'Checklist milimal satu terlebih dahulu',
+			  text	: 'Please check at least one first',
 			  type	: "warning"
 			});
 			return false;

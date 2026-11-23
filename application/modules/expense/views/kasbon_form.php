@@ -63,13 +63,13 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				<i class="fa <?= $is_approval ? 'fa-check-circle text-success' : ($is_view ? 'fa-eye' : (isset($data->id) ? 'fa-edit' : 'fa-plus')) ?> me-2"></i>
 				<?php 
 				if ($is_approval) {
-					echo ($mod == '_mgt') ? 'Persetujuan / Approval Management Kasbon' : 'Pengecekan / Approval Finance Kasbon';
+					echo ($mod == '_mgt') ? 'Cash Advance Management Approval' : 'Cash Advance Finance Check / Approval';
 				} elseif ($is_view) {
-					echo 'Detail Pengajuan Kasbon';
+					echo 'Cash Advance Request Detail';
 				} elseif (isset($data->id) && $data->id != '') {
-					echo 'Edit Kasbon';
+					echo 'Edit Cash Advance';
 				} else {
-					echo 'Form Pengajuan Kasbon';
+					echo 'Cash Advance Request Form';
 				}
 				?>
 			</h5>
@@ -87,7 +87,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						<label class="form-label fw-bold text-dark mb-0">
 							<i class="fa fa-sliders-h me-1 text-primary"></i> Sumber Pengajuan Kasbon <span class="text-danger">*</span>
 						</label>
-						<div class="text-muted small">Pilih metode input manual atau tarik dari PR</div>
+						<div class="text-muted small">Select manual input or pull from PR</div>
 					</div>
 					<div class="col-md-8">
 						<div class="btn-group w-100" role="group">
@@ -98,14 +98,14 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 
 							<input type="radio" class="btn-check btn-check-mode opt_tipe_pengajuan" name="tipe_pengajuan" id="tipe_pr" value="pr" <?= ($is_mode_pr) ? 'checked' : '' ?> autocomplete="off">
 							<label class="btn btn-mode-tipe py-2 <?= ($is_mode_pr) ? 'active' : '' ?>" for="tipe_pr" id="lbl_tipe_pr">
-								<i class="fa fa-shopping-cart me-2"></i> Tarik dari PR Non PO
+								<i class="fa fa-shopping-cart me-2"></i> Pull from PR Non PO
 							</label>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- 2. Card Bagian: Kasbon PR Non PO (POSISI DI PALING ATAS - Tampil HANYA jika mode "Tarik dari PR Non PO" dipilih) -->
+			<!-- 2. Card Bagian: PR Non PO Cash Advance (POSISI DI PALING ATAS - Tampil HANYA jika mode "Pull from PR Non PO" dipilih) -->
 			<div class="mb-4 p-3 bg-light rounded-3 border" id="card_pr_non_po" style="<?= (!$is_mode_pr) ? 'display: none;' : '' ?>">
 				<div class="d-flex justify-content-between align-items-center mb-3">
 					<h6 class="fw-bold text-dark mb-0">
@@ -115,7 +115,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				</div>
 				<div class="row g-3 mb-3">
 					<div class="col-md-6">
-						<label class="form-label fw-semibold">Pilih No. PR Non PO <span class="text-danger">*</span></label>
+						<label class="form-label fw-semibold">Select PR Non PO No. <span class="text-danger">*</span></label>
 						<?php if (isset($data->id_pr) && $data->id_pr != '') : ?>
 							<input type="text" name="no_pr" id="search_pr_non_po" class="form-control" placeholder="- No PR -" value="<?= $data->id_pr ?>" readonly>
 						<?php else : ?>
@@ -136,7 +136,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						<?php endif; ?>
 
 						<input type="hidden" name="tipe_pr" id="tipe_pr" value="<?= (isset($list_detail_pr_kasbon[0]['tipe_pr'])) ? $list_detail_pr_kasbon[0]['tipe_pr'] : null ?>">
-						<small class="text-muted"><i class="fa fa-info-circle me-1"></i>Pilih PR Non PO untuk memuat daftar barang otomatis</small>
+						<small class="text-muted"><i class="fa fa-info-circle me-1"></i>Select a PR Non PO to load the item list automatically</small>
 					</div>
 				</div>
 
@@ -148,7 +148,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 								<th class="text-center">Material Name</th>
 								<th width="10%" class="text-center">Qty</th>
 								<th width="10%" class="text-center">Unit</th>
-								<th width="18%" class="text-center">Harga Satuan</th>
+								<th width="18%" class="text-center">Unit Price</th>
 								<th width="18%" class="text-center">Total</th>
 								<th width="6%" class="text-center">Action</th>
 							</tr>
@@ -174,7 +174,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 									if (($mod == '_fin' || $mod == '_mgt')) {
 									} else {
 										if (!isset($stsview) || $stsview == '') {
-											echo '<button type="button" class="btn btn-sm btn-danger del_detail" data-no="' . $detail_pr['id_detail'] . '" title="Hapus"><i class="fa fa-trash"></i></button>';
+											echo '<button type="button" class="btn btn-sm btn-danger del_detail" data-no="' . $detail_pr['id_detail'] . '" title="Delete"><i class="fa fa-trash"></i></button>';
 										}
 									}
 									echo '</td>';
@@ -200,12 +200,12 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			<!-- 3. Baris 1: No Dokumen & Tanggal -->
 			<div class="row g-3 mb-3">
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">No Dokumen</label>
+					<label class="form-label fw-semibold">Document No.</label>
 					<input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
 				</div>
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Tanggal <span class="text-danger">*</span></label>
-					<input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" required autocomplete="off">
+					<label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+					<input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Document Date" required autocomplete="off">
 				</div>
 			</div>
 
@@ -213,16 +213,16 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			<div class="row g-3 mb-3">
 				<div class="col-md-6">
 					<label class="form-label fw-semibold">Keperluan <span class="text-danger">*</span></label>
-					<input type="text" class="form-control" id="keperluan" name="keperluan" value="<?php echo (isset($data->keperluan) ? $data->keperluan : ''); ?>" placeholder="Keperluan Kasbon" required>
+					<input type="text" class="form-control" id="keperluan" name="keperluan" value="<?php echo (isset($data->keperluan) ? $data->keperluan : ''); ?>" placeholder="Cash Advance Purpose" required>
 				</div>
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Nominal Kasbon <span class="text-danger">*</span></label>
+					<label class="form-label fw-semibold">Cash Advance Amount <span class="text-danger">*</span></label>
 					<input type="text" class="form-control divide" id="jumlah_kasbon" name="jumlah_kasbon" value="<?php echo (isset($data->jumlah_kasbon) ? $data->jumlah_kasbon : '0'); ?>" placeholder="0" <?= ($is_mode_pr) ? 'readonly style="background-color: #f8f9fa; cursor: not-allowed;"' : '' ?>>
 					<small class="text-muted" id="note_nominal">
 						<?php if ($is_mode_pr) : ?>
-							<i class="fa fa-info-circle me-1"></i>Otomatis mengikuti grand total rincian barang PR Non PO di atas
+							<i class="fa fa-info-circle me-1"></i>Automatically follows the grand total of the PR Non PO item details above
 						<?php else : ?>
-							<i class="fa fa-pencil-alt me-1"></i>Masukkan nominal kasbon secara manual
+							<i class="fa fa-pencil-alt me-1"></i>Enter the cash advance amount manually
 						<?php endif; ?>
 					</small>
 				</div>
@@ -236,12 +236,12 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 							<i class="fa fa-folder-open me-2 text-primary"></i>Daftar File Lampiran
 						</h6>
 						<small class="text-muted">
-							Maksimal 5 file lampiran (maks. 5 MB per file). Format yang didukung: PDF, JPG, PNG, DOCX, XLSX.
+							Maximum 5 attachment files (max. 5 MB per file). Supported formats: PDF, JPG, PNG, DOCX, XLSX.
 						</small>
 					</div>
 					<div class="d-flex align-items-center gap-2">
 						<span class="badge bg-secondary" id="badge_total_files">
-							<?= (isset($list_files) && !empty($list_files)) ? count($list_files) : 0 ?> / 5 File
+							<?= (isset($list_files) && !empty($list_files)) ? count($list_files ?? []) : 0 ?> / 5 File
 						</span>
 						<?php if (!isset($stsview) || $stsview == '') : ?>
 							<button type="button" class="btn btn-primary btn-sm" id="btn_add_files">
@@ -258,9 +258,9 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						<thead class="table-light text-center">
 							<tr>
 								<th width="5%">No.</th>
-								<th>Nama File</th>
-								<th width="15%">Ukuran</th>
-								<th width="20%">Status / Sumber</th>
+								<th>File Name</th>
+								<th width="15%">Size</th>
+								<th width="20%">Status / Source</th>
 								<th width="15%">Aksi</th>
 							</tr>
 						</thead>
@@ -280,14 +280,14 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 										</td>
 										<td class="text-center text-muted">-</td>
 										<td class="text-center">
-											<span class="badge bg-success">Tersimpan</span>
+											<span class="badge bg-success">Saved</span>
 										</td>
 										<td class="text-center">
-											<a href="<?= $f_url ?>" target="_blank" class="btn btn-xs btn-outline-primary me-1" title="Buka File">
+											<a href="<?= $f_url ?>" target="_blank" class="btn btn-xs btn-outline-primary me-1" title="Open File">
 												<i class="fa fa-external-link-alt"></i> Buka
 											</a>
 											<?php if (!isset($stsview) || $stsview == '') : ?>
-												<button type="button" class="btn btn-xs btn-outline-danger btn_del_file" data-id="<?= $f_item['id'] ?>" data-name="<?= $f_name ?>" title="Hapus File">
+												<button type="button" class="btn btn-xs btn-outline-danger btn_del_file" data-id="<?= $f_item['id'] ?>" data-name="<?= $f_name ?>" title="Delete File">
 													<i class="fa fa-trash"></i>
 												</button>
 											<?php endif; ?>
@@ -302,13 +302,13 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 								<td class="text-center font-monospace">#</td>
 								<td id="lbl_pr_doc_name"></td>
 								<td class="text-center text-muted">-</td>
-								<td class="text-center"><span class="badge bg-info text-dark">Dari PR Non PO</span></td>
+								<td class="text-center"><span class="badge bg-info text-dark">From PR Non PO</span></td>
 								<td class="text-center"><span class="badge bg-light text-dark">Otomatis Disertakan</span></td>
 							</tr>
 							<!-- Baris kosong jika belum ada file sama sekali -->
 							<tr id="row_empty_files" style="<?= (isset($list_files) && !empty($list_files)) ? 'display: none;' : '' ?>">
 								<td colspan="5" class="text-center text-muted py-3">
-									<i class="fa fa-info-circle me-1"></i> Belum ada file lampiran yang dipilih. Klik tombol <strong>+ Tambah File</strong> di atas untuk mengunggah.
+									<i class="fa fa-info-circle me-1"></i> No attachment files selected yet. Click the <strong>+ Add File</strong> button above to upload.
 								</td>
 							</tr>
 						</tbody>
@@ -319,8 +319,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			<!-- 6. Baris 4: Keterangan & COA -->
 			<div class="row g-3 mb-4">
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Keterangan</label>
-					<textarea class="form-control" id="keterangan" name="keterangan" rows="3" placeholder="Keterangan"><?php echo (isset($data->keterangan) ? $data->keterangan : ''); ?></textarea>
+					<label class="form-label fw-semibold">Description</label>
+					<textarea class="form-control" id="keterangan" name="keterangan" rows="3" placeholder="Description"><?php echo (isset($data->keterangan) ? $data->keterangan : ''); ?></textarea>
 
 					<?php if (isset($data->st_reject) && $data->st_reject !== '') : ?>
 						<div class="alert alert-danger mt-2 py-2 mb-0">
@@ -357,15 +357,15 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				<div class="row g-3">
 					<div class="col-md-4">
 						<label class="form-label fw-semibold">Bank</label>
-						<input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Nama Bank">
+						<input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank Name">
 					</div>
 					<div class="col-md-4">
-						<label class="form-label fw-semibold">Nomor Rekening</label>
-						<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening">
+						<label class="form-label fw-semibold">Account Number</label>
+						<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Account Number">
 					</div>
 					<div class="col-md-4">
-						<label class="form-label fw-semibold">Nama Pemilik Rekening</label>
-						<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening">
+						<label class="form-label fw-semibold">Account Holder Name</label>
+						<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Account Holder Name">
 					</div>
 				</div>
 			</div>
@@ -373,7 +373,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			<!-- 8. Lampiran Dokumen Preview Jika Ada -->
 			<?php if (isset($list_files) && !empty($list_files)) : ?>
 				<div class="card shadow-sm border-0 mb-4 p-3 bg-light rounded-3">
-					<h6 class="fw-bold mb-3"><i class="fa fa-paperclip me-2 text-primary"></i>Preview Lampiran Dokumen</h6>
+					<h6 class="fw-bold mb-3"><i class="fa fa-paperclip me-2 text-primary"></i>Document Attachment Preview</h6>
 					<div class="row g-3">
 						<?php
 						$f_idx = 1;
@@ -389,7 +389,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 											<i class="fa fa-file-alt me-1 text-primary"></i> Dokumen <?= $f_idx ?>: <?= $f_name ?>
 										</span>
 										<a href="<?= $f_url ?>" target="_blank" class="btn btn-sm btn-primary py-0 px-2">
-											<i class="fa fa-external-link-alt me-1"></i> Buka File
+											<i class="fa fa-external-link-alt me-1"></i> Open File
 										</a>
 									</div>
 									<div class="card-body text-center p-2">
@@ -432,13 +432,13 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						<i class="fa fa-check-circle"></i> Setujui Kasbon
 					</button>
 					<button type="button" class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1 shadow-sm" onclick="data_reject()">
-						<i class="fa fa-ban"></i> Tolak Pengajuan
+						<i class="fa fa-ban"></i> Reject Request
 					</button>
 				<?php endif; ?>
 
 				<?php if (!$is_view): ?>
 					<button type="submit" name="save" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" id="submit">
-						<i class="fa fa-save"></i> Simpan Pengajuan
+						<i class="fa fa-save"></i> Save Request
 					</button>
 				<?php endif; ?>
 			</div>
@@ -543,7 +543,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 
 			// Buka kunci Nominal Kasbon agar bisa diinput bebas
 			$('#jumlah_kasbon').prop('readonly', false).removeAttr('style');
-			$('#note_nominal').html('<i class="fa fa-pencil-alt me-1"></i>Masukkan nominal kasbon secara manual');
+			$('#note_nominal').html('<i class="fa fa-pencil-alt me-1"></i>Enter the cash advance amount manually');
 		} else {
 			// Update tampilan warna tombol aktif
 			$('#lbl_tipe_pr').addClass('active');
@@ -557,7 +557,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				'background-color': '#f8f9fa',
 				'cursor': 'not-allowed'
 			});
-			$('#note_nominal').html('<i class="fa fa-info-circle me-1"></i>Otomatis mengikuti grand total rincian barang PR Non PO di atas');
+			$('#note_nominal').html('<i class="fa fa-info-circle me-1"></i>Automatically follows the grand total of the PR Non PO item details above');
 
 			// Hitung ulang jika sudah ada barang di tabel
 			hitung_grand_total_non_pr();
@@ -593,8 +593,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 		var current_count = get_current_total_files_count();
 		if (current_count >= MAX_TOTAL_FILES) {
 			swal({
-				title: "Batas Maksimal!",
-				text: "Maksimal hanya " + MAX_TOTAL_FILES + " file yang dapat dilampirkan.",
+				title: "Maximum Limit!",
+				text: "Maximum of only " + MAX_TOTAL_FILES + " file yang dapat dilampirkan.",
 				type: "warning"
 			});
 			return;
@@ -624,7 +624,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				if (f.size > MAX_FILE_SIZE_BYTES) {
 					var sizeMb = (f.size / (1024 * 1024)).toFixed(2);
 					swal({
-						title: "Ukuran File Terlalu Besar!",
+						title: "File Size Too Large!",
 						text: "File \"" + f.name + "\" berukuran " + sizeMb + " MB. Maksimal ukuran per file adalah 5 MB.",
 						type: "error"
 					});
@@ -634,8 +634,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				// Validasi 2: Kuota Maksimal 5 File
 				if (current_count >= MAX_TOTAL_FILES) {
 					swal({
-						title: "Batas Maksimal Tercapai!",
-						text: "Maksimal hanya " + MAX_TOTAL_FILES + " file lampiran yang diizinkan. Sebagian file tidak dapat ditambahkan.",
+						title: "Maximum Limit Reached!",
+						text: "Maximum of only " + MAX_TOTAL_FILES + " attachment files are allowed. Some files could not be added.",
 						type: "warning"
 					});
 					break;
@@ -677,10 +677,10 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 					'<td class="text-center font-monospace">' + noUrut + '</td>' +
 					'<td><i class="fa fa-file-upload text-primary me-2"></i><strong>' + f.name + '</strong></td>' +
 					'<td class="text-center font-monospace text-muted">' + fSize + '</td>' +
-					'<td class="text-center"><span class="badge bg-primary">Baru Dipilih</span></td>' +
+					'<td class="text-center"><span class="badge bg-primary">Newly Selected</span></td>' +
 					'<td class="text-center">' +
 						'<button type="button" class="btn btn-xs btn-outline-danger btn_remove_new_file" data-index="' + i + '" title="Batalkan file ini">' +
-							'<i class="fa fa-times me-1"></i> Batal' +
+							'<i class="fa fa-times me-1"></i> Cancel' +
 						'</button>' +
 					'</td>' +
 					'</tr>';
@@ -708,7 +708,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 
 		// Toggle state tombol tambah file
 		if (total >= MAX_TOTAL_FILES) {
-			$('#btn_add_files').prop('disabled', true).addClass('disabled').attr('title', 'Batas maksimal 5 file telah tercapai');
+			$('#btn_add_files').prop('disabled', true).addClass('disabled').attr('title', 'The maximum of 5 files has been reached');
 		} else {
 			$('#btn_add_files').prop('disabled', false).removeClass('disabled').removeAttr('title');
 		}
@@ -727,12 +727,12 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 		var f_name = $(this).data('name');
 
 		swal({
-			title: "Hapus File Lampiran?",
-			text: "File \"" + f_name + "\" akan dihapus permanen!",
+			title: "Delete Attachment File?",
+			text: "File \"" + f_name + "\" will be deleted permanently!",
 			type: "warning",
 			showCancelButton: true,
-			confirmButtonText: "Ya, Hapus!",
-			cancelButtonText: "Batal",
+			confirmButtonText: "Yes, Delete!",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false,
 			closeOnCancel: true
 		}, function(isConfirm) {
@@ -754,18 +754,18 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 								render_new_files_rows();
 							});
 							swal({
-								title: "Sukses!",
+								title: "Success!",
 								text: resp.pesan,
 								type: "success",
 								timer: 1500,
 								showConfirmButton: false
 							});
 						} else {
-							swal("Gagal!", resp.pesan, "error");
+							swal("Failed!", resp.pesan, "error");
 						}
 					},
 					error: function() {
-						swal("Gagal!", "Terjadi kesalahan saat menghapus file.", "error");
+						swal("Failed!", "An error occurred while deleting the file.", "error");
 					}
 				});
 			}
@@ -784,12 +784,12 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 		var nominal_val = $("#jumlah_kasbon").val().toString().replace(/,/g, '');
 
 		if (nominal_val == "0" || nominal_val == "" || parseFloat(nominal_val) <= 0) {
-			errors = "Nominal Kasbon tidak boleh kosong atau 0!";
+			errors = "Cash Advance Amount cannot be empty or 0!";
 		}
 
 		if (tipe_pengajuan === 'pr') {
 			if (!search_pr_non_po || search_pr_non_po === '') {
-				errors = "Silakan pilih No. PR Non PO terlebih dahulu!";
+				errors = "Please select a PR Non PO No. first!";
 			}
 
 			var price_no_input = 0;
@@ -801,7 +801,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			});
 
 			if (price_no_input > 0) {
-				errors = "Pastikan semua harga material pada tabel PR sudah terisi!";
+				errors = "Make sure all material prices in the PR table are filled in!";
 			}
 		}
 
@@ -810,12 +810,12 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 
 		if (errors == "") {
 			swal({
-					title: "Anda Yakin?",
-					text: "Data Akan Disimpan!",
+					title: "Are you sure?",
+					text: "The Data Will Be Saved!",
 					type: "info",
 					showCancelButton: true,
-					confirmButtonText: "Ya, simpan!",
-					cancelButtonText: "Tidak!",
+					confirmButtonText: "Yes, save!",
+					cancelButtonText: "No!",
 					closeOnConfirm: false,
 					closeOnCancel: true
 				},
@@ -840,8 +840,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 							success: function(msg) {
 								if (msg['save'] == '1') {
 									swal({
-										title: "Sukses!",
-										text: "Data Berhasil Disimpan",
+										title: "Success!",
+										text: "Data Saved Successfully",
 										type: "success",
 										timer: 1500,
 										showConfirmButton: false
@@ -854,8 +854,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 									}
 								} else {
 									swal({
-										title: "Gagal!",
-										text: "Data Gagal Disimpan",
+										title: "Failed!",
+										text: "Data Failed to Save",
 										type: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -864,8 +864,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 							},
 							error: function(msg) {
 								swal({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Diproses",
+									title: "Failed!",
+									text: "Ajax Data Failed to Process",
 									type: "error",
 									timer: 1500,
 									showConfirmButton: false
@@ -876,7 +876,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				});
 		} else {
 			swal({
-				title: 'Perhatian!',
+				title: 'Attention!',
 				text: errors,
 				type: 'error'
 			});
@@ -939,7 +939,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 					hitung_grand_total_non_pr();
 
 					if ($('#keperluan').val() == '') {
-						$('#keperluan').val('Kasbon Non PO ' + no_pr);
+						$('#keperluan').val('Non-PO Cash Advance ' + no_pr);
 					}
 
 					// Otomatis tarik No COA dan Nama COA dari PR
@@ -954,7 +954,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 					}
 				} else {
 					swal({
-						title: 'Perhatian!',
+						title: 'Attention!',
 						text: result.pesan,
 						type: 'error'
 					});
@@ -963,7 +963,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			error: function(result) {
 				swal({
 					title: 'Error!',
-					text: 'Terjadi kendala saat memuat data PR, silakan coba beberapa saat lagi.',
+					text: 'A problem occurred while loading PR data, please try again in a moment.',
 					type: 'error'
 				});
 			}
@@ -1094,19 +1094,19 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 
 	function data_approve(id, status) {
 		Swal.fire({
-			title: "Konfirmasi Persetujuan",
-			text: "Apakah Anda yakin ingin menyetujui pengajuan kasbon ini?",
+			title: "Confirm Approval",
+			text: "Are you sure you want to approve this cash advance request?",
 			icon: "question",
 			showCancelButton: true,
 			confirmButtonColor: "#198754",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Setujui!',
-			cancelButtonText: "Batal"
+			confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Approve!',
+			cancelButtonText: "Cancel"
 		}).then((result) => {
 			if (result.isConfirmed) {
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang menyimpan persetujuan kasbon...",
+					text: "Saving cash advance approval...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -1128,8 +1128,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						if (msg['save'] == '1' || msg.save == 1 || msg.save == true || msg.status == '1' || msg.status == 1) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Disetujui!",
-								text: msg.msg || "Pengajuan kasbon berhasil disetujui.",
+								title: "Approved Successfully!",
+								text: msg.msg || "Cash advance request approved successfully.",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -1137,8 +1137,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.msg || "Data gagal disetujui."
+								title: "Failed!",
+								text: msg.msg || "Data failed to approve."
 							});
 						}
 					},
@@ -1146,7 +1146,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan koneksi saat memproses persetujuan."
+							text: "A connection error occurred while processing the approval."
 						});
 					}
 				});
@@ -1159,17 +1159,17 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 		if (!id) {
 			Swal.fire({
 				icon: "warning",
-				title: "Peringatan",
-				text: "ID pengajuan tidak ditemukan."
+				title: "Warning",
+				text: "Request ID not found."
 			});
 			return;
 		}
 
 		Swal.fire({
 			title: "Alasan Penolakan",
-			text: "Silakan masukkan alasan penolakan pengajuan kasbon ini:",
+			text: "Please enter the reason for rejecting this cash advance request:",
 			input: "textarea",
-			inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+			inputPlaceholder: "Write the rejection reason here...",
 			inputAttributes: {
 				"aria-label": "Alasan penolakan",
 				"rows": 4
@@ -1177,11 +1177,11 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 			showCancelButton: true,
 			confirmButtonColor: "#dc3545",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-ban me-1"></i> Tolak Pengajuan',
-			cancelButtonText: "Batal",
+			confirmButtonText: '<i class="fa fa-ban me-1"></i> Reject Request',
+			cancelButtonText: "Cancel",
 			inputValidator: (value) => {
 				if (!value || !value.trim()) {
-					return "Alasan penolakan wajib diisi!";
+					return "A rejection reason is required!";
 				}
 			}
 		}).then((result) => {
@@ -1189,7 +1189,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 				var reason = result.value.trim();
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang memproses penolakan kasbon...",
+					text: "Processing cash advance rejection...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -1209,8 +1209,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						if (msg.save == 1 || msg.save == true || msg.status == 1 || msg.status == true) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Ditolak!",
-								text: msg.message || msg.msg || "Data pengajuan kasbon berhasil ditolak.",
+								title: "Rejected Successfully!",
+								text: msg.message || msg.msg || "Cash advance request data rejected successfully.",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -1218,8 +1218,8 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.message || msg.msg || "Data gagal ditolak."
+								title: "Failed!",
+								text: msg.message || msg.msg || "Data failed to reject."
 							});
 						}
 					},
@@ -1227,7 +1227,7 @@ $is_mode_pr = (isset($data->id_pr) && !empty($data->id_pr));
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan sistem saat memproses penolakan."
+							text: "A system error occurred saat memproses penolakan."
 						});
 					}
 				});

@@ -37,7 +37,7 @@ foreach ($results['result_payment'] as $item_check) {
 		if (!empty($get_inv_po) && !empty($get_inv_po->no_po)) {
 			$no_po_check = $get_inv_po->no_po;
 			if (strpos((string) $no_po_check, 'TRS1') !== false) {
-				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check));
+				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check ?? ''));
 				$get_ipp = $this->db->select('no_ipp')->where_in('kode_trans', $arr_inc)->get('tr_incoming_check')->row();
 				if (!empty($get_ipp)) {
 					$no_po_check = $get_ipp->no_ipp;
@@ -131,16 +131,16 @@ if (!empty($results['result_header']->nm_supplier)) {
 	<div class="payment-section-body">
 		<table class="payment-info-table" style="width: 100%;" border="0">
 			<tr>
-				<td width="15%" style="">Tgl Bayar</td>
+				<td width="15%" style="">Payment Date</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="text" name="tgl_bayar" id="tgl_bayar" readonly disabled class="form-control form-control-sm tgl_bayar" value="<?= $results['result_header']->tgl_bayar ?>" placeholder="Pilih tanggal">
+					<input type="text" name="tgl_bayar" id="tgl_bayar" readonly disabled class="form-control form-control-sm tgl_bayar" value="<?= $results['result_header']->tgl_bayar ?>" placeholder="Select date">
 				</td>
 				<td width="15%" style="">Supplier</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier) ?>">
-					<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier) ?>">
+					<input type="hidden" name="supplier_input" class="supplier_input" value="<?= implode(',', $kode_supplier ?? []) ?>">
+					<input type="hidden" name="nm_supplier_input" class="nm_supplier_input" value="<?= implode(',', $nm_supplier ?? []) ?>">
 					<select name="supplier" id="" class="form-control form-control-sm supplier" disabled>
 						<option value="">- Supplier Name -</option>
 						<?php
@@ -153,12 +153,12 @@ if (!empty($results['result_header']->nm_supplier)) {
 				</td>
 			</tr>
 			<tr>
-				<td width="15%" style="">Keterangan Pembayaran</td>
+				<td width="15%" style="">Payment Description</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
 					<textarea name="keterangan_pembayaran" readonly id="" class="form-control form-control-sm keterangan_pembayaran"><?= $results['result_header']->keterangan_pembayaran ?></textarea>
 				</td>
-				<td width="15%" style="">Pilih Bank</td>
+				<td width="15%" style="">Select Bank</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
 					<select name="bank" id="" class="form-control form-control-sm bank" disabled onchange="set_jurnal_refill('<?= $results['id_payment'] ?>')">
@@ -172,11 +172,11 @@ if (!empty($results['result_header']->nm_supplier)) {
 				</td>
 			</tr>
 			<tr>
-				<td width="15%" style="">Mata Uang</td>
+				<td width="15%" style="">Currency</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
 					<select name="mata_uang" id="" class="form-control form-control-sm mata_uang" disabled data-placeholder="- Pilih Mata Uang -">
-						<option value="">- Mata Uang -</option>
+						<option value="">- Currency -</option>
 						<?php
 						foreach ($results['list_mata_uang'] as $item_mata_uang) {
 							echo '<option value="' . $item_mata_uang->kode . '" ' . ($item_mata_uang->kode == $results['result_header']->mata_uang ? 'selected' : '') . '>' . $item_mata_uang->kode . '</option>';
@@ -184,7 +184,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 						?>
 					</select>
 				</td>
-				<td width="15%" style="">Nilai Bank</td>
+				<td width="15%" style="">Bank Value</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
 					<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="<?= number_format((float) $results['result_header']->payment_bank, 2) ?>" readonly>
@@ -194,9 +194,9 @@ if (!empty($results['result_header']->nm_supplier)) {
 				<td width="15%" style="">Kurs</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
-					<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="<?= number_format((float) $results['result_header']->kurs_payment, 2) ?>" readonly disabled placeholder="Pilih mata uang dulu">
+					<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="<?= number_format((float) $results['result_header']->kurs_payment, 2) ?>" readonly disabled placeholder="Select a currency first">
 				</td>
-				<td width="15%" style="">Nilai Bank IDR</td>
+				<td width="15%" style="">Bank IDR Value</td>
 				<td width="5%" class="text-center">:</td>
 				<td width="25%">
 					<input type="text" name="nilai_bank_idr" id="" class="form-control form-control-sm text-right nilai_bank_idr" value="<?= number_format((float) $results['result_header']->dibayar_idr, 2) ?>" readonly readonly style="background-color: #e9ecef;">
@@ -217,11 +217,11 @@ if (!empty($results['result_header']->nm_supplier)) {
 				<thead>
 					<tr class='bg-blue'>
 						<th class="text-center">Supplier</th>
-						<th class="text-center">Nomor Dokumen</th>
+						<th class="text-center">Document Number</th>
 						<th class="text-center">Invoice</th>
 						<th class="text-center" colspan="2" <?= $hide_ppn_pph_style ?>>PPH</th>
 						<th class="text-center" <?= $hide_ppn_pph_style ?>>PPN</th>
-						<th class="text-center">Lampiran</th>
+						<th class="text-center">Attachment</th>
 						<th class="text-center">DPP</th>
 					</tr>
 				</thead>
@@ -355,7 +355,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 <div class="payment-section-card">
 	<div class="payment-section-body payment-footer-actions">
 		<div class="form-group" style="margin-bottom: 0;">
-			<a href="<?= base_url() ?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+			<a href="<?= base_url() ?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 		</div>
 	</div>
 </div>
@@ -398,7 +398,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 			if (!mata_uang || mata_uang === '') {
 				// Belum pilih — kosongkan dan disable
 				kurs_input.val('').prop('disabled', true)
-					.attr('placeholder', 'Pilih mata uang dulu');
+					.attr('placeholder', 'Select a currency first');
 			} else if (mata_uang.toUpperCase() === 'IDR') {
 				// IDR — set 1 dan tetap disable
 				kurs_input.val('1').prop('disabled', true)
@@ -406,7 +406,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 			} else {
 				// Non-IDR — enable dan minta input kurs
 				kurs_input.val('').prop('disabled', false)
-					.attr('placeholder', 'Masukkan kurs')
+					.attr('placeholder', 'Enter exchange rate')
 					.focus();
 			}
 
@@ -490,7 +490,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		// Grand Total = Subtotal + PPN - PPH + Bank Charge
 		var grand_total = total_payment + total_ppn - total_pph + bank_charge;
 
-		// Kontrol = Nilai Bank IDR - Grand Total Payment
+		// Kontrol = Bank IDR Value - Grand Total Payment
 		var kontrol = parseFloat((nilai_bank_idr - grand_total).toFixed(2));
 
 		$('.kontrol').val(kontrol);
@@ -629,7 +629,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		var grand_total = subtotal + total_ppn - total_pph + bank_charge;
 		$('.grand_total_payment_col').html('<strong>' + number_format(grand_total, 2) + '</strong>');
 
-		// Selisih Kurs: bandingkan Nilai Bank IDR dengan nilai berdasarkan kurs_receive_invoice
+		// Selisih Kurs: bandingkan Bank IDR Value dengan nilai berdasarkan kurs_receive_invoice
 		var kurs_receive = parseFloat($('.kurs_receive_invoice').val()) || 0;
 		var nilai_bank_input = parseFloat($('.input_payment_bank').val().split(',').join('')) || 0;
 		var nilai_bank_idr = nilai_bank_input * kurs_val;
@@ -678,7 +678,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		if (payment_bank <= 0) {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Nilai bank harus diisi dan tidak boleh 0!',
+				text: 'Sorry, the bank value is required and cannot be 0!',
 				type: 'warning'
 			});
 
@@ -687,7 +687,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		if (bank == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Bank wajib diisi!',
+				text: 'Sorry, Bank is required!',
 				type: 'warning'
 			});
 
@@ -697,7 +697,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		if (mata_uang == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Mata Uang tidak boleh kosong!',
+				text: 'Sorry, Currency cannot be empty!',
 				type: 'warning'
 			});
 
@@ -707,7 +707,7 @@ if (!empty($results['result_header']->nm_supplier)) {
 		if (kurs_payment == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Kurs payment tidak bbisa kosong!',
+				text: 'Sorry, the payment exchange rate cannot be empty!',
 				type: 'warning'
 			});
 

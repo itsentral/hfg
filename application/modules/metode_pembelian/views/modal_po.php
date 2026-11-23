@@ -16,7 +16,7 @@
             </div>
             <label class='label-control col-sm-2'><b>Repeat-PO Valid</b></label>
             <div class='col-sm-4'>              
-                <input type="text" id='valid_date' name='valid_date' class='form-control input-md datepicker' placeholder='Jangan dipilih jika tidak repeat PO' readonly>
+                <input type="text" id='valid_date' name='valid_date' class='form-control input-md datepicker' placeholder='Do not select if it is not a repeat PO' readonly>
             </div>
         </div>
         <div class='form-group row'>		 	 
@@ -25,11 +25,11 @@
                 <select id='category2' name='category2' class='form-control input-sm chosen-select'>
                     <option value='0'>Select Category</option>
                     <option value='asset'>ASSET</option>
-                    <option value='rutin'>STOK</option>
-				    <option value='non rutin'>DEPARTEMEN</option>
+                    <option value='rutin'>STOCK</option>
+				    <option value='non rutin'>DEPARTMENT</option>
                 </select>
             </div>
-            <label class='label-control col-sm-2'><b>Tanggal Dibutuhkan <span class='text-red'>*</span></b></label>
+            <label class='label-control col-sm-2'><b>Required Date <span class='text-red'>*</span></b></label>
             <div class='col-sm-4'>              
                 <input type="text" id='tanggal_dibutuhkan' name='tanggal_dibutuhkan' class='form-control input-md datepicker' readonly>
             </div>

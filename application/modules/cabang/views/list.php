@@ -23,11 +23,11 @@
 		<thead>
 		<tr>
 			<th width="50">#</th>
-			<th>Cabang ID</th>
-			<th>Nama Cabang</th>
-			<th>Kepala Cabang</th>
-			<th>Kota</th>
-			<th>Alamat</th>			
+			<th>Branch ID</th>
+			<th>Branch Name</th>
+			<th>Branch Manager</th>
+			<th>City</th>
+			<th>Address</th>			
 			<th>Status</th>
 			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
 			<th width="25">Action</th>
@@ -48,9 +48,9 @@
 			<td><?= $record->alamat ?></td>			
 			<td>
 				<?php if($record->sts_aktif == 'aktif'){ ?>
-					<label class="label label-success">Aktif</label>
+					<label class="label label-success">Active</label>
 				<?php }else{ ?>
-					<label class="label label-danger">Non Aktif</label>
+					<label class="label label-danger">Inactive</label>
 				<?php } ?>
 			</td>
 			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
@@ -79,11 +79,11 @@
 		<tfoot>
 		<tr>
 		<th width="50">#</th>
-			<th>Cabang ID</th>
-			<th>Nama Cabang</th>
-			<th>Kepala Cabang</th>
-			<th>Kota</th>
-			<th>Alamat</th>			
+			<th>Branch ID</th>
+			<th>Branch Name</th>
+			<th>Branch Manager</th>
+			<th>City</th>
+			<th>Address</th>			
 			<th>Status</th>
 			<?php if($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>
 			<th width="25">Action</th>
@@ -113,7 +113,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">
-        <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
+        <span class="glyphicon glyphicon-remove"></span>  Close</button>
         </div>
     </div>
   </div>
@@ -153,13 +153,13 @@
 	function delete_data(id){
 		//alert(id);
 		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Terhapus secara Permanen!",
+		  title: "Are you sure?",
+		  text: "The data will be permanently deleted!",
 		  type: "warning",
 		  showCancelButton: true,
 		  confirmButtonColor: "#DD6B55",
-		  confirmButtonText: "Ya, delete!",
-		  cancelButtonText: "Tidak!",
+		  confirmButtonText: "Yes, delete!",
+		  cancelButtonText: "No!",
 		  closeOnConfirm: false,
 		  closeOnCancel: true
 		},
@@ -172,8 +172,8 @@
 		            success: function(msg){
 		                if(msg['delete']=='1'){		                	
 		                    swal({
-		                      title: "Terhapus!",
-		                      text: "Data berhasil dihapus",
+		                      title: "Deleted!",
+		                      text: "Data deleted successfully",
 		                      type: "success",
 		                      timer: 1500,
 		                      showConfirmButton: false
@@ -181,8 +181,8 @@
 		                    window.location.reload();
 		                } else {
 		                    swal({
-		                      title: "Gagal!",
-		                      text: "Data gagal dihapus",
+		                      title: "Failed!",
+		                      text: "Failed to delete data",
 		                      type: "error",
 		                      timer: 1500,
 		                      showConfirmButton: false
@@ -191,8 +191,8 @@
 		            },
 		            error: function(){
 		                swal({
-	                      title: "Gagal!",
-	                      text: "Gagal Eksekusi Ajax",
+	                      title: "Failed!",
+	                      text: "Ajax execution failed",
 	                      type: "error",
 	                      timer: 1500,
 	                      showConfirmButton: false

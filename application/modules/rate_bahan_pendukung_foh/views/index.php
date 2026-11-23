@@ -8,13 +8,13 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <div>
             <h5 class="mb-1 text-primary fw-bold">
-                <i class="fa fa-cubes me-2"></i>Rate Bahan Pendukung Khusus &amp; FOH
+                <i class="fa fa-cubes me-2"></i>Rate Special Supporting Material &amp; FOH
             </h5>
             <small class="text-muted">Rate per Product Category (Rp/Kg). Digunakan dalam perhitungan HPP Simulasi Costing.</small>
         </div>
         <div>
             <span class="badge bg-light text-dark border px-3 py-2 me-2">
-                Total: <strong><?= count($list) ?></strong> Kategori
+                Total: <strong><?= count($list ?? []) ?></strong> Category
             </span>
             <?php if (($ENABLE_ADD || $ENABLE_MANAGE) && !empty($available)): ?>
                 <button type="button" class="btn btn-primary btn-sm btn-add-rate shadow-sm">
@@ -43,7 +43,7 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
                     <tr>
                         <th class="text-center" width="50">#</th>
                         <th>Product Category</th>
-                        <th class="text-end" width="220">Rate Bahan Pendukung Khusus (Rp/Kg)</th>
+                        <th class="text-end" width="220">Rate Special Supporting Material (Rp/Kg)</th>
                         <th class="text-end" width="220">Rate FOH (Rp/Kg)</th>
                         <th class="text-center" width="160">Last Update</th>
                         <?php if ($ENABLE_MANAGE): ?>
@@ -80,7 +80,7 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
                                         <button type="button" class="btn btn-sm btn-danger btn-del-rate ms-1"
                                             data-id="<?= $r->id ?>"
                                             data-nama="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
-                                            title="Hapus">
+                                            title="Delete">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -102,7 +102,7 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
                 <input type="hidden" name="id" id="rate_id" value="">
 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title text-white" id="modalRateLabel">Rate Bahan Pendukung &amp; FOH</h5>
+                    <h5 class="modal-title text-white" id="modalRateLabel">Supporting Material &amp; FOH Rate</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -120,13 +120,13 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
                         <input type="text" id="ro_cat_name" class="form-control bg-light" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Rate Bahan Pendukung Khusus (Rp/Kg) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Rate Special Supporting Material (Rp/Kg) <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
                             <input type="number" step="0.0001" min="0" name="rate_pendukung_khusus" id="rate_bpk" class="form-control text-end" required placeholder="0.00">
                             <span class="input-group-text">/ Kg</span>
                         </div>
-                        <div class="form-text text-muted">Tarif bahan pendukung khusus per kilogram.</div>
+                        <div class="form-text text-muted">Special supporting material tariff per kilogram.</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Rate FOH (Rp/Kg) <span class="text-danger">*</span></label>
@@ -139,8 +139,8 @@ $ENABLE_DELETE  = has_permission('Rate_Bahan_Pendukung_FOH.Delete');
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Simpan</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Save</button>
                 </div>
             </form>
         </div>
@@ -167,7 +167,7 @@ $(document).ready(function() {
         $('#rate_code_lv2').val('').prop('required', true);
         $('#rate_bpk').val('');
         $('#rate_foh').val('');
-        $('#modalRateLabel').text('Tambah Rate Bahan Pendukung & FOH');
+        $('#modalRateLabel').text('Add Supporting Material & FOH Rate');
         $('#modal-rate').modal('show');
     });
 
@@ -195,13 +195,13 @@ $(document).ready(function() {
         var nama = $(this).data('nama');
 
         Swal.fire({
-            title: 'Hapus Rate?',
-            text: 'Rate Bahan Pendukung Khusus & FOH untuk "' + nama + '" akan dihapus.',
+            title: 'Delete Rate?',
+            text: 'Special Supporting Material & FOH Rate for "' + nama + '" akan dihapus.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Ya, Hapus',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
         }).then(function(res) {
             if (!res.isConfirmed) return;
             $.ajax({
@@ -211,10 +211,10 @@ $(document).ready(function() {
                 data: { id: id },
                 success: function(resp) {
                     if (resp.status == 1) {
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function() { window.location.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({ title: 'Failed!', text: resp.pesan, icon: 'error' });
                     }
                 },
                 error: function(xhr) {

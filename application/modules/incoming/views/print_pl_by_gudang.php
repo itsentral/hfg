@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Packing List per Gudang - <?= isset($header_ros['id']) ? $header_ros['id'] : '-' ?></title>
+    <title>Packing List per Warehouse - <?= isset($header_ros['id']) ? $header_ros['id'] : '-' ?></title>
     <style>
         /* ── Reset & Base ───────────────────────────────────────────── */
         * {
@@ -274,7 +274,7 @@
 
     /* ── Ambil nilai header ── */
     $no_ros        = $header_ros['id']            ?? '-';
-    $no_po         = isset($header_ros['no_po'])  ? str_replace(',', ', ', $header_ros['no_po']) : '-';
+    $no_po         = isset($header_ros['no_po'])  ? str_replace(',', ', ', $header_ros['no_po'] ?? '') : '-';
     $no_surat      = $header_ros['no_surat']      ?? '-';
     $nm_supplier   = $header_ros['nm_supplier']   ?? '-';
     $awb_number    = (!empty($header_ros['awb_bl_number'])) ? $header_ros['awb_bl_number'] : '-';
@@ -386,8 +386,8 @@
                         $mat_summary[$mat_key]['coil_count']++;
                     }
 
-                    $pack_nw = array_sum(array_column($items, 'berat_bersih'));
-                    $pack_gw = array_sum(array_column($items, 'berat_kotor'));
+                    $pack_nw = array_sum(array_column($items ?? [], 'berat_bersih'));
+                    $pack_gw = array_sum(array_column($items ?? [], 'berat_kotor'));
                     ?>
 
                     <div style="margin-bottom: 16px;">

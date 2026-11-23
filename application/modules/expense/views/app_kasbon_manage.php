@@ -33,13 +33,13 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
             <div class="box box-primary">
                 <div class="box-body">
                     <div class="form-group ">
-                        <label class="col-sm-2 control-label">No Dokumen</label>
+                        <label class="col-sm-2 control-label">Document No.</label>
                         <div class="col-sm-4">
                             <input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
                         </div>
-                        <label class="col-sm-2 control-label">Tanggal <b class="text-red">*</b></label>
+                        <label class="col-sm-2 control-label">Date <b class="text-red">*</b></label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" required>
+                            <input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Document Date" required>
                         </div>
                     </div>
                     <div class="form-group ">
@@ -47,13 +47,13 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                         <div class="col-sm-4">
                             <input type="text" class="form-control" id="keperluan" name="keperluan" value="<?php echo (isset($data->keperluan) ? $data->keperluan : ''); ?>" placeholder="Keperluan" required>
                         </div>
-                        <label class="col-sm-2 control-label">Nominal Kasbon</label>
+                        <label class="col-sm-2 control-label">Cash Advance Amount</label>
                         <div class="col-sm-4">
                             <input type="text" class="form-control divide" id="jumlah_kasbon" name="jumlah_kasbon" value="<?php echo (isset($data->jumlah_kasbon) ? $data->jumlah_kasbon : '0'); ?>" placeholder="jumlah_kasbon">
                         </div>
                     </div>
                     <div class="form-group ">
-                        <label class="col-sm-2 control-label">Dokumen 1</label>
+                        <label class="col-sm-2 control-label">Document 1</label>
                         <div class="col-sm-4">
                             <input type="hidden" name="filename" id="filename" value="<?= (isset($data->doc_file) ? $data->doc_file : ''); ?>">
                             <input type="file" name="doc_file" id="doc_file">
@@ -65,7 +65,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                 ?>
                             </span>
                         </div>
-                        <label class="col-sm-2 control-label">Dokumen 2</label>
+                        <label class="col-sm-2 control-label">Document 2</label>
                         <div class="col-sm-4">
                             <input type="hidden" name="filename2" id="filename2" value="<?= (isset($data->doc_file_2) ? $data->doc_file_2 : ''); ?>">
                             <input type="file" name="doc_file_2" id="doc_file_2">
@@ -80,7 +80,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                     </div>
 
                     <div class="form-group">
-                        <!-- <label class="col-sm-2 control-label">Metode Pembayaran</label>
+                        <!-- <label class="col-sm-2 control-label">Payment Method</label>
 						<div class="col-sm-4">
 							<select name="metode_pembayaran" id="" class="form-control metode_pembayaran" required>
 								<option value="">- Metode Pembayaran -</option>
@@ -88,9 +88,9 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
 								<option value="2" <?= ($metode_pembayaran == 2) ? 'selected' : null ?>>Pettycash Finance</option>
 							</select>
 						</div> -->
-                        <label class="col-sm-2 control-label">Keterangan</label>
+                        <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-4">
-                            <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" required><?php echo (isset($data->keterangan) ? $data->keterangan : ''); ?></textarea>
+                            <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Description" required><?php echo (isset($data->keterangan) ? $data->keterangan : ''); ?></textarea>
 
                             <?php
                             if (isset($data->st_reject)) {
@@ -135,24 +135,24 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                     </div>
 
                     <div class="transfer_ke_cont">
-                        <h4>Transfer ke</h4>
+                        <h4>Transfer to</h4>
                         <div class="form-group ">
                             <label class="col-md-1 control-label">Bank</label>
                             <div class="col-md-2">
                                 <input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank">
                             </div>
-                            <label class="col-md-2 control-label">Nomor Rekening</label>
+                            <label class="col-md-2 control-label">Account Number</label>
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening">
+                                <input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Account Number">
                             </div>
-                            <label class="col-md-2 control-label">Nama Rekening</label>
+                            <label class="col-md-2 control-label">Account Name</label>
                             <div class="col-md-3">
-                                <input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening">
+                                <input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Account Holder Name">
                             </div>
                         </div>
                     </div>
 
-                    <h4>Kasbon PR Non PO</h4>
+                    <h4>PR Non PO Cash Advance</h4>
                     <div class="form-group">
                         <div class="col-md-1 control-label">
                             No. PR
@@ -184,7 +184,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                             ?>
 
                             <input type="hidden" name="tipe_pr" id="tipe_pr" value="<?= (isset($list_detail_pr_kasbon[0]['tipe_pr'])) ? $list_detail_pr_kasbon[0]['tipe_pr'] : null ?>">
-                            <label for="">*Note: Klik enter jika sudah</label>
+                            <label for="">*Note: Press enter when done</label>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -195,7 +195,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                     <th class="text-center">Material Name</th>
                                     <th class="text-center">Qty</th>
                                     <th class="text-center">Unit</th>
-                                    <th class="text-center">Harga Satuan</th>
+                                    <th class="text-center">Unit Price</th>
                                     <th class="text-center">Total</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -254,16 +254,16 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                         echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban">&nbsp;</i> Reject</a>';
                                         $stsview = 'view';
                                     } else {
-                                        echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
+                                        echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>';
                                     }
                                 } else {
-                                    echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
+                                    echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>';
                                 }
                             } else {
-                                echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
+                                echo '<button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>';
                             }
                             ?>
-                            <a class="btn btn-default btn-sm" onclick="window.location=siteurl+'expense/kasbon<?= $mod ?>';return false;"><i class="fa fa-reply"></i> Batal</a>
+                            <a class="btn btn-default btn-sm" onclick="window.location=siteurl+'expense/kasbon<?= $mod ?>';return false;"><i class="fa fa-reply"></i> Cancel</a>
                         </div>
                     </div>
                     <?php
@@ -358,13 +358,13 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
 
         if ($("#filename").val() == "" && search_pr_non_po == '') {
             if ($('#doc_file').get(0).files.length === 0) {
-                errors = "Dokumen 1 harus diupload";
+                errors = "Document 1 must be uploaded";
             }
         }
 
         // var metode_pembayaran = $('.metode_pembayaran').val();
 
-        if ($("#jumlah_kasbon").val() == "0") errors = "Jumlah Kasbon tidak boleh kosong";
+        if ($("#jumlah_kasbon").val() == "0") errors = "Cash Advance Amount cannot be empty";
         if ($("#keperluan").val() == "") errors = "keperluan tidak boleh kosong";
         if ($("#tgl_doc").val() == "") errors = "Tanggal Transaksi tidak boleh kosong";
         // if (metode_pembayaran == "") errors = "Pilih metode pembayaran";
@@ -391,12 +391,12 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
         }
         if (errors == "") {
             swal({
-                    title: "Anda Yakin?",
-                    text: "Data Akan Disimpan!",
+                    title: "Are you sure?",
+                    text: "The Data Will Be Saved!",
                     type: "info",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, simpan!",
-                    cancelButtonText: "Tidak!",
+                    confirmButtonText: "Yes, save!",
+                    cancelButtonText: "No!",
                     closeOnConfirm: false,
                     closeOnCancel: true
                 },
@@ -413,8 +413,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                             success: function(msg) {
                                 if (msg['save'] == '1') {
                                     swal({
-                                        title: "Sukses!",
-                                        text: "Data Berhasil Di Simpan",
+                                        title: "Success!",
+                                        text: "Data saved successfully",
                                         type: "success",
                                         timer: 1500,
                                         showConfirmButton: false
@@ -422,8 +422,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                     window.location = siteurl + 'expense/kasbon';
                                 } else {
                                     swal({
-                                        title: "Gagal!",
-                                        text: "Data Gagal Di Simpan",
+                                        title: "Failed!",
+                                        text: "Failed to save data",
                                         type: "error",
                                         timer: 1500,
                                         showConfirmButton: false
@@ -433,8 +433,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                             },
                             error: function(msg) {
                                 swal({
-                                    title: "Gagal!",
-                                    text: "Ajax Data Gagal Di Proses",
+                                    title: "Failed!",
+                                    text: "Ajax request failed to process.",
                                     type: "error",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -633,12 +633,12 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
 
     function data_approve() {
         swal({
-                title: "Anda Yakin?",
-                text: "Data Akan Diupdate!",
+                title: "Are you sure?",
+                text: "The Data Will Be Updated!",
                 type: "info",
                 showCancelButton: true,
-                confirmButtonText: "Ya, setuju!",
-                cancelButtonText: "Tidak!",
+                confirmButtonText: "Yes, approve!",
+                cancelButtonText: "No!",
                 closeOnConfirm: false,
                 closeOnCancel: true
             },
@@ -652,8 +652,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                         success: function(msg) {
                             if (msg['save'] == '1') {
                                 swal({
-                                    title: "Sukses!",
-                                    text: "Data Berhasil Di Update",
+                                    title: "Success!",
+                                    text: "Data Updated Successfully",
                                     type: "success",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -661,8 +661,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                 window.location = siteurl + 'expense/kasbon_fin_manage';
                             } else {
                                 swal({
-                                    title: "Gagal!",
-                                    text: "Data Gagal Di Update",
+                                    title: "Failed!",
+                                    text: "Data Failed to Update",
                                     type: "error",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -672,8 +672,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                         },
                         error: function(msg) {
                             swal({
-                                title: "Gagal!",
-                                text: "Ajax Data Gagal Di Proses",
+                                title: "Failed!",
+                                text: "Ajax request failed to process.",
                                 type: "error",
                                 timer: 1500,
                                 showConfirmButton: false
@@ -687,7 +687,7 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
 
     function data_reject() {
         swal({
-                title: "Perhatian",
+                title: "Attention",
                 text: "Berikan alasan penolakan",
                 type: "input",
                 showCancelButton: true,
@@ -697,17 +697,17 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
             function(inputValue) {
                 if (inputValue === false) return false;
                 if (inputValue === "") {
-                    swal.showInputError("Tuliskan alasan anda");
+                    swal.showInputError("Write your reason");
                     return false
                 }
 
                 swal({
-                        title: "Anda Yakin?",
-                        text: "Data Akan ditolak!",
+                        title: "Are you sure?",
+                        text: "The Data Will Be Rejected!",
                         type: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Ya, tolak!",
-                        cancelButtonText: "Tidak!",
+                        confirmButtonText: "Yes, reject!",
+                        cancelButtonText: "No!",
                         closeOnConfirm: false,
                         closeOnCancel: true
                     },
@@ -726,8 +726,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                 success: function(msg) {
                                     if (msg['save'] == '1') {
                                         swal({
-                                            title: "Sukses!",
-                                            text: "Data Berhasil Di Tolak",
+                                            title: "Success!",
+                                            text: "Data Rejected Successfully",
                                             type: "success",
                                             timer: 1500,
                                             showConfirmButton: false
@@ -735,8 +735,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                         window.location = siteurl + 'expense/kasbon_fin_manage'
                                     } else {
                                         swal({
-                                            title: "Gagal!",
-                                            text: "Data Gagal Di Tolak",
+                                            title: "Failed!",
+                                            text: "Data Failed to Reject",
                                             type: "error",
                                             timer: 1500,
                                             showConfirmButton: false
@@ -746,8 +746,8 @@ $metode_pembayaran = (isset($data)) ? $data->metode_pembayaran : 1;
                                 },
                                 error: function(msg) {
                                     swal({
-                                        title: "Gagal!",
-                                        text: "Ajax Data Gagal Di Proses",
+                                        title: "Failed!",
+                                        text: "Ajax request failed to process.",
                                         type: "error",
                                         timer: 1500,
                                         showConfirmButton: false

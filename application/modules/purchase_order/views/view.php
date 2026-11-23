@@ -20,7 +20,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									</div>
 									<div class="col-md-8">
 										<select id="id_suplier" name="id_suplier" class='form-control input-md chosen-select' onchange="get_lokasi()" required>
-											<option value="">--Pilih--</option>
+											<option value="">--Select--</option>
 											<?php foreach ($results['supplier'] as $supplier) { ?>
 												<option value="<?= $supplier->id_suplier ?>"><?= strtoupper(strtolower((string) $supplier->name_suplier)) ?></option>
 											<?php } ?>
@@ -35,7 +35,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8" id="ubahloi">
 								<select id="loi" name="loi" class="form-control select2" onchange="get_kurs()" required>
-									<option value="">--Pilih--</option>
+									<option value="">--Select--</option>
 									<option value="Import" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Import') ? 'selected' : null ?>>Import</option>
 									<option value="Lokal" <?= (isset($results['get_po']) && $results['get_po']->loi == 'Lokal') ? 'selected' : null ?>>Lokal</option>
 								</select>
@@ -49,7 +49,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8" id="ubahloi">
 								<select id="select_department" name="dept[]" class="form-control select2" multiple required>
-									<option value="">--Pilih--</option>
+									<option value="">--Select--</option>
 									<?php
 									foreach ($results['list_department'] as $item) {
 										$selected = '';
@@ -96,7 +96,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="customer">Tanggal PO</label>
+								<label for="customer">PO Date</label>
 							</div>
 							<div class="col-md-8">
 								<input type="text" class="form-control" id="tanggal" value="<?= $results['get_po']->tanggal ?>" onkeyup required name="tanggal">
@@ -133,7 +133,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8">
 								<select id="term" name="term" class="form-control select2" required>
-									<option value="">-- Pilih --</option>
+									<option value="">-- Select --</option>
 									<?php foreach ($results['term'] as $term): ?>
 										<option value="<?= htmlspecialchars((string) $term->id) ?>" <?= ($results['get_po']->term == ($term->id)) ? 'selected' : '' ?>>
 											<?= htmlspecialchars((string) $term->name) ?>
@@ -171,7 +171,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					<div class="col-sm-6">
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="id_customer">Keterangan</label>
+								<label for="id_customer">Description</label>
 							</div>
 							<div class="col-md-8">
 								<textarea name="keterangan" id="" class="form-control"><?= $results['get_po']->note ?></textarea>
@@ -181,7 +181,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					<div class="col-sm-6" hidden>
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="id_customer">Alamat</label>
+								<label for="id_customer">Address</label>
 							</div>
 							<div class="col-md-8">
 								<textarea name="delivery_address" id="" class="form-control"><?= $results['get_po']->delivery_address ?></textarea>
@@ -198,7 +198,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-8">
 								<select id="cif" name="cif" class="form-control select" required>
-									<option value="">--Pilih--</option>
+									<option value="">--Select--</option>
 									<option value="CIF">CIF</option>
 									<option value="FOB">FOB</option>
 									<option value="LOCO">LOCO</option>
@@ -219,13 +219,13 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							name="show_tax"
 							value="Y"
 							<?= ($results['get_po']->show_tax == 'Y') ? 'checked' : ''; ?>>
-						<label class="form-check-label" for="show_tax"><b>Gunakan Pajak (PPn)</b></label>
+						<label class="form-check-label" for="show_tax"><b>Use Tax (VAT)</b></label>
 					</div>
 					<table class='table table-bordered table-striped'>
 						<thead>
 							<tr class='bg-blue'>
 								<th style="min-width: 200px;">Item</th>
-								<th style="min-width: 200px;">Nama Lain</th>
+								<th style="min-width: 200px;">Other Name</th>
 								<th style="min-width: 150px;">HS Code</th>
 								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;" hidden>Width</th>
@@ -237,15 +237,15 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								<th style="min-width: 100px;" hidden>Rate LME</th>
 								<th style="min-width: 100px;" hidden>Alloy Price</th>
 								<th style="min-width: 100px;" hidden>Fab Cost</th>
-								<th style="min-width: 150px;">Harga Satuan</th>
+								<th style="min-width: 150px;">Unit Price</th>
 								<th style="min-width: 100px;" hidden>Disc %</th>
-								<th style="min-width: 100px;" hidden>Biaya Kirim</th>
-								<th style="min-width: 150px;">Total Harga</th>
-								<th style="min-width: 150px;">Nilai Discount</th>
-								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
+								<th style="min-width: 100px;" hidden>Shipping Cost</th>
+								<th style="min-width: 150px;">Total Price</th>
+								<th style="min-width: 150px;">Discount Value</th>
+								<!-- <th style="min-width: 100px;">VAT Value</th> -->
 								<th style="min-width: 150px;">Sub Total</th>
 								<th style="min-width: 150px;">Deskripsi Item</th>
-								<th style="min-width: 150px;">Sisa Kuota</th>
+								<th style="min-width: 150px;">Remaining Quota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -339,8 +339,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 														<td class='text-center'>" . ucfirst((string) $value->packing_unit) . ucfirst((string) $value->packing_unit2) . "</td>
 														<td hidden>
 															<select class='form-control input-sm' id='dt_ratelme_" . $key . "' name='dt[" . $key . "][ratelme]' onchange='CariPrice(" . $key . ")'>
-																<option value=''>-Pilih-</option>
-																<option value='Hari Ini'>Hari ini</option>
+																<option value=''>-Select-</option>
+																<option value='Hari Ini'>Today</option>
 																<option value='H-10'>H-10</option>
 																<option value='H-30'>H-30</option>
 															</select>
@@ -373,7 +373,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 															</div>
 														</td>
 														<td hidden>
-														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='Nilai PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn : null) . "'>
+														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='VAT Value' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn : null) . "'>
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' " . (($value->ppn > 0) ? '' : 'readonly') . " value='" . (($value->ppn > 0) ? $value->ppn_persen : null) . "'>
 														</td>
 														<td><input type='text' class='form-control input-sm text-right auto_num ch_jumlah_ex2' id='dt_totalharga_" . $key . "' readonly name='dt[" . $key . "][totalharga]' value='" . number_format($total - $value->nilai_disc + $value->ppn, 4, '.', ',') . "'></td>
@@ -416,7 +416,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								</td>
 							</tr>
 							<tr>
-								<td class="text-end" colspan="11"><b>Biaya Kirim</b></td>
+								<td class="text-end" colspan="11"><b>Shipping Cost</b></td>
 								<td colspan="2">
 									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
 									<input type="text" class="form-control auto_num text-end" id="kirim" value="<?= $results['get_po']->taxtotal ?>" onblur="cariTotal()" required name="kirim">
@@ -479,7 +479,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 								</div>
 								<div class="col-md-7" id="ForHarga">
 									<input type="text" class="form-control auto_num" id="persendisc" onkeyup required name="persendisc" onblur="cariTotal()" placeholder="Persen Disc (%)" value="<?= $results['get_po']->persen_disc ?>">
-									<input type="text" class="form-control auto_num" id="totaldisc" onkeyup required name="totaldisc" onblur="cariTotal()" placeholder="Nilai Disc" value="<?= $results['get_po']->nilai_disc ?>">
+									<input type="text" class="form-control auto_num" id="totaldisc" onkeyup required name="totaldisc" onblur="cariTotal()" placeholder="Discount Value" value="<?= $results['get_po']->nilai_disc ?>">
 								</div>
 							</div>
 						</div>
@@ -497,7 +497,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 							</div>
 							<div class="col-md-7" id="ForHarga">
 								<input type="text" class="form-control auto_num" id="persenppn" onkeyup required name="persenppn" onblur="cariTotal()" placeholder="Persen PPN (%)" value="<?= $results['get_po']->total_ppn_persen ?>">
-								<input type="text" class="form-control auto_num" id="totalppn" onkeyup required name="totalppn" onblur="cariTotal()" placeholder="Nilai PPN" value="<?= $results['get_po']->total_ppn ?>" disabled>
+								<input type="text" class="form-control auto_num" id="totalppn" onkeyup required name="totalppn" onblur="cariTotal()" placeholder="VAT Value" value="<?= $results['get_po']->total_ppn ?>" disabled>
 							</div>
 						</div>
 					</div>
@@ -518,7 +518,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 						<div class="col-sm-6">
 							<div class="form-group row">
 								<div class="col-md-4">
-									<label for="id_customer">Biaya Kirim</label>
+									<label for="id_customer">Shipping Cost</label>
 								</div>
 								<div class="col-md-8" id="ForTax">
 									<input type="hidden" class="form-control" id="taxtotal" onkeyup required name="taxtotal">
@@ -550,8 +550,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									<th class="text-center">Group TOP</th>
 									<th class="text-center">Progress (%)</th>
 									<th class="text-center">Value</th>
-									<th class="text-center">Keterangan</th>
-									<th class="text-center">Tipe Pembayaran</th>
+									<th class="text-center">Description</th>
+									<th class="text-center">Payment Type</th>
 									<th class="text-center">Jatuh Tempo</th>
 									<th class="text-center">Action</th>
 								</tr>
@@ -614,7 +614,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									echo '</div>';
 
 									// Tombol untuk buka modal LC
-									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"' . $disabled_attr . '><i class="fas fa-eye"></i> Detail LC</button>';
+									echo '<button type="button" class="btn btn-sm btn-outline-primary btn_view_lc" id="btn_lc_' . $no . '" style="' . $display_btn_lc . '" data-no="' . $no . '"' . $disabled_attr . '><i class="fas fa-eye"></i> LC Detail</button>';
 
 									// --- INPUT HIDDEN UNTUK DATA LC (DARI TABEL tr_po_detail_lc) ---
 									echo '<input type="hidden" name="no_credit_' . $no . '" value="' . $item_top->no_credit . '">';
@@ -639,7 +639,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 									if (!empty($status_bayar)) {
 										$badge = isset($status_bayar_map[$status_bayar])
 											? $status_bayar_map[$status_bayar]
-											: ['label' => ucwords(str_replace('_', ' ', $status_bayar)), 'class' => 'bg-secondary'];
+											: ['label' => ucwords(str_replace('_', ' ', $status_bayar ?? '')), 'class' => 'bg-secondary'];
 										echo '<span class="badge ' . $badge['class'] . '">' . $badge['label'] . '</span>';
 									} else {
 										echo '<span class="text-muted">-</span>';
@@ -657,7 +657,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 					</div>
 				</div>
 				<div class="text-center">
-					<a href="<?= site_url('purchase_order') ?>" class="btn btn-danger"><i class="fa fa-arrow-left me-1"></i> Kembali</a>
+					<a href="<?= site_url('purchase_order') ?>" class="btn btn-danger"><i class="fa fa-arrow-left me-1"></i> Back</a>
 				</div>
 			</div>
 		</form>
@@ -668,7 +668,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-info">
-				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<h5 class="modal-title text-white">Letter of Credit (LC) Detail</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -871,25 +871,25 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 			var data, xhr;
 			if (loi == '' || loi == null) {
-				swal("Warning", "Form Tidak Boleh Kosong :)", "error");
+				swal("Warning", "Form cannot be empty.", "error");
 				return false;
 			} else if (tanggal == '' || tanggal == null) {
-				swal("Warning", "Tanggal Tidak Boleh Kosong :)", "error");
+				swal("Warning", "Date cannot be empty.", "error");
 				return false;
 			} else if (supplier == '' || supplier == null) {
-				swal("Warning", "Supplier tidak boleh kosong  :)", "error");
+				swal("Warning", "Supplier cannot be empty.", "error");
 				return false;
 			} else if (select_department == '' || select_department == null) {
-				swal("Warning", "Department tidak boleh kosong  :)", "error");
+				swal("Warning", "Department cannot be empty.", "error");
 				return false;
 			} else if (delivery_date == '' || delivery_date == null) {
-				swal("Warning", "Delivery Date tidak boleh kosong  :)", "error");
+				swal("Warning", "Delivery Date cannot be empty.", "error");
 				return false;
 			} else if (currency == '' || currency == null) {
-				swal("Warning", "Currency tidak boleh kosong  :)", "error");
+				swal("Warning", "Currency cannot be empty.", "error");
 				return false;
 			} else if (ttl_persen_top > 100) {
-				swal("Warning", "Total TOP tidak boleh lebih dari 100%", "error");
+				swal("Warning", "Total TOP cannot exceed 100%", "error");
 				return false;
 			} else {
 				swal({
@@ -1005,12 +1005,12 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 			targetRow.css('background-color', '#e8f5e9');
 			targetRow.find('label[for="lc"]').html('LC <i class="fa fa-check-circle text-success"></i>');
 
-			swal("Berhasil", "Data LC telah tersimpan di baris ini.", "success");
+			swal("Success", "LC data has been saved in this row.", "success");
 			$('#modal_lc').modal('hide');
 		});
 
 		$('.list_tbody_top tr').each(function(i) {
-			console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
+			console.log("Row " + i + " data-lc: ", $(this).attr('data-lc_detail'));
 		});
 
 		$(document).on('click', '.btn_view_lc', function() {
@@ -1222,7 +1222,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				let alamatSupplier = $('#supplier option:selected').data('address');
 
 				if (idSupplier === "") {
-					swal("Perhatian", "Silakan pilih Supplier terlebih dahulu di header form!", "warning");
+					swal("Attention", "Please select a Supplier first in the form header!", "warning");
 					$(this).prop('checked', false);
 					return false;
 				}
@@ -1324,7 +1324,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var loi = $("#loi").val();
 		var angka = jumlah + 1;
 		if (id_suplier == '' || id_suplier == null || loi == '' || loi == null) {
-			swal("Warning", "Silahkan Pilih Supplier Terlebih Dahulu :)", "error");
+			swal("Warning", "Please select a supplier first.", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -1379,7 +1379,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var dt_ratelme = $("#dt_ratelme_" + id).val();
 		var dt_idmaterial = $("#dt_idmaterial_" + id).val();
 		if (dt_idmaterial == '' || dt_idmaterial == null) {
-			swal("Warning", "Silahkan Pilih Material Terlebih Dahulu :)", "error");
+			swal("Warning", "Please select a material first.", "error");
 			return false;
 		} else {
 			$.ajax({
@@ -1410,7 +1410,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 
 		// if (dt_idmaterial == '' || dt_idmaterial == null) {
-		// 	swal("Warning", "Silahkan Pilih Material Terlebih Dahulu :)", "error");
+		// 	swal("Warning", "Please select a material first.", "error");
 		// 	return false;
 		// } else {
 
@@ -1649,7 +1649,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 
 		// Batas per baris
 		if (progress > 100) {
-			swal("Peringatan", "Progress tidak boleh lebih dari 100%.", "warning");
+			swal("Warning", "Progress cannot exceed 100%.", "warning");
 			return 100;
 		}
 
@@ -1665,7 +1665,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		if (sisa < 0) sisa = 0;
 
 		if ((totalLain + progress) > 100) {
-			swal("Peringatan", "Total progress semua Group TOP tidak boleh lebih dari 100%. Sisa yang tersedia: " + number_format(sisa, 2) + "%.", "warning");
+			swal("Warning", "Total progress of all TOP Groups cannot exceed 100%. Remaining available: " + number_format(sisa, 2) + "%.", "warning");
 			return sisa;
 		}
 
@@ -1680,7 +1680,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		var disc_persen = getNum($('#disc_persen_' + id).val().split(',').join(''));
 		var disc_num = getNum($('#disc_num_' + id).val().split(',').join(''));
 
-		// Jumlah kotor (harga satuan x qty) -> kolom "Total Harga" (jumlahharga)
+		// Jumlah kotor (harga satuan x qty) -> kolom "Total Price" (jumlahharga)
 		var jumlah = hargasatuan * qty;
 
 		// --- Diskon efektif (satu sumber kebenaran) ---

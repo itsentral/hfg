@@ -99,7 +99,7 @@ class Production_weighing_model extends CI_Model
         if (!$coil_data) {
             return [
                 'valid'     => false,
-                'message'   => 'Coil ' . $no_coil . ' tidak ditemukan dalam SPK berstatus In Process',
+                'message'   => 'Coil ' . $no_coil . ' not found in an SPK with status In Process',
                 'coil_data' => null,
                 'spk_no'    => null,
             ];
@@ -112,7 +112,7 @@ class Production_weighing_model extends CI_Model
         if ($issued === 0) {
             return [
                 'valid'     => false,
-                'message'   => 'Coil ' . $no_coil . ' belum di-issue ke area produksi',
+                'message'   => 'Coil ' . $no_coil . ' has not been issued to the production area',
                 'coil_data' => null,
                 'spk_no'    => null,
             ];
@@ -199,7 +199,7 @@ class Production_weighing_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal menyimpan data timbang awal', 'preweigh_no' => null];
+            return ['success' => false, 'message' => 'Failed to save data timbang awal', 'preweigh_no' => null];
         }
 
         // Kirim notifikasi jika Exception
@@ -207,7 +207,7 @@ class Production_weighing_model extends CI_Model
             $this->send_notification_exception($preweigh_no, $data['spk_no'], $data['no_coil']);
         }
 
-        return ['success' => true, 'message' => 'Data timbang awal berhasil disimpan', 'preweigh_no' => $preweigh_no];
+        return ['success' => true, 'message' => 'Initial weighing data saved successfully', 'preweigh_no' => $preweigh_no];
     }
 
     // -------------------------------------------------------------------------
@@ -220,7 +220,7 @@ class Production_weighing_model extends CI_Model
     public function send_notification_exception($preweigh_no, $spk_no, $no_coil)
     {
         $judul = 'Exception Timbang Awal: ' . $no_coil;
-        $pesan = 'Selisih berat timbang awal coil ' . $no_coil . ' pada SPK ' . $spk_no
+        $pesan = 'Initial coil weighing difference ' . $no_coil . ' pada SPK ' . $spk_no
                . ' melebihi toleransi. No Timbang: ' . $preweigh_no;
 
         // Ambil user supervisor/QC dari config param

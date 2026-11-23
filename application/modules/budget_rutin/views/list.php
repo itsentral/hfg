@@ -18,7 +18,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                     </div>
                     <div>
                         <h5 class="card-title fw-bold text-dark mb-0">Budget Stock (Rutin)</h5>
-                        <small class="text-muted">Kelola data perencanaan budget stock rutin per warehouse / gudang</small>
+                        <small class="text-muted">Manage routine stock budget planning data per warehouse</small>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="50">#</th>
-                        <th width="150">Tanggal Dibuat</th>
+                        <th width="150">Created Date</th>
                         <th>Warehouse</th>
                         <th class="text-center" width="80">Revisi</th>
                         <th class="text-center" width="130">Aksi</th>
@@ -73,7 +73,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <?php if ($ENABLE_VIEW) : ?>
-                                            <button type="button" class="btn btn-outline-info" title="Lihat Detail" onclick="view_data('<?= $record->code_budget ?>')">
+                                            <button type="button" class="btn btn-outline-info" title="View Detail" onclick="view_data('<?= $record->code_budget ?>')">
                                                 <i class="fa fa-eye"></i>
                                             </button>
                                         <?php endif; ?>
@@ -83,7 +83,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                                             </button>
                                         <?php endif; ?>
                                         <?php if ($ENABLE_DELETE) : ?>
-                                            <button type="button" class="btn btn-outline-danger" title="Hapus Budget" onclick="delete_data('<?= $record->code_budget ?>')">
+                                            <button type="button" class="btn btn-outline-danger" title="Delete Budget" onclick="delete_data('<?= $record->code_budget ?>')">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         <?php endif; ?>
@@ -116,7 +116,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
         $("#example1").DataTable({
             paging: true,
             pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-2"lfB>rt<"d-flex flex-wrap justify-content-between align-items-center mt-2"ip>',
             buttons: [
                 {
@@ -129,16 +129,16 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                 }
             ],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
                 infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Tidak ada data yang cocok",
+                zeroRecords: "No matching data",
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "Lanjut",
+                    next: "Continue",
                     previous: "Sebelum"
                 }
             }
@@ -148,7 +148,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
     function add_data() {
         var url = 'budget_rutin/create/';
         $("#card-list, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir tambah budget stock...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading add stock budget form...</p></div>');
         $("#form-data").load(siteurl + url);
     }
 
@@ -156,7 +156,7 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
         if (id != "") {
             var url = 'budget_rutin/edit/' + id;
             $("#card-list, .box").hide();
-            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir edit budget stock...</p></div>');
+            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading stock budget edit form...</p></div>');
             $("#form-data").load(siteurl + url);
         }
     }
@@ -165,26 +165,26 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
         if (id != "") {
             var url = 'budget_rutin/view/' + id;
             $("#card-list, .box").hide();
-            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat detail budget stock...</p></div>');
+            $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading stock budget details...</p></div>');
             $("#form-data").load(siteurl + url);
         }
     }
 
     function delete_data(id) {
         Swal.fire({
-            title: "Anda Yakin?",
-            text: "Data budget stock " + id + " akan dihapus secara permanen!",
+            title: "Are you sure?",
+            text: "Data budget stock " + id + " will be deleted permanently!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#dc3545",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-trash me-1'></i> Ya, Hapus!",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-trash me-1'></i> Yes, Delete!",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menghapus data...',
+                    text: 'Deleting data...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -196,8 +196,8 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                         if (msg['delete'] == '1' || msg['delete'] == true) {
                             Swal.fire({
                                 icon: "success",
-                                title: "Terhapus!",
-                                text: "Data budget stock berhasil dihapus.",
+                                title: "Deleted!",
+                                text: "Stock budget data deleted successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -206,9 +206,9 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data gagal dihapus.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Failed to delete data.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
@@ -216,8 +216,8 @@ $ENABLE_DELETE  = has_permission('Budget_Rutin.Delete');
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

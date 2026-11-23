@@ -16,8 +16,8 @@ $ENABLE_DELETE  = has_permission('Adjustment_Stock.Delete');
                                 <i class="fa fa-sliders fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Adjustment Stok Gudang</h5>
-                                <small class="text-muted">Kelola penyesuaian kuantitas stok barang (penambahan atau pengurangan fisik)</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Warehouse Stock Adjustment</h5>
+                                <small class="text-muted">Manage item stock quantity adjustments (physical additions or reductions)</small>
                             </div>
                         </div>
                     </div>
@@ -33,18 +33,18 @@ $ENABLE_DELETE  = has_permission('Adjustment_Stock.Delete');
                 <!-- Filter Controls Section -->
                 <div class="row g-3 align-items-end mt-2 pt-3 border-top">
                     <div class="col-md-4 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-filter text-primary me-1"></i> Tipe Penyesuaian</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-filter text-primary me-1"></i> Adjustment Type</label>
                         <select name="type" id="type" class="form-select select2">
-                            <option value="0">SEMUA TIPE ADJUSTMENT</option>
-                            <option value="plus">PLUS (Penambahan Stok)</option>
-                            <option value="minus">MINUS (Pengurangan Stok)</option>
+                            <option value="0">ALL ADJUSTMENT TYPES</option>
+                            <option value="plus">PLUS (Stock Addition)</option>
+                            <option value="minus">MINUS (Stock Reduction)</option>
                         </select>
                     </div>
 
                     <div class="col-md-8 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-boxes-stacked text-primary me-1"></i> Filter Barang Stok</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-boxes-stacked text-primary me-1"></i> Filter Stock Items</label>
                         <select name="code_lv4" id="code_lv4" class="form-select select2">
-                            <option value="0">SEMUA BARANG STOK</option>
+                            <option value="0">ALL STOCK ITEMS</option>
                             <?php foreach ($material as $key => $value) : ?>
                                 <option value="<?= $value['id']; ?>">
                                     <?= strtoupper((string) $value['stock_name']); ?>
@@ -61,13 +61,13 @@ $ENABLE_DELETE  = has_permission('Adjustment_Stock.Delete');
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" width="4%">#</th>
-                                <th class="text-center" width="13%">No Transaksi</th>
+                                <th class="text-center" width="13%">Transaction No.</th>
                                 <th class="text-center" width="9%">Tipe</th>
-                                <th class="text-start">Nama Barang</th>
+                                <th class="text-start">Item Name</th>
                                 <th class="text-end" width="10%">Qty Adjust</th>
                                 <th class="text-start" width="12%">PIC</th>
                                 <th class="text-start" width="12%">No BA</th>
-                                <th class="text-start" width="15%">Keterangan</th>
+                                <th class="text-start" width="15%">Description</th>
                                 <th class="text-start" width="10%">User</th>
                                 <th class="text-center" width="12%">Waktu Input</th>
                             </tr>
@@ -122,18 +122,18 @@ $ENABLE_DELETE  = has_permission('Adjustment_Stock.Delete');
                 },
                 cache: false,
                 error: function() {
-                    $("#example1 tbody").html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Tidak ada data adjustment ditemukan</td></tr>');
+                    $("#example1 tbody").html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> No adjustment data found</td></tr>');
                 }
             },
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no transaksi / no BA / PIC...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search transaction no / BA no / PIC...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Belum ada riwayat adjustment stok",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data...'
+                emptyTable: "No stock adjustment history yet",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             }
         });
     }

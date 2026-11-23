@@ -38,8 +38,8 @@
 <div class="container-fluid p-3">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-      <h1 class="h4 fw-bold mb-1">Detail Laporan Produksi</h1>
-      <p class="text-muted small mb-0">Nomor SPK: <strong><?= htmlspecialchars($report['spk_header']['spk_no'] ?? '-'); ?></strong> &bull; Tgl Produksi: <?= !empty($report['header']['tgl_produksi']) ? date('d/m/Y', strtotime((string) $report['header']['tgl_produksi'])) : '-'; ?></p>
+      <h1 class="h4 fw-bold mb-1">Production Report Detail</h1>
+      <p class="text-muted small mb-0">SPK Number: <strong><?= htmlspecialchars($report['spk_header']['spk_no'] ?? '-'); ?></strong> &bull; Tgl Produksi: <?= !empty($report['header']['tgl_produksi']) ? date('d/m/Y', strtotime((string) $report['header']['tgl_produksi'])) : '-'; ?></p>
     </div>
     <div class="d-flex gap-2">
       <span class="badge <?= ($report['header']['status_draft'] ?? 1) == 1 ? 'bg-warning text-dark' : 'bg-success'; ?> px-3 py-2 fs-6">
@@ -62,7 +62,7 @@
   <!-- Header Info -->
   <div class="pr-card mb-3">
     <div class="pr-card-header">
-      <h2 class="pr-card-title">Informasi Laporan &amp; Operator</h2>
+      <h2 class="pr-card-title">Report &amp; Operator Information</h2>
     </div>
     <div class="p-3">
       <div class="row g-3">
@@ -89,15 +89,15 @@
   <!-- Materials Used -->
   <div class="pr-card mb-3">
     <div class="pr-card-header">
-      <h2 class="pr-card-title">Baby Coil Terpakai (Bahan Baku)</h2>
+      <h2 class="pr-card-title">Used Baby Coil (Raw Material)</h2>
     </div>
     <div class="p-0 table-responsive">
       <table class="tbl-custom">
         <thead>
           <tr>
-            <th>Sumber</th>
+            <th>Source</th>
             <th>No Coil</th>
-            <th>Nama Material</th>
+            <th>Material Name</th>
             <th class="text-end">Nett Packing List (kg)</th>
             <th class="text-end">Gross (kg)</th>
             <th class="text-end">Total Meter</th>
@@ -107,7 +107,7 @@
         </thead>
         <tbody>
           <?php if (empty($report['materials'])): ?>
-            <tr><td colspan="8" class="text-center text-muted py-3">Tidak ada data material coil.</td></tr>
+            <tr><td colspan="8" class="text-center text-muted py-3">No coil material data.</td></tr>
           <?php else: ?>
             <?php foreach ($report['materials'] as $m): ?>
               <?php
@@ -138,29 +138,29 @@
   <!-- Items Produced -->
   <div class="pr-card mb-3">
     <div class="pr-card-header">
-      <h2 class="pr-card-title">Hasil Produksi (KW 1, Stok Bebas, KW 2)</h2>
+      <h2 class="pr-card-title">Production Output (KW 1, Free Stock, KW 2)</h2>
     </div>
     <div class="p-0 table-responsive">
       <table class="tbl-custom">
         <thead>
           <tr>
-            <th>Kategori</th>
-            <th>Nama Produk</th>
+            <th>Category</th>
+            <th>Product Name</th>
             <th>No Coil Asal</th>
             <th class="text-end">Qty</th>
-            <th class="text-end">Berat Total (kg)</th>
-            <th class="text-end">Berat/Pcs (kg)</th>
+            <th class="text-end">Total Weight (kg)</th>
+            <th class="text-end">Weight/Pcs (kg)</th>
             <th class="text-end">Std/Pcs (kg)</th>
             <th class="text-end">% Selisih</th>
-            <th class="text-end">Aktual Berat/m</th>
+            <th class="text-end">Actual Weight/m</th>
             <th class="text-end">Std/m (BOM)</th>
             <th class="text-end">% Selisih/m</th>
-            <th>Keterangan</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
           <?php if (empty($report['items'])): ?>
-            <tr><td colspan="12" class="text-center text-muted py-3">Tidak ada data hasil produksi.</td></tr>
+            <tr><td colspan="12" class="text-center text-muted py-3">No production output data.</td></tr>
           <?php else: ?>
             <?php foreach ($report['items'] as $it): ?>
               <?php
@@ -179,7 +179,7 @@
               <tr>
                 <td>
                   <span class="badge <?= in_array($cat, ['kw_1']) ? 'bg-primary' : (in_array($cat, ['stok_bebas']) ? 'bg-info text-dark' : 'bg-secondary'); ?>">
-                    <?= strtoupper(str_replace('_', ' ', $cat)); ?>
+                    <?= strtoupper(str_replace('_', ' ', $cat ?? '')); ?>
                   </span>
                 </td>
                 <td><strong><?= htmlspecialchars((string) $prod_name); ?></strong></td>
@@ -209,16 +209,16 @@
   <?php if (!empty($report['scraps'])): ?>
   <div class="pr-card mb-3">
     <div class="pr-card-header">
-      <h2 class="pr-card-title">Komponen Scrap, Sisa, &amp; Hold Coil</h2>
+      <h2 class="pr-card-title">Scrap, Remaining, &amp; Hold Coil Components</h2>
     </div>
     <div class="p-0 table-responsive">
       <table class="tbl-custom">
         <thead>
           <tr>
-            <th>Jenis Komponen</th>
+            <th>Component Type</th>
             <th>No Coil Terkait</th>
-            <th class="text-end">Berat Total (kg)</th>
-            <th>Keterangan</th>
+            <th class="text-end">Total Weight (kg)</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
@@ -229,7 +229,7 @@
               $sc_berat = (float)($sc['berat_total'] ?? $sc['berat'] ?? 0);
             ?>
             <tr>
-              <td><span class="badge bg-light text-secondary border"><?= strtoupper(str_replace('_', ' ', $sc_type)); ?></span></td>
+              <td><span class="badge bg-light text-secondary border"><?= strtoupper(str_replace('_', ' ', $sc_type ?? '')); ?></span></td>
               <td><?= htmlspecialchars($sc_coil ?: '-'); ?></td>
               <td class="text-end fw-bold"><?= number_format((float) $sc_berat, 2, ',', '.'); ?></td>
               <td><?= htmlspecialchars($sc['keterangan'] ?? '-'); ?></td>
@@ -245,8 +245,8 @@
   <?php if (!empty($report['claims'])): ?>
   <div class="pr-card mb-3">
     <div class="pr-card-header d-flex justify-content-between align-items-center">
-      <h2 class="pr-card-title">Claim Material Yang Diajukan (FR-94)</h2>
-      <span class="badge bg-warning text-dark"><?= count($report['claims']); ?> Claim</span>
+      <h2 class="pr-card-title">Submitted Material Claims (FR-94)</h2>
+      <span class="badge bg-warning text-dark"><?= count($report['claims'] ?? []); ?> Claim</span>
     </div>
     <div class="p-0 table-responsive">
       <table class="tbl-custom">
@@ -255,10 +255,10 @@
             <th>No. Claim</th>
             <th>Asal</th>
             <th>No. Coil PL</th>
-            <th>Nama Material</th>
+            <th>Material Name</th>
             <th>Supplier</th>
             <th>No. PO</th>
-            <th class="text-end">Berat (kg)</th>
+            <th class="text-end">Weight (kg)</th>
             <th>Problem</th>
             <th>Alasan Produksi</th>
             <th>Bukti Pendukung</th>
@@ -309,7 +309,7 @@
   ?>
   <div class="pr-card">
     <div class="pr-card-header">
-      <h2 class="pr-card-title">Ringkasan &amp; Rekonsiliasi Berat</h2>
+      <h2 class="pr-card-title">Weight Summary &amp; Reconciliation</h2>
     </div>
     <div class="p-3">
       <div class="row g-3 text-center">

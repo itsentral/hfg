@@ -54,7 +54,7 @@ class Jurnal_nomor extends CI_Controller {
 		
 		}
 		
-		$invc =  implode($separator, $allinv);
+		$invc =  implode($separator, $allinv ?? []);
 
         $Tgl_Invoice = date('Y-m-d');
 
@@ -258,7 +258,7 @@ class Jurnal_nomor extends CI_Controller {
 			
             $param = array(
             'save' => 0,
-            'msg' => "GAGAL, simpan data..!!!",
+            'msg' => "FAILED, save data..!!!",
 			
             );
         }
@@ -268,7 +268,7 @@ class Jurnal_nomor extends CI_Controller {
 			
             $param = array(
             'save' => 1,
-            'msg' => "SUKSES, simpan data..!!!",
+            'msg' => "SUCCESS, save data..!!!",
 		
             );
         }

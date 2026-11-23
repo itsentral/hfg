@@ -9,17 +9,17 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
     <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
         <div>
             <h5 class="mb-0 text-dark fw-bold">
-                <i class="ti ti-coins text-primary me-2"></i>Master Mata Uang
+                <i class="ti ti-coins text-primary me-2"></i>Master Currency
             </h5>
-            <small class="text-muted">Kelola data mata uang negara beserta kode mata uang</small>
+            <small class="text-muted">Manage country currency data and currency codes</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <span class="badge bg-light-primary text-primary fw-semibold px-3 py-2">
-                Total: <?= !empty($results) ? count($results) : 0; ?> Mata Uang
+                Total: <?= !empty($results) ? count($results ?? []) : 0; ?> Mata Uang
             </span>
             <?php if ($ENABLE_ADD) : ?>
-                <a class="btn btn-primary add" href="javascript:void(0)" title="Tambah Mata Uang">
-                    <i class="ti ti-plus me-1"></i> Tambah Mata Uang
+                <a class="btn btn-primary add" href="javascript:void(0)" title="Add Currency">
+                    <i class="ti ti-plus me-1"></i> Add Currency
                 </a>
             <?php endif; ?>
         </div>
@@ -31,9 +31,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                 <thead class="table-light">
                     <tr>
                         <th class="text-center" style="width: 50px;">#</th>
-                        <th style="width: 100px;">Kode</th>
-                        <th>Negara</th>
-                        <th>Nama Mata Uang</th>
+                        <th style="width: 100px;">Code</th>
+                        <th>Country</th>
+                        <th>Currency Name</th>
                         <th class="text-end" style="width: 160px;">Kurs (Rp)</th>
                         <th class="text-center" style="width: 120px;">Status</th>
                         <th class="text-center" style="width: 110px;">Aksi</th>
@@ -68,11 +68,11 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                             Rp <?= number_format((float)$record->kurs, 2, ',', '.'); ?>
                                         </span>
                                     <?php else : ?>
-                                        <span class="text-muted fst-italic">Belum diset</span>
+                                        <span class="text-muted fst-italic">Not set</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
-                                    <label class="ios-toggle-labeled" title="Klik untuk beralih status">
+                                    <label class="ios-toggle-labeled" title="Click to toggle status">
                                         <input type="checkbox"
                                                class="table-toggle-input"
                                                data-id="<?= $record->id_kurs; ?>"
@@ -98,7 +98,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                         <?php if ($ENABLE_DELETE) : ?>
                                             <a class="btn-icon btn-icon-delete delete"
                                                href="javascript:void(0)"
-                                               title="Hapus"
+                                               title="Delete"
                                                data-id="<?= $record->id_kurs; ?>"
                                                data-name="<?= htmlspecialchars((string) $record->negara, ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="ti ti-trash"></i>
@@ -122,7 +122,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             <form id="data_form" autocomplete="off">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title text-white fw-bold" id="head_title">
-                        <i class="ti ti-coins me-2"></i>Mata Uang
+                        <i class="ti ti-coins me-2"></i>Currency
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -130,16 +130,16 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                 <div class="modal-body p-4" id="ModalView">
                     <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-2 text-muted">Memuat form...</p>
+                        <p class="mt-2 text-muted">Loading form...</p>
                     </div>
                 </div>
 
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="ti ti-x me-1"></i> Batal
+                        <i class="ti ti-x me-1"></i> Cancel
                     </button>
                     <button type="submit" class="btn btn-primary" id="btn_save">
-                        <i class="ti ti-device-floppy me-1"></i> Simpan
+                        <i class="ti ti-device-floppy me-1"></i> Save
                     </button>
                 </div>
             </form>
@@ -160,7 +160,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                 confirmButtonColor: '#e02424',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: confirmBtnText,
-                cancelButtonText: 'Batal',
+                cancelButtonText: 'Cancel',
                 reverseButtons: true
             }).then(function(result) {
                 if (result.isConfirmed || result.value === true) {
@@ -175,7 +175,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                 showCancelButton: true,
                 confirmButtonClass: 'btn-danger',
                 confirmButtonText: confirmBtnText,
-                cancelButtonText: 'Batal',
+                cancelButtonText: 'Cancel',
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm === true) {
@@ -197,11 +197,11 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                zeroRecords: "Tidak ada data yang cocok",
+                zeroRecords: "No matching data",
                 paginate: {
                     previous: "Prev",
                     next: "Next"
@@ -212,11 +212,11 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
         // Buka Modal ADD / EDIT
         $(document).on('click', '.add', function() {
             var id = ($(this).data('id') === undefined) ? '' : $(this).data('id');
-            let title = (id === '') ? 'Tambah Mata Uang' : 'Edit Mata Uang';
+            let title = (id === '') ? 'Add Currency' : 'Edit Currency';
             $("#head_title").html('<i class="ti ti-coins me-2"></i>' + title);
 
             $("#dialog-popup").modal('show');
-            $("#ModalView").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Memuat data...</p></div>');
+            $("#ModalView").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Loading data...</p></div>');
 
             $.ajax({
                 type: 'POST',
@@ -232,7 +232,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                     }
                 },
                 error: function() {
-                    $("#ModalView").html('<div class="alert alert-danger">Gagal memuat form! Silakan coba lagi.</div>');
+                    $("#ModalView").html('<div class="alert alert-danger">Failed to load the form! Please try again.</div>');
                 }
             });
         });
@@ -244,9 +244,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             var negaraVal = $('#negara').val();
             if (!negaraVal) {
                 if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                    Swal.fire('Peringatan', 'Silakan pilih negara terlebih dahulu!', 'warning');
+                    Swal.fire('Warning', 'Please select a country first!', 'warning');
                 } else if (typeof swal !== 'undefined') {
-                    swal({ title: "Peringatan", text: "Silakan pilih negara terlebih dahulu!", type: "warning" });
+                    swal({ title: "Warning", text: "Please select a country first!", type: "warning" });
                 }
                 return false;
             }
@@ -254,9 +254,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             var formData = $('#data_form').serialize();
 
             customConfirm(
-                "Konfirmasi Simpan",
-                "Apakah Anda yakin ingin menyimpan data mata uang ini?",
-                "Ya, Simpan!",
+                "Confirm Save",
+                "Are you sure you want to save this currency data?",
+                "Yes, Save!",
                 function() {
                     $('#btn_save').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
 
@@ -266,11 +266,11 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                         dataType: "json",
                         data: formData,
                         success: function(res) {
-                            $('#btn_save').prop('disabled', false).html('<i class="ti ti-device-floppy me-1"></i> Simpan');
+                            $('#btn_save').prop('disabled', false).html('<i class="ti ti-device-floppy me-1"></i> Save');
                             if (res.status == '1') {
                                 if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
                                     Swal.fire({
-                                        title: "Berhasil",
+                                        title: "Success",
                                         text: res.pesan,
                                         icon: "success",
                                         timer: 1500,
@@ -278,7 +278,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                     });
                                 } else if (typeof swal !== 'undefined') {
                                     swal({
-                                        title: "Berhasil",
+                                        title: "Success",
                                         text: res.pesan,
                                         type: "success",
                                         showConfirmButton: false,
@@ -290,18 +290,18 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                 }, 1500);
                             } else {
                                 if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                                    Swal.fire("Peringatan", res.pesan, "warning");
+                                    Swal.fire("Warning", res.pesan, "warning");
                                 } else if (typeof swal !== 'undefined') {
-                                    swal({ title: "Peringatan", text: res.pesan, type: "warning" });
+                                    swal({ title: "Warning", text: res.pesan, type: "warning" });
                                 }
                             }
                         },
                         error: function() {
-                            $('#btn_save').prop('disabled', false).html('<i class="ti ti-device-floppy me-1"></i> Simpan');
+                            $('#btn_save').prop('disabled', false).html('<i class="ti ti-device-floppy me-1"></i> Save');
                             if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                                Swal.fire("Error", "Terjadi kesalahan saat memproses data!", "error");
+                                Swal.fire("Error", "An error occurred while processing the data!", "error");
                             } else if (typeof swal !== 'undefined') {
-                                swal({ title: "Error", text: "Terjadi kesalahan saat memproses data!", type: "error" });
+                                swal({ title: "Error", text: "An error occurred while processing the data!", type: "error" });
                             }
                         }
                     });
@@ -316,9 +316,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
             var name = $(this).data('name') || '';
 
             customConfirm(
-                "Konfirmasi Hapus",
-                "Apakah Anda yakin ingin menghapus mata uang untuk negara " + name + "?",
-                "Ya, Hapus!",
+                "Confirm Delete",
+                "Are you sure you want to delete the currency for country " + name + "?",
+                "Yes, Delete!",
                 function() {
                     $.ajax({
                         type: 'POST',
@@ -329,7 +329,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                             if (res.status == '1') {
                                 if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
                                     Swal.fire({
-                                        title: "Berhasil",
+                                        title: "Success",
                                         text: res.pesan,
                                         icon: "success",
                                         timer: 1500,
@@ -337,7 +337,7 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                     });
                                 } else if (typeof swal !== 'undefined') {
                                     swal({
-                                        title: "Berhasil",
+                                        title: "Success",
                                         text: res.pesan,
                                         type: "success",
                                         showConfirmButton: false,
@@ -349,17 +349,17 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                                 }, 1500);
                             } else {
                                 if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                                    Swal.fire("Gagal", res.pesan, "error");
+                                    Swal.fire("Failed", res.pesan, "error");
                                 } else if (typeof swal !== 'undefined') {
-                                    swal({ title: "Gagal", text: res.pesan, type: "error" });
+                                    swal({ title: "Failed", text: res.pesan, type: "error" });
                                 }
                             }
                         },
                         error: function() {
                             if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                                Swal.fire("Error", "Gagal memproses penghapusan data!", "error");
+                                Swal.fire("Error", "Failed to process data deletion!", "error");
                             } else if (typeof swal !== 'undefined') {
-                                swal({ title: "Error", text: "Gagal memproses penghapusan data!", type: "error" });
+                                swal({ title: "Error", text: "Failed to process data deletion!", type: "error" });
                             }
                         }
                     });
@@ -386,9 +386,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                         // Kembalikan ke posisi semula jika gagal
                         checkbox.prop('checked', !isChecked);
                         if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                            Swal.fire("Gagal", res.pesan, "error");
+                            Swal.fire("Failed", res.pesan, "error");
                         } else if (typeof swal !== 'undefined') {
-                            swal({ title: "Gagal", text: res.pesan, type: "error" });
+                            swal({ title: "Failed", text: res.pesan, type: "error" });
                         }
                     }
                 },
@@ -396,9 +396,9 @@ $ENABLE_DELETE  = has_permission('Mata_uang.Delete');
                     // Kembalikan ke posisi semula jika koneksi error
                     checkbox.prop('checked', !isChecked);
                     if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
-                        Swal.fire("Error", "Gagal menghubungi server", "error");
+                        Swal.fire("Error", "Failed to contact the server", "error");
                     } else if (typeof swal !== 'undefined') {
-                        swal({ title: "Error", text: "Gagal menghubungi server", type: "error" });
+                        swal({ title: "Error", text: "Failed to contact the server", type: "error" });
                     }
                 }
             });

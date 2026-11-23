@@ -13,7 +13,7 @@
 				<div class="input_fields_wrap2">
 					<div class="row">
 						
-										<center><label for="customer" ><h3>Detail Identitas Siplier</h3></label></center>
+										<center><label for="customer" ><h3>Supplier Identity Detail</h3></label></center>
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-6">
@@ -29,7 +29,7 @@
 									</div>
 									<div class="col-md-6">
 											  <select id="id_category_supplier" name="id_category_supplier" class="form-control select" required>
-												<option value="">--pilih--</option>
+												<option value="">--select--</option>
 												<?php foreach ($results['category'] as $category){
 												$select = $sup->id_category_supplier == $category->id_category_supplier ? 'selected' : '';
 												?>
@@ -40,10 +40,10 @@
 								</div>
 								<div class="form-group row">
 									<div class="col-md-6">
-									    <label for="customer">Nama Suplier</label>
+									    <label for="customer">Supplier Name</label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="text" class="form-control" id="name_suplier" value='<?= $sup->name_suplier ?>' required name="name_suplier" placeholder="Nama Suplier">
+											<input type="text" class="form-control" id="name_suplier" value='<?= $sup->name_suplier ?>' required name="name_suplier" placeholder="Supplier Name">
 									</div>
 								</div>
 										
@@ -52,7 +52,7 @@
 									    <label for="customer">Telephone</label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="text" class="form-control" id="telephone" value='<?= $sup->telephone ?>' required name="telephone" placeholder="Nomor Telephone">
+											<input type="text" class="form-control" id="telephone" value='<?= $sup->telephone ?>' required name="telephone" placeholder="Phone Number">
 									    </div>
 										</div>
 										<div class="form-group row">
@@ -60,7 +60,7 @@
 									    <label for="customer"></label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="text" class="form-control" id="telephone_2" value='<?= $sup->telephone_2 ?>' name="telephone_2" placeholder="Nomor Telephone">
+											<input type="text" class="form-control" id="telephone_2" value='<?= $sup->telephone_2 ?>' name="telephone_2" placeholder="Phone Number">
 									    </div>
 										</div>
 										<div class="form-group row">
@@ -68,7 +68,7 @@
 									    <label for="customer">Fax</label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="text" class="form-control" id="fax" value='<?= $sup->fax ?>' required name="fax" placeholder="Nomor Fax">
+											<input type="text" class="form-control" id="fax" value='<?= $sup->fax ?>' required name="fax" placeholder="Fax Number">
 									    </div>
 										</div>
 										<div class="form-group row">
@@ -81,21 +81,21 @@
 										</div>
 										<div class="form-group row">
 										<div class="col-md-6">
-									    <label for="customer">Tanggal Mulai</label>
+									    <label for="customer">Start Date</label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="date" class="form-control" id="start_date" required value='<?= $sup->start_date ?>' name="start_date" placeholder="Tanggal Mulai">
+											<input type="date" class="form-control" id="start_date" required value='<?= $sup->start_date ?>' name="start_date" placeholder="Start Date">
 									    </div>
 										</div>
 						</div>
 						<div class="col-sm-6">
 										<div class="form-group row">
 											<div class="col-md-6">
-											 <label for="id_category_supplier">Negara</label>
+											 <label for="id_category_supplier">Country</label>
 											</div>
 											<div class="col-md-6">
 											  <select id="id_negara" name="id_negara" class="form-control select" onchange="get_kota()" required>
-												<option value="">--Pilih--</option>
+												<option value="">--Select--</option>
 												<?php foreach ($results['negara'] as $negara){
 												$select = $sup->id_negara == $negara->id_negara ? 'selected' : '';
 												?>
@@ -116,28 +116,28 @@
 										
 										<div class="form-group row">
 											<div class="col-md-6">
-											 <label for="id_category_supplier">Kota</label>
+											 <label for="id_category_supplier">City</label>
 											</div>
 											<div class="col-md-6">
-											   <input type="text" class="form-control" id="international_kota" value="<?= $sup->international_kota?>" required name="international_kota" placeholder="Kota">
+											   <input type="text" class="form-control" id="international_kota" value="<?= $sup->international_kota?>" required name="international_kota" placeholder="City">
 											</div>
 										</div>
 										
 										<div class="form-group row">
 										<div class="col-md-6">
-									    <label for="customer">Alamat</label>
+									    <label for="customer">Address</label>
 									    </div>
 									    <div class="col-md-6">
-										<textarea type="text" name="address_office" id="address_office" class="form-control input-sm required w70" placeholder="Alamat"><?= $sup->address_office ?></textarea>
+										<textarea type="text" name="address_office" id="address_office" class="form-control input-sm required w70" placeholder="Address"><?= $sup->address_office ?></textarea>
 									    </div>
 										</div>
 										
 										<div class="form-group row">
 										<div class="col-md-6">
-									    <label for="customer">Kode Pos</label>
+									    <label for="customer">Postcode</label>
 									    </div>
 									    <div class="col-md-6">
-											<input type="text" class="form-control" id="zip_code" required name="zip_code" value='<?= $sup->zip_code ?>' placeholder="Kode Pos">
+											<input type="text" class="form-control" id="zip_code" required name="zip_code" value='<?= $sup->zip_code ?>' placeholder="Postcode">
 									    </div>
 										</div>
 										<div class="form-group row">
@@ -163,14 +163,14 @@
 									    <div class="col-md-6">
 										<?php if($sup->activation == 'aktif'){ ?>
 										  <label>
-											<input type="radio" class="radio-control" id="activation" name="activation" value="aktif" checked required> Aktif
+											<input type="radio" class="radio-control" id="activation" name="activation" value="aktif" checked required> Active
 										  </label>
 										  <label>
 											<input type="radio" class="radio-control" id="activation" name="activation" value="inaktif" required> Inaktif
 										  </label>
 										<?php }else{ ?>
 										  <label>
-											<input type="radio" class="radio-control" id="activation" name="activation" value="aktif" required> Aktif
+											<input type="radio" class="radio-control" id="activation" name="activation" value="aktif" required> Active
 										  </label>
 										  <label>
 											<input type="radio" class="radio-control" id="activation" name="activation" value="inaktif" checked required> Inaktif
@@ -196,10 +196,10 @@
 								<table class='table table-bordered table-striped'>
 										<thead>
 											<tr class='bg-blue'>
-												<td align='center'><b>Nama PIC</b></td>	
-												<td align='center'><b>Nomor Telp</b></td>	
+												<td align='center'><b>PIC Name</b></td>	
+												<td align='center'><b>Phone Number</b></td>	
 												<td align='center'><b>Email</b></td>	
-												<td align='center'><b>Jabatan</b></td>
+												<td align='center'><b>Position</b></td>
 												<td align='center'><b>Aksi</b></td>
 											</tr>
 											
@@ -214,7 +214,7 @@
 			echo"<td align='left'><input type='text' class='form-control input-sm' name='data1[".$loop."][phone_pic]' value='$pic->phone_pic'  id='data1_".$loop."_phone_pic' label='FALSE' div='FALSE'></td>";
 			echo"<td align='left'><input type='text' class='form-control input-sm' name='data1[".$loop."][email_pic]' value='$pic->email_pic'  id='data1_".$loop."_email_pic' label='FALSE' div='FALSE'></td>";
 			echo"<td align='left'><input type='text' class='form-control input-sm' name='data1[".$loop."][position_pic]' value='$pic->position_pic' d='data1_".$loop."_position_pic' label='FALSE' div='FALSE'></td>";
-			echo"<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return DelItem(".$loop.");'><i class='fa fa-trash-o'></i></button></td></tr>";
+			echo"<td align='center'><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return DelItem(".$loop.");'><i class='fa fa-trash-o'></i></button></td></tr>";
 											
 											}?>
 										</tbody>
@@ -223,42 +223,42 @@
 							</div>
 						
 						
-						<center><label for="customer" ><h3>INFORMASI PEMBAYARAN</h3></label></center>
+						<center><label for="customer" ><h3>PAYMENT INFORMATION</h3></label></center>
 						
 						<div class="col-sm-12">
 									<div class="col-md-12">
-									    <label for="id_supplier"><h4>Informasi Bank</h4></label>
+									    <label for="id_supplier"><h4>Bank Information</h4></label>
 									</div>
 									<div class="form-group row">
 										<div class="col-md-3">
-									    <label for="id_supplier">Nama Bank</label>
+									    <label for="id_supplier">Bank Name</label>
 									    </div>
 									    <div class="col-md-9">
-											<input type="text" class="form-control" value='<?= $sup->name_bank ?>' id="name_bank" required name="name_bank" placeholder="Nama Bank">
+											<input type="text" class="form-control" value='<?= $sup->name_bank ?>' id="name_bank" required name="name_bank" placeholder="Bank Name">
 									    </div>
 									</div>
 										
 										<div class="form-group row">
 											<div class="col-md-3">
-											 <label for="id_category_supplier">Nomor Akun</label>
+											 <label for="id_category_supplier">Account Number</label>
 											</div>
 											<div class="col-md-9">
-												<input type="text" class="form-control" id="no_rekening" value='<?= $sup->no_rekening ?>' required name="no_rekening" placeholder="No Rekening">
+												<input type="text" class="form-control" id="no_rekening" value='<?= $sup->no_rekening ?>' required name="no_rekening" placeholder="Account Number">
 											</div>
 										</div>
 										
 										<div class="form-group row">
 										<div class="col-md-3">
-									    <label for="customer">Nama Akun</label>
+									    <label for="customer">Account Name</label>
 									    </div>
 									    <div class="col-md-9">
-											<input type="text" class="form-control" id="nama_rekening" required value='<?= $sup->nama_rekening ?>' name="nama_rekening" placeholder="Nama Rekening">
+											<input type="text" class="form-control" id="nama_rekening" required value='<?= $sup->nama_rekening ?>' name="nama_rekening" placeholder="Account Name">
 									    </div>
 										</div>
 										
 										<div class="form-group row">
 										<div class="col-md-3">
-									    <label for="customer">Alamat Bank</label>
+									    <label for="customer">Bank Address</label>
 									    </div>
 									    <div class="col-md-9">
 										<textarea type="text" name="alamat_bank" id="alamat_bank" class="form-control input-sm required w70"  placeholder="Alamat_Bank"><?= $sup->alamat_bank ?></textarea>
@@ -333,7 +333,7 @@
 						
 						<div class="col-sm-12">
 							<center>
-								<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+								<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 								</center>
 						</div>
 					</div>
@@ -423,7 +423,7 @@
 			Template	+='<td align="left">';
 					Template	+='<input type="text" class="form-control input-sm" name="data1['+loop+'][position_pic]" id="data1_'+loop+'_position_pic" label="FALSE" div="FALSE">';
 			Template	+='</td>';
-			Template	+='<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem('+loop+');"><i class="fa fa-trash-o"></i></button></td>';
+			Template	+='<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Delete Data" data-role="qtip" onClick="return DelItem('+loop+');"><i class="fa fa-trash-o"></i></button></td>';
 			Template	+='</tr>';
 			$('#list_payment').append(Template);
 			});

@@ -60,7 +60,7 @@ class Expense extends Admin_Controller
 		// $this->template->set('results', $data);
 		$this->template->set('status', $this->status);
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Kasbon');
+		$this->template->title('Cash Advance');
 		$this->template->render('kasbon_list');
 	}
 	// list kasbon all
@@ -70,7 +70,7 @@ class Expense extends Admin_Controller
 		// $this->template->set('results', $data);
 		$this->template->set('status', $this->status);
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Kasbon List');
+		$this->template->title('Cash Advance List');
 		$this->template->render('kasbon_list_all');
 	}
 
@@ -175,7 +175,7 @@ class Expense extends Admin_Controller
 		// Tangani multiple file upload native move_uploaded_file (aman & tidak menimpa)
 		if (!empty($_FILES['doc_file']['name'])) {
 			if (is_array($_FILES['doc_file']['name'])) {
-				$count_files = count($_FILES['doc_file']['name']);
+				$count_files = count($_FILES['doc_file']['name'] ?? []);
 				for ($i = 0; $i < $count_files; $i++) {
 					if (!empty($_FILES['doc_file']['name'][$i]) && isset($_FILES['doc_file']['error'][$i]) && $_FILES['doc_file']['error'][$i] === 0) {
 						$orig_name = $_FILES['doc_file']['name'][$i];
@@ -244,7 +244,7 @@ class Expense extends Admin_Controller
 		if (!empty($arr_uploaded_files)) {
 			if (empty($filenames)) {
 				$filenames = $arr_uploaded_files[0];
-				if (count($arr_uploaded_files) > 1 && empty($filenames2)) {
+				if (count($arr_uploaded_files ?? []) > 1 && empty($filenames2)) {
 					$filenames2 = $arr_uploaded_files[1];
 				}
 			} else if (empty($filenames2)) {
@@ -637,9 +637,9 @@ class Expense extends Admin_Controller
 				@unlink('./assets/expense/' . $file->file_name);
 			}
 			$this->db->delete('tr_kasbon_files', ['id' => $id]);
-			echo json_encode(['status' => 1, 'pesan' => 'File lampiran berhasil dihapus']);
+			echo json_encode(['status' => 1, 'pesan' => 'Attachment file deleted successfully']);
 		} else {
-			echo json_encode(['status' => 0, 'pesan' => 'File tidak ditemukan']);
+			echo json_encode(['status' => 0, 'pesan' => 'File not found']);
 		}
 	}
 
@@ -744,7 +744,7 @@ class Expense extends Admin_Controller
 		}
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
 		$this->template->set('list_files', $list_files);
-		$this->template->title('Kasbon Form');
+		$this->template->title('Cash Advance Form');
 		$this->template->page_icon('fa fa-list');
 		$this->template->render('kasbon_form');
 	}
@@ -769,7 +769,7 @@ class Expense extends Admin_Controller
 		$this->template->set('stsview', 'approval');
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
 		$this->template->set('list_files', $list_files);
-		$this->template->title('Approval Kasbon by Management');
+		$this->template->title('Cash Advance Approval by Management');
 		$this->template->page_icon('fa fa-list');
 		$this->template->render('kasbon_form');
 	}
@@ -841,7 +841,7 @@ class Expense extends Admin_Controller
 		}
 
 		$data = array(
-			'title'                 => 'Print Kasbon',
+			'title'                 => 'Print Cash Advance',
 			'stsview'               => 'print',
 			'data'                  => $results,
 			'nmuser'                => $nmuser,
@@ -950,7 +950,7 @@ class Expense extends Admin_Controller
 		$this->template->set('stsview', 'view');
 		$this->template->set('list_detail_pr_kasbon', $get_pr_detail_kasbon);
 		$this->template->set('list_files', $list_files);
-		$this->template->title('Detail Kasbon');
+		$this->template->title('Cash Advance Detail');
 		$this->template->page_icon('fa fa-file-text-o');
 		$this->template->render('kasbon_form_detail');
 	}
@@ -962,7 +962,7 @@ class Expense extends Admin_Controller
 		$this->template->set('status', $this->status);
 		// $this->template->set('results', $data);
 		$this->template->set('stsview', 'view');
-		$this->template->title('Kasbon Approval by Finance');
+		$this->template->title('Cash Advance Approval by Finance');
 		$this->template->page_icon('fa fa-list');
 		$this->template->render('kasbon_list_fin');
 	}
@@ -1003,7 +1003,7 @@ class Expense extends Admin_Controller
 		$param = array(
 			'save'   => $result ? 1 : 0,
 			'status' => $result ? 1 : 0,
-			'msg'    => $result ? 'Pengajuan kasbon berhasil disetujui.' : 'Gagal menyetujui pengajuan kasbon.',
+			'msg'    => $result ? 'Cash advance request approved successfully.' : 'Failed to approve the cash advance request.',
 			'id'     => $id
 		);
 		echo json_encode($param);
@@ -1040,7 +1040,7 @@ class Expense extends Admin_Controller
 		$param = array(
 			'save'   => $result ? 1 : 0,
 			'status' => $result ? 1 : 0,
-			'msg'    => $result ? 'Pengajuan kasbon berhasil disetujui Management.' : 'Gagal menyetujui pengajuan kasbon.',
+			'msg'    => $result ? 'The cash advance request was approved by Management successfully.' : 'Failed to approve the cash advance request.',
 			'id'     => $id
 		);
 		echo json_encode($param);
@@ -1186,10 +1186,10 @@ class Expense extends Admin_Controller
 
 				$nom = 0;
 				if (isset($expense_list[$i]) && $expense_list[$i] > 0) {
-					$nom = floatval(str_replace(',', '', $expense_list[$i]));
+					$nom = floatval(str_replace(',', '', $expense_list[$i] ?? ''));
 				} elseif (isset($harga_list[$i]) && isset($qty_list[$i])) {
-					$q = floatval(str_replace(',', '', $qty_list[$i]));
-					$h = floatval(str_replace(',', '', $harga_list[$i]));
+					$q = floatval(str_replace(',', '', $qty_list[$i] ?? ''));
+					$h = floatval(str_replace(',', '', $harga_list[$i] ?? ''));
 					$nom = $q * $h;
 				}
 				$total_debit += $nom;
@@ -1210,7 +1210,7 @@ class Expense extends Admin_Controller
 		}
 
 		if (empty($html)) {
-			$html = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada rincian alokasi biaya</td></tr>';
+			$html = '<tr><td colspan="6" class="text-center text-muted py-3">No cost allocation details yet</td></tr>';
 		}
 
 		echo json_encode([
@@ -1830,11 +1830,11 @@ class Expense extends Admin_Controller
 					if (move_uploaded_file($tmpName, $filePath)) {
 						$pathBonBukti[] = $filePath;
 					} else {
-						echo "Gagal mengunggah file: $name<br>";
+						echo "Failed to upload file: $name<br>";
 					}
 				}
 			}
-			$bonBukti = implode(";", $pathBonBukti);
+			$bonBukti = implode(";", $pathBonBukti ?? []);
 
 			if (!empty($_FILES['bukti_pengembalian']['name'][0])) {
 				foreach ($_FILES['bukti_pengembalian']['name'] as $index => $name) {
@@ -1844,13 +1844,13 @@ class Expense extends Admin_Controller
 					if (move_uploaded_file($tmpName, $filePath)) {
 						$pathBuktiPengembalian[] = $filePath;
 					} else {
-						echo "Gagal mengunggah file: $name<br>";
+						echo "Failed to upload file: $name<br>";
 					}
 				}
 			}
 
 			if ($pengembalian == 2) {
-				$buktiPengembalian = implode(";", $pathBuktiPengembalian);
+				$buktiPengembalian = implode(";", $pathBuktiPengembalian ?? []);
 			} else {
 				$buktiPengembalian = null;
 			}
@@ -2109,7 +2109,7 @@ class Expense extends Admin_Controller
 		$this->template->set('results', $data);
 		$this->template->set('status', $this->status);
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Persetujuan Managemen Penggantian Transport');
+		$this->template->title('Transport Reimbursement Management Approval');
 		$this->template->render('transport_req_mgt_list');
 	}
 
@@ -2130,7 +2130,7 @@ class Expense extends Admin_Controller
 		$this->template->set('data_detail', $data_detail);
 		$this->template->set('status', $status);
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Pengajuan  Transport');
+		$this->template->title('Transport Request');
 		$this->template->render('transport_req_all');
 	}
 
@@ -2138,7 +2138,7 @@ class Expense extends Admin_Controller
 	public function transport_req()
 	{
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Pengajuan Penggantian Transport');
+		$this->template->title('Transport Reimbursement Request');
 		$this->template->render('transport_req_list');
 	}
 	// transport pengajuan create
@@ -2249,7 +2249,7 @@ class Expense extends Admin_Controller
 			$this->template->set('stsview', '');
 		}
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Pengajuan Transport');
+		$this->template->title('Transport Request');
 		$this->template->render('transport_req_form');
 	}
 	public function transport_req_print($id)
@@ -2298,7 +2298,7 @@ class Expense extends Admin_Controller
 		$this->template->set('mod', $mod);
 		$this->template->set('stsview', 'view');
 		$this->template->page_icon('fa fa-list');
-		$this->template->title('Pengajuan Transport');
+		$this->template->title('Transport Request');
 		$this->template->render('transport_req_form');
 	}
 
@@ -2441,12 +2441,12 @@ class Expense extends Admin_Controller
 				$this->db->trans_rollback();
 				$result = FALSE;
 
-				$msg = 'Data gagal di simpan !';
+				$msg = 'Data failed to save!';
 			} else {
 				$this->db->trans_commit();
 				$result = TRUE;
 
-				$msg = 'Data berhasil di simpan !';
+				$msg = 'Data saved successfully!';
 			}
 		} else {
 			$this->db->trans_rollback();
@@ -2718,7 +2718,7 @@ class Expense extends Admin_Controller
 	function getcoabudget()
 	{
 		$coa = $this->input->post("coa");
-		$coabudget = str_ireplace(";", "','", $coa);
+		$coabudget = str_ireplace(";", "','", $coa ?? '');
 		$datacombocoa = "";
 		$data_budget = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coabudget . "')")->result();
 		foreach ($data_budget as $keys) {
@@ -2742,7 +2742,7 @@ class Expense extends Admin_Controller
 
 		try {
 			if (empty($id) || empty($table)) {
-				throw new Exception('ID atau Tabel tidak ditemukan!');
+				throw new Exception('ID or Table not found!');
 			}
 
 			$data = array(
@@ -2769,7 +2769,7 @@ class Expense extends Admin_Controller
 			} else {
 				$this->db->trans_commit();
 				$result = true;
-				$message = "Berhasil mereject data.";
+				$message = "Data rejected successfully.";
 			}
 		} catch (Exception $e) {
 			$this->db->trans_rollback();
@@ -3130,11 +3130,11 @@ class Expense extends Admin_Controller
 		$valid = 1;
 		$hasil = '';
 		$grand_total = 0;
-		if (count($get_detail_pr_stok_material) < 1 && count($get_detail_pr_departemen) < 1 && count($get_detail_pr_asset) < 1) {
+		if (count($get_detail_pr_stok_material ?? []) < 1 && count($get_detail_pr_departemen ?? []) < 1 && count($get_detail_pr_asset ?? []) < 1) {
 			$valid = 0;
 		} else {
 			$no = 1;
-			if (count($get_detail_pr_stok_material) > 0) {
+			if (count($get_detail_pr_stok_material ?? []) > 0) {
 				foreach ($get_detail_pr_stok_material as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3157,7 +3157,7 @@ class Expense extends Admin_Controller
 				endforeach;
 			}
 
-			if (count($get_detail_pr_departemen) > 0) {
+			if (count($get_detail_pr_departemen ?? []) > 0) {
 				foreach ($get_detail_pr_departemen as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3178,7 +3178,7 @@ class Expense extends Admin_Controller
 				endforeach;
 			}
 
-			if (count($get_detail_pr_asset)) {
+			if (count($get_detail_pr_asset ?? [])) {
 				foreach ($get_detail_pr_asset as $detail_pr) :
 					if ($tipe_pr == '') {
 						$tipe_pr = $detail_pr['tipe_pr'];
@@ -3308,7 +3308,7 @@ class Expense extends Admin_Controller
 			$hasil .= '<td class="text-left">' . $item->keperluan . '</td>';
 			$hasil .= '<td class="text-center">' . number_format((float) $item->jumlah_kasbon) . '</td>';
 			$hasil .= '<td class="text-center">
-									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Bayar</button>
+									<button type="button" class="btn btn-sm btn-success add_kasbon_pr" data-no_doc="' . $item->no_doc . '">Pay</button>
 								</td>';
 			$hasil .= '</tr>';
 		}
@@ -3365,7 +3365,7 @@ class Expense extends Admin_Controller
 			$hasil .= '<td class="text-left">' . $item->informasi . '</td>';
 			$hasil .= '<td class="text-center">' . number_format((float) $item->jumlah) . '</td>';
 			$hasil .= '<td class="text-center">
-									<button type="button" class="btn btn-sm btn-success add_ganti_expense" data-no_doc="' . $item->no_doc . '">Bayar</button>
+									<button type="button" class="btn btn-sm btn-success add_ganti_expense" data-no_doc="' . $item->no_doc . '">Pay</button>
 								</td>';
 			$hasil .= '</tr>';
 		}
@@ -3463,7 +3463,7 @@ class Expense extends Admin_Controller
 		$this->template->set('status', $this->status);
 		// $this->template->set('results', $data);
 		$this->template->set('stsview', 'view');
-		$this->template->title('Kasbon Approval by Management');
+		$this->template->title('Cash Advance Approval by Management');
 		$this->template->page_icon('fa fa-list');
 		$this->template->render('kasbon_list_fin_manage');
 	}
@@ -3566,7 +3566,7 @@ class Expense extends Admin_Controller
 		} elseif ($item['status'] == '9') {
 			$sts = '<span class="badge bg-danger text-light">Reject</span>';
 		} elseif ($item['status'] == '4') {
-			$sts = '<span class="badge bg-warning text-dark">Kurang</span>';
+			$sts = '<span class="badge bg-warning text-dark">Short</span>';
 		}
 		return $sts;
 	}
@@ -3590,7 +3590,7 @@ class Expense extends Admin_Controller
 				$action .= ' <a class="btn btn-success btn-sm edit" href="javascript:void(0)" title="Edit" onclick="data_edit(' . $item['id'] . ')"><i class="fa fa-edit"></i></a>';
 			}
 			if (has_permission($this->deletePermissionKasbon)) {
-				$action .= ' <a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Hapus" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
+				$action .= ' <a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
 			}
 		}
 
@@ -3716,13 +3716,13 @@ class Expense extends Admin_Controller
 			$no++;
 
 			if ($item['status'] == '0') {
-				$sts = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Menunggu Approval Finance</span>';
+				$sts = '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Awaiting Finance Approval</span>';
 			} elseif ($item['status'] == '1' || $item['status'] == '2') {
 				$sts = '<span class="badge bg-success"><i class="fa fa-check me-1"></i> Approved</span>';
 			} elseif ($item['status'] == '3') {
 				$sts = '<span class="badge bg-secondary">Closed</span>';
 			} elseif ($item['status'] == '9') {
-				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Rejected</span>';
 			} else {
 				$sts = '<span class="badge bg-info">' . $item['status'] . '</span>';
 			}
@@ -3730,7 +3730,7 @@ class Expense extends Admin_Controller
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			if (has_permission($this->viewPermissionKasbonApp)) {
 				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url("expense/kasbon_print/" . $item['id']) . '" target="_blank" title="Cetak Kasbon"><i class="fa fa-print"></i></a>';
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_fin') . '" data-id="' . $item['id'] . '" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_fin') . '" data-id="' . $item['id'] . '" title="View Detail"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($this->managePermissionKasbonApp)) {
@@ -3743,7 +3743,7 @@ class Expense extends Admin_Controller
 			$nmuser = $item['nmuser'];
 
 			$check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item['no_doc']])->result();
-			if (count($check_detail)) {
+			if (count($check_detail ?? [])) {
 				if ($item['tipe_pr'] == 'pr departemen') {
 					$this->db->select('b.nm_lengkap');
 					$this->db->from('rutin_non_planning_header a');
@@ -3857,13 +3857,13 @@ class Expense extends Admin_Controller
 			$no++;
 
 			if ($item['status'] == '0') {
-				$sts = '<span class="badge bg-primary"><i class="fa fa-clock me-1"></i> Menunggu Approval Management</span>';
+				$sts = '<span class="badge bg-primary"><i class="fa fa-clock me-1"></i> Awaiting Management Approval</span>';
 			} elseif ($item['status'] == '1' || $item['status'] == '2') {
 				$sts = '<span class="badge bg-success"><i class="fa fa-check me-1"></i> Approved</span>';
 			} elseif ($item['status'] == '3') {
 				$sts = '<span class="badge bg-secondary">Closed</span>';
 			} elseif ($item['status'] == '9') {
-				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Ditolak</span>';
+				$sts = '<span class="badge bg-danger"><i class="fa fa-times-circle me-1"></i> Rejected</span>';
 			} else {
 				$sts = '<span class="badge bg-info">' . $item['status'] . '</span>';
 			}
@@ -3871,7 +3871,7 @@ class Expense extends Admin_Controller
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			if (has_permission($this->viewPermissionKasbonAppMan)) {
 				$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url("expense/kasbon_print/" . $item['id']) . '" target="_blank" title="Cetak Kasbon"><i class="fa fa-print"></i></a>';
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_mgt') . '" data-id="' . $item['id'] . '" title="Lihat Detail"><i class="fa fa-eye"></i></a>';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="' . base_url('expense/kasbon_view/' . $item['id'] . '/_mgt') . '" data-id="' . $item['id'] . '" title="View Detail"><i class="fa fa-eye"></i></a>';
 			}
 
 			if (has_permission($this->managePermissionKasbonAppMan)) {
@@ -3884,7 +3884,7 @@ class Expense extends Admin_Controller
 			$nmuser = $item['nmuser'];
 
 			$check_detail = $this->db->get_where('tr_pr_detail_kasbon', ['id_kasbon' => $item['no_doc']])->result();
-			if (count($check_detail)) {
+			if (count($check_detail ?? [])) {
 				if ($item['tipe_pr'] == 'pr departemen') {
 					$this->db->select('b.nm_lengkap');
 					$this->db->from('rutin_non_planning_header a');
@@ -4018,15 +4018,15 @@ class Expense extends Admin_Controller
 		foreach ($get_data as $item) :
 			$no++;
 
-			$status = '<span class="badge bg-warning text-dark">Baru</span>';
+			$status = '<span class="badge bg-warning text-dark">New</span>';
 			if ($item['status'] == '1') {
-				$status = '<span class="badge bg-info text-dark">Disetujui Finance</span>';
+				$status = '<span class="badge bg-info text-dark">Approved by Finance</span>';
 			} elseif ($item['status'] == '2') {
-				$status = '<span class="badge bg-primary text-light">Disetujui Management</span>';
+				$status = '<span class="badge bg-primary text-light">Approved by Management</span>';
 			} elseif ($item['status'] == '3') {
-				$status = '<span class="badge bg-success text-light">Selesai</span>';
+				$status = '<span class="badge bg-success text-light">Done</span>';
 			} elseif ($item['status'] == '9') {
-				$status = '<span class="badge bg-danger text-light">Ditolak</span>';
+				$status = '<span class="badge bg-danger text-light">Rejected</span>';
 			}
 
 			$action = '';
@@ -4045,7 +4045,7 @@ class Expense extends Admin_Controller
 
 			if (has_permission($this->deletePermission)) {
 				if ($item['status'] == '0' || $item['status'] == '9') {
-					$action .= ' <a href="javascript:void(0);" class="btn btn-outline-danger btn-sm delete" title="Hapus" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
+					$action .= ' <a href="javascript:void(0);" class="btn btn-outline-danger btn-sm delete" title="Delete" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
 				}
 			}
 
@@ -4139,18 +4139,18 @@ class Expense extends Admin_Controller
 		foreach ($get_data as $item) :
 			$no++;
 
-			$status = '<span class="badge bg-yellow">Baru</span>';
+			$status = '<span class="badge bg-yellow">New</span>';
 			if ($item['status'] == '1') {
-				$status = '<span class="badge bg-green">Disetujui</span>';
+				$status = '<span class="badge bg-green">Approved</span>';
 			}
 			if ($item['status'] == '2') {
-				$status = '<span class="badge bg-green">Disetujui Management</span>';
+				$status = '<span class="badge bg-green">Approved by Management</span>';
 			}
 			if ($item['status'] == '3') {
-				$status = '<span class="badge bg-green">Selesai</span>';
+				$status = '<span class="badge bg-green">Done</span>';
 			}
 			if ($item['status'] == '9') {
-				$status = '<span class="badge bg-red">Ditolak</span>';
+				$status = '<span class="badge bg-red">Rejected</span>';
 			}
 
 			$action = '';
@@ -4171,7 +4171,7 @@ class Expense extends Admin_Controller
 
 			if (has_permission($this->deletePermission)) {
 				if ($item['status'] == '0' || $item['status'] == '9') {
-					$action .= ' <a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Hapus" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
+					$action .= ' <a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" onclick="data_delete(' . $item['id'] . ')"><i class="fa fa-trash"></i></a>';
 				}
 			}
 
@@ -4371,11 +4371,11 @@ class Expense extends Admin_Controller
 		foreach ($rows as $row) {
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			// Cetak / Print
-			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a> ';
+			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a> ';
 
 			// View Detail
 			if (has_permission('Approval Expense Management.View') || has_permission('Expense_Approval_Management.View')) {
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a> ';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="View Detail"><i class="fa fa-eye"></i></a> ';
 			}
 
 			// Persetujuan / Approval Management
@@ -4384,7 +4384,7 @@ class Expense extends Admin_Controller
 			}
 			$action .= '</div>';
 
-			$badge_status = '<span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval Management</span>';
+			$badge_status = '<span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Awaiting Management Approval</span>';
 
 			$data[] = array(
 				'no'        => $no++,
@@ -4491,11 +4491,11 @@ class Expense extends Admin_Controller
 		foreach ($rows as $row) {
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			// Cetak / Print
-			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Cetak"><i class="fa fa-print"></i></a> ';
+			$action .= '<a class="btn btn-outline-secondary btn-sm print" href="' . base_url('expense/expense_print/' . $row->id) . '" target="_blank" title="Print"><i class="fa fa-print"></i></a> ';
 
 			// View Detail
 			if (has_permission('Expense_Approval.View')) {
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="Lihat Detail"><i class="fa fa-eye"></i></a> ';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" data-id="' . $row->id . '" title="View Detail"><i class="fa fa-eye"></i></a> ';
 			}
 
 			// Pengecekan / Approval Finance
@@ -4504,7 +4504,7 @@ class Expense extends Admin_Controller
 			}
 			$action .= '</div>';
 
-			$badge_status = '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval Finance</span>';
+			$badge_status = '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Awaiting Finance Approval</span>';
 
 			$data[] = array(
 				'no'        => $no++,

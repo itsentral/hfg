@@ -44,8 +44,8 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
                     <tr>
                         <th width="4%" class="no-sort text-center">#</th>
                         <th>Item Code</th>
-                        <th>Stok Name</th>
-                        <th>Stok Category</th>
+                        <th>Stock Name</th>
+                        <th>Stock Category</th>
                         <th>Trade Name</th>
                         <th>Brand</th>
                         <th>Spec</th>
@@ -83,7 +83,7 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
     $(document).on('click', '.detail', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        $("#head_title").html("Detail Accessories");
+        $("#head_title").html("Accessories Detail");
         $.ajax({
             type: 'POST',
             url: "<?= site_url('accessories/detail'); ?>/" + id,
@@ -102,13 +102,13 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
         e.preventDefault();
         var id = $(this).data('id');
         swal({
-                title: "Anda Yakin?",
-                text: "Data akan di hapus.",
+                title: "Are you sure?",
+                text: "The data will be deleted.",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             },
             function(isConfirm) {
@@ -125,7 +125,7 @@ $ENABLE_DELETE  = has_permission('Master_Indirect.Delete');
                     success: function(result) {
                         if (result.status == '1') {
                             swal({
-                                    title: "Sukses",
+                                    title: "Success",
                                     text: result.pesan,
                                     type: "success"
                                 },

@@ -24,22 +24,22 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 					<tr>
 						<td></td>
 						<th width="5">No</th>
-						<th class="exclass">No Dokumen</th>
+						<th class="exclass">Document No.</th>
 						<th>Request By</th>
-						<th class="exclass">Tanggal</th>
+						<th class="exclass">Date</th>
 						<th>Keperluan</th>
 						<th class="exclass">Tipe</th>
 						<th>Info Transfer</th>
 						<th>Currency</th>
 						<th>Bank</th>
-						<th>Nilai Pengajuan</th>
-						<th class="exclass">Tanggal Pembayaran</th>
+						<th>Request Value</th>
+						<th class="exclass">Payment Date</th>
 						<?php if ($ENABLE_MANAGE) : ?>
-							<th class="exclass">Keterangan</th>
+							<th class="exclass">Description</th>
 							<th class="exclass">Payment</th>
 							<th class="exclass">Administrasi</th>
 							<th class="exclass">Status</th>
-							<th class="exclass">Dokumen</th>
+							<th class="exclass">Document</th>
 						<?php endif; ?>
 					</tr>
 				</thead>
@@ -136,16 +136,16 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 		// alert(checked_checkbox);
 
 		var errors = "";
-		if ($("#bank_coa").val() == "0") errors = "Bank tidak boleh kosong";
-		if (checked_checkbox < 1) errors = "Maaf, pilih terlebih dahulu payment yang akan di proses";
+		if ($("#bank_coa").val() == "0") errors = "Bank cannot be empty";
+		if (checked_checkbox < 1) errors = "Sorry, select the payment to process first";
 		if (errors == "") {
 			swal({
-					title: "Anda Yakin?",
-					text: "Data Akan Di Update!",
+					title: "Are you sure?",
+					text: "The Data Will Be Updated!",
 					type: "info",
 					showCancelButton: true,
-					confirmButtonText: "Ya, Update!",
-					cancelButtonText: "Tidak!",
+					confirmButtonText: "Yes, Update!",
+					cancelButtonText: "No!",
 					closeOnConfirm: false,
 					closeOnCancel: true
 				},
@@ -162,8 +162,8 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 							success: function(msg) {
 								if (msg.hasil == '1') {
 									swal({
-										title: "Sukses!",
-										text: "Data Berhasil Di Update",
+										title: "Success!",
+										text: "Data Updated Successfully",
 										type: "success",
 										timer: 1500,
 										showConfirmButton: false
@@ -171,8 +171,8 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 									window.location.href = window.location.href;
 								} else {
 									swal({
-										title: "Gagal!",
-										text: "Data Gagal Di Update",
+										title: "Failed!",
+										text: "Data Failed to Update",
 										type: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -182,8 +182,8 @@ $ENABLE_DELETE  = has_permission('Payment.Delete');
 							},
 							error: function(msg) {
 								swal({
-									title: "Gagal!",
-									text: "Ajax Data Gagal Di Proses",
+									title: "Failed!",
+									text: "Ajax request failed to process.",
 									type: "error",
 									timer: 1500,
 									showConfirmButton: false

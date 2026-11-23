@@ -55,8 +55,8 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
                     <th width="5%">No</th>
                     <th>Unpack No</th>
                     <th>Pack</th>
-                    <th width="9%">Jumlah Material</th>
-                    <th width="9%">Jumlah Coil (Roll)</th>
+                    <th width="9%">Material Count</th>
+                    <th width="9%">Coil Count (Roll)</th>
                     <th width="13%">Nett Weight Total</th>
                     <th width="10%">Tgl Unpack</th>
                     <th width="9%">Status</th>
@@ -144,10 +144,10 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
             Swal.fire({
                 icon: 'warning',
                 title: 'Lock Report Unpack?',
-                text: 'Report ' + unpackNo + ' akan dikunci dan tidak bisa diedit lagi. Lanjutkan?',
+                text: 'Report ' + unpackNo + ' will be locked and can no longer be edited. Continue?',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Lock',
-                cancelButtonText: 'Batal',
+                confirmButtonText: 'Yes, Lock',
+                cancelButtonText: 'Cancel',
                 confirmButtonColor: '#d33',
                 reverseButtons: true
             }).then(function(result) {
@@ -164,7 +164,7 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
                         if (res.status == 1) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil',
+                                title: 'Success',
                                 text: res.message,
                                 timer: 1500,
                                 showConfirmButton: false
@@ -182,7 +182,7 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Terjadi kesalahan jaringan.'
+                            text: 'A network error occurred.'
                         });
                     }
                 });
@@ -195,11 +195,11 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
 
             Swal.fire({
                 icon: 'warning',
-                title: 'Hapus Report Unpack?',
+                title: 'Delete Unpack Report?',
                 text: 'Report ' + unpackNo + ' akan dihapus. Lanjutkan?',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal',
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel',
                 confirmButtonColor: '#d33',
                 reverseButtons: true
             }).then(function(result) {
@@ -216,7 +216,7 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
                         if (res.status == 1) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil',
+                                title: 'Success',
                                 text: res.message,
                                 timer: 1500,
                                 showConfirmButton: false
@@ -234,7 +234,7 @@ $ENABLE_MANAGE = has_permission('Unpack_Coil.Manage');
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Terjadi kesalahan jaringan.'
+                            text: 'A network error occurred.'
                         });
                     }
                 });

@@ -43,7 +43,7 @@ class Report_payment_po extends Admin_Controller
 
         $no_po = $this->input->post('no_po') ?? $this->input->get('no_po');
         if (empty($no_po)) {
-            echo "<div class='alert alert-danger mb-0'>Nomor PO tidak valid!</div>";
+            echo "<div class='alert alert-danger mb-0'>Invalid PO number!</div>";
             return;
         }
 
@@ -129,7 +129,7 @@ class Report_payment_po extends Admin_Controller
         $sheet1->mergeCells('A1:G1');
         $sheet1->getStyle('A1')->getFont()->setSize(14)->setBold(true)->getColor()->setRGB('1E293B');
 
-        $sheet1->setCellValue('A2', 'Diekspor pada: ' . date('d/m/Y H:i:s') . (!empty($no_po) ? ' | Filter PO: ' . $no_po : ''));
+        $sheet1->setCellValue('A2', 'Exported on: ' . date('d/m/Y H:i:s') . (!empty($no_po) ? ' | Filter PO: ' . $no_po : ''));
         $sheet1->mergeCells('A2:G2');
         $sheet1->getStyle('A2')->getFont()->setSize(10)->setItalic(true)->getColor()->setRGB('64748B');
 
@@ -139,7 +139,7 @@ class Report_payment_po extends Admin_Controller
             'B4' => 'NO. PO',
             'C4' => 'SUPPLIER',
             'D4' => 'CURRENCY',
-            'E4' => 'NILAI PO',
+            'E4' => 'PO VALUE',
             'F4' => 'PO TERBAYAR',
             'G4' => 'OUTSTANDING PO',
         ];
@@ -205,7 +205,7 @@ class Report_payment_po extends Admin_Controller
         // SHEET 2: DETAIL PAYMENT PO (18 KOLOM)
         // ========================================================
         $sheet2 = $objPHPExcel->createSheet(1);
-        $sheet2->setTitle('Detail Payment PO');
+        $sheet2->setTitle('PO Payment Details');
 
         // Headers Row 1 (Merged Headers)
         $sheet2->setCellValue('A1', 'PO');
@@ -249,7 +249,7 @@ class Report_payment_po extends Admin_Controller
             $is_first = true;
             foreach ($items as $item) {
                 if ($item['category'] == 'dp') {
-                    $category_label = 'Uang Muka';
+                    $category_label = 'Down Payment';
                 } elseif ($item['category'] == 'import') {
                     $category_label = 'Pelunasan (After ROS)';
                 } elseif ($item['category'] == 'local') {
@@ -301,7 +301,7 @@ class Report_payment_po extends Admin_Controller
             ob_clean();
         }
 
-        $filename = "Report_Payment_PO_" . (!empty($no_po) ? str_replace('/', '_', $no_po) : "All") . "_" . date('Ymd_His') . ".xlsx";
+        $filename = "Report_Payment_PO_" . (!empty($no_po) ? str_replace('/', '_', $no_po ?? '') : "All") . "_" . date('Ymd_His') . ".xlsx";
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');

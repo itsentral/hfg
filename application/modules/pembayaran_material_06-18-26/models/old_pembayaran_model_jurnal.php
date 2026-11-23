@@ -133,8 +133,8 @@ class Pembayaran_material_model extends BF_Model
 		$post = $this->input->post();
 
 		$id_payment = $post['id_payment'];
-		$payment_bank = str_replace(',', '', $post['payment_bank']);
-		$bank_charge = str_replace(',', '', $post['bank_charge']);
+		$payment_bank = str_replace(',', '', $post['payment_bank'] ?? '');
+		$bank_charge = str_replace(',', '', $post['bank_charge'] ?? '');
 		$bank = $post['bank'];
 
 		$hasil_jurnal = '';
@@ -493,7 +493,7 @@ class Pembayaran_material_model extends BF_Model
 				// Maksa urutan berdasarkan posisi di array
 				// 1. Gabungkan isi array jadi string dipisahkan koma dan petik
 				// Hasil yang kita mau: 1106-01-06', '7201-01-04', 'dst...
-				$ids = implode("', '", $arr_coa_jurnal);
+				$ids = implode("', '", $arr_coa_jurnal ?? []);
 
 				// 2. Masukkan ke FIELD() dengan benar
 				// Perhatikan: ada petik pembuka sebelum $ids dan petik penutup setelah $ids

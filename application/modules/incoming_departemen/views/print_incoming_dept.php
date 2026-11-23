@@ -24,7 +24,7 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string)
 	</tr>
 	<tr>
 		<td align='center'><b>
-				<h2>TANDA TERIMA BARANG</h2>
+				<h2>GOODS RECEIPT</h2>
 			</b></td>
 	</tr>
 </table>
@@ -33,7 +33,7 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string)
 <table class="gridtable2" width="100%" border='0'>
 	<thead>
 		<tr>
-			<td class="mid">No Transaksi</td>
+			<td class="mid">Transaction No.</td>
 			<td class="mid">:</td>
 			<td class="mid" colspan='4'><?= $kode_trans; ?></td>
 		</tr>
@@ -46,7 +46,7 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string)
 			<td class="mid" width='40%'><?= $rest_data[0]['pic']; ?></td>
 		</tr>
 		<tr>
-			<td class="mid">Tanggal Terima</td>
+			<td class="mid">Received Date</td>
 			<td class="mid">:</td>
 			<td class="mid"><?= $TANGGAL; ?></td>
 			<td class="mid">Note</td>
@@ -59,9 +59,9 @@ $TANGGAL = (!empty($rest_data[0]['tanggal'])) ? date('d F Y', strtotime((string)
 	<thead align='center'>
 		<tr>
 			<th class="mid" style='vertical-align:middle;' width='4%'>#</th>
-			<th class="mid" style='vertical-align:middle;'>Name Barang</th>
+			<th class="mid" style='vertical-align:middle;'>Item Name</th>
 			<th class="mid" style='vertical-align:middle;' width='8%'>Qty</th>
-			<th class="mid" style='vertical-align:middle;' width='19%'>Keterangan</th>
+			<th class="mid" style='vertical-align:middle;' width='19%'>Description</th>
 			<th class="mid" style='vertical-align:middle;' width='19%'>Pemeriksa</th>
 		</tr>
 	</thead>

@@ -25,7 +25,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Master</span>
                     <h4 class="fw-bold mb-0 text-success mt-1" id="budget-display">Rp <?= number_format((float) $budget, 0, ',', '.') ?></h4>
-                    <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil aktif</small>
+                    <small class="text-muted" style="font-size: 11px;">Active petty cash allocation</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
                     <i class="fas fa-money-bill-alt"></i>
@@ -51,9 +51,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
         <div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 5px solid #2563eb !important;">
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Budget Tersedia</span>
+                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Available Remaining Budget</span>
                     <h4 class="fw-bold mb-0 text-primary mt-1" id="sisa-budget-display">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></h4>
-                    <small class="text-muted" style="font-size: 11px;" id="sisa-budget-status">Sisa saldo aman</small>
+                    <small class="text-muted" style="font-size: 11px;" id="sisa-budget-status">Remaining balance is safe</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 48px; height: 48px; font-size: 20px;">
                     <i class="fa fa-balance-scale"></i>
@@ -68,9 +68,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-pencil-square-o me-2"></i><?= $edit_mode ? 'Edit' : 'Tambah' ?> Pencatatan Petty Cash
+                <i class="fa fa-pencil-square-o me-2"></i><?= $edit_mode ? 'Edit' : 'Add' ?> Pencatatan Petty Cash
             </h5>
-            <small class="text-muted">Isi informasi pengeluaran kas kecil beserta bukti transaksinya</small>
+            <small class="text-muted">Fill in the petty cash expense information together with its transaction proof</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -97,10 +97,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <label for="tanggal" class="form-label fw-semibold text-muted small">Tanggal <span class="text-danger">*</span></label>
+                <label for="tanggal" class="form-label fw-semibold text-muted small">Date <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-calendar"></i></span>
-                    <input type="text" class="form-control flatpickr-date border-start-0" id="tanggal" name="tanggal" value="<?= $tanggal ?>" placeholder="Pilih tanggal..." required>
+                    <input type="text" class="form-control flatpickr-date border-start-0" id="tanggal" name="tanggal" value="<?= $tanggal ?>" placeholder="Select date..." required>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -116,11 +116,11 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 <label for="request_by" class="form-label fw-semibold text-muted small">Request By <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-user"></i></span>
-                    <input type="text" class="form-control border-start-0" id="request_by" name="request_by" value="<?= $request_by ?>" placeholder="Nama pemohon..." maxlength="100" required>
+                    <input type="text" class="form-control border-start-0" id="request_by" name="request_by" value="<?= $request_by ?>" placeholder="Requester name..." maxlength="100" required>
                 </div>
             </div>
             <div class="col-12">
-                <label for="keterangan" class="form-label fw-semibold text-muted small">Keterangan / Keperluan</label>
+                <label for="keterangan" class="form-label fw-semibold text-muted small">Description / Purpose</label>
                 <textarea class="form-control" id="keterangan" name="keterangan" rows="2" placeholder="Catatan atau keterangan opsional..."><?= $keterangan ?></textarea>
             </div>
         </div>
@@ -133,7 +133,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 <h6 class="fw-bold mb-0 text-dark">
                     <i class="fa fa-list-ul text-primary me-2"></i>Detail Item Pengeluaran
                 </h6>
-                <small class="text-muted">Tambahkan rincian item transaksi beserta bukti pendukung</small>
+                <small class="text-muted">Add transaction item details with supporting proof</small>
             </div>
             <button type="button" class="btn btn-outline-success btn-sm px-3 shadow-sm" id="btn-add-row">
                 <i class="fa fa-plus me-1"></i> Tambah Item
@@ -145,10 +145,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 <thead class="table-light text-center">
                     <tr>
                         <th width="40" class="text-center">#</th>
-                        <th width="240">COA Pengeluaran</th>
-                        <th width="180">Deskripsi Pengeluaran</th>
+                        <th width="240">Expense COA</th>
+                        <th width="180">Expense Description</th>
                         <th width="160">Spesifikasi</th>
-                        <th width="85" class="text-center">Jumlah</th>
+                        <th width="85" class="text-center">Amount</th>
                         <th width="130" class="text-end">Nominal</th>
                         <th width="140" class="text-end">Total</th>
                         <th width="180">Evidence (Bukti)</th>
@@ -171,10 +171,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" name="details[<?= $idx ?>][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="<?= htmlspecialchars((string) $detail->pengeluaran) ?>" placeholder="Pengeluaran..." required>
+                                    <input type="text" name="details[<?= $idx ?>][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="<?= htmlspecialchars((string) $detail->pengeluaran) ?>" placeholder="Expense..." required>
                                 </td>
                                 <td>
-                                    <input type="text" name="details[<?= $idx ?>][spesifikasi]" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $detail->spesifikasi) ?>" placeholder="Spesifikasi...">
+                                    <input type="text" name="details[<?= $idx ?>][spesifikasi]" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $detail->spesifikasi) ?>" placeholder="Specification...">
                                 </td>
                                 <td>
                                     <input type="number" name="details[<?= $idx ?>][jumlah]" class="form-control form-control-sm text-center jumlah-input" value="<?= $detail->jumlah ?>" min="1" max="9999" required>
@@ -194,7 +194,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                                     <div class="evidence-item badge bg-light text-dark border d-inline-flex align-items-center me-1 mb-1 p-1 px-2" data-encrypted="<?= htmlspecialchars((string) $evidence->encrypted_name) ?>">
                                                         <i class="fa fa-file me-1 text-primary"></i>
                                                         <span class="evidence-name text-truncate" style="max-width: 90px;" title="<?= htmlspecialchars((string) $evidence->original_name) ?>"><?= htmlspecialchars((string) $evidence->original_name) ?></span>
-                                                        <a href="javascript:void(0)" class="text-danger ms-1 btn-remove-evidence" title="Hapus"><i class="fa fa-times"></i></a>
+                                                        <a href="javascript:void(0)" class="text-danger ms-1 btn-remove-evidence" title="Delete"><i class="fa fa-times"></i></a>
                                                         <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][original_name]" value="<?= htmlspecialchars((string) $evidence->original_name) ?>">
                                                         <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][encrypted_name]" value="<?= htmlspecialchars((string) $evidence->encrypted_name) ?>">
                                                         <input type="hidden" name="evidences[<?= $idx ?>][<?= $evKey ?>][file_type]" value="<?= htmlspecialchars((string) $evidence->file_type) ?>">
@@ -210,7 +210,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -229,10 +229,10 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="details[0][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="" placeholder="Pengeluaran..." required>
+                                <input type="text" name="details[0][pengeluaran]" class="form-control form-control-sm pengeluaran-input" value="" placeholder="Expense..." required>
                             </td>
                             <td>
-                                <input type="text" name="details[0][spesifikasi]" class="form-control form-control-sm" value="" placeholder="Spesifikasi...">
+                                <input type="text" name="details[0][spesifikasi]" class="form-control form-control-sm" value="" placeholder="Specification...">
                             </td>
                             <td>
                                 <input type="number" name="details[0][jumlah]" class="form-control form-control-sm text-center jumlah-input" value="1" min="1" max="9999" required>
@@ -254,14 +254,14 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 </div>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>
+                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="6" class="text-end fw-bold py-2">Grand Total Pengeluaran:</th>
+                        <th colspan="6" class="text-end fw-bold py-2">Grand Total Expense:</th>
                         <th class="text-end fw-bold text-primary py-2 fs-6" id="grand-total-display">Rp 0</th>
                         <th colspan="2"></th>
                     </tr>
@@ -271,7 +271,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         <th colspan="2"></th>
                     </tr>
                     <tr class="bg-light">
-                        <th colspan="6" class="text-end fw-bold py-2">Sisa Budget Tersisa:</th>
+                        <th colspan="6" class="text-end fw-bold py-2">Remaining Budget:</th>
                         <th class="text-end fw-bold py-2 text-success" id="sisa-budget-table-display">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></th>
                         <th colspan="2"></th>
                     </tr>
@@ -283,8 +283,8 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
         <div class="alert alert-warning border-0 shadow-sm rounded-3 d-flex align-items-center mb-4" id="budget-warning-container" style="display: none !important;">
             <div class="me-3 fs-3 text-warning"><i class="fa fa-exclamation-triangle"></i></div>
             <div>
-                <h6 class="alert-heading fw-bold mb-1">Peringatan: Melebihi Sisa Budget!</h6>
-                <p class="mb-0 small">Total pengeluaran yang diinput melebihi sisa anggaran kas kecil yang tersedia. Anda tetap dapat menyimpan pencatatan ini, namun perhatikan saldo fisik kas kecil.</p>
+                <h6 class="alert-heading fw-bold mb-1">Warning: Exceeds Remaining Budget!</h6>
+                <p class="mb-0 small">The entered total expense exceeds the available petty cash budget. You can still save this record, but watch the physical petty cash balance.</p>
             </div>
         </div>
 
@@ -297,7 +297,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     <h6 class="fw-bold mb-0 text-dark">
                         <i class="fa fa-book text-primary me-2"></i>Simulasi Jurnal Transaksi (Live Preview)
                     </h6>
-                    <small class="text-muted"><i class="fa fa-info-circle me-1"></i>Pratinjau ayat jurnal otomatis saat disimpan</small>
+                    <small class="text-muted"><i class="fa fa-info-circle me-1"></i>Preview of the journal entries generated on save</small>
                 </div>
 
                 <!-- Jurnal STM -->
@@ -309,9 +309,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>
@@ -319,7 +319,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                             </thead>
                             <tbody id="jurnal-stm-body">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                    <td colspan="6" class="text-center text-muted py-2">No data yet</td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
@@ -342,9 +342,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>
@@ -352,7 +352,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                             </thead>
                             <tbody id="jurnal-company-body">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                    <td colspan="6" class="text-center text-muted py-2">No data yet</td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
@@ -372,9 +372,9 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>
@@ -382,7 +382,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                             </thead>
                             <tbody id="jurnal-stm-side-body">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-2">Belum ada data</td>
+                                    <td colspan="6" class="text-center text-muted py-2">No data yet</td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-light fw-bold">
@@ -400,7 +400,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
 
         <div class="d-flex align-items-center justify-content-end gap-2 pt-2">
             <a href="<?= site_url('expense_petty_cash') ?>" class="btn btn-secondary px-3">
-                <i class="fa fa-times me-1"></i> Batal
+                <i class="fa fa-times me-1"></i> Cancel
             </a>
             <button type="button" class="btn btn-primary px-4 shadow-sm" id="btn-save-bottom">
                 <i class="fa fa-save me-1"></i> Simpan Pencatatan
@@ -491,8 +491,8 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             newRow += coaOptions;
             newRow += '    </select>';
             newRow += '  </td>';
-            newRow += '  <td><input type="text" name="details[' + nextIndex + '][pengeluaran]" class="form-control form-control-sm pengeluaran-input" placeholder="Pengeluaran..." required></td>';
-            newRow += '  <td><input type="text" name="details[' + nextIndex + '][spesifikasi]" class="form-control form-control-sm" placeholder="Spesifikasi..."></td>';
+            newRow += '  <td><input type="text" name="details[' + nextIndex + '][pengeluaran]" class="form-control form-control-sm pengeluaran-input" placeholder="Expense..." required></td>';
+            newRow += '  <td><input type="text" name="details[' + nextIndex + '][spesifikasi]" class="form-control form-control-sm" placeholder="Specification..."></td>';
             newRow += '  <td><input type="number" name="details[' + nextIndex + '][jumlah]" class="form-control form-control-sm text-center jumlah-input" value="1" min="1" max="9999" required></td>';
             newRow += '  <td><input type="text" name="details[' + nextIndex + '][nominal]" class="form-control form-control-sm text-end nominal-input" placeholder="0" required></td>';
             newRow += '  <td>';
@@ -509,7 +509,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             newRow += '    </div>';
             newRow += '  </td>';
             newRow += '  <td class="text-center">';
-            newRow += '    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Hapus Baris"><i class="fa fa-trash"></i></button>';
+            newRow += '    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row" title="Delete Row"><i class="fa fa-trash"></i></button>';
             newRow += '  </td>';
             newRow += '</tr>';
 
@@ -529,7 +529,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
         // Remove Row
         $('#detail-table').on('click', '.btn-remove-row', function() {
             if ($('#detail-table-body tr').length <= 1) {
-                Swal.fire('Info', 'Minimal harus ada 1 baris item pengeluaran.', 'info');
+                Swal.fire('Info', 'There must be at least 1 expense item row.', 'info');
                 return;
             }
             $(this).closest('tr').remove();
@@ -617,7 +617,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 var evHtml = '<div class="evidence-item badge bg-light text-dark border d-inline-flex align-items-center me-1 mb-1 p-1 px-2" data-encrypted="' + resp.data.encrypted_name + '">';
                                 evHtml += '  <i class="fa fa-file me-1 text-primary"></i>';
                                 evHtml += '  <span class="evidence-name text-truncate" style="max-width: 90px;" title="' + $('<div>').text(resp.data.original_name).html() + '">' + $('<div>').text(resp.data.original_name).html() + '</span>';
-                                evHtml += '  <a href="javascript:void(0)" class="text-danger ms-1 btn-remove-evidence" title="Hapus"><i class="fa fa-times"></i></a>';
+                                evHtml += '  <a href="javascript:void(0)" class="text-danger ms-1 btn-remove-evidence" title="Delete"><i class="fa fa-times"></i></a>';
                                 evHtml += '  <input type="hidden" name="evidences[' + rowIndex + '][' + evKey + '][original_name]" value="' + resp.data.original_name + '">';
                                 evHtml += '  <input type="hidden" name="evidences[' + rowIndex + '][' + evKey + '][encrypted_name]" value="' + resp.data.encrypted_name + '">';
                                 evHtml += '  <input type="hidden" name="evidences[' + rowIndex + '][' + evKey + '][file_type]" value="' + resp.data.file_type + '">';
@@ -625,12 +625,12 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                                 evHtml += '</div>';
                                 $list.append(evHtml);
                             } else {
-                                Swal.fire('Upload Gagal', resp.message || 'Gagal mengupload file.', 'error');
+                                Swal.fire('Upload Failed', resp.message || 'Failed to upload file.', 'error');
                             }
                         },
                         error: function() {
                             $('#' + loadingId).remove();
-                            Swal.fire('Error', 'Terjadi kesalahan saat upload bukti.', 'error');
+                            Swal.fire('Error', 'An error occurred while uploading the proof.', 'error');
                         }
                     });
                 })(file);
@@ -665,7 +665,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             } else {
                 $('#sisa-budget-display').removeClass('text-danger').addClass('text-primary');
                 $('#sisa-budget-table-display').removeClass('text-danger').addClass('text-success');
-                $('#sisa-budget-status').text('Sisa saldo aman').removeClass('text-danger');
+                $('#sisa-budget-status').text('Remaining balance is safe').removeClass('text-danger');
                 $('#budget-warning-container').hide();
             }
 
@@ -721,7 +721,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     html += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
                     html += '</tr>';
                 } else {
-                    html = '<tr><td colspan="6" class="text-center text-muted py-2">Belum ada item transaksi valid</td></tr>';
+                    html = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
                 }
                 $('#jurnal-stm-body').html(html);
                 $('#jurnal-stm-total-debit').text('Rp ' + formatRupiah(grandTotal));
@@ -751,13 +751,13 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     htmlComp += '<tr class="table-warning">';
                     htmlComp += '  <td class="text-center">' + tglFmt + '</td>';
                     htmlComp += '  <td>' + coaHutang + '</td>';
-                    htmlComp += '  <td>Hutang ke STM</td>';
+                    htmlComp += '  <td>Payable to STM</td>';
                     htmlComp += '  <td class="text-center">' + comp + '</td>';
                     htmlComp += '  <td class="text-end text-muted">-</td>';
                     htmlComp += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
                     htmlComp += '</tr>';
                 } else {
-                    htmlComp = '<tr><td colspan="6" class="text-center text-muted py-2">Belum ada item transaksi valid</td></tr>';
+                    htmlComp = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
                 }
                 $('#jurnal-company-body').html(htmlComp);
                 $('#jurnal-company-total-debit').text('Rp ' + formatRupiah(grandTotal));
@@ -783,7 +783,7 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                     htmlStm += '  <td class="text-end">Rp ' + formatRupiah(grandTotal) + '</td>';
                     htmlStm += '</tr>';
                 } else {
-                    htmlStm = '<tr><td colspan="6" class="text-center text-muted py-2">Belum ada item transaksi valid</td></tr>';
+                    htmlStm = '<tr><td colspan="6" class="text-center text-muted py-2">No valid transaction items yet</td></tr>';
                 }
                 $('#jurnal-stm-side-body').html(htmlStm);
                 $('#jurnal-stm-side-total-debit').text('Rp ' + formatRupiah(grandTotal));
@@ -798,14 +798,14 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
             // Client Validation
             var company = $('#company').val();
             if (!company) {
-                Swal.fire('Validasi', 'Company wajib dipilih.', 'warning');
+                Swal.fire('Validasi', 'A company is required.', 'warning');
                 $('#company').focus();
                 return;
             }
 
             var requestBy = $('#request_by').val();
             if (!requestBy || !$.trim(requestBy)) {
-                Swal.fire('Validasi', 'Request By wajib diisi.', 'warning');
+                Swal.fire('Validasi', 'Request By is required.', 'warning');
                 $('#request_by').focus();
                 return;
             }
@@ -819,16 +819,16 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                 var nominal = cleanNumber($(this).find('.nominal-input').val());
                 var evidenceCount = $(this).find('.evidence-item').length;
 
-                if (!coa) rowErrors.push('Baris ' + rowNum + ': COA belum dipilih.');
-                if (!pengeluaran) rowErrors.push('Baris ' + rowNum + ': Deskripsi pengeluaran wajib diisi.');
-                if (jumlah <= 0) rowErrors.push('Baris ' + rowNum + ': Jumlah minimal 1.');
-                if (nominal <= 0) rowErrors.push('Baris ' + rowNum + ': Nominal harus lebih besar dari 0.');
-                if (evidenceCount === 0) rowErrors.push('Baris ' + rowNum + ': Wajib mengupload minimal 1 bukti/evidence.');
+                if (!coa) rowErrors.push('Row ' + rowNum + ': COA has not been selected.');
+                if (!pengeluaran) rowErrors.push('Row ' + rowNum + ': Expense description is required.');
+                if (jumlah <= 0) rowErrors.push('Row ' + rowNum + ': Quantity must be at least 1.');
+                if (nominal <= 0) rowErrors.push('Row ' + rowNum + ': Amount must be greater than 0.');
+                if (evidenceCount === 0) rowErrors.push('Row ' + rowNum + ': At least 1 proof/evidence must be uploaded.');
             });
 
             if (rowErrors.length > 0) {
                 Swal.fire({
-                    title: 'Validasi Belum Lengkap',
+                    title: 'Validation Incomplete',
                     html: '<div class="text-start small"><ul><li>' + rowErrors.join('</li><li>') + '</li></ul></div>',
                     icon: 'warning'
                 });
@@ -837,19 +837,19 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
 
             // Confirm & Submit
             Swal.fire({
-                title: 'Simpan Pencatatan?',
-                text: 'Pastikan data pengeluaran dan lampiran bukti sudah sesuai.',
+                title: 'Save Record?',
+                text: 'Make sure the expense data and proof attachments are correct.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-save me-1"></i> Ya, Simpan',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-save me-1"></i> Yes, Save',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Menyimpan...',
-                        text: 'Sedang memproses pencatatan kas kecil',
+                        text: 'Processing petty cash record',
                         allowOutsideClick: false,
                         didOpen: function() {
                             Swal.showLoading();
@@ -868,22 +868,22 @@ $sisa_budget = isset($budget_info->sisa_budget) ? (float)$budget_info->sisa_budg
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: resp.message + (resp.warning ? ' (' + resp.warning + ')' : ''),
                                     icon: resp.warning ? 'warning' : 'success'
                                 }).then(function() {
                                     window.location.href = FORM_DATA.base_url;
                                 });
                             } else {
-                                var msg = resp.message || 'Gagal menyimpan data.';
+                                var msg = resp.message || 'Failed to save data.';
                                 if (resp.errors) {
                                     msg += '<br><small>' + Object.values(resp.errors).join('<br>') + '</small>';
                                 }
-                                Swal.fire('Gagal!', msg, 'error');
+                                Swal.fire('Failed!', msg, 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem saat menyimpan data.', 'error');
+                            Swal.fire('Error!', 'A system error occurred while saving the data.', 'error');
                         }
                     });
                 }

@@ -4,19 +4,19 @@
 			<tr>
 				<td class="text-left" style='vertical-align:middle;' width='15%'>No PO</td>
 				<td class="text-left" style='vertical-align:middle;' width='2%'>:</td>
-				<td class="text-left" style='vertical-align:middle;'><?= is_array($no_surat) ? implode(', ', $no_surat) : $no_surat ?></td>
+				<td class="text-left" style='vertical-align:middle;'><?= is_array($no_surat) ? implode(', ', $no_surat ?? []) : $no_surat ?></td>
 				<td class="text-left" style='vertical-align:middle;' width='15%'>No PR</td>
 				<td class="text-left" style='vertical-align:middle;' width='2%'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= $no_pr; ?></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>No Transaksi</td>
+				<td class="text-left" style='vertical-align:middle;'>Transaction No.</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= $result_header['kode_trans']; ?></td>
 				<td colspan="3"></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>Tanggal Penerimaan</td>
+				<td class="text-left" style='vertical-align:middle;'>Receipt Date</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?= date('d F Y', strtotime((string) $result_header['created_date'])); ?></td>
 				<td colspan="3"></td>
@@ -166,7 +166,7 @@
 				</tbody>
 				<tbody class="list_masuk_stock">
 					<tr>
-						<td colspan="3" class="text-right">Masuk ke Stock</td>
+						<td colspan="3" class="text-right">Into Stock</td>
 						<td class="text-center">
 							<span style="color: red;"><?= number_format((float) $stok_tidak_masuk) ?></span>
 						</td>

@@ -14,13 +14,13 @@ $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
                 <i class="fa fa-calendar-check fs-5"></i>
             </div>
             <div>
-                <h5 class="card-title mb-0 fw-bold text-dark">Approval Pengajuan Pembayaran Periodik (Rutin)</h5>
-                <small class="text-muted">Daftar pengajuan pembayaran periodik / rutin yang menunggu persetujuan</small>
+                <h5 class="card-title mb-0 fw-bold text-dark">Periodic (Routine) Payment Request Approval</h5>
+                <small class="text-muted">List of periodic / routine payment requests awaiting approval</small>
             </div>
         </div>
         <div>
             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">
-                <i class="fa fa-clock me-1"></i>Menunggu Approval
+                <i class="fa fa-clock me-1"></i>Awaiting Approval
             </span>
         </div>
     </div>
@@ -31,9 +31,9 @@ $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th class="text-center">No Dokumen</th>
-                        <th>Departemen</th>
-                        <th class="text-center">Tanggal</th>
+                        <th class="text-center">Document No.</th>
+                        <th>Department</th>
+                        <th class="text-center">Date</th>
                         <th class="text-end">Total Nominal</th>
                         <th class="text-center" width="16%">Status</th>
                         <th class="text-center no-sort" width="120">Aksi</th>
@@ -90,13 +90,13 @@ $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
             order: [[1, 'desc']],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no dokumen, tanggal...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search document no, date...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Tidak ada data pengajuan pembayaran periodik yang menunggu approval",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+                emptyTable: "No periodic payment requests awaiting approval",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             },
             ajax: {
                 type: 'POST',
@@ -134,13 +134,13 @@ $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
     function data_view(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian pengajuan periodik...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading periodic request details...</div></div>');
             $('#form-data').load(url_view + id, function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load details data: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }
@@ -151,13 +151,13 @@ $ENABLE_DELETE  = has_permission('Approval_Pengajuan_Pembayaran_Rutin.Delete');
     function data_approve(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Memuat form verifikasi approval...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Loading approval verification form...</div></div>');
             $('#form-data').load(url_view + id + '/app', function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat form approval: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load approval form: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }

@@ -53,8 +53,8 @@ class Approval_po extends Admin_Controller
       if (!empty($detail)) {
         foreach ($detail as $key => $value) {
           //Planning
-          $use_stock = str_replace(',', '', $value['use_stock']);
-          $propose = str_replace(',', '', $value['propose']);
+          $use_stock = str_replace(',', '', $value['use_stock'] ?? '');
+          $propose = str_replace(',', '', $value['propose'] ?? '');
 
           $ArrPlanningDetail[$key]['id'] = $value['id'];
           $ArrPlanningDetail[$key]['stock_free'] = $value['stock_free'];
@@ -172,7 +172,7 @@ class Approval_po extends Admin_Controller
       'GET_STOK_PUSAT' => getStokMaterial(1)
     ];
 
-    $this->template->title('Detail PR - ' . $so_number);
+    $this->template->title('PR Detail - ' . $so_number);
     $this->template->render('detail_planning', $data);
   }
 
@@ -331,7 +331,7 @@ class Approval_po extends Admin_Controller
         LEFT JOIN ms_satuan g ON g.id = c.id_unit_packing
         LEFT JOIN ms_satuan h ON h.id = d.id_unit_gudang
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND
 				(a.tipe IS NULL OR a.tipe = 'pr material')
       GROUP BY a.id
 
@@ -372,7 +372,7 @@ class Approval_po extends Admin_Controller
 				JOIN rutin_non_planning_detail e ON e.id = a.idpr
         LEFT JOIN ms_satuan f ON f.id = e.satuan
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr depart'
       GROUP BY a.id
 
@@ -413,7 +413,7 @@ class Approval_po extends Admin_Controller
 				JOIN rutin_non_planning_detail e ON e.id = a.idpr
         LEFT JOIN ms_satuan f ON f.id = e.satuan
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND 
+				a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND 
 				a.tipe = 'pr asset'
 		")->result();
 
@@ -437,7 +437,7 @@ class Approval_po extends Admin_Controller
     $this->db->join('tr_po_detail_lc b', 'a.id = b.id_top', 'left');
     $this->db->where('a.no_po', $no_po);
     $list_top = $this->db->get()->result();
-    $num_top = count($list_top);
+    $num_top = count($list_top ?? []);
 
     // $matauang = $this->db->get_where('matauang')->result();
 
@@ -445,7 +445,7 @@ class Approval_po extends Admin_Controller
     $data_department = $this->db->select('if(nama IS NULL, "", nama) as nm_department')->get_where('ms_department', ['id' => $header_po->id_dept])->row();
 
     $nm_depart = [];
-    $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header_po->id_dept) . "')")->result();
+    $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $header_po->id_dept ?? '') . "')")->result();
     if (!empty($get_nm_depart)) {
       foreach ($get_nm_depart as $item_depart) {
         $nm_depart[] = strtoupper((string) $item_depart->nama);
@@ -453,7 +453,7 @@ class Approval_po extends Admin_Controller
     }
 
     if (!empty($nm_depart)) {
-      $nm_depart = implode(', ', $nm_depart);
+      $nm_depart = implode(', ', $nm_depart ?? []);
     } else {
       $nm_depart = '';
     }

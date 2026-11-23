@@ -33,7 +33,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
 <!-- Header Info -->
 <div class="card mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Detail Delivery Order: <?= $do->do_no ?></h5>
+        <h5 class="mb-0">Delivery Order Detail: <?= $do->do_no ?></h5>
         <span class="badge bg-<?= $badge_color ?> fs-6"><?= $do->status ?></span>
     </div>
     <div class="card-body">
@@ -54,7 +54,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     </tr>
                     <?php if ($do->keterangan): ?>
                     <tr>
-                        <td>Keterangan</td>
+                        <td>Description</td>
                         <td><?= htmlspecialchars((string) $do->keterangan) ?></td>
                     </tr>
                     <?php endif; ?>
@@ -63,7 +63,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
             <div class="col-md-6">
                 <table class="table table-sm table-borderless">
                     <tr>
-                        <td width="40%">Dibuat Oleh</td>
+                        <td width="40%">Created By</td>
                         <td><?= isset($do->nama_created_by) ? $do->nama_created_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -72,7 +72,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     </tr>
                     <?php if ($do->approved_by): ?>
                     <tr>
-                        <td>Disetujui Oleh</td>
+                        <td>Approved By</td>
                         <td><?= isset($do->nama_approved_by) ? $do->nama_approved_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -95,9 +95,9 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                 <thead class="table-light">
                     <tr>
                         <th>Produk FG</th>
-                        <th class="text-end">Qty Kirim</th>
-                        <th class="text-end">Berat Referensi (kg)</th>
-                        <th class="text-end">Estimasi Berat (kg)</th>
+                        <th class="text-end">Delivery Qty</th>
+                        <th class="text-end">Reference Weight (kg)</th>
+                        <th class="text-end">Estimated Weight (kg)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,7 +117,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <td colspan="3" class="text-end fw-bold">Total Estimasi Berat:</td>
+                        <td colspan="3" class="text-end fw-bold">Total Estimated Weight:</td>
                         <td class="text-end fw-bold"><?= number_format((float) $total_estimasi, 3) ?> kg</td>
                     </tr>
                 </tfoot>
@@ -136,12 +136,12 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
         <form method="post" action="<?= base_url('delivery_fg/save_timbang/' . $do->do_no) ?>">
             <div class="row align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label">Berat Aktual (kg) <span class="text-danger">*</span></label>
+                    <label class="form-label">Actual Weight (kg) <span class="text-danger">*</span></label>
                     <input type="number" name="berat_aktual" class="form-control" min="0.001" step="0.001"
-                           placeholder="Masukkan berat aktual" required>
+                           placeholder="Enter actual weight" required>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label">Keterangan</label>
+                    <label class="form-label">Description</label>
                     <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
                 </div>
                 <div class="col-md-3">
@@ -169,10 +169,10 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                     <tr>
                         <th>Tgl Timbang</th>
                         <th>Petugas</th>
-                        <th class="text-end">Berat Aktual (kg)</th>
+                        <th class="text-end">Actual Weight (kg)</th>
                         <th class="text-end">Selisih (kg)</th>
                         <th class="text-end">Selisih (%)</th>
-                        <th>Keterangan</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -237,7 +237,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
 <div class="card">
     <div class="card-body d-flex flex-wrap gap-2">
         <a href="<?= base_url('delivery_fg') ?>" class="btn btn-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
 
         <?php if ($do->status === 'Draft'): ?>
@@ -291,7 +291,7 @@ $badge_color = isset($status_color[$do->status]) ? $status_color[$do->status] : 
                 <textarea id="alasan_reject" class="form-control" rows="3" placeholder="Masukkan alasan reject..."></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" onclick="doReject()">Reject</button>
             </div>
         </div>
@@ -303,19 +303,19 @@ var doNo = '<?= $do->do_no ?>';
 
 function doApprove() {
     Swal.fire({
-        title: 'Approve Delivery Order ini?',
+        title: 'Approve this Delivery Order?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Ya, Approve',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Approve',
+        cancelButtonText: 'Cancel'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'delivery_fg/process_approve/' + doNo, {}, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });
@@ -324,24 +324,24 @@ function doApprove() {
 function doReject() {
     var alasan = $('#alasan_reject').val().trim();
     if (!alasan) {
-        Swal.fire({ title: 'Perhatian', text: 'Alasan reject wajib diisi', icon: 'warning', confirmButtonText: 'OK' });
+        Swal.fire({ title: 'Attention', text: 'Reject reason is required', icon: 'warning', confirmButtonText: 'OK' });
         return;
     }
     Swal.fire({
-        title: 'Reject Delivery Order ini?',
+        title: 'Reject this Delivery Order?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Ya, Reject',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Reject',
+        cancelButtonText: 'Cancel'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'delivery_fg/process_reject/' + doNo, { alasan: alasan }, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });
@@ -349,21 +349,21 @@ function doReject() {
 
 function doShip() {
     Swal.fire({
-        title: 'Konfirmasi Shipped?',
-        text: 'Stok FG akan dikurangi dan tindakan ini tidak dapat dibatalkan.',
+        title: 'Confirm Shipped?',
+        text: 'FG stock will be reduced and this action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Ya, Ship',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Ship',
+        cancelButtonText: 'Cancel'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'delivery_fg/process_ship/' + doNo, {}, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });
@@ -371,20 +371,20 @@ function doShip() {
 
 function doCancel() {
     Swal.fire({
-        title: 'Batalkan Delivery Order ini?',
+        title: 'Cancel this Delivery Order?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Ya, Batalkan',
-        cancelButtonText: 'Tidak'
+        confirmButtonText: 'Yes, Cancel',
+        cancelButtonText: 'No'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'delivery_fg/process_cancel/' + doNo, {}, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });

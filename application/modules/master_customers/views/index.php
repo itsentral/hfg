@@ -40,7 +40,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 						<div class="d-flex gap-2 flex-wrap">
 							<?php if ($ENABLE_VIEW) : ?>
 								<a class="btn btn-success btn-md" href="<?= base_url('master_customers/add') ?>">
-									<i class="fa fa-plus me-1"></i> Tambah Data
+									<i class="fa fa-plus me-1"></i> Add Data
 								</a>
 							<?php endif; ?>
 
@@ -61,9 +61,9 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 								<tr>
 									<th style="width:60px;">#</th>
 									<th style="width:160px;">Id Customer</th>
-									<th>Nama Customer</th>
+									<th>Customer Name</th>
 									<th>Sales</th>
-									<th hidden>Kategori Customer</th>
+									<th hidden>Customer Category</th>
 									<th style="width:120px;">Status</th>
 
 									<?php if ($ENABLE_MANAGE) : ?>
@@ -94,9 +94,9 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 
 											<td class="text-center">
 												<?php if ($customer->activation == 'aktif') : ?>
-													<span class="badge-status active">Aktif</span>
+													<span class="badge-status active">Active</span>
 												<?php else : ?>
-													<span class="badge-status inactive">Non Aktif</span>
+													<span class="badge-status inactive">Inactive</span>
 												<?php endif; ?>
 											</td>
 
@@ -140,7 +140,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 						<div>
 							<?php if ($ENABLE_VIEW) : ?>
 								<a class="btn btn-success btn-md add_category" href="javascript:void(0)">
-									<i class="fa fa-plus me-1"></i> Tambah Data
+									<i class="fa fa-plus me-1"></i> Add Data
 								</a>
 							<?php endif; ?>
 						</div>
@@ -155,7 +155,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 								<tr>
 									<th style="width:60px;">#</th>
 									<th hidden>Id Category</th>
-									<th>Nama Kategori</th>
+									<th>Category Name</th>
 									<th style="width:120px;">Status</th>
 
 									<?php if ($ENABLE_MANAGE) : ?>
@@ -232,7 +232,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary" name="save" id="simpan-com">
-						<i class="fa fa-save me-1"></i> Simpan
+						<i class="fa fa-save me-1"></i> Save
 					</button>
 					<button type="button" class="btn btn-dark" data-bs-dismiss="modal">
 						<i class="ti ti-x me-1"></i> Cancel
@@ -357,7 +357,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 			type: 'POST',
 			url: siteurl + 'master_customers/addCategory',
 			success: function(data) {
-				openModal("<i class='fa fa-list-alt me-2'></i><b>Tambah Data</b>", data);
+				openModal("<i class='fa fa-list-alt me-2'></i><b>Add Data</b>", data);
 			}
 		});
 	});
@@ -367,8 +367,8 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 		e.preventDefault();
 
 		swal({
-			title: "Anda yakin?",
-			text: "Data akan diproses!",
+			title: "Are you sure?",
+			text: "The data will be processed!",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonClass: "btn-danger",
@@ -484,13 +484,13 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 		var id = $(this).data('id_category');
 
 		swal({
-			title: "Anda Yakin?",
-			text: "Data akan di hapus.",
+			title: "Are you sure?",
+			text: "The data will be deleted.",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonClass: "btn-info",
-			confirmButtonText: "Ya, Hapus!",
-			cancelButtonText: "Batal",
+			confirmButtonText: "Yes, Delete!",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false
 		}, function(isConfirm) {
 			if (!isConfirm) {
@@ -506,8 +506,8 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 				success: function(result) {
 					if (result.status == '1') {
 						swal({
-							title: "Sukses",
-							text: "Data berhasil dihapus.",
+							title: "Success",
+							text: "Data deleted successfully.",
 							type: "success"
 						}, function() {
 							window.location.reload(true);
@@ -515,7 +515,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 					} else {
 						swal({
 							title: "Error",
-							text: "Data error. Gagal hapus data",
+							text: "Data error. Failed to delete data.",
 							type: "error"
 						});
 					}
@@ -523,7 +523,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 				error: function() {
 					swal({
 						title: "Error",
-						text: "Data error. Gagal request Ajax",
+						text: "Data error. Ajax request failed.",
 						type: "error"
 					});
 				}
@@ -536,13 +536,13 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 		var id = $(this).data('id_customer');
 
 		swal({
-			title: "Anda Yakin?",
-			text: "Data akan di hapus.",
+			title: "Are you sure?",
+			text: "The data will be deleted.",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonClass: "btn-info",
-			confirmButtonText: "Ya, Hapus!",
-			cancelButtonText: "Batal",
+			confirmButtonText: "Yes, Delete!",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false
 		}, function(isConfirm) {
 			if (!isConfirm) {
@@ -558,8 +558,8 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 				success: function(result) {
 					if (result.status == '1') {
 						swal({
-							title: "Sukses",
-							text: "Data berhasil dihapus.",
+							title: "Success",
+							text: "Data deleted successfully.",
 							type: "success"
 						}, function() {
 							window.location.reload(true);
@@ -567,7 +567,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 					} else {
 						swal({
 							title: "Error",
-							text: "Data error. Gagal hapus data",
+							text: "Data error. Failed to delete data.",
 							type: "error"
 						});
 					}
@@ -575,7 +575,7 @@ $ENABLE_DELETE  = has_permission('Master_customer.Delete');
 				error: function() {
 					swal({
 						title: "Error",
-						text: "Data error. Gagal request Ajax",
+						text: "Data error. Ajax request failed.",
 						type: "error"
 					});
 				}

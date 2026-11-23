@@ -43,7 +43,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
                     <?= $dataset['kategori'] ?>
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Tutup Formulir">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Close Form">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -60,22 +60,22 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
         <!-- Info Strip & Quick Filter -->
         <div class="row g-3 mb-4 align-items-center bg-light p-3 rounded-3 border">
             <div class="col-md-3 col-sm-6">
-                <small class="text-muted d-block fw-semibold">Tahun Anggaran</small>
+                <small class="text-muted d-block fw-semibold">Budget Year</small>
                 <div class="fw-bold font-monospace fs-6 text-dark mt-1">
                     <i class="fa fa-calendar me-1 text-primary"></i> <?= $dataset['tahun'] ?>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6">
-                <small class="text-muted d-block fw-semibold">Penanggung Jawab / Departemen</small>
+                <small class="text-muted d-block fw-semibold">Person in Charge / Department</small>
                 <div class="fw-bold fs-6 text-dark mt-1">
                     <i class="fa fa-building me-1 text-secondary"></i> <?= $dept_name ?>
                 </div>
             </div>
             <div class="col-md-5 col-sm-12">
-                <small class="text-muted d-block fw-semibold">Cari Akun COA Cepat</small>
+                <small class="text-muted d-block fw-semibold">Quick COA Account Search</small>
                 <div class="input-group input-group-sm mt-1">
                     <span class="input-group-text bg-white text-muted"><i class="fa fa-search"></i></span>
-                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Ketik kode / nama COA...">
+                    <input type="text" id="quick_filter_coa" class="form-control" placeholder="Type COA code / name...">
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                         ?>
                         <tr>
                             <td colspan="16" class="text-center py-4 text-muted">
-                                Tidak ada data budget ditemukan untuk parameter ini.
+                                No budget data found for this parameter.
                             </td>
                         </tr>
                     <?php } ?>
@@ -177,14 +177,14 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
 
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top">
             <div class="text-muted small">
-                <i class="fa fa-info-circle text-primary me-1"></i> Nilai alokasi per bulan akan otomatis mengakumulasi Total Alokasi baris COA dan Grand Total.
+                <i class="fa fa-info-circle text-primary me-1"></i> The monthly allocation values automatically accumulate into the COA row Total Allocation and the Grand Total.
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-outline-secondary px-3" onclick="cancel()">
-                    <i class="fa fa-arrow-left me-1"></i> Batal
+                    <i class="fa fa-arrow-left me-1"></i> Cancel
                 </button>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="btn_submit_category">
-                    <i class="fa fa-save me-1"></i> Simpan Alokasi Budget
+                    <i class="fa fa-save me-1"></i> Save Budget Allocation
                 </button>
             </div>
         </div>
@@ -284,20 +284,20 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
             }
         });
 
-        var confirmText = "Pastikan seluruh alokasi bulanan sudah sesuai.";
+        var confirmText = "Make sure all monthly allocations are correct.";
         if (exceeds) {
-            confirmText = "Perhatian: Ada baris alokasi budget yang melebihi nilai referensi tahunan! Tetap simpan?";
+            confirmText = "Attention: Some budget allocation rows exceed the annual reference value! Save anyway?";
         }
 
         Swal.fire({
-            title: "Simpan Alokasi Budget?",
+            title: "Save Budget Allocation?",
             text: confirmText,
             icon: exceeds ? "warning" : "question",
             showCancelButton: true,
             confirmButtonColor: exceeds ? "#f59e0b" : "#0d6efd",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 var $btn = $("#btn_submit_category");
@@ -305,7 +305,7 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
 
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyimpan alokasi budget...',
+                    text: 'Saving budget allocation...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -317,12 +317,12 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                     type: 'POST',
                     data: formdata,
                     success: function(msg) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Alokasi Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Allocation');
                         if (msg['save'] == true || msg['save'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data alokasi budget berhasil disimpan.",
+                                title: "Success!",
+                                text: "Budget allocation data saved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -331,19 +331,19 @@ $dept_name = isset($datadept[$dataset['divisi']]) ? $datadept[$dataset['divisi']
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data alokasi budget gagal disimpan.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Budget allocation data failed to save.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
                     error: function(xhr, status, error) {
-                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Alokasi Budget');
+                        $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Budget Allocation');
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal memproses request AJAX: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to process AJAX request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

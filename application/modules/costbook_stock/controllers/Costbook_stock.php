@@ -65,7 +65,7 @@ class Costbook_stock extends Admin_Controller
 		$data = array('list_warehouse' => $get_warehouse);
 
 		$this->template->set('results', $data);
-		$this->template->title('Costbook Stock Neraca Gudang');
+		$this->template->title('Costbook Stock Warehouse Balance Sheet');
 		$this->template->render('neraca_gudang');
 	}
 

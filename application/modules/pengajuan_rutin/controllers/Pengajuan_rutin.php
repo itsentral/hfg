@@ -27,7 +27,7 @@ class Pengajuan_rutin extends Admin_Controller
 	{
 		parent::__construct();
 		$this->load->model(array('All/All_model', 'Pengajuan_rutin/Pengajuan_rutin_model'));
-		$this->template->title('Master Pembayaran Rutin');
+		$this->template->title('Routine Payment Master');
 		$this->template->page_icon('fa fa-cubes');
 		date_default_timezone_set('Asia/Bangkok');
 		$this->waktu = array("bulan" => "bulan", "tahun" => "tahun");
@@ -67,7 +67,7 @@ class Pengajuan_rutin extends Admin_Controller
 		// $this->template->set('results', $data);
 		$this->template->set('dept', $arr_dept);
 		$this->template->set('data_detail', $data_detail);
-		$this->template->title('Pengajuan Pembayaran Periodik');
+		$this->template->title('Periodic Payment Request');
 		$this->template->render('list');
 	}
 
@@ -89,7 +89,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->set('arr_dept', $arr_dept);
 		$this->template->set('datdept', $datdept);
 		$this->template->set('results', $data);
-		$this->template->title('Pengajuan Pembayaran Periodik');
+		$this->template->title('Periodic Payment Request');
 		$this->template->render('app_list');
 	}
 
@@ -98,7 +98,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->auth->restrict($this->addPermission);
 		$datdept  = $this->All_model->GetDeptCombo($key);
 		$this->template->set('datdept', $datdept);
-		$this->template->title('Input Pengajuan Pembayaran Periodik');
+		$this->template->title('Input Periodic Payment Request');
 		$this->template->set('type', 'add');
 		$this->template->set('app', '');
 		if ($this->input->is_ajax_request()) {
@@ -121,7 +121,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->set('data', $data);
 		$this->template->set('app', '');
 		$this->template->set('data_detail', $data_detail);
-		$this->template->title('Edit Pengajuan Pembayaran Rutin');
+		$this->template->title('Edit Routine Payment Request');
 		if ($this->input->is_ajax_request()) {
 			$this->template->set_layout(FALSE);
 		}
@@ -142,7 +142,7 @@ class Pengajuan_rutin extends Admin_Controller
 		$this->template->set('data', $data);
 		$this->template->set('app', $app);
 		$this->template->set('data_detail', $data_detail);
-		$this->template->title('View Pengajuan Pembayaran Rutin');
+		$this->template->title('View Routine Payment Request');
 		if ($this->input->is_ajax_request()) {
 			$this->template->set_layout(FALSE);
 		}
@@ -216,13 +216,13 @@ class Pengajuan_rutin extends Admin_Controller
 				);
 				$this->Pengajuan_rutin_model->update_batch($dataheader, 'id');
 				if (is_array($detail_id)) {
-					$delid = implode("','", $detail_id);
+					$delid = implode("','", $detail_id ?? []);
 					$this->All_model->dataDelete('tr_pengajuan_rutin_detail', " id not in ('" . $delid . "') and no_doc='" . $no_doc . "'");
 				} else {
 					$this->All_model->dataDelete('tr_pengajuan_rutin_detail', "no_doc='" . $no_doc . "'");
 				}
 			}
-			for ($x = 0; $x < count($detail_id); $x++) {
+			for ($x = 0; $x < count($detail_id ?? []); $x++) {
 				$idf = $details[$x];
 				if ($detail_id[$x] != '') {
 					if ($nilai[$x] > 0) {
@@ -463,7 +463,7 @@ class Pengajuan_rutin extends Admin_Controller
 			$nm_department = isset($arr_dept[$record->departement]) ? $arr_dept[$record->departement] : '-';
 			$action = '<div class="btn-group btn-group-sm" role="group">';
 			if ($ENABLE_VIEW) {
-				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" title="Lihat Detail" data-id="' . $record->id . '"><i class="fa fa-eye"></i></a> ';
+				$action .= '<a class="btn btn-outline-info btn-sm view" href="javascript:void(0)" title="View Detail" data-id="' . $record->id . '"><i class="fa fa-eye"></i></a> ';
 			}
 			if ($record->status == 0 && $ENABLE_MANAGE) {
 				$action .= '<a class="btn btn-success btn-sm approve" href="javascript:void(0)" title="Persetujuan / Approve" data-id="' . $record->id . '"><i class="fa fa-check"></i></a>';
@@ -476,7 +476,7 @@ class Pengajuan_rutin extends Admin_Controller
 				'departemen'  => '<span class="fw-medium text-dark">' . strtoupper(htmlspecialchars((string) $nm_department)) . '</span>',
 				'tanggal_doc' => date('d F Y', strtotime((string) $record->tanggal_doc)),
 				'total_nilai' => '<span class="fw-bold text-end d-block">Rp ' . number_format((float) $record->total_nilai, 0, ',', '.') . '</span>',
-				'status'      => '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Menunggu Approval</span>',
+				'status'      => '<span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="fa fa-clock me-1"></i> Awaiting Approval</span>',
 				'action'      => $action,
 			];
 		}
@@ -612,7 +612,7 @@ class Pengajuan_rutin extends Admin_Controller
 					$status = '<div class="badge bg-success">Approved</div>';
 				} else {
 					if ($item->status == '2') {
-						$status = '<div class="badge bg-primary">Diproses Finance</div>';
+						$status = '<div class="badge bg-primary">Processed by Finance</div>';
 
 						$this->db->select('a.id');
 						$this->db->from('payment_approve a');
@@ -641,7 +641,7 @@ class Pengajuan_rutin extends Admin_Controller
 					$btn_edit = '<a href="javascript:void(0);" class="btn btn-sm btn-warning btn_edit" title="Edit" onclick="data_edit(' . $item->id . ')"><i class="fa fa-edit"></i></a>';
 				}
 				if (has_permission($this->deletePermission)) {
-					$no_doc_delete = str_replace($item->no_doc, "'" . $item->no_doc . "'", $item->no_doc);
+					$no_doc_delete = str_replace($item->no_doc, "'" . $item->no_doc . "'", $item->no_doc ?? '');
 					$btn_delete = '<a class="btn btn-danger btn-sm delete" href="javascript:void(0);" title="hapus" onclick="data_delete(' . $no_doc_delete . ')"><i class="fa fa-trash"></i</a>';
 				}
 			}

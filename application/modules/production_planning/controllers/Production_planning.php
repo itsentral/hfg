@@ -110,7 +110,7 @@ class Production_planning extends Admin_Controller
         if ($produk) {
             echo json_encode(['status' => 'ok', 'data' => $produk]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Produk tidak ditemukan']);
+            echo json_encode(['status' => 'error', 'message' => 'Product not found']);
         }
     }
 
@@ -151,9 +151,9 @@ class Production_planning extends Admin_Controller
         }
 
         if ($result) {
-            $this->session->set_flashdata('success', 'Production Plan berhasil disimpan');
+            $this->session->set_flashdata('success', 'Production Plan saved successfully');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan Production Plan');
+            $this->session->set_flashdata('error', 'Failed to save Production Plan');
         }
         redirect('production_planning');
     }

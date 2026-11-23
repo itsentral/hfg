@@ -9,7 +9,7 @@
         <div class="row mb-2">
             <div class="col-md-3"><strong>Unpack No</strong><br><?= htmlspecialchars((string) $header['unpack_no']) ?></div>
             <div class="col-md-3"><strong>Pack</strong><br><span class="badge bg-primary"><?= htmlspecialchars((string) $header['pack_code']) ?></span></div>
-            <div class="col-md-3"><strong>Tanggal Unpack</strong><br><?= date('d/m/Y H:i', strtotime((string) $header['tgl_unpack'])) ?></div>
+            <div class="col-md-3"><strong>Unpack Date</strong><br><?= date('d/m/Y H:i', strtotime((string) $header['tgl_unpack'])) ?></div>
             <div class="col-md-3"><strong>Status</strong><br>
                 <span class="badge <?= $header['status'] == 'Confirmed' ? 'bg-success' : ($header['status'] == 'Cancelled' ? 'bg-danger' : 'bg-secondary') ?>">
                     <?= htmlspecialchars((string) $header['status']) ?>
@@ -19,14 +19,14 @@
         <div class="row">
             <div class="col-md-3"><strong>Kulit</strong><br><?= htmlspecialchars($header['catatan_kulit'] ?: '-') ?></div>
             <div class="col-md-3"><strong>Clamp / ring</strong><br><?= htmlspecialchars($header['catatan_clamp_ring'] ?: '-') ?></div>
-            <div class="col-md-6"><strong>Catatan</strong><br><?= nl2br(htmlspecialchars($header['catatan'] ?: '-')) ?></div>
+            <div class="col-md-6"><strong>Notes</strong><br><?= nl2br(htmlspecialchars($header['catatan'] ?: '-')) ?></div>
         </div>
     </div>
 </div>
 
 <!-- Ringkasan level pack -->
 <div class="card mb-3">
-    <div class="card-header bg-light fw-bold">Ringkasan Pack</div>
+    <div class="card-header bg-light fw-bold">Pack Summary</div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered table-sm text-center align-middle">
@@ -70,7 +70,7 @@
         <div class="card-header bg-light">
             <strong>Material #<?= $i + 1 ?>:</strong> <?= htmlspecialchars((string) $m['nm_material']) ?>
             &mdash; <?= htmlspecialchars((string) $m['no_coil']) ?> | <?= htmlspecialchars((string) $m['kode_internal']) ?>
-            <span class="float-end">Jumlah Roll: <span class="badge bg-success"><?= (int) $m['jumlah_coil_roll'] ?></span></span>
+            <span class="float-end">Roll Count: <span class="badge bg-success"><?= (int) $m['jumlah_coil_roll'] ?></span></span>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -90,7 +90,7 @@
                     </thead>
                     <tbody>
                         <?php if (empty($m['babies'])): ?>
-                            <tr><td colspan="7" class="text-muted">Tidak ada baby coil.</td></tr>
+                            <tr><td colspan="7" class="text-muted">No baby coils.</td></tr>
                         <?php else: ?>
                             <?php foreach ($m['babies'] as $j => $b): ?>
                                 <tr>
@@ -132,4 +132,4 @@
     </div>
 <?php endforeach; ?>
 
-<a href="<?= site_url('unpack_coil') ?>" class="btn btn-secondary"><i class="fa fa-arrow-left me-1"></i> Kembali</a>
+<a href="<?= site_url('unpack_coil') ?>" class="btn btn-secondary"><i class="fa fa-arrow-left me-1"></i> Back</a>

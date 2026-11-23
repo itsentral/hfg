@@ -22,7 +22,7 @@
 			 echo form_input(array('id'=>'request_date','name'=>'request_date','class'=>'form-control input-md','placeholder'=>'Request Date','readonly'=>'readonly'), strtoupper((string) $data[0]->request_date));
 			?>
 		</div>
-		<label class='label-control col-sm-1'><b>Harga Pembelian</b></label>
+		<label class='label-control col-sm-1'><b>Purchase Price</b></label>
 		<div class='col-sm-3'>
 			<select id='current' name='current' class='form-control input-sm' readonly style="pointer-events: none;">
 				<?php
@@ -60,18 +60,18 @@
 		<label class='label-control col-sm-1'><b>Buyer</b></label>
 		<div class='col-sm-3'>
 			<?php
-			$buyer = (!empty($data[0]->buyer))?strtoupper((string) $data[0]->buyer):strtoupper(get_name('users','nm_lengkap','username',$data[0]->updated_by));
+			$buyer = (!empty($data[0]->buyer))?strtoupper((string) $data[0]->buyer):strtoupper((string) get_name('users','nm_lengkap','username',$data[0]->updated_by));
 			 echo form_input(array('id'=>'buyer','name'=>'buyer','readonly'=>'readonly','class'=>'form-control input-md','placeholder'=>'Buyer'), $buyer);
 			?>
 		</div>
 	</div>
 	<div class='form-group row'>
-		<label class='label-control col-sm-1'>Detail Barang</label>
+		<label class='label-control col-sm-1'>Item Detail</label>
 		<div class='col-sm-11'>
 			<table id="my-grid" class="table table-bordered table-condensed" width="100%">
 				<thead id='head_table'>
 					<tr class='bg-blue'>
-						<th class="text-center">Nama Barang</th>
+						<th class="text-center">Item Name</th>
 						<th class="text-center" width='10%'>Qty</th>
 						<th class="text-center" width='20%'>Price/Unit</th>
 						<th class="text-center" width='20%'>Total Price</th>
@@ -79,7 +79,7 @@
 				</thead>
 				<tbody>
 					<?php
-					$jumlah = count($result);
+					$jumlah = count($result ?? []);
 					$no  = 0;
 					$SUM = 0;
 					foreach($result AS $val => $valx){ $no++;
@@ -152,7 +152,7 @@
 						<th class="text-center" width='8%'>Progress (%)</th>
 						<th class="text-center hidden" width='11%'>Value (USD)</th>
 						<th class="text-center" width='11%'>Value <!--(IDR)--></th>
-						<th class="text-center" width='25%'>Keterangan</th>
+						<th class="text-center" width='25%'>Description</th>
 						<th class="text-center" width='10%'>Est Jatuh Tempo</th>
 						<th class="text-center" width='25%'>Persyaratan</th>
 						<th class="text-center" width='5%'>#</th>

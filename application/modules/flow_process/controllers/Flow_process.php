@@ -104,7 +104,7 @@ class Flow_process extends Admin_Controller
 		}
 
 		if (!$this->input->post()) {
-			echo json_encode(['pesan' => 'Tidak ada data yang dikirim.', 'status' => 0]);
+			echo json_encode(['pesan' => 'No data was sent.', 'status' => 0]);
 			return;
 		}
 
@@ -116,7 +116,7 @@ class Flow_process extends Admin_Controller
 		if (!empty($id)) {
 			$oldHeader = $this->Flow_process_model->get_header($id);
 			if (empty($oldHeader)) {
-				echo json_encode(['pesan' => 'Data flow process tidak ditemukan.', 'status' => 0]);
+				echo json_encode(['pesan' => 'Flow process data not found.', 'status' => 0]);
 				return;
 			}
 			$oldDetails = $this->Flow_process_model->get_details($id);
@@ -127,11 +127,11 @@ class Flow_process extends Admin_Controller
 
 		$errors = [];
 		if ($code_lv2 === '' || $code_lv2 === '0') {
-			$errors[] = 'Product Category wajib dipilih.';
+			$errors[] = 'Product Category is required.';
 		} elseif (empty($id) && !isset($categories[$code_lv2])) {
-			$errors[] = 'Product Category tidak ditemukan.';
+			$errors[] = 'Product Category not found.';
 		} elseif (empty($id) && !empty($this->Flow_process_model->get_header_by_code($code_lv2))) {
-			$errors[] = 'Product Category ini sudah memiliki Flow Process. Gunakan Edit.';
+			$errors[] = 'This Product Category already has a Flow Process. Use Edit.';
 		}
 
 		// ---- Detail: daftar proses
@@ -144,7 +144,7 @@ class Flow_process extends Admin_Controller
 		$details       = [];
 		$sum_cycletime = 0.0;
 		$sum_man_hour  = 0.0;
-		$jumlah        = max(count($areas), count($names), count($machines), count($cts), count($mps));
+		$jumlah        = max(count($areas ?? []), count($names ?? []), count($machines ?? []), count($cts ?? []), count($mps ?? []));
 		for ($i = 0; $i < $jumlah; $i++) {
 			$area    = isset($areas[$i]) ? trim((string) $areas[$i]) : '';
 			$name    = isset($names[$i]) ? trim((string) $names[$i]) : '';
@@ -156,20 +156,20 @@ class Flow_process extends Admin_Controller
 			if ($area === '' && $name === '' && $machine === '' && $ct_txt === '' && $mp_txt === '') {
 				continue;
 			}
-			$no = count($details) + 1;
+			$no = count($details ?? []) + 1;
 
 			if ($name === '') {
-				$errors[] = 'Proses #' . $no . ': Process Name wajib diisi.';
+				$errors[] = 'Process #' . $no . ': Process Name is required.';
 			}
 			if (strlen((string) $name) > 150 || strlen((string) $area) > 150 || strlen((string) $machine) > 150) {
-				$errors[] = 'Proses #' . $no . ': Costcentre/Area, Process Name, dan Machine maksimal 150 karakter.';
+				$errors[] = 'Process #' . $no . ': Costcentre/Area, Process Name, and Machine are limited to 150 characters.';
 			}
 			// Titik sebagai pemisah desimal; koma ditolak (bukan dihapus) agar "0,5" tidak berubah menjadi 5
-			if (!preg_match('/^\d{1,8}(\.\d{1,6})?$/', $ct_txt)) {
-				$errors[] = 'Proses #' . $no . ': Cycletime harus berupa angka 0 atau lebih (gunakan titik untuk desimal, maksimal 6 digit desimal).';
+			if (!preg_match('/^\d{1,8}(\.\d{1,6})?$/', $ct_txt ?? '')) {
+				$errors[] = 'Process #' . $no . ': Cycletime must be a number of 0 or more (use a dot for decimals, maximum 6 decimal digits).';
 			}
-			if (!preg_match('/^\d{1,4}$/', $mp_txt)) {
-				$errors[] = 'Proses #' . $no . ': Man Power harus berupa bilangan bulat 0 atau lebih.';
+			if (!preg_match('/^\d{1,4}$/', $mp_txt ?? '')) {
+				$errors[] = 'Process #' . $no . ': Man Power must be a whole number of 0 or more.';
 			}
 
 			$ct = (float) $ct_txt;
@@ -188,11 +188,11 @@ class Flow_process extends Admin_Controller
 			$sum_man_hour  += $mh;
 		}
 		if (empty($details)) {
-			$errors[] = 'Minimal satu proses harus diisi.';
+			$errors[] = 'At least one process must be filled in.';
 		}
 
 		if (!empty($errors)) {
-			echo json_encode(['pesan' => implode(' ', $errors), 'status' => 0]);
+			echo json_encode(['pesan' => implode(' ', $errors ?? []), 'status' => 0]);
 			return;
 		}
 
@@ -213,7 +213,7 @@ class Flow_process extends Admin_Controller
 		if (!empty($id)) {
 			$logPayload = [
 				'old'            => $oldHeader,
-				'new'            => array_merge($oldHeader, $header),
+				'new'            => array_merge($oldHeader ?? [], $header ?? []),
 				'detail_changes' => $this->build_detail_changes($oldDetails, $details),
 			];
 		} else {
@@ -225,7 +225,7 @@ class Flow_process extends Admin_Controller
 			write_log('Flow Process', $label, 'Gagal ' . strtolower((string) $label) . ' flow process: ' . $nama_kategori, $logPayload, null, 0);
 		} else {
 			$result = ['pesan' => 'Success process data!', 'status' => 1];
-			write_log('Flow Process', $label, $label . ' flow process: ' . $nama_kategori . ' (' . count($details) . ' proses, total man hour ' . $header['total_man_hour'] . ')', $logPayload, null, 1);
+			write_log('Flow Process', $label, $label . ' flow process: ' . $nama_kategori . ' (' . count($details ?? []) . ' proses, total man hour ' . $header['total_man_hour'] . ')', $logPayload, null, 1);
 		}
 
 		echo json_encode($result);
@@ -238,7 +238,7 @@ class Flow_process extends Admin_Controller
 		$id     = $this->input->post('id');
 		$header = (!empty($id)) ? $this->Flow_process_model->get_header($id) : [];
 		if (empty($header)) {
-			echo json_encode(['pesan' => 'Data flow process tidak ditemukan.', 'status' => 0]);
+			echo json_encode(['pesan' => 'Flow process data not found.', 'status' => 0]);
 			return;
 		}
 		$details    = $this->Flow_process_model->get_details($id);
@@ -248,7 +248,7 @@ class Flow_process extends Admin_Controller
 
 		if ($this->Flow_process_model->delete_flow($id)) {
 			$result = ['pesan' => 'Success process data!', 'status' => 1];
-			write_log('Flow Process', 'Delete', 'Hapus flow process: ' . $nama . ' (' . count($details) . ' proses)', $snapshot, null, 1);
+			write_log('Flow Process', 'Delete', 'Hapus flow process: ' . $nama . ' (' . count($details ?? []) . ' proses)', $snapshot, null, 1);
 		} else {
 			$result = ['pesan' => 'Failed process data!', 'status' => 0];
 			write_log('Flow Process', 'Delete', 'Gagal hapus flow process: ' . $nama, $snapshot, null, 0);
@@ -265,20 +265,20 @@ class Flow_process extends Admin_Controller
 		$fields  = ['costcentre_area', 'process_name', 'machine', 'cycletime', 'man_power', 'total_man_hour'];
 		$numeric = ['cycletime', 'man_power', 'total_man_hour'];
 		$changes = [];
-		$jumlah  = max(count($oldDetails), count($newDetails));
+		$jumlah  = max(count($oldDetails ?? []), count($newDetails ?? []));
 		for ($i = 0; $i < $jumlah; $i++) {
 			$old = isset($oldDetails[$i]) ? $oldDetails[$i] : null;
 			$new = isset($newDetails[$i]) ? $newDetails[$i] : null;
 
 			if ($old === null) {
-				$changes['Proses [' . $new['process_name'] . '] - ditambahkan'] = [
+				$changes['Process [' . $new['process_name'] . '] - ditambahkan'] = [
 					'old' => null,
 					'new' => $new['process_name'] . ' | cycletime ' . $new['cycletime'] . ' | man power ' . $new['man_power'],
 				];
 				continue;
 			}
 			if ($new === null) {
-				$changes['Proses [' . $old['process_name'] . '] - dihapus'] = [
+				$changes['Process [' . $old['process_name'] . '] - dihapus'] = [
 					'old' => $old['process_name'] . ' | cycletime ' . $old['cycletime'] . ' | man power ' . $old['man_power'],
 					'new' => null,
 				];
@@ -287,11 +287,11 @@ class Flow_process extends Admin_Controller
 			foreach ($fields as $f) {
 				$a = $old[$f];
 				$b = $new[$f];
-				$sama = in_array($f, $numeric)
+				$sama = in_array($f, $numeric ?? [])
 					? (abs((float) $a - (float) $b) < 1e-9)
 					: ((string) $a === (string) $b);
 				if (!$sama) {
-					$changes['Proses [' . $old['process_name'] . '] - ' . $f] = ['old' => $a, 'new' => $b];
+					$changes['Process [' . $old['process_name'] . '] - ' . $f] = ['old' => $a, 'new' => $b];
 				}
 			}
 		}

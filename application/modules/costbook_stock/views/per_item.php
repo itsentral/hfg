@@ -42,7 +42,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                             </div>
                             <div>
                                 <h5 class="card-title fw-bold text-dark mb-0">Costbook Stock Per Item</h5>
-                                <small class="text-muted">Pantau nilai harga perolehan (costbook), saldo stok, dan nilai neraca per barang per gudang</small>
+                                <small class="text-muted">Monitor the acquisition cost (costbook), stock balance, and balance sheet value per item per warehouse</small>
                             </div>
                         </div>
                     </div>
@@ -56,23 +56,23 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                 <!-- Filter Section -->
                 <div class="row g-2 align-items-end mt-2 pt-3 border-top">
                     <div class="col-md-3 col-sm-6 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-alt text-primary me-1"></i> Dari Tanggal</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-alt text-primary me-1"></i> Start Date</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fa fa-calendar"></i></span>
-                            <input type="text" class="form-control flatpickr tgl_from" placeholder="Pilih Dari Tanggal" autocomplete="off">
+                            <input type="text" class="form-control flatpickr tgl_from" placeholder="Select Start Date" autocomplete="off">
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-check text-primary me-1"></i> Sampai Tanggal</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-calendar-check text-primary me-1"></i> End Date</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fa fa-calendar"></i></span>
-                            <input type="text" class="form-control flatpickr tgl_to" placeholder="Pilih Sampai Tanggal" autocomplete="off">
+                            <input type="text" class="form-control flatpickr tgl_to" placeholder="Select End Date" autocomplete="off">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-8 col-12">
-                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Pilih Gudang</label>
+                        <label class="form-label fw-bold text-dark mb-1"><i class="fa fa-warehouse text-primary me-1"></i> Select Warehouse</label>
                         <select class="form-select select2 select_warehouse">
-                            <option value="">-- SEMUA GUDANG --</option>
+                            <option value="">-- ALL WAREHOUSES --</option>
                             <?php foreach ($results['list_warehouse'] as $item_warehouse) : ?>
                                 <option value="<?= $item_warehouse->id ?>"><?= strtoupper((string) $item_warehouse->nm_gudang) ?></option>
                             <?php endforeach; ?>
@@ -92,11 +92,11 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" width="4%">#</th>
-                                <th class="text-center" width="12%">Kode Produk</th>
-                                <th class="text-start">Nama Barang</th>
-                                <th class="text-center" width="15%">Gudang</th>
-                                <th class="text-end" width="10%">Qty Stok</th>
-                                <th class="text-end" width="12%">Nilai Costbook</th>
+                                <th class="text-center" width="12%">Product Code</th>
+                                <th class="text-start">Item Name</th>
+                                <th class="text-center" width="15%">Warehouse</th>
+                                <th class="text-end" width="10%">Stock Qty</th>
+                                <th class="text-end" width="12%">Costbook Value</th>
                                 <th class="text-end" width="13%">Value Neraca</th>
                                 <th class="text-center" width="14%">Update Terakhir</th>
                                 <th class="text-center" width="8%">Aksi</th>
@@ -126,7 +126,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                                     <td class="text-end fw-bold text-primary font-monospace">Rp <?= number_format((float) $value_neraca, 2) ?></td>
                                     <td class="text-center text-muted font-monospace" style="font-size:0.85rem;"><?= $last_update ?></td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-outline-info check_costbook shadow-sm" data-id_material="<?= $item->id_material ?>" data-id_gudang="<?= $item->id_gudang ?>" title="Lihat Riwayat Transaksi Costbook">
+                                        <button type="button" class="btn btn-sm btn-outline-info check_costbook shadow-sm" data-id_material="<?= $item->id_material ?>" data-id_gudang="<?= $item->id_gudang ?>" title="View Costbook Transaction History">
                                             <i class="fa fa-eye me-1"></i> Detail
                                         </button>
                                     </td>
@@ -148,13 +148,13 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title fw-bold" id="myModalLabel"><i class="fa fa-list-check me-2"></i>Detail Transaksi Costbook Barang</h5>
+                <h5 class="modal-title fw-bold" id="myModalLabel"><i class="fa fa-list-check me-2"></i>Item Costbook Transaction Details</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="ModalView">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 text-muted">Memuat rincian transaksi costbook...</p>
+                    <p class="mt-2 text-muted">Loading costbook transaction details...</p>
                 </div>
             </div>
             <div class="modal-footer bg-light py-2">
@@ -162,7 +162,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                     <i class="fa fa-print me-1"></i> Cetak / Print Rincian
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Tutup
+                    <i class="fa fa-times me-1"></i> Close
                 </button>
             </div>
         </div>
@@ -200,12 +200,12 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
             responsive: true,
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari barang / kode...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search item / code...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Belum ada data stok barang",
-                zeroRecords: "Tidak ada data yang cocok"
+                emptyTable: "No item stock data yet",
+                zeroRecords: "No matching data"
             }
         });
     }
@@ -213,7 +213,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
     $(document).on('click', '.change_warehouse', function() {
         var btn = $(this);
         var originalText = btn.html();
-        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Memuat...');
+        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Loading...');
 
         var warehouse = $('.select_warehouse').val();
         var tgl_from = $('.tgl_from').val();
@@ -236,9 +236,9 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
             error: function() {
                 btn.prop('disabled', false).html(originalText);
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan saat memfilter data gudang.' });
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'An error occurred while filtering the warehouse data.' });
                 } else {
-                    alert('Terjadi kesalahan saat memfilter data gudang.');
+                    alert('An error occurred while filtering the warehouse data.');
                 }
             }
         });
@@ -248,7 +248,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         var id_material = $(this).data('id_material');
         var id_gudang = $(this).data('id_gudang');
 
-        $('#ModalView').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Memuat rincian transaksi costbook...</p></div>');
+        $('#ModalView').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Loading costbook transaction details...</p></div>');
         
         // Show modal (support Bootstrap 5 and Bootstrap 3/4)
         if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
@@ -271,7 +271,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
                 $('#ModalView').html(result);
             },
             error: function() {
-                $('#ModalView').html('<div class="alert alert-danger my-3"><i class="fa fa-circle-exclamation me-1"></i> Gagal memuat data transaksi. Silakan coba kembali.</div>');
+                $('#ModalView').html('<div class="alert alert-danger my-3"><i class="fa fa-circle-exclamation me-1"></i> Failed to load transaction data. Please try again.</div>');
             }
         });
     });
@@ -287,17 +287,17 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal Mencetak!',
-                    text: 'Tidak ada data di dalam tabel untuk dicetak.'
+                    title: 'Print Failed!',
+                    text: 'There is no data in the table to print.'
                 });
             } else if (typeof swal === 'function') {
                 swal({
-                    title: 'Gagal Mencetak!',
-                    text: 'Tidak ada data di dalam tabel untuk dicetak.',
+                    title: 'Print Failed!',
+                    text: 'There is no data in the table to print.',
                     type: 'error'
                 });
             } else {
-                alert('Gagal Mencetak: Tidak ada data di dalam tabel untuk dicetak.');
+                alert('Print Failed: There is no data in the table to print.');
             }
             return false;
         }
@@ -311,10 +311,10 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         var warehouseName = $('.select_warehouse option:selected').text();
         var tglFrom = $('.tgl_from').val();
         var tglTo = $('.tgl_to').val();
-        var periodeText = (tglFrom && tglTo) ? (tglFrom + ' s/d ' + tglTo) : 'Semua Periode';
+        var periodeText = (tglFrom && tglTo) ? (tglFrom + ' s/d ' + tglTo) : 'All Periods';
 
         var printWindow = window.open('', '', 'height=750,width=1050');
-        printWindow.document.write('<!DOCTYPE html><html><head><title>Cetak Costbook Stok Per Item</title>');
+        printWindow.document.write('<!DOCTYPE html><html><head><title>Print Costbook Stock Per Item</title>');
         printWindow.document.write('<style>');
         printWindow.document.write('@page { size: landscape; margin: 10mm; }');
         printWindow.document.write('body { font-family: Arial, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 10px; }');
@@ -331,8 +331,8 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         printWindow.document.write('</style></head><body>');
 
         printWindow.document.write('<div class="header-cetak">');
-        printWindow.document.write('<h3>LAPORAN COSTBOOK STOK PER ITEM</h3>');
-        printWindow.document.write('<p>Gudang: <b>' + warehouseName + '</b> | Periode: <b>' + periodeText + '</b> | Dicetak: ' + new Date().toLocaleString('id-ID') + '</p>');
+        printWindow.document.write('<h3>COSTBOOK STOCK REPORT PER ITEM</h3>');
+        printWindow.document.write('<p>Warehouse: <b>' + warehouseName + '</b> | Periode: <b>' + periodeText + '</b> | Dicetak: ' + new Date().toLocaleString('id-ID') + '</p>');
         printWindow.document.write('</div>');
 
         printWindow.document.write(tableClone[0].outerHTML);
@@ -368,7 +368,7 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         var infoText = infoElem ? infoElem.innerText.replace(/\s+/g, ' ').trim() : '';
 
         var printWindow = window.open('', '', 'height=750,width=1000');
-        printWindow.document.write('<!DOCTYPE html><html><head><title>Cetak Rincian Costbook</title>');
+        printWindow.document.write('<!DOCTYPE html><html><head><title>Print Costbook Details</title>');
         printWindow.document.write('<style>');
         printWindow.document.write('@page { size: landscape; margin: 10mm; }');
         printWindow.document.write('body { font-family: Arial, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 10px; }');
@@ -386,8 +386,8 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         printWindow.document.write('</style></head><body>');
 
         printWindow.document.write('<div class="header-cetak">');
-        printWindow.document.write('<h3>RINCIAN TRANSAKSI COSTBOOK BARANG</h3>');
-        printWindow.document.write('<p>Tanggal Cetak: ' + new Date().toLocaleString('id-ID') + '</p>');
+        printWindow.document.write('<h3>ITEM COSTBOOK TRANSACTION DETAILS</h3>');
+        printWindow.document.write('<p>Print Date: ' + new Date().toLocaleString('id-ID') + '</p>');
         printWindow.document.write('</div>');
 
         if (infoText) {
@@ -409,17 +409,17 @@ $ENABLE_DELETE  = has_permission('Costbook_Stock_Per_Item.Delete');
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal Mencetak!',
-                text: 'Tidak ada data transaksi di dalam tabel untuk dicetak.'
+                title: 'Print Failed!',
+                text: 'There is no transaction data in the table to print.'
             });
         } else if (typeof swal === 'function') {
             swal({
-                title: 'Gagal Mencetak!',
-                text: 'Tidak ada data transaksi di dalam tabel untuk dicetak.',
+                title: 'Print Failed!',
+                text: 'There is no transaction data in the table to print.',
                 type: 'error'
             });
         } else {
-            alert('Gagal Mencetak: Tidak ada data transaksi di dalam tabel untuk dicetak.');
+            alert('Print Failed: There is no transaction data in the table to print.');
         }
     }
 </script>

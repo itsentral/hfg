@@ -45,12 +45,12 @@
                         <thead class="text-center">
                             <tr>
                                 <th>No Payment</th>
-                                <th>No Dokumen</th>
-                                <th>Tgl Bayar</th>
+                                <th>Document No.</th>
+                                <th>Payment Date</th>
                                 <th>Requestor / Supplier</th>
                                 <th>Payment IDR</th>
                                 <th>Payment Kurs</th>
-                                <th>Keterangan</th>
+                                <th>Description</th>
                                 <th style="width: 100px;">Option</th>
                             </tr>
                         </thead>
@@ -63,7 +63,7 @@
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
                                                 $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
-                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
+                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc ?? []));
                                             } else {
                                                 echo '-';
                                             }
@@ -78,7 +78,7 @@
                                             <div class="d-flex gap-1 justify-content-center">
                                                 <a href="<?= base_url('pembayaran_material/view_payment_new/' . $item->no_doc); ?>" class="btn btn-sm btn-info text-white" title="View Request Payment"><i class="fa fa-eye"></i></a>
                                                 <?php if (!empty($item->link_doc) && file_exists('assets/expense/' . $item->link_doc)) : ?>
-                                                    <a href="<?= base_url('assets/expense/' . $item->link_doc); ?>" class="btn btn-sm btn-primary" title="Download berkas"><i class="fa fa-download"></i></a>
+                                                    <a href="<?= base_url('assets/expense/' . $item->link_doc); ?>" class="btn btn-sm btn-primary" title="Download file"><i class="fa fa-download"></i></a>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
@@ -96,12 +96,12 @@
                         <thead class="text-center">
                             <tr>
                                 <th>No Payment</th>
-                                <th>No Dokumen</th>
-                                <th>Tgl Bayar</th>
+                                <th>Document No.</th>
+                                <th>Payment Date</th>
                                 <th>Requestor / Supplier</th>
                                 <th>Payment IDR</th>
                                 <th>Payment Kurs</th>
-                                <th>Keterangan</th>
+                                <th>Description</th>
                                 <th style="width: 100px;">Option</th>
                             </tr>
                         </thead>
@@ -114,7 +114,7 @@
                                             <?php
                                             if (!empty($item->detail_no_doc)) {
                                                 $list_no_doc = array_unique(explode('||', (string) $item->detail_no_doc));
-                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc));
+                                                echo implode('<br>', array_map('htmlspecialchars', $list_no_doc ?? []));
                                             } else {
                                                 echo '-';
                                             }
@@ -130,7 +130,7 @@
                                             <div class="d-flex gap-1 justify-content-center">
                                                 <a href="<?= base_url('pembayaran_material/view_payment_new/' . $item->id_payment); ?>" class="btn btn-sm btn-info text-white" title="View Request Payment"><i class="fa fa-eye"></i></a>
                                                 <?php if (!empty($item->link_doc) && file_exists('assets/expense/' . $item->link_doc)) : ?>
-                                                    <a href="<?= base_url('assets/expense/' . $item->link_doc); ?>" class="btn btn-sm btn-primary" title="Download berkas"><i class="fa fa-download"></i></a>
+                                                    <a href="<?= base_url('assets/expense/' . $item->link_doc); ?>" class="btn btn-sm btn-primary" title="Download file"><i class="fa fa-download"></i></a>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
@@ -150,21 +150,21 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="modalLabel"><i class="fa fa-money me-2"></i>Pilih Jenis Payment</h5>
+                <h5 class="modal-title fw-bold" id="modalLabel"><i class="fa fa-money me-2"></i>Select Payment Type</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-shadow="none"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    <label class="form-label fw-semibold small text-muted">Jenis Payment</label>
+                    <label class="form-label fw-semibold small text-muted">Payment Type</label>
                     <select name="jenis_payment" class="form-select jenis_payment">
-                        <option value="">- Silakan Pilih Jenis Payment -</option>
-                        <option value="1">Pembayaran PR</option>
-                        <option value="2">Pembayaran Non PR</option>
+                        <option value="">- Silakan Select Payment Type -</option>
+                        <option value="1">PR Payment</option>
+                        <option value="2">Non-PR Payment</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa fa-remove me-1"></i> Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa fa-remove me-1"></i> Cancel</button>
                 <button type="button" class="btn btn-success confirm_jenis_payment"><i class="fa fa-check me-1"></i> Proses</button>
             </div>
         </div>
@@ -207,8 +207,8 @@
         if (jenis_payment === '' || jenis_payment === null) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Perhatian!',
-                text: 'Mohon pilih salah satu Jenis Payment terlebih dahulu!'
+                title: 'Attention!',
+                text: 'Please select a Payment Type first!'
             });
         } else {
             if (jenis_payment == 1 || jenis_payment == 2) {
@@ -216,8 +216,8 @@
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan sistem, silakan coba beberapa saat lagi.'
+                    title: 'Failed!',
+                    text: 'A system error occurred, please try again in a moment.'
                 });
             }
         }

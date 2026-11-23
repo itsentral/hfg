@@ -8,7 +8,7 @@
                 <i class="fa fa-edit me-1"></i> Edit
             </a>
             <a href="<?= base_url('bom') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </a>
         </div>
     </div>
@@ -16,11 +16,11 @@
         <div class="table-responsive" style="max-width: 600px;">
             <table class="table table-sm table-borderless mb-0">
                 <tr>
-                    <td width="160" class="fw-bold text-muted">Kode Produk</td>
+                    <td width="160" class="fw-bold text-muted">Product Code</td>
                     <td>: <strong class="fs-6 text-dark"><?= htmlspecialchars((string) $bom->id_produk) ?></strong></td>
                 </tr>
                 <tr>
-                    <td class="fw-bold text-muted">Nama Produk</td>
+                    <td class="fw-bold text-muted">Product Name</td>
                     <td>: <?= htmlspecialchars($bom->nm_produk ?: '-') ?></td>
                 </tr>
                 <tr>
@@ -40,7 +40,7 @@
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3">
         <h6 class="mb-0 fw-bold text-secondary">
-            <i class="fa fa-list me-2"></i> Daftar Varian Tebal (<?= count($details) ?> item)
+            <i class="fa fa-list me-2"></i> Daftar Varian Tebal (<?= count($details ?? []) ?> item)
         </h6>
     </div>
     <div class="card-body p-0">
@@ -50,17 +50,17 @@
                     <tr>
                         <th class="text-center" width="50">No</th>
                         <th width="160">No. Uniq ID</th>
-                        <th width="180">Kode Material</th>
-                        <th>Nama Material</th>
-                        <th class="text-end" width="130">Varian Tebal</th>
-                        <th class="text-end" width="130">Lebar Coil</th>
-                        <th class="text-end" width="180">Berat/Meter (kg/m)</th>
+                        <th width="180">Material Code</th>
+                        <th>Material Name</th>
+                        <th class="text-end" width="130">Thickness Variant</th>
+                        <th class="text-end" width="130">Coil Width</th>
+                        <th class="text-end" width="180">Weight/Meter (kg/m)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($details)): ?>
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-3">Belum ada varian material</td>
+                            <td colspan="7" class="text-center text-muted py-3">No material variants yet</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($details as $i => $d): ?>

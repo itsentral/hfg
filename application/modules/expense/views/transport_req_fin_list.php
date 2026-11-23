@@ -15,12 +15,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
             </div>
             <div>
                 <h5 class="card-title mb-0 fw-bold text-dark">Pengecekan Finance Penggantian Transport</h5>
-                <small class="text-muted">Daftar pengajuan transport yang menunggu verifikasi dan persetujuan finance</small>
+                <small class="text-muted">List of transport requests awaiting finance verification and approval</small>
             </div>
         </div>
         <div>
             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">
-                <i class="fa fa-clock me-1"></i>Menunggu Approval Finance
+                <i class="fa fa-clock me-1"></i>Awaiting Finance Approval
             </span>
         </div>
     </div>
@@ -31,10 +31,10 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th class="text-center">No Dokumen</th>
-                        <th class="text-center">Tanggal</th>
-                        <th class="text-center">Nama Karyawan</th>
-                        <th class="text-end">Total Pengajuan</th>
+                        <th class="text-center">Document No.</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center">Employee Name</th>
+                        <th class="text-end">Total Request</th>
                         <th class="text-center" width="16%">Status</th>
                         <th class="text-center no-sort" width="120">Aksi</th>
                     </tr>
@@ -95,13 +95,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
             order: [[1, 'desc']],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no dokumen, nama...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search document no, name...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Tidak ada data pengajuan transport yang menunggu approval",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+                emptyTable: "No transport requests awaiting approval",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             },
             ajax: {
                 type: 'POST',
@@ -139,13 +139,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
     function data_view(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian pengajuan transport...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading transport request details...</div></div>');
             $('#form-data').load(url_view + id + '/_fin', function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load details data: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 } else {
@@ -160,13 +160,13 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
     function data_edit(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Memuat form verifikasi finance...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><div class="mt-2 text-muted">Loading finance verification form...</div></div>');
             $('#form-data').load(url_edit + id + '/_fin', function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat form verifikasi: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load verification form: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 } else {

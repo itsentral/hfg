@@ -5,7 +5,7 @@
     <div class="card-header bg-white py-3">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-primary fw-bold">
-                <i class="fa fa-book me-2"></i> Kartu Stok FG
+                <i class="fa fa-book me-2"></i> FG Stock Card
             </h5>
             <a href="<?= base_url('fg_warehouse/stok_fg') ?>" class="btn btn-outline-secondary btn-sm">
                 <i class="fa fa-arrow-left me-1"></i> Kembali ke Stok FG
@@ -17,7 +17,7 @@
             <div class="col-md-4">
                 <label class="form-label fw-bold">Produk FG <span class="text-danger">*</span></label>
                 <select name="produk_fg" class="form-control select2" required>
-                    <option value="">-- Pilih Produk --</option>
+                    <option value="">-- Select Product --</option>
                     <?php foreach ($produk_list as $p): ?>
                         <option value="<?= htmlspecialchars((string) $p->produk_fg) ?>"
                             <?= ($produk_fg === $p->produk_fg) ? 'selected' : '' ?>>
@@ -27,18 +27,18 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-bold">Tanggal Dari</label>
+                <label class="form-label fw-bold">Date From</label>
                 <input type="date" name="tgl_dari" class="form-control"
                        value="<?= htmlspecialchars($tgl_dari ? $tgl_dari : '') ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-bold">Tanggal Sampai</label>
+                <label class="form-label fw-bold">Date To</label>
                 <input type="date" name="tgl_sampai" class="form-control"
                        value="<?= htmlspecialchars($tgl_sampai ? $tgl_sampai : '') ?>">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fa fa-search me-1"></i> Tampilkan
+                    <i class="fa fa-search me-1"></i> Show
                 </button>
             </div>
         </form>
@@ -71,7 +71,7 @@
     <div class="col-md-3">
         <div class="card text-center border-primary shadow-sm">
             <div class="card-body py-2">
-                <div class="text-muted small fw-bold">Qty Stok</div>
+                <div class="text-muted small fw-bold">Stock Qty</div>
                 <div class="fs-4 fw-bold text-primary"><?= number_format((float) $stok_info->qty_stok, 2) ?> <small class="fs-6">pcs</small></div>
             </div>
         </div>
@@ -79,7 +79,7 @@
     <div class="col-md-2">
         <div class="card text-center border-info shadow-sm">
             <div class="card-body py-2">
-                <div class="text-muted small fw-bold">Total Berat</div>
+                <div class="text-muted small fw-bold">Total Weight</div>
                 <div class="fs-4 fw-bold text-info"><?= number_format((float) $stok_info->total_berat, 3) ?> <small class="fs-6">kg</small></div>
             </div>
         </div>
@@ -87,7 +87,7 @@
     <div class="col-md-2">
         <div class="card text-center border-secondary shadow-sm">
             <div class="card-body py-2">
-                <div class="text-muted small fw-bold">Berat Ref</div>
+                <div class="text-muted small fw-bold">Ref Weight</div>
                 <div class="fs-4 fw-bold text-dark"><?= number_format((float) $stok_info->berat_referensi, 4) ?> <small class="fs-6">kg/pc</small></div>
             </div>
         </div>
@@ -103,7 +103,7 @@
     <div class="col-md-3">
         <div class="card text-center border-warning shadow-sm">
             <div class="card-body py-2">
-                <div class="text-muted small fw-bold">Total Nilai Stok</div>
+                <div class="text-muted small fw-bold">Total Stock Value</div>
                 <div class="fs-5 fw-bold text-dark">Rp <?= number_format((float) $stok_info->total_nilai, 2) ?></div>
             </div>
         </div>
@@ -128,28 +128,28 @@
     </div>
     <div class="card-body p-0">
         <?php if (empty($ledger)): ?>
-            <div class="p-3 text-muted">Tidak ada data mutasi untuk filter yang dipilih.</div>
+            <div class="p-3 text-muted">No mutation data for the selected filter.</div>
         <?php else: ?>
         <div class="table-responsive">
             <table class="table table-sm table-bordered table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" width="40">No</th>
-                        <th class="text-center" width="90">Tanggal</th>
+                        <th class="text-center" width="90">Date</th>
                         <th>No Referensi</th>
                         <th>No SPK</th>
-                        <th class="text-center">Kategori</th>
-                        <th class="text-center" width="60">Jenis</th>
+                        <th class="text-center">Category</th>
+                        <th class="text-center" width="60">Type</th>
                         <th class="text-end">Qty IN</th>
                         <th class="text-end">Qty OUT</th>
-                        <th class="text-end">Saldo Qty</th>
-                        <th class="text-end">Berat IN (kg)</th>
-                        <th class="text-end">Berat OUT (kg)</th>
-                        <th class="text-end">Saldo Berat (kg)</th>
+                        <th class="text-end">Qty Balance</th>
+                        <th class="text-end">IN Weight (kg)</th>
+                        <th class="text-end">OUT Weight (kg)</th>
+                        <th class="text-end">Weight Balance (kg)</th>
                         <th class="text-end">Costbook (Rp)</th>
-                        <th class="text-end">Total Nilai (Rp)</th>
-                        <th class="text-end">Saldo Nilai (Rp)</th>
-                        <th>Keterangan</th>
+                        <th class="text-end">Total Value (Rp)</th>
+                        <th class="text-end">Value Balance (Rp)</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,6 +194,6 @@
 
 <?php else: ?>
 <div class="alert alert-info shadow-sm">
-    <i class="fa fa-info-circle me-1"></i> Pilih produk FG untuk melihat kartu stok.
+    <i class="fa fa-info-circle me-1"></i> Select an FG product to view the stock card.
 </div>
 <?php endif; ?>

@@ -194,7 +194,7 @@ class Claim_material_model extends CI_Model
     public function send_email_complaint($claim_id, $email_to, $email_subject, $email_body, $user_name = '')
     {
         $claim = $this->db->where('id', $claim_id)->get('claim_material')->row_array();
-        if (!$claim) return ['status' => false, 'message' => 'Data claim tidak ditemukan'];
+        if (!$claim) return ['status' => false, 'message' => 'Claim data not found'];
 
         $old_claim = $claim;
 
@@ -209,14 +209,14 @@ class Claim_material_model extends CI_Model
         if (function_exists('write_log')) {
             $logPayload = [
                 'old'           => $old_claim,
-                'new'           => array_merge($old_claim, $data_update),
+                'new'           => array_merge($old_claim ?? [], $data_update ?? []),
                 'email_to'      => $email_to,
                 'email_subject' => $email_subject,
             ];
             write_log('Claim Material', 'Email', 'Kirim email keluhan claim ke supplier: ' . $claim['no_claim'] . ' (' . $email_to . ')', $logPayload, null, 1);
         }
 
-        return ['status' => true, 'message' => 'Email keluhan berhasil dikirim ke ' . $email_to];
+        return ['status' => true, 'message' => 'Complaint email sent successfully to ' . $email_to];
     }
 
     /**
@@ -380,7 +380,7 @@ class Claim_material_model extends CI_Model
                 'id'       => $cid,
                 'no_claim' => $claim['no_claim'],
                 'old'      => $old_claim,
-                'new'      => array_merge($old_claim, $update_claim),
+                'new'      => array_merge($old_claim ?? [], $update_claim ?? []),
                 'decisions'=> $decisions,
             ];
         }
@@ -388,7 +388,7 @@ class Claim_material_model extends CI_Model
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === false) {
-            return ['status' => false, 'message' => 'Gagal menyimpan keputusan claim di database'];
+            return ['status' => false, 'message' => 'Failed to save the claim decision to the database'];
         }
 
         // Audit Log
@@ -404,7 +404,7 @@ class Claim_material_model extends CI_Model
             }
         }
 
-        return ['status' => true, 'message' => 'Keputusan claim berhasil disimpan'];
+        return ['status' => true, 'message' => 'Claim decision saved successfully'];
     }
 
     /**
@@ -461,14 +461,14 @@ class Claim_material_model extends CI_Model
             $dec = $this->get_claim_decisions($r['id']);
             $status_material = 'Hold';
             if (!empty($dec)) {
-                $aksis = array_column($dec, 'aksi');
-                if (in_array('Lanjut Produksi', $aksis)) {
+                $aksis = array_column($dec ?? [], 'aksi');
+                if (in_array('Lanjut Produksi', $aksis ?? [])) {
                     $status_material = 'Dapat Dipakai (Release)';
-                } elseif (in_array('Jual Material', $aksis)) {
+                } elseif (in_array('Jual Material', $aksis ?? [])) {
                     $status_material = 'Dijual (Gudang Slitting)';
-                } elseif (in_array('Retur', $aksis)) {
+                } elseif (in_array('Retur', $aksis ?? [])) {
                     $status_material = 'Dalam Retur';
-                } elseif (in_array('Debit Note', $aksis)) {
+                } elseif (in_array('Debit Note', $aksis ?? [])) {
                     $status_material = 'Dikompensasi';
                 }
             }
@@ -539,12 +539,12 @@ class Claim_material_model extends CI_Model
         foreach ($rows as $r) {
             $biaya_material = (float)$r['berat_kg'] * (float)$r['harga_beli_per_kg'];
             $beban = 0;
-            $akun = 'Biaya Scrap';
+            $akun = 'Scrap Cost';
 
             if ($r['aksi'] === 'Debit Note') {
                 $nilai_komp = (float)($r['nilai_debit_note'] ?? 0);
                 $beban = max(0, $biaya_material - $nilai_komp);
-                $akun = ($r['asal'] === 'KW 2 (Supplier)') ? 'Biaya KW 2 Supplier' : 'Biaya Scrap';
+                $akun = ($r['asal'] === 'KW 2 (Supplier)') ? 'KW 2 Supplier Cost' : 'Scrap Cost';
                 $report[] = [
                     'jenis'                 => 'Debit Note',
                     'no_claim'              => $r['no_claim'],
@@ -562,7 +562,7 @@ class Claim_material_model extends CI_Model
             } elseif ($r['aksi'] === 'Jual Material') {
                 $nilai_kw = (float)($r['nilai_material_kw'] ?? 0);
                 $beban = (float)($r['nilai_biaya_scrap'] ?? ($biaya_material - $nilai_kw));
-                $akun = 'Biaya Scrap';
+                $akun = 'Scrap Cost';
                 $report[] = [
                     'jenis'                 => 'Jual Material',
                     'no_claim'              => $r['no_claim'],
@@ -606,15 +606,15 @@ class Claim_material_model extends CI_Model
                     'posted' => true,
                     'lines'  => [
                         ['Material KW (Inventory)', $kw, 0],
-                        ['Biaya Scrap (Rugi)', $scrap, 0],
-                        ['Gudang Bahan Persediaan Produksi', 0, $tot]
+                        ['Scrap Cost (Loss)', $scrap, 0],
+                        ['Production Supplies Warehouse', 0, $tot]
                     ]
                 ];
             }
 
             if ($d['aksi'] === 'Debit Note') {
                 $nilai_dn = (float)$d['nilai_debit_note'];
-                $akun_kredit = ($claim['asal'] === 'KW 2 (Supplier)') ? 'Biaya KW 2 Supplier' : 'Biaya Scrap';
+                $akun_kredit = ($claim['asal'] === 'KW 2 (Supplier)') ? 'KW 2 Supplier Cost' : 'Scrap Cost';
                 $journals[] = [
                     'title'  => 'Debit Note Terbit (Kompensasi)',
                     'posted' => true,
@@ -632,7 +632,7 @@ class Claim_material_model extends CI_Model
 
                 $lines = [
                     ['Debit Note (Retur)', $nilai_po, 0],
-                    ['Nilai Material Retur (In Transit)', 0, $nilai_retur],
+                    ['Returned Material Value (In Transit)', 0, $nilai_retur],
                 ];
                 if ($selisih > 0) {
                     $lines[] = ['Selisih Costbook vs Price/Unit PO', 0, $selisih];
@@ -641,7 +641,7 @@ class Claim_material_model extends CI_Model
                 }
 
                 $journals[] = [
-                    'title'  => 'Confirm Surat Jalan Retur (Retur ke Supplier)',
+                    'title'  => 'Confirm Return Delivery Note (Return to Supplier)',
                     'posted' => false,
                     'lines'  => $lines
                 ];

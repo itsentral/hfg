@@ -13,7 +13,7 @@ class Mata_uang extends Admin_Controller
     {
         parent::__construct();
         $this->load->model('mata_uang/Mata_uang_model', 'mata_uang_model');
-        $this->template->title('Master Mata Uang');
+        $this->template->title('Master Currency');
         date_default_timezone_set('Asia/Bangkok');
     }
 
@@ -24,7 +24,7 @@ class Mata_uang extends Admin_Controller
         $data = $this->mata_uang_model->get_all_mata_uang();
 
         $this->template->set('results', $data);
-        $this->template->title('Master Mata Uang');
+        $this->template->title('Master Currency');
         $this->template->render('index');
     }
 
@@ -52,7 +52,7 @@ class Mata_uang extends Admin_Controller
             $this->auth->restrict($this->managePermission);
             $header = $this->mata_uang_model->get_by_id($id);
             if (!$header) {
-                echo "<div class='alert alert-danger'>Data tidak ditemukan!</div>";
+                echo "<div class='alert alert-danger'>Data not found!</div>";
                 return;
             }
         } else {
@@ -75,7 +75,7 @@ class Mata_uang extends Admin_Controller
     {
         $post = $this->input->post();
         if (!$post) {
-            echo json_encode(['status' => 0, 'pesan' => 'Permintaan tidak valid!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid request!']);
             return;
         }
 
@@ -89,15 +89,15 @@ class Mata_uang extends Admin_Controller
 
         // 1. Validasi Input Required
         if (empty($negara)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Negara harus dipilih!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Country is required!']);
             return;
         }
         if (empty($kode)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Kode mata uang harus diisi!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Currency code is required!']);
             return;
         }
         if (empty($mata_uang)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Nama mata uang harus diisi!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Currency name is required!']);
             return;
         }
 
@@ -106,7 +106,7 @@ class Mata_uang extends Admin_Controller
         if ($is_duplicate) {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Negara "' . htmlspecialchars((string) $negara) . '" sudah terdaftar dalam data mata uang! Silakan pilih negara lain.'
+                'pesan'  => 'Negara "' . htmlspecialchars((string) $negara) . '" is already registered in the currency data! Please select another country.'
             ]);
             return;
         }
@@ -129,13 +129,13 @@ class Mata_uang extends Admin_Controller
             write_log('Master Mata Uang', $field_hist, $field_hist . ' mata uang: ' . $kode . ' (' . $negara . ')', $payload, null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Data mata uang berhasil disimpan!'
+                'pesan'  => 'Currency data saved successfully!'
             ]);
         } else {
             write_log('Master Mata Uang', $field_hist, 'Gagal ' . strtolower((string) $field_hist) . ' mata uang: ' . $kode, $payload, null, 0);
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal menyimpan data mata uang!'
+                'pesan'  => 'Failed to save currency data!'
             ]);
         }
     }
@@ -149,7 +149,7 @@ class Mata_uang extends Admin_Controller
 
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID tidak valid!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid ID!']);
             return;
         }
 
@@ -163,13 +163,13 @@ class Mata_uang extends Admin_Controller
             write_log('Master Mata Uang', 'Delete', 'Hapus mata uang ID: ' . $id . ' (' . ($record->kode ?? '') . ')', ['id' => $id], null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Data mata uang berhasil dihapus!'
+                'pesan'  => 'Currency data deleted successfully!'
             ]);
         } else {
             write_log('Master Mata Uang', 'Delete', 'Gagal hapus mata uang ID: ' . $id, ['id' => $id], null, 0);
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal menghapus data!'
+                'pesan'  => 'Failed to delete data!'
             ]);
         }
     }
@@ -183,7 +183,7 @@ class Mata_uang extends Admin_Controller
 
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID tidak valid!']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid ID!']);
             return;
         }
 
@@ -195,13 +195,13 @@ class Mata_uang extends Admin_Controller
         if ($new_status) {
             echo json_encode([
                 'status'     => 1,
-                'pesan'      => 'Status berhasil diubah menjadi ' . ucfirst((string) $new_status),
+                'pesan'      => 'Status changed successfully to ' . ucfirst((string) $new_status),
                 'new_status' => $new_status
             ]);
         } else {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal mengubah status!'
+                'pesan'  => 'Failed to change status!'
             ]);
         }
     }

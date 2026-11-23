@@ -263,8 +263,8 @@ class Incoming_asset extends Admin_Controller
 			$ArrJurnal		= array();
 			$SumMat = 0;
 			foreach ($addInMat as $val => $valx) {
-				$qtyOrder 	= (float)str_replace(',', '', $valx['qty_rev']);
-				$qtyIN 		= (float)str_replace(',', '', $valx['qty_in']);
+				$qtyOrder 	= (float)str_replace(',', '', $valx['qty_rev'] ?? '');
+				$qtyIN 		= (float)str_replace(',', '', $valx['qty_in'] ?? '');
 				$SumMat 	+= $qtyIN;
 
 				// update detail purchase

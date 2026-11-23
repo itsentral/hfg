@@ -225,7 +225,7 @@
         
         public static function getEccSpec($version, $level, array &$spec)
         {
-            if (count($spec) < 5) {
+            if (count($spec ?? []) < 5) {
                 $spec = array(0,0,0,0,0);
             }
 
@@ -500,7 +500,7 @@
                 </style>
                 <?php
                     echo '<pre><tt><br/ ><br/ ><br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                    echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame);
+                    echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame ?? []);
                     echo '</tt></pre><br/ ><br/ ><br/ ><br/ ><br/ ><br/ >';
             
             } else {
@@ -532,7 +532,7 @@
                 </style>
                 <?php
                 echo "<pre><tt>";
-                echo join("<br/ >", $frame);
+                echo join("<br/ >", $frame ?? []);
                 echo "</tt></pre>";
             
             }
@@ -541,7 +541,7 @@
         //----------------------------------------------------------------------
         public static function serial($frame)
         {
-            return gzcompress(join("\n", $frame), 9);
+            return gzcompress(join("\n", $frame ?? []), 9);
         }
         
         //----------------------------------------------------------------------

@@ -15,8 +15,8 @@ $this->load->view('include/side_menu');
 				<select id='category' name='category' class='form-control input-sm' style='min-width:200px;'>
 					<option value='0'>ALL CATEGORY</option>
 					<option value='asset'>ASSET</option>
-					<option value='rutin'>STOK</option>
-					<option value='non rutin'>DEPARTEMEN</option>
+					<option value='rutin'>STOCK</option>
+					<option value='non rutin'>DEPARTMENT</option>
 				</select>
 
 			</div>
@@ -273,7 +273,7 @@ $this->load->view('include/side_menu');
 		if (tanggal_dibutuhkan == '') {
 			swal({
 				title: "Error Message!",
-				text: 'Tanggal Dibutuhkan kosong, please input first ...',
+				text: 'Required Date is empty, please input first.',
 				type: "warning"
 			});
 			$('#savePO').prop('disabled', false);
@@ -466,7 +466,7 @@ $this->load->view('include/side_menu');
 
 		swal({
 				title: "Are you sure?",
-				text: "Barang yang di checklist akan menjadi RFQ baru ...",
+				text: "Checked items will become a new RFQ.",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-danger",
@@ -536,7 +536,7 @@ $this->load->view('include/side_menu');
 
 		swal({
 				title: "Are you sure?",
-				text: "Semua barang akan menjadi PR baru ...",
+				text: "All items will become a new PR.",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-danger",
@@ -603,7 +603,7 @@ $this->load->view('include/side_menu');
 
 		swal({
 				title: "Are you sure?",
-				text: "Barang yang di hapus akan menjadi PR baru ...",
+				text: "Deleted items will become a new PR.",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-danger",

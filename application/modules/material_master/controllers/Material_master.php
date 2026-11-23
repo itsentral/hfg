@@ -18,7 +18,7 @@ class Material_master extends Admin_Controller
     $this->load->model(array(
       'Material_master/Material_master_model'
     ));
-    $this->template->title('Manage Material Jenis');
+    $this->template->title('Manage Material Type');
     $this->template->page_icon('fa fa-building-o');
 
     date_default_timezone_set('Asia/Bangkok');
@@ -78,10 +78,10 @@ class Material_master extends Admin_Controller
 
       $hscode           = $post['hscode'];
       $trade_name       = $post['trade_name'];
-      $width            = str_replace(',', '', $post['width']);
+      $width            = str_replace(',', '', $post['width'] ?? '');
       $id_coating       = $post['id_coating'];
       $id_tensile       = $post['id_tensile'];
-      $thickness        = str_replace(',', '', $post['thickness']);
+      $thickness        = str_replace(',', '', $post['thickness'] ?? '');
       $warna            = $post['warna'];
       $hardness         = $post['hardness'];
       $no_accurate      = $post['no_accurate'];
@@ -90,41 +90,41 @@ class Material_master extends Admin_Controller
       // $id_unit_other    = $post['id_unit_other'];
       $id_unit          = $post['id_unit'];
       $id_supplier      = $post['id_supplier'];
-      $konversi         = str_replace(',', '', $post['konversi']);
+      $konversi         = str_replace(',', '', $post['konversi'] ?? '');
       // $konversi_other   = str_replace(',', '', $post['konversi_other']);
 
-      $max_stok     = str_replace(',', '', $post['max_stok']);
-      $min_stok     = str_replace(',', '', $post['min_stok']);
+      $max_stok     = str_replace(',', '', $post['max_stok'] ?? '');
+      $min_stok     = str_replace(',', '', $post['min_stok'] ?? '');
 
-      $length     = str_replace(',', '', $post['length']);
-      $wide       = str_replace(',', '', $post['wide']);
-      $high       = str_replace(',', '', $post['high']);
-      $cub        = str_replace(',', '', $post['cub']);
+      $length     = str_replace(',', '', $post['length'] ?? '');
+      $wide       = str_replace(',', '', $post['wide'] ?? '');
+      $high       = str_replace(',', '', $post['high'] ?? '');
+      $cub        = str_replace(',', '', $post['cub'] ?? '');
 
       // Validasi server (FR-38): level 1-3 dan nama wajib; Thickness (tebal) dan Width (lebar coil) harus > 0.
       // Material tidak menyimpan Berat/Meter (dihitung di BOM dari Master Standard Material).
       $errors = [];
       if (empty($code_lv1) || $code_lv1 == '0') {
-        $errors[] = 'Metal type wajib dipilih.';
+        $errors[] = 'Metal Type is required.';
       }
       if (empty($code_lv2) || $code_lv2 == '0') {
-        $errors[] = 'Slitted/Mother coil wajib dipilih.';
+        $errors[] = 'Slitted/Mother Coil is required.';
       }
       if (empty($code_lv3) || $code_lv3 == '0') {
-        $errors[] = 'Boron/Non boron wajib dipilih.';
+        $errors[] = 'Boron/Non Boron is required.';
       }
       if (trim((string) $nama) === '') {
-        $errors[] = 'Nama material wajib diisi.';
+        $errors[] = 'Material name is required.';
       }
       if (!is_numeric($thickness) || $thickness <= 0) {
-        $errors[] = 'Thickness harus berupa angka lebih dari 0.';
+        $errors[] = 'Thickness must be a number greater than 0.';
       }
       if (!is_numeric($width) || $width <= 0) {
-        $errors[] = 'Width harus berupa angka lebih dari 0.';
+        $errors[] = 'Width must be a number greater than 0.';
       }
       if (!empty($errors)) {
         echo json_encode([
-          'pesan'  => implode(' ', $errors),
+          'pesan'  => implode(' ', $errors ?? []),
           'status' => 0
         ]);
         return;
@@ -187,7 +187,7 @@ class Material_master extends Admin_Controller
         // }
       }
 
-      $dataProcess = array_merge($dataProcess1, $dataProcess2);
+      $dataProcess = array_merge($dataProcess1 ?? [], $dataProcess2 ?? []);
 
       $ArrGudangNew = [
         'id_material' => $code_lv4,
@@ -228,7 +228,7 @@ class Material_master extends Admin_Controller
       // Siapkan payload log (jika update, sertakan data old & new serta rincian sinkronisasi)
       $logPayload = (!empty($id) && !empty($oldData)) ? [
         'old'           => $oldData,
-        'new'           => array_merge($oldData, $dataProcess),
+        'new'           => array_merge($oldData ?? [], $dataProcess ?? []),
         'sync_affected' => $syncAffected
       ] : $dataProcess;
 
@@ -320,7 +320,7 @@ class Material_master extends Admin_Controller
     $jumlah = 1;
     $sql = $this->db->last_query();  // Ambil query terakhir untuk logging
     $logPayload = !empty($oldData)
-      ? ['old' => $oldData, 'new' => array_merge($oldData, $dataProcess)]
+      ? ['old' => $oldData, 'new' => array_merge($oldData ?? [], $dataProcess ?? [])]
       : ['id' => $id, 'new_status' => $new_status];
     write_log('Material Master', 'Update Status', $keterangan, $logPayload, $sql, $status);
 
@@ -368,14 +368,14 @@ class Material_master extends Admin_Controller
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
       $status  = array(
-        'pesan'    => 'Gagal menghapus data material!',
+        'pesan'    => 'Failed to delete material data!',
         'status'  => 0
       );
       write_log('Material Master', 'Delete', 'Gagal delete material master: ' . $code_lv4, ['id' => $id, 'code_lv4' => $code_lv4], null, 0);
     } else {
       $this->db->trans_commit();
       $status  = array(
-        'pesan'    => 'Berhasil menghapus data material ' . $code_lv4 . ' (' . $nama_mat . ')',
+        'pesan'    => 'Material data deleted successfully ' . $code_lv4 . ' (' . $nama_mat . ')',
         'status'  => 1
       );
       write_log('Material Master', 'Delete', 'Delete material master: ' . $code_lv4 . ' (' . $nama_mat . ')', ['id' => $id, 'code_lv4' => $code_lv4, 'data' => $data], null, 1);
@@ -412,7 +412,7 @@ class Material_master extends Admin_Controller
     $result  = get_list_inventory_lv3('material');
 
     if (!empty($result[$code_lv1][$code_lv2])) {
-      $option  = "<option value='0'>Select Material Jenis</option>";
+      $option  = "<option value='0'>Select Material Type</option>";
       foreach ($result[$code_lv1][$code_lv2] as $val => $valx) {
         $sel = ($id == $valx['code_lv3']) ? 'selected' : '';
         $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";

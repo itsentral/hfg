@@ -6,7 +6,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-list-alt me-2"></i>Daftar Mutasi Terealisasi
             </h5>
-            <small class="text-muted">Riwayat pemindahan dana bank yang telah berhasil dieksekusi dan dijurnal</small>
+            <small class="text-muted">History of bank fund transfers that were executed and journaled</small>
         </div>
         <div>
             <span class="badge bg-success px-3 py-2 rounded-pill">
@@ -21,13 +21,13 @@
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">No</th>
-                        <th width="9%" class="text-center">Tgl Mutasi</th>
-                        <th width="14%">Kode Mutasi Aktual</th>
-                        <th>Keterangan</th>
+                        <th width="9%" class="text-center">Mutation Date</th>
+                        <th width="14%">Actual Mutation Code</th>
+                        <th>Description</th>
                         <th width="13%">Bank Asal</th>
-                        <th width="13%">Bank Tujuan</th>
-                        <th width="7%" class="text-center">Mata Uang</th>
-                        <th width="12%" class="text-end">Nilai Aktual</th>
+                        <th width="13%">Destination Bank</th>
+                        <th width="7%" class="text-center">Currency</th>
+                        <th width="12%" class="text-end">Actual Value</th>
                         <th width="8%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -49,7 +49,7 @@
                                 <td class="text-center"><span class="badge bg-light text-dark border"><?= htmlspecialchars($record->mata_uang ?: 'IDR') ?></span></td>
                                 <td class="text-end fw-bold text-success">Rp <?= number_format((float) $record->nilai_request, 0, ',', '.') ?></td>
                                 <td class="text-center text-nowrap">
-                                    <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_mutasi/' . $record->kd_mutasi) ?>" target="_blank" title="Cetak Bukti Mutasi">
+                                    <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_mutasi/' . $record->kd_mutasi) ?>" target="_blank" title="Print Mutation Voucher">
                                         <i class="fa fa-print"></i>
                                     </a>
                                 </td>

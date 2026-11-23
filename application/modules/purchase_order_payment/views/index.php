@@ -294,7 +294,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
         if (!supplier) {
             Swal.fire({
                 title: 'Warning!',
-                text: 'Pilih supplier terlebih dahulu!',
+                text: 'Please select a supplier first!',
                 icon: 'warning'
             });
             return;
@@ -378,20 +378,20 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
         var kurs = parseFloat(($('#frm-data input[name="kurs"]').val() || '0').replace(/,/g, ''));
         if (currency && currency.toUpperCase() !== 'IDR' && kurs <= 0) {
             Swal.fire({
-                title: 'Peringatan!',
-                text: 'Kurs wajib diisi jika currency bukan IDR!',
+                title: 'Warning!',
+                text: 'Exchange rate is required if the currency is not IDR!',
                 icon: 'warning'
             });
             return;
         }
 
         Swal.fire({
-            title: 'Konfirmasi',
-            text: 'Invoice akan disimpan, lanjutkan?',
+            title: 'Confirmation',
+            text: 'The invoice will be saved, continue?',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Simpan!',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Save!',
+            cancelButtonText: 'Cancel'
         }).then(function(result) {
             if (!result.isConfirmed) return;
             var formdata = new FormData($('#frm-data')[0]);
@@ -406,7 +406,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
                 success: function(res) {
                     if (res.status == 1) {
                         Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: res.message,
                                 icon: 'success',
                                 timer: 1500,
@@ -417,7 +417,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Order.Delete');
                             });
                     } else {
                         Swal.fire({
-                            title: 'Gagal!',
+                            title: 'Failed!',
                             text: res.message,
                             icon: 'error'
                         });

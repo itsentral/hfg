@@ -35,7 +35,7 @@ class Faktor_indirect_labor extends Admin_Controller
         $nilai = (float) $this->input->post('faktor_indirect_labor');
 
         if ($nilai <= 0) {
-            $this->session->set_flashdata('error', 'Faktor Indirect Labor harus lebih besar dari 0');
+            $this->session->set_flashdata('error', 'Indirect Labor Factor must be greater than 0');
             redirect('faktor_indirect_labor');
         }
 
@@ -48,10 +48,10 @@ class Faktor_indirect_labor extends Admin_Controller
                 'after'  => ['faktor_indirect_labor' => $nilai],
             ];
             write_log('Faktor Indirect Labor', 'Edit', 'Update Faktor Indirect Labor menjadi ' . $nilai, $log, null, 1);
-            $this->session->set_flashdata('success', 'Faktor Indirect Labor berhasil disimpan');
+            $this->session->set_flashdata('success', 'Indirect Labor Factor saved successfully');
         } else {
             write_log('Faktor Indirect Labor', 'Edit', 'Gagal update Faktor Indirect Labor', [], null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan Faktor Indirect Labor');
+            $this->session->set_flashdata('error', 'Failed to save Indirect Labor Factor');
         }
 
         redirect('faktor_indirect_labor');

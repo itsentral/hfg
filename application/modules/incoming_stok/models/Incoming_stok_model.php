@@ -74,7 +74,7 @@ class Incoming_stok_model extends BF_Model
       }
 
       $no_po = [];
-      $get_no_po =  $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $row['no_ipp']) . "')")->result();
+      $get_no_po =  $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $row['no_ipp'] ?? '') . "')")->result();
       foreach ($get_no_po as $item) {
         $no_po[] = $item->no_surat;
       }
@@ -86,7 +86,7 @@ class Incoming_stok_model extends BF_Model
       foreach ($get_no_kasbon as $item) {
         $no_po[] = $item->no_doc;
       }
-      $no_po = implode(', ', $no_po);
+      $no_po = implode(', ', $no_po ?? []);
 
       $no_pr = [];
       $get_no_pr = $this->db->query("
@@ -98,7 +98,7 @@ class Incoming_stok_model extends BF_Model
             JOIN material_planning_base_on_produksi_detail b ON b.id = a.idpr
             JOIN material_planning_base_on_produksi c ON c.so_number = b.so_number
           WHERE
-            d.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_po)) . "')
+            d.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_po ?? '')) . "')
           GROUP BY c.no_pr
       ")->result();
       foreach ($get_no_pr as $item_no_pr) {
@@ -115,7 +115,7 @@ class Incoming_stok_model extends BF_Model
       }
 
       if (!empty($no_pr)) {
-        $no_pr = implode(', ', $no_pr);
+        $no_pr = implode(', ', $no_pr ?? []);
       } else {
         $no_pr = '';
       }
@@ -150,7 +150,7 @@ class Incoming_stok_model extends BF_Model
       //   $edit	= "&nbsp;<button type='button' data-kode_trans='".$row['kode_trans']."' data-tanda='edit' class='btn btn-sm btn-primary detail' title='Edit' data-role='qtip'><i class='fa fa-edit'></i></button>";
       // }
       if ($row['sts_confirm'] == 'N') {
-        $print  = "&nbsp;<a href='" . base_url('incoming_stok/print_incoming_stok/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-info' title='Print SPK Permintaan Material' data-role='qtip'><i class='fa fa-print'></i></a>";
+        $print  = "&nbsp;<a href='" . base_url('incoming_stok/print_incoming_stok/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-info' title='Print SPK Material Request' data-role='qtip'><i class='fa fa-print'></i></a>";
       }
       $nestedData[]  = "<div align='center'>" . $view . $edit . $print . $release . "</div>";
       $data[] = $nestedData;

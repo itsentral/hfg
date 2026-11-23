@@ -269,7 +269,7 @@ $terbilang = function_exists('rupiah_to_words')
             <?php endforeach; ?>
             <?php if (empty($rows)): ?>
                 <tr>
-                    <td colspan="6" class="text-center">Tidak ada data item</td>
+                    <td colspan="6" class="text-center">No item data</td>
                 </tr>
             <?php endif; ?>
         </tbody>
@@ -283,7 +283,7 @@ $terbilang = function_exists('rupiah_to_words')
                 <div class="box" style="min-height:26px;"><em><strong><?= htmlspecialchars((string) $terbilang) ?></strong></em></div>
 
                 <div class="box mt-8" style="white-space:pre-line; min-height:80px;">
-                    <strong>Keterangan :</strong>
+                    <strong>Description:</strong>
                     <?= $header->note ?>
                 </div>
             </td>
@@ -302,7 +302,7 @@ $terbilang = function_exists('rupiah_to_words')
                         <td class="text-right"><?= fmt2($header->total_ppn) ?></td>
                     </tr>
                     <tr>
-                        <td class="text-left">Biaya Lain-lain</td>
+                        <td class="text-left">Other Costs</td>
                         <td class="text-right"><?= $biayaLain ? fmt2($biayaLain) : '0' ?></td>
                     </tr>
                     <tr>

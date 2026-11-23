@@ -102,8 +102,8 @@ if ($status_app == 'Y') {
 		<label class="form-label">Expired <span class="text-danger">*</span></label>
 		<select id="price_ref_expired" name="price_ref_expired" class="form-control chosen-select" required>
 			<option value="0">Select An Expired</option>
-			<option value="1" <?= $expired1; ?>>1 Bulan</option>
-			<option value="3" <?= $expired3; ?>>3 Bulan</option>
+			<option value="1" <?= $expired1; ?>>1 Month</option>
+			<option value="3" <?= $expired3; ?>>3 Months</option>
 			<option value="6" <?= $expired6; ?>>Semester</option>
 			<option value="12" <?= $expired12; ?>>Tahunan</option>
 		</select>

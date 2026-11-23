@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-	<?php if (isset($results) && is_array($results) && count($results)) : ?>
+	<?php if (isset($results) && is_array($results) && count($results ?? [])) : ?>
 	<div class="box-body table-responsive no-padding">
             <table class="table table-hover table-striped">
                 <thead>
@@ -56,7 +56,7 @@
                             <?php endif; ?>
                         </td>
                         <?php if($ENABLE_MANAGE) : ?>
-                        <td style="padding-right:20px"><a class="text-black" href="<?= site_url('supplier/edit/' . $record->id_supplier); ?>" data-toggle="tooltip" data-placement="left" title="Edit Data"><i class="fa fa-pencil"></i></a></td>
+                        <td style="padding-right:20px"><a class="text-black" href="<?= site_url('supplier/edit/' . $record->id_supplier); ?>" data-toggle="tooltip" data-placement="left" title="Edit"><i class="fa fa-pencil"></i></a></td>
                         <?php endif; ?>
                     </tr>
                     <?php $numb++; endforeach; ?>

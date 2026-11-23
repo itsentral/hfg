@@ -12,7 +12,7 @@ $usd_to_rmb = round($kurs_usd->kurs/$kurs_rmb->kurs,2);
 		<table id="my-grid" class="table table-striped table-bordered table-hover table-condensed" width="100%">
 			<tbody>
 				<tr style='background-color: #175477; color: white; font-size: 15px;'>
-					<th class="text-center" >Pilih Spesifikasi</th>
+					<th class="text-center" >Select Specification</th>
 				</tr>
 			</tbody>
 		</table>
@@ -104,7 +104,7 @@ $usd_to_rmb = round($kurs_usd->kurs/$kurs_rmb->kurs,2);
   }
 	$(document).ready(function() {
     $(".select2").select2({
-      placeholder: "Pilih",
+      placeholder: "Select",
       allowClear: true
     });
 

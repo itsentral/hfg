@@ -22,7 +22,7 @@
         <form method="GET" action="<?= base_url('fg_stock/history') ?>" class="row g-3 align-items-end">
             <!-- Filter Kategori Stok (Utama) -->
             <div class="col-md-3">
-                <label class="form-label fw-bold">Kategori Stok <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold">Stock Category <span class="text-danger">*</span></label>
                 <select name="kategori" id="select_kategori" class="form-select">
                     <option value="ALL" <?= ($kategori === 'ALL' || empty($kategori)) ? 'selected' : '' ?>>-- Semua Kategori --</option>
                     <option value="KW1" <?= ($kategori === 'KW1') ? 'selected' : '' ?>>1. Finish Good KW 1</option>
@@ -34,7 +34,7 @@
 
             <!-- Filter Produk (Opsional) -->
             <div class="col-md-3">
-                <label class="form-label fw-bold">Pilih Produk <small class="text-muted fw-normal">(Opsional)</small></label>
+                <label class="form-label fw-bold">Select Product <small class="text-muted fw-normal">(Opsional)</small></label>
                 <select name="produk_fg" id="select_produk_fg" class="form-control select2">
                     <option value="">-- Semua Produk --</option>
                     <?php if (!empty($produk_dropdown)): ?>
@@ -51,22 +51,22 @@
 
             <!-- Tanggal Dari -->
             <div class="col-md-2">
-                <label class="form-label fw-bold">Tanggal Dari</label>
+                <label class="form-label fw-bold">Date From</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="fa fa-calendar text-muted"></i></span>
                     <input type="text" name="tgl_dari" id="tgl_dari" class="form-control flatpickr-date bg-white"
-                        placeholder="Pilih Tanggal" autocomplete="off"
+                        placeholder="Select Date" autocomplete="off"
                         value="<?= htmlspecialchars($tgl_dari ? $tgl_dari : '') ?>">
                 </div>
             </div>
 
             <!-- Tanggal Sampai -->
             <div class="col-md-2">
-                <label class="form-label fw-bold">Tanggal Sampai</label>
+                <label class="form-label fw-bold">Date To</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="fa fa-calendar text-muted"></i></span>
                     <input type="text" name="tgl_sampai" id="tgl_sampai" class="form-control flatpickr-date bg-white"
-                        placeholder="Pilih Tanggal" autocomplete="off"
+                        placeholder="Select Date" autocomplete="off"
                         value="<?= htmlspecialchars($tgl_sampai ? $tgl_sampai : '') ?>">
                 </div>
             </div>
@@ -93,13 +93,13 @@
                     <i class="fa fa-layer-group me-1"></i>
                     <?php
                         $cat_names = [
-                            'ALL'       => 'Semua Kategori (KW 1, KW 2, Tong Coil, Scrap)',
+                            'ALL'       => 'All Categories (KW 1, KW 2, Tong Coil, Scrap)',
                             'KW1'       => '1. Finish Good KW 1',
                             'KW2'       => '2. Finish Good KW 2',
                             'TONG_COIL' => '3. Tong Coil',
                             'SCRAP'     => '4. Scrap / Waste'
                         ];
-                        echo isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'Semua Kategori';
+                        echo isset($cat_names[$kategori]) ? $cat_names[$kategori] : 'All Categories';
                     ?>
                     <?php if (!empty($produk_fg)): ?>
                         <span class="badge bg-secondary fs-6 ms-2">Produk: <?= htmlspecialchars((string) $produk_fg) ?></span>
@@ -127,7 +127,7 @@
     <div class="col-md-3">
         <div class="card text-center border-success shadow-sm h-100">
             <div class="card-body py-2">
-                <div class="text-muted small text-uppercase fw-bold">Total Qty Tersedia</div>
+                <div class="text-muted small text-uppercase fw-bold">Total Available Qty</div>
                 <div class="fs-4 fw-bold text-success"><?= number_format((float) (isset($summary_kategori->total_qty) ? $summary_kategori->total_qty : 0), 2) ?> <small class="fs-6 text-muted">pcs/roll</small></div>
             </div>
         </div>
@@ -135,7 +135,7 @@
     <div class="col-md-3">
         <div class="card text-center border-info shadow-sm h-100">
             <div class="card-body py-2">
-                <div class="text-muted small text-uppercase fw-bold">Total Berat Stok</div>
+                <div class="text-muted small text-uppercase fw-bold">Total Stock Weight</div>
                 <div class="fs-4 fw-bold text-info"><?= number_format((float) (isset($summary_kategori->total_berat) ? $summary_kategori->total_berat : 0), 3) ?> <small class="fs-6 text-muted">kg</small></div>
             </div>
         </div>
@@ -143,7 +143,7 @@
     <div class="col-md-3">
         <div class="card text-center border-warning shadow-sm h-100">
             <div class="card-body py-2">
-                <div class="text-muted small text-uppercase fw-bold">Total Nilai Persediaan</div>
+                <div class="text-muted small text-uppercase fw-bold">Total Inventory Value</div>
                 <div class="fs-5 fw-bold text-dark">Rp <?= number_format((float) (isset($summary_kategori->total_nilai) ? $summary_kategori->total_nilai : 0), 2) ?></div>
             </div>
         </div>
@@ -161,13 +161,13 @@
                 </span>
             <?php endif; ?>
         </h6>
-        <span class="badge bg-primary fs-6"><?= count($ledger) ?> Catatan Transaksi</span>
+        <span class="badge bg-primary fs-6"><?= count($ledger ?? []) ?> Catatan Transaksi</span>
     </div>
     <div class="card-body p-0">
         <?php if (empty($ledger)): ?>
             <div class="p-4 text-center text-muted">
                 <i class="fa fa-folder-open fa-2x mb-2 d-block text-secondary"></i>
-                Belum ada riwayat mutasi untuk kategori/produk ini pada periode yang dipilih.
+                There is no mutation history for this category/product in the selected period.
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -175,22 +175,22 @@
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" width="40">No</th>
-                            <th class="text-center" width="90">Tanggal</th>
-                            <th>Kode & Nama Produk</th>
+                            <th class="text-center" width="90">Date</th>
+                            <th>Product Code & Name</th>
                             <th>No Referensi</th>
                             <th>No SPK</th>
-                            <th class="text-center">Kategori</th>
-                            <th class="text-center" width="60">Jenis</th>
+                            <th class="text-center">Category</th>
+                            <th class="text-center" width="60">Type</th>
                             <th class="text-end">Qty IN</th>
                             <th class="text-end">Qty OUT</th>
-                            <th class="text-end">Saldo Qty</th>
-                            <th class="text-end">Berat IN (kg)</th>
-                            <th class="text-end">Berat OUT (kg)</th>
-                            <th class="text-end">Saldo Berat (kg)</th>
+                            <th class="text-end">Qty Balance</th>
+                            <th class="text-end">IN Weight (kg)</th>
+                            <th class="text-end">OUT Weight (kg)</th>
+                            <th class="text-end">Weight Balance (kg)</th>
                             <th class="text-end">Costbook (Rp)</th>
-                            <th class="text-end">Total Nilai (Rp)</th>
-                            <th class="text-end">Saldo Nilai (Rp)</th>
-                            <th>Keterangan</th>
+                            <th class="text-end">Total Value (Rp)</th>
+                            <th class="text-end">Value Balance (Rp)</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>

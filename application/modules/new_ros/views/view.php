@@ -184,7 +184,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                 <?= number_format($h['biaya_ls'] * (11 / 12), 0) ?>
             </div>
             <div class="col-md-3">
-                <strong>Total Biaya LS <small class="text-muted">(LS Cost + PPN - PPH):</small></strong><br>
+                <strong>Total LS Cost <small class="text-muted">(LS Cost + PPN - PPH):</small></strong><br>
                 <?= number_format($h['biaya_ls'] + $h['ppn_ls'] - $h['pph_ls'], 0) ?>
             </div>
         </div>
@@ -328,7 +328,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
         foreach ($materials as $mat) {
             if (!empty($mat['coils'])) {
                 $has_coil = true;
-                $total_coil_count += count($mat['coils']);
+                $total_coil_count += count($mat['coils'] ?? []);
                 foreach ($mat['coils'] as $coil) {  // tambah loop ini
                     $total_nw += (float) $coil['berat_bersih'];
                     $total_gw += (float) $coil['berat_kotor'];
@@ -360,7 +360,7 @@ $total_fc = $h['cost_bm'] + $h['cost_bm_kite'] + $h['cost_bmt'] + $h['cost_cukai
                         foreach ($materials as $mat) :
                             if (empty($mat['coils'])) continue;
 
-                            $rowspan  = count($mat['coils']);
+                            $rowspan  = count($mat['coils'] ?? []);
                             $nm_asli  = $mat['nm_barang'] ?: $mat['nm_erp'];
                             $nm_alias = $mat['nm_alias']  ?: $mat['nm_barang'];
                         ?>

@@ -18,7 +18,7 @@
                 </button>
             <?php endif; ?>
             <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
     </div>
@@ -31,7 +31,7 @@
                         <td>: <?= htmlspecialchars((string) $plan->plan_no) ?></td>
                     </tr>
                     <tr>
-                        <td class="fw-semibold">Tanggal Plan</td>
+                        <td class="fw-semibold">Plan Date</td>
                         <td>: <?= date('d/m/Y', strtotime((string) $plan->tgl_plan)) ?></td>
                     </tr>
                     <tr>
@@ -51,7 +51,7 @@
                         <td>: <?= number_format((float) $plan->target_qty, 2) ?></td>
                     </tr>
                     <tr>
-                        <td class="fw-semibold">Target Berat</td>
+                        <td class="fw-semibold">Target Weight</td>
                         <td>: <?= $plan->target_berat ? number_format((float) $plan->target_berat, 3) . ' kg' : '-' ?></td>
                     </tr>
                     <tr>
@@ -73,7 +73,7 @@
         </div>
         <?php if ($plan->catatan): ?>
             <div class="mt-2">
-                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars((string) $plan->catatan)) ?>
+                <strong>Notes:</strong> <?= nl2br(htmlspecialchars((string) $plan->catatan)) ?>
             </div>
         <?php endif; ?>
     </div>
@@ -82,7 +82,7 @@
 <!-- Detail Coil -->
 <div class="card mb-3">
     <div class="card-header">
-        <h6 class="mb-0">Detail Coil yang Dialokasikan</h6>
+        <h6 class="mb-0">Allocated Coil Detail</h6>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -118,7 +118,7 @@
                         </tr>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Belum ada coil yang dialokasikan</td>
+                            <td colspan="6" class="text-center text-muted py-3">No coils allocated yet</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -161,7 +161,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-3">Tidak ada data alokasi</td>
+                            <td colspan="4" class="text-center text-muted py-3">No allocation data</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -178,12 +178,12 @@ $(document).on('click', '.btn-release', function () {
     var plan_no = $(this).data('plan');
     Swal.fire({
         title: 'Release Plan?',
-        text: 'Plan akan diubah ke status Released.',
+        text: 'The plan will be changed to status Released.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
-        confirmButtonText: 'Ya, Release',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Release',
+        cancelButtonText: 'Cancel'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.ajax({
@@ -192,14 +192,14 @@ $(document).on('click', '.btn-release', function () {
             dataType: 'json',
             success: function(res) {
                 if (res.success) {
-                    Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil di-release.', icon: 'success', timer: 1500, showConfirmButton: false })
+                    Swal.fire({ title: 'Success!', text: 'Plan released successfully.', icon: 'success', timer: 1500, showConfirmButton: false })
                         .then(function(){ location.reload(); });
                 } else {
-                    Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                    Swal.fire({ title: 'Failed!', text: res.message || 'An error occurred.', icon: 'error', confirmButtonText: 'OK' });
                 }
             },
             error: function(xhr) {
-                Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Error!', text: 'Request failed: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
             }
         });
     });
@@ -209,12 +209,12 @@ $(document).on('click', '.btn-cancel', function () {
     var plan_no = $(this).data('plan');
     Swal.fire({
         title: 'Batalkan Plan?',
-        text: 'Plan akan dibatalkan.',
+        text: 'The plan will be cancelled.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Ya, Batalkan',
-        cancelButtonText: 'Tidak'
+        confirmButtonText: 'Yes, Cancel',
+        cancelButtonText: 'No'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.ajax({
@@ -223,14 +223,14 @@ $(document).on('click', '.btn-cancel', function () {
             dataType: 'json',
             success: function(res) {
                 if (res.success) {
-                    Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil dibatalkan.', icon: 'success', timer: 1500, showConfirmButton: false })
+                    Swal.fire({ title: 'Success!', text: 'Plan cancelled successfully.', icon: 'success', timer: 1500, showConfirmButton: false })
                         .then(function(){ window.location.href = siteurl + 'production_planning'; });
                 } else {
-                    Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                    Swal.fire({ title: 'Failed!', text: res.message || 'An error occurred.', icon: 'error', confirmButtonText: 'OK' });
                 }
             },
             error: function(xhr) {
-                Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Error!', text: 'Request failed: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
             }
         });
     });

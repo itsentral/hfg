@@ -15,7 +15,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fa fa-cogs me-2"></i> Manage Request Pack</h5>
-        <a href="<?= site_url('request_list') ?>" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-left"></i> Kembali</a>
+        <a href="<?= site_url('request_list') ?>" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-left"></i> Back</a>
     </div>
     <div class="card-body">
 
@@ -23,7 +23,7 @@
         <div class="info-header">
             <div class="d-flex flex-wrap align-items-center gap-4">
                 <div><span class="info-label">SPK No</span><span class="info-value"><?= htmlspecialchars((string) $spk_no) ?></span></div>
-                <div class="border-start ps-4"><span class="info-label">Tanggal SPK</span><span class="info-value"><?= isset($header['tgl_spk']) ? date('d/m/Y', strtotime((string) $header['tgl_spk'])) : '-' ?></span></div>
+                <div class="border-start ps-4"><span class="info-label">SPK Date</span><span class="info-value"><?= isset($header['tgl_spk']) ? date('d/m/Y', strtotime((string) $header['tgl_spk'])) : '-' ?></span></div>
                 <div class="border-start ps-4"><span class="info-label">Shift</span><span class="info-value"><?= htmlspecialchars($header['shift_names'] ?? '-') ?></span></div>
                 <div class="border-start ps-4"><span class="info-label">Target Qty</span><span class="info-value"><?= isset($header['target_qty']) ? number_format((float) $header['target_qty']) : '-' ?></span></div>
                 <div class="border-start ps-4"><span class="info-label">Total Weight</span><span class="info-value"><?= isset($header['total_weight']) ? number_format((float) $header['total_weight'], 2) . ' Kg' : '-' ?></span></div>
@@ -33,8 +33,8 @@
         <!-- Saved SPK Coils -->
         <div class="card mb-4 border-info">
             <div class="card-header bg-info text-dark d-flex justify-content-between align-items-center" style="cursor:pointer;" id="toggle-saved">
-                <h6 class="mb-0 fw-bold"><i class="fa fa-list-alt me-2"></i> Daftar SPK Pack Yang Sudah Dibuat</h6>
-                <span class="badge bg-light text-dark fw-bold" id="saved-count"><?= isset($saved_spk_coils) ? count($saved_spk_coils) : 0 ?> SPK Pack</span>
+                <h6 class="mb-0 fw-bold"><i class="fa fa-list-alt me-2"></i> List of Created SPK Packs</h6>
+                <span class="badge bg-light text-dark fw-bold" id="saved-count"><?= isset($saved_spk_coils) ? count($saved_spk_coils ?? []) : 0 ?> SPK Pack</span>
             </div>
             <div class="card-body p-3" id="container-saved"></div>
         </div>
@@ -43,7 +43,7 @@
         <div class="mb-4">
             <div class="input-group">
                 <span class="input-group-text bg-light"><i class="fa fa-search text-muted"></i></span>
-                <input type="text" id="search-pack" class="form-control" placeholder="Cari pack code / material...">
+                <input type="text" id="search-pack" class="form-control" placeholder="Search pack code / material...">
             </div>
         </div>
 
@@ -79,7 +79,7 @@
                                                             <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars((string) $material['id_material']) ?>" data-target="wip">
                                                         </th>
                                                         <th>Pack Code</th>
-                                                        <th>Kode Internal</th>
+                                                        <th>Internal Code</th>
                                                         <th class="text-center" width="8%">Roll</th>
                                                         <th class="text-end" width="12%">N.W. Total</th>
                                                         <th class="text-end" width="12%">G.W. Total</th>
@@ -103,7 +103,7 @@
                                                             <input type="checkbox" class="form-check-input check-all-pack" data-id-material="<?= htmlspecialchars((string) $material['id_material']) ?>" data-target="pro">
                                                         </th>
                                                         <th>Pack Code</th>
-                                                        <th>Kode Internal</th>
+                                                        <th>Internal Code</th>
                                                         <th class="text-center" width="8%">Roll</th>
                                                         <th class="text-end" width="12%">N.W. Total</th>
                                                         <th class="text-end" width="12%">G.W. Total</th>
@@ -119,19 +119,19 @@
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <div class="alert alert-warning">Tidak ada data BOM material untuk produk ini.</div>
+                                <div class="alert alert-warning">No BOM material data for this product.</div>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="text-center text-muted py-4"><i class="fa fa-info-circle fa-2x mb-2"></i><p>Tidak ada produk/material ditemukan untuk SPK ini.</p></div>
+                <div class="text-center text-muted py-4"><i class="fa fa-info-circle fa-2x mb-2"></i><p>No products/materials found for this SPK.</p></div>
             <?php endif; ?>
         </div>
 
         <!-- Submit -->
         <div class="mt-4 d-flex gap-2 justify-content-end">
-            <a href="<?= site_url('request_list') ?>" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-left"></i> Kembali</a>
+            <a href="<?= site_url('request_list') ?>" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-left"></i> Back</a>
             <?php if ($ENABLE_MANAGE): ?>
                 <button type="button" class="btn btn-sm btn-primary" id="btnSaveSpkCoil"><i class="fa fa-save"></i> Save & Create SPK Pack</button>
             <?php endif; ?>
@@ -165,7 +165,7 @@
             <div class="modal-body">
                 <div class="input-group mb-3">
                     <span class="input-group-text"><i class="fa fa-search"></i></span>
-                    <input type="text" id="search-add-pack" class="form-control" placeholder="Cari pack code...">
+                    <input type="text" id="search-add-pack" class="form-control" placeholder="Search pack code...">
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm">
@@ -173,7 +173,7 @@
                             <tr>
                                 <th width="5%" class="text-center"><input type="checkbox" class="form-check-input" id="checkAllAddPack"></th>
                                 <th>Pack Code</th>
-                                <th>Kode Internal</th>
+                                <th>Internal Code</th>
                                 <th class="text-center">Roll</th>
                                 <th class="text-end">N.W.</th>
                                 <th class="text-end">G.W.</th>
@@ -188,8 +188,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-success" id="btnConfirmAddPack"><i class="fa fa-plus"></i> Tambahkan Pack</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnConfirmAddPack"><i class="fa fa-plus"></i> Add Pack</button>
             </div>
         </div>
     </div>
@@ -288,16 +288,16 @@ $(document).ready(function() {
         });
 
         if (selectedPacks.length === 0) {
-            Swal.fire('Perhatian', 'Pilih minimal 1 pack.', 'warning');
+            Swal.fire('Attention', 'Select at least 1 pack.', 'warning');
             return;
         }
 
-        var confirmMsg = selectedPacks.length + ' pack dipilih. Lanjutkan?';
+        var confirmMsg = selectedPacks.length + ' packs selected. Continue?';
         var confirmHtml = '';
 
         if (fromOtherSpk.length > 0) {
             confirmHtml = '<p>' + selectedPacks.length + ' pack dipilih.</p>' +
-                '<p class="text-warning"><i class="fa fa-exclamation-triangle"></i> Pack berikut akan <b>dipindah</b> dari SPK Pack lain:</p>' +
+                '<p class="text-warning"><i class="fa fa-exclamation-triangle"></i> The following packs will be <b>moved</b> from another SPK Pack:</p>' +
                 '<ul style="text-align:left;font-size:12px;">' + fromOtherSpk.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul>';
         }
 
@@ -306,8 +306,8 @@ $(document).ready(function() {
             html: confirmHtml || ('<p>' + confirmMsg + '</p>'),
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Buat SPK Pack!',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Create SPK Pack!',
+            cancelButtonText: 'Cancel'
         }).then(function(result) {
             if (!result.isConfirmed) return;
 
@@ -317,15 +317,15 @@ $(document).ready(function() {
             $.post(BASE_URL + '/save_spk_coil', { spk_no: SPK_NO, packs: selectedPacks }, function(res) {
                 btn.prop('disabled', false).html('<i class="fa fa-save"></i> Save & Create SPK Pack');
                 if (res.status == 1) {
-                    Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1500, showConfirmButton: false });
+                    Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1500, showConfirmButton: false });
                     loadSavedSpkCoils();
                     materialIds.forEach(function(id) { loadPackData(id); });
                 } else {
-                    Swal.fire('Gagal', res.message, 'error');
+                    Swal.fire('Failed', res.message, 'error');
                 }
             }, 'json').fail(function() {
                 btn.prop('disabled', false).html('<i class="fa fa-save"></i> Save & Create SPK Pack');
-                Swal.fire('Error', 'Terjadi kesalahan pada server.', 'error');
+                Swal.fire('Error', 'A server error occurred.', 'error');
             });
         });
     });
@@ -338,17 +338,17 @@ $(document).ready(function() {
         var reqId = $(this).data('id');
         var spkcNo = $(this).data('no');
         Swal.fire({
-            title: 'Hapus ' + spkcNo + '?',
-            text: 'Pack di dalamnya akan dilepas kembali.',
-            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
+            title: 'Delete ' + spkcNo + '?',
+            text: 'The packs inside will be released again.',
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Yes, Delete!'
         }).then(function(result) {
             if (result.isConfirmed) {
                 $.post(BASE_URL + '/delete_spk_coil', { request_id: reqId }, function(res) {
                     if (res.status == 1) {
-                        Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1500, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1500, showConfirmButton: false });
                         loadSavedSpkCoils();
                         materialIds.forEach(function(id) { loadPackData(id); });
-                    } else { Swal.fire('Gagal', res.message, 'error'); }
+                    } else { Swal.fire('Failed', res.message, 'error'); }
                 }, 'json');
             }
         });
@@ -361,9 +361,9 @@ $(document).ready(function() {
         var packCode = $(this).data('pack-code');
 
         Swal.fire({
-            title: 'Hapus Pack ' + packCode + '?',
-            text: 'Pack ini akan dilepas dari SPK Pack.',
-            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
+            title: 'Delete Pack ' + packCode + '?',
+            text: 'This pack will be released from the SPK Pack.',
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Yes, Delete!'
         }).then(function(result) {
             if (!result.isConfirmed) return;
             $.post(BASE_URL + '/remove_pack_from_spkc', { request_id: reqId, pack_code: packCode }, function(res) {
@@ -372,11 +372,11 @@ $(document).ready(function() {
                     materialIds.forEach(function(id) { loadPackData(id); });
 
                     if (res.spk_deleted) {
-                        Swal.fire({ icon: 'info', title: 'SPK Pack Dihapus', text: res.message, timer: 2000, showConfirmButton: false });
+                        Swal.fire({ icon: 'info', title: 'SPK Pack Deleted', text: res.message, timer: 2000, showConfirmButton: false });
                     } else {
-                        Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1500, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1500, showConfirmButton: false });
                     }
-                } else { Swal.fire('Gagal', res.message, 'error'); }
+                } else { Swal.fire('Failed', res.message, 'error'); }
             }, 'json');
         });
     });
@@ -397,7 +397,7 @@ $(document).ready(function() {
         var loadCount = 0;
 
         if (materialIds.length === 0) {
-            $('#tbody-add-pack').html('<tr><td colspan="6" class="text-center text-muted">Tidak ada material.</td></tr>');
+            $('#tbody-add-pack').html('<tr><td colspan="6" class="text-center text-muted">No materials.</td></tr>');
             return;
         }
 
@@ -422,7 +422,7 @@ $(document).ready(function() {
 
     function renderAddPackModal(packs) {
         if (!packs || packs.length === 0) {
-            $('#tbody-add-pack').html('<tr><td colspan="8" class="text-center text-muted py-3">Tidak ada pack tersedia.</td></tr>');
+            $('#tbody-add-pack').html('<tr><td colspan="8" class="text-center text-muted py-3">No packs available.</td></tr>');
             return;
         }
         var html = '';
@@ -441,11 +441,11 @@ $(document).ready(function() {
                 badge = '<span class="badge bg-success">Scanned</span>';
                 actionHtml = '-';
             } else if (isInThisSpk) {
-                badge = '<span class="badge bg-secondary">Sudah di SPK ini</span>';
+                badge = '<span class="badge bg-secondary">Already in this SPK</span>';
                 // Bisa dihapus karena belum scanned
-                actionHtml = '<button type="button" class="btn btn-sm btn-outline-danger btn-remove-from-modal" data-pack-code="' + esc(p.pack_code) + '" title="Hapus dari SPK ini"><i class="fa fa-trash"></i></button>';
+                actionHtml = '<button type="button" class="btn btn-sm btn-outline-danger btn-remove-from-modal" data-pack-code="' + esc(p.pack_code) + '" title="Remove from this SPK"><i class="fa fa-trash"></i></button>';
             } else if (assignedSPKC) {
-                badge = '<span class="badge bg-warning text-dark">di ' + esc(assignedSPKC) + '</span>';
+                badge = '<span class="badge bg-warning text-dark">in ' + esc(assignedSPKC) + '</span>';
                 actionHtml = '-';
             } else {
                 badge = '<span class="badge bg-light text-dark border">Available</span>';
@@ -479,9 +479,9 @@ $(document).ready(function() {
         var $btn = $(this);
 
         Swal.fire({
-            title: 'Hapus Pack ' + packCode + '?',
-            text: 'Pack ini akan dilepas dari SPK Pack ini.',
-            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!'
+            title: 'Delete Pack ' + packCode + '?',
+            text: 'This pack will be released from this SPK Pack.',
+            icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Yes, Delete!'
         }).then(function(result) {
             if (!result.isConfirmed) return;
 
@@ -495,13 +495,13 @@ $(document).ready(function() {
                     if (res.spk_deleted) {
                         // SPK Pack dihapus karena kosong — tutup modal
                         $('#modalAddPackToSpkc').modal('hide');
-                        Swal.fire({ icon: 'info', title: 'SPK Pack Dihapus', text: res.message, timer: 2000, showConfirmButton: false });
+                        Swal.fire({ icon: 'info', title: 'SPK Pack Deleted', text: res.message, timer: 2000, showConfirmButton: false });
                     } else {
-                        Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1200, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1200, showConfirmButton: false });
                     }
                 } else {
                     $btn.prop('disabled', false).html('<i class="fa fa-trash"></i>');
-                    Swal.fire('Gagal', res.message, 'error');
+                    Swal.fire('Failed', res.message, 'error');
                 }
             }, 'json');
         });
@@ -533,7 +533,7 @@ $(document).ready(function() {
         });
 
         if (selected.length === 0) {
-            Swal.fire('Perhatian', 'Pilih minimal 1 pack.', 'warning');
+            Swal.fire('Attention', 'Select at least 1 pack.', 'warning');
             return;
         }
 
@@ -541,12 +541,12 @@ $(document).ready(function() {
         if (fromOtherSpk.length > 0) {
             Swal.fire({
                 title: 'Pindahkan Pack?',
-                html: '<p>Pack berikut akan <b>dipindah</b> dari SPK lain ke SPK ini:</p><ul style="text-align:left;font-size:13px;">' +
+                html: '<p>The following packs will be <b>moved</b> from another SPK to this SPK:</p><ul style="text-align:left;font-size:13px;">' +
                     fromOtherSpk.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul>',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Pindahkan!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Move!',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) doAddPacks(selected);
             });
@@ -560,16 +560,16 @@ $(document).ready(function() {
         $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i> Menyimpan...');
 
         $.post(BASE_URL + '/add_packs_to_spkc', { request_id: addPackTargetReqId, packs: selected }, function(res) {
-            $btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Tambahkan Pack');
+            $btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Add Pack');
             if (res.status == 1) {
                 $('#modalAddPackToSpkc').modal('hide');
-                Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'Success', text: res.message, timer: 1500, showConfirmButton: false });
                 loadSavedSpkCoils();
                 materialIds.forEach(function(id) { loadPackData(id); });
-            } else { Swal.fire('Gagal', res.message, 'error'); }
+            } else { Swal.fire('Failed', res.message, 'error'); }
         }, 'json').fail(function() {
-            $btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Tambahkan Pack');
-            Swal.fire('Error', 'Terjadi kesalahan server.', 'error');
+            $btn.prop('disabled', false).html('<i class="fa fa-plus"></i> Add Pack');
+            Swal.fire('Error', 'A server error occurred.', 'error');
         });
     }
 });
@@ -582,8 +582,8 @@ function loadPackData(idMaterial) {
 
     $.get(BASE_URL + '/get_available_packs/' + idMaterial + '?spk_no=' + SPK_NO, function(res) {
         if (res.status != 1 || !res.data || res.data.length === 0) {
-            tbodyWip.html('<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
-            tbodyPro.html('<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
+            tbodyWip.html('<tr><td colspan="8" class="text-center text-muted py-2">No WIP packs available.</td></tr>');
+            tbodyPro.html('<tr><td colspan="8" class="text-center text-muted py-2">No Production packs available.</td></tr>');
             return;
         }
 
@@ -601,7 +601,7 @@ function loadPackData(idMaterial) {
             if (isScanned) {
                 badge = '<span class="badge bg-success">Scanned</span>';
             } else if (assignedSPKC) {
-                badge = '<span class="badge bg-warning text-dark">di ' + esc(assignedSPKC) + '</span>';
+                badge = '<span class="badge bg-warning text-dark">in ' + esc(assignedSPKC) + '</span>';
             } else {
                 badge = '<span class="badge bg-light text-dark border">Available</span>';
             }
@@ -625,18 +625,18 @@ function loadPackData(idMaterial) {
             }
         });
 
-        tbodyWip.html(htmlWip || '<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack WIP tersedia.</td></tr>');
-        tbodyPro.html(htmlPro || '<tr><td colspan="8" class="text-center text-muted py-2">Tidak ada pack Produksi tersedia.</td></tr>');
+        tbodyWip.html(htmlWip || '<tr><td colspan="8" class="text-center text-muted py-2">No WIP packs available.</td></tr>');
+        tbodyPro.html(htmlPro || '<tr><td colspan="8" class="text-center text-muted py-2">No Production packs available.</td></tr>');
     }, 'json').fail(function() {
-        tbodyWip.html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
-        tbodyPro.html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
+        tbodyWip.html('<tr><td colspan="8" class="text-center text-danger">Failed to load data.</td></tr>');
+        tbodyPro.html('<tr><td colspan="8" class="text-center text-danger">Failed to load data.</td></tr>');
     });
 }
 
 function loadSavedSpkCoils() {
     $.get(BASE_URL + '/get_saved_spk_coils/' + SPK_NO, function(res) {
         if (res.status != 1 || !res.data || res.data.length === 0) {
-            $('#container-saved').html('<div class="text-center text-muted py-3">Belum ada SPK Pack.</div>');
+            $('#container-saved').html('<div class="text-center text-muted py-3">No SPK Pack yet.</div>');
             $('#saved-count').text('0 SPK Pack');
             return;
         }
@@ -672,10 +672,10 @@ function loadSavedSpkCoils() {
             packCodes.forEach(function(pc) {
                 var isPackScanned = packMap[pc].scanned;
                 var kiStr = (packMap[pc].kode_internals || []).join(', ');
-                var kiBadge = kiStr ? ' <span class="badge bg-light text-dark border ms-1" title="Kode Internal"><i class="fa fa-tag me-1"></i>' + esc(kiStr) + '</span>' : '';
+                var kiBadge = kiStr ? ' <span class="badge bg-light text-dark border ms-1" title="Internal Code"><i class="fa fa-tag me-1"></i>' + esc(kiStr) + '</span>' : '';
                 if (!allScanned && !isPackScanned) {
                     packListHtml += '<span class="d-inline-block me-2 mb-1"><span class="badge bg-primary">' + esc(pc) +
-                        ' <a href="#" class="text-white ms-1 btn-remove-pack-item" data-request-id="' + spkc.id + '" data-pack-code="' + esc(pc) + '" title="Hapus pack ini"><i class="fa fa-times"></i></a></span>' + kiBadge + '</span>';
+                        ' <a href="#" class="text-white ms-1 btn-remove-pack-item" data-request-id="' + spkc.id + '" data-pack-code="' + esc(pc) + '" title="Delete this pack"><i class="fa fa-times"></i></a></span>' + kiBadge + '</span>';
                 } else {
                     packListHtml += '<span class="d-inline-block me-2 mb-1"><span class="badge bg-success"><i class="fa fa-check me-1"></i>' + esc(pc) + '</span>' + kiBadge + '</span>';
                 }
@@ -685,8 +685,8 @@ function loadSavedSpkCoils() {
             // Manage buttons
             var manageHtml = '';
             if (!allScanned) {
-                manageHtml += '<button type="button" class="btn btn-sm btn-outline-success btn-add-pack-to-spkc" data-id="' + spkc.id + '" data-no="' + esc(spkc.spk_coil_no) + '" title="Tambah Pack"><i class="fa fa-plus"></i></button> ';
-                manageHtml += '<button type="button" class="btn btn-sm btn-outline-danger btn-delete-spkc" data-id="' + spkc.id + '" data-no="' + esc(spkc.spk_coil_no) + '" title="Hapus SPK Pack"><i class="fa fa-trash"></i></button>';
+                manageHtml += '<button type="button" class="btn btn-sm btn-outline-success btn-add-pack-to-spkc" data-id="' + spkc.id + '" data-no="' + esc(spkc.spk_coil_no) + '" title="Add Pack"><i class="fa fa-plus"></i></button> ';
+                manageHtml += '<button type="button" class="btn btn-sm btn-outline-danger btn-delete-spkc" data-id="' + spkc.id + '" data-no="' + esc(spkc.spk_coil_no) + '" title="Delete SPK Pack"><i class="fa fa-trash"></i></button>';
             }
 
             html += '<div class="card mb-2 border">' +

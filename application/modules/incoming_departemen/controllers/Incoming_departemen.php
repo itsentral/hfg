@@ -19,7 +19,7 @@ class Incoming_departemen extends Admin_Controller
 		parent::__construct();
 		$this->load->model('master_model');
 		$this->load->library(array('upload', 'Image_lib'));
-		$this->template->title('Incoming Departemen');
+		$this->template->title('Incoming Department');
 		$this->template->page_icon('fa fa-building-o');
 
 		// $this->dbhris = $this->load->database('hris', true);
@@ -71,7 +71,7 @@ class Incoming_departemen extends Admin_Controller
 		$get_incoming = $this->db->get()->result_array();
 
 		$data = array(
-			'title'			=> 'Pembelian Non-Material & Jasa >> Incoming Departemen',
+			'title'			=> 'Non-Material Purchase & Services >> Incoming Department',
 			'action'		=> 'index',
 			'list_po'		=> $list_po,
 			'data_gudang'	=> $data_gudang,
@@ -95,7 +95,7 @@ class Incoming_departemen extends Admin_Controller
 		$get_supplier = $this->db->get_where('new_supplier', ['deleted_by' => null])->result_array();
 
 		$data = array(
-			'title'			=> 'Pembelian Non-Material & Jasa >> Tambah Incoming Departemen',
+			'title'			=> 'Non-Material Purchase & Services >> Add Incoming Department',
 			'action'		=> 'add',
 			'list_supplier' => $get_supplier
 		);
@@ -305,7 +305,7 @@ class Incoming_departemen extends Admin_Controller
 		$totalprice = 0;
 
 		if ($adjustment == 'IN') {
-			$histHlp = "Adjustment incoming departemen / " . $no_po;
+			$histHlp = "Adjustment incoming department / " . $no_po;
 
 			//pengurutan kode
 			$srcMtr			= "SELECT MAX(kode_trans) as maxP FROM warehouse_adjustment WHERE kode_trans LIKE 'TRS" . $Ym . "%' ";
@@ -323,8 +323,8 @@ class Incoming_departemen extends Admin_Controller
 			$ArrJurnal		= array();
 			$SumMat = 0;
 			foreach ($addInMat as $val => $valx) {
-				$qtyOrder 	= str_replace(',', '', $valx['qty_rev']);
-				$qtyIN 		= str_replace(',', '', $valx['qty_in']);
+				$qtyOrder 	= str_replace(',', '', $valx['qty_rev'] ?? '');
+				$qtyIN 		= str_replace(',', '', $valx['qty_in'] ?? '');
 
 				$SumMat 	+= $qtyIN;
 
@@ -541,7 +541,7 @@ class Incoming_departemen extends Admin_Controller
 		$result_header		= $this->db->query($sql_header)->result();
 
 		if (empty($result_header)) {
-			echo '<div class="alert alert-warning text-center">Data incoming tidak ditemukan.</div>';
+			echo '<div class="alert alert-warning text-center">Incoming data not found.</div>';
 			return;
 		}
 
@@ -640,7 +640,7 @@ class Incoming_departemen extends Admin_Controller
 			$nestedData[]	= "<div align='center'>" . date('d-M-Y', strtotime((string) $TANGGAL)) . "</div>";
 			$nestedData[]	= "<div align='center'>" . $row['no_ipp'] . "</div>";
 			// $nestedData[]	= "<div align='left'>".$row['kd_gudang_dari']."</div>";
-			$nestedData[]	= "<div align='left'>" . strtoupper(get_name('department', 'nm_dept', 'id', $row['id_gudang_ke'])) . "</div>";
+			$nestedData[]	= "<div align='left'>" . strtoupper((string) get_name('department', 'nm_dept', 'id', $row['id_gudang_ke'])) . "</div>";
 			$nestedData[]	= "<div align='center'>" . strtoupper((string) $row['pic']) . "</div>";
 			$nestedData[]	= "<div align='left'>" . strtoupper((string) $row['note']) . "</div>";
 			$nestedData[]	= "<div align='center'>" . strtoupper((string) $NM_LENGKAP) . "</div>";
@@ -776,7 +776,7 @@ class Incoming_departemen extends Admin_Controller
 			$ArrJurnal		= array();
 			$SumMat = 0;
 			foreach ($addInMat as $val => $valx) {
-				$qtyIN 		= str_replace(',', '', $valx['qty_rev']);
+				$qtyIN 		= str_replace(',', '', $valx['qty_rev'] ?? '');
 
 				$SumMat 	+= $qtyIN;
 
@@ -929,7 +929,7 @@ class Incoming_departemen extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -948,7 +948,7 @@ class Incoming_departemen extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -1020,7 +1020,7 @@ class Incoming_departemen extends Admin_Controller
 				$no_pr[] = $item_no_pr['no_pr'];
 			}
 
-			$no_pr = implode(', ', $no_pr);
+			$no_pr = implode(', ', $no_pr ?? []);
 
 			if (empty($no_pr)) {
 				$get_no_pr_non_po = $this->db->select('id_pr')->get_where('tr_kasbon', ['no_doc' => $item_po['no_po']])->row_array();

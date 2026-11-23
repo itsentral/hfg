@@ -27,7 +27,7 @@
         //----------------------------------------------------------------------
         public static function binarize($frame)
         {
-            $len = count($frame);
+            $len = count($frame ?? []);
             foreach ($frame as &$frameLine) {
                 
                 for($i=0; $i<$len; $i++) {
@@ -48,12 +48,12 @@
                 
             $eccLevel = 'L';
                 
-            if (count($mode) > 1) {
+            if (count($mode ?? []) > 1) {
                 $eccLevel = $mode[1];
             }
                 
             $qrTab = QRcode::text($code, false, $eccLevel);
-            $size = count($qrTab);
+            $size = count($qrTab ?? []);
                 
             $barcode_array['num_rows'] = $size;
             $barcode_array['num_cols'] = $size;
@@ -61,7 +61,7 @@
                 
             foreach ($qrTab as $line) {
                 $arrAdd = array();
-                foreach(str_split($line) as $char)
+                foreach(str_split($line ?? '') as $char)
                     $arrAdd[] = ($char=='1')?1:0;
                 $barcode_array['bcode'][] = $arrAdd;
             }
@@ -88,7 +88,7 @@
                     QRimage::png(self::binarize($frame), $fileName, 1, 0);
                 }
 				
-				$width = count($frame);
+				$width = count($frame ?? []);
 				$bitMask = array_fill(0, $width, array_fill(0, $width, 0));
 				for ($maskNo=0; $maskNo<8; $maskNo++)
 					$mask->makeMaskNo($maskNo, $width, $frame, $bitMask, true);
@@ -114,7 +114,7 @@
         //----------------------------------------------------------------------
         public static function dumpMask($frame) 
         {
-            $width = count($frame);
+            $width = count($frame ?? []);
             for($y=0;$y<$width;$y++) {
                 for($x=0;$x<$width;$x++) {
                     echo ord($frame[$y][$x]).',';

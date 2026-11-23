@@ -389,7 +389,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 	<!-- Toolbar Aksi di Atas (Hanya tampil di browser) -->
 	<div class="no-print-toolbar">
 		<div>
-			<strong>Laporan Expense:</strong> <?= $data->no_doc ?>
+			<strong>Expense Report:</strong> <?= $data->no_doc ?>
 		</div>
 		<div style="display: flex; gap: 10px;">
 			<button type="button" class="btn btn-primary" onclick="window.print()">
@@ -400,7 +400,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				Cetak Dokumen
 			</button>
 			<button type="button" class="btn btn-secondary" onclick="window.close()">
-				Tutup
+				Close
 			</button>
 		</div>
 	</div>
@@ -437,34 +437,34 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 		<!-- Info Pengajuan -->
 		<table class="info-table">
 			<tr>
-				<td class="info-label">Tanggal Dokumen</td>
+				<td class="info-label">Document Date</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></td>
 
-				<td class="info-label">Bank Penerima</td>
+				<td class="info-label">Recipient Bank</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= !empty($data->bank_id) ? $data->bank_id : '-' ?></td>
 			</tr>
 			<tr>
-				<td class="info-label">Nama Pelapor</td>
+				<td class="info-label">Reporter Name</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= $pelapor_name ?></td>
 
-				<td class="info-label">No. Rekening</td>
+				<td class="info-label">Account Number</td>
 				<td class="info-separator">:</td>
 				<td class="info-value font-monospace"><strong><?= !empty($data->accnumber) ? $data->accnumber : '-' ?></strong></td>
 			</tr>
 			<tr>
-				<td class="info-label">Departemen</td>
+				<td class="info-label">Department</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= !empty($nm_dept) ? $nm_dept : '-' ?></td>
 
-				<td class="info-label">Atas Nama Rekening</td>
+				<td class="info-label">Account Holder Name</td>
 				<td class="info-separator">:</td>
 				<td class="info-value"><?= !empty($data->accname) ? $data->accname : '-' ?></td>
 			</tr>
 			<tr>
-				<td class="info-label">Keterangan</td>
+				<td class="info-label">Description</td>
 				<td class="info-separator">:</td>
 				<td class="info-value" colspan="4"><strong><?= nl2br(htmlspecialchars($data->informasi ?: '-')) ?></strong></td>
 			</tr>
@@ -475,12 +475,12 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 			<thead>
 				<tr>
 					<th style="width: 30px;">No</th>
-					<th style="width: 85px;">Tanggal</th>
+					<th style="width: 85px;">Date</th>
 					<th style="width: 140px;">Akun COA</th>
-					<th>Barang / Jasa</th>
+					<th>Goods / Services</th>
 					<th>Spesifikasi</th>
 					<th style="width: 50px;">Qty</th>
-					<th style="width: 105px;">Harga Satuan</th>
+					<th style="width: 105px;">Unit Price</th>
 					<th style="width: 110px;">Total (Rp)</th>
 				</tr>
 			</thead>
@@ -512,7 +512,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				else :
 					?>
 					<tr>
-						<td colspan="8" class="text-center">Tidak ada rincian data expense.</td>
+						<td colspan="8" class="text-center">No expense detail data.</td>
 					</tr>
 				<?php endif; ?>
 			</tbody>
@@ -523,11 +523,11 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 				</tr>
 				<?php if ($total_kasbon > 0) : ?>
 					<tr>
-						<th colspan="7" class="text-right">TOTAL KASBON DITERIMA</th>
+						<th colspan="7" class="text-right">TOTAL CASH ADVANCE RECEIVED</th>
 						<th class="text-right">Rp <?= number_format((float) $total_kasbon, 0, ',', '.') ?></th>
 					</tr>
 					<tr>
-						<th colspan="7" class="text-right">SELISIH (<?= ($selisih >= 0) ? 'KURANG BAYAR' : 'LEBIH BAYAR' ?>)</th>
+						<th colspan="7" class="text-right">SELISIH (<?= ($selisih >= 0) ? 'UNDERPAID' : 'OVERPAID' ?>)</th>
 						<th class="text-right">Rp <?= number_format(abs($selisih), 0, ',', '.') ?></th>
 					</tr>
 				<?php endif; ?>
@@ -552,10 +552,10 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 		<!-- Kolom Tanda Tangan -->
 		<table class="signature-table">
 			<tr>
-				<td class="signature-header">Diajukan Oleh (Pelapor),</td>
+				<td class="signature-header">Submitted By (Reporter),</td>
 				<td class="signature-header">Mengetahui (Atasan),</td>
 				<td class="signature-header">Diperiksa (Finance),</td>
-				<td class="signature-header">Disetujui (Management),</td>
+				<td class="signature-header">Approved (Management),</td>
 			</tr>
 			<tr>
 				<td class="signature-space"></td>
@@ -612,7 +612,7 @@ $approved_by_name = isset($data->approved_by) && !empty($data->approved_by) ? $d
 			<div class="pagebreak"></div>
 			<div class="print-container attachment-img-page">
 				<div style="text-align: left; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">
-					<strong>Bukti Pengeluaran / Bon Dokumen</strong> &bull; No Dokumen: <?= $data->no_doc ?>
+					<strong>Expense Proof / Receipt Document</strong> &bull; No Dokumen: <?= $data->no_doc ?>
 				</div>
 				<img src="<?= $img_url ?>" alt="Bukti Bon Expense">
 			</div>

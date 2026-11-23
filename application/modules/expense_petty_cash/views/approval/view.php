@@ -1,7 +1,7 @@
 <?php
 $header = isset($pelaporan->header) ? $pelaporan->header : $pelaporan;
 $pencatatan_list = isset($pelaporan->pencatatan_list) ? $pelaporan->pencatatan_list : [];
-$jumlah_item = count($pencatatan_list);
+$jumlah_item = count($pencatatan_list ?? []);
 
 $periode_start_fmt = date('d/m/Y', strtotime((string) $header->periode_start));
 $periode_end_fmt   = date('d/m/Y', strtotime((string) $header->periode_end));
@@ -22,17 +22,17 @@ if (!empty($coa_list)) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle text-primary me-2"></i>Review Approval Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
+            <small class="text-muted">Document Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pelaporan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash/approval') ?>" class="btn btn-outline-secondary btn-sm px-3">
                 <i class="fa fa-arrow-left me-1"></i> Kembali ke Antrian
             </a>
             <button type="button" class="btn btn-danger btn-sm px-3 shadow-sm" id="btn-reject-top">
-                <i class="fa fa-ban me-1"></i> Tolak (Reject)
+                <i class="fa fa-ban me-1"></i> Reject
             </button>
             <button type="button" class="btn btn-success btn-sm px-3 shadow-sm" id="btn-approve-top">
-                <i class="fa fa-check me-1"></i> Setujui (Approve)
+                <i class="fa fa-check me-1"></i> Approve
             </button>
         </div>
     </div>
@@ -48,7 +48,7 @@ if (!empty($coa_list)) {
             </div>
             <div class="col-md-3">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Periode Transaksi</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Transaction Period</span>
                     <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= $periode_start_fmt ?> - <?= $periode_end_fmt ?></h6>
                 </div>
             </div>
@@ -101,7 +101,7 @@ if (!empty($coa_list)) {
                                     <span class="text-muted small"><i class="fa fa-user me-1"></i><?= htmlspecialchars((string) $pItem->request_by) ?></span>
                                 </div>
                                 <div>
-                                    <span class="badge bg-white text-dark border me-2"><?= count($items) ?> item</span>
+                                    <span class="badge bg-white text-dark border me-2"><?= count($items ?? []) ?> item</span>
                                     <span class="fw-bold text-success">Rp <?= number_format((float) $pItem->grand_total, 0, ',', '.') ?></span>
                                 </div>
                             </div>
@@ -110,7 +110,7 @@ if (!empty($coa_list)) {
                     <div id="collapse_app_<?= $pItem->id ?>" class="accordion-collapse collapse <?= ($pIdx === 0) ? 'show' : '' ?>" data-bs-parent="#accordionApproval">
                         <div class="accordion-body p-3 bg-white">
                             <?php if (!empty($pItem->keterangan)) : ?>
-                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
+                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Description:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
                             <?php endif; ?>
 
                             <div class="table-responsive">
@@ -119,7 +119,7 @@ if (!empty($coa_list)) {
                                         <tr>
                                             <th width="35" class="text-center">#</th>
                                             <th width="220">COA</th>
-                                            <th>Pengeluaran</th>
+                                            <th>Outgoing</th>
                                             <th>Spesifikasi</th>
                                             <th width="60" class="text-center">Qty</th>
                                             <th width="110" class="text-end">Nominal</th>
@@ -154,7 +154,7 @@ if (!empty($coa_list)) {
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else : ?>
-                                            <tr><td colspan="8" class="text-center text-muted py-2">Tidak ada detail</td></tr>
+                                            <tr><td colspan="8" class="text-center text-muted py-2">No details</td></tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
@@ -192,7 +192,7 @@ if (!empty($coa_list)) {
                         <thead class="table-light">
                             <tr>
                                 <th width="120">COA</th>
-                                <th>Nama Account</th>
+                                <th>Account Name</th>
                                 <th width="80" class="text-center">Company</th>
                                 <th width="140" class="text-end">Total Debit</th>
                                 <th width="140" class="text-end">Total Kredit</th>
@@ -235,11 +235,11 @@ if (!empty($coa_list)) {
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                 <div>
                     <h6 class="fw-bold mb-1 text-dark">Keputusan Approval</h6>
-                    <small class="text-muted">Setujui pelaporan untuk memproses reimbursement kas kecil, atau tolak dengan menyertakan alasan.</small>
+                    <small class="text-muted">Approve the report to process the petty cash reimbursement, or reject it with a reason.</small>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-outline-danger px-4" id="btn-reject">
-                        <i class="fa fa-ban me-1"></i> Tolak Pelaporan
+                        <i class="fa fa-ban me-1"></i> Reject Report
                     </button>
                     <button type="button" class="btn btn-success px-4 shadow-sm" id="btn-approve">
                         <i class="fa fa-check me-1"></i> Setujui Pelaporan
@@ -261,19 +261,19 @@ if (!empty($coa_list)) {
         // Approve
         $('#btn-approve, #btn-approve-top').on('click', function() {
             Swal.fire({
-                title: 'Setujui Pelaporan Petty Cash?',
-                text: 'Pelaporan akan disetujui dan pengajuan Request Payment untuk reimbursement akan otomatis dibuat.',
+                title: 'Approve Petty Cash Report?',
+                text: 'The report will be approved and a Request Payment for reimbursement will be created automatically.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#198754',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Setujui',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Approve',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Memproses...',
-                        text: 'Sedang menyetujui pelaporan',
+                        text: 'Approving report',
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -285,18 +285,18 @@ if (!empty($coa_list)) {
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: resp.message || 'Pelaporan berhasil disetujui.',
+                                    title: 'Success!',
+                                    text: resp.message || 'Report approved successfully.',
                                     icon: 'success'
                                 }).then(function() {
                                     window.location.href = BASE_URL + 'approval';
                                 });
                             } else {
-                                Swal.fire('Gagal!', resp.message || 'Gagal melakukan approval.', 'error');
+                                Swal.fire('Failed!', resp.message || 'Failed to approve.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem saat memproses approval.', 'error');
+                            Swal.fire('Error!', 'A system error occurred saat memproses approval.', 'error');
                         }
                     });
                 }
@@ -306,10 +306,10 @@ if (!empty($coa_list)) {
         // Reject
         $('#btn-reject, #btn-reject-top').on('click', function() {
             Swal.fire({
-                title: 'Tolak Pelaporan Petty Cash',
+                title: 'Reject Petty Cash Report',
                 text: 'Tuliskan alasan penolakan secara jelas (minimal 10 karakter):',
                 input: 'textarea',
-                inputPlaceholder: 'Tuliskan alasan penolakan di sini...',
+                inputPlaceholder: 'Write the rejection reason here...',
                 inputAttributes: {
                     'aria-label': 'Alasan penolakan',
                     'rows': 4
@@ -317,11 +317,11 @@ if (!empty($coa_list)) {
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-ban me-1"></i> Tolak Pelaporan',
-                cancelButtonText: 'Batal',
+                confirmButtonText: '<i class="fa fa-ban me-1"></i> Reject Report',
+                cancelButtonText: 'Cancel',
                 preConfirm: function(alasan) {
                     if (!alasan || alasan.trim().length < 10) {
-                        Swal.showValidationMessage('Alasan penolakan wajib diisi minimal 10 karakter.');
+                        Swal.showValidationMessage('The rejection reason must be at least 10 characters.');
                         return false;
                     }
                     return alasan.trim();
@@ -330,7 +330,7 @@ if (!empty($coa_list)) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Memproses...',
-                        text: 'Sedang menolak pelaporan',
+                        text: 'Rejecting report',
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -343,18 +343,18 @@ if (!empty($coa_list)) {
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: resp.message || 'Pelaporan berhasil ditolak.',
+                                    title: 'Success!',
+                                    text: resp.message || 'Report rejected successfully.',
                                     icon: 'success'
                                 }).then(function() {
                                     window.location.href = BASE_URL + 'approval';
                                 });
                             } else {
-                                Swal.fire('Gagal!', resp.message || 'Gagal menolak pelaporan.', 'error');
+                                Swal.fire('Failed!', resp.message || 'Failed to reject the report.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem saat memproses reject.', 'error');
+                            Swal.fire('Error!', 'A system error occurred while processing the reject.', 'error');
                         }
                     });
                 }

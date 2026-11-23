@@ -218,8 +218,8 @@
   <div class="cl-page-header">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h1>Daftar Claim Material</h1>
-        <p>Kelola claim material ke supplier (Hold Coil, KW 2, Reject) dari Laporan Produksi, kirim email keluhan, dan tetapkan Process Decision (Kompensasi / Retur).</p>
+        <h1>Material Claim List</h1>
+        <p>Manage material claims to suppliers (Hold Coil, KW 2, Reject) from Production Reports, send complaint emails, and set the Process Decision (Compensation / Return).</p>
       </div>
       <div>
         <a href="<?= site_url('claim_material/report_biaya') ?>" class="btn btn-outline-primary btn-sm me-1">
@@ -236,15 +236,15 @@
   <div class="cl-summary-cards">
     <div class="cl-stat-card">
       <div class="val" id="statBelumEmail"><?= (int)($stats['belum_email'] ?? 0) ?></div>
-      <div class="lbl">Belum diemail ke Supplier</div>
+      <div class="lbl">Not yet emailed to Supplier</div>
     </div>
     <div class="cl-stat-card">
       <div class="val text-primary" id="statMenunggu"><?= (int)($stats['menunggu_decision'] ?? 0) ?></div>
-      <div class="lbl">Menunggu Process Decision</div>
+      <div class="lbl">Awaiting Process Decision</div>
     </div>
     <div class="cl-stat-card">
       <div class="val text-success" id="statPutus"><?= (int)($stats['sudah_diputuskan'] ?? 0) ?></div>
-      <div class="lbl">Sudah Diputuskan (Claim)</div>
+      <div class="lbl">Already Decided (Claim)</div>
     </div>
   </div>
 
@@ -274,7 +274,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-grow-1">
-          <input type="text" class="form-control form-control-sm" id="searchKeyword" placeholder="Cari No. Claim / No. Coil / PO / Problem...">
+          <input type="text" class="form-control form-control-sm" id="searchKeyword" placeholder="Search Claim No. / Coil No. / PO / Problem...">
         </div>
 
         <div>
@@ -285,7 +285,7 @@
       </div>
 
       <div class="hint-box">
-        <i class="fa fa-info-circle me-1"></i> Centang beberapa claim dari <b>satu supplier yang sama</b> (misal: baris KW 2 dan Hold Coil dari satu SPK), lalu klik tombol <b>Process Decision (Terpilih)</b> untuk menetapkan keputusan bersamaan dengan satu kesepakatan.
+        <i class="fa fa-info-circle me-1"></i> Tick several claims from <b>the same supplier</b> (e.g. KW 2 and Hold Coil rows from one SPK), then click the <b>Process Decision (Selected)</b> button to set a combined decision with one agreement.
       </div>
 
       <!-- TABLE -->
@@ -294,14 +294,14 @@
           <thead>
             <tr>
               <th width="35" class="text-center">
-                <input type="checkbox" id="checkAllClaims" title="Centang semua yang belum diputuskan">
+                <input type="checkbox" id="checkAllClaims" title="Tick all undecided items">
               </th>
               <th width="40">No</th>
-              <th>Nama Supplier</th>
-              <th>Nama Material</th>
+              <th>Supplier Name</th>
+              <th>Material Name</th>
               <th>No. Coil Packing List</th>
               <th>No. PO</th>
-              <th class="text-end">Berat (Kg)</th>
+              <th class="text-end">Weight (Kg)</th>
               <th>Problem</th>
               <th>Asal</th>
               <th>Status Claim</th>
@@ -311,7 +311,7 @@
           </thead>
           <tbody id="claimTableBody">
             <tr>
-              <td colspan="12" class="text-center py-4 text-muted">Memuat data claim...</td>
+              <td colspan="12" class="text-center py-4 text-muted">Loading claim data...</td>
             </tr>
           </tbody>
         </table>
@@ -327,21 +327,21 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white py-2">
-        <h5 class="modal-title fs-6" id="emailModalTitle">Kirim Email Keluhan ke Supplier</h5>
+        <h5 class="modal-title fs-6" id="emailModalTitle">Send Complaint Email to Supplier</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="emailClaimId">
         <dl class="cl-modal-kv mb-3">
           <dt>No. Claim</dt><dd id="emNoClaim">-</dd>
-          <dt>Nama Supplier</dt><dd id="emSupplier">-</dd>
+          <dt>Supplier Name</dt><dd id="emSupplier">-</dd>
           <dt>Material & Coil</dt><dd id="emMaterial">-</dd>
-          <dt>No. PO / Berat</dt><dd id="emPoKg">-</dd>
+          <dt>PO No. / Weight</dt><dd id="emPoKg">-</dd>
           <dt>Problem</dt><dd id="emProblem">-</dd>
         </dl>
 
         <div class="mb-3">
-          <label class="form-label fw-bold">Email Tujuan Supplier <span class="text-danger">*</span></label>
+          <label class="form-label fw-bold">Supplier Destination Email <span class="text-danger">*</span></label>
           <input type="email" class="form-control form-control-sm" id="emailTo" required placeholder="misal: claim@supplier.com">
         </div>
 
@@ -351,21 +351,21 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-bold">Isi Pesan Keluhan <span class="text-danger">*</span></label>
+          <label class="form-label fw-bold">Complaint Message <span class="text-danger">*</span></label>
           <textarea class="form-control form-control-sm" id="emailBody" rows="5" required></textarea>
         </div>
 
         <div class="mb-2">
-          <label class="form-label fw-bold">Dokumen & Bukti Pendukung Terlampir (FR-94)</label>
+          <label class="form-label fw-bold">Attached Documents & Supporting Evidence (FR-94)</label>
           <div id="emailBuktiList" class="p-2 border rounded bg-light" style="max-height: 120px; overflow-y: auto;">
-            <span class="text-muted small">Tidak ada berkas bukti terlampir</span>
+            <span class="text-muted small">No evidence files attached</span>
           </div>
         </div>
       </div>
       <div class="modal-footer py-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-primary btn-sm" id="btnSubmitEmail">
-          <i class="fa fa-paper-plane me-1"></i> Kirim Email Keluhan
+          <i class="fa fa-paper-plane me-1"></i> Send Complaint Email
         </button>
       </div>
     </div>
@@ -387,12 +387,12 @@
         <div class="mb-3 p-3 bg-light border rounded">
           <div class="row align-items-center">
             <div class="col-md-4">
-              <label class="form-label fw-bold mb-0">Kesepakatan dengan Supplier <span class="text-danger">*</span></label>
+              <label class="form-label fw-bold mb-0">Agreement with Supplier <span class="text-danger">*</span></label>
               <div class="small text-muted">Hasil negosiasi luar sistem (BPMN D003)</div>
             </div>
             <div class="col-md-8">
               <select class="form-select form-select-sm" id="decKesepakatan" required>
-                <option value="">-- Pilih Kesepakatan --</option>
+                <option value="">-- Select Agreement --</option>
                 <option value="Kompensasi">Kompensasi</option>
                 <option value="Retur">Retur</option>
                 <option value="Kompensasi + Retur">Kompensasi + Retur (Dua Jalur)</option>
@@ -407,9 +407,9 @@
         </div>
       </div>
       <div class="modal-footer py-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-success btn-sm" id="btnSubmitDecision">
-          <i class="fa fa-check me-1"></i> Simpan Keputusan Claim
+          <i class="fa fa-check me-1"></i> Save Claim Decision
         </button>
       </div>
     </div>
@@ -423,27 +423,27 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-light py-2">
-        <h5 class="modal-title fs-6">Alasan Hold & Bukti Pendukung dari Produksi</h5>
+        <h5 class="modal-title fs-6">Hold Reason & Supporting Evidence from Production</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <dl class="cl-modal-kv mb-3">
           <dt>No. Claim</dt><dd id="viewNoClaim">-</dd>
-          <dt>Nama Supplier</dt><dd id="viewSupplier">-</dd>
-          <dt>Nama Material</dt><dd id="viewMaterial">-</dd>
+          <dt>Supplier Name</dt><dd id="viewSupplier">-</dd>
+          <dt>Material Name</dt><dd id="viewMaterial">-</dd>
           <dt>No. Coil</dt><dd id="viewCoil">-</dd>
-          <dt>Berat</dt><dd id="viewBerat">-</dd>
+          <dt>Weight</dt><dd id="viewBerat">-</dd>
           <dt>Problem</dt><dd class="text-danger fw-bold" id="viewProblem">-</dd>
           <dt>Alasan Produksi</dt><dd id="viewAlasanText">-</dd>
         </dl>
 
-        <h6 class="fw-bold mb-2">Berkas Bukti Foto / Video / QC Report:</h6>
+        <h6 class="fw-bold mb-2">Photo / Video / QC Report Evidence Files:</h6>
         <div id="viewBuktiContainer">
-          <div class="text-muted small">Tidak ada lampiran berkas bukti.</div>
+          <div class="text-muted small">No evidence files attached.</div>
         </div>
       </div>
       <div class="modal-footer py-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -456,13 +456,13 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-dark text-white py-2">
-        <h5 class="modal-title fs-6">Jurnal Transaksi GL — Claim Material</h5>
+        <h5 class="modal-title fs-6">GL Transaction Journal — Material Claim</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <dl class="cl-modal-kv mb-3">
           <dt>No. Claim</dt><dd id="jrNoClaim">-</dd>
-          <dt>Nama Supplier</dt><dd id="jrSupplier">-</dd>
+          <dt>Supplier Name</dt><dd id="jrSupplier">-</dd>
           <dt>Material</dt><dd id="jrMaterial">-</dd>
           <dt>Status Keputusan</dt><dd id="jrStatus">-</dd>
         </dl>
@@ -472,7 +472,7 @@
         </div>
       </div>
       <div class="modal-footer py-2">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -509,7 +509,7 @@
     const isDone = hasDec;
 
     return `
-      <div class="cl-prog-step is-done">&#10003; 1. Laporan Produksi</div>
+      <div class="cl-prog-step is-done">&#10003; 1. Production Report</div>
       <div class="cl-prog-step ${hasEmail ? 'is-done' : ''}">${hasEmail ? '&#10003;' : '&#9675;'} 2. Email Keluhan</div>
       <div class="cl-prog-step ${hasDec ? 'is-done' : ''}">${hasDec ? '&#10003;' : '&#9675;'} 3. Process Decision</div>
     `;
@@ -521,13 +521,13 @@
     const q = document.getElementById('searchKeyword').value;
 
     const tbody = document.getElementById('claimTableBody');
-    tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-muted"><i class="fa fa-spinner fa-spin me-1"></i> Memuat data claim...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-muted"><i class="fa fa-spinner fa-spin me-1"></i> Loading claim data...</td></tr>';
 
     fetch(`<?= site_url('claim_material/ajax_claim_list') ?>?supplier=${encodeURIComponent(supplier)}&asal=${encodeURIComponent(asal)}&q=${encodeURIComponent(q)}`)
       .then(res => res.json())
       .then(res => {
         if (!res.status) {
-          tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-danger">Gagal memuat data</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-danger">Failed to load data</td></tr>';
           return;
         }
 
@@ -537,7 +537,7 @@
       })
       .catch(err => {
         console.error(err);
-        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-danger">Terjadi kesalahan koneksi</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-danger">A connection error occurred</td></tr>';
       });
   }
 
@@ -551,7 +551,7 @@
   function renderTable() {
     const tbody = document.getElementById('claimTableBody');
     if (!claimsData.length) {
-      tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-muted">Belum ada data claim material.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-muted">No material claim data yet.</td></tr>';
       document.getElementById('btnProcessSelected').disabled = true;
       document.getElementById('selCount').textContent = '0';
       return;
@@ -579,7 +579,7 @@
           <td class="text-center">
             <div class="d-flex flex-column gap-1">
               <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-info py-0 px-2" onclick="openEmailModal(${c.id})" title="Kirim Email Keluhan">
+                <button type="button" class="btn btn-outline-info py-0 px-2" onclick="openEmailModal(${c.id})" title="Send Complaint Email">
                   <i class="fa fa-envelope"></i> Email
                 </button>
                 <button type="button" class="btn ${hasDec ? 'btn-outline-secondary' : 'btn-primary'} py-0 px-2" onclick="openDecisionModal([${c.id}])">
@@ -615,7 +615,7 @@
               Swal.fire({
                 icon: 'warning',
                 title: 'Supplier Berbeda',
-                text: 'Process Decision bersamaan hanya dapat dilakukan untuk claim dari satu supplier yang sama (' + firstClaim.nama_supplier + ').'
+                text: 'A combined Process Decision can only be made for claims from the same supplier (' + firstClaim.nama_supplier + ').'
               });
               this.checked = false;
               return;
@@ -699,7 +699,7 @@
     const companyNamePt = <?= json_encode(get_company_name(true, false)) ?>;
     document.getElementById('emailSubject').value = `[CLAIM MATERIAL] Ketidaksesuaian Coil ${c.no_coil_packing_list} - ${c.no_claim} - PT ${companyCode}`;
     document.getElementById('emailBody').value = `Kepada Yth. Rekan Supplier ${c.nama_supplier},\n\n`
-      + `Melalui surat ini kami sampaikan klaim ketidaksesuaian material coil dengan rincian sbb:\n`
+      + `With this letter we submit a claim for coil material nonconformity with the following details:\n`
       + `- No. Claim : ${c.no_claim}\n`
       + `- No. PO : ${c.no_po}\n`
       + `- No. Coil : ${c.no_coil_packing_list}\n`
@@ -707,14 +707,14 @@
       + `- Berat : ${formatNum(c.berat_kg, 2)} Kg\n`
       + `- Problem : ${c.problem}\n`
       + `- Alasan Produksi : ${c.alasan_produksi || '-'}\n\n`
-      + `Bersama ini kami lampirkan foto dan bukti pendukung dari tim produksi untuk ditindaklanjuti. Mohon kesepakatan penanganan kompensasi atau retur.\n\n`
+      + `Attached are the photos and supporting evidence from the production team for follow-up. Please agree on the compensation or return handling.\n\n`
       + `Hormat Kami,\n${companyNamePt} (Purchasing)`;
 
     const buktiBox = document.getElementById('emailBuktiList');
     if (c.bukti && c.bukti.length > 0) {
       buktiBox.innerHTML = c.bukti.map(b => `<div>📎 <b>${b.file_original_name}</b> <span class="text-muted">(${formatBytes(b.file_size)})</span></div>`).join('');
     } else {
-      buktiBox.innerHTML = '<span class="text-muted small">Tidak ada berkas bukti terlampir</span>';
+      buktiBox.innerHTML = '<span class="text-muted small">No evidence files attached</span>';
     }
 
     modalEmailEl.show();
@@ -727,7 +727,7 @@
     const body = document.getElementById('emailBody').value.trim();
 
     if (!to || !subject || !body) {
-      Swal.fire('Peringatan', 'Harap lengkapi email tujuan, subjek, dan isi pesan', 'warning');
+      Swal.fire('Warning', 'Please complete the destination email, subject, and message body', 'warning');
       return;
     }
 
@@ -748,19 +748,19 @@
     .then(r => r.json())
     .then(res => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Kirim Email Keluhan';
+      btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Send Complaint Email';
       if (res.status) {
         modalEmailEl.hide();
-        Swal.fire('Berhasil', res.message, 'success');
+        Swal.fire('Success', res.message, 'success');
         loadClaims();
       } else {
-        Swal.fire('Gagal', res.message, 'error');
+        Swal.fire('Failed', res.message, 'error');
       }
     })
     .catch(err => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Kirim Email Keluhan';
-      Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+      btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Send Complaint Email';
+      Swal.fire('Error', 'A system error occurred', 'error');
     });
   });
 
@@ -787,26 +787,26 @@
       html += `
         <div class="cl-dec-box" data-cid="${c.id}">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6>Baris Claim #${idx + 1}: ${c.no_claim} &mdash; ${c.nama_material} (${c.no_coil_packing_list})</h6>
-            <span class="badge bg-primary">Total Berat: ${formatNum(c.berat_kg, 2)} Kg</span>
+            <h6>Claim Row #${idx + 1}: ${c.no_claim} &mdash; ${c.nama_material} (${c.no_coil_packing_list})</h6>
+            <span class="badge bg-primary">Total Weight: ${formatNum(c.berat_kg, 2)} Kg</span>
           </div>
 
           <div class="row g-2 mb-3 small text-muted">
             <div class="col-md-3">Supplier: <b>${c.nama_supplier}</b></div>
             <div class="col-md-3">No. PO: <b>${c.no_po}</b></div>
-            <div class="col-md-3">Harga Beli/Kg: <b>Rp ${formatNum(c.harga_beli_per_kg)}</b></div>
-            <div class="col-md-3">Mata Uang PO: <b>${cur}</b></div>
+            <div class="col-md-3">Purchase Price/Kg: <b>Rp ${formatNum(c.harga_beli_per_kg)}</b></div>
+            <div class="col-md-3">PO Currency: <b>${cur}</b></div>
           </div>
 
           ${isValas ? `
             <div class="row g-2 mb-3 p-2 bg-warning bg-opacity-10 border border-warning rounded align-items-center">
               <div class="col-md-4">
-                <label class="form-label fw-bold mb-0">Kurs Saat Claim (${cur} ke IDR) <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold mb-0">Exchange Rate at Claim (${cur} to IDR) <span class="text-danger">*</span></label>
               </div>
               <div class="col-md-4">
                 <input type="number" step="any" class="form-control form-control-sm claim-kurs" data-cid="${c.id}" value="${c.kurs_default || 16000}" required>
               </div>
-              <div class="col-md-4 small text-muted">Wajib diisi untuk PO valas non-IDR (FR-78).</div>
+              <div class="col-md-4 small text-muted">Required for non-IDR foreign currency POs (FR-78).</div>
             </div>
           ` : `<input type="hidden" class="claim-kurs" data-cid="${c.id}" value="1">`}
 
@@ -817,7 +817,7 @@
 
           <div class="d-flex justify-content-between align-items-center mt-2">
             <button type="button" class="btn btn-outline-primary btn-sm" onclick="addDecisionLine(${c.id}, ${c.berat_kg}, ${c.harga_beli_per_kg})">
-              <i class="fa fa-plus me-1"></i> Tambah Jalur Keputusan
+              <i class="fa fa-plus me-1"></i> Add Decision Path
             </button>
             <div class="small fw-bold">
               Total Alokasi Berat: <span id="totDecKg_${c.id}">0.00</span> / ${formatNum(c.berat_kg, 2)} Kg
@@ -878,15 +878,15 @@
           </select>
         </div>
         <div class="col-md-2">
-          <label class="form-label small fw-bold mb-1">Berat (Kg)</label>
+          <label class="form-label small fw-bold mb-1">Weight (Kg)</label>
           <input type="number" step="0.01" class="form-control form-control-sm inp-kg" value="${kg}" oninput="calcDecTotal(${cid}, ${hargaBeli})" required>
         </div>
         <div class="col-md-3 val-box">
           <!-- Nilai DN atau Nilai KW -->
         </div>
         <div class="col-md-2">
-          <label class="form-label small fw-bold mb-1">Keterangan</label>
-          <input type="text" class="form-control form-control-sm inp-ket" value="${ket}" placeholder="Catatan...">
+          <label class="form-label small fw-bold mb-1">Description</label>
+          <input type="text" class="form-control form-control-sm inp-ket" value="${ket}" placeholder="Notes...">
         </div>
         <div class="col-md-1 text-end">
           <label class="form-label small mb-1">&nbsp;</label>
@@ -911,12 +911,12 @@
     if (jalur === 'Kompensasi') {
       aksiEl.innerHTML = `
         <option value="Debit Note" ${defaultAksi === 'Debit Note' ? 'selected' : ''}>Debit Note</option>
-        <option value="Lanjut Produksi" ${defaultAksi === 'Lanjut Produksi' ? 'selected' : ''}>Lanjut Produksi</option>
+        <option value="Lanjut Produksi" ${defaultAksi === 'Lanjut Produksi' ? 'selected' : ''}>Continue Production</option>
         <option value="Jual Material" ${defaultAksi === 'Jual Material' ? 'selected' : ''}>Jual Material</option>
       `;
     } else {
       aksiEl.innerHTML = `
-        <option value="Retur" ${defaultAksi === 'Retur' ? 'selected' : ''}>Retur ke Supplier</option>
+        <option value="Retur" ${defaultAksi === 'Retur' ? 'selected' : ''}>Return to Supplier</option>
       `;
     }
 
@@ -939,25 +939,25 @@
     const valBox = row.querySelector('.val-box');
     if (aksi === 'Debit Note') {
       valBox.innerHTML = `
-        <label class="form-label small fw-bold mb-1">Nilai Debit Note (tanpa PPN)</label>
+        <label class="form-label small fw-bold mb-1">Debit Note Value (excluding VAT)</label>
         <input type="number" step="0.01" class="form-control form-control-sm inp-nilai-dn" value="${nilaiDn != null ? nilaiDn : (kg * hargaBeli)}" required>
       `;
     } else if (aksi === 'Jual Material') {
       const totMaterial = kg * hargaBeli;
       valBox.innerHTML = `
-        <label class="form-label small fw-bold mb-1">Nilai Material KW (Rp)</label>
+        <label class="form-label small fw-bold mb-1">KW Material Value (Rp)</label>
         <input type="number" step="0.01" class="form-control form-control-sm inp-nilai-kw" value="${nilaiKw != null ? nilaiKw : (totMaterial * 0.7)}" required>
-        <div class="small text-muted mt-1">Sisa diakui Biaya Scrap</div>
+        <div class="small text-muted mt-1">Remainder recognized as Scrap Cost</div>
       `;
     } else if (aksi === 'Lanjut Produksi') {
       valBox.innerHTML = `
         <label class="form-label small fw-bold mb-1">Status Coil</label>
-        <div class="badge bg-success mt-1 py-1 px-2">Release ke Produksi (tanpa jurnal)</div>
+        <div class="badge bg-success mt-1 py-1 px-2">Release to Production (without journal)</div>
       `;
     } else {
       valBox.innerHTML = `
-        <label class="form-label small fw-bold mb-1">Tindak Lanjut Retur</label>
-        <div class="small text-muted">Akan masuk antrian SPK Re-Pack & Surat Jalan Retur</div>
+        <label class="form-label small fw-bold mb-1">Return Follow-up</label>
+        <div class="small text-muted">Will enter the SPK Re-Pack & Return Delivery Note queue</div>
       `;
     }
   }
@@ -965,7 +965,7 @@
   function removeDecisionLine(btn, cid, hargaBeli) {
     const container = document.getElementById(`linesContainer_${cid}`);
     if (container.querySelectorAll('.dec-line-row').length <= 1) {
-      Swal.fire('Perhatian', 'Minimal harus ada 1 jalur keputusan per claim', 'warning');
+      Swal.fire('Attention', 'There must be at least 1 decision path per claim', 'warning');
       return;
     }
     btn.closest('.dec-line-row').remove();
@@ -997,7 +997,7 @@
   document.getElementById('btnSubmitDecision').addEventListener('click', function() {
     const kesepakatan = document.getElementById('decKesepakatan').value;
     if (!kesepakatan) {
-      Swal.fire('Peringatan', 'Harap pilih Kesepakatan dengan Supplier', 'warning');
+      Swal.fire('Warning', 'Please select the Agreement with Supplier', 'warning');
       return;
     }
 
@@ -1025,7 +1025,7 @@
 
         if (kg <= 0) {
           hasError = true;
-          errorMsg = `Berat (Kg) pada claim ${c ? c.no_claim : cid} harus lebih dari 0`;
+          errorMsg = `Weight (Kg) on claim ${c ? c.no_claim : cid} must be greater than 0`;
           return;
         }
 
@@ -1059,7 +1059,7 @@
       const maxKg = c ? (parseFloat(c.berat_kg) || 0) : 0;
       if (totKg > maxKg + 0.001) {
         hasError = true;
-        errorMsg = `Total berat alokasi (${formatNum(totKg, 2)} Kg) melebihi berat claim ${c ? c.no_claim : cid} (${formatNum(maxKg, 2)} Kg)`;
+        errorMsg = `Total allocation weight (${formatNum(totKg, 2)} Kg) exceeds the claim weight ${c ? c.no_claim : cid} (${formatNum(maxKg, 2)} Kg)`;
         return;
       }
 
@@ -1067,17 +1067,17 @@
     });
 
     if (hasError) {
-      Swal.fire('Validasi Gagal', errorMsg, 'warning');
+      Swal.fire('Validation Failed', errorMsg, 'warning');
       return;
     }
 
     Swal.fire({
-      title: 'Konfirmasi Keputusan',
-      text: `Simpan keputusan untuk ${currentDecClaimIds.length} claim dengan kesepakatan "${kesepakatan}"?`,
+      title: 'Confirm Decision',
+      text: `Save the decision for ${currentDecClaimIds.length} claims with agreement "${kesepakatan}"?`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Ya, Simpan',
-      cancelButtonText: 'Batal'
+      confirmButtonText: 'Yes, Save',
+      cancelButtonText: 'Cancel'
     }).then(res => {
       if (!res.isConfirmed) return;
 
@@ -1105,21 +1105,21 @@
       .then(r => r.json())
       .then(resp => {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa fa-check me-1"></i> Simpan Keputusan Claim';
+        btn.innerHTML = '<i class="fa fa-check me-1"></i> Save Claim Decision';
         if (resp.status) {
           modalDecisionEl.hide();
           selectedClaimIds.clear();
           updateSelectedButton();
-          Swal.fire('Berhasil', resp.message, 'success');
+          Swal.fire('Success', resp.message, 'success');
           loadClaims();
         } else {
-          Swal.fire('Gagal', resp.message, 'error');
+          Swal.fire('Failed', resp.message, 'error');
         }
       })
       .catch(err => {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa fa-check me-1"></i> Simpan Keputusan Claim';
-        Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan keputusan', 'error');
+        btn.innerHTML = '<i class="fa fa-check me-1"></i> Save Claim Decision';
+        Swal.fire('Error', 'A system error occurred while saving the decision', 'error');
       });
     });
   });
@@ -1141,7 +1141,7 @@
 
     const bBox = document.getElementById('viewBuktiContainer');
     if (!c.bukti || c.bukti.length === 0) {
-      bBox.innerHTML = '<div class="text-muted small">Tidak ada lampiran berkas bukti dari tim produksi.</div>';
+      bBox.innerHTML = '<div class="text-muted small">No evidence files attached by the production team.</div>';
     } else {
       let bHtml = '';
       c.bukti.forEach(b => {
@@ -1155,8 +1155,8 @@
             <div class="d-flex justify-content-between align-items-center">
               <span>📎 <strong>${b.file_original_name}</strong> <span class="text-muted">(${formatBytes(b.file_size)})</span></span>
               <div>
-                <a href="${url}" class="btn btn-outline-primary btn-sm py-0 px-2" target="_blank" rel="noopener">Buka di Tab Baru</a>
-                <a href="${url}" class="btn btn-outline-secondary btn-sm py-0 px-2" download="${b.file_original_name}">Unduh</a>
+                <a href="${url}" class="btn btn-outline-primary btn-sm py-0 px-2" target="_blank" rel="noopener">Open in New Tab</a>
+                <a href="${url}" class="btn btn-outline-secondary btn-sm py-0 px-2" download="${b.file_original_name}">Download</a>
               </div>
             </div>
             ${isImg ? `<img src="${url}" alt="${b.file_original_name}">` : ''}
@@ -1184,13 +1184,13 @@
     document.getElementById('jrStatus').textContent = c.status_claim;
 
     const jBox = document.getElementById('jrEventsContainer');
-    jBox.innerHTML = '<div class="text-center py-3 text-muted"><i class="fa fa-spinner fa-spin"></i> Memuat jurnal...</div>';
+    jBox.innerHTML = '<div class="text-center py-3 text-muted"><i class="fa fa-spinner fa-spin"></i> Loading journal...</div>';
 
     fetch(`<?= site_url('claim_material/ajax_jurnal') ?>/${claimId}`)
       .then(r => r.json())
       .then(res => {
         if (!res.status || !res.journals || !res.journals.length) {
-          jBox.innerHTML = '<div class="text-muted small">Belum ada peristiwa jurnal yang terbentuk untuk claim ini.</div>';
+          jBox.innerHTML = '<div class="text-muted small">No journal events have been generated for this claim yet.</div>';
           return;
         }
 
@@ -1218,7 +1218,7 @@
             <div class="card mb-3 border">
               <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
                 <span class="fw-bold">${j.title}</span>
-                <span class="badge ${j.posted ? 'bg-success' : 'bg-warning text-dark'}">${j.posted ? 'Terposting ke GL' : 'Proyeksi (Belum Terbit)'}</span>
+                <span class="badge ${j.posted ? 'bg-success' : 'bg-warning text-dark'}">${j.posted ? 'Posted to GL' : 'Projection (Not Issued)'}</span>
               </div>
               <div class="card-body p-0">
                 <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
@@ -1232,7 +1232,7 @@
                   <tbody>${linesHtml}</tbody>
                   <tfoot class="table-light fw-bold">
                     <tr>
-                      <td>Total ${isBalanced ? '<span class="text-success ms-2">&#10003; Seimbang</span>' : '<span class="text-danger ms-2">Tidak Seimbang</span>'}</td>
+                      <td>Total ${isBalanced ? '<span class="text-success ms-2">&#10003; Seimbang</span>' : '<span class="text-danger ms-2">Unbalanced</span>'}</td>
                       <td class="text-end">${formatNum(dbTotal)}</td>
                       <td class="text-end">${formatNum(crTotal)}</td>
                     </tr>
@@ -1246,7 +1246,7 @@
         jBox.innerHTML = jHtml;
       })
       .catch(err => {
-        jBox.innerHTML = '<div class="text-danger small">Gagal memuat data jurnal.</div>';
+        jBox.innerHTML = '<div class="text-danger small">Failed to load journal data.</div>';
       });
 
     modalJurnalEl.show();

@@ -9,12 +9,12 @@
 
     <!-- Baris 1: Info PO -->
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor PO</label>
+        <label class="form-label fw-semibold">PO Number</label>
         <input type="text" name="nomor_po" class="form-control form-control-sm nomor_po"
             value="<?= $data_po['no_surat'] ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nama Supplier</label>
+        <label class="form-label fw-semibold">Supplier Name</label>
         <input type="text" name="nm_supplier" class="form-control form-control-sm"
             value="<?= $get_supplier['nama'] ?>" readonly>
     </div>
@@ -23,17 +23,17 @@
     <div class="col-md-6">
         <label class="form-label fw-semibold">Receive Invoice Date <span class="text-danger">*</span></label>
         <input type="text" name="invoice_date" class="form-control form-control-sm flatpickr-input"
-            placeholder="Pilih tanggal..." required>
+            placeholder="Select date..." required>
     </div>
     <div class="col-md-6">
         <label class="form-label fw-semibold">Invoice Date</label>
         <input type="text" name="invoice_date_real" class="form-control form-control-sm flatpickr-input"
-            placeholder="Pilih tanggal...">
+            placeholder="Select date...">
     </div>
 
     <!-- Baris 3: Nomor Invoice & Persentase DP -->
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Invoice <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold">Invoice Number <span class="text-danger">*</span></label>
         <input type="text" name="nomor_invoice" class="form-control form-control-sm nomor_invoice" required>
     </div>
     <div class="col-md-6">
@@ -56,12 +56,12 @@
 
     <!-- Baris 5: Nilai PPn & Nilai Disc -->
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai PPN</label>
+        <label class="form-label fw-semibold">VAT Value</label>
         <input type="text" name="nilai_ppn" class="form-control form-control-sm text-end auto_num nilai_ppn"
             value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai Disc</label>
+        <label class="form-label fw-semibold">Discount Value</label>
         <input type="text" name="nilai_disc" class="form-control form-control-sm text-end auto_num nilai_disc"
             value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
     </div>
@@ -80,13 +80,13 @@
 
     <!-- Baris 7: Faktur Pajak -->
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Number</label>
         <input type="text" name="nomor_faktur_pajak" class="form-control form-control-sm nomor_faktur_pajak">
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Date</label>
         <input type="text" name="tanggal_faktur_pajak" class="form-control form-control-sm flatpickr-input"
-            placeholder="Pilih tanggal...">
+            placeholder="Select date...">
     </div>
 
     <!-- Baris 8: Upload Invoice -->
@@ -98,20 +98,20 @@
     <!-- Divider Info Bank -->
     <div class="col-12">
         <hr class="my-1">
-        <p class="fw-bold mb-2">Informasi Bank</p>
+        <p class="fw-bold mb-2">Bank Information</p>
     </div>
 
     <div class="col-md-4">
         <label class="form-label fw-semibold">Bank</label>
-        <input type="text" name="bank" class="form-control form-control-sm" placeholder="Nama Bank">
+        <input type="text" name="bank" class="form-control form-control-sm" placeholder="Bank Name">
     </div>
     <div class="col-md-4">
-        <label class="form-label fw-semibold">No. Rekening</label>
-        <input type="text" name="no_bank" class="form-control form-control-sm" placeholder="Nomor Rekening">
+        <label class="form-label fw-semibold">Account Number</label>
+        <input type="text" name="no_bank" class="form-control form-control-sm" placeholder="Account Number">
     </div>
     <div class="col-md-4">
-        <label class="form-label fw-semibold">Nama Pemilik</label>
-        <input type="text" name="nm_acc_bank" class="form-control form-control-sm" placeholder="Nama Pemilik Rekening">
+        <label class="form-label fw-semibold">Owner Name</label>
+        <input type="text" name="nm_acc_bank" class="form-control form-control-sm" placeholder="Account Holder Name">
     </div>
 
 </div>

@@ -28,7 +28,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                 </a>
             <?php endif; ?>
             <a href="<?= base_url('production_issue') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
     </div>
@@ -51,7 +51,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                         <td>: <?= htmlspecialchars($spk->nm_produk_fg ?: $spk->produk_fg) ?></td>
                     </tr>
                     <tr>
-                        <td class="fw-semibold">Tanggal SPK</td>
+                        <td class="fw-semibold">SPK Date</td>
                         <td>: <?= date('d/m/Y', strtotime((string) $spk->tgl_spk)) ?></td>
                     </tr>
                 </table>
@@ -93,7 +93,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 
         <?php if ($spk->catatan): ?>
             <div class="mt-2">
-                <strong>Catatan:</strong> <?= nl2br(htmlspecialchars((string) $spk->catatan)) ?>
+                <strong>Notes:</strong> <?= nl2br(htmlspecialchars((string) $spk->catatan)) ?>
             </div>
         <?php endif; ?>
     </div>
@@ -102,7 +102,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 <!-- Detail Coil -->
 <div class="card mb-3">
     <div class="card-header">
-        <h6 class="mb-0">Detail Coil SPK</h6>
+        <h6 class="mb-0">SPK Coil Detail</h6>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -113,7 +113,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                         <th>No Coil</th>
                         <th>No ROS</th>
                         <th>Material</th>
-                        <th class="text-end">Berat Bersih (kg)</th>
+                        <th class="text-end">Net Weight (kg)</th>
                         <th class="text-center">Status Scan</th>
                     </tr>
                 </thead>
@@ -144,14 +144,14 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                                     <?php if ($is_scanned): ?>
                                         <span class="badge bg-success"><i class="fa fa-check"></i> Issued</span>
                                     <?php else: ?>
-                                        <span class="badge bg-secondary">Belum Scan</span>
+                                        <span class="badge bg-secondary">Not Scanned</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Tidak ada coil</td>
+                            <td colspan="6" class="text-center text-muted py-3">No coils</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -164,7 +164,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h6 class="mb-0">Log Scan Barcode</h6>
-        <span class="badge bg-secondary"><?= count($logs) ?> entri</span>
+        <span class="badge bg-secondary"><?= count($logs ?? []) ?> entri</span>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -176,7 +176,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                         <th class="text-center">Waktu Scan</th>
                         <th>Operator</th>
                         <th class="text-center">Status</th>
-                        <th>Keterangan</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -189,9 +189,9 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                                 <td><?= htmlspecialchars($log->nama_user ?: 'User #' . $log->scan_user) ?></td>
                                 <td class="text-center">
                                     <?php if ($log->status_scan === 'success'): ?>
-                                        <span class="badge bg-success">Sukses</span>
+                                        <span class="badge bg-success">Success</span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger">Ditolak</span>
+                                        <span class="badge bg-danger">Rejected</span>
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($log->keterangan ?: '-') ?></td>
@@ -199,7 +199,7 @@ $pct   = $total_coil > 0 ? round(($scanned_coil / $total_coil) * 100) : 0;
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Belum ada log scan</td>
+                            <td colspan="6" class="text-center text-muted py-3">No scan logs yet</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -213,20 +213,20 @@ $(document).on('click', '.btn-release-spk', function () {
     var spk_no = $(this).data('spk');
     swal({
         title: 'Release SPK?',
-        text: 'SPK akan diubah ke status Released dan siap untuk scan issue material.',
+        text: 'The SPK will be changed to status Released and be ready for material issue scanning.',
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
-        confirmButtonText: 'Ya, Release',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Release',
+        cancelButtonText: 'Cancel'
     }, function (isConfirm) {
         if (isConfirm) {
             $.post(siteurl + 'production_issue/process_release_spk/' + spk_no, function (res) {
                 if (res.success) {
-                    swal('Berhasil!', 'SPK berhasil di-release.', 'success');
+                    swal('Success!', 'SPK released successfully.', 'success');
                     setTimeout(function () { location.reload(); }, 1500);
                 } else {
-                    swal('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
+                    swal('Failed!', res.message || 'An error occurred.', 'error');
                 }
             }, 'json');
         }

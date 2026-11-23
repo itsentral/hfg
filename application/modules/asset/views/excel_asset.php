@@ -21,16 +21,16 @@ header("Content-Disposition: attachment; filename=Data_Asset_" . date('Ymd_His')
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th>Kode Asset</th>
-                <th>Nama Asset</th>
-                <th>Tanggal Perolehan</th>
+                <th>Asset Code</th>
+                <th>Asset Name</th>
+                <th>Acquisition Date</th>
                 <th>Category</th>
                 <th>Department</th>
                 <th>Cost Center</th>
-                <th>Penyusutan</th>
-                <th>Nilai Asset (Acquisition)</th>
-                <th>Depresiasi (Tahun)</th>
-                <th>Nilai Susut/Bulan (Value)</th>
+                <th>Depreciation</th>
+                <th>Asset Value (Acquisition)</th>
+                <th>Depreciation (Years)</th>
+                <th>Depreciation/Month (Value)</th>
             </tr>
         </thead>
         <tbody>
@@ -48,12 +48,12 @@ header("Content-Disposition: attachment; filename=Data_Asset_" . date('Ymd_His')
                     echo "<td>" . strtoupper((string) $row['nm_costcenter']) . "</td>";
                     echo "<td class='text-center'>" . $row['penyusutan'] . "</td>";
                     echo "<td class='text-right'>" . number_format((float) $row['nilai_asset'], 2) . "</td>";
-                    echo "<td class='text-center'>" . $row['depresiasi'] . " Tahun</td>";
+                    echo "<td class='text-center'>" . $row['depresiasi'] . " Year</td>";
                     echo "<td class='text-right'>" . number_format((float) $row['value'], 2) . "</td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='11' class='text-center'>Data tidak ditemukan</td></tr>";
+                echo "<tr><td colspan='11' class='text-center'>Data not found</td></tr>";
             }
             ?>
         </tbody>

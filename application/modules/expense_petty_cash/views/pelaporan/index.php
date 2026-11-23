@@ -7,7 +7,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-file-text-o me-2"></i>Daftar Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Kelola rekapitulasi pelaporan mingguan petty cash dan pantau status persetujuannya</small>
+            <small class="text-muted">Manage weekly petty cash report recaps and monitor their approval status</small>
         </div>
         <div>
             <a href="<?= site_url('expense_petty_cash') ?>" class="btn btn-outline-primary btn-sm px-3 shadow-sm">
@@ -39,10 +39,10 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small fw-semibold text-muted mb-1">Cari Tanggal / Periode (Flatpickr)</label>
+                <label class="form-label small fw-semibold text-muted mb-1">Search Date / Period (Flatpickr)</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white"><i class="fa fa-calendar"></i></span>
-                    <input type="text" id="filter-date-search" class="form-control flatpickr-date" placeholder="Pilih tanggal...">
+                    <input type="text" id="filter-date-search" class="form-control flatpickr-date" placeholder="Select date...">
                 </div>
             </div>
             <div class="col-md-2 d-flex gap-2">
@@ -197,7 +197,7 @@
                         }
 
                         if (row.status === 'approved') {
-                            btn += '<a href="' + BASE_URL + 'print_pelaporan/' + row.id + '" target="_blank" class="btn btn-outline-success btn-sm" title="Cetak PDF"><i class="fa fa-print"></i></a>';
+                            btn += '<a href="' + BASE_URL + 'print_pelaporan/' + row.id + '" target="_blank" class="btn btn-outline-success btn-sm" title="Print PDF"><i class="fa fa-print"></i></a>';
                         }
 
                         btn += '</div>';

@@ -7,17 +7,17 @@ $dept_name = isset($datdept[$departement_id]) ? $datdept[$departement_id] : $dep
 $is_view_mode = (isset($type) && $type == 'view');
 $is_approve_mode = (isset($app) && $app == 'app');
 
-$status_label = 'Menunggu Approval';
+$status_label = 'Awaiting Approval';
 $status_badge = 'bg-warning text-dark';
 if (isset($data->status)) {
     if ($data->status == 1) {
         $status_label = 'Approved';
         $status_badge = 'bg-success text-white';
     } elseif ($data->status == 2) {
-        $status_label = 'Diproses Finance';
+        $status_label = 'Processed by Finance';
         $status_badge = 'bg-info text-dark';
     } elseif ($data->sts_reject == 1) {
-        $status_label = 'Ditolak';
+        $status_label = 'Rejected';
         $status_badge = 'bg-danger text-white';
     }
 }
@@ -47,13 +47,13 @@ if (isset($data->status)) {
                     </div>
                     <h4 class="fw-bold mb-1 text-dark">
                         <i class="fa fa-calendar-check text-primary me-2"></i>
-                        <?= $is_approve_mode ? 'Verifikasi Approval Pembayaran Periodik (Rutin)' : 'Detail Pengajuan Pembayaran Periodik (Rutin)' ?>
+                        <?= $is_approve_mode ? 'Periodic (Routine) Payment Approval Verification' : 'Periodic (Routine) Payment Request Detail' ?>
                         <?php if (!empty($no_doc)): ?>
                             <span class="text-primary fs-5">#<?= htmlspecialchars((string) $no_doc) ?></span>
                         <?php endif; ?>
                     </h4>
                     <small class="text-muted">
-                        Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></span>
+                        Department: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></span>
                     </small>
                 </div>
 
@@ -64,10 +64,10 @@ if (isset($data->status)) {
 
                     <?php if (isset($data->status) && $data->status == 0 && $is_approve_mode): ?>
                         <button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve(<?= $id ?>)">
-                            <i class="fa fa-check me-1"></i> Setujui (Approve)
+                            <i class="fa fa-check me-1"></i> Approve
                         </button>
                         <button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject(<?= $id ?>)">
-                            <i class="fa fa-ban me-1"></i> Tolak (Reject)
+                            <i class="fa fa-ban me-1"></i> Reject
                         </button>
                     <?php endif; ?>
                 </div>
@@ -80,19 +80,19 @@ if (isset($data->status)) {
         <div class="card-body p-3 p-md-4">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1">No. Dokumen</label>
+                    <label class="form-label text-muted small mb-1">Document No.</label>
                     <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $no_doc) ?></div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1">Departemen</label>
+                    <label class="form-label text-muted small mb-1">Department</label>
                     <div class="fw-semibold fs-6 text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)) ?></div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1">Tanggal Dokumen</label>
+                    <label class="form-label text-muted small mb-1">Document Date</label>
                     <div class="fw-semibold fs-6 text-dark"><?= date('d F Y', strtotime((string) $tanggal_doc)) ?></div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1">Status Pengajuan</label>
+                    <label class="form-label text-muted small mb-1">Request Status</label>
                     <div><span class="badge <?= $status_badge ?>"><?= $status_label ?></span></div>
                 </div>
             </div>
@@ -112,13 +112,13 @@ if (isset($data->status)) {
                     <thead class="table-light">
                         <tr>
                             <th width="40" class="text-center">#</th>
-                            <th>Deskripsi Pembayaran</th>
+                            <th>Payment Description</th>
                             <th class="text-center">Jadwal</th>
                             <th class="text-end">Budget (Rp)</th>
-                            <th class="text-end">Perkiraan Biaya (Rp)</th>
-                            <th>Keterangan</th>
-                            <th>Bank & Rekening Penerima</th>
-                            <th class="text-center">Dokumen Bukti</th>
+                            <th class="text-end">Estimated Cost (Rp)</th>
+                            <th>Description</th>
+                            <th>Recipient Bank & Account</th>
+                            <th class="text-center">Proof Document</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -172,11 +172,11 @@ if (isset($data->status)) {
                                     </td>
                                     <td class="text-center">
                                         <?php if (!empty($record->doc_file)): ?>
-                                            <a href="<?= base_url('assets/bayar_rutin/' . $record->doc_file) ?>" target="_blank" class="btn btn-outline-primary btn-sm py-1 px-2" title="Unduh / Lihat Dokumen">
-                                                <i class="fa fa-file-text me-1"></i> Buka File
+                                            <a href="<?= base_url('assets/bayar_rutin/' . $record->doc_file) ?>" target="_blank" class="btn btn-outline-primary btn-sm py-1 px-2" title="Download / View Document">
+                                                <i class="fa fa-file-text me-1"></i> Open File
                                             </a>
                                         <?php else: ?>
-                                            <span class="badge bg-light text-muted border">Tidak ada</span>
+                                            <span class="badge bg-light text-muted border">None</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -185,13 +185,13 @@ if (isset($data->status)) {
                         } else {
                         ?>
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">Tidak ada rincian data pembayaran.</td>
+                                <td colspan="8" class="text-center py-4 text-muted">No payment detail data.</td>
                             </tr>
                         <?php } ?>
                     </tbody>
                     <tfoot class="table-light fw-bold">
                         <tr>
-                            <td colspan="4" class="text-end py-3 text-uppercase text-secondary">TOTAL PERKIRAAN BIAYA :</td>
+                            <td colspan="4" class="text-end py-3 text-uppercase text-secondary">TOTAL ESTIMATED COST :</td>
                             <td class="text-end py-3 text-success font-monospace fs-5">Rp <?= number_format((float) $total, 0, ',', '.') ?></td>
                             <td colspan="3"></td>
                         </tr>
@@ -206,7 +206,7 @@ if (isset($data->status)) {
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-header bg-white py-3 border-bottom">
                 <h5 class="card-title mb-0 fw-bold text-dark">
-                    <i class="fa fa-paperclip text-primary me-2"></i>Lampiran Dokumen Bukti (<?= count($lampiran_list) ?>)
+                    <i class="fa fa-paperclip text-primary me-2"></i>Proof Document Attachments (<?= count($lampiran_list ?? []) ?>)
                 </h5>
             </div>
             <div class="card-body p-3 p-md-4">
@@ -256,10 +256,10 @@ if (isset($data->status)) {
 
             <?php if (isset($data->status) && $data->status == 0 && $is_approve_mode): ?>
                 <button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve(<?= $id ?>)">
-                    <i class="fa fa-check me-1"></i> Setujui (Approve)
+                    <i class="fa fa-check me-1"></i> Approve
                 </button>
                 <button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject(<?= $id ?>)">
-                    <i class="fa fa-ban me-1"></i> Tolak (Reject)
+                    <i class="fa fa-ban me-1"></i> Reject
                 </button>
             <?php endif; ?>
         </div>
@@ -274,12 +274,12 @@ if (isset($data->status)) {
         var id = id_param || $("#id").val();
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: "Setujui Pengajuan?",
-                text: "Data pengajuan periodik ini akan disetujui!",
+                title: "Approve Request?",
+                text: "This periodic request data will be approved!",
                 icon: "question",
                 showCancelButton: true,
-                confirmButtonText: "Ya, Setujui!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Approve!",
+                cancelButtonText: "Cancel",
                 confirmButtonColor: "#28a745"
             }).then((res) => {
                 if (res.isConfirmed) {
@@ -287,8 +287,8 @@ if (isset($data->status)) {
                         if (msg.save == '1' || msg.save == 1 || msg.save === true) {
                             Swal.fire({
                                 icon: "success",
-                                title: "Sukses!",
-                                text: "Data Berhasil Disetujui",
+                                title: "Success!",
+                                text: "Data Approved Successfully",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -299,23 +299,23 @@ if (isset($data->status)) {
                                 }
                             });
                         } else {
-                            Swal.fire("Gagal!", "Data Gagal Disetujui", "error");
+                            Swal.fire("Failed!", "Data Failed to Approve", "error");
                         }
                     }, "json");
                 }
             });
         } else {
-            if (confirm("Setujui pengajuan ini?")) {
+            if (confirm("Approve this request?")) {
                 $.post(url_approve + id, function(msg) {
                     if (msg.save == '1' || msg.save == 1) {
-                        alert("Data Berhasil Disetujui");
+                        alert("Data Approved Successfully");
                         if (typeof list_view === 'function') {
                             list_view();
                         } else {
                             window.location.reload();
                         }
                     } else {
-                        alert("Data Gagal Disetujui");
+                        alert("Data Failed to Approve");
                     }
                 }, "json");
             }
@@ -326,17 +326,17 @@ if (isset($data->status)) {
         var id = id_param || $("#id").val();
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: "Tolak Pengajuan Periodik",
+                title: "Reject Periodic Request",
                 input: "textarea",
                 inputLabel: "Alasan Penolakan (Reject Reason)",
-                inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+                inputPlaceholder: "Write the rejection reason here...",
                 showCancelButton: true,
-                confirmButtonText: "Tolak Dokumen",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Reject Document",
+                cancelButtonText: "Cancel",
                 confirmButtonColor: "#dc3545",
                 inputValidator: (value) => {
                     if (!value || !value.trim()) {
-                        return "Alasan penolakan wajib diisi!";
+                        return "A rejection reason is required!";
                     }
                 }
             }).then((res) => {
@@ -347,8 +347,8 @@ if (isset($data->status)) {
                         if (msg.save == '1' || msg.save == 1 || msg.save === true) {
                             Swal.fire({
                                 icon: "info",
-                                title: "Ditolak!",
-                                text: "Data Berhasil Ditolak",
+                                title: "Rejected!",
+                                text: "Data Rejected Successfully",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -359,7 +359,7 @@ if (isset($data->status)) {
                                 }
                             });
                         } else {
-                            Swal.fire("Gagal!", "Data Gagal Ditolak", "error");
+                            Swal.fire("Failed!", "Data Failed to Reject", "error");
                         }
                     }, "json");
                 }
@@ -370,7 +370,7 @@ if (isset($data->status)) {
                 $.post(url_reject + id, {
                     'reject_reason': reason
                 }, function(msg) {
-                    alert("Data Berhasil Ditolak");
+                    alert("Data Rejected Successfully");
                     if (typeof list_view === 'function') {
                         list_view();
                     } else {
@@ -401,14 +401,14 @@ if (isset($data->status)) {
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <span class="badge <?= ($type == 'edit') ? 'bg-warning text-dark' : 'bg-primary text-white'; ?> px-3 py-1 rounded-pill fw-medium">
-                                <?= ($type == 'edit') ? '<i class="fa fa-edit me-1"></i>Mode Edit Pengajuan' : '<i class="fa fa-plus-circle me-1"></i>Mode Tambah Baru'; ?>
+                                <?= ($type == 'edit') ? '<i class="fa fa-edit me-1"></i>Edit Request Mode' : '<i class="fa fa-plus-circle me-1"></i>Add New Mode'; ?>
                             </span>
                         </div>
                         <h4 class="fw-bold mb-0 text-dark">
-                            <?= ($type == 'edit') ? 'Edit Pengajuan Pembayaran Periodik' : 'Input Pengajuan Pembayaran Periodik'; ?>
+                            <?= ($type == 'edit') ? 'Edit Periodic Payment Request' : 'Input Periodic Payment Request'; ?>
                             <?php if (!empty($no_doc)): ?><span class="text-primary ms-1">#<?= htmlspecialchars((string) $no_doc); ?></span><?php endif; ?>
                         </h4>
-                        <small class="text-muted">Departemen: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)); ?></span></small>
+                        <small class="text-muted">Department: <span class="fw-semibold text-dark"><?= strtoupper(htmlspecialchars((string) $dept_name)); ?></span></small>
                     </div>
                 </div>
 
@@ -417,7 +417,7 @@ if (isset($data->status)) {
                         <i class="fa fa-arrow-left me-1"></i> Kembali ke List
                     </button>
                     <button type="submit" name="save" class="btn btn-success btn-sm px-4 shadow-sm fw-bold" id="submit">
-                        <i class="fa fa-save me-1"></i> Simpan Pengajuan
+                        <i class="fa fa-save me-1"></i> Save Request
                     </button>
                 </div>
             </div>
@@ -434,19 +434,19 @@ if (isset($data->status)) {
         <div class="card-body p-3 p-md-4">
             <div class="row g-3">
                 <div class="col-md-4 col-12">
-                    <label class="form-label fw-bold small text-muted">Departemen <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small text-muted">Department <span class="text-danger">*</span></label>
                     <?= form_dropdown('departement', $datdept, set_value('departement', isset($data->departement) ? $data->departement : (isset($departement) ? $departement : '0')), array('id' => 'departement', 'class' => 'form-select form-select-sm', 'required' => 'required')); ?>
                 </div>
 
                 <div class="col-md-4 col-12">
-                    <label class="form-label fw-bold small text-muted">No. Dokumen</label>
+                    <label class="form-label fw-bold small text-muted">Document No.</label>
                     <input type="text" class="form-control form-control-sm bg-light fw-semibold text-primary" id="no_doc" name="no_doc" value="<?= htmlspecialchars((string) $no_doc); ?>" placeholder="Auto Generate" readonly>
                 </div>
 
                 <div class="col-md-4 col-12">
-                    <label class="form-label fw-bold small text-muted">Tanggal Dokumen <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small text-muted">Document Date <span class="text-danger">*</span></label>
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control form-control-sm flatpickr-date bg-white" id="tanggal_doc" name="tanggal_doc" value="<?= htmlspecialchars((string) $tanggal_doc); ?>" placeholder="Pilih tanggal..." required readonly>
+                        <input type="text" class="form-control form-control-sm flatpickr-date bg-white" id="tanggal_doc" name="tanggal_doc" value="<?= htmlspecialchars((string) $tanggal_doc); ?>" placeholder="Select date..." required readonly>
                         <span class="input-group-text bg-white"><i class="fa fa-calendar-alt text-primary"></i></span>
                     </div>
                 </div>
@@ -461,7 +461,7 @@ if (isset($data->status)) {
                 <h6 class="fw-bold mb-0 text-primary">
                     <i class="fa fa-list-check me-1"></i> Rincian Item Pembayaran Periodik
                 </h6>
-                <small class="text-muted">Masukkan nilai perkiraan biaya dan informasi rekening tujuan pembayaran</small>
+                <small class="text-muted">Enter the estimated cost and the payment destination account information</small>
             </div>
             <div>
                 <button class="btn btn-outline-primary btn-sm px-3" onclick="add_detail()" id="add-material" type="button">
@@ -476,13 +476,13 @@ if (isset($data->status)) {
                     <thead class="table-light text-nowrap text-center">
                         <tr>
                             <th width="40">#</th>
-                            <th style="min-width: 220px;">Deskripsi Biaya</th>
-                            <th width="140">Jadwal Pembayaran</th>
+                            <th style="min-width: 220px;">Cost Description</th>
+                            <th width="140">Payment Schedule</th>
                             <th width="140" class="text-end">Budget</th>
-                            <th width="160" class="text-end">Perkiraan Biaya <span class="text-danger">*</span></th>
-                            <th style="min-width: 180px;">Keterangan</th>
-                            <th width="160">Dokumen Lampiran</th>
-                            <th style="min-width: 240px;">Rekening Tujuan (Bank / No Rek / Nama)</th>
+                            <th width="160" class="text-end">Estimated Cost <span class="text-danger">*</span></th>
+                            <th style="min-width: 180px;">Description</th>
+                            <th width="160">Attachment Document</th>
+                            <th style="min-width: 240px;">Destination Account (Bank / Acc No / Name)</th>
                         </tr>
                     </thead>
                     <tbody id="detail_body">
@@ -515,7 +515,7 @@ if (isset($data->status)) {
                                         <input type="text" class="form-control form-control-sm nilai divide text-end fw-bold text-primary" name="nilai[]" id="nilai_<?= $idd; ?>" value="<?= ($record->nilai); ?>" data-no="<?= $idd; ?>">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Catatan...">
+                                        <input type="text" class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->keterangan); ?>" placeholder="Notes...">
                                     </td>
                                     <td>
                                         <input type="file" class="form-control form-control-sm mb-1" name="doc_file_<?= $idd; ?>" id="doc_file<?= $idd; ?>">
@@ -528,13 +528,13 @@ if (isset($data->status)) {
                                     <td>
                                         <div class="d-flex flex-column gap-1">
                                             <div class="input-group input-group-sm">
-                                                <input type="text" class="form-control form-control-sm" name="bank_id[]" id="bank_id_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->bank_id); ?>" placeholder="Nama Bank">
-                                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="list_bank(<?= $idd; ?>)" title="Pilih dari daftar bank">
+                                                <input type="text" class="form-control form-control-sm" name="bank_id[]" id="bank_id_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->bank_id); ?>" placeholder="Bank Name">
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="list_bank(<?= $idd; ?>)" title="Select from the bank list">
                                                     <i class="fa fa-list"></i>
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm" name="accnumber[]" id="accnumber_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accnumber); ?>" placeholder="No. Rekening">
-                                            <input type="text" class="form-control form-control-sm" name="accname[]" id="accname_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accname); ?>" placeholder="Atas Nama">
+                                            <input type="text" class="form-control form-control-sm" name="accnumber[]" id="accnumber_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accnumber); ?>" placeholder="Account Number">
+                                            <input type="text" class="form-control form-control-sm" name="accname[]" id="accname_<?= $idd; ?>" value="<?= htmlspecialchars((string) $record->accname); ?>" placeholder="Account Name">
                                         </div>
                                     </td>
                                 </tr>
@@ -546,7 +546,7 @@ if (isset($data->status)) {
                     </tbody>
                     <tfoot class="table-light">
                         <tr class="fw-bold">
-                            <td colspan="4" class="text-end py-2">TOTAL PERKIRAAN BIAYA:</td>
+                            <td colspan="4" class="text-end py-2">TOTAL ESTIMATED COST:</td>
                             <td class="text-end py-2">
                                 <span id="total_nilai_display" class="fw-bold text-success fs-6">
                                     Rp <?= number_format((float) $total); ?>
@@ -567,7 +567,7 @@ if (isset($data->status)) {
                 <i class="fa fa-arrow-left me-1"></i> Kembali ke List
             </button>
             <button type="submit" name="save" class="btn btn-success btn-sm px-4 shadow-sm fw-bold" id="submit">
-                <i class="fa fa-save me-1"></i> Simpan Pengajuan
+                <i class="fa fa-save me-1"></i> Save Request
             </button>
         </div>
     </div>
@@ -584,11 +584,11 @@ if (isset($data->status)) {
             <div class="modal-body p-3" id="bankModalBody">
                 <div class="text-center py-4">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2 mb-0">Memuat data bank...</p>
+                    <p class="text-muted mt-2 mb-0">Loading bank data...</p>
                 </div>
             </div>
             <div class="modal-footer py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -640,7 +640,7 @@ if (isset($data->status)) {
     });
 
     function list_bank(id) {
-        $("#bankModalBody").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Memuat data bank...</p></div>');
+        $("#bankModalBody").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Loading bank data...</p></div>');
         $('#bankModal').modal('show');
         $.ajax({
             url: siteurl + 'all/list_bank/' + id,
@@ -652,7 +652,7 @@ if (isset($data->status)) {
                 }
             },
             error: function() {
-                $("#bankModalBody").html('<div class="alert alert-danger text-center">Gagal memuat daftar bank.</div>');
+                $("#bankModalBody").html('<div class="alert alert-danger text-center">Failed to load the bank list.</div>');
             }
         });
     }
@@ -672,7 +672,7 @@ if (isset($data->status)) {
             idbudget.push($(this).val());
         });
 
-        $('#table-detail-biaya tbody').html('<tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>Memuat rincian budget periodik...</td></tr>');
+        $('#table-detail-biaya tbody').html('<tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>Loading periodic budget details...</td></tr>');
 
         $.ajax({
             url: siteurl + "pengajuan_rutin/get_data",
@@ -713,7 +713,7 @@ if (isset($data->status)) {
                             Rows += "<input type='text' class='form-control form-control-sm nilai divide text-end fw-bold text-primary' name='nilai[]' value='0' data-no='" + nomor + "' id='nilai_" + nomor + "' />";
                             Rows += "</td>";
                             Rows += "<td>";
-                            Rows += "<input type='text' class='form-control form-control-sm' name='keterangan[]' id='keterangan_" + nomor + "' value='' placeholder='Catatan...' />";
+                            Rows += "<input type='text' class='form-control form-control-sm' name='keterangan[]' id='keterangan_" + nomor + "' value='' placeholder='Notes...' />";
                             Rows += "</td>";
                             Rows += "<td>";
                             Rows += "<input type='file' class='form-control form-control-sm' name='doc_file_" + nomor + "' id='doc_file" + nomor + "'>";
@@ -721,11 +721,11 @@ if (isset($data->status)) {
                             Rows += "<td>";
                             Rows += "<div class='d-flex flex-column gap-1'>";
                             Rows += "<div class='input-group input-group-sm'>";
-                            Rows += "<input type='text' class='form-control form-control-sm' name='bank_id[]' id='bank_id_" + nomor + "' value='' placeholder='Nama Bank' />";
+                            Rows += "<input type='text' class='form-control form-control-sm' name='bank_id[]' id='bank_id_" + nomor + "' value='' placeholder='Bank Name' />";
                             Rows += "<button type='button' class='btn btn-outline-secondary btn-sm' onclick='list_bank(" + nomor + ")'><i class='fa fa-list'></i></button>";
                             Rows += "</div>";
-                            Rows += "<input type='text' class='form-control form-control-sm' name='accnumber[]' id='accnumber_" + nomor + "' value='' placeholder='No. Rekening' />";
-                            Rows += "<input type='text' class='form-control form-control-sm' name='accname[]' id='accname_" + nomor + "' value='' placeholder='Atas Nama' />";
+                            Rows += "<input type='text' class='form-control form-control-sm' name='accnumber[]' id='accnumber_" + nomor + "' value='' placeholder='Account Number' />";
+                            Rows += "<input type='text' class='form-control form-control-sm' name='accname[]' id='accname_" + nomor + "' value='' placeholder='Account Name' />";
                             Rows += "</div>";
                             Rows += "</td>";
                             Rows += "</tr>";
@@ -735,18 +735,18 @@ if (isset($data->status)) {
                         $(".divide").divide();
                         hitung_total();
                     } else {
-                        $('#detail_body').html('<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fa fa-info-circle me-1"></i> Tidak ada rincian budget periodik yang ditemukan untuk periode ini.</td></tr>');
+                        $('#detail_body').html('<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fa fa-info-circle me-1"></i> No periodic budget details were found for this period.</td></tr>');
                     }
                 } else {
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire({ icon: 'warning', title: 'Perhatian!', text: 'Tidak ada data budget yang ditemukan.' });
+                        Swal.fire({ icon: 'warning', title: 'Attention!', text: 'No budget data found.' });
                     } else {
-                        alert('Tidak ada data budget yang ditemukan.');
+                        alert('No budget data found.');
                     }
                 }
             },
             error: function() {
-                $('#detail_body').html('<tr><td colspan="8" class="text-center py-4 text-danger"><i class="fa fa-exclamation-triangle me-1"></i> Gagal memuat data budget. Silakan coba lagi.</td></tr>');
+                $('#detail_body').html('<tr><td colspan="8" class="text-center py-4 text-danger"><i class="fa fa-exclamation-triangle me-1"></i> Failed to load budget data. Please try again.</td></tr>');
             }
         });
     }
@@ -767,11 +767,11 @@ if (isset($data->status)) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Perhatian!',
-                    text: 'Setidaknya masukkan 1 nilai perkiraan biaya yang lebih besar dari 0!'
+                    title: 'Attention!',
+                    text: 'Enter at least 1 estimated cost value greater than 0!'
                 });
             } else {
-                alert('Setidaknya masukkan 1 nilai perkiraan biaya yang lebih besar dari 0!');
+                alert('Enter at least 1 estimated cost value greater than 0!');
             }
             return false;
         }
@@ -789,13 +789,13 @@ if (isset($data->status)) {
                 processData: false,
                 contentType: false,
                 success: function(msg) {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Pengajuan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Request');
                     if (msg['save'] == '1') {
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Sukses!',
-                                text: 'Data pengajuan pembayaran periodik berhasil disimpan.',
+                                title: 'Success!',
+                                text: 'Periodic payment request data saved successfully.',
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -806,7 +806,7 @@ if (isset($data->status)) {
                                 }
                             });
                         } else {
-                            alert('Data pengajuan berhasil disimpan.');
+                            alert('Request data saved successfully.');
                             if (typeof list_view === 'function') {
                                 list_view();
                             } else {
@@ -817,24 +817,24 @@ if (isset($data->status)) {
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Gagal!',
-                                text: msg['msg'] || 'Data gagal disimpan.'
+                                title: 'Failed!',
+                                text: msg['msg'] || 'Data failed to save.'
                             });
                         } else {
-                            alert('Data gagal disimpan.');
+                            alert('Data failed to save.');
                         }
                     }
                 },
                 error: function() {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Pengajuan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Request');
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: 'Terjadi kesalahan sistem saat memproses data.'
+                            text: 'A system error occurred while processing the data.'
                         });
                     } else {
-                        alert('Terjadi kesalahan sistem saat memproses data.');
+                        alert('A system error occurred while processing the data.');
                     }
                 }
             });
@@ -842,21 +842,21 @@ if (isset($data->status)) {
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: "Simpan Pengajuan?",
-                text: "Pastikan data rincian pembayaran periodik telah sesuai!",
+                title: "Save Request?",
+                text: "Make sure the periodic payment details are correct!",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed) {
                     doSubmit();
                 }
             });
         } else {
-            if (confirm("Simpan pengajuan ini?")) {
+            if (confirm("Save this request?")) {
                 doSubmit();
             }
         }

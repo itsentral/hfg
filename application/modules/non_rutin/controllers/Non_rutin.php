@@ -88,7 +88,7 @@ class Non_rutin extends Admin_Controller
 		$get_list_data = $this->db->get()->result();
 
 		$data = array(
-			'title'			=> 'PR Departemen',
+			'title'			=> 'PR Department',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda,
@@ -177,8 +177,8 @@ class Non_rutin extends Admin_Controller
 				$ArrDetail = array();
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['harga']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['harga'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -301,8 +301,8 @@ class Non_rutin extends Admin_Controller
 				$SUM_HARGA = 0;
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['harga']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['harga'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -585,7 +585,7 @@ class Non_rutin extends Admin_Controller
 			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
 			$data = array(
-				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
+				'title'				=> $tanda . ' PR Department ' . $title_tingkat,
 				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'detail'		=> $detail,
@@ -658,8 +658,8 @@ class Non_rutin extends Admin_Controller
 				$ArrDetail = array();
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['harga']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['harga'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -762,8 +762,8 @@ class Non_rutin extends Admin_Controller
 				$SUM_HARGA = 0;
 				if (!empty($detail)) {
 					foreach ($detail as $val => $valx) {
-						$qty 	= str_replace(',', '', $valx['qty']);
-						$harga 	= str_replace(',', '', $valx['harga']);
+						$qty 	= str_replace(',', '', $valx['qty'] ?? '');
+						$harga 	= str_replace(',', '', $valx['harga'] ?? '');
 
 						$SUM_QTY 	+= $qty;
 						$SUM_HARGA 	+= $harga * $qty;
@@ -1015,7 +1015,7 @@ class Non_rutin extends Admin_Controller
 			$get_employee   = $this->db->get_where('employee', ['deleted' => 'N'])->result();
 
 			$data = array(
-				'title'				=> $tanda . ' PR Departemen ' . $title_tingkat,
+				'title'				=> $tanda . ' PR Department ' . $title_tingkat,
 				'action'		=> strtolower((string) $tanda),
 				'header'		=> $header,
 				'detail'		=> $detail,
@@ -1049,7 +1049,7 @@ class Non_rutin extends Admin_Controller
 		$d_Header .= "</td>";
 		$d_Header .= "<td align='left'><input type='text' id='qty_" . $id . "' name='detail[" . $id . "][qty]' class='form-control input-md text-center autoNumeric2 sum_tot'></td>";
 		$d_Header .= "<td align='left'><select name='detail[" . $id . "][satuan]' class='form-control form-select wajib satuan_" . $id . "' required>";
-		$d_Header .= "<option value=''>Pilih</option>";
+		$d_Header .= "<option value=''>Select</option>";
 		foreach ($satuan as $key => $value) {
 			$d_Header .= "<option value='" . $value['id'] . "'>" . $value['code'] . "</option>";
 		}
@@ -1074,7 +1074,7 @@ class Non_rutin extends Admin_Controller
 		$data_Group			= $this->db->get('groups')->result();
 		$tanda				= $this->uri->segment(2);
 		$data = array(
-			'title'			=> 'Approval PR Departemen - Head Department',
+			'title'			=> 'Approval PR Department - Head Department',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda
@@ -1089,7 +1089,7 @@ class Non_rutin extends Admin_Controller
 		$data_Group			= $this->db->get('groups')->result();
 		$tanda				= $this->uri->segment(2);
 		$data = array(
-			'title'			=> 'Approval PR Departemen - Cost Control',
+			'title'			=> 'Approval PR Department - Cost Control',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda
@@ -1104,7 +1104,7 @@ class Non_rutin extends Admin_Controller
 		$data_Group			= $this->db->get('groups')->result();
 		$tanda				= $this->uri->segment(2);
 		$data = array(
-			'title'			=> 'Approval PR Departemen',
+			'title'			=> 'Approval PR Department',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda
@@ -1129,7 +1129,7 @@ class Non_rutin extends Admin_Controller
 
 		$data_url		= base_url();
 		$Split_Beda		= explode('/', (string) $data_url);
-		$Jum_Beda		= count($Split_Beda);
+		$Jum_Beda		= count($Split_Beda ?? []);
 		$Nama_Beda		= $Split_Beda[$Jum_Beda - 2];
 
 		$data = array(
@@ -1258,12 +1258,12 @@ class Non_rutin extends Admin_Controller
 						<tr class="bg-blue">
 							<th class="text-center">#</th>
 							<th class="text-center">No PR</th>
-							<th class="text-center">Departemen</th>
-							<th class="text-center no-sort">Nama Barang/Jasa</th>
+							<th class="text-center">Department</th>
+							<th class="text-center no-sort">Item/Service Name</th>
 							<th class="text-center no-sort">Spec / Requirement</th>
 							<th class="text-center no-sort" width="7%">Qty</th>
 							<th class="text-center no-sort">Dibutuhkan</th>
-							<th class="text-center no-sort">Keterangan</th>
+							<th class="text-center no-sort">Description</th>
 							<th class="text-center no-sort">Status</th>
 							<th class="text-center no-sort" width="13%">Option</th>
 						</tr>
@@ -1298,11 +1298,11 @@ class Non_rutin extends Admin_Controller
 				$arr_tanggal[$val] = "&bull; " . $tgl_dibutuhkan;
 				$arr_ket[$val] = "&bull; " . strtoupper((string) $valx['keterangan']);
 			}
-			$dt_nama_barang    = implode("<br>", $arr_nmbarang);
-			$dt_spec    = implode("<br>", $arr_spec);
-			$dt_qty    = implode("<br>", $arr_qty);
-			$dt_tanggal    = implode("<br>", $arr_tanggal);
-			$dt_ket    = implode("<br>", $arr_ket);
+			$dt_nama_barang    = implode("<br>", $arr_nmbarang ?? []);
+			$dt_spec    = implode("<br>", $arr_spec ?? []);
+			$dt_qty    = implode("<br>", $arr_qty ?? []);
+			$dt_tanggal    = implode("<br>", $arr_tanggal ?? []);
+			$dt_ket    = implode("<br>", $arr_ket ?? []);
 
 			$hasil .= '<td>' . $dt_nama_barang . '</td>';
 			$hasil .= '<td>' . $dt_spec . '</td>';
@@ -1374,7 +1374,7 @@ class Non_rutin extends Admin_Controller
 			}
 
 			$btns = array_filter([$view, $edit, $approve, $cancel, $print, $close]);
-			$hasil .= '<td class="text-center"><div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $btns) . '</div></td>';
+			$hasil .= '<td class="text-center"><div class="d-inline-flex gap-1 justify-content-center">' . implode(' ', $btns ?? []) . '</div></td>';
 
 			$hasil .= '</tr>';
 
@@ -1429,7 +1429,7 @@ class Non_rutin extends Admin_Controller
 		$data_Group			= $this->db->get('groups')->result();
 		$tanda				= $this->uri->segment(2);
 		$data = array(
-			'title'			=> 'Approval PR Departemen by Finance',
+			'title'			=> 'Approval PR Department by Finance',
 			'action'		=> 'index',
 			'row_group'		=> $data_Group,
 			'tanda'			=> $tanda

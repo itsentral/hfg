@@ -24,11 +24,11 @@ width:90%;
 			Action
 			<?php endif; ?>
 			</th>
-			<th>No Kasbon</th>
+			<th>Cash Advance No</th>
 			<th>No PR</th>
-			<th>Tanggal Kasbon</th> 			
-			<th>Nilai Kasbon</th>
-			<th>Nilai Aktual</th>
+			<th>Cash Advance Date</th> 			
+			<th>Cash Advance Value</th>
+			<th>Actual Value</th>
 			
 		</tr>
 		</thead>
@@ -48,19 +48,19 @@ width:90%;
 			<?php if($ENABLE_MANAGE) : 
 			if ($record->sts_trm == 1){
 			?>
-			    <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Jurnal Penerimaan" data-id_material="<?=$record->no_kasbon?>"><i class="fa fa-eye"></i>
+			    <a class="btn btn-success btn-sm view3" href="javascript:void(0)" title="View Receipt Journal" data-id_material="<?=$record->no_kasbon?>"><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
 			if ($record->sts_apr == 1){
 			?>
-				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Jurnal Permintaan Bayar" data-id_material="<?=$record->no_kasbon?>" data-id_total="<?=$record->nilai_bayar + $record->ppn_request?>" data-id_vendor="kasbon" data-nm_vendor="kasbon"><i class="fa fa-eye"></i>
+				<a class="btn btn-primary btn-sm view" href="javascript:void(0)" title="View Payment Request Journal" data-id_material="<?=$record->no_kasbon?>" data-id_total="<?=$record->nilai_bayar + $record->ppn_request?>" data-id_vendor="kasbon" data-nm_vendor="kasbon"><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
 			if ($record->sts_buk == 1){
 			?>
-				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Jurnal Pembayaran" data-id_material="<?=$record->no_kasbon?>" data-id_total="<?=$record->nilai_bayar + $record->nilai_ppn?>" data-id_vendor="kasbon" data-nm_vendor="kasbon"><i class="fa fa-eye"></i>
+				<a class="btn btn-warning btn-sm view2" href="javascript:void(0)" title="View Payment Journal" data-id_material="<?=$record->no_kasbon?>" data-id_total="<?=$record->nilai_bayar + $record->nilai_ppn?>" data-id_vendor="kasbon" data-nm_vendor="kasbon"><i class="fa fa-eye"></i>
 				</a>
 			<?php 
 			}
@@ -89,11 +89,11 @@ width:90%;
 			Action
 			<?php endif; ?>
 			</th>
-			<th>No Kasbon</th>
+			<th>Cash Advance No</th>
 			<th>No PR</th>
-			<th>Tanggal Kasbon</th> 	
-			<th>Nilai Kasbon</th>
-			<th>Nilai Aktual</th>
+			<th>Cash Advance Date</th> 	
+			<th>Cash Advance Value</th>
+			<th>Actual Value</th>
 			
 		</tr>
 		</tfoot>
@@ -141,7 +141,7 @@ width:90%;
 		var pp = 'kasbonproduksi1';
 		var akses = 'approval_jurnal_po_produksi1';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_approval/'+id+'/'+pp+'/'+akses+'/'+total+'/'+id_vendor+'/'+nm_vendor,
@@ -162,7 +162,7 @@ width:90%;
 		var pp = 'kasbonproduksi1';
 		var akses = 'approval_jurnal_po_produksi1';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_buk/'+id+'/'+pp+'/'+akses+'/'+total+'/'+id_vendor+'/'+nm_vendor,
@@ -180,7 +180,7 @@ width:90%;
 	    var pp = 'kasbonproduksi1';
 		var akses = 'approval_jurnal_po_produksi1';
 		// alert(id);
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Detail Jurnal</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Journal Detail</b>");
 		$.ajax({
 			type:'POST',
 			url:siteurl+'jurnal_nomor/view_jurnal_penerimaan/'+id+'/'+pp+'/'+akses,

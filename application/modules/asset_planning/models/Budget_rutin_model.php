@@ -37,7 +37,7 @@ class Budget_rutin_model extends BF_Model {
 		$nm_category = '';
 		if($id_category != '0'){
 			$WHERE = " WHERE jenis_barang='".$id_category."'";
-			$nm_category = ' ['.strtoupper(get_name('con_nonmat_category_awal','category','id',$id_category)).']';
+			$nm_category = ' ['.strtoupper((string) get_name('con_nonmat_category_awal','category','id',$id_category)).']';
 		}
 		
 		$group_header = $this->db->query("SELECT department, costcenter FROM budget_rutin_header GROUP BY department, costcenter")->result_array();
@@ -133,7 +133,7 @@ class Budget_rutin_model extends BF_Model {
 					$ArrDetail[$val]['code_budget'] 	= $code_budget;
 					$ArrDetail[$val]['jenis_barang'] 	= $valx['jenis_barang'];
 					$ArrDetail[$val]['id_barang'] 		= $valx['id_barang'];
-					$ArrDetail[$val]['kebutuhan_month'] = str_replace(',','',$valx['kebutuhan_month']);
+					$ArrDetail[$val]['kebutuhan_month'] = str_replace(',','',$valx['kebutuhan_month'] ?? '');
 					$ArrDetail[$val]['satuan'] 			= $valx['satuan'];
 				}
 			}
@@ -214,7 +214,7 @@ class Budget_rutin_model extends BF_Model {
 			$d_Header .= "<td align='center'>".$class_no."</td>";
 			$d_Header .= "<td align='left'>";
 				$d_Header .= "<select name='detail[".$id."][id_barang]' data-no='".$id."' class='chosen_select form-control input-sm getSpec'>";
-				$d_Header .= "<option value='0'>Select Barang</option>";
+				$d_Header .= "<option value='0'>Select Item</option>";
 				foreach($jenis_barang AS $val => $valx){
 				  $d_Header .= "<option value='".$valx['code_group']."'>".strtoupper($valx['material_name']." - ".$valx['spec'])."</option>";
 				}
@@ -229,7 +229,7 @@ class Budget_rutin_model extends BF_Model {
 			$d_Header .= "</td>";
 			$d_Header .= "<td align='left'>";
 				$d_Header .= "<select name='detail[".$id."][satuan]' data-no='".$id."' id='satuan_".$id."' class='chosen_select form-control input-sm'>";
-				$d_Header .= "<option value='0'>Select Satuan</option>";
+				$d_Header .= "<option value='0'>Select Unit</option>";
 				foreach($satuan AS $val => $valx){
 				  $d_Header .= "<option value='".$valx['id_satuan']."'>".strtoupper((string) $valx['kode_satuan'])."</option>";
 				}
@@ -319,13 +319,13 @@ class Budget_rutin_model extends BF_Model {
 				$delete	= "";
 				$detail	= "";
 				if($Arr_Akses['update'] =='1'){
-					$edit	= "&nbsp;<a href='".site_url($this->uri->segment(1)).'/add_rutin/'.$row['code_budget']."' class='btn btn-sm btn-primary' title='Edit Data' data-role='qtip'><i class='fa fa-edit'></i></a>";
+					$edit	= "&nbsp;<a href='".site_url($this->uri->segment(1)).'/add_rutin/'.$row['code_budget']."' class='btn btn-sm btn-primary' title=\'Edit\' data-role='qtip'><i class='fa fa-edit'></i></a>";
 				}
 				// if($Arr_Akses['update'] =='1'){
 				// 	$detail	= "&nbsp;<a href='".site_url($this->uri->segment(1)).'/kompilasi_budget/'.$row['code_budget']."' class='btn btn-sm btn-success' title='Kompilasi Budget' data-role='qtip'><i class='fa fa-filter'></i></a>";
 				// }
 				if($Arr_Akses['delete'] =='1'){
-					$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger hapus' data-id='".$row['code_budget']."' title='Hapus'><i class='fa fa-trash'></i></button>";
+					$delete	= "&nbsp;<button type='button' class='btn btn-sm btn-danger hapus' data-id='".$row['code_budget']."' title='Delete'><i class='fa fa-trash'></i></button>";
 				}
 			$nestedData[]	= "	<div align='center'>
                                     <button type='button' class='btn btn-sm btn-warning detail' data-code='".$row['code_budget']."' title='Detail'><i class='fa fa-eye'></i></button>
@@ -494,7 +494,7 @@ class Budget_rutin_model extends BF_Model {
 			$nm_category = '';
 			if($id_category != '0'){
 				$WHERE = " WHERE jenis_barang='".$id_category."'";
-				$nm_category = ' ['.strtoupper(get_name('con_nonmat_category_awal','category','id',$id_category)).']';
+				$nm_category = ' ['.strtoupper((string) get_name('con_nonmat_category_awal','category','id',$id_category)).']';
 			}
 
 			$group_header = $this->db->query("SELECT department, costcenter FROM budget_rutin_header GROUP BY department, costcenter")->result_array();
@@ -503,7 +503,7 @@ class Budget_rutin_model extends BF_Model {
 
     		$Row		= 1;
     		$NewRow		= $Row+1;
-    		$Col_Akhir	= $Cols	= getColsChar(5+COUNT($group_header));
+    		$Col_Akhir	= $Cols	= getColsChar(5+COUNT($group_header ?? []));
     		$sheet->setCellValue('A'.$Row, 'KOMPILASI BUDGET'.$nm_category);
     		$sheet->getStyle('A'.$Row.':'.$Col_Akhir.$NewRow)->applyFromArray($style_header2);
     		$sheet->mergeCells('A'.$Row.':'.$Col_Akhir.$NewRow);
@@ -516,12 +516,12 @@ class Budget_rutin_model extends BF_Model {
     		$sheet->mergeCells('A'.$NewRow.':A'.$NextRow);
     		$sheet->getColumnDimension('A')->setAutoSize(true);
 
-    		$sheet->setCellValue('B'.$NewRow, 'Kategori');
+    		$sheet->setCellValue('B'.$NewRow, 'Category');
     		$sheet->getStyle('B'.$NewRow.':B'.$NextRow)->applyFromArray($style_header);
     		$sheet->mergeCells('B'.$NewRow.':B'.$NextRow);
     		$sheet->getColumnDimension('B')->setAutoSize(true);
 
-			$sheet->setCellValue('C'.$NewRow, 'Nama Barang');
+			$sheet->setCellValue('C'.$NewRow, 'Item Name');
     		$sheet->getStyle('C'.$NewRow.':C'.$NextRow)->applyFromArray($style_header);
     		$sheet->mergeCells('C'.$NewRow.':C'.$NextRow);
     		$sheet->getColumnDimension('C')->setAutoSize(true);
@@ -550,10 +550,10 @@ class Budget_rutin_model extends BF_Model {
 			foreach($group_header AS $val => $valx){ $noexcel++;
 				$cc = '';
 				if($valx['costcenter'] <> '0'){
-					$cc = strtoupper(get_name('costcenter', 'nm_costcenter', 'id_costcenter', $valx['costcenter']));
+					$cc = strtoupper((string) get_name('costcenter', 'nm_costcenter', 'id_costcenter', $valx['costcenter']));
 				}
 				$row_name = getColsChar($noexcel);
-				$sheet->setCellValue($row_name.$NewRow, strtoupper(get_name('department', 'nm_dept', 'id', $valx['department'])).", ".$cc);
+				$sheet->setCellValue($row_name.$NewRow, strtoupper((string) get_name('department', 'nm_dept', 'id', $valx['department'])).", ".$cc);
 				$sheet->getStyle($row_name.$NewRow.':'.$row_name.''.$NextRow)->applyFromArray($style_header);
 				$sheet->mergeCells($row_name.$NewRow.':'.$row_name.''.$NextRow);
 				$sheet->getColumnDimension($row_name)->setAutoSize(false);
@@ -574,25 +574,25 @@ class Budget_rutin_model extends BF_Model {
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
 
   				$awal_col++;
-  				$id_produksi	= strtoupper(get_name('con_nonmat_category_awal', 'category', 'id', $valx['jenis_barang']));
+  				$id_produksi	= strtoupper((string) get_name('con_nonmat_category_awal', 'category', 'id', $valx['jenis_barang']));
   				$Cols			= getColsChar($awal_col);
   				$sheet->setCellValue($Cols.$awal_row, $id_produksi);
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
 
   				$awal_col++;
-  				$status_date	= strtoupper(get_name('con_nonmat_new', 'material_name', 'code_group', $valx['id_barang']));
+  				$status_date	= strtoupper((string) get_name('con_nonmat_new', 'material_name', 'code_group', $valx['id_barang']));
   				$Cols			= getColsChar($awal_col);
   				$sheet->setCellValue($Cols.$awal_row, $status_date);
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
 				
 				$awal_col++;
-  				$status_date	= strtoupper(get_name('con_nonmat_new', 'spec', 'code_group', $valx['id_barang']));
+  				$status_date	= strtoupper((string) get_name('con_nonmat_new', 'spec', 'code_group', $valx['id_barang']));
   				$Cols			= getColsChar($awal_col);
   				$sheet->setCellValue($Cols.$awal_row, $status_date);
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
 				
 				$awal_col++;
-  				$status_date	= strtoupper(get_name('con_nonmat_new', 'brand', 'code_group', $valx['id_barang']));
+  				$status_date	= strtoupper((string) get_name('con_nonmat_new', 'brand', 'code_group', $valx['id_barang']));
   				$Cols			= getColsChar($awal_col);
   				$sheet->setCellValue($Cols.$awal_row, $status_date);
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
@@ -611,7 +611,7 @@ class Budget_rutin_model extends BF_Model {
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
 				
 				$awal_col++;
-  				$status_date	= strtoupper(get_name('raw_pieces','kode_satuan','id_satuan',$valx['satuan']));
+  				$status_date	= strtoupper((string) get_name('raw_pieces','kode_satuan','id_satuan',$valx['satuan']));
   				$Cols			= getColsChar($awal_col);
   				$sheet->setCellValue($Cols.$awal_row, $status_date);
   				$sheet->getStyle($Cols.$awal_row)->applyFromArray($styleArray3);
@@ -631,7 +631,7 @@ class Budget_rutin_model extends BF_Model {
   		}
 
 
-  		$sheet->setTitle('List Budget Barang Rutin');
+  		$sheet->setTitle('Routine Item Budget List');
   		//mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
   		$objWriter		= PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
   		ob_end_clean();
@@ -642,7 +642,7 @@ class Budget_rutin_model extends BF_Model {
   		header("Pragma: no-cache");
   		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   		//ubah nama file saat diunduh
-  		header('Content-Disposition: attachment;filename="compile-budget'.strtolower(str_replace(' ','-',$nm_category)).'.xls"');
+  		header('Content-Disposition: attachment;filename="compile-budget'.strtolower(str_replace(' ','-',$nm_category ?? '')).'.xls"');
   		//unduh file
   		$objWriter->save("php://output");
   	}

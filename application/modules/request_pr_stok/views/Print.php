@@ -155,12 +155,12 @@
 			<td><?= $header->no_pr ?></td>
 		</tr>
 		<tr>
-			<td width="45%">Tanggal PR</td>
+			<td width="45%">PR Date</td>
 			<td style="text-align: center;">:</td>
 			<td><?= date('d F Y', strtotime((string) $header->tgl_so)) ?></td>
 		</tr>
 		<tr>
-			<td width="45%">Tanggal Dibutuhkan</td>
+			<td width="45%">Required Date</td>
 			<td style="text-align: center;">:</td>
 			<td><?= date('d F Y', strtotime((string) $header->tgl_dibutuhkan)) ?></td>
 		</tr>
@@ -172,14 +172,14 @@
 		<thead>
 			<tr>
 				<th style="text-align: center;">No.</th>
-				<th style="text-align: center;">Nama Barang</th>
+				<th style="text-align: center;">Item Name</th>
 				<th style="text-align: center;">Spesifikasi</th>
 				<th style="text-align: center;">Tipe</th>
-				<th style="text-align: center;">Qty Stok</th>
-				<th style="text-align: center;">Satuan</th>
+				<th style="text-align: center;">Stock Qty</th>
+				<th style="text-align: center;">Unit</th>
 				<th style="text-align: center;">Qty Kebutuhan</th>
-				<th style="text-align: center;">Qty Permintaan</th>
-				<th style="text-align: center;">Harga</th>
+				<th style="text-align: center;">Requested Qty</th>
+				<th style="text-align: center;">Price</th>
 				<th style="text-align: center;">Total</th>
 			</tr>
 		</thead>

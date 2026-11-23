@@ -52,7 +52,7 @@ function get_journal_badge($status)
                 <div>
                     <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Budget Master</span>
                     <h4 class="fw-bold mb-0 text-success mt-1">Rp <?= number_format((float) $budget, 0, ',', '.') ?></h4>
-                    <small class="text-muted" style="font-size: 11px;">Alokasi kas kecil</small>
+                    <small class="text-muted" style="font-size: 11px;">Petty cash allocation</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; font-size: 20px;">
                     <i class="fas fa-money-bill-alt"></i>
@@ -78,9 +78,9 @@ function get_journal_badge($status)
         <div class="card border-0 shadow-sm rounded-3 h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 5px solid #2563eb !important;">
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Sisa Budget Tersedia</span>
+                    <span class="text-muted text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Available Remaining Budget</span>
                     <h4 class="fw-bold mb-0 text-primary mt-1">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></h4>
-                    <small class="text-muted" style="font-size: 11px;">Sisa anggaran saat pencatatan</small>
+                    <small class="text-muted" style="font-size: 11px;">Remaining budget at recording</small>
                 </div>
                 <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center text-primary" style="width: 48px; height: 48px; font-size: 20px;">
                     <i class="fa fa-balance-scale"></i>
@@ -95,9 +95,9 @@ function get_journal_badge($status)
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-file-text-o me-2"></i>Detail Pencatatan Petty Cash
+                <i class="fa fa-file-text-o me-2"></i>Petty Cash Record Detail
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pencatatan) ?></span></small>
+            <small class="text-muted">Document Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header->no_pencatatan) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash') ?>" class="btn btn-outline-secondary btn-sm px-3">
@@ -119,7 +119,7 @@ function get_journal_badge($status)
                 <div class="fw-bold fs-6 text-primary"><?= htmlspecialchars((string) $header->no_pencatatan) ?></div>
             </div>
             <div class="col-md-3">
-                <label class="form-label text-muted small fw-semibold mb-1">Tanggal Transaksi</label>
+                <label class="form-label text-muted small fw-semibold mb-1">Transaction Date</label>
                 <div class="fw-semibold text-dark"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $header->tanggal)) ?></div>
             </div>
             <div class="col-md-3">
@@ -137,8 +137,8 @@ function get_journal_badge($status)
                 <div class="fw-semibold text-dark"><i class="fa fa-user me-1 text-muted"></i><?= htmlspecialchars((string) $header->request_by) ?></div>
             </div>
             <div class="col-md-6">
-                <label class="form-label text-muted small fw-semibold mb-1">Keterangan / Keperluan</label>
-                <div class="text-dark bg-light p-2 rounded small"><?= !empty($header->keterangan) ? nl2br(htmlspecialchars((string) $header->keterangan)) : '<span class="text-muted">Tidak ada keterangan</span>' ?></div>
+                <label class="form-label text-muted small fw-semibold mb-1">Description / Purpose</label>
+                <div class="text-dark bg-light p-2 rounded small"><?= !empty($header->keterangan) ? nl2br(htmlspecialchars((string) $header->keterangan)) : '<span class="text-muted">No description</span>' ?></div>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-muted small fw-semibold mb-1">Status Pencatatan</label>
@@ -161,13 +161,13 @@ function get_journal_badge($status)
                 <thead class="table-light text-center">
                     <tr>
                         <th width="40" class="text-center">#</th>
-                        <th width="240">COA Pengeluaran</th>
-                        <th>Deskripsi Pengeluaran</th>
+                        <th width="240">Expense COA</th>
+                        <th>Expense Description</th>
                         <th width="180">Spesifikasi</th>
-                        <th width="80" class="text-center">Jumlah</th>
+                        <th width="80" class="text-center">Amount</th>
                         <th width="130" class="text-end">Nominal</th>
                         <th width="140" class="text-end">Total</th>
-                        <th width="200">Lampiran Bukti</th>
+                        <th width="200">Proof Attachment</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,20 +194,20 @@ function get_journal_badge($status)
                                             <?php endforeach; ?>
                                         </div>
                                     <?php else : ?>
-                                        <span class="text-muted small">Tidak ada bukti</span>
+                                        <span class="text-muted small">No proof</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-3">Tidak ada data rincian pengeluaran</td>
+                            <td colspan="8" class="text-center text-muted py-3">No expense detail data</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="6" class="text-end fw-bold py-2">Grand Total Pengeluaran:</th>
+                        <th colspan="6" class="text-end fw-bold py-2">Grand Total Expense:</th>
                         <th class="text-end fw-bold text-primary py-2 fs-6">Rp <?= number_format((float) $header->grand_total, 0, ',', '.') ?></th>
                         <th></th>
                     </tr>
@@ -217,7 +217,7 @@ function get_journal_badge($status)
                         <th></th>
                     </tr>
                     <tr class="bg-light">
-                        <th colspan="6" class="text-end fw-bold py-2">Sisa Budget Tersedia:</th>
+                        <th colspan="6" class="text-end fw-bold py-2">Available Remaining Budget:</th>
                         <th class="text-end fw-bold text-success py-2">Rp <?= number_format((float) $sisa_budget, 0, ',', '.') ?></th>
                         <th></th>
                     </tr>
@@ -244,9 +244,9 @@ function get_journal_badge($status)
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>
@@ -299,9 +299,9 @@ function get_journal_badge($status)
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>
@@ -324,7 +324,7 @@ function get_journal_badge($status)
                                     <tr class="table-warning">
                                         <td class="text-center"><?= $jurnal_tanggal ?></td>
                                         <td><?= $coa_hutang ?></td>
-                                        <td>Hutang ke STM</td>
+                                        <td>Payable to STM</td>
                                         <td class="text-center"><?= $jurnal_company ?></td>
                                         <td class="text-end text-muted">-</td>
                                         <td class="text-end">Rp <?= number_format((float) $jurnal_grand_total, 0, ',', '.') ?></td>
@@ -349,9 +349,9 @@ function get_journal_badge($status)
                         <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="100" class="text-center">Tanggal</th>
+                                    <th width="100" class="text-center">Date</th>
                                     <th width="120">COA</th>
-                                    <th>Nama Account</th>
+                                    <th>Account Name</th>
                                     <th width="80" class="text-center">Company</th>
                                     <th width="130" class="text-end">Debit</th>
                                     <th width="130" class="text-end">Kredit</th>

@@ -149,8 +149,8 @@ $ENABLE_DELETE  = has_permission('Master_Department.Delete');
 			var data = $(this).serialize();
 
 			swal({
-				title: "Anda Yakin?",
-				text: "Data akan diproses!",
+				title: "Are you sure?",
+				text: "The data will be processed!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
@@ -169,7 +169,7 @@ $ENABLE_DELETE  = has_permission('Master_Department.Delete');
 					success: function(res) {
 						if (res.status == '1') {
 							swal({
-								title: "Sukses",
+								title: "Success",
 								text: res.pesan,
 								type: "success"
 							}, function() {
@@ -200,8 +200,8 @@ $ENABLE_DELETE  = has_permission('Master_Department.Delete');
 			var id = $(this).data('id');
 
 			swal({
-				title: "Anda Yakin?",
-				text: "Data akan di hapus!",
+				title: "Are you sure?",
+				text: "The data will be deleted!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
@@ -222,7 +222,7 @@ $ENABLE_DELETE  = has_permission('Master_Department.Delete');
 					success: function(res) {
 						if (res.status == '1') {
 							swal({
-								title: "Sukses",
+								title: "Success",
 								text: res.pesan,
 								type: "success"
 							}, function() {

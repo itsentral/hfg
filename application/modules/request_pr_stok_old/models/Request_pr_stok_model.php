@@ -103,7 +103,7 @@ class Request_pr_stok_model extends BF_Model
       }
 
       if (!empty($kategori_pr)) {
-        $kategori_pr = implode(', ', $kategori_pr);
+        $kategori_pr = implode(', ', $kategori_pr ?? []);
       } else {
         $kategori_pr = '';
       }
@@ -149,7 +149,7 @@ class Request_pr_stok_model extends BF_Model
           endif;
         endif;
       }
-      if (COUNT($getCheck) <= 0) {
+      if (COUNT($getCheck ?? []) <= 0) {
         $sts = 'Approved';
         $warna = 'green';
       }
@@ -161,7 +161,7 @@ class Request_pr_stok_model extends BF_Model
       $approve  = "";
       $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row['so_number'] . "' class='btn btn-sm btn-warning' title='Detail PR' data-role='qtip'><i class='fa fa-eye'></i></a>";
       $edit   = "";
-      if ($this->ENABLE_MANAGE and COUNT($getCheck) > 0) {
+      if ($this->ENABLE_MANAGE and COUNT($getCheck ?? []) > 0) {
         $edit   = "<a href='" . site_url($this->uri->segment(1)) . '/edit_planning/' . $row['so_number'] . "' class='btn btn-sm btn-info' title='Edit PR' data-role='qtip'><i class='fa fa-edit'></i></a>";
       }
 

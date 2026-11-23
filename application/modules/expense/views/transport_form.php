@@ -24,15 +24,15 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 			</div>
 			<div>
 				<h5 class="card-title mb-0 fw-bold text-dark">
-					<?= (isset($data->id) && $data->id != '') ? ($is_view ? 'Detail Pengajuan Transportasi' : 'Edit Pengajuan Transportasi') : 'Form Pengajuan Transportasi'; ?>
+					<?= (isset($data->id) && $data->id != '') ? ($is_view ? 'Transport Request Detail' : 'Edit Transport Request') : 'Form Pengajuan Transportasi'; ?>
 				</h5>
-				<small class="text-muted"><?= $is_view ? 'Lihat rincian pengajuan biaya transportasi' : 'Isi data formulir perjalanan dan rincian biaya di bawah ini'; ?></small>
+				<small class="text-muted"><?= $is_view ? 'View transport expense request details' : 'Fill in the trip form data and cost details below'; ?></small>
 			</div>
 		</div>
 		<div>
 			<button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" onclick="list_view()">
 				<i class="fa fa-arrow-left"></i>
-				<span>Kembali</span>
+				<span>Back</span>
 			</button>
 		</div>
 	</div>
@@ -46,18 +46,18 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 			<h6 class="fw-bold text-dark mb-3"><i class="fa fa-info-circle text-primary me-1"></i> Informasi Dokumen</h6>
 			<div class="row g-3">
 				<div class="col-md-3">
-					<label for="no_doc" class="form-label fw-semibold text-secondary small">No. Dokumen</label>
+					<label for="no_doc" class="form-label fw-semibold text-secondary small">Document No.</label>
 					<input type="text" class="form-control form-control-sm bg-white" id="no_doc" name="no_doc" value="<?= (isset($data->no_doc) ? $data->no_doc : ''); ?>" placeholder="Otomatis" readonly>
 				</div>
 				<div class="col-md-3">
-					<label for="tgl_doc" class="form-label fw-semibold text-secondary small">Tanggal Dokumen <span class="text-danger">*</span></label>
+					<label for="tgl_doc" class="form-label fw-semibold text-secondary small">Document Date <span class="text-danger">*</span></label>
 					<div class="input-group input-group-sm">
 						<input type="text" class="form-control flatpickr-input bg-white" id="tgl_doc" name="tgl_doc" value="<?= $default_date; ?>" placeholder="YYYY-MM-DD" required <?= $is_view ? 'disabled' : ''; ?>>
 						<span class="input-group-text bg-white" onclick="$('#tgl_doc').focus()"><i class="fa fa-calendar text-muted"></i></span>
 					</div>
 				</div>
 				<div class="col-md-3">
-					<label for="nama" class="form-label fw-semibold text-secondary small">Nama Karyawan <span class="text-danger">*</span></label>
+					<label for="nama" class="form-label fw-semibold text-secondary small">Employee Name <span class="text-danger">*</span></label>
 					<select class="form-select form-select-sm select2-transport" id="nama" name="nama" required <?= $is_view ? 'disabled' : ''; ?>>
 						<option value="">-- Pilih Karyawan --</option>
 						<?php if (!empty($data_employee)): ?>
@@ -80,10 +80,10 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					</select>
 				</div>
 				<div class="col-md-3">
-					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Departemen <span class="text-danger">*</span></label>
+					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Department <span class="text-danger">*</span></label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-light text-muted"><i class="fa fa-building"></i></span>
-						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
+						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Automatically follows the employee" readonly>
 					</div>
 					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars((string) $selected_dept); ?>">
 				</div>
@@ -106,7 +106,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 				</div>
 				<div class="col-md-6">
 					<label for="keperluan" class="form-label fw-semibold text-secondary small">Keperluan Perjalanan <span class="text-danger">*</span></label>
-					<input type="text" class="form-control form-control-sm" id="keperluan" name="keperluan" value="<?= (isset($data->keperluan) ? htmlspecialchars((string) $data->keperluan) : ''); ?>" placeholder="Contoh: Meeting dengan vendor, survey lapangan..." required <?= $is_view ? 'disabled' : ''; ?>>
+					<input type="text" class="form-control form-control-sm" id="keperluan" name="keperluan" value="<?= (isset($data->keperluan) ? htmlspecialchars((string) $data->keperluan) : ''); ?>" placeholder="Example: Meeting with a vendor, field survey..." required <?= $is_view ? 'disabled' : ''; ?>>
 				</div>
 			</div>
 		</div>
@@ -120,7 +120,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					</div>
 					<div class="card-body">
 						<div class="mb-3">
-							<label for="nopol" class="form-label fw-semibold text-secondary small">Nomor Polisi Kendaraan</label>
+							<label for="nopol" class="form-label fw-semibold text-secondary small">Vehicle Plate Number</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text"><i class="fa fa-car text-muted"></i></span>
 								<input type="text" class="form-control text-uppercase" id="nopol" name="nopol" value="<?= (isset($data->nopol) ? htmlspecialchars((string) $data->nopol) : ''); ?>" placeholder="Contoh: B 1234 ABC" maxlength="15" <?= $is_view ? 'disabled' : ''; ?>>
@@ -194,7 +194,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 						<div class="p-3 bg-light-primary rounded-2 border border-primary-subtle mt-3">
 							<div class="d-flex justify-content-between align-items-center">
 								<div>
-									<small class="text-muted d-block">Total Biaya Transport:</small>
+									<small class="text-muted d-block">Total Transport Cost:</small>
 									<span class="badge bg-primary">Total Reimbursement</span>
 								</div>
 								<div class="text-end">
@@ -216,7 +216,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					</label>
 					<input type="hidden" name="filename" id="filename" value="<?= (isset($data->doc_file) ? $data->doc_file : ''); ?>">
 					<input type="file" class="form-control form-control-sm" name="doc_file" id="doc_file" accept="image/*,application/pdf" <?= $is_view ? 'disabled' : ''; ?>>
-					<small class="text-muted d-block mt-1">Format file: JPG, PNG, atau PDF (maks. 5MB)</small>
+					<small class="text-muted d-block mt-1">File format: JPG, PNG, or PDF (max. 5MB)</small>
 
 					<?php if (isset($data->doc_file) && $data->doc_file != ''): ?>
 						<div class="mt-3 p-2 bg-white rounded border d-flex align-items-center justify-content-between">
@@ -228,7 +228,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 								</div>
 							</div>
 							<div>
-								<a href="<?= base_url('uploads/expense/' . $data->doc_file); ?>" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" title="Buka Dokumen">
+								<a href="<?= base_url('uploads/expense/' . $data->doc_file); ?>" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" title="Open Document">
 									<i class="fa fa-external-link"></i> Buka
 								</a>
 							</div>
@@ -236,7 +236,7 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 					<?php endif; ?>
 				</div>
 				<div class="col-md-6">
-					<label for="keterangan" class="form-label fw-semibold text-secondary small">Keterangan Tambahan</label>
+					<label for="keterangan" class="form-label fw-semibold text-secondary small">Additional Notes</label>
 					<textarea class="form-control form-control-sm" id="keterangan" name="keterangan" rows="3" placeholder="Catatan atau keterangan tambahan (opsional)" <?= $is_view ? 'disabled' : ''; ?>><?= (isset($data->keterangan) ? htmlspecialchars((string) $data->keterangan) : ''); ?></textarea>
 				</div>
 			</div>
@@ -247,13 +247,13 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 	<div class="card-footer bg-transparent py-3 border-top d-flex justify-content-between align-items-center">
 		<div>
 			<button type="button" class="btn btn-outline-secondary px-4" onclick="list_view()">
-				<i class="fa fa-times me-1"></i> Batal
+				<i class="fa fa-times me-1"></i> Cancel
 			</button>
 		</div>
 		<div>
 			<?php if (!$is_view): ?>
 				<button type="submit" class="btn btn-primary px-4 shadow-sm" id="btn_submit">
-					<i class="fa fa-save me-1"></i> Simpan Data
+					<i class="fa fa-save me-1"></i> Save Data
 				</button>
 			<?php endif; ?>
 		</div>
@@ -362,24 +362,24 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 			var isNew = ($('#id').val() == "");
 
 			if (isNew && $('#filename').val() == "" && $('#doc_file').get(0).files.length === 0) {
-				errors = "Dokumen/Bukti harus diupload!";
+				errors = "The document/proof must be uploaded!";
 			}
 			if ($('#tgl_doc').val() == "") {
-				errors = "Tanggal transaksi tidak boleh kosong!";
+				errors = "Transaction date cannot be empty!";
 			}
 			if ($('#nama').val() == "") {
-				errors = "Karyawan harus dipilih!";
+				errors = "An employee must be selected!";
 			}
 			if ($('#departement').val() == "") {
-				errors = "Departemen karyawan tidak boleh kosong! Pastikan karyawan memiliki data departemen.";
+				errors = "The employee department cannot be empty! Make sure the employee has department data.";
 			}
 			if ($('#coa').val() == "") {
-				errors = "Akun COA harus dipilih!";
+				errors = "A COA account must be selected!";
 			}
 
 			if (errors != "") {
 				swal({
-					title: "Perhatian!",
+					title: "Attention!",
 					text: errors,
 					type: "warning"
 				});
@@ -387,12 +387,12 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 			}
 
 			swal({
-				title: "Konfirmasi Simpan",
-				text: "Apakah Anda yakin data pengajuan transportasi sudah benar?",
+				title: "Confirm Save",
+				text: "Are you sure the transport request data is correct?",
 				type: "info",
 				showCancelButton: true,
-				confirmButtonText: "Ya, Simpan!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Save!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			}, function(isConfirm) {
 				if (isConfirm) {
@@ -409,11 +409,11 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 						processData: false,
 						contentType: false,
 						success: function(msg) {
-							submitBtn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data');
+							submitBtn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Data');
 							if (msg.save == '1' || msg.save == 1 || msg.save == true) {
 								swal({
-									title: "Berhasil!",
-									text: msg.msg || "Data transportasi berhasil disimpan!",
+									title: "Success!",
+									text: msg.msg || "Transport data saved successfully!",
 									type: "success",
 									timer: 1500,
 									showConfirmButton: false
@@ -423,17 +423,17 @@ $selected_dept_name = isset($dept_map[$selected_dept]) ? $dept_map[$selected_dep
 								}, 1200);
 							} else {
 								swal({
-									title: "Gagal!",
-									text: msg.msg || "Terjadi kesalahan saat menyimpan data.",
+									title: "Failed!",
+									text: msg.msg || "An error occurred while saving data.",
 									type: "error"
 								});
 							}
 						},
 						error: function(xhr, status, err) {
-							submitBtn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Data');
+							submitBtn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Data');
 							swal({
 								title: "Error!",
-								text: "Gagal memproses data melalui AJAX (" + err + ")",
+								text: "Failed to process data via AJAX (" + err + ")",
 								type: "error"
 							});
 						}

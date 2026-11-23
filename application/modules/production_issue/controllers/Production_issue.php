@@ -38,7 +38,7 @@ class Production_issue extends Admin_Controller
             $details = $this->Production_planning_model->get_plan_details($plan_no);
 
             if (!$plan || $plan->status !== 'Released') {
-                $this->session->set_flashdata('error', 'Plan tidak ditemukan atau belum Released');
+                $this->session->set_flashdata('error', 'Plan not found or not yet Released');
                 redirect('production_issue');
             }
         }
@@ -57,12 +57,12 @@ class Production_issue extends Admin_Controller
         $logs    = $this->Production_issue_model->get_spk_scan_log($spk_no);
 
         if (!$spk) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan');
+            $this->session->set_flashdata('error', 'SPK not found');
             redirect('production_issue');
         }
 
         // Hitung progress scan dari scan_status di detail coil
-        $total_coil   = count($details);
+        $total_coil   = count($details ?? []);
         $scanned_coil = 0;
         foreach ($details as $d) {
             if ($d->scan_status === 'scanned') {
@@ -134,7 +134,7 @@ class Production_issue extends Admin_Controller
         $spk_no = $this->input->get('spk_no');
         $spk    = $this->Production_issue_model->get_spk($spk_no);
         if (!$spk) {
-            echo json_encode(['status' => 'error', 'message' => 'SPK tidak ditemukan']);
+            echo json_encode(['status' => 'error', 'message' => 'SPK not found']);
             return;
         }
         $details = $this->Production_issue_model->get_spk_details($spk_no);
@@ -146,7 +146,7 @@ class Production_issue extends Admin_Controller
             }
         }
 
-        $spk->total_coil   = count($details);
+        $spk->total_coil   = count($details ?? []);
         $spk->scanned_coil = $scanned_coil;
 
         echo json_encode(['status' => 'ok', 'spk' => $spk, 'details' => $details]);
@@ -248,7 +248,7 @@ class Production_issue extends Admin_Controller
         if ($result) {
             $this->session->set_flashdata('success', 'SPK ' . $result . ' berhasil dibuat');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan SPK');
+            $this->session->set_flashdata('error', 'Failed to save SPK');
         }
         redirect('production_issue');
     }
@@ -274,7 +274,7 @@ class Production_issue extends Admin_Controller
         if (empty($no_coil) || empty($spk_no)) {
             echo json_encode([
                 'success' => false,
-                'message' => 'No coil dan No SPK wajib diisi',
+                'message' => 'Coil No and SPK No are required',
                 'data'    => [],
             ]);
             return;

@@ -100,8 +100,8 @@ class App_pr_stock extends Admin_Controller
       if (!empty($detail)) {
         foreach ($detail as $key => $value) {
           //Planning
-          $use_stock = str_replace(',', '', $value['use_stock']);
-          $propose = str_replace(',', '', $value['propose']);
+          $use_stock = str_replace(',', '', $value['use_stock'] ?? '');
+          $propose = str_replace(',', '', $value['propose'] ?? '');
 
           $ArrPlanningDetail[$key]['id'] = $value['id'];
           $ArrPlanningDetail[$key]['stock_free'] = $value['stock_free'];
@@ -138,13 +138,13 @@ class App_pr_stock extends Admin_Controller
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $Arr_Data  = array(
-          'pesan'    => 'Save gagal disimpan ...',
+          'pesan'    => 'Failed to save data.',
           'status'  => 0
         );
       } else {
         $this->db->trans_commit();
         $Arr_Data  = array(
-          'pesan'    => 'Save berhasil disimpan. Thanks ...',
+          'pesan'    => 'Data saved successfully.',
           'status'  => 1
         );
         history("Create material planning  : " . $so_number);
@@ -274,7 +274,7 @@ class App_pr_stock extends Admin_Controller
     $id          = $data['id'];
     $action      = $data['action'];
     $so_number  = $data['so_number'];
-    $pr_rev      = str_replace(',', '', $data['pr_rev']);
+    $pr_rev      = str_replace(',', '', $data['pr_rev'] ?? '');
 
     $ArrHeader = array(
       'propose_rev'  => ($action == 'approve') ? $pr_rev : NULL,

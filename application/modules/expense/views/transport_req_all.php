@@ -15,14 +15,14 @@ $ENABLE_DELETE  = has_permission('List_Transportasi.Delete');
 				<i class="fa fa-list-check fs-5"></i>
 			</div>
 			<div>
-				<h5 class="card-title mb-0 fw-bold text-dark">Monitoring Seluruh Pengajuan Transport</h5>
-				<small class="text-muted">Rekapitulasi dan pemantauan status pengajuan penggantian biaya transport seluruh departemen</small>
+				<h5 class="card-title mb-0 fw-bold text-dark">All Transport Requests Monitoring</h5>
+				<small class="text-muted">Recap and monitoring of transport reimbursement request status for all departments</small>
 			</div>
 		</div>
 		<div class="d-flex gap-2">
 			<a href="<?= base_url('expense/transport_req'); ?>" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm">
 				<i class="fa fa-folder-open"></i>
-				<span>Pengajuan Saya</span>
+				<span>My Requests</span>
 			</a>
 		</div>
 	</div>
@@ -33,12 +33,12 @@ $ENABLE_DELETE  = has_permission('List_Transportasi.Delete');
 				<thead class="table-light">
 					<tr>
 						<th width="40" class="text-center">#</th>
-						<th>No. Dokumen</th>
-						<th>Tanggal</th>
-						<th>Nama Karyawan</th>
-						<th>Departemen</th>
-						<th>Tgl Disetujui</th>
-						<th class="text-end">Total Biaya</th>
+						<th>Document No.</th>
+						<th>Date</th>
+						<th>Employee Name</th>
+						<th>Department</th>
+						<th>Approval Date</th>
+						<th class="text-end">Total Cost</th>
 						<th class="text-center">Status</th>
 						<th width="110" class="text-center">Aksi</th>
 					</tr>
@@ -75,13 +75,13 @@ $ENABLE_DELETE  = has_permission('List_Transportasi.Delete');
 			destroy: true,
 			language: {
 				search: "_INPUT_",
-				searchPlaceholder: "Cari no dokumen, karyawan, departemen...",
-				lengthMenu: "_MENU_ data per halaman",
-				info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+				searchPlaceholder: "Search document no, employee, department...",
+				lengthMenu: "_MENU_ entries per page",
+				info: "Showing _START_ to _END_ of _TOTAL_ entries",
 				infoEmpty: "Menampilkan 0 data",
-				emptyTable: "Tidak ada data pengajuan transport yang ditemukan",
-				zeroRecords: "Tidak ada data yang cocok",
-				processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+				emptyTable: "No transport requests found",
+				zeroRecords: "No matching data",
+				processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
 			},
 			ajax: {
 				type: 'post',
@@ -115,12 +115,12 @@ $ENABLE_DELETE  = has_permission('List_Transportasi.Delete');
 	function data_view(id) {
 		if (id != "") {
 			$('#card-list, .box').hide();
-			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat detail pengajuan...</div></div>');
+			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading request details...</div></div>');
 			$('#form-data').load(url_view + id + '/_all', function(response, status, xhr) {
 				if (status == "error") {
 					swal({
 						title: "Error!",
-						text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText,
+						text: "Failed to load details data: " + xhr.status + " " + xhr.statusText,
 						type: "error"
 					});
 					list_view();

@@ -43,7 +43,7 @@ if ($data->status == '0') {
 	$status_label = 'Rejected';
 	$status_badge = 'bg-danger text-light';
 } elseif ($data->status == '4') {
-	$status_label = 'Kurang';
+	$status_label = 'Short';
 	$status_badge = 'bg-warning text-dark';
 }
 
@@ -112,7 +112,7 @@ if (empty($all_attachments)) {
 						</span>
 						<?php if (!empty($data->id_pr)) : ?>
 							<span class="badge bg-light text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium fs-7">
-								<i class="fa fa-link me-1"></i>Tarik dari <?= ucwords($data->tipe_pr ?: 'PR Non PO') ?>
+								<i class="fa fa-link me-1"></i>Pull from <?= ucwords($data->tipe_pr ?: 'PR Non PO') ?>
 							</span>
 						<?php else : ?>
 							<span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-medium fs-7">
@@ -121,7 +121,7 @@ if (empty($all_attachments)) {
 						<?php endif; ?>
 					</div>
 					<h3 class="fw-bold mb-1 text-dark">
-						Detail Pengajuan Kasbon <span class="text-primary">#<?= $data->no_doc ?></span>
+						Cash Advance Request Detail <span class="text-primary">#<?= $data->no_doc ?></span>
 					</h3>
 					<p class="text-muted small mb-0">
 						Dibuat pada <?= date('d F Y', strtotime((string) $data->tgl_doc)) ?> &bull; Pemohon: <span class="fw-semibold text-dark"><?= $nama_pemohon ?></span> <?= !empty($dept_name) ? "({$dept_name})" : "" ?>
@@ -130,7 +130,7 @@ if (empty($all_attachments)) {
 
 				<div class="d-flex flex-wrap align-items-center gap-2">
 					<button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="list_view(); return false;">
-						<i class="fa fa-arrow-left me-1"></i> Kembali
+						<i class="fa fa-arrow-left me-1"></i> Back
 					</button>
 					<a href="<?= base_url('expense/kasbon_print/' . $data->id) ?>" target="_blank" class="btn btn-outline-primary btn-sm px-3">
 						<i class="fa fa-print me-1"></i> Cetak Kasbon
@@ -144,14 +144,14 @@ if (empty($all_attachments)) {
 							<i class="fa fa-check me-1"></i> Setujui (Finance)
 						</button>
 						<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
-							<i class="fa fa-times me-1"></i> Tolak
+							<i class="fa fa-times me-1"></i> Reject
 						</button>
 					<?php elseif ($stsview_mode !== 'view' && $mod == '_mgt' && $data->status == 0 && (isset($data->sts_finance) ? $data->sts_finance == 1 : false)) : ?>
 						<button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve(<?= $data->id ?>, 1)">
 							<i class="fa fa-check me-1"></i> Setujui (Management)
 						</button>
 						<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
-							<i class="fa fa-times me-1"></i> Tolak
+							<i class="fa fa-times me-1"></i> Reject
 						</button>
 					<?php endif; ?>
 				</div>
@@ -164,7 +164,7 @@ if (empty($all_attachments)) {
 		<div class="alert alert-danger border-0 shadow-sm rounded-3 p-3 mb-4 d-flex align-items-start gap-3">
 			<div class="fs-3 text-danger"><i class="fa fa-ban"></i></div>
 			<div>
-				<h5 class="fw-bold mb-1 text-danger">Pengajuan Kasbon Ditolak!</h5>
+				<h5 class="fw-bold mb-1 text-danger">Cash Advance Request Rejected!</h5>
 				<p class="mb-0 text-dark"><?= nl2br(htmlspecialchars((string) $reject_msg)) ?></p>
 			</div>
 		</div>
@@ -183,11 +183,11 @@ if (empty($all_attachments)) {
 				<div class="card-body p-4">
 					<div class="row g-3">
 						<div class="col-sm-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">No. Dokumen</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Document No.</label>
 							<div class="fw-bold text-dark fs-6"><?= $data->no_doc ?></div>
 						</div>
 						<div class="col-sm-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Tanggal Dokumen</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Document Date</label>
 							<div class="fw-bold text-dark fs-6"><?= date('d F Y', strtotime((string) $data->tgl_doc)) ?></div>
 						</div>
 
@@ -196,7 +196,7 @@ if (empty($all_attachments)) {
 							<div class="fw-semibold text-dark fs-6"><?= $nama_pemohon ?></div>
 						</div>
 						<div class="col-sm-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Departemen</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Department</label>
 							<div class="fw-semibold text-dark fs-6"><?= !empty($dept_name) ? $dept_name : '-' ?></div>
 						</div>
 
@@ -208,7 +208,7 @@ if (empty($all_attachments)) {
 						</div>
 
 						<div class="col-12">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Keterangan Tambahan</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Additional Notes</label>
 							<div class="p-3 bg-light rounded-3 text-dark border border-light-subtle">
 								<?= nl2br(htmlspecialchars($data->keterangan ?: '-')) ?>
 							</div>
@@ -234,7 +234,7 @@ if (empty($all_attachments)) {
 				<div class="card border-0 shadow-sm rounded-3" style="background: linear-gradient(135deg, #f8faff 0%, #eef4fe 100%); border-left: 5px solid #0d6efd !important;">
 					<div class="card-body p-4">
 						<div class="d-flex justify-content-between align-items-center mb-2">
-							<span class="text-uppercase fw-bold text-muted small letter-spacing-1">Nominal Kasbon</span>
+							<span class="text-uppercase fw-bold text-muted small letter-spacing-1">Cash Advance Amount</span>
 							<span class="badge bg-primary text-light px-2 py-1 rounded">IDR</span>
 						</div>
 						<h2 class="fw-bolder text-primary mb-2">
@@ -259,7 +259,7 @@ if (empty($all_attachments)) {
 						<div class="d-flex flex-column gap-3">
 							<div class="p-3 bg-light rounded-3 border border-light-subtle">
 								<div class="row align-items-center">
-									<div class="col-4 text-muted small fw-semibold text-uppercase">Nama Bank</div>
+									<div class="col-4 text-muted small fw-semibold text-uppercase">Bank Name</div>
 									<div class="col-8 fw-bold text-dark fs-6">
 										<i class="fa fa-university text-secondary me-2"></i><?= $data->bank_id ?: '-' ?>
 									</div>
@@ -268,7 +268,7 @@ if (empty($all_attachments)) {
 
 							<div class="p-3 bg-light rounded-3 border border-light-subtle">
 								<div class="row align-items-center">
-									<div class="col-4 text-muted small fw-semibold text-uppercase">No. Rekening</div>
+									<div class="col-4 text-muted small fw-semibold text-uppercase">Account Number</div>
 									<div class="col-8 fw-bold text-primary fs-6 font-monospace">
 										<?= $data->accnumber ?: '-' ?>
 									</div>
@@ -277,7 +277,7 @@ if (empty($all_attachments)) {
 
 							<div class="p-3 bg-light rounded-3 border border-light-subtle">
 								<div class="row align-items-center">
-									<div class="col-4 text-muted small fw-semibold text-uppercase">Atas Nama</div>
+									<div class="col-4 text-muted small fw-semibold text-uppercase">Account Name</div>
 									<div class="col-8 fw-semibold text-dark fs-6">
 										<?= $data->accname ?: '-' ?>
 									</div>
@@ -304,7 +304,7 @@ if (empty($all_attachments)) {
 				</div>
 				<?php if (!empty($data->tipe_pr)) : ?>
 					<span class="text-muted small">
-						Kategori: <strong class="text-dark"><?= ucwords((string) $data->tipe_pr) ?></strong>
+						Category: <strong class="text-dark"><?= ucwords((string) $data->tipe_pr) ?></strong>
 					</span>
 				<?php endif; ?>
 			</div>
@@ -314,10 +314,10 @@ if (empty($all_attachments)) {
 						<thead class="table-light text-secondary">
 							<tr>
 								<th class="text-center py-3" style="width: 50px;">No.</th>
-								<th class="py-3">Nama Material / Barang</th>
+								<th class="py-3">Material / Item Name</th>
 								<th class="text-center py-3" style="width: 100px;">Qty</th>
-								<th class="text-center py-3" style="width: 100px;">Satuan</th>
-								<th class="text-end py-3" style="width: 180px;">Harga Satuan (Rp)</th>
+								<th class="text-center py-3" style="width: 100px;">Unit</th>
+								<th class="text-end py-3" style="width: 180px;">Unit Price (Rp)</th>
 								<th class="text-end py-3 pe-4" style="width: 180px;">Total (Rp)</th>
 							</tr>
 						</thead>
@@ -375,7 +375,7 @@ if (empty($all_attachments)) {
 						<i class="fa fa-paperclip text-primary me-2"></i>Berkas Lampiran Pendukung
 					</h5>
 					<span class="badge bg-light text-dark border rounded-pill px-3">
-						<?= count($all_attachments) ?> Berkas
+						<?= count($all_attachments ?? []) ?> Berkas
 					</span>
 				</div>
 				<div class="card-body p-4">
@@ -385,7 +385,7 @@ if (empty($all_attachments)) {
 								<thead class="table-light text-secondary">
 									<tr>
 										<th style="width: 40px;">#</th>
-										<th>Nama Berkas</th>
+										<th>File Name</th>
 										<th class="text-center" style="width: 140px;">Aksi</th>
 									</tr>
 								</thead>
@@ -409,7 +409,7 @@ if (empty($all_attachments)) {
 													<div>
 														<div class="fw-semibold text-dark text-break small"><?= htmlspecialchars((string) $att['file_name']) ?></div>
 														<span class="text-muted" style="font-size: 0.75rem;">
-															<?= strtoupper((string) $ext) ?> &bull; <?= !empty($att['uploaded_at']) ? date('d M Y H:i', strtotime((string) $att['uploaded_at'])) : 'Tersimpan' ?>
+															<?= strtoupper((string) $ext) ?> &bull; <?= !empty($att['uploaded_at']) ? date('d M Y H:i', strtotime((string) $att['uploaded_at'])) : 'Saved' ?>
 														</span>
 													</div>
 												</div>
@@ -417,7 +417,7 @@ if (empty($all_attachments)) {
 											<td class="text-center">
 												<div class="btn-group btn-group-sm">
 													<?php if ($is_image || $is_pdf) : ?>
-														<button type="button" class="btn btn-outline-primary btn-sm" onclick="previewModalFile('<?= $att['file_path'] ?>', '<?= $is_pdf ? 'pdf' : 'image' ?>', '<?= htmlspecialchars((string) $att['file_name']) ?>')" title="Lihat Preview">
+														<button type="button" class="btn btn-outline-primary btn-sm" onclick="previewModalFile('<?= $att['file_path'] ?>', '<?= $is_pdf ? 'pdf' : 'image' ?>', '<?= htmlspecialchars((string) $att['file_name']) ?>')" title="View Preview">
 															<i class="fa fa-eye"></i>
 														</button>
 													<?php endif; ?>
@@ -434,7 +434,7 @@ if (empty($all_attachments)) {
 					<?php else : ?>
 						<div class="text-center py-4 text-muted">
 							<i class="fa fa-folder-open-o fs-1 opacity-50 mb-2"></i>
-							<p class="mb-0 small">Tidak ada berkas lampiran yang diunggah.</p>
+							<p class="mb-0 small">No attachment files uploaded.</p>
 						</div>
 					<?php endif; ?>
 				</div>
@@ -454,7 +454,7 @@ if (empty($all_attachments)) {
 						<!-- Pemohon -->
 						<div class="position-relative">
 							<span class="position-absolute top-0 start-0 translate-middle p-2 bg-primary rounded-circle" style="left: -17px !important;"></span>
-							<div class="fw-bold text-dark small text-uppercase">1. Pengajuan Dibuat</div>
+							<div class="fw-bold text-dark small text-uppercase">1. Request Created</div>
 							<div class="fw-semibold text-dark"><?= $nama_pemohon ?></div>
 							<div class="text-muted small">
 								<?= !empty($data->created_on) ? date('d F Y, H:i', strtotime((string) $data->created_on)) : '-' ?>
@@ -470,14 +470,14 @@ if (empty($all_attachments)) {
 							<span class="position-absolute top-0 start-0 translate-middle p-2 <?= $dot_fin ?> rounded-circle" style="left: -17px !important;"></span>
 							<div class="fw-bold text-dark small text-uppercase">2. Verifikasi Finance</div>
 							<?php if ($fin_approved) : ?>
-								<div class="fw-semibold text-success"><i class="fa fa-check me-1"></i>Telah Diverifikasi</div>
+								<div class="fw-semibold text-success"><i class="fa fa-check me-1"></i>Verified</div>
 								<div class="text-muted small">
-									<?= !empty($data->app_finance_date) ? date('d F Y, H:i', strtotime((string) $data->app_finance_date)) : 'Selesai' ?>
+									<?= !empty($data->app_finance_date) ? date('d F Y, H:i', strtotime((string) $data->app_finance_date)) : 'Done' ?>
 								</div>
 							<?php elseif ($data->status == '9') : ?>
-								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>
+								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Rejected</div>
 							<?php else : ?>
-								<div class="fw-semibold text-warning"><i class="fa fa-clock-o me-1"></i>Menunggu Verifikasi Finance</div>
+								<div class="fw-semibold text-warning"><i class="fa fa-clock-o me-1"></i>Awaiting Finance Verification</div>
 							<?php endif; ?>
 						</div>
 
@@ -488,18 +488,18 @@ if (empty($all_attachments)) {
 							$dot_mgt = $mgt_approved ? 'bg-success' : ($data->status == '9' ? 'bg-danger' : 'bg-secondary');
 							?>
 							<span class="position-absolute top-0 start-0 translate-middle p-2 <?= $dot_mgt ?> rounded-circle" style="left: -17px !important;"></span>
-							<div class="fw-bold text-dark small text-uppercase">3. Persetujuan Management</div>
+							<div class="fw-bold text-dark small text-uppercase">3. Management Approval</div>
 							<?php if ($mgt_approved) : ?>
 								<div class="fw-semibold text-success">
-									<i class="fa fa-check me-1"></i>Disetujui oleh <?= $data->approved_by ?: 'Management' ?>
+									<i class="fa fa-check me-1"></i>Approved by <?= $data->approved_by ?: 'Management' ?>
 								</div>
 								<div class="text-muted small">
 									<?= !empty($data->approved_on) ? date('d F Y, H:i', strtotime((string) $data->approved_on)) : '-' ?>
 								</div>
 							<?php elseif ($data->status == '9') : ?>
-								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Ditolak</div>
+								<div class="fw-semibold text-danger"><i class="fa fa-times me-1"></i>Rejected</div>
 							<?php else : ?>
-								<div class="fw-semibold text-muted"><i class="fa fa-clock-o me-1"></i>Menunggu Approval Management</div>
+								<div class="fw-semibold text-muted"><i class="fa fa-clock-o me-1"></i>Awaiting Management Approval</div>
 							<?php endif; ?>
 						</div>
 					</div>
@@ -514,7 +514,7 @@ if (empty($all_attachments)) {
 	<div class="modal-dialog modal-lg modal-dialog-centered">
 		<div class="modal-content border-0 shadow rounded-3">
 			<div class="modal-header border-bottom py-3">
-				<h5 class="modal-title fw-bold text-dark fs-6" id="modalPreviewFileTitle">Preview Berkas</h5>
+				<h5 class="modal-title fw-bold text-dark fs-6" id="modalPreviewFileTitle">File Preview</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body p-0 text-center bg-light" id="modalPreviewFileBody" style="min-height: 400px; max-height: 80vh; overflow-y: auto;">
@@ -524,7 +524,7 @@ if (empty($all_attachments)) {
 				<a href="#" id="modalPreviewFileDownload" download class="btn btn-outline-primary btn-sm">
 					<i class="fa fa-download me-1"></i> Download Berkas
 				</a>
-				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -543,7 +543,7 @@ if (empty($all_attachments)) {
 		} else if (fileType === 'image') {
 			body.html('<div class="p-3"><img src="' + fileUrl + '" class="img-fluid rounded shadow-sm" style="max-height: 70vh;"></div>');
 		} else {
-			body.html('<div class="p-5 text-muted"><i class="fa fa-file-o fs-1 mb-3"></i><p>Preview tidak didukung untuk tipe file ini. Silakan unduh berkas untuk membukanya.</p></div>');
+			body.html('<div class="p-5 text-muted"><i class="fa fa-file-o fs-1 mb-3"></i><p>Preview is not supported for this file type. Please download the file to open it.</p></div>');
 		}
 
 		$('#modalPreviewFile').modal('show');
@@ -566,19 +566,19 @@ if (empty($all_attachments)) {
 		var url = siteurl + (mod === '_mgt' ? 'expense/kasbon_approve_manage/' : 'expense/kasbon_approve/') + id;
 
 		Swal.fire({
-			title: "Konfirmasi Approval",
-			text: "Apakah Anda yakin ingin menyetujui pengajuan kasbon ini?",
+			title: "Confirm Approval",
+			text: "Are you sure you want to approve this cash advance request?",
 			icon: "question",
 			showCancelButton: true,
 			confirmButtonColor: "#198754",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Setujui!',
-			cancelButtonText: "Batal"
+			confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Approve!',
+			cancelButtonText: "Cancel"
 		}).then((result) => {
 			if (result.isConfirmed) {
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang memproses persetujuan kasbon...",
+					text: "Processing cash advance approval...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -593,8 +593,8 @@ if (empty($all_attachments)) {
 						if (msg.save == '1' || msg.save == 1 || msg.status == '1' || msg.status == 1) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Disetujui!",
-								text: msg.msg || "Kasbon berhasil disetujui",
+								title: "Approved Successfully!",
+								text: msg.msg || "Cash advance approved successfully",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -602,8 +602,8 @@ if (empty($all_attachments)) {
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.msg || "Gagal menyetujui pengajuan kasbon"
+								title: "Failed!",
+								text: msg.msg || "Failed to approve the cash advance request"
 							});
 						}
 					},
@@ -611,7 +611,7 @@ if (empty($all_attachments)) {
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan saat memproses approval"
+							text: "An error occurred while processing the approval"
 						});
 					}
 				});
@@ -625,9 +625,9 @@ if (empty($all_attachments)) {
 
 		Swal.fire({
 			title: "Alasan Penolakan",
-			text: "Silakan masukkan alasan penolakan pengajuan kasbon ini:",
+			text: "Please enter the reason for rejecting this cash advance request:",
 			input: "textarea",
-			inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+			inputPlaceholder: "Write the rejection reason here...",
 			inputAttributes: {
 				"aria-label": "Alasan penolakan",
 				"rows": 4
@@ -635,11 +635,11 @@ if (empty($all_attachments)) {
 			showCancelButton: true,
 			confirmButtonColor: "#dc3545",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-ban me-1"></i> Tolak Pengajuan',
-			cancelButtonText: "Batal",
+			confirmButtonText: '<i class="fa fa-ban me-1"></i> Reject Request',
+			cancelButtonText: "Cancel",
 			inputValidator: (value) => {
 				if (!value || !value.trim()) {
-					return "Alasan penolakan wajib diisi!";
+					return "A rejection reason is required!";
 				}
 			}
 		}).then((result) => {
@@ -647,7 +647,7 @@ if (empty($all_attachments)) {
 				var reason = result.value.trim();
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang memproses penolakan kasbon...",
+					text: "Processing cash advance rejection...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -667,8 +667,8 @@ if (empty($all_attachments)) {
 						if (msg.save == '1' || msg.save == 1 || msg.status == '1' || msg.status == 1) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Ditolak!",
-								text: msg.message || msg.msg || "Pengajuan kasbon berhasil ditolak",
+								title: "Rejected Successfully!",
+								text: msg.message || msg.msg || "Cash advance request rejected successfully",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -676,8 +676,8 @@ if (empty($all_attachments)) {
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.message || msg.msg || "Gagal menolak pengajuan kasbon"
+								title: "Failed!",
+								text: msg.message || msg.msg || "Failed to reject the cash advance request"
 							});
 						}
 					},
@@ -685,7 +685,7 @@ if (empty($all_attachments)) {
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan saat menolak pengajuan"
+							text: "An error occurred while rejecting the request"
 						});
 					}
 				});

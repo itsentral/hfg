@@ -22,7 +22,7 @@ $ENABLE_DELETE  = has_permission('Asset_coa.Delete');
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" style="width: 5ppx;">#</th>
-                        <th class="text-center">Keterangan</th>
+                        <th class="text-center">Description</th>
                         <th class="text-center">COA Debet</th>
                         <th class="text-center">COA Kredit</th>
                         <th class="text-center" style="width: 120px;">Option</th>
@@ -80,7 +80,7 @@ $ENABLE_DELETE  = has_permission('Asset_coa.Delete');
     $(document).on('click', '#save', function(){
         var keterangan = $("#keterangan").val();
         if (keterangan === '') {
-            swal({title: "Error Message!", text: 'Keterangan Kosong ...', type: "warning"});
+            swal({title: "Error Message!", text: 'Description is empty.', type: "warning"});
             $('#save').prop('disabled', false);
             return false;
         }

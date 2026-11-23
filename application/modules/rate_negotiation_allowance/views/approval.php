@@ -9,12 +9,12 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                 <i class="fa fa-check-square-o me-2"></i>Approval Extra Margin (Negotiation Allowance)
             </h5>
             <small class="text-muted">
-                GM memeriksa pengajuan perubahan Extra Margin dari Sales Manager. Menyetujui akan langsung memperbarui rate aktif; Menolak wajib disertai alasan.
+                The GM reviews Extra Margin change requests from the Sales Manager. Approving updates the active rate immediately; Rejecting requires a reason.
             </small>
         </div>
         <div class="d-flex align-items-center">
             <span class="badge <?= $pending_count > 0 ? 'bg-warning text-dark border border-warning' : 'bg-light text-muted border' ?> px-3 py-2 me-2">
-                <?= $pending_count > 0 ? $pending_count . ' Pengajuan Menunggu Keputusan' : 'Tidak ada pengajuan pending' ?>
+                <?= $pending_count > 0 ? $pending_count . ' Pengajuan Menunggu Keputusan' : 'No pending requests' ?>
             </span>
             <a href="<?= base_url('rate_negotiation_allowance') ?>" class="btn btn-outline-secondary btn-sm shadow-sm">
                 <i class="fa fa-tag me-1"></i> Lihat Rate Aktif
@@ -41,7 +41,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                 <label class="form-label text-muted small mb-1 fw-bold">Filter Status</label>
                 <select id="filter-status" class="form-select form-select-sm">
                     <option value="" <?= empty($status_filter) ? 'selected' : '' ?>>-- SEMUA STATUS --</option>
-                    <option value="Menunggu Approval GM" <?= ($status_filter === 'Menunggu Approval GM') ? 'selected' : '' ?>>Menunggu Approval GM</option>
+                    <option value="Menunggu Approval GM" <?= ($status_filter === 'Menunggu Approval GM') ? 'selected' : '' ?>>Awaiting GM Approval</option>
                     <option value="Approved" <?= ($status_filter === 'Approved') ? 'selected' : '' ?>>Approved</option>
                     <option value="Rejected" <?= ($status_filter === 'Rejected') ? 'selected' : '' ?>>Rejected</option>
                 </select>
@@ -54,12 +54,12 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                     <tr>
                         <th class="text-center" width="50">#</th>
                         <th>Product Category</th>
-                        <th class="text-end" width="120">Rate Aktif</th>
+                        <th class="text-end" width="120">Active Rate</th>
                         <th class="text-end" width="130">Rate Diajukan</th>
                         <th class="text-end" width="120">Selisih</th>
-                        <th width="180">Diajukan Oleh / Pada</th>
+                        <th width="180">Requested By / At</th>
                         <th class="text-center" width="160">Status</th>
-                        <th width="180">Diputuskan Oleh / Pada</th>
+                        <th width="180">Decided By / At</th>
                         <th>Alasan Reject</th>
                         <th class="text-center no-sort" width="140">Action</th>
                     </tr>
@@ -135,7 +135,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                             data-diff="<?= ($diff !== null) ? (($diff > 0 ? '+' : '') . number_format((float) $diff, 2, ',', '.') . ' poin %') : '—' ?>"
                                             data-by="<?= htmlspecialchars($r->submitted_by_name ?: 'Sales') ?>"
                                             data-at="<?= date('d/m/Y H:i', strtotime((string) $r->submitted_at)) ?>"
-                                            title="Periksa & Putuskan">
+                                            title="Review & Decide">
                                             <i class="fa fa-gavel me-1"></i> Keputusan
                                         </button>
                                     <?php else: ?>
@@ -174,7 +174,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
 
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title text-white" id="modalDecideLabel">
-                        <i class="fa fa-gavel me-2"></i>Periksa Pengajuan Extra Margin
+                        <i class="fa fa-gavel me-2"></i>Periksa Extra Margin Request
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -188,19 +188,19 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                     <div class="fw-bold fs-6 text-dark" id="dec_cat"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="text-muted small mb-1">Diajukan Oleh / Waktu</label>
+                                    <label class="text-muted small mb-1">Requested By / Time</label>
                                     <div class="fw-bold text-dark" id="dec_by_at"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="text-muted small mb-1">Rate Extra Margin Aktif</label>
+                                    <label class="text-muted small mb-1">Active Extra Margin Rate</label>
                                     <div class="fw-bold text-dark fs-6" id="dec_active"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="text-muted small mb-1">Rate Yang Diajukan</label>
+                                    <label class="text-muted small mb-1">Requested Rate</label>
                                     <div class="fw-bold text-primary fs-5" id="dec_req"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="text-muted small mb-1">Selisih Perubahan</label>
+                                    <label class="text-muted small mb-1">Change Difference</label>
                                     <div class="fw-bold text-success fs-6" id="dec_diff"></div>
                                 </div>
                             </div>
@@ -218,7 +218,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                         <div class="card-body p-0">
                             <div id="dec_impact_loading" class="text-center py-4 text-muted" style="display:none;">
                                 <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
-                                <div>Memuat simulasi impact produk...</div>
+                                <div>Loading product impact simulation...</div>
                             </div>
                             <div class="table-responsive" id="dec_impact_wrapper" style="max-height: 280px; overflow-y: auto;">
                                 <table class="table table-sm table-bordered table-hover align-middle mb-0" id="dec_tbl_impact">
@@ -228,8 +228,8 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                             <th>Category Produk</th>
                                             <th>Produk</th>
                                             <th class="text-end">Bottom Price</th>
-                                            <th class="text-end">Pricelist Saat Ini</th>
-                                            <th class="text-center">Pengajuan Ext. Margin</th>
+                                            <th class="text-end">Current Pricelist</th>
+                                            <th class="text-center">Ext. Margin Request</th>
                                             <th class="text-end" style="background-color: #fff3cd; color: #856404;">Pricelist/Meter</th>
                                             <th class="text-end">Selisih</th>
                                         </tr>
@@ -258,20 +258,20 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                             </div>
                         </div>
                         <div class="form-text text-muted mt-2" id="decision-hint">
-                            Approve: Rate aktif kategori ini akan otomatis diperbarui menjadi rate diajukan.
+                            Approve: The active rate for this category will be updated automatically to the requested rate.
                         </div>
                     </div>
 
                     <div class="mb-3 d-none" id="group-reject-reason">
                         <label class="form-label fw-bold text-danger">Alasan Penolakan (Reject) <span class="text-danger">*</span></label>
                         <textarea class="form-control" name="reject_reason" id="dec_reason" rows="3" placeholder="Tuliskan alasan penolakan untuk Sales Manager..."></textarea>
-                        <div class="form-text text-danger">Alasan penolakan wajib diisi untuk panduan Sales Manager.</div>
+                        <div class="form-text text-danger">A rejection reason is required as guidance for the Sales Manager.</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4" id="btn-submit-decision">
-                        <i class="fa fa-save me-1"></i> Simpan Keputusan
+                        <i class="fa fa-save me-1"></i> Save Decision
                     </button>
                 </div>
             </form>
@@ -284,7 +284,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
             <div class="modal-header bg-light">
-                <h5 class="modal-title" id="modalViewLabel"><i class="fa fa-info-circle me-2"></i>Detail Pengajuan Extra Margin</h5>
+                <h5 class="modal-title" id="modalViewLabel"><i class="fa fa-info-circle me-2"></i>Extra Margin Request Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -294,16 +294,16 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                 </div>
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label class="text-muted small mb-1">Rate Aktif Sebelumnya</label>
+                        <label class="text-muted small mb-1">Previous Active Rate</label>
                         <div class="fw-bold text-dark" id="v_active"></div>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small mb-1">Rate Yang Diajukan</label>
+                        <label class="text-muted small mb-1">Requested Rate</label>
                         <div class="fw-bold text-primary" id="v_req"></div>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="text-muted small mb-1">Diajukan Oleh / Waktu</label>
+                    <label class="text-muted small mb-1">Requested By / Time</label>
                     <div class="fw-bold" id="v_by_at"></div>
                 </div>
                 <hr>
@@ -312,7 +312,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                     <div id="v_status"></div>
                 </div>
                 <div class="mb-3">
-                    <label class="text-muted small mb-1">Diputuskan Oleh / Waktu</label>
+                    <label class="text-muted small mb-1">Decided By / Time</label>
                     <div class="fw-bold" id="v_dec_by_at"></div>
                 </div>
                 <div class="mb-3" id="v_group_reason">
@@ -331,7 +331,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                     <div class="card-body p-0">
                         <div id="v_impact_loading" class="text-center py-4 text-muted" style="display:none;">
                             <i class="fa fa-spinner fa-spin fa-2x mb-2 text-primary"></i>
-                            <div>Memuat data impact...</div>
+                            <div>Loading impact data...</div>
                         </div>
                         <div class="table-responsive" id="v_impact_wrapper" style="max-height: 280px; overflow-y: auto;">
                             <table class="table table-sm table-bordered table-hover align-middle mb-0" id="v_tbl_impact">
@@ -341,8 +341,8 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                                         <th>Category Produk</th>
                                         <th>Produk</th>
                                         <th class="text-end">Bottom Price</th>
-                                        <th class="text-end">Pricelist Saat Ini</th>
-                                        <th class="text-center">Pengajuan Ext. Margin</th>
+                                        <th class="text-end">Current Pricelist</th>
+                                        <th class="text-center">Ext. Margin Request</th>
                                         <th class="text-end" style="background-color: #fff3cd; color: #856404;">Pricelist/Meter</th>
                                         <th class="text-end">Selisih</th>
                                     </tr>
@@ -354,7 +354,7 @@ $ENABLE_MANAGE = has_permission('Approval_Extra_Margin.Manage');
                 </div>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -383,11 +383,11 @@ $(document).ready(function() {
         if ($(this).val() === 'Reject') {
             $('#group-reject-reason').removeClass('d-none');
             $('#dec_reason').prop('required', true);
-            $('#decision-hint').text('Reject: Pengajuan ditolak dan kembali ke Sales Manager dengan alasan yang diberikan.');
+            $('#decision-hint').text('Reject: The request is rejected and returned to the Sales Manager with the given reason.');
         } else {
             $('#group-reject-reason').addClass('d-none');
             $('#dec_reason').prop('required', false);
-            $('#decision-hint').text('Approve: Rate aktif kategori ini akan otomatis diperbarui menjadi rate diajukan.');
+            $('#decision-hint').text('Approve: The active rate for this category will be updated automatically to the requested rate.');
         }
     });
 
@@ -403,7 +403,7 @@ $(document).ready(function() {
         var $tbody = $('#' + tbodyId);
         $tbody.empty();
         if (!items || items.length === 0) {
-            $tbody.html('<tr><td colspan="8" class="text-center text-muted py-3">Tidak ada data produk / costing untuk kategori ini.</td></tr>');
+            $tbody.html('<tr><td colspan="8" class="text-center text-muted py-3">There is no product / costing data for this category.</td></tr>');
             if (countId) $('#' + countId).text('0 Produk');
             return;
         }
@@ -462,13 +462,13 @@ $(document).ready(function() {
 
         $('#dec_approve').prop('checked', true).trigger('change');
         $('#dec_reason').val('');
-        $('#modalDecideLabel').html('<i class="fa fa-gavel me-2"></i>Periksa Pengajuan Extra Margin — ' + cat);
+        $('#modalDecideLabel').html('<i class="fa fa-gavel me-2"></i>Review Extra Margin Request — ' + cat);
 
         // Load Detail Impact
         $('#dec_impact_tbody').empty();
         $('#dec_impact_loading').show();
         $('#dec_impact_wrapper').hide();
-        $('#dec_impact_count').text('Memuat...');
+        $('#dec_impact_count').text('Loading...');
 
         $.ajax({
             url: '<?= base_url('rate_negotiation_allowance/get_detail_impact') ?>',
@@ -481,14 +481,14 @@ $(document).ready(function() {
                 if (resp.status == 1) {
                     renderImpactTable(resp.items, 'dec_impact_tbody', 'dec_impact_count');
                 } else {
-                    $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Gagal memuat impact.') + '</td></tr>');
+                    $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Failed to load impact.') + '</td></tr>');
                     $('#dec_impact_count').text('0 Produk');
                 }
             },
             error: function() {
                 $('#dec_impact_loading').hide();
                 $('#dec_impact_wrapper').show();
-                $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">Terjadi kesalahan jaringan saat memuat impact.</td></tr>');
+                $('#dec_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">A network error occurred while loading the impact.</td></tr>');
                 $('#dec_impact_count').text('0 Produk');
             }
         });
@@ -504,7 +504,7 @@ $(document).ready(function() {
         var reason   = $('#dec_reason').val();
 
         if (decision === 'Reject' && !reason.trim()) {
-            Swal.fire({ title: 'Validasi', text: 'Alasan penolakan (Reject) wajib diisi.', icon: 'warning' });
+            Swal.fire({ title: 'Validasi', text: 'Rejection reason is required.', icon: 'warning' });
             return;
         }
 
@@ -512,13 +512,13 @@ $(document).ready(function() {
         var actionUrl = isApprove ? '<?= base_url('rate_negotiation_allowance/approve') ?>' : '<?= base_url('rate_negotiation_allowance/reject') ?>';
 
         Swal.fire({
-            title: isApprove ? 'Setujui Pengajuan?' : 'Tolak Pengajuan?',
-            text: isApprove ? 'Rate aktif akan diperbarui sesuai nilai yang diajukan.' : 'Pengajuan akan ditolak dan dikembalikan ke Sales Manager.',
+            title: isApprove ? 'Approve Request?' : 'Reject Request?',
+            text: isApprove ? 'The active rate will be updated to the requested value.' : 'The request will be rejected and returned to the Sales Manager.',
             icon: isApprove ? 'question' : 'warning',
             showCancelButton: true,
             confirmButtonColor: isApprove ? '#28a745' : '#dc3545',
-            confirmButtonText: isApprove ? 'Ya, Setujui' : 'Ya, Tolak',
-            cancelButtonText: 'Batal'
+            confirmButtonText: isApprove ? 'Yes, Approve' : 'Yes, Reject',
+            cancelButtonText: 'Cancel'
         }).then(function(res) {
             if (!res.isConfirmed) return;
 
@@ -533,17 +533,17 @@ $(document).ready(function() {
                     reject_reason: reason
                 },
                 success: function(resp) {
-                    $('#btn-submit-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Keputusan');
+                    $('#btn-submit-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Decision');
                     if (resp.status == 1) {
                         $('#modal-decide').modal('hide');
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: resp.pesan, icon: 'success', timer: 1800, showConfirmButton: false })
                             .then(function() { window.location.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({ title: 'Failed!', text: resp.pesan, icon: 'error' });
                     }
                 },
                 error: function(xhr) {
-                    $('#btn-submit-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Keputusan');
+                    $('#btn-submit-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Decision');
                     Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
                 }
             });
@@ -582,7 +582,7 @@ $(document).ready(function() {
         $('#v_impact_tbody').empty();
         $('#v_impact_loading').show();
         $('#v_impact_wrapper').hide();
-        $('#v_impact_count').text('Memuat...');
+        $('#v_impact_count').text('Loading...');
 
         if (id) {
             $.ajax({
@@ -596,21 +596,21 @@ $(document).ready(function() {
                     if (resp.status == 1) {
                         renderImpactTable(resp.items, 'v_impact_tbody', 'v_impact_count');
                     } else {
-                        $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Gagal memuat impact.') + '</td></tr>');
+                        $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">' + (resp.pesan || 'Failed to load impact.') + '</td></tr>');
                         $('#v_impact_count').text('0 Produk');
                     }
                 },
                 error: function() {
                     $('#v_impact_loading').hide();
                     $('#v_impact_wrapper').show();
-                    $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">Terjadi kesalahan jaringan saat memuat impact.</td></tr>');
+                    $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-danger py-3">A network error occurred while loading the impact.</td></tr>');
                     $('#v_impact_count').text('0 Produk');
                 }
             });
         } else {
             $('#v_impact_loading').hide();
             $('#v_impact_wrapper').show();
-            $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-muted py-3">ID pengajuan tidak ditemukan.</td></tr>');
+            $('#v_impact_tbody').html('<tr><td colspan="8" class="text-center text-muted py-3">Request ID not found.</td></tr>');
             $('#v_impact_count').text('0 Produk');
         }
 

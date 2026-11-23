@@ -24,7 +24,7 @@
         <div class="p-3 rounded-3 bg-light border h-100 d-flex flex-column justify-content-center">
             <div class="row g-2 text-center">
                 <div class="col-4">
-                    <small class="text-muted d-block">Nilai PO</small>
+                    <small class="text-muted d-block">PO Value</small>
                     <span class="fw-bold text-dark"><?= number_format((float) $nilai_po, 2); ?></span>
                     <small class="text-xs text-muted d-block"><?= htmlspecialchars($header->currency ?? 'IDR'); ?></small>
                 </div>
@@ -49,7 +49,7 @@
         <h6 class="fw-bold text-dark mb-0">
             <i class="fa fa-list-alt text-primary me-2"></i>Rincian Transaksi Pembayaran (PO, ROS, Receive Invoice, Payment)
         </h6>
-        <small class="text-muted"><i class="fa fa-arrows-h me-1"></i>Scroll ke samping untuk melihat seluruh kolom</small>
+        <small class="text-muted"><i class="fa fa-arrows-h me-1"></i>Scroll horizontally to view all columns</small>
     </div>
 
     <div class="table-responsive border rounded" style="max-height: 60vh; overflow-y: auto;">
@@ -90,11 +90,11 @@
                 <?php if (!empty($details)) : ?>
                     <?php 
                     $is_first = true;
-                    $row_count = count($details);
+                    $row_count = count($details ?? []);
                     foreach ($details as $item) : 
                         if ($item['category'] == 'dp') {
-                            $category_label = 'Uang Muka';
-                            $category_badge = '<span class="badge bg-warning bg-opacity-25 text-dark fw-semibold">Uang Muka</span>';
+                            $category_label = 'Down Payment';
+                            $category_badge = '<span class="badge bg-warning bg-opacity-25 text-dark fw-semibold">Down Payment</span>';
                         } elseif ($item['category'] == 'import') {
                             $category_label = 'Pelunasan (After ROS)';
                             $category_badge = '<span class="badge bg-info bg-opacity-25 text-dark fw-semibold">Pelunasan (After ROS)</span>';

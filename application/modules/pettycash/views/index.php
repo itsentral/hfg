@@ -9,7 +9,7 @@ $ENABLE_DELETE  = has_permission('Pettycash.Delete');
 <div class="box">
 	<div class="box-header">
 		<?php if ($ENABLE_ADD) : ?>
-			<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Tambah" onclick="data_add()"><i class="fa fa-plus">&nbsp;</i>Tambah</a>
+			<a class="btn btn-success btn-sm" href="javascript:void(0)" title="Add" onclick="data_add()"><i class="fa fa-plus">&nbsp;</i>Add</a>
 		<?php endif; ?>
 	</div>
 	<!-- /.box-header -->
@@ -19,9 +19,9 @@ $ENABLE_DELETE  = has_permission('Pettycash.Delete');
 				<thead>
 					<tr>
 						<th width="5">#</th>
-						<th>Nama</th>
+						<th>Name</th>
 						<th>Pengelola</th>
-						<th>Keterangan</th>
+						<th>Description</th>
 						<th width="90">
 							<?php if ($ENABLE_MANAGE) : ?>
 								Action
@@ -45,7 +45,7 @@ $ENABLE_DELETE  = has_permission('Pettycash.Delete');
 										<a class="btn btn-success btn-sm edit" href="javascript:void(0)" title="Edit" onclick="data_edit('<?= $record->id ?>')"><i class="fa fa-edit"></i></a>
 									<?php endif;
 									if ($ENABLE_DELETE) : ?>
-										<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Hapus" onclick="data_delete('<?= $record->id ?>')"><i class="fa fa-trash"></i></a>
+										<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" onclick="data_delete('<?= $record->id ?>')"><i class="fa fa-trash"></i></a>
 									<?php endif; ?>
 								</td>
 							</tr>

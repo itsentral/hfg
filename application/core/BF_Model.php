@@ -374,7 +374,7 @@ class BF_Model extends CI_Model
         }
 
         if (is_array($return)) {
-            $last_record = count($return) - 1;
+            $last_record = count($return ?? []) - 1;
             foreach ($return as $key => &$row) {
                 $row = $this->trigger('after_find', $row, ($key == $last_record));
             }
@@ -486,7 +486,7 @@ class BF_Model extends CI_Model
 
         if ($this->set_created === true
             && $this->log_user === true
-            && ! array_key_exists($this->created_by_field, $data)
+            && ! array_key_exists($this->created_by_field, $data ?? [])
         ) {
             $data[$this->created_by_field] = $this->auth->user_id();
         }
@@ -537,7 +537,7 @@ class BF_Model extends CI_Model
         if (! empty($set)) {
             foreach ($data as $key => &$record) {
                 $record = $this->trigger('before_insert', $record);
-                $data[$key] = array_merge($set, $data[$key]);
+                $data[$key] = array_merge($set ?? [], $data[$key] ?? []);
             }
         }
 
@@ -577,7 +577,7 @@ class BF_Model extends CI_Model
         // Add the user id if using a modified_by field.
         if ($this->set_modified === true
             && $this->log_user === true
-            && ! array_key_exists($this->modified_by_field, $data)
+            && ! array_key_exists($this->modified_by_field, $data ?? [])
         ) {
             $data[$this->modified_by_field] = $this->auth->user_id();
         }
@@ -623,12 +623,12 @@ class BF_Model extends CI_Model
 
         // Add the modified field
         if ($this->set_modified === true
-            && ! array_key_exists($this->modified_field, $data)
+            && ! array_key_exists($this->modified_field, $data ?? [])
         ) {
             foreach ($data as $key => $record) {
                 $data[$key][$this->modified_field] = $this->set_date();
                 if ($this->log_user === true
-                    && ! array_key_exists($this->modified_by_field, $data[$key])
+                    && ! array_key_exists($this->modified_by_field, $data[$key] ?? [])
                 ) {
                     $data[$key][$this->modified_by_field] = $this->auth->user_id();
                 }
@@ -802,7 +802,7 @@ class BF_Model extends CI_Model
     public function format_dropdown()
     {
         $args = func_get_args();
-        if (count($args) == 2) {
+        if (count($args ?? []) == 2) {
             list($key, $value) = $args;
         } else {
             $key = $this->key;
@@ -978,7 +978,7 @@ class BF_Model extends CI_Model
      */
     public function created_on($row)
     {
-        if (! array_key_exists($this->created_field, $row)) {
+        if (! array_key_exists($this->created_field, $row ?? [])) {
             $row[$this->created_field] = $this->set_date();
         }
 
@@ -997,7 +997,7 @@ class BF_Model extends CI_Model
      */
     public function modified_on($row)
     {
-        if (! array_key_exists($this->modified_field, $row)) {
+        if (! array_key_exists($this->modified_field, $row ?? [])) {
             $row[$this->modified_field] = $this->set_date();
         }
 
@@ -1024,7 +1024,7 @@ class BF_Model extends CI_Model
 
         foreach ($this->$event as $method) {
             if (strpos((string) $method, '(')) {
-                preg_match('/([a-zA-Z0-9\_\-]+)(\(([a-zA-Z0-9\_\-\., ]+)\))?/', $method, $matches);
+                preg_match('/([a-zA-Z0-9\_\-]+)(\(([a-zA-Z0-9\_\-\., ]+)\))?/', $method ?? '', $matches);
                 $this->callback_parameters = explode(',', (string) $matches[3]);
             }
 
@@ -1480,14 +1480,14 @@ class BF_Model extends CI_Model
 
         // Though the model doesn't support multiple keys well, $this->key could
         // be an array or a string.
-        $skippedFields = array_merge($skippedFields, (array) $this->key);
+        $skippedFields = array_merge($skippedFields ?? [], (array) $this->key);
 
         // If the field is the primary key, one of the created/modified/deleted
         // fields, or has not been set in the $post_data, skip it.
         foreach ($this->get_field_info() as $field) {
             if (isset($field->primary_key)
                 && $field->primary_key
-                || in_array($field->name, $skippedFields)
+                || in_array($field->name, $skippedFields ?? [])
                 || ! isset($post_data[$field->name])
             ) {
                 continue;

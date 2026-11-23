@@ -25,7 +25,7 @@ class Budget_periodik extends Admin_Controller
 	{
 		parent::__construct();
 		$this->load->model(array('All/All_model', 'Budget_periodik/Budget_periodik_model'));
-		$this->template->title('Master Pembayaran Periodik');
+		$this->template->title('Periodic Payment Master');
 		$this->template->page_icon('fa fa-calendar-check');
 		date_default_timezone_set('Asia/Bangkok');
 		$this->waktu = array("bulan" => "bulan", "tahun" => "tahun");
@@ -50,7 +50,7 @@ class Budget_periodik extends Admin_Controller
 		$this->template->set('all_dept', $all_dept);
 		$this->template->set('datdept', $datdept);
 		$this->template->set('results', $data);
-		$this->template->title('Master Pembayaran Periodik');
+		$this->template->title('Periodic Payment Master');
 		$this->template->render('list');
 	}
 
@@ -72,7 +72,7 @@ class Budget_periodik extends Admin_Controller
 		$this->template->set('waktu', $this->waktu);
 		$this->template->set('departement', $key);
 		$this->template->set('mode', 'add');
-		$this->template->title('Input Master Pembayaran Periodik');
+		$this->template->title('Input Periodic Payment Master');
 		$this->template->render('input_form');
 	}
 
@@ -94,7 +94,7 @@ class Budget_periodik extends Admin_Controller
 		$this->template->set('waktu', $this->waktu);
 		$this->template->set('departement', $key);
 		$this->template->set('mode', 'edit');
-		$this->template->title('Edit Master Pembayaran Periodik');
+		$this->template->title('Edit Periodic Payment Master');
 		$this->template->render('input_form');
 	}
 
@@ -116,7 +116,7 @@ class Budget_periodik extends Admin_Controller
 		$this->template->set('waktu', $this->waktu);
 		$this->template->set('departement', $key);
 		$this->template->set('mode', 'view');
-		$this->template->title('Detail Master Pembayaran Periodik');
+		$this->template->title('Periodic Payment Master Detail');
 		$this->template->render('input_form');
 	}
 
@@ -135,7 +135,7 @@ class Budget_periodik extends Admin_Controller
 
 		$this->db->trans_begin();
 
-		$delid = !empty($detail_id) ? implode("','", array_filter($detail_id)) : '';
+		$delid = !empty($detail_id) ? implode("','", array_filter($detail_id ?? [])) : '';
 		if (!empty($delid)) {
 			$this->All_model->dataDelete('ms_budget_rutin', "id not in ('" . $delid . "') and departement='" . $departement . "'");
 		} else {
@@ -143,7 +143,7 @@ class Budget_periodik extends Admin_Controller
 		}
 
 		if (!empty($detail_id)) {
-			for ($x = 0; $x < count($detail_id); $x++) {
+			for ($x = 0; $x < count($detail_id ?? []); $x++) {
 				if (isset($tipe[$x]) && $tipe[$x] == 'bulan') {
 					$tanggal = isset($bln[$x]) ? $bln[$x] : '';
 				} else {
@@ -151,7 +151,7 @@ class Budget_periodik extends Admin_Controller
 				}
 
 				$val_raw = isset($nilai[$x]) ? $nilai[$x] : 0;
-				$clean_val = str_replace(',', '', str_replace('.', '', $val_raw));
+				$clean_val = str_replace(',', '', str_replace('.', '', $val_raw ?? ''));
 				$clean_val = is_numeric($clean_val) ? $clean_val : 0;
 
 				$row_nama = isset($nama[$x]) ? trim((string) $nama[$x]) : '';
@@ -202,9 +202,9 @@ class Budget_periodik extends Admin_Controller
 		$nilai_alokasi	= $this->input->post("nilai_alokasi");
 		$this->All_model->dataDelete('ms_budget_rutin_alokasi', array('departement' => $departement));
 		if (isset($kode_detail) && is_array($kode_detail)) {
-			for ($x = 0; $x < count($kode_detail); $x++) {
+			for ($x = 0; $x < count($kode_detail ?? []); $x++) {
 				$val_alok = isset($nilai_alokasi[$x]) ? $nilai_alokasi[$x] : 0;
-				$clean_alok = str_replace(',', '', str_replace('.', '', $val_alok));
+				$clean_alok = str_replace(',', '', str_replace('.', '', $val_alok ?? ''));
 				$dataalokasi = array(
 					'kode'        => $kode_detail[$x],
 					'coa'         => isset($coa_alokasi[$x]) ? $coa_alokasi[$x] : '',
@@ -222,7 +222,7 @@ class Budget_periodik extends Admin_Controller
 			$status         = 1;
 			$nm_hak_akses   = $this->addPermission;
 			$kode_universal = 'SavePeriodik';
-			$jumlah         = isset($detail_id) ? count($detail_id) : 0;
+			$jumlah         = isset($detail_id) ? count($detail_id ?? []) : 0;
 			$sql            = $this->db->last_query();
 			$result         = TRUE;
 		} else {
@@ -238,7 +238,7 @@ class Budget_periodik extends Admin_Controller
 		$this->db->trans_complete();
 		$param = array(
 			'save' => $result,
-			'msg'  => $result ? 'Data berhasil disimpan' : 'Gagal menyimpan data'
+			'msg'  => $result ? 'Data saved successfully' : 'Failed to save data'
 		);
 		echo json_encode($param);
 	}

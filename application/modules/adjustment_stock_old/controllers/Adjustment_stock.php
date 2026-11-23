@@ -53,7 +53,7 @@ class Adjustment_stock extends Admin_Controller
       $adjustment_type   = $data['adjustment_type'];
       $id_material       = $data['id_material'];
       $no_ba             = $data['no_ba'];
-      $qty_oke           = str_replace(',', '', $data['qty_oke']);
+      $qty_oke           = str_replace(',', '', $data['qty_oke'] ?? '');
       $keterangan       = $data['keterangan'];
 
       $id_gudang_dari_m   = $data['id_gudang_dari_m'];

@@ -62,8 +62,8 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 	ob_start(); ?>
 	<tr class="fp-row">
 		<td class="text-center fp-no"><?= $no; ?></td>
-		<td><input type="text" name="costcentre_area[]" list="list_costcenter" class="form-control form-control-sm" maxlength="150" placeholder="Pilih / ketik area" value="<?= htmlspecialchars((string) $r['costcentre_area']); ?>" <?= $readonly; ?>></td>
-		<td><input type="text" name="process_name[]" class="form-control form-control-sm" maxlength="150" placeholder="Nama proses" value="<?= htmlspecialchars((string) $r['process_name']); ?>" <?= $readonly; ?> required></td>
+		<td><input type="text" name="costcentre_area[]" list="list_costcenter" class="form-control form-control-sm" maxlength="150" placeholder="Select / type area" value="<?= htmlspecialchars((string) $r['costcentre_area']); ?>" <?= $readonly; ?>></td>
+		<td><input type="text" name="process_name[]" class="form-control form-control-sm" maxlength="150" placeholder="Process name" value="<?= htmlspecialchars((string) $r['process_name']); ?>" <?= $readonly; ?> required></td>
 		<td>
 			<select name="machine[]" class="form-select form-select-sm select-machine" style="width: 100%;" <?= $disabled; ?>>
 				<option value="">-- Pilih Mesin --</option>
@@ -93,7 +93,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 		<td><input type="text" name="man_power[]" class="form-control form-control-sm text-end fp-mp" inputmode="numeric" placeholder="0" value="<?= ($r['man_power'] === '' ? '' : (int) $r['man_power']); ?>" <?= $readonly; ?>></td>
 		<td class="text-end fp-mh"><?= $plain($r['total_man_hour'], 8); ?></td>
 		<?php if (!$view_only) : ?>
-			<td class="text-center"><a href="javascript:void(0)" class="btn-icon btn-icon-delete fp-del" title="Hapus proses"><i class="ti ti-trash"></i></a></td>
+			<td class="text-center"><a href="javascript:void(0)" class="btn-icon btn-icon-delete fp-del" title="Delete process"><i class="ti ti-trash"></i></a></td>
 		<?php endif; ?>
 	</tr>
 	<?php
@@ -126,7 +126,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 				<?php endforeach; ?>
 			</select>
 			<?php if (empty($tersedia)) : ?>
-				<small class="text-muted">Semua Product Category sudah memiliki Flow Process.</small>
+				<small class="text-muted">All Product Categories already have a Flow Process.</small>
 			<?php endif; ?>
 		<?php else : ?>
 			<input type="text" class="form-control bg-light" value="<?= strtoupper(htmlspecialchars((string) $nama_kat)); ?>" readonly>
@@ -174,7 +174,7 @@ $baris = function ($r, $no) use ($plain, $readonly, $disabled, $view_only, $mach
 </div>
 
 <div class="alert alert-light border py-2 mt-3 mb-0 text-muted small">
-	<i class="fa fa-info-circle me-1"></i> <strong>Rumus:</strong> <code>Man Hour = Cycletime &times; Man Power &divide; 60</code>. Total Man Hour = jumlah Man Hour seluruh proses. Contoh: Cycletime <code>0.041667</code> menit/m dengan 1 orang Man Power &rarr; <code>0.000694</code> jam/meter.
+	<i class="fa fa-info-circle me-1"></i> <strong>Formula:</strong> <code>Man Hour = Cycletime &times; Man Power &divide; 60</code>. Total Man Hour = sum of the Man Hours of all processes. Example: Cycletime <code>0.041667</code> min/m with 1 Man Power &rarr; <code>0.000694</code> hours/meter.
 </div>
 
 <!-- Templat baris baru -->

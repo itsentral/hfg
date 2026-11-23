@@ -9,14 +9,14 @@
                                 <i class="fa fa-file-text-o fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Detail Purchase Request (PR) Stok</h5>
+                                <h5 class="card-title fw-bold text-dark mb-0">Purchase Request (PR) Stock Detail</h5>
                                 <small class="text-muted">No. PR: <span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars($header[0]['no_pr'] ?? '-') ?></span> &bull; No. SO: <?= htmlspecialchars($header[0]['so_number'] ?? '-') ?></small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-5 col-12 text-md-end d-flex gap-2 justify-content-md-end">
                         <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
-                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                            <i class="fa fa-arrow-left me-1"></i> Back
                         </a>
                         <a href="<?= base_url('request_pr_stok/PrintH2/' . ($header[0]['so_number'] ?? '')) ?>" class="btn btn-success shadow-sm" target="_blank">
                             <i class="fa fa-print me-1"></i> Cetak PR
@@ -30,9 +30,9 @@
                     <div class="alert alert-danger border-0 shadow-sm d-flex align-items-start gap-3 mb-4" role="alert">
                         <i class="fa fa-ban fs-3 text-danger mt-1"></i>
                         <div>
-                            <h6 class="alert-heading fw-bold mb-1">Pengajuan PR Ditolak!</h6>
+                            <h6 class="alert-heading fw-bold mb-1">PR Request Rejected!</h6>
                             <p class="mb-0 text-dark">
-                                <?= !empty($header[0]['reject_reason3']) ? htmlspecialchars((string) $header[0]['reject_reason3']) : (!empty($header[0]['reject_reason2']) ? htmlspecialchars((string) $header[0]['reject_reason2']) : (!empty($header[0]['reject_reason1']) ? htmlspecialchars((string) $header[0]['reject_reason1']) : 'Pengajuan PR ditolak oleh pihak Management / Approval.')); ?>
+                                <?= !empty($header[0]['reject_reason3']) ? htmlspecialchars((string) $header[0]['reject_reason3']) : (!empty($header[0]['reject_reason2']) ? htmlspecialchars((string) $header[0]['reject_reason2']) : (!empty($header[0]['reject_reason1']) ? htmlspecialchars((string) $header[0]['reject_reason1']) : 'The PR request was rejected by Management / Approval.')); ?>
                             </p>
                         </div>
                     </div>
@@ -49,12 +49,12 @@
                                         <td class="py-2 px-3 fw-bold text-dark"><?= htmlspecialchars($header[0]['so_number'] ?? '-') ?></td>
                                     </tr>
                                     <tr class="border-bottom">
-                                        <th class="bg-light text-muted py-2 px-3">No. Dokumen PR</th>
+                                        <th class="bg-light text-muted py-2 px-3">PR Document No.</th>
                                         <td class="py-2 px-3 fw-bold text-danger"><?= htmlspecialchars($header[0]['no_pr'] ?? '-') ?></td>
                                     </tr>
                                     <tr class="border-bottom">
                                         <th class="bg-light text-muted py-2 px-3">Customer / Keperluan</th>
-                                        <td class="py-2 px-3"><?= htmlspecialchars($header[0]['nm_customer'] ?? 'Pengisian Stok Internal') ?></td>
+                                        <td class="py-2 px-3"><?= htmlspecialchars($header[0]['nm_customer'] ?? 'Internal Stock Replenishment') ?></td>
                                     </tr>
                                     <tr class="border-bottom">
                                         <th class="bg-light text-muted py-2 px-3">Tgl Dibutuhkan</th>
@@ -80,7 +80,7 @@
                             <div class="card border-0 bg-info bg-opacity-10 rounded-3 p-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="text-muted small fw-bold text-uppercase">Nilai Budget</div>
+                                        <div class="text-muted small fw-bold text-uppercase">Budget Value</div>
                                         <div class="fs-4 fw-bold text-info mt-1">
                                             Rp <?= number_format($header[0]['nilai_budget'] ?? 0) ?>
                                         </div>
@@ -94,7 +94,7 @@
                             <div class="card border-0 bg-success bg-opacity-10 rounded-3 p-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="text-muted small fw-bold text-uppercase">Nilai Total Pengajuan</div>
+                                        <div class="text-muted small fw-bold text-uppercase">Total Request Value</div>
                                         <div class="fs-4 fw-bold text-success mt-1">
                                             Rp <?= number_format($header[0]['nilai_pengajuan'] ?? 0) ?>
                                         </div>
@@ -109,21 +109,21 @@
                 </div>
 
                 <!-- Detail Table -->
-                <h6 class="fw-bold text-dark mb-3"><i class="fa fa-list text-primary me-1"></i> Rincian Barang Permintaan (PR)</h6>
+                <h6 class="fw-bold text-dark mb-3"><i class="fa fa-list text-primary me-1"></i> Request Item Details (PR)</h6>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle table-striped border-top mb-0" width="100%">
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" style="width: 40px;">#</th>
-                                <th class="text-start">Nama Barang & No. Akun COA</th>
+                                <th class="text-start">Item Name & COA Account No.</th>
                                 <th class="text-end" style="width: 90px;">Min Stock</th>
                                 <th class="text-end" style="width: 90px;">Max Stock</th>
                                 <th class="text-end" style="width: 90px;">Min Order</th>
                                 <th class="text-end" style="width: 110px;">Qty PR (Pack)</th>
-                                <th class="text-center" style="width: 80px;">Satuan</th>
+                                <th class="text-center" style="width: 80px;">Unit</th>
                                 <th class="text-end" style="width: 100px;">Qty Total</th>
                                 <th class="text-center" style="width: 80px;">Unit</th>
-                                <th class="text-end" style="width: 110px;">Harga Acuan</th>
+                                <th class="text-end" style="width: 110px;">Reference Price</th>
                                 <th class="text-end" style="width: 120px;">Total Estimasi</th>
                                 <th class="text-center" style="width: 120px;">Status</th>
                             </tr>
@@ -166,24 +166,24 @@
 
                                     $status_badge = "<span class='badge bg-secondary'>Draft</span>";
                                     if (($value['status_app'] ?? '') == 'N') {
-                                        $status_badge = "<span class='badge bg-warning text-dark'>Menunggu Review</span>";
+                                        $status_badge = "<span class='badge bg-warning text-dark'>Waiting for Review</span>";
                                     } elseif (($value['status_app'] ?? '') == 'Y') {
-                                        $status_badge = "<span class='badge bg-success'>Disetujui</span>";
+                                        $status_badge = "<span class='badge bg-success'>Approved</span>";
                                     } elseif (($value['status_app'] ?? '') == 'D') {
-                                        $status_badge = "<span class='badge bg-danger'>Ditolak</span>";
+                                        $status_badge = "<span class='badge bg-danger'>Rejected</span>";
                                     }
 
                                     echo "<td class='text-center'>" . $status_badge . "</td>";
                                     echo "</tr>";
                                 }
                             } else {
-                                echo "<tr><td colspan='12' class='text-center py-4 text-muted'>Tidak ada rincian item dalam PR ini</td></tr>";
+                                echo "<tr><td colspan='12' class='text-center py-4 text-muted'>There are no item details in this PR</td></tr>";
                             }
                             ?>
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
-                                <th colspan="10" class="text-end fw-bold py-3 fs-6">Total Nilai Item:</th>
+                                <th colspan="10" class="text-end fw-bold py-3 fs-6">Total Item Value:</th>
                                 <th class="text-end fw-bold py-3 fs-6 text-success">Rp <?= number_format((float) $total_all_item, 2) ?></th>
                                 <th></th>
                             </tr>
@@ -193,7 +193,7 @@
 
                 <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
                     <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
-                        <i class="fa fa-arrow-left me-1"></i> Kembali
+                        <i class="fa fa-arrow-left me-1"></i> Back
                     </a>
                     <a href="<?= base_url('request_pr_stok/PrintH2/' . ($header[0]['so_number'] ?? '')) ?>" class="btn btn-success shadow-sm" target="_blank">
                         <i class="fa fa-print me-1"></i> Cetak Dokumen PR

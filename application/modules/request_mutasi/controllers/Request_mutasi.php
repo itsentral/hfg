@@ -20,7 +20,7 @@ class Request_mutasi extends Admin_Controller
         parent::__construct();
         $this->load->model(array('Request_mutasi/Request_mutasi_model', 'All/All_model', 'Jurnal_nomor/Jurnal_model', 'Gl_interface/Acc_model'));
         $this->load->helper('app');
-        $this->template->title('Manage Request Mutasi');
+        $this->template->title('Manage Mutation Request');
         $this->template->page_icon('fa fa-table');
         date_default_timezone_set("Asia/Bangkok");
     }
@@ -29,7 +29,7 @@ class Request_mutasi extends Admin_Controller
     {
         $data = $this->Request_mutasi_model->GetListDataRequest();
         $this->template->set('data', $data);
-        $this->template->title('Request Mutasi');
+        $this->template->title('Mutation Request');
         $this->template->render('index');
     }
 
@@ -55,7 +55,7 @@ class Request_mutasi extends Admin_Controller
             'matauang'      => $matauang,
         ];
 
-        $this->template->title('Form Request Mutasi');
+        $this->template->title('Mutation Request Form');
         $this->template->render('form', $data);
     }
 
@@ -85,11 +85,11 @@ class Request_mutasi extends Admin_Controller
         $bank_tujuan  = $q_bank_tujuan->row();
 
         if (!$bank_asal) {
-            echo json_encode(['status' => 2, 'pesan' => "COA '$dari' tidak ditemukan di database " . DBACC . "."]);
+            echo json_encode(['status' => 2, 'pesan' => "COA '$dari' was not found in the database " . DBACC . "."]);
             return;
         }
         if (!$bank_tujuan) {
-            echo json_encode(['status' => 2, 'pesan' => "COA '$ke' tidak ditemukan di database " . DBACC . "."]);
+            echo json_encode(['status' => 2, 'pesan' => "COA '$ke' was not found in the database " . DBACC . "."]);
             return;
         }
 
@@ -101,7 +101,7 @@ class Request_mutasi extends Admin_Controller
             'bank_tujuan'       => $ke,
             'mata_uang'         => $post['matauang'],
             'target_accounting' => 'default',
-            'nilai_request'     => str_replace(",", "", $post['nilai']),
+            'nilai_request'     => str_replace(",", "", $post['nilai'] ?? ''),
             'keterangan'        => $post['keterangan'],
             'terbilang'         => $post['terbilang'],
             'nama_bank_asal'    => $bank_asal->nama,
@@ -131,7 +131,7 @@ class Request_mutasi extends Admin_Controller
     public function mutasi()
     {
         $data = $this->Request_mutasi_model->GetListDataMutasi();
-        $this->template->title('List Mutasi');
+        $this->template->title('Mutation List');
         $this->template->set('data', $data);
         $this->template->render('mutasi');
     }
@@ -140,7 +140,7 @@ class Request_mutasi extends Admin_Controller
     {
         $data = $this->Request_mutasi_model->GetListApproval();
         $this->template->set('data', $data);
-        $this->template->title('Approval Mutasi');
+        $this->template->title('Mutation Approval');
         $this->template->render('index_approval');
     }
 
@@ -163,7 +163,7 @@ class Request_mutasi extends Admin_Controller
             'matauang'      => $matauang,
         ];
         $this->template->page_icon('fa fa-plus');
-        $this->template->title('Add Mutasi');
+        $this->template->title('Add Mutation');
         $this->template->render('add', $data);
     }
 
@@ -177,12 +177,12 @@ class Request_mutasi extends Admin_Controller
         $keterangan  = $post['keterangan'];
         $kurs        = str_replace(',', '', $post['kurs'] ?? '1');
         $tgl         = $post['tgl'];
-        $nilai_req   = str_replace(',', '', $post['nilai']);
-        $rupiah      = str_replace(',', '', $post['rupiah']);
+        $nilai_req   = str_replace(',', '', $post['nilai'] ?? '');
+        $rupiah      = str_replace(',', '', $post['rupiah'] ?? '');
 
         $request = $this->db->get_where('tr_request_mutasi', ['kd_mutasi' => $no_request])->row();
         if (!$request) {
-            echo json_encode(['status' => 2, 'pesan' => 'Data request mutasi tidak ditemukan.']);
+            echo json_encode(['status' => 2, 'pesan' => 'Mutation request data not found.']);
             return;
         }
 
@@ -215,7 +215,7 @@ class Request_mutasi extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            echo json_encode(['status' => 2, 'pesan' => 'Gagal menyimpan data mutasi.']);
+            echo json_encode(['status' => 2, 'pesan' => 'Failed to save mutation data.']);
             return;
         }
 
@@ -223,7 +223,7 @@ class Request_mutasi extends Admin_Controller
 
         if (!$jurnal_ok) {
             $this->db->trans_rollback();
-            echo json_encode(['status' => 2, 'pesan' => 'Gagal membuat jurnal mutasi.']);
+            echo json_encode(['status' => 2, 'pesan' => 'Failed to create the mutation journal.']);
             return;
         }
 
@@ -231,7 +231,7 @@ class Request_mutasi extends Admin_Controller
         echo json_encode([
             'status' => 1,
             'nomor'  => $kode_aktual,
-            'pesan'  => 'Mutasi berhasil disimpan.'
+            'pesan'  => 'Mutation saved successfully.'
         ]);
     }
 
@@ -335,7 +335,7 @@ class Request_mutasi extends Admin_Controller
         $data = $this->Request_mutasi_model->GetDataApprove($id);
         $this->template->set('data', $data);
         $this->template->page_icon('fa fa-check');
-        $this->template->title('Approval Mutasi');
+        $this->template->title('Mutation Approval');
         $this->template->render('approval');
     }
 
@@ -402,7 +402,7 @@ class Request_mutasi extends Admin_Controller
     {
         $data = $this->Request_mutasi_model->GetListDataTransaksi();
         $this->template->set('data', $data);
-        $this->template->title('Data Transaksi Bank');
+        $this->template->title('Bank Transaction Data');
         $this->template->render('index_transaksi');
     }
 
@@ -428,7 +428,7 @@ class Request_mutasi extends Admin_Controller
             'matauang'      => $matauang,
         ];
 
-        $this->template->title('Form Transaksi Bank');
+        $this->template->title('Bank Transaction Form');
         $this->template->render('form_transaksi', $data);
     }
 
@@ -463,17 +463,17 @@ class Request_mutasi extends Admin_Controller
         $bank_tujuan = $q_bank_tujuan2->row();
 
         if (!$bank_asal) {
-            echo json_encode(['status' => 2, 'pesan' => "COA '$dari' tidak ditemukan di database " . DBACC . "."]);
+            echo json_encode(['status' => 2, 'pesan' => "COA '$dari' was not found in the database " . DBACC . "."]);
             return;
         }
         if (!$bank_tujuan) {
-            echo json_encode(['status' => 2, 'pesan' => "COA '$ke' tidak ditemukan di database " . DBACC . "."]);
+            echo json_encode(['status' => 2, 'pesan' => "COA '$ke' was not found in the database " . DBACC . "."]);
             return;
         }
 
         $nilai = str_replace(",", "", isset($post['nilai']) ? $post['nilai'] : '0');
-        $kurs = (!empty($post['kurs'])) ? str_replace(",", "", $post['kurs']) : '1';
-        $transaksi = (!empty($post['transaksi'])) ? str_replace(",", "", $post['transaksi']) : ((float)$nilai * (float)$kurs);
+        $kurs = (!empty($post['kurs'])) ? str_replace(",", "", $post['kurs'] ?? '') : '1';
+        $transaksi = (!empty($post['transaksi'])) ? str_replace(",", "", $post['transaksi'] ?? '') : ((float)$nilai * (float)$kurs);
 
         $this->db->trans_begin();
         $data = array(

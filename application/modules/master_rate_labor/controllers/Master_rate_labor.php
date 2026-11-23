@@ -24,7 +24,7 @@ class Master_rate_labor extends Admin_Controller
     {
         $rate = $this->Master_rate_labor_model->get_rate_labor($id);
         if (!$rate) {
-            echo '<div class="alert alert-danger">Data tidak ditemukan.</div>';
+            echo '<div class="alert alert-danger">Data not found.</div>';
             return;
         }
 
@@ -41,7 +41,7 @@ class Master_rate_labor extends Admin_Controller
         $remark = $this->input->post('remark');
 
         if (empty($id) || !isset($rate)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Parameter tidak lengkap']);
+            echo json_encode(['status' => 0, 'pesan' => 'Incomplete parameters']);
             return;
         }
 
@@ -57,10 +57,10 @@ class Master_rate_labor extends Admin_Controller
 
         if ($result) {
             write_log('Master Rate Labor', 'Edit', 'Update tarif labor ID: ' . $id . ' menjadi ' . $rate, $logPayload, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Tarif labor berhasil diperbarui!']);
+            echo json_encode(['status' => 1, 'pesan' => 'Labor rate updated successfully!']);
         } else {
             write_log('Master Rate Labor', 'Edit', 'Gagal update tarif labor ID: ' . $id, $logPayload, null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal memperbarui tarif labor']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to update labor rate']);
         }
     }
 
@@ -88,7 +88,7 @@ class Master_rate_labor extends Admin_Controller
         $products = $this->input->post('products');
 
         if (empty($products) || !is_array($products)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Tidak ada data produk untuk disimpan']);
+            echo json_encode(['status' => 0, 'pesan' => 'No product data to save']);
             return;
         }
 
@@ -96,11 +96,11 @@ class Master_rate_labor extends Admin_Controller
         $result  = $this->Master_rate_labor_model->save_rate_process_product($products, $user_id);
 
         if ($result) {
-            write_log('Master Rate Labor', 'Save Process Product', 'Simpan Standard Biaya Gaji Produk (' . count($products) . ' items)', ['total_items' => count($products)], null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Data Standard Biaya Gaji Produk berhasil disimpan!']);
+            write_log('Master Rate Labor', 'Save Process Product', 'Simpan Standard Biaya Gaji Produk (' . count($products ?? []) . ' items)', ['total_items' => count($products ?? [])], null, 1);
+            echo json_encode(['status' => 1, 'pesan' => 'Product Standard Salary Cost data saved successfully!']);
         } else {
-            write_log('Master Rate Labor', 'Save Process Product', 'Gagal simpan Standard Biaya Gaji Produk', ['total_items' => count($products)], null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan data Standard Biaya Gaji Produk']);
+            write_log('Master Rate Labor', 'Save Process Product', 'Gagal simpan Standard Biaya Gaji Produk', ['total_items' => count($products ?? [])], null, 0);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to save Product Standard Salary Cost data']);
         }
     }
 }

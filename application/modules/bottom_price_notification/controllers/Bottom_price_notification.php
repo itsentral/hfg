@@ -10,7 +10,7 @@ class Bottom_price_notification extends Admin_Controller
     {
         parent::__construct();
         $this->load->model('bottom_price_notification/Bottom_price_notification_model', 'bpn_model');
-        $this->template->title('Notifikasi Perubahan Bottom Price');
+        $this->template->title('Bottom Price Change Notification');
         $this->template->page_icon('fa fa-bell');
     }
 
@@ -39,7 +39,7 @@ class Bottom_price_notification extends Admin_Controller
         $catatan = trim($this->input->post('catatan'));
 
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID notifikasi tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid notification ID']);
             return;
         }
 
@@ -48,10 +48,10 @@ class Bottom_price_notification extends Admin_Controller
             write_log('Notifikasi Bottom Price', 'Keep', "Keputusan: Rate Extra Margin tetap dipakai untuk notifikasi #{$id}", ['catatan' => $catatan], null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => 'Keputusan tersimpan. Rate Extra Margin aktif tetap dipakai.',
+                'pesan'  => 'Decision saved. The active Extra Margin rate is still used.',
             ]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan keputusan.']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to save the decision.']);
         }
     }
 
@@ -64,18 +64,18 @@ class Bottom_price_notification extends Admin_Controller
         $rate_pct = (float) $this->input->post('rate_pct');
 
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID notifikasi tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid notification ID']);
             return;
         }
 
         if ($rate_pct < 0 || $rate_pct > 100) {
-            echo json_encode(['status' => 0, 'pesan' => 'Rate Extra Margin harus antara 0% dan 100%']);
+            echo json_encode(['status' => 0, 'pesan' => 'Extra Margin Rate must be between 0% and 100%']);
             return;
         }
 
         $notif = $this->db->where('id', $id)->get('bottom_price_notification')->row();
         if (!$notif) {
-            echo json_encode(['status' => 0, 'pesan' => 'Data notifikasi tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Notification data not found']);
             return;
         }
 
@@ -100,7 +100,7 @@ class Bottom_price_notification extends Admin_Controller
 
         echo json_encode([
             'status' => 1,
-            'pesan'  => 'Pengajuan perubahan Extra Margin berhasil dikirim ke antrean Approval GM.',
+            'pesan'  => 'The Extra Margin change request was sent to the GM Approval queue successfully.',
         ]);
     }
 }

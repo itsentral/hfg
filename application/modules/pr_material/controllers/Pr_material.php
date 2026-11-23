@@ -51,10 +51,10 @@ class Pr_material extends Admin_Controller
         $data = $this->input->post();
 
         $id_material    = $data['id_material'];
-        $purchase       = str_replace(',', '', $data['purchase']);
+        $purchase       = str_replace(',', '', $data['purchase'] ?? '');
         $tanggal        = $data['tanggal'];
         $keterangan     = $data['keterangan'];
-        $forecast       = str_replace(',', '', $data['forecast']);
+        $forecast       = str_replace(',', '', $data['forecast'] ?? '');
 
         $ArrHeader = array(
             'request'           => $purchase,
@@ -338,7 +338,7 @@ class Pr_material extends Admin_Controller
         ];
 
         $this->template->page_icon('fa fa-cart-plus');
-        $this->template->title('Detail Purchase Request : ' . $so_number);
+        $this->template->title('Purchase Request Detail: ' . $so_number);
         $this->template->render('detail_planning', $data);
     }
 
@@ -484,7 +484,7 @@ class Pr_material extends Admin_Controller
 
             $ArrUpdate[] = [
                 'id'               => $value['id'],
-                'propose_purchase' => (float) str_replace(',', '', $value['qty']),
+                'propose_purchase' => (float) str_replace(',', '', $value['qty'] ?? ''),
                 'note'             => $value['note'] ?? '',
             ];
         }
@@ -545,7 +545,7 @@ class Pr_material extends Admin_Controller
         }
 
         $oldHeader = (array)$get_pr;
-        $newHeader = array_merge($oldHeader, [
+        $newHeader = array_merge($oldHeader ?? [], [
             'no_rev'         => ($get_pr->no_rev + 1),
             'tgl_dibutuhkan' => $data['tgl_dibutuhkan'],
             'tingkat_pr'     => $data['tingkat_pr'],
@@ -633,7 +633,7 @@ class Pr_material extends Admin_Controller
 
         $data_url    = base_url();
         $Split_Beda    = explode('/', (string) $data_url);
-        $Jum_Beda    = count($Split_Beda);
+        $Jum_Beda    = count($Split_Beda ?? []);
         $Nama_Beda    = $Split_Beda[$Jum_Beda - 2];
 
         $getData        = $this->db->get_where('material_planning_base_on_produksi', array('so_number' => $kode))->result_array();

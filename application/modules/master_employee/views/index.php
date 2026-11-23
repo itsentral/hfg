@@ -35,7 +35,7 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 						<th>Employee Name</th>
 						<th style="width:140px;">Gender</th>
 						<th>Department</th>
-						<th style="width:150px;">Telepon</th>
+						<th style="width:150px;">Phone</th>
 						<th>Email</th>
 						<th style="width:120px;" class="text-center">Status</th>
 						<th style="width:140px;" class="text-end">Option</th>
@@ -53,7 +53,7 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 							if ($record->status == 'N') $status_text = 'Non-Active';
 
 							$gender = ($record->gender == 'P') ? 'Perempuan' : 'Laki-Laki';
-							$dept = ucwords(strtolower(get_name('ms_department', 'nama', 'id', $record->department)));
+							$dept = ucwords(strtolower((string) get_name('ms_department', 'nama', 'id', $record->department)));
 						?>
 							<tr>
 								<td class="text-center"><?= $numb; ?></td>
@@ -136,8 +136,8 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 		var id = $(this).data('id');
 
 		swal({
-			title: "Anda Yakin?",
-			text: "Data akan di hapus!",
+			title: "Are you sure?",
+			text: "The data will be deleted!",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonClass: "btn-info",
@@ -158,7 +158,7 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 				success: function(res) {
 					if (res.status == '1') {
 						swal({
-							title: "Sukses",
+							title: "Success",
 							text: res.pesan,
 							type: "success"
 						}, function() {
@@ -175,7 +175,7 @@ $ENABLE_DELETE  = has_permission('Master_Karyawan.Delete');
 				error: function() {
 					swal({
 						title: "Error",
-						text: "Error proccess !",
+						text: "Process error!",
 						type: "error"
 					});
 				}

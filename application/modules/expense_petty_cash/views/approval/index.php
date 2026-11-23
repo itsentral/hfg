@@ -6,7 +6,7 @@
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle me-2"></i>Daftar Approval Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Daftar pengajuan pelaporan mingguan yang membutuhkan persetujuan Anda</small>
+            <small class="text-muted">List of weekly report submissions that need your approval</small>
         </div>
         <div>
             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">

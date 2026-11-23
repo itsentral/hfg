@@ -34,7 +34,7 @@ class Users extends Front_Controller
             $token = $this->input->post('g-recaptcha-response', true);
             list($ok, $info) = $this->verify_recaptcha_v3($token, 'login', 0.5);
             if (!$ok) {
-                $this->session->set_flashdata('error', 'Verifikasi reCAPTCHA gagal: ' . $info);
+                $this->session->set_flashdata('error', 'reCAPTCHA verification failed: ' . $info);
                 redirect('users/login');
                 return;
             }
@@ -63,8 +63,8 @@ class Users extends Front_Controller
     /** Verifikasi reCAPTCHA v3 */
     private function verify_recaptcha_v3($token, $expectedAction = 'login', $threshold = 0.5)
     {
-        if (empty($this->secret_key)) return [false, 'Secret key kosong'];
-        if (empty($token))            return [false, 'Token kosong'];
+        if (empty($this->secret_key)) return [false, 'Secret key is empty'];
+        if (empty($token))            return [false, 'Token is empty'];
 
         $postData = http_build_query([
             'secret'   => $this->secret_key,
@@ -86,7 +86,7 @@ class Users extends Front_Controller
         if ($raw === false) return [false, 'cURL error: ' . $err];
 
         $res = json_decode((string) $raw, true);
-        if (empty($res['success'])) return [false, 'Gagal: ' . json_encode($res['error-codes'] ?? [])];
+        if (empty($res['success'])) return [false, 'Failed: ' . json_encode($res['error-codes'] ?? [])];
 
         if (!empty($expectedAction) && isset($res['action']) && $res['action'] !== $expectedAction) {
             return [false, 'Action mismatch'];

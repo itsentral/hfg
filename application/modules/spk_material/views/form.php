@@ -165,14 +165,14 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 <!-- Header Fields -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
-                        <label class="form-label">Tanggal SPK <span class="text-danger">*</span></label>
+                        <label class="form-label">SPK Date <span class="text-danger">*</span></label>
                         <input type="text" id="tgl_spk" name="tgl_spk" class="form-control"
-                            value="<?= htmlspecialchars((string) $tgl_spk) ?>" placeholder="Pilih tanggal" required>
+                            value="<?= htmlspecialchars((string) $tgl_spk) ?>" placeholder="Select date" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Due Date</label>
                         <input type="text" id="due_date" name="due_date" class="form-control"
-                            value="<?= htmlspecialchars((string) $due_date) ?>" placeholder="Tanggal batas (opsional)">
+                            value="<?= htmlspecialchars((string) $due_date) ?>" placeholder="Cut-off date (optional)">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Shift <span class="text-danger">*</span></label>
@@ -181,9 +181,9 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                         <input type="hidden" id="shift_names" name="shift_names" value="<?= htmlspecialchars((string) $shift_names) ?>">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Catatan</label>
+                        <label class="form-label">Notes</label>
                         <textarea id="catatan" name="catatan" class="form-control" rows="1"
-                            placeholder="Catatan tambahan (opsional)"><?= htmlspecialchars((string) $catatan) ?></textarea>
+                            placeholder="Additional notes (optional)"><?= htmlspecialchars((string) $catatan) ?></textarea>
                     </div>
                 </div>
 
@@ -202,7 +202,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                 <!-- Submit Button -->
                 <div class="mt-4 d-flex gap-2 justify-content-end">
                     <a href="<?= site_url('spk_material') ?>" class="btn btn-sm btn-secondary">
-                        <i class="fa fa-arrow-left"></i> Kembali
+                        <i class="fa fa-arrow-left"></i> Back
                     </a>
                     <button type="button" class="btn btn-sm btn-primary" id="btnSubmitSpk">
                         <i class="fa fa-save"></i> <?= $is_edit ? 'Update SPK' : 'Create SPK' ?>
@@ -255,7 +255,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
         $('#btnAddProduct').on('click', function() {
             if ($('#product-lines-container .product-line').length >= 100) {
-                Swal.fire('Perhatian', 'Maksimal 100 baris produk dalam satu SPK.', 'warning');
+                Swal.fire('Attention', 'Maximum 100 product rows in one SPK.', 'warning');
                 return;
             }
             addProductLine();
@@ -297,7 +297,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         }
         $el.html(options);
         $el.select2({
-            placeholder: 'Pilih Shift',
+            placeholder: 'Select Shift',
             allowClear: true,
             closeOnSelect: false,
             width: '100%'
@@ -331,14 +331,14 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         var html = `
         <div class="product-line" data-line-idx="${idx}">
             <span class="line-number">${getLineCount()}</span>
-            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-line" onclick="removeProductLine(${idx})" title="Hapus baris">
+            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-line" onclick="removeProductLine(${idx})" title="Delete row">
                 <i class="fa fa-times"></i>
             </button>
             <div class="row g-3 mt-1">
                 <div class="col-md-5">
                     <label class="form-label">Produk <span class="text-danger">*</span></label>
                     <select class="form-select select-produk" id="produk_${idx}" data-idx="${idx}">
-                        <option value="">-- Pilih Produk --</option>
+                        <option value="">-- Select Product --</option>
                         ${selectedProduct ? '<option value="'+escHtml(selectedProduct)+'" selected>'+escHtml(selectedProductName)+'</option>' : ''}
                     </select>
                 </div>
@@ -348,7 +348,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                            min="1" max="999999" step="1" placeholder="0" value="${targetQty}">
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label">Berat/Unit</label>
+                    <label class="form-label">Weight/Unit</label>
                     <input type="text" class="form-control input-berat-per-unit" id="berat_${idx}" readonly
                            value="${beratPerUnit ? parseFloat(beratPerUnit).toFixed(2) : '0.00'}">
                 </div>
@@ -356,7 +356,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     <label class="form-label">Total Weight (Kg)</label>
                     <input type="text" class="form-control input-total-weight" id="weight_${idx}" readonly
                            value="${totalWeight ? parseFloat(totalWeight).toFixed(2) : '0.00'}">
-                    <div class="weight-warning" id="weight_warn_${idx}" style="display:none; font-size: 11px; color: #dc3545;">Berat/Unit belum diset</div>
+                    <div class="weight-warning" id="weight_warn_${idx}" style="display:none; font-size: 11px; color: #dc3545;">Weight/Unit not set</div>
                 </div>
             </div>
         </div>`;
@@ -377,7 +377,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     // ---------------------------------------------------------------
     function initProdukSelect2(idx) {
         $('#produk_' + idx).select2({
-            placeholder: '-- Pilih Produk --',
+            placeholder: '-- Select Product --',
             allowClear: true,
             ajax: {
                 url: BASE_URL + '/get_produk_list',
@@ -479,7 +479,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         });
 
         if (isDup) {
-            Swal.fire('Perhatian', 'Produk ini sudah dipilih di baris lain.', 'warning');
+            Swal.fire('Attention', 'This product has already been selected in another row.', 'warning');
             $('#produk_' + currentIdx).val('').trigger('change');
         }
     }
@@ -495,7 +495,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
     // ---------------------------------------------------------------
     function removeProductLine(idx) {
         if ($('#product-lines-container .product-line').length <= 1) {
-            Swal.fire('Perhatian', 'Minimal harus ada 1 baris produk.', 'warning');
+            Swal.fire('Attention', 'There must be at least 1 product row.', 'warning');
             return;
         }
         $('#produk_' + idx).select2('destroy');
@@ -536,14 +536,14 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
         // Validate date
         if (!$('#tgl_spk').val()) {
-            markInvalid('#tgl_spk', 'Tanggal SPK wajib diisi.');
+            markInvalid('#tgl_spk', 'SPK Date is required.');
             isValid = false;
         }
 
         // Validate shift (header level)
         var headerShiftVal = $('#header_shift').val() || [];
         if (headerShiftVal.length === 0) {
-            markInvalid('#header_shift', 'Shift wajib dipilih minimal satu.');
+            markInvalid('#header_shift', 'At least one shift must be selected.');
             isValid = false;
         }
 
@@ -560,11 +560,11 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
             var totalWeight = parseFloat($('#weight_' + idx).val()) || 0;
 
             if (!produkId) {
-                markInvalid('#produk_' + idx, 'Produk harus dipilih.');
+                markInvalid('#produk_' + idx, 'A product must be selected.');
                 isValid = false;
             } else {
                 if (productKeys.indexOf(produkId) > -1) {
-                    markInvalid('#produk_' + idx, 'Produk ini sudah dipilih di baris lain.');
+                    markInvalid('#produk_' + idx, 'This product has already been selected in another row.');
                     isValid = false;
                 }
                 productKeys.push(produkId);
@@ -572,13 +572,13 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
 
             var rawQty = $('#qty_' + idx).val();
             if (!rawQty || rawQty.trim() === '') {
-                markInvalid('#qty_' + idx, 'Target Qty wajib diisi.');
+                markInvalid('#qty_' + idx, 'Target Qty is required.');
                 isValid = false;
             } else if (!/^\d+$/.test(rawQty.trim())) {
-                markInvalid('#qty_' + idx, 'Target Qty harus bilangan bulat positif.');
+                markInvalid('#qty_' + idx, 'Target Qty must be a positive whole number.');
                 isValid = false;
             } else if (targetQty < 1 || targetQty > 999999) {
-                markInvalid('#qty_' + idx, 'Target Qty harus antara 1 - 999.999.');
+                markInvalid('#qty_' + idx, 'Target Qty must be between 1 - 999,999.');
                 isValid = false;
             }
 
@@ -593,18 +593,18 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
         });
 
         if (!isValid) {
-            Swal.fire('Validasi Gagal', 'Periksa form dan lengkapi data yang diperlukan.', 'error');
+            Swal.fire('Validation Failed', 'Check the form and complete the required data.', 'error');
             return;
         }
 
         // Konfirmasi sebelum simpan
         Swal.fire({
             icon: 'question',
-            title: 'Konfirmasi',
-            text: MODE === 'edit' ? 'Apakah Anda yakin ingin mengupdate SPK ini?' : 'Apakah Anda yakin ingin membuat SPK ini?',
+            title: 'Confirmation',
+            text: MODE === 'edit' ? 'Are you sure you want to update this SPK?' : 'Are you sure you want to create this SPK?',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Simpan',
-            cancelButtonText: 'Batal',
+            confirmButtonText: 'Yes, Save',
+            cancelButtonText: 'Cancel',
             reverseButtons: true
         }).then(function(result) {
             if (!result.isConfirmed) return;
@@ -635,7 +635,7 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                     if (res.status == 1) {
                         Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil',
+                                title: 'Success',
                                 text: res.message,
                                 showConfirmButton: false,
                                 timer: 1500
@@ -644,12 +644,12 @@ $catatan    = $is_edit ? $spk['catatan'] : '';
                                 window.location.href = siteurl + 'spk_material';
                             });
                     } else {
-                        Swal.fire('Error', res.message || 'Gagal menyimpan SPK.', 'error');
+                        Swal.fire('Error', res.message || 'Failed to save SPK.', 'error');
                     }
                 },
                 error: function() {
                     $btn.prop('disabled', false).html('<i class="fa fa-save"></i> <?= $is_edit ? "Update SPK" : "Create SPK" ?>');
-                    Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+                    Swal.fire('Error', 'A network error occurred.', 'error');
                 }
             });
         });

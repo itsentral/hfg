@@ -151,7 +151,7 @@ if (!function_exists('assertIsArray')) {
 if (!function_exists('assertArrayHasKey')) {
     function assertArrayHasKey($key, $array, string $message = ''): void
     {
-        if (!is_array($array) || !array_key_exists($key, $array)) {
+        if (!is_array($array) || !array_key_exists($key, $array ?? [])) {
             throw new AssertionError($message ?: "Expected array to have key '{$key}'");
         }
     }
@@ -270,7 +270,7 @@ class PersistenceRoundTripTest
             'target_accounting' => $target_accounting,
             'nilai' => mt_rand(100000, 99999999),
             'keterangan' => 'Test request mutasi',
-        ], $extra_data);
+        ], $extra_data ?? []);
 
         return $this->storageRequestMutasi->insert($data);
     }
@@ -297,7 +297,7 @@ class PersistenceRoundTripTest
             'nilai' => mt_rand(100000, 99999999),
             'jenis' => 'BUM',
             'keterangan' => 'Test transaksi bank',
-        ], $extra_data);
+        ], $extra_data ?? []);
 
         return $this->storageRequestMutasiAdmin->insert($data);
     }
@@ -327,7 +327,7 @@ class PersistenceRoundTripTest
             'target_accounting' => $target_accounting,
             'nilai' => mt_rand(100000, 99999999),
             'keterangan' => 'Test realisasi mutasi',
-        ], $extra_data);
+        ], $extra_data ?? []);
 
         return $this->storageRequestMutasiAktual->insert($data);
     }
@@ -526,8 +526,8 @@ class PersistenceRoundTripTest
             $record = $this->storageRequestMutasi->find($id);
 
             // Count underscores - must be preserved
-            $expected_underscores = substr_count($value, '_');
-            $actual_underscores = substr_count($record['target_accounting'], '_');
+            $expected_underscores = substr_count($value ?? '', '_');
+            $actual_underscores = substr_count($record['target_accounting'] ?? '', '_');
             assertEquals(
                 $expected_underscores,
                 $actual_underscores,

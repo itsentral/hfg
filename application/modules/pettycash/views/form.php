@@ -8,9 +8,9 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 		<div class="box box-primary">
 			<div class="box-body">
 				<div class="form-group ">
-					<label for="nama" class="col-sm-2 control-label">Nama<b class="text-red">*</b></label>
+					<label for="nama" class="col-sm-2 control-label">Name<b class="text-red">*</b></label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" id="nama" name="nama" value="<?php echo (isset($data->nama) ? $data->nama : ""); ?>" placeholder="Nama">
+						<input type="text" class="form-control" id="nama" name="nama" value="<?php echo (isset($data->nama) ? $data->nama : ""); ?>" placeholder="Name">
 					</div>
 					<label for="pengelola" class="col-sm-2 control-label">PIC<b class="text-red">*</b></label>
 					<div class="col-sm-4">
@@ -18,9 +18,9 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 					</div>
 				</div>
 				<div class="form-group ">
-					<label for="keterangan" class="col-sm-2 control-label">Jenis Pembelian</label>
+					<label for="keterangan" class="col-sm-2 control-label">Purchase Type</label>
 					<div class="col-sm-4">
-						<textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan"><?php echo (isset($data->keterangan) ? $data->keterangan : ""); ?></textarea>
+						<textarea class="form-control" id="keterangan" name="keterangan" placeholder="Description"><?php echo (isset($data->keterangan) ? $data->keterangan : ""); ?></textarea>
 					</div>
 					<label for="budget" class="col-sm-2 control-label">Budget<b class="text-red">*</b></label>
 					<div class="col-sm-4">
@@ -52,7 +52,7 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 							foreach ($datacoa as $key => $val) {
 								$selected = '';
 								if (isset($data->coa)) {
-									if (in_array($key, $arraycoa)) {
+									if (in_array($key, $arraycoa ?? [])) {
 										$selected = ' selected';
 									}
 								}
@@ -65,8 +65,8 @@ if (isset($data->id)) $readonly = " readonly"; ?>
 				<div class="box-footer">
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-							<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+							<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>
+							<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Cancel</a>
 						</div>
 					</div>
 				</div>

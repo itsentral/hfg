@@ -24,15 +24,15 @@ $today = date('l, d F Y [H:i:s]');
 <table class="gridtable2" width="100%" border='0'>
     <thead>
         <tr>
-            <td class="mid" width='18%'>Dari Gudang</td>
+            <td class="mid" width='18%'>From Warehouse</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
-            <td class="mid" width='18%'>Ke Gudang</td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
+            <td class="mid" width='18%'>To Warehouse</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'>GUDANG PRODUKSI</td>
+            <td class="mid" width='30%'>PRODUCTION WAREHOUSE</td>
         </tr>
         <tr>
-            <td class="mid">No Transaksi</td>
+            <td class="mid">Transaction No.</td>
             <td class="mid">:</td>
             <td class="mid"><?=$getData[0]['kode_det'];?></td>
             <td class="mid">No SO</td>
@@ -40,7 +40,7 @@ $today = date('l, d F Y [H:i:s]');
             <td class="mid"><?=$getData[0]['so_number'];?></td>
         </tr>
         <tr>
-            <td class="mid">Tanggal Request</td>
+            <td class="mid">Request Date</td>
             <td class="mid">:</td>
             <td class="mid"><?=tgl_indo($getData[0]['tanggal']);?></td>
             <td class="mid">No SPK</td>
@@ -55,8 +55,8 @@ $today = date('l, d F Y [H:i:s]');
             <th class="mid" width='6%'>No</th>
             <th class="mid" style='vertical-align:middle;'>Material Name</th>
             <th class="mid" width='14%'>Request<br>(Kg)</th>
-            <th class="mid" width='14%'>Pengeluaran<br>(Kg)</th>
-            <th class="mid" width='18%'>Keterangan</th> 
+            <th class="mid" width='14%'>Outgoing<br>(Kg)</th>
+            <th class="mid" width='18%'>Description</th> 
         </tr>
     </thead>
     <tbody>
@@ -83,7 +83,7 @@ $today = date('l, d F Y [H:i:s]');
         <td width='65%'></td>
         <td>Disiapkan,</td>
         <td></td>
-        <td>Penerima,</td>
+        <td>Received by,</td>
         <td></td>
     </tr>
     <tr>

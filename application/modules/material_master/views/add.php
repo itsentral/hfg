@@ -114,7 +114,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 		<input type="text" class="form-control" id="nama" name="nama" required placeholder="Material Master" value="<?= $nama; ?>">
 		<small class="text-muted">
 			Otomatis dari pilihan di bawah (dapat diedit manual).
-			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Generate ulang</span>
+			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Regenerate</span>
 		</small>
 	</div>
 </div>
@@ -452,7 +452,7 @@ $status2 = (!empty($listData[0]->status) && $listData[0]->status == '0') ? 'chec
 	});
 
 	// Nama otomatis: material baru mengikuti pilihan; material yang diedit mempertahankan nama tersimpan.
-	// Setelah nama diketik manual, pilihan lain tidak menimpanya sampai "Generate ulang" diklik.
+	// Setelah nama diketik manual, pilihan lain tidak menimpanya sampai "Regenerate" diklik.
 	var namaManual = <?= !empty($id) ? 'true' : 'false'; ?>;
 
 	// Form dimuat ulang lewat ajax setiap modal dibuka: pakai event ber-namespace agar handler tidak menumpuk

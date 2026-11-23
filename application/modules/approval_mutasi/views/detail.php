@@ -147,7 +147,7 @@ $st = $status_map[$m['status']] ?? ['-', 'secondary'];
                                 ];
                             }
                             $mat_name = $detail['trade_name'] ?: $detail['nm_material'];
-                            if (!in_array($mat_name, $pack_groups[$pk]['materials'])) {
+                            if (!in_array($mat_name, $pack_groups[$pk]['materials'] ?? [])) {
                                 $pack_groups[$pk]['materials'][] = $mat_name;
                             }
                             foreach ($detail['coils'] ?? [] as $coil) {

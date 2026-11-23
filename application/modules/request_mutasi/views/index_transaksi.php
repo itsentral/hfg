@@ -12,11 +12,11 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-exchange me-2"></i>Daftar Transaksi Kas / Bank Langsung
             </h5>
-            <small class="text-muted">Kelola transaksi penerimaan (BUM) dan pengeluaran (BUK) bank langsung</small>
+            <small class="text-muted">Manage direct bank receipt (BUM) and payment (BUK) transactions</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <?php if ($ENABLE_ADD) : ?>
-                <a class="btn btn-success btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/create_transaksi') ?>" title="Tambah Transaksi Bank">
+                <a class="btn btn-success btn-sm px-3 shadow-sm" href="<?= base_url('request_mutasi/create_transaksi') ?>" title="Add Bank Transaction">
                     <i class="fa fa-plus me-1"></i> Tambah Transaksi
                 </a>
             <?php endif; ?>
@@ -29,13 +29,13 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">No</th>
-                        <th width="9%" class="text-center">Tgl Transaksi</th>
-                        <th width="13%">Kode Transaksi</th>
-                        <th width="8%" class="text-center">Jenis</th>
-                        <th>Keterangan</th>
+                        <th width="9%" class="text-center">Transaction Date</th>
+                        <th width="13%">Transaction Code</th>
+                        <th width="8%" class="text-center">Type</th>
+                        <th>Description</th>
                         <th width="13%">COA Asal</th>
-                        <th width="13%">COA Tujuan</th>
-                        <th width="11%" class="text-end">Nilai Valas</th>
+                        <th width="13%">Destination COA</th>
+                        <th width="11%" class="text-end">Foreign Currency Value</th>
                         <th width="12%" class="text-end">Total IDR</th>
                         <th width="7%" class="text-center">Aksi</th>
                     </tr>
@@ -45,8 +45,8 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                         <?php $numb = 1; foreach ($data as $record) : ?>
                             <?php
                             $jenis_badge = ($record->jenis_transaksi == 'keluar')
-                                ? '<span class="badge bg-danger px-2 py-1"><i class="fa fa-arrow-up me-1"></i>Keluar</span>'
-                                : '<span class="badge bg-success px-2 py-1"><i class="fa fa-arrow-down me-1"></i>Terima</span>';
+                                ? '<span class="badge bg-danger px-2 py-1"><i class="fa fa-arrow-up me-1"></i>Out</span>'
+                                : '<span class="badge bg-success px-2 py-1"><i class="fa fa-arrow-down me-1"></i>In</span>';
                             ?>
                             <tr>
                                 <td class="text-center text-muted fw-semibold"><?= $numb++; ?></td>
@@ -59,7 +59,7 @@ $ENABLE_VIEW    = has_permission('Request_Mutasi.View');
                                 <td class="text-end fw-semibold"><?= number_format((float) $record->nilai, 0, ',', '.') ?></td>
                                 <td class="text-end fw-bold text-success">Rp <?= number_format((float) $record->transaksi, 0, ',', '.') ?></td>
                                 <td class="text-center text-nowrap">
-                                    <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_transaksi/' . $record->kd_mutasi) ?>" target="_blank" title="Cetak Bukti Transaksi">
+                                    <a class="btn btn-outline-success btn-sm" href="<?= base_url('request_mutasi/printout_transaksi/' . $record->kd_mutasi) ?>" target="_blank" title="Print Transaction Voucher">
                                         <i class="fa fa-print"></i>
                                     </a>
                                 </td>

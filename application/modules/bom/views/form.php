@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') || exit('No direct script access allowed');
 $is_edit     = isset($bom) && $bom;
-$page_title  = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Buat BOM Baru';
+$page_title  = $is_edit ? 'Edit BOM: ' . $bom->nm_produk : 'Create New BOM';
 $bom_num     = !empty($bom->id) ? (int)$bom->id : (isset($next_bom_id) ? (int)$next_bom_id : 1);
 $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
 ?>
@@ -13,7 +13,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h5 class="mb-0 fw-bold"><i class="fa fa-sitemap text-primary me-2"></i> <?= $page_title ?></h5>
         <a href="<?= base_url('bom') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left me-1"></i> Kembali
+            <i class="fa fa-arrow-left me-1"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -27,7 +27,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                 <div class="col-md-6 mb-3 mb-md-0">
                     <label class="form-label fw-bold">Produk FG <span class="text-danger">*</span></label>
                     <select name="id_produk" id="select-produk" class="form-select select2-produk" required <?= $is_edit ? 'disabled' : '' ?>>
-                        <option value="">-- Pilih Produk --</option>
+                        <option value="">-- Select Product --</option>
                         <?php foreach ($produk_list as $idx => $p): ?>
                             <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
                                 data-bom-id="<?= !empty($p->existing_bom_id) ? str_pad((string) $p->existing_bom_id, 3, '0', STR_PAD_LEFT) : '' ?>"
@@ -51,7 +51,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                     <label class="form-label fw-bold">Trade Name Produk</label>
                     <input type="text" id="trade-name-produk" class="form-control bg-light" readonly
                         value="<?= $is_edit ? htmlspecialchars(!empty($bom->trade_name) ? $bom->trade_name : $bom->nm_produk) : '' ?>"
-                        placeholder="Otomatis dari master">
+                        placeholder="Automatic from master">
                 </div>
             </div>
 
@@ -60,7 +60,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 px-3">
                     <h6 class="mb-0 text-white fw-bold"><i class="fa fa-list me-1"></i> Daftar Varian Tebal (Material)</h6>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" id="btn-recalculate" title="Hitung ulang Berat/Meter untuk semua varian material">
+                        <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" id="btn-recalculate" title="Recalculate Weight/Meter for all material variants">
                             <i class="fa fa-calculator me-1"></i> Recalculate Berat/Meter
                         </button>
                         <button type="button" class="btn btn-light btn-sm fw-bold" id="btn-add-variant">
@@ -76,10 +76,10 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                                     <th width="45" class="text-center">No</th>
                                     <th width="180">No. Uniq ID <small class="text-muted fw-normal d-block">(Otomatis)</small></th>
                                     <th width="38%">Material <span class="text-danger">*</span></th>
-                                    <th width="120" class="text-end">Varian Tebal</th>
-                                    <th width="120" class="text-end">Lebar Coil</th>
-                                    <th width="160" class="text-end">Berat/Meter (kg/m)</th>
-                                    <th width="60" class="text-center">Hapus</th>
+                                    <th width="120" class="text-end">Thickness Variant</th>
+                                    <th width="120" class="text-end">Coil Width</th>
+                                    <th width="160" class="text-end">Weight/Meter (kg/m)</th>
+                                    <th width="60" class="text-center">Delete</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-variant">
@@ -95,7 +95,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                                         <td>
                                             <select name="detail[<?= $i ?>][id_material]"
                                                 class="form-select form-select-sm select2-material" required>
-                                                <option value="">-- Pilih Material --</option>
+                                                <option value="">-- Select Material --</option>
                                                 <?php foreach ($material_list as $m): ?>
                                                     <option value="<?= htmlspecialchars((string) $m->code_lv4) ?>"
                                                         data-nama="<?= htmlspecialchars((string) $m->nama) ?>"
@@ -122,11 +122,11 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                                         <td class="col-bpm">
                                             <input type="number" step="any" min="0" name="detail[<?= $i ?>][berat_per_meter]"
                                                 class="form-control form-control-sm text-end fw-bold inp-bpm"
-                                                title="Kuning = berbeda dari hitungan otomatis. Klik Recalculate Berat/Meter untuk mengembalikan."
+                                                title="Yellow = differs from the automatic calculation. Click Recalculate Weight/Meter to restore it."
                                                 value="<?= number_format((float) $d->berat_per_meter, 6, '.', '') ?>">
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-danger btn-sm btn-del-row" title="Hapus">
+                                            <button type="button" class="btn btn-danger btn-sm btn-del-row" title="Delete">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </td>
@@ -141,7 +141,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
 
             <!-- Keterangan Formula Sesuai Mockup -->
             <div class="alert alert-light border py-2 mb-4 text-muted small">
-                <i class="fa fa-info-circle me-1"></i> <strong>Berat/Meter (otomatis, dapat diubah manual)</strong> = <code>((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code> &middot; nilai standar dari Master Standard Material (Toleransi <?= number_format((float) $standard_mat->standar_toleransi, 2) ?>, Berat Jenis <?= number_format((float) $standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format((float) $standard_mat->coating, 2) ?>). Nilai terisi otomatis saat material dipilih dan boleh diubah bila ada hitungan sendiri; kolom yang berbeda dari hitungan otomatis ditandai kuning dan bisa dikembalikan dengan tombol Recalculate Berat/Meter. Material yang sudah dipakai varian lain pada produk ini tidak muncul di pilihan (tidak boleh dobel).
+                <i class="fa fa-info-circle me-1"></i> <strong>Weight/Meter (automatic, can be changed manually)</strong> = <code>((Material Thickness &minus; Standard Tolerance) &times; Coil Width &times; Standard Specific Gravity &divide; 1000) + Coating</code> &middot; standard values from Master Standard Material (Tolerance <?= number_format((float) $standard_mat->standar_toleransi, 2) ?>, Specific Gravity <?= number_format((float) $standard_mat->standar_berat_jenis, 2) ?>, Coating <?= number_format((float) $standard_mat->coating, 2) ?>). The value is filled in automatically when a material is selected and may be changed if you have your own calculation; columns that differ from the automatic calculation are marked yellow and can be restored with the Recalculate Weight/Meter button. Materials already used by other variants of this product do not appear in the options (no duplicates).
             </div>
 
             <!-- Tombol Action Simpan & Batal -->
@@ -149,7 +149,7 @@ $bom_num_str = str_pad((string) $bom_num, 3, '0', STR_PAD_LEFT);
                 <button type="submit" class="btn btn-primary px-4">
                     <i class="fa fa-save me-1"></i> Simpan BOM
                 </button>
-                <a href="<?= base_url('bom') ?>" class="btn btn-secondary px-4">Batal</a>
+                <a href="<?= base_url('bom') ?>" class="btn btn-secondary px-4">Cancel</a>
             </div>
         </form>
     </div>
@@ -167,7 +167,7 @@ $(document).ready(function() {
     };
 
     var materialList = <?= json_encode($material_list) ?>;
-    var rowIndex = <?= ($is_edit && !empty($details)) ? count($details) : 0 ?>;
+    var rowIndex = <?= ($is_edit && !empty($details)) ? count($details ?? []) : 0 ?>;
     var defaultBomNumStr = '<?= $bom_num_str ?>';
     var currentBomNumStr = defaultBomNumStr;
 
@@ -183,14 +183,14 @@ $(document).ready(function() {
     // Inisialisasi Select2 Produk
     $('#select-produk').select2({
         theme: 'bootstrap-5',
-        placeholder: '-- Pilih Produk --',
+        placeholder: '-- Select Product --',
         width: '100%'
     });
 
     function initSelect2Material(elem) {
         elem.select2({
             theme: 'bootstrap-5',
-            placeholder: '-- Pilih Material --',
+            placeholder: '-- Select Material --',
             width: '100%'
         });
     }
@@ -305,24 +305,24 @@ $(document).ready(function() {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Recalculate Selesai',
-                        text: count + ' varian material berhasil dihitung ulang berat/meter-nya. Silakan klik "Simpan BOM" untuk menyimpan perubahan.',
+                        title: 'Recalculation Done',
+                        text: count + ' material variants had their weight/meter recalculated. Please click "Save BOM" to save the changes.',
                         timer: 2500,
                         showConfirmButton: false
                     });
                 } else {
-                    alert(count + ' varian material berhasil dihitung ulang berat/meter-nya. Silakan klik "Simpan BOM" untuk menyimpan.');
+                    alert(count + ' material variants had their weight/meter recalculated. Please click "Save BOM" to save.');
                 }
             } else {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Perhatian',
-                        text: 'Belum ada material yang dipilih pada tabel varian.',
+                        title: 'Attention',
+                        text: 'No materials selected in the variant table yet.',
                         confirmButtonText: 'OK'
                     });
                 } else {
-                    alert('Belum ada material yang dipilih pada tabel varian.');
+                    alert('No materials selected in the variant table yet.');
                 }
             }
         }
@@ -338,15 +338,15 @@ $(document).ready(function() {
             recalculateAllBPM(true);
             return;
         }
-        var msg = differs + ' baris berbeda dari hitungan otomatis (diubah manual atau standar berubah). Hitung ulang akan menimpa nilai tersebut.';
+        var msg = differs + ' rows differ from the automatic calculation (changed manually or the standard changed). Recalculating will overwrite those values.';
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'warning',
-                title: 'Timpa nilai Berat/Meter?',
+                title: 'Overwrite Weight/Meter values?',
                 text: msg,
                 showCancelButton: true,
-                confirmButtonText: 'Ya, hitung ulang',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, recalculate',
+                cancelButtonText: 'Cancel'
             }).then(function(r) {
                 if (r.isConfirmed) recalculateAllBPM(true);
             });
@@ -361,7 +361,7 @@ $(document).ready(function() {
         var nextRow = currentRows + 1;
         var uniqId = 'Type ' + currentBomNumStr + '.' + nextRow;
 
-        var matOptions = '<option value="">-- Pilih Material --</option>';
+        var matOptions = '<option value="">-- Select Material --</option>';
         materialList.forEach(function(m) {
             matOptions += '<option value="' + m.code_lv4 + '"'
                 + ' data-nama="' + (m.nama || '') + '"'
@@ -387,10 +387,10 @@ $(document).ready(function() {
             + '<td class="text-end col-thick">—</td>'
             + '<td class="text-end col-width">—</td>'
             + '<td class="col-bpm">'
-            +   '<input type="number" step="any" min="0" name="detail[' + rowIndex + '][berat_per_meter]" class="form-control form-control-sm text-end fw-bold inp-bpm" title="Kuning = berbeda dari hitungan otomatis. Klik Recalculate Berat/Meter untuk mengembalikan." value="">'
+            +   '<input type="number" step="any" min="0" name="detail[' + rowIndex + '][berat_per_meter]" class="form-control form-control-sm text-end fw-bold inp-bpm" title="Yellow = differs from the automatic calculation. Click Recalculate Weight/Meter to restore it." value="">'
             + '</td>'
             + '<td class="text-center">'
-            +   '<button type="button" class="btn btn-danger btn-sm btn-del-row" title="Hapus"><i class="fa fa-trash"></i></button>'
+            +   '<button type="button" class="btn btn-danger btn-sm btn-del-row" title="Delete"><i class="fa fa-trash"></i></button>'
             + '</td>'
             + '</tr>';
 
@@ -402,7 +402,7 @@ $(document).ready(function() {
     // Hapus Baris Varian
     $(document).on('click', '.btn-del-row', function() {
         if ($('#tbody-variant tr').length <= 1) {
-            alert('Minimal harus ada 1 varian material.');
+            alert('There must be at least 1 material variant.');
             return;
         }
         $(this).closest('tr').remove();
@@ -419,7 +419,7 @@ $(document).ready(function() {
     $('#form-bom').on('submit', function(e) {
         if ($('#tbody-variant tr').length === 0) {
             e.preventDefault();
-            alert('Tambahkan minimal 1 varian material.');
+            alert('Add at least 1 material variant.');
             return false;
         }
 
@@ -438,7 +438,7 @@ $(document).ready(function() {
 
         if (hasDup) {
             e.preventDefault();
-            alert('Material yang sama tidak boleh dipakai dua kali pada produk ini.');
+            alert('The same material cannot be used twice on this product.');
             return false;
         }
 
@@ -457,7 +457,7 @@ $(document).ready(function() {
 
         if (hasDupUniq) {
             e.preventDefault();
-            alert('No. Uniq ID (Varian BOM) tidak boleh duplikat pada produk yang sama.');
+            alert('Unique ID No. (BOM Variant) cannot be duplicated on the same product.');
             return false;
         }
     });

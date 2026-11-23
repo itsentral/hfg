@@ -37,7 +37,7 @@ foreach ($data as $item) :
     if (in_array($item->tipe, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
         $count_pembayaran_po += 1;
     }
-    if (in_array($item->tipe, $ros_payment_types)) {
+    if (in_array($item->tipe, $ros_payment_types ?? [])) {
         $count_document_import += 1;
     }
 endforeach;
@@ -89,7 +89,7 @@ endforeach;
         <div class="card h-100 border-0 shadow-sm card-counter border-start border-4 border-warning">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-                    <small class="text-muted fw-bold text-uppercase">Kasbon</small>
+                    <small class="text-muted fw-bold text-uppercase">Cash Advance</small>
                     <h2 class="fw-bold m-0 mt-1 text-warning"><?= $count_kasbon ?></h2>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-warning text-dark btn_view_req" data-val="kasbon"><i class="fa fa-eye"></i> View</button>
@@ -170,13 +170,13 @@ endforeach;
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
                             </tr>
@@ -224,20 +224,20 @@ endforeach;
     <div class="col-12 list_kasbon" style="display: none;">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-transparent border-0 pt-3">
-                <h5 class="fw-bold text-warning m-0">Data Request: Kasbon</h5>
+                <h5 class="fw-bold text-warning m-0">Request Data: Cash Advance</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Status</th>
                                 <th style="width: 15%">Action</th>
                             </tr>
@@ -278,16 +278,16 @@ endforeach;
                                                     <a href="<?= base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_kasbon->tipe . '&id=' . $item_kasbon->id . '&nilai=' . $item_kasbon->jumlah); ?>" class="btn btn-success btn-sm w-100"><i class="fa fa-check-square-o"></i> Approve</a>
                                                 <?php endif; ?>
                                                 <?php if ($ENABLE_MANAGE && $get_kasbon->project_consultant == '1') :
-                                                    echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_cons=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant)) . '&id_sendigs=' . $item_kasbon->no_doc . '" class="btn btn-success btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
+                                                    echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_cons=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')) . '&id_sendigs=' . $item_kasbon->no_doc . '" class="btn btn-success btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
                                                     $link_view = '#';
                                                     if ($get_kasbon_header->tipe == '1') {
-                                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                                     }
                                                     if ($get_kasbon_header->tipe == '2') {
-                                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                                     }
                                                     if ($get_kasbon_header->tipe == '3') {
-                                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                                     }
                                                     echo '<a href="' . $link_view . '" class="btn btn-sm btn-info text-white" title="View Kasbon" target="_blank"><i class="fa fa-eye"></i></a>';
                                                 endif; ?>
@@ -313,13 +313,13 @@ endforeach;
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
                             </tr>
@@ -363,7 +363,7 @@ endforeach;
                                             <td class="text-center">
                                                 <?php if ($ENABLE_MANAGE || $get_sts_payment['status'] < 1) {
                                                     if ($get_expense['project_consultant'] == '1') {
-                                                        echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant']))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-success w-100"><i class="fa fa-check-square-o"></i> Approve</a>';
+                                                        echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant'] ?? ''))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-success w-100"><i class="fa fa-check-square-o"></i> Approve</a>';
                                                     } else {
                                                         echo '<a href="' . base_url($this->uri->segment(1) . '/approval_payment/?type=' . $item_expense->tipe . '&id=' . $item_expense->id . '&nilai=' . $item_expense->jumlah) . '" class="btn btn-sm btn-success w-100"><i class="fa fa-check-square-o"></i> Approve</a>';
                                                     }
@@ -390,13 +390,13 @@ endforeach;
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
                             </tr>
@@ -444,22 +444,22 @@ endforeach;
     <div class="col-12 list_pembayaran_po" style="display: none;">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-transparent border-0 pt-3">
-                <h5 class="fw-bold text-info m-0">Data Request: Pembayaran PO</h5>
+                <h5 class="fw-bold text-info m-0">Request Data: PO Payment</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>No Invoice</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
-                                <th>Keterangan PO</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
+                                <th>PO Description</th>
                                 <th>Status</th>
                                 <th style="width: 12%">Action</th>
                             </tr>
@@ -485,7 +485,7 @@ endforeach;
                                         foreach ($get_po_note as $item_po_note) {
                                             $po_note[] = $item_po_note->note;
                                         }
-                                        $po_note = implode(', ', $po_note);
+                                        $po_note = implode(', ', $po_note ?? []);
                             ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?= $item_expense->no_doc ?></td>
@@ -528,7 +528,7 @@ endforeach;
                             // === Tambahan: Invoice PO (DP/Import/Local) ===
                             foreach ($data as $item_inv) :
                                 if (in_array($item_inv->tipe, ['invoice_dp', 'invoice_import', 'invoice_local'])) {
-                                    $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $item_inv->tipe);
+                                    $tipe_label = str_replace(['invoice_dp', 'invoice_import', 'invoice_local'], ['Invoice DP', 'Invoice Import', 'Invoice Local'], $item_inv->tipe ?? '');
                             ?>
                                     <tr>
                                         <td class="text-center fw-semibold"><?= $item_inv->no_surat ?></td>
@@ -577,11 +577,11 @@ endforeach;
                                 <th>No PO</th>
                                 <th>No ROS</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Supplier</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
@@ -589,11 +589,11 @@ endforeach;
                         </thead>
                         <tbody>
                             <?php foreach ($data as $item_ros) :
-                                if (in_array($item_ros->tipe, $ros_payment_types)) :
+                                if (in_array($item_ros->tipe, $ros_payment_types ?? [])) :
                                     $tipe_label = str_replace(
                                         ['ros_bm', 'ros_ls', 'ros_insurance', 'ros_other_cost'],
                                         ['BM', 'LS (Surveyor)', 'Insurance', 'Other Cost'],
-                                        $item_ros->tipe
+                                        $item_ros->tipe ?? ''
                                     ); ?>
                                     <tr>
                                         <td class="text-center fw-semibold"><?= $item_ros->no_surat ?: $item_ros->no_doc ?></td>
@@ -639,13 +639,13 @@ endforeach;
                     <table class="table table-striped table-hover table-bordered align-middle w-100 data-table-init">
                         <thead class="text-center">
                             <tr>
-                                <th>No Dokumen</th>
+                                <th>Document No.</th>
                                 <th>Request By</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Keperluan</th>
                                 <th>Tipe</th>
-                                <th>Nilai Pengajuan</th>
-                                <th>Tanggal Pembayaran</th>
+                                <th>Request Value</th>
+                                <th>Payment Date</th>
                                 <th>Status</th>
                                 <th style="width: 10%">Action</th>
                             </tr>
@@ -719,8 +719,8 @@ endforeach;
             "info": true,
             "autoWidth": false,
             "language": {
-                "search": "Cari data:",
-                "lengthMenu": "Tampilkan _MENU_ entri"
+                "search": "Search data:",
+                "lengthMenu": "Show _MENU_ entries"
             }
         });
     });
@@ -767,7 +767,7 @@ endforeach;
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Gagal memuat rincian invoice, silakan coba lagi nanti!'
+                    text: 'Failed to load invoice details, please try again later!'
                 });
             }
         });

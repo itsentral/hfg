@@ -97,7 +97,7 @@ class Budget_rutin extends Admin_Controller
         $this->template->set('datdepartemen', $datdepartemen);
         $this->template->set('data_jenis', $data_jenis);
         $this->template->set('is_view', true);
-        $this->template->title('Detail Budget Stock');
+        $this->template->title('Stock Budget Detail');
         $this->template->render('budget_rutin_form');
     }
 
@@ -170,16 +170,16 @@ class Budget_rutin extends Admin_Controller
         $sql = $this->db->last_query();
         if (!empty($id_barang)) {
             $this->All_model->dataDelete('budget_rutin_detail', array('code_budget' => $id));
-            for ($i = 0; $i < count($id_barang); $i++) {
+            for ($i = 0; $i < count($id_barang ?? []); $i++) {
                 if ($kebutuhan_month[$i] > 0) {
                     $data_detail =  array(
                         'code_budget' => $id,
                         'jenis_barang' => $jenis_barang[$i],
                         'id_barang' => $id_barang[$i],
-                        'kebutuhan_month' => str_replace(',', '', $kebutuhan_month[$i]),
+                        'kebutuhan_month' => str_replace(',', '', $kebutuhan_month[$i] ?? ''),
                         'satuan' => $satuan[$i],
-                        'price_reference' => str_replace(',', '', $price_reference[$i]),
-                        'total_price' => str_replace(',', '', $total_price[$i])
+                        'price_reference' => str_replace(',', '', $price_reference[$i] ?? ''),
+                        'total_price' => str_replace(',', '', $total_price[$i] ?? '')
                     );
                     $this->All_model->dataSave('budget_rutin_detail', $data_detail);
                 }

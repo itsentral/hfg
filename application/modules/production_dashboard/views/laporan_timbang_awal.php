@@ -2,7 +2,7 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Laporan Timbang Awal</h5>
+        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Initial Weighing Report</h5>
     </div>
     <div class="card-body">
         <form method="get" action="<?= base_url('production_dashboard/laporan_timbang_awal') ?>">
@@ -20,16 +20,16 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Dari</label>
+                    <label class="form-label">Date From</label>
                     <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Sampai</label>
+                    <label class="form-label">Date To</label>
                     <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa fa-search"></i> Tampilkan
+                        <i class="fa fa-search"></i> Show
                     </button>
                 </div>
             </div>
@@ -41,7 +41,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Perbandingan Timbang Awal vs Packing List</h5>
         <a href="<?= base_url('production_dashboard') ?>" class="btn btn-sm btn-outline-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -66,7 +66,7 @@
                 <tbody>
                     <?php if (empty($data_laporan)): ?>
                         <tr>
-                            <td colspan="12" class="text-center text-muted py-3">Tidak ada data untuk filter yang dipilih</td>
+                            <td colspan="12" class="text-center text-muted py-3">No data for the selected filter</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($data_laporan as $i => $row): ?>
@@ -105,7 +105,7 @@
             </table>
         </div>
         <?php if (!empty($data_laporan)): ?>
-            <div class="text-muted small mt-2">Total: <?= count($data_laporan) ?> record</div>
+            <div class="text-muted small mt-2">Total: <?= count($data_laporan ?? []) ?> record</div>
         <?php endif; ?>
     </div>
 </div>

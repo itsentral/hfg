@@ -170,7 +170,7 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
             <td style="width:80mm;">
                 <table style="tr:hover {border-right: 0px #f5f5f5;}">
                 <tr>
-                  <td style="width:50mm;">Nama Customer</td>
+                  <td style="width:50mm;">Customer Name</td>
                   <td style="width:60mm;"><b><?=$cust_data->nm_customer;?></b></td>                  
                 </tr>
 
@@ -180,7 +180,7 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
                 </tr>
 
                 <tr>
-                  <td style="width:50mm;">Produk yang dijual</td>
+                  <td style="width:50mm;">Products sold</td>
                   <td style="width:60mm;"><?=$cust_data->produk_jual;?></td>                  
                 </tr>
 
@@ -195,7 +195,7 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
                 </tr>
 
                 <tr>
-                  <td style="width:50mm;">Alamat NPWP</td>
+                  <td style="width:50mm;">NPWP Address</td>
                   <td style="width:60mm;"><?=$cust_data->alamat_npwp;?></td>                  
                 </tr>
 
@@ -217,10 +217,10 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
         </tr>
         <tr>
             <td>                
-            Alamat<br/>
-            <?php $kodepos = " kode pos ".$cust_data->kode_pos." ";?>
+            Address<br/>
+            <?php $kodepos = " postcode ".$cust_data->kode_pos." ";?>
             <i><?=$cust_data->alamat?></i><br>
-            <?=(isset($kodepos) ? $kodepos :" ").strtolower((string) $inisial->kota)." Provinsi ".strtolower((string) $inisial->provinsi);?>
+            <?=(isset($kodepos) ? $kodepos :" ").strtolower((string) $inisial->kota)." Province ".strtolower((string) $inisial->provinsi);?>
             </td>
         </tr>
     </table>
@@ -233,9 +233,9 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
             <table>
             <tr style="background:#eee;">
                 <td style="width:8%;"><b>No</b></td>
-                <td style="width:25%;"><b>Nama Toko</b></td>
+                <td style="width:25%;"><b>Store Name</b></td>
                 <td style="width:15%;"><b>Area</b></td>
-                <td style="width:15%;"><b>Alamat</b></td>
+                <td style="width:15%;"><b>Address</b></td>
                 <td style="width:15%;"><b>Telp</b></td>                
             </tr>
               <?= $no=1; foreach ($cust_toko as $toko){?>  
@@ -255,9 +255,9 @@ $pathphoto = base_url().'photocustomer/'.$cust_data->foto;
             <table>
             <tr style="background:#eee;">
                 <td style="width:8%;"><b>No</b></td>
-                <td style="width:25%;"><b>Nama PIC</b></td>
+                <td style="width:25%;"><b>PIC Name</b></td>
                 <td style="width:15%;"><b>Divisi</b></td>
-                <td style="width:15%;"><b>Jabatan</b></td>
+                <td style="width:15%;"><b>Position</b></td>
                 <td style="width:15%;"><b>Kontak</b></td>                
             </tr>
               <?= $no=1; foreach ($cust_pic as $pic){?>  

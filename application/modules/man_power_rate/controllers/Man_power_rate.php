@@ -44,12 +44,12 @@ class Man_power_rate extends Admin_Controller
         $keterangan    = trim($this->input->post('keterangan'));
 
         if (empty($nama_komponen)) {
-            $this->session->set_flashdata('error', 'Nama Komponen wajib diisi');
+            $this->session->set_flashdata('error', 'Component Name is required');
             redirect('man_power_rate');
         }
 
         if ($nilai < 0) {
-            $this->session->set_flashdata('error', 'Nilai komponen tidak boleh negatif');
+            $this->session->set_flashdata('error', 'Component value cannot be negative');
             redirect('man_power_rate');
         }
 
@@ -71,10 +71,10 @@ class Man_power_rate extends Admin_Controller
                 'after'  => $data,
             ];
             write_log('Man Power Rate', $action, $action . ' Komponen ' . $nama_komponen . ' (Rp ' . number_format((float) $nilai, 0, ',', '.') . ')', $log, null, 1);
-            $this->session->set_flashdata('success', 'Komponen berhasil disimpan');
+            $this->session->set_flashdata('success', 'Component saved successfully');
         } else {
             write_log('Man Power Rate', 'Save', 'Gagal simpan komponen ' . $nama_komponen, $data, null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan komponen');
+            $this->session->set_flashdata('error', 'Failed to save component');
         }
 
         redirect('man_power_rate');
@@ -87,7 +87,7 @@ class Man_power_rate extends Admin_Controller
 
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid ID']);
             return;
         }
 
@@ -96,10 +96,10 @@ class Man_power_rate extends Admin_Controller
 
         if ($del) {
             write_log('Man Power Rate', 'Delete', 'Hapus komponen ' . ($old ? $old->nama_komponen : $id), (array)$old, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Komponen berhasil dihapus']);
+            echo json_encode(['status' => 1, 'pesan' => 'Component deleted successfully']);
         } else {
             write_log('Man Power Rate', 'Delete', 'Gagal hapus komponen ID ' . $id, [], null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus komponen']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to delete component']);
         }
     }
 
@@ -112,7 +112,7 @@ class Man_power_rate extends Admin_Controller
         $porsi_den = (float) $this->input->post('porsi_operator_den');
 
         if ($jam_kerja <= 0 || $porsi_den <= 0) {
-            $this->session->set_flashdata('error', 'Jam Kerja dan Porsi Operator harus lebih besar dari 0');
+            $this->session->set_flashdata('error', 'Working Hours and Operator Portion must be greater than 0');
             redirect('man_power_rate');
         }
 
@@ -132,10 +132,10 @@ class Man_power_rate extends Admin_Controller
                 ],
             ];
             write_log('Man Power Rate', 'Edit', 'Update Parameter Man Power Rate (Jam: ' . $jam_kerja . ', Porsi: 1/' . $porsi_den . ')', $log, null, 1);
-            $this->session->set_flashdata('success', 'Parameter Man Power Rate berhasil diperbarui');
+            $this->session->set_flashdata('success', 'Man Power Rate parameters updated successfully');
         } else {
             write_log('Man Power Rate', 'Edit', 'Gagal update Parameter Man Power Rate', [], null, 0);
-            $this->session->set_flashdata('error', 'Gagal memperbarui parameter');
+            $this->session->set_flashdata('error', 'Failed to update parameters');
         }
 
         redirect('man_power_rate');

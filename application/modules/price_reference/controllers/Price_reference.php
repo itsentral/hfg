@@ -64,13 +64,13 @@ class Price_reference extends Admin_Controller
     public function get_detail($id)
     {
         if (!$this->check_perm($this->viewPermission)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Akses ditolak']);
+            echo json_encode(['status' => 0, 'pesan' => 'Access denied']);
             return;
         }
 
         $material = $this->model_pr->get_material_by_id($id);
         if (!$material) {
-            echo json_encode(['status' => 0, 'pesan' => 'Material tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Material not found']);
             return;
         }
 
@@ -109,7 +109,7 @@ class Price_reference extends Admin_Controller
         // Hitung Max, Latest, Avg
         $max_usd = !empty($numeric_vals) ? max($numeric_vals) : 0;
         $latest_usd = !empty($numeric_vals) ? end($numeric_vals) : 0;
-        $avg_usd = !empty($numeric_vals) ? (array_sum($numeric_vals) / count($numeric_vals)) : 0;
+        $avg_usd = !empty($numeric_vals) ? (array_sum($numeric_vals ?? []) / count($numeric_vals ?? [])) : 0;
 
         $calc_kurs = ($material->kurs && (float)$material->kurs > 0) ? (float)$material->kurs : $kurs_info['kurs'];
         $calc_id_kurs = ($material->id_kurs && (int)$material->id_kurs > 0) ? (int)$material->id_kurs : $kurs_info['id_kurs'];

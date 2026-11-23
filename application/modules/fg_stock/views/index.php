@@ -95,7 +95,7 @@
                     <i class="fa fa-file-excel me-1"></i> Export Excel
                 </a>
                 <a href="<?= base_url('fg_stock/history') ?>" class="btn btn-secondary btn-sm">
-                    <i class="fa fa-book me-1"></i> Kartu Stok
+                    <i class="fa fa-book me-1"></i> Stock Card
                 </a>
             </div>
         </div>
@@ -105,25 +105,25 @@
             <li class="nav-item">
                 <a class="nav-link active fw-bold" id="tab-kw1-tab" data-bs-toggle="tab" href="#tab-kw1" role="tab">
                     <i class="fa fa-star text-primary me-1"></i> Finish Good KW 1
-                    <span class="badge bg-primary ms-1"><?= count($stok_kw1) ?></span>
+                    <span class="badge bg-primary ms-1"><?= count($stok_kw1 ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-kw2-tab" data-bs-toggle="tab" href="#tab-kw2" role="tab">
                     <i class="fa fa-cubes text-warning me-1"></i> Finish Good KW 2
-                    <span class="badge bg-warning text-dark ms-1"><?= count($stok_kw2) ?></span>
+                    <span class="badge bg-warning text-dark ms-1"><?= count($stok_kw2 ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-tong-coil-tab" data-bs-toggle="tab" href="#tab-tong-coil" role="tab">
                     <i class="fa fa-circle-o text-info me-1"></i> Tong Coil
-                    <span class="badge bg-info text-dark ms-1"><?= count($stok_tong_coil) ?></span>
+                    <span class="badge bg-info text-dark ms-1"><?= count($stok_tong_coil ?? []) ?></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link fw-bold" id="tab-scrap-tab" data-bs-toggle="tab" href="#tab-scrap" role="tab">
                     <i class="fa fa-trash text-danger me-1"></i> Scrap / Waste
-                    <span class="badge bg-danger ms-1"><?= count($stok_scrap) ?></span>
+                    <span class="badge bg-danger ms-1"><?= count($stok_scrap ?? []) ?></span>
                 </a>
             </li>
         </ul>
@@ -141,14 +141,14 @@
                         <thead class="table-primary">
                             <tr>
                                 <th class="text-center" width="40">No</th>
-                                <th>Kode Produk</th>
-                                <th>Nama Produk</th>
+                                <th>Product Code</th>
+                                <th>Product Name</th>
                                 <th class="text-center">Tipe</th>
-                                <th class="text-end">Qty Stok (pcs)</th>
-                                <th class="text-end">Total Berat (kg)</th>
-                                <th class="text-end">Berat Ref (kg/pcs)</th>
+                                <th class="text-end">Stock Qty (pcs)</th>
+                                <th class="text-end">Total Weight (kg)</th>
+                                <th class="text-end">Ref Weight (kg/pcs)</th>
                                 <th class="text-end">Costbook (Rp/pcs)</th>
-                                <th class="text-end">Total Nilai HPP (Rp)</th>
+                                <th class="text-end">Total HPP Value (Rp)</th>
                                 <th class="text-center">Terakhir Update</th>
                                 <th class="text-center no-sort" width="100">Aksi</th>
                             </tr>
@@ -173,8 +173,8 @@
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
                                 <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
-                                        <i class="fa fa-history me-1"></i> Kartu Stok
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="View Stock Card">
+                                        <i class="fa fa-history me-1"></i> Stock Card
                                     </a>
                                 </td>
                             </tr>
@@ -193,14 +193,14 @@
                         <thead class="table-warning">
                             <tr>
                                 <th class="text-center" width="40">No</th>
-                                <th>Kode Produk</th>
-                                <th>Nama Produk</th>
-                                <th class="text-center">Kategori</th>
-                                <th class="text-end">Qty Stok (pcs)</th>
-                                <th class="text-end">Total Berat (kg)</th>
-                                <th class="text-end">Berat Ref (kg/pcs)</th>
+                                <th>Product Code</th>
+                                <th>Product Name</th>
+                                <th class="text-center">Category</th>
+                                <th class="text-end">Stock Qty (pcs)</th>
+                                <th class="text-end">Total Weight (kg)</th>
+                                <th class="text-end">Ref Weight (kg/pcs)</th>
                                 <th class="text-end">Costbook (Rp/pcs)</th>
-                                <th class="text-end">Nilai Inventory (80%) (Rp)</th>
+                                <th class="text-end">Inventory Value (80%) (Rp)</th>
                                 <th class="text-center">Terakhir Update</th>
                                 <th class="text-center no-sort" width="100">Aksi</th>
                             </tr>
@@ -225,8 +225,8 @@
                                 <td class="text-end text-primary fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
                                 <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
-                                        <i class="fa fa-history me-1"></i> Kartu Stok
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="View Stock Card">
+                                        <i class="fa fa-history me-1"></i> Stock Card
                                     </a>
                                 </td>
                             </tr>
@@ -245,12 +245,12 @@
                         <thead class="table-info">
                             <tr>
                                 <th class="text-center" width="40">No</th>
-                                <th>Kode Stok</th>
+                                <th>Stock Code</th>
                                 <th>Material Asal</th>
                                 <th class="text-end">Qty (Roll/Pcs)</th>
-                                <th class="text-end">Total Berat (kg)</th>
+                                <th class="text-end">Total Weight (kg)</th>
                                 <th class="text-end">Costbook Mat (Rp/kg)</th>
-                                <th class="text-end">Nilai Persediaan 40% (Rp)</th>
+                                <th class="text-end">Inventory Value 40% (Rp)</th>
                                 <th class="text-center">Terakhir Update</th>
                                 <th class="text-center no-sort" width="100">Aksi</th>
                             </tr>
@@ -263,7 +263,7 @@
                                 <td>
                                     <strong><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></strong>
                                     <?php if (!empty($s->id_material)): ?>
-                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars((string) $s->id_material) ?></small>
+                                        <br><small class="text-muted">Material Code: <?= htmlspecialchars((string) $s->id_material) ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
@@ -274,8 +274,8 @@
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
                                 <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
-                                        <i class="fa fa-history me-1"></i> Kartu Stok
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="View Stock Card">
+                                        <i class="fa fa-history me-1"></i> Stock Card
                                     </a>
                                 </td>
                             </tr>
@@ -294,12 +294,12 @@
                         <thead class="table-danger">
                             <tr>
                                 <th class="text-center" width="40">No</th>
-                                <th>Kode Stok</th>
-                                <th class="text-center">Jenis Scrap</th>
+                                <th>Stock Code</th>
+                                <th class="text-center">Scrap Type</th>
                                 <th>Material Asal</th>
-                                <th class="text-end">Total Berat (kg)</th>
+                                <th class="text-end">Total Weight (kg)</th>
                                 <th class="text-end">Costbook Mat (Rp/kg)</th>
-                                <th class="text-end">Nilai Persediaan 40% (Rp)</th>
+                                <th class="text-end">Inventory Value 40% (Rp)</th>
                                 <th class="text-center">Terakhir Update</th>
                                 <th class="text-center no-sort" width="100">Aksi</th>
                             </tr>
@@ -315,7 +315,7 @@
                                 <td>
                                     <strong><?= htmlspecialchars($s->nm_produk_fg ?: '-') ?></strong>
                                     <?php if (!empty($s->id_material)): ?>
-                                        <br><small class="text-muted">Kode Material: <?= htmlspecialchars((string) $s->id_material) ?></small>
+                                        <br><small class="text-muted">Material Code: <?= htmlspecialchars((string) $s->id_material) ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end fw-bold text-danger"><?= number_format((float) $s->total_berat, 3) ?></td>
@@ -323,8 +323,8 @@
                                 <td class="text-end text-success fw-bold">Rp <?= number_format((float) $s->total_nilai, 2) ?></td>
                                 <td class="text-center"><small class="text-muted"><?= $s->last_update ? date('d-m-Y H:i', strtotime((string) $s->last_update)) : '-' ?></small></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="Lihat Kartu Stok">
-                                        <i class="fa fa-history me-1"></i> Kartu Stok
+                                    <a href="<?= base_url('fg_stock/history/' . urlencode((string) $s->produk_fg)) ?>" class="btn btn-sm btn-outline-info" title="View Stock Card">
+                                        <i class="fa fa-history me-1"></i> Stock Card
                                     </a>
                                 </td>
                             </tr>
@@ -350,11 +350,11 @@ $(document).ready(function () {
         iDisplayLength: 25,
         aLengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
         language: {
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+            search: "Search:",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
             infoEmpty: "Menampilkan 0 data",
-            zeroRecords: "Tidak ada data yang cocok",
+            zeroRecords: "No matching data",
             paginate: { first: "Awal", last: "Akhir", next: "&raquo;", previous: "&laquo;" }
         }
     };

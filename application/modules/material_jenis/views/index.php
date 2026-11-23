@@ -89,7 +89,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 		<div class="modal-content">
 			<form id="data_form" autocomplete="off">
 				<div class="modal-header">
-					<h4 class="modal-title" id="head_title">Material Jenis</h4>
+					<h4 class="modal-title" id="head_title">Material Type</h4>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="ModalView">
@@ -153,7 +153,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 		// Edit
 		$(document).on('click', '.edit', function() {
 			var id = $(this).data('id');
-			$("#head_title").html("Material Jenis");
+			$("#head_title").html("Material Type");
 			$.ajax({
 				type: 'POST',
 				url: siteurl + active_controller + '/add/' + id,
@@ -169,7 +169,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 
 		// Add
 		$(document).on('click', '.add', function() {
-			$("#head_title").html("Material Jenis");
+			$("#head_title").html("Material Type");
 			$.ajax({
 				type: 'POST',
 				url: siteurl + active_controller + '/add/',
@@ -235,7 +235,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 						type: 'POST', url: siteurl + active_controller + 'add', dataType: 'json', data: data,
 						success: function(res) {
 							if (res.status == '1') {
-								Swal.fire({ title: "Sukses", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+								Swal.fire({ title: "Success", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
 									.then(function(){ window.location.reload(true); });
 							} else {
 								Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
@@ -260,7 +260,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 						type: 'POST', url: siteurl + active_controller + '/delete', dataType: 'json', data: { 'id': id },
 						success: function(res) {
 							if (res.status == '1') {
-								Swal.fire({ title: "Sukses", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
+								Swal.fire({ title: "Success", text: res.pesan, icon: "success", timer: 1500, showConfirmButton: false })
 									.then(function(){ window.location.reload(true); });
 							} else {
 								Swal.fire({ title: "Error", text: res.pesan, icon: "error", confirmButtonText: "OK" });
@@ -290,7 +290,7 @@ $ENABLE_DELETE  = has_permission('Material_Jenis.Delete');
 						const msg = response.message || response.pesan || "Status updated.";
 						checkbox.data('status', newStatus);
 						checkbox.prop('checked', newStatus == 1);
-						Swal.fire({ title: "Sukses", text: msg, icon: "success", timer: 1500, showConfirmButton: false });
+						Swal.fire({ title: "Success", text: msg, icon: "success", timer: 1500, showConfirmButton: false });
 					} else {
 						const msg = response.message || response.pesan || "Failed to update status.";
 						checkbox.prop('checked', currentStatus == 1);

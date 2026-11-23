@@ -137,7 +137,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 										<i class="fa fa-download me-1"></i> File (<?= $upload_spk; ?>)
 									</a>
 								<?php elseif ($is_locked) : ?>
-									<span class="form-control text-muted bg-light">Tidak ada dokumen dilampirkan</span>
+									<span class="form-control text-muted bg-light">No documents attached</span>
 								<?php endif; ?>
 							</div>
 						</div>
@@ -184,7 +184,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			<div class="row g-3 mb-3">
 				<div class="col-md-6">
 					<div class="row align-items-center">
-						<label class="col-sm-4 col-form-label fw-bold">Nama Pembuat PR</label>
+						<label class="col-sm-4 col-form-label fw-bold">PR Creator Name</label>
 						<div class="col-sm-8">
 							<input type="text" class="form-control" value="<?= ucwords(strtolower((string) $nm_pembuat)) ?>" readonly>
 						</div>
@@ -212,7 +212,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 										<th>Status</th>
 										<th>Tgl Approve / Reject</th>
 										<th>Alasan Reject</th>
-										<th>Keterangan</th>
+										<th>Description</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -253,12 +253,12 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 				</div>
 			<?php endif; ?>
 
-			<!-- Header Detail Barang / Jasa with Add Button on top -->
+			<!-- Header Item / Service Detail with Add Button on top -->
 			<div class="d-flex justify-content-between align-items-center mb-2">
-				<h6 class="fw-bold mb-0 text-primary"><i class="fa fa-list me-1"></i> Detail Barang / Jasa</h6>
+				<h6 class="fw-bold mb-0 text-primary"><i class="fa fa-list me-1"></i> Item / Service Detail</h6>
 				<?php if (empty($approve)) : ?>
-					<button type="button" class="btn btn-sm btn-success addPart" title="Add Barang">
-						<i class="fa fa-plus me-1"></i> Add Barang
+					<button type="button" class="btn btn-sm btn-success addPart" title="Add Item">
+						<i class="fa fa-plus me-1"></i> Add Item
 					</button>
 				<?php endif; ?>
 			</div>
@@ -267,14 +267,14 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 					<thead class="table text-center align-middle">
 						<tr>
 							<th class='text-center' style='width: 3%;'>#</th>
-							<th class='text-center' style='width: 17%;'>Nama Barang/Jasa</th>
+							<th class='text-center' style='width: 17%;'>Item/Service Name</th>
 							<th class='text-center' style='width: 17%;'>Spec/ Requirement</th>
 							<th class='text-center' style='width: 8%;'>Qty</th>
-							<th class='text-center' style='width: 8%;'>Satuan</th>
-							<th class='text-center' style='width: 12%;'>Est Harga</th>
-							<th class='text-center' style='width: 12%;'>Est Total Harga</th>
-							<th class='text-center' style='width: 11%;'>Tanggal<br>Dibutuhkan</th>
-							<th class='text-center' style='width: 12%;'>Keterangan</th>
+							<th class='text-center' style='width: 8%;'>Unit</th>
+							<th class='text-center' style='width: 12%;'>Est. Price</th>
+							<th class='text-center' style='width: 12%;'>Est. Total Price</th>
+							<th class='text-center' style='width: 11%;'>Date<br>Dibutuhkan</th>
+							<th class='text-center' style='width: 12%;'>Description</th>
 							<?php if (empty($approve)) : ?>
 								<th class='text-center' style='width: 5%;'>#</th>
 							<?php endif; ?>
@@ -301,7 +301,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 								} else {
 									echo "<select name='detail[" . $nomor . "][satuan]' class='form-control form-select wajib satuan_" . $nomor . "' required>";
 								}
-								echo "<option value=''>Pilih</option>";
+								echo "<option value=''>Select</option>";
 								foreach ($satuan as $key => $value) {
 									$selected = ($value['id'] == $valx['satuan']) ? 'selected' : '';
 									echo "<option value='" . $value['id'] . "' " . $selected . ">" . $value['code'] . "</option>";
@@ -337,21 +337,21 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			<div class="form-group row g-3 mb-3">
 				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Bank <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_name" id="bank_name" class="form-control input-md" placeholder="Nama Bank (e.g. BCA, Mandiri)" value="<?= htmlspecialchars((string) $bank_name); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_name" id="bank_name" class="form-control input-md" placeholder="Bank Name (e.g. BCA, Mandiri)" value="<?= htmlspecialchars((string) $bank_name); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 
 			<div class="form-group row g-3 mb-3">
-				<label class="label-control col-sm-2 col-form-label fw-bold"><b>No Rekening <span class="text-danger text-red">*</span></b></label>
+				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Account Number <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_account_no" id="bank_account_no" class="form-control input-md" placeholder="No. Rekening" value="<?= htmlspecialchars((string) $bank_account_no); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_account_no" id="bank_account_no" class="form-control input-md" placeholder="Account Number" value="<?= htmlspecialchars((string) $bank_account_no); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 
 			<div class="form-group row g-3 mb-3">
-				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Nama Rekening <span class="text-danger text-red">*</span></b></label>
+				<label class="label-control col-sm-2 col-form-label fw-bold"><b>Account Name <span class="text-danger text-red">*</span></b></label>
 				<div class="col-sm-5">
-					<input type="text" name="bank_account_name" id="bank_account_name" class="form-control input-md" placeholder="Nama Pemilik Rekening" value="<?= htmlspecialchars((string) $bank_account_name); ?>" <?= $disabled; ?>>
+					<input type="text" name="bank_account_name" id="bank_account_name" class="form-control input-md" placeholder="Account Holder Name" value="<?= htmlspecialchars((string) $bank_account_name); ?>" <?= $disabled; ?>>
 				</div>
 			</div>
 		</div>
@@ -561,7 +561,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 		if (itemCount === 0) {
 			Swal.fire({
 				title: "Error Message!",
-				text: 'Silakan tambahkan minimal 1 data barang / jasa terlebih dahulu!',
+				text: 'Please add at least 1 item / service first!',
 				icon: "warning"
 			});
 			$('#save').prop('disabled', false);
@@ -615,7 +615,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			if (FALIDASIwajib === false) {
 				Swal.fire({
 					title: "Error Message!",
-					text: 'Satuan wajib diisi !',
+					text: 'Unit is required!',
 					icon: "warning",
 					showCancelButton: false,
 					showConfirmButton: false,
@@ -637,7 +637,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			if (FALIDASI === false) {
 				Swal.fire({
 					title: "Error Message!",
-					text: 'Tgl dibutuhkan wajib diisi !',
+					text: 'Required date is required!',
 					icon: "warning",
 					showCancelButton: false,
 					showConfirmButton: false,
@@ -654,7 +654,7 @@ $readonly		= ($is_locked) ? 'readonly' : '';
 			if (bank_name == '' || bank_account_no == '' || bank_account_name == '') {
 				Swal.fire({
 					title: "Error Message!",
-					text: 'Informasi Bank (Bank, No Rekening, dan Nama Rekening) wajib diisi !',
+					text: 'Bank Information (Bank, Account Number, and Account Name) is required!',
 					icon: "warning"
 				});
 				$('#save').prop('disabled', false);

@@ -47,7 +47,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-3">Belum ada data tarif labor.</td>
+                            <td colspan="7" class="text-center text-muted py-3">No labor rate data yet.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fa fa-times me-1"></i> Batal
+                        <i class="fa fa-times me-1"></i> Cancel
                     </button>
                     <button type="button" id="btn-save-rate" class="btn btn-warning text-white fw-bold">
                         <i class="fa fa-save me-1"></i> Simpan Perubahan
@@ -102,8 +102,8 @@
                 error: function() {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Gagal',
-                        text: 'Gagal memuat form edit'
+                        title: 'Failed',
+                        text: 'Failed to load the edit form'
                     });
                 }
             });
@@ -119,8 +119,8 @@
             if (rate === '' || isNaN(rate)) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Perhatian',
-                    text: 'Tarif/Nilai rate harus berupa angka!'
+                    title: 'Attention',
+                    text: 'Rate value must be a number!'
                 });
                 return;
             }
@@ -138,7 +138,7 @@
                     if (res.status == 1) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Berhasil',
+                            title: 'Success',
                             text: res.pesan,
                             timer: 1500,
                             showConfirmButton: false
@@ -149,7 +149,7 @@
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Gagal',
+                            title: 'Failed',
                             text: res.pesan
                         });
                     }
@@ -158,7 +158,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Request gagal: ' + xhr.status
+                        text: 'Request failed: ' + xhr.status
                     });
                 }
             });

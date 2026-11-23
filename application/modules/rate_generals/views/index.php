@@ -18,7 +18,7 @@ foreach ($elements as $el) {
         </div>
         <div>
             <span class="badge bg-light text-dark border px-3 py-2 me-2">
-                Total: <strong><?= count($elements) ?></strong> Elemen Costing
+                Total: <strong><?= count($elements ?? []) ?></strong> Elemen Costing
             </span>
             <?php if ($ENABLE_MANAGE): ?>
                 <button type="button" class="btn btn-outline-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-batch-edit">
@@ -133,7 +133,7 @@ foreach ($elements as $el) {
                         <input type="text" id="disp_basis" class="form-control bg-light" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold" id="lbl_edit_val">Nilai Tarif <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold" id="lbl_edit_val">Tariff Value <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text" id="prefix_val">Rp</span>
                             <input type="number" step="0.0001" min="0" name="value" id="edit_val" class="form-control text-end fs-6 fw-bold" required placeholder="0.00">
@@ -145,9 +145,9 @@ foreach ($elements as $el) {
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4" id="btn-save-single">
-                        <i class="fa fa-save me-1"></i> Simpan Perubahan
+                        <i class="fa fa-save me-1"></i> Save Changes
                     </button>
                 </div>
             </form>
@@ -190,7 +190,7 @@ foreach ($elements as $el) {
                                     <div class="form-text text-muted">Dasar: % Material Cost</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Biaya Koordinasi (Rp/Kg)</label>
+                                    <label class="form-label fw-bold">Coordination Cost (Rp/Kg)</label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rp</span>
                                         <input type="number" step="0.0001" min="0" name="rate_biaya_koordinasi" class="form-control text-end" value="<?= (float)$rate_row->rate_biaya_koordinasi ?>" required>
@@ -254,7 +254,7 @@ foreach ($elements as $el) {
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4">
                         <i class="fa fa-save me-1"></i> Simpan Seluruh Rate
                     </button>
@@ -306,12 +306,12 @@ foreach ($elements as $el) {
             if (unit === 'pct') {
                 $('#prefix_val').addClass('d-none');
                 $('#suffix_val').removeClass('d-none').text('%');
-                $('#lbl_edit_val').html('Nilai Persentase (%) <span class="text-danger">*</span>');
-                $('#hint_edit_val').text('Persentase dihitung terhadap HPP (atau terhadap Material Cost untuk Scrap).');
+                $('#lbl_edit_val').html('Percentage Value (%) <span class="text-danger">*</span>');
+                $('#hint_edit_val').text('The percentage is calculated against HPP (or against Material Cost for Scrap).');
             } else {
                 $('#prefix_val').removeClass('d-none').text('Rp');
                 $('#suffix_val').removeClass('d-none').text('/ Kg');
-                $('#lbl_edit_val').html('Nilai Tarif (Rp/Kg) <span class="text-danger">*</span>');
+                $('#lbl_edit_val').html('Tariff Value (Rp/Kg) <span class="text-danger">*</span>');
                 $('#hint_edit_val').text('Tarif per kilogram material dalam Rupiah.');
             }
 
@@ -330,7 +330,7 @@ foreach ($elements as $el) {
             if (label === '') {
                 Swal.fire({
                     title: 'Validasi',
-                    text: 'Nama Element Costing tidak boleh kosong',
+                    text: 'Costing Element Name cannot be empty',
                     icon: 'warning'
                 });
                 return;
@@ -339,7 +339,7 @@ foreach ($elements as $el) {
             if (val === '' || isNaN(val) || Number(val) < 0) {
                 Swal.fire({
                     title: 'Validasi',
-                    text: 'Nilai tarif tidak valid atau bernilai negatif',
+                    text: 'The tariff value is invalid or negative',
                     icon: 'warning'
                 });
                 return;
@@ -358,11 +358,11 @@ foreach ($elements as $el) {
                     value: val
                 },
                 success: function(resp) {
-                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
+                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Changes');
                     if (resp.status == 1) {
                         $('#modal-single-edit').modal('hide');
                         Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1500,
@@ -373,14 +373,14 @@ foreach ($elements as $el) {
                             });
                     } else {
                         Swal.fire({
-                            title: 'Gagal!',
+                            title: 'Failed!',
                             text: resp.pesan,
                             icon: 'error'
                         });
                     }
                 },
                 error: function(xhr) {
-                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Perubahan');
+                    $('#btn-save-single').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Changes');
                     Swal.fire({
                         title: 'Error!',
                         text: 'Request error: ' + xhr.status,

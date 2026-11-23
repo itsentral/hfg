@@ -7,30 +7,30 @@
             <div class="row g-3">
                 <div class="col-md-6 col-12">
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">No Transaksi</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Transaction No.</span>
                         <span class="fw-bold text-primary font-monospace">: <?= $getData[0]['kode_trans']; ?></span>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Nomor PO / Kasbon</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">PO / Cash Advance Number</span>
                         <span class="fw-bold text-dark">: <?= strtoupper((string) $no_po); ?></span>
                     </div>
                     <div class="d-flex align-items-center">
                         <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Warehouse</span>
-                        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">: <?= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_ke'])); ?></span>
+                        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">: <?= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_ke'])); ?></span>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-12">
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Tanggal Incoming</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Incoming Date</span>
                         <span class="fw-semibold text-dark">: <?= tgl_indo($getData[0]['tanggal']); ?></span>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">PIC Penerima</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Receiving PIC</span>
                         <span class="fw-semibold text-dark">: <?= !empty($getData[0]['pic']) ? strtoupper((string) $getData[0]['pic']) : '-'; ?></span>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Catatan</span>
+                        <span class="text-muted text-uppercase fw-semibold" style="width: 140px; font-size: 0.8rem;">Notes</span>
                         <span class="text-dark fst-italic">: <?= !empty($getData[0]['note']) ? $getData[0]['note'] : '-'; ?></span>
                     </div>
                 </div>
@@ -44,11 +44,11 @@
             <thead class="table-light">
                 <tr>
                     <th class="text-center" width="5%">#</th>
-                    <th width="15%">Kode Barang</th>
-                    <th>Nama Barang Stok</th>
-                    <th class="text-center" width="12%">Qty Masuk</th>
-                    <th class="text-center" width="10%">Satuan</th>
-                    <th width="28%">Catatan</th>
+                    <th width="15%">Item Code</th>
+                    <th>Stock Item Name</th>
+                    <th class="text-center" width="12%">Qty In</th>
+                    <th class="text-center" width="10%">Unit</th>
+                    <th width="28%">Notes</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,7 +85,7 @@
                     endforeach;
                     ?>
                     <tr class="table-light fw-bold">
-                        <td colspan="3" class="text-end">TOTAL QTY MASUK :</td>
+                        <td colspan="3" class="text-end">TOTAL QTY IN :</td>
                         <td class="text-center text-primary fs-6"><?= number_format((float) $totalQty, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>

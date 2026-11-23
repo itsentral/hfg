@@ -18,7 +18,7 @@ class Product_jenis extends Admin_Controller
         $this->load->model(array(
           'Product_jenis/Product_jenis_model'
         ));
-        $this->template->title('Manage Product Jenis');
+        $this->template->title('Manage Product Sub Category');
         $this->template->page_icon('fa fa-building-o');
 
         date_default_timezone_set('Asia/Bangkok');
@@ -45,7 +45,7 @@ class Product_jenis extends Admin_Controller
           'get_level_2' =>  get_list_product_lv2('product')
         ];
         $this->template->set($data);
-        $this->template->title('Product Jenis');
+        $this->template->title('Product Sub Category');
         $this->template->render('index');
     }
 

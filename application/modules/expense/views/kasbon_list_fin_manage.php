@@ -14,13 +14,13 @@ $ENABLE_DELETE  = has_permission('Approval Kasbon Management.Delete');
                 <i class="fa fa-user-check fs-5"></i>
             </div>
             <div>
-                <h5 class="card-title mb-0 fw-bold text-dark">Persetujuan Management Pengajuan Kasbon</h5>
-                <small class="text-muted">Daftar pengajuan kasbon yang menunggu persetujuan level Management</small>
+                <h5 class="card-title mb-0 fw-bold text-dark">Cash Advance Request Management Approval</h5>
+                <small class="text-muted">List of cash advance requests awaiting Management approval</small>
             </div>
         </div>
         <div>
             <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">
-                <i class="fa fa-clock me-1"></i>Menunggu Approval Management
+                <i class="fa fa-clock me-1"></i>Awaiting Management Approval
             </span>
         </div>
     </div>
@@ -31,10 +31,10 @@ $ENABLE_DELETE  = has_permission('Approval Kasbon Management.Delete');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th class="text-center">No Kasbon</th>
-                        <th class="text-center">Tanggal</th>
-                        <th>Nama Karyawan</th>
-                        <th class="text-end">Total Pengajuan</th>
+                        <th class="text-center">Cash Advance No</th>
+                        <th class="text-center">Date</th>
+                        <th>Employee Name</th>
+                        <th class="text-end">Total Request</th>
                         <th class="text-center" width="18%">Status</th>
                         <th class="text-center no-sort" width="120">Aksi</th>
                     </tr>
@@ -95,13 +95,13 @@ $ENABLE_DELETE  = has_permission('Approval Kasbon Management.Delete');
             order: [[1, 'desc']],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no kasbon, nama...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search cash advance no, name...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Tidak ada data pengajuan kasbon yang menunggu persetujuan management",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Sedang memuat data...'
+                emptyTable: "No cash advance requests awaiting management approval",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             },
             ajax: {
                 type: 'POST',
@@ -139,13 +139,13 @@ $ENABLE_DELETE  = has_permission('Approval Kasbon Management.Delete');
     function data_view(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat rincian pengajuan kasbon...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading cash advance request details...</div></div>');
             $('#form-data').load(url_view + id + '/_mgt', function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load details data: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }
@@ -156,13 +156,13 @@ $ENABLE_DELETE  = has_permission('Approval Kasbon Management.Delete');
     function data_edit(id) {
         if (id != "") {
             $('#card-list, .box').hide();
-            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat form persetujuan management...</div></div>');
+            $('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading management approval form...</div></div>');
             $('#form-data').load(url_edit + id + '/_mgt', function(response, status, xhr) {
                 if (status == "error") {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Gagal memuat form verifikasi: " + xhr.status + " " + xhr.statusText
+                        text: "Failed to load verification form: " + xhr.status + " " + xhr.statusText
                     });
                     list_view();
                 }

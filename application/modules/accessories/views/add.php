@@ -30,10 +30,10 @@ if (!empty($id)) {
 <div class="card shadow-sm border-0 mb-4">
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <h5 class="card-title mb-0 fw-bold text-primary">
-            <i class="fa <?= empty($id) ? 'fa-plus' : ($is_view ? 'fa-eye' : 'fa-edit') ?> me-2"></i><?= empty($id) ? 'Add Barang Stok' : ($is_view ? 'Detail Barang Stok' : 'Edit Barang Stok') ?>
+            <i class="fa <?= empty($id) ? 'fa-plus' : ($is_view ? 'fa-eye' : 'fa-edit') ?> me-2"></i><?= empty($id) ? 'Add Stock Item' : ($is_view ? 'Stock Item Detail' : 'Edit Stock Item') ?>
         </h5>
         <a href="<?= base_url('accessories') ?>" class="btn btn-outline-secondary btn-sm">
-            <i class="fa fa-arrow-left me-1"></i> Kembali
+            <i class="fa fa-arrow-left me-1"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -42,7 +42,7 @@ if (!empty($id)) {
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Category Stok <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Stock Category <span class="text-danger">*</span></label>
                     <select id="id_category" name="id_category" class="form-select chosen-select" required <?= $disabled; ?>>
                         <option value="0">Select An Option</option>
                         <?php foreach ($results['category'] as $kel) {
@@ -53,8 +53,8 @@ if (!empty($id)) {
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Stok Name <span class="text-danger">*</span></label>
-                    <input type="text" id="stock_name" name="stock_name" class="form-control" required placeholder="Stok Name" value='<?= $stock_name; ?>' <?= $disabled; ?>>
+                    <label class="form-label fw-bold">Stock Name <span class="text-danger">*</span></label>
+                    <input type="text" id="stock_name" name="stock_name" class="form-control" required placeholder="Stock Name" value='<?= $stock_name; ?>' <?= $disabled; ?>>
                 </div>
             </div>
 
@@ -139,11 +139,11 @@ if (!empty($id)) {
                         <label class="form-label fw-bold d-block">Status</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="status" id="status1" value="1" <?= $status1; ?> <?= $disabled; ?>>
-                            <label class="form-check-label" for="status1">Aktif</label>
+                            <label class="form-check-label" for="status1">Active</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="status" id="status0" value="0" <?= $status2; ?> <?= $disabled; ?>>
-                            <label class="form-check-label" for="status0">Non-Aktif</label>
+                            <label class="form-check-label" for="status0">Inactive</label>
                         </div>
                     </div>
                 </div>
@@ -185,7 +185,7 @@ if (!empty($id)) {
 			if (id_category == '0') {
 				swal({
 					title: "Error Message!",
-					text: 'Category stok empty, select first ...',
+					text: 'Stock category is empty, please select first.',
 					type: "warning"
 				});
 				$('#save').prop('disabled', false);
@@ -194,7 +194,7 @@ if (!empty($id)) {
 			if (stock_name == '') {
 				swal({
 					title: "Error Message!",
-					text: 'Stok name empty, select first ...',
+					text: 'Stock name is empty, please select first.',
 					type: "warning"
 				});
 				$('#save').prop('disabled', false);

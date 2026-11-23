@@ -76,14 +76,14 @@ class Report_monitoring_po extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (empty($no_po)) {
-            echo "<div class='alert alert-danger mb-0'>No PO tidak valid!</div>";
+            echo "<div class='alert alert-danger mb-0'>Invalid PO number!</div>";
             return;
         }
 
         $detail_data = $this->monitoring_model->get_po_detail($no_po);
 
         if (!$detail_data) {
-            echo "<div class='alert alert-warning mb-0'>Data PO tidak ditemukan!</div>";
+            echo "<div class='alert alert-warning mb-0'>PO data not found!</div>";
             return;
         }
 
@@ -161,9 +161,9 @@ class Report_monitoring_po extends Admin_Controller
         $sheet1->mergeCells('A1:K1');
         $sheet1->getStyle('A1')->getFont()->setSize(14)->setBold(true)->getColor()->setRGB('1E293B');
 
-        $filterInfo = 'Diekspor pada: ' . date('d/m/Y H:i:s');
+        $filterInfo = 'Exported on: ' . date('d/m/Y H:i:s');
         if (!empty($filter_status) && $filter_status !== 'all') {
-            $filterInfo .= ' | Status: ' . ucfirst(str_replace('_', ' ', $filter_status));
+            $filterInfo .= ' | Status: ' . ucfirst(str_replace('_', ' ', $filter_status ?? ''));
         }
         $sheet1->setCellValue('A2', $filterInfo);
         $sheet1->mergeCells('A2:K2');
@@ -173,13 +173,13 @@ class Report_monitoring_po extends Admin_Controller
         $headers1 = [
             'A4' => 'NO',
             'B4' => 'NO. PO',
-            'C4' => 'TANGGAL PO',
+            'C4' => 'PO DATE',
             'D4' => 'SUPPLIER',
             'E4' => 'NO. PR & TIPE PR',
             'F4' => 'ITEM / SPEK MATERIAL',
             'G4' => 'TOTAL QTY PO (KG)',
-            'H4' => 'TOTAL DITERIMA (KG)',
-            'I4' => 'SISA QTY BELUM DIKIRIM (KG)',
+            'H4' => 'TOTAL RECEIVED (KG)',
+            'I4' => 'REMAINING UNDELIVERED QUANTITY (KG)',
             'J4' => '% PROGRESS',
             'K4' => 'STATUS',
         ];
@@ -198,7 +198,7 @@ class Report_monitoring_po extends Admin_Controller
         $sumSisa = 0;
 
         foreach ($data as $item) {
-            $materials = !empty($item->materials_arr) ? implode(", ", $item->materials_arr) : '-';
+            $materials = !empty($item->materials_arr) ? implode(", ", $item->materials_arr ?? []) : '-';
             $pr_text   = $item->pr_text ?? '-';
 
             $sheet1->setCellValue('A' . $rowNum1, $no1);
@@ -257,14 +257,14 @@ class Report_monitoring_po extends Admin_Controller
         // SHEET 2: DETAIL RIWAYAT KEDATANGAN PO
         // ========================================================
         $sheet2 = $objPHPExcel->createSheet(1);
-        $sheet2->setTitle('Detail Kedatangan PO');
+        $sheet2->setTitle('PO Delivery Details');
 
         // Judul Sheet 2
-        $sheet2->setCellValue('A1', 'DETAIL RIWAYAT KEDATANGAN BARANG (INCOMING DELIVERIES)');
+        $sheet2->setCellValue('A1', 'INCOMING DELIVERY HISTORY');
         $sheet2->mergeCells('A1:J1');
         $sheet2->getStyle('A1')->getFont()->setSize(14)->setBold(true)->getColor()->setRGB('1E293B');
 
-        $sheet2->setCellValue('A2', 'Urutan Kedatangan: Paling lama di atas (kronologis per kedatangan)');
+        $sheet2->setCellValue('A2', 'Delivery Order: Oldest First (Chronological)');
         $sheet2->mergeCells('A2:J2');
         $sheet2->getStyle('A2')->getFont()->setSize(10)->setItalic(true)->getColor()->setRGB('64748B');
 
@@ -276,10 +276,10 @@ class Report_monitoring_po extends Admin_Controller
             'D4' => 'NO. PR & TIPE PR',
             'E4' => 'ITEM / SPEK MATERIAL',
             'F4' => 'NO. INCOMING',
-            'G4' => 'TANGGAL TERIMA',
-            'H4' => 'QTY DITERIMA (KG)',
-            'I4' => 'KUMULATIF DITERIMA (KG)',
-            'J4' => 'SISA QTY SETELAH INI (KG)',
+            'G4' => 'RECEIPT DATE',
+            'H4' => 'QUANTITY RECEIVED (KG)',
+            'I4' => 'CUMULATIVE QUANTITY RECEIVED (KG)',
+            'J4' => 'REMAINING QUANTITY AFTER RECEIPT (KG)',
         ];
 
         foreach ($headers2 as $cell => $val) {
@@ -328,7 +328,7 @@ class Report_monitoring_po extends Admin_Controller
                 $sheet2->setCellValue('B' . $rowNum2, $item->no_surat ?? $item->no_po);
                 $sheet2->setCellValue('C' . $rowNum2, $item->nm_supplier ?? '-');
                 $sheet2->setCellValue('D' . $rowNum2, $pr_text);
-                $sheet2->setCellValue('E' . $rowNum2, !empty($item->materials_arr) ? implode(", ", $item->materials_arr) : '-');
+                $sheet2->setCellValue('E' . $rowNum2, !empty($item->materials_arr) ? implode(", ", $item->materials_arr ?? []) : '-');
                 $sheet2->setCellValue('F' . $rowNum2, '-');
                 $sheet2->setCellValue('G' . $rowNum2, '-');
                 $sheet2->setCellValue('H' . $rowNum2, 0);

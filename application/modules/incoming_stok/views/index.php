@@ -16,15 +16,15 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
                                 <i class="fa fa-dolly fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Incoming Stok Gudang</h5>
-                                <small class="text-muted">Kelola riwayat penerimaan barang stok dari PO atau kasbon ke gudang</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Warehouse Stock Incoming</h5>
+                                <small class="text-muted">Manage the history of stock item receipts from POs or cash advances into the warehouse</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-5 col-12 text-md-end">
                         <?php if ($ENABLE_ADD) : ?>
                             <a class="btn btn-primary shadow-sm" href="<?= base_url('incoming_stok/request_stok') ?>">
-                                <i class="fa fa-plus me-1"></i> Tambah Incoming
+                                <i class="fa fa-plus me-1"></i> Add Incoming
                             </a>
                         <?php endif; ?>
                     </div>
@@ -38,9 +38,9 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
                             <tr>
                                 <th class="text-center" width="4%">#</th>
                                 <th class="text-center" width="12%">No Trans</th>
-                                <th class="text-center" width="10%">Tanggal</th>
-                                <th class="text-start" width="13%">Nomor PO</th>
-                                <th class="text-start" width="12%">Nomor PR</th>
+                                <th class="text-center" width="10%">Date</th>
+                                <th class="text-start" width="13%">PO Number</th>
+                                <th class="text-start" width="12%">PR Number</th>
                                 <th class="text-start">Warehouse</th>
                                 <th class="text-center" width="8%">Qty</th>
                                 <th class="text-start" width="10%">PIC</th>
@@ -70,11 +70,11 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
             <div class="modal-body p-4" id="view2">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2 mb-0">Memuat rincian transaksi...</p>
+                    <p class="text-muted mt-2 mb-0">Loading transaction details...</p>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light py-2">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -88,10 +88,10 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
         $(document).on('click', '.detail', function(e) {
             e.preventDefault();
             var kode_trans = $(this).data('kode_trans');
-            var title = 'DETAIL INCOMING BARANG STOK';
+            var title = 'STOCK ITEM INCOMING DETAILS';
 
             $("#head_title2").html('<i class="fa fa-dolly text-primary me-2"></i><b>' + title + '</b>: <span class="text-primary">' + kode_trans + '</span>');
-            $("#view2").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Memuat rincian transaksi...</p></div>');
+            $("#view2").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Loading transaction details...</p></div>');
 
             var modalEl = document.getElementById('ModalView2');
             if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
@@ -108,7 +108,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
                     $("#view2").html(data);
                 },
                 error: function() {
-                    $("#view2").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Gagal mengambil data detail incoming dari server.</div>');
+                    $("#view2").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Failed to fetch incoming detail data from the server.</div>');
                 }
             });
         });
@@ -135,18 +135,18 @@ $ENABLE_DELETE  = has_permission('Incoming_Stok.Delete');
                 type: "POST",
                 cache: false,
                 error: function() {
-                    $("#example2 tbody").html('<tr><td colspan="11" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Tidak ada data incoming ditemukan</td></tr>');
+                    $("#example2 tbody").html('<tr><td colspan="11" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> No incoming data found</td></tr>');
                 }
             },
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari no transaksi / no PO / PR...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search transaction no / PO no / PR...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Belum ada riwayat transaksi incoming",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data...'
+                emptyTable: "No incoming transaction history yet",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             }
         });
     }

@@ -319,7 +319,7 @@ class New_ros_model extends BF_Model
             $urutan++;
             $candidate = $prefix . '-' . sprintf("%03d", $urutan);
 
-            if (!empty($exclude_codes) && in_array($candidate, $exclude_codes)) {
+            if (!empty($exclude_codes) && in_array($candidate, $exclude_codes ?? [])) {
                 continue;
             }
 

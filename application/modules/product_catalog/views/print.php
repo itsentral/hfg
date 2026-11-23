@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Katalog Harga Resmi <?= html_escape(get_company_code()) ?> - <?= date('d/m/Y') ?></title>
+    <title>Official Price Catalog <?= html_escape(get_company_code()) ?> - <?= date('d/m/Y') ?></title>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #333; margin: 20px; }
         .header { border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
@@ -26,7 +26,7 @@
         <button onclick="window.print()" style="padding: 6px 14px; background: #3c8dbc; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">
             Cetak / Simpan PDF
         </button>
-        <span style="margin-left: 10px; font-size: 12px; color: #555;">Gunakan tombol cetak ini untuk mencetak katalog atau menyimpannya sebagai PDF.</span>
+        <span style="margin-left: 10px; font-size: 12px; color: #555;">Use this print button to print the catalog or save it as a PDF.</span>
     </div>
 
     <div class="header">
@@ -34,8 +34,8 @@
             <tr style="border:none;">
                 <td style="border:none; padding:0;">
                     <h2><?= html_escape(get_company_name(true, true)) ?> (<?= html_escape(get_company_code()) ?>)</h2>
-                    <p><strong>DAFTAR HARGA RESMI PRODUK (PRODUCT CATALOG)</strong></p>
-                    <p>Status: RESMI AKTIF | Tanggal Cetak: <?= html_escape($date) ?></p>
+                    <p><strong>OFFICIAL PRODUCT PRICE LIST (PRODUCT CATALOG)</strong></p>
+                    <p>Status: OFFICIALLY ACTIVE | Print Date: <?= html_escape($date) ?></p>
                 </td>
                 <td style="border:none; padding:0; text-align:right; vertical-align:top;">
                     <?php if ($catalog): ?>
@@ -52,11 +52,11 @@
         <thead>
             <tr>
                 <th style="width: 4%;" class="text-center">No</th>
-                <th style="width: 25%;">Nama Produk & Kode</th>
+                <th style="width: 25%;">Product Name & Code</th>
                 <th style="width: 12%;" class="text-center">Varian (Uniq ID)</th>
-                <th style="width: 15%;">Kategori</th>
-                <th style="width: 8%;" class="text-center">Ukuran (m)</th>
-                <th style="width: 8%;" class="text-right">Berat (Kg/m)</th>
+                <th style="width: 15%;">Category</th>
+                <th style="width: 8%;" class="text-center">Size (m)</th>
+                <th style="width: 8%;" class="text-right">Weight (Kg/m)</th>
                 <th style="width: 14%;" class="text-right">Price List / Meter</th>
                 <th style="width: 14%;" class="text-right">Price List / Kg</th>
             </tr>
@@ -81,7 +81,7 @@
     </table>
 
     <div class="footer">
-        <p>* Harga di atas merupakan harga resmi katalog <?= html_escape(get_company_code()) ?> dan belum termasuk diskon khusus atau penyesuaian negosiasi tambahan yang disetujui General Manager.</p>
+        <p>* The prices above are the official catalog prices <?= html_escape(get_company_code()) ?> and do not include special discounts or additional negotiated adjustments approved by the General Manager.</p>
     </div>
 </body>
 </html>

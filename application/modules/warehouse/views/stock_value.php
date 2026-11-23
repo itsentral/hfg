@@ -45,7 +45,15 @@
                 <input type="text" id="filter_material" class="form-control"
                     placeholder="Search code / material name...">
             </div>
-            <div class="col-md-8 text-end">
+            <div class="col-md-4">
+                <label for="filter-gudang-produksi" class="form-label">Warehouse Code</label>
+                <select id="filter-gudang-produksi" class="form-select">
+                    <?php foreach ($list_gudang as $g): if (!in_array($g['kd_gudang'], ['PRO','PRT','WIP','HLD'], true)) continue; ?>
+                    <option value="<?= htmlspecialchars($g['kd_gudang'], ENT_QUOTES, 'UTF-8') ?>" <?= $g['kd_gudang'] === 'PRO' ? 'selected' : '' ?>><?= htmlspecialchars($g['kd_gudang'] . ' — ' . $g['nm_gudang'], ENT_QUOTES, 'UTF-8') ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-4 text-end">
                 <button class="btn btn-sm btn-primary" id="btn-filter">
                     <i class="fa fa-search"></i> Filter
                 </button>
@@ -164,12 +172,13 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                                    <i class="fa fa-filter"></i> Gudang
+                                    <i class="fa fa-filter"></i> Warehouse
                                 </label>
                                 <select id="sv_hist_gudang" class="form-select form-select-sm">
                                     <option value="">-- All --</option>
-                                    <option value="PRO">Production Warehouse</option>
-                                    <option value="SLI">Slitting Warehouse</option>
+                                    <?php foreach ($list_gudang as $g): ?>
+                                    <option value="<?= htmlspecialchars($g['kd_gudang'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($g['kd_gudang'] . ' — ' . $g['nm_gudang'], ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -245,17 +254,17 @@
                         <tr>
                             <th>No</th>
                             <th>Date</th>
-                            <th>No. Transaksi</th>
+                            <th>Transaction No.</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Coil Count</th>
                             <th class="text-end">Qty Awal (Kg)</th>
-                            <th class="text-end">Qty Transaksi (Kg)</th>
+                            <th class="text-end">Transaction Qty (Kg)</th>
                             <th class="text-end">Qty Akhir (Kg)</th>
-                            <th class="text-end">Total Harga</th>
-                            <th class="text-end">Saldo Awal</th>
-                            <th class="text-end">Saldo Akhir</th>
-                            <th class="text-end">Harga Lama</th>
-                            <th class="text-end">Harga Baru (Avg)</th>
+                            <th class="text-end">Total Price</th>
+                            <th class="text-end">Opening Balance</th>
+                            <th class="text-end">Closing Balance</th>
+                            <th class="text-end">Old Price</th>
+                            <th class="text-end">New Price (Avg)</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-history">
@@ -327,7 +336,7 @@
                                 <th>Internal Code</th>
                                 <th class="text-end">Net Weight (Kg)</th>
                                 <th class="text-end">Gross Weight (Kg)</th>
-                                <th class="text-end">Panjang (m)</th>
+                                <th class="text-end">Length (m)</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-detail-coil-trx">
@@ -454,6 +463,7 @@
                     type: 'POST',
                     data: function(d) {
                         d.filter_material = $('#filter_material').val();
+                        d.kd_gudang = endpoint === 'data_side_stock_value_produksi' ? $('#filter-gudang-produksi').val() : kdGudang;
                     },
                     cache: false,
                 },
@@ -468,7 +478,7 @@
                 },
                 drawCallback: function() {
                     $.post(siteurl + 'warehouse/get_grand_total_stock_value', {
-                        kd_gudang: kdGudang,
+                        kd_gudang: endpoint === 'data_side_stock_value_produksi' ? $('#filter-gudang-produksi').val() : kdGudang,
                         filter_material: $('#filter_material').val(),
                     }, function(res) {
                         $('#' + grandTotalId).html('<strong>' + res.total + '</strong>');
@@ -491,6 +501,8 @@
                 }
             });
 
+        $('#filter-gudang-produksi').on('change', function() { dtProduksi.ajax.reload(); });
+
         $('#btn-filter').on('click', function() {
             dtProduksi.ajax.reload();
             if (dtSlitting) dtSlitting.ajax.reload();
@@ -498,12 +510,13 @@
 
         $('#btn-reset').on('click', function() {
             $('#filter_material').val('');
+            $('#filter-gudang-produksi').val('PRO');
             dtProduksi.ajax.reload();
             if (dtSlitting) dtSlitting.ajax.reload();
         });
 
         $('#btn-excel').on('click', function() {
-            var kd = document.getElementById('tab-sv-produksi').classList.contains('active') ? 'PRO' : 'SLI';
+            var kd = document.getElementById('tab-sv-produksi').classList.contains('active') ? $('#filter-gudang-produksi').val() : 'SLI';
             window.location.href = siteurl + 'warehouse/export_excel_stock_value?kd_gudang=' + kd;
         });
 
@@ -655,13 +668,11 @@
             }
             var html = '';
             $.each(data, function(i, r) {
-                // Determine IN/OUT status
-                var status = 'IN';
-                var statusBadge = '<span class="badge bg-success">IN</span>';
-                if (parseFloat(r.qty_akhir) < parseFloat(r.qty_awal)) {
-                    status = 'OUT';
-                    statusBadge = '<span class="badge bg-danger">OUT</span>';
-                }
+                var delta = parseFloat(r.qty_akhir) - parseFloat(r.qty_awal);
+                var statusBadge = delta < 0
+                    ? '<span class="badge bg-danger">OUT</span>'
+                    : (delta > 0 ? '<span class="badge bg-success">IN</span>'
+                    : '<span class="badge bg-secondary">Fixed Balance</span>');
 
                 html += '<tr>' +
                     '<td class="text-center">' + (i + 1) + '</td>' +
@@ -671,6 +682,7 @@
                     // Jumlah coil — klik → drill-down
                     '<td class="text-center">' +
                     '<a href="javascript:void(0)" class="badge bg-primary" ' +
+                    'data-id-summary="' + r.id + '" ' +
                     'data-kode-trans="' + r.kode_trans + '" ' +
                     'data-id-material="' + r.id_material + '" ' +
                     'data-id-gudang="' + r.id_gudang + '" ' +
@@ -708,10 +720,17 @@
         new bootstrap.Modal(document.getElementById('modal-detail-coil-trx')).show();
 
         $.post(siteurl + 'warehouse/get_summary_detail_coil', {
+            id_summary: el.dataset.idSummary,
             kode_trans: kode_trans,
             id_material: id_material,
             id_gudang: id_gudang
         }, function(data) {
+            if (!Array.isArray(data)) {
+                $('#tbody-detail-coil-trx').empty().append(
+                    $('<tr>').append($('<td colspan="7" class="text-center">').text(data.message || 'Transaction details are not available.'))
+                );
+                return;
+            }
             if (!data.length) {
                 $('#tbody-detail-coil-trx').html(
                     '<tr><td colspan="7" class="text-center">No data available.coil</td></tr>'

@@ -302,7 +302,7 @@ class Master_model extends CI_Model {
 	}
 
 	function GetCategory(){
-		$category=array(''=>'','EXPENSE'=>'EXPENSE','RUTIN'=>'RUTIN','NON RUTIN'=>'NON RUTIN','PEMBAYARAN PERIODIK'=>'PEMBAYARAN PERIODIK','UMUM'=>'UMUM');
+		$category=array(''=>'','EXPENSE'=>'EXPENSE','RUTIN'=>'ROUTINE','NON RUTIN'=>'NON-ROUTINE','PEMBAYARAN PERIODIK'=>'PERIODIC PAYMENT','UMUM'=>'GENERAL');
 		return $category;
 	}
 

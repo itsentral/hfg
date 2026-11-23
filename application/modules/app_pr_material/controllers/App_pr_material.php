@@ -47,8 +47,8 @@ class App_pr_material extends Admin_Controller
             if (!empty($detail)) {
                 foreach ($detail as $key => $value) {
                     //Planning
-                    $use_stock = str_replace(',', '', $value['use_stock']);
-                    $propose = str_replace(',', '', $value['propose']);
+                    $use_stock = str_replace(',', '', $value['use_stock'] ?? '');
+                    $propose = str_replace(',', '', $value['propose'] ?? '');
 
                     $ArrPlanningDetail[$key]['id'] = $value['id'];
                     $ArrPlanningDetail[$key]['stock_free'] = $value['stock_free'];
@@ -215,7 +215,7 @@ class App_pr_material extends Admin_Controller
             'GET_STOK_PUSAT'  => $get_stok_pusat
         ];
         $this->template->page_icon('fa fa-cart-plus');
-        $this->template->title('Detail Purchase Request : ' . $so_number);
+        $this->template->title('Purchase Request Detail: ' . $so_number);
         $this->template->render('detail_planning', $data);
     }
 
@@ -225,7 +225,7 @@ class App_pr_material extends Admin_Controller
         $id             = $data['id'];
         $action         = $data['action'];
         $so_number      = $data['so_number'];
-        $pr_rev         = str_replace(',', '', $data['pr_rev']);
+        $pr_rev         = str_replace(',', '', $data['pr_rev'] ?? '');
 
         $ArrHeader = array(
             'propose_rev'   => ($action == 'approve') ? $pr_rev : NULL,

@@ -21,7 +21,7 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar Delivery Order</h5>
+        <h5 class="mb-0">Delivery Order List</h5>
         <a href="<?= base_url('delivery_fg/add') ?>" class="btn btn-success btn-sm">
             <i class="fa fa-plus"></i> Buat DO Baru
         </a>

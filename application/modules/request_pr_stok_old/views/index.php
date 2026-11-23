@@ -96,7 +96,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 						}
 
 						if (!empty($kategori_pr)) {
-							$kategori_pr = implode(', ', $kategori_pr);
+							$kategori_pr = implode(', ', $kategori_pr ?? []);
 						} else {
 							$kategori_pr = '';
 						}
@@ -141,7 +141,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
 							endif;
 						}
 
-						if (COUNT($getCheck) <= 0) {
+						if (COUNT($getCheck ?? []) <= 0) {
 							$sts = 'Approved';
 							$warna = 'success';
 							$valid_edit = 0;

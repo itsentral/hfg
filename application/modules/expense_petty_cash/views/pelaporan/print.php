@@ -241,7 +241,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
 <body>
     <!-- Header Section -->
     <div class="header-section">
-        <h2>LAPORAN PENGELUARAN KAS KECIL</h2>
+        <h2>PETTY CASH EXPENSE REPORT</h2>
     </div>
 
     <!-- Info Section -->
@@ -269,9 +269,9 @@ $grand_total = (int) $pelaporan->header->grand_total;
             <tr>
                 <th style="width: 30px;">No</th>
                 <th style="width: 110px;">No Pencatatan</th>
-                <th style="width: 80px;">Tanggal</th>
+                <th style="width: 80px;">Date</th>
                 <th>Request By</th>
-                <th>Keterangan</th>
+                <th>Description</th>
                 <th style="width: 100px;">Nominal</th>
             </tr>
         </thead>
@@ -290,7 +290,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="6" class="text-center" style="padding: 15px; font-style: italic;">Tidak ada data pencatatan</td>
+                    <td colspan="6" class="text-center" style="padding: 15px; font-style: italic;">No record data</td>
                 </tr>
             <?php endif; ?>
         </tbody>
@@ -306,12 +306,12 @@ $grand_total = (int) $pelaporan->header->grand_total;
     <table class="signature-section">
         <tr>
             <td>
-                <div class="signature-label">Dibuat Oleh</div>
+                <div class="signature-label">Created By</div>
                 <div class="signature-line"></div>
                 <div class="signature-name"><?= htmlspecialchars($creator_name ?: '_______________') ?></div>
             </td>
             <td>
-                <div class="signature-label">Disetujui Oleh</div>
+                <div class="signature-label">Approved By</div>
                 <div class="signature-line"></div>
                 <div class="signature-name"><?= htmlspecialchars($approver_name ?: '_______________') ?></div>
             </td>
@@ -333,7 +333,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
     <?php if ($has_evidence): ?>
         <div style="page-break-before: always;"></div>
         <div class="header-section">
-            <h2>LAMPIRAN BUKTI PENGELUARAN</h2>
+            <h2>EXPENSE PROOF ATTACHMENT</h2>
         </div>
 
         <?php foreach ($pelaporan->pencatatan_list as $item): ?>
@@ -454,7 +454,7 @@ $grand_total = (int) $pelaporan->header->grand_total;
                     }
                 }).catch(function(err) {
                     console.error('Error loading PDF:', err);
-                    container.innerHTML = '<p style="color: red; font-size: 10px;">Gagal memuat PDF: ' + item.url + '</p>';
+                    container.innerHTML = '<p style="color: red; font-size: 10px;">Failed to load PDF: ' + item.url + '</p>';
                     checkComplete();
                 });
             });

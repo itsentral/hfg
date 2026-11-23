@@ -65,14 +65,14 @@ class Spk_material extends Admin_Controller
         $spk = $this->Spk_material_model->get_spk($spk_no);
 
         if (!$spk) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK not found.');
             redirect('spk_material');
         }
 
         // Validate editable status
         $editable_statuses = ['Material Requested', 'Material Confirmed'];
-        if (!in_array($spk['status'], $editable_statuses)) {
-            $this->session->set_flashdata('error', 'SPK tidak dapat diedit karena status: ' . $spk['status']);
+        if (!in_array($spk['status'], $editable_statuses ?? [])) {
+            $this->session->set_flashdata('error', 'SPK cannot be edited because of its status: ' . $spk['status']);
             redirect('spk_material/view/' . $spk_no);
         }
 
@@ -92,14 +92,14 @@ class Spk_material extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (!$spk_no) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK not found.');
             redirect('spk_material');
         }
 
         $spk = $this->Spk_material_model->get_spk_for_view($spk_no);
 
         if (!$spk) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK not found.');
             redirect('spk_material');
         }
 
@@ -133,13 +133,13 @@ class Spk_material extends Admin_Controller
 
         // ===== VALIDASI (dilakukan SEBELUM transaction) =====
         if (empty($tgl_spk)) {
-            return $this->_json(['status' => 0, 'message' => 'Tanggal SPK wajib diisi.']);
+            return $this->_json(['status' => 0, 'message' => 'SPK Date is required.']);
         }
         if (empty($shift_ids)) {
-            return $this->_json(['status' => 0, 'message' => 'Shift wajib dipilih minimal satu.']);
+            return $this->_json(['status' => 0, 'message' => 'At least one shift must be selected.']);
         }
         if (empty($products) || !is_array($products)) {
-            return $this->_json(['status' => 0, 'message' => 'Minimal 1 baris produk harus diisi.']);
+            return $this->_json(['status' => 0, 'message' => 'At least 1 product row must be filled in.']);
         }
 
         // Validate each product line
@@ -150,17 +150,17 @@ class Spk_material extends Admin_Controller
             $line_num = $i + 1;
 
             if (empty($prod['id_produk_fg'])) {
-                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk harus dipilih."]);
+                return $this->_json(['status' => 0, 'message' => "Row {$line_num}: A product must be selected."]);
             }
 
             $qty = (int) $prod['target_qty'];
             if ($qty < 1 || $qty > 999999) {
-                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Target Qty harus antara 1 - 999.999."]);
+                return $this->_json(['status' => 0, 'message' => "Row {$line_num}: Target Qty must be between 1 - 999,999."]);
             }
 
             // Check duplicate product
-            if (in_array($prod['id_produk_fg'], $product_ids)) {
-                return $this->_json(['status' => 0, 'message' => "Baris {$line_num}: Produk ini sudah dipilih di baris lain."]);
+            if (in_array($prod['id_produk_fg'], $product_ids ?? [])) {
+                return $this->_json(['status' => 0, 'message' => "Row {$line_num}: This product has already been selected in another row."]);
             }
             $product_ids[] = $prod['id_produk_fg'];
 
@@ -171,7 +171,7 @@ class Spk_material extends Admin_Controller
         }
 
         if (!empty($no_bom_products)) {
-            return $this->_json(['status' => 0, 'message' => 'BOM belum dibuat untuk produk: ' . implode(', ', $no_bom_products)]);
+            return $this->_json(['status' => 0, 'message' => 'BOM has not been created for product: ' . implode(', ', $no_bom_products ?? [])]);
         }
 
         // Validasi edit: cek SPK exist dan editable SEBELUM transaction
@@ -179,7 +179,7 @@ class Spk_material extends Admin_Controller
             $spk_no = $this->input->post('spk_no');
             $spk = $this->Spk_material_model->get_spk($spk_no);
             if (!$spk || !in_array($spk['status'], ['Material Requested', 'Material Confirmed'])) {
-                return $this->_json(['status' => 0, 'message' => 'SPK tidak dapat diedit.']);
+                return $this->_json(['status' => 0, 'message' => 'SPK cannot be edited.']);
             }
         }
 
@@ -266,13 +266,13 @@ class Spk_material extends Admin_Controller
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             write_log('SPK Material', 'Save SPK Material', 'Gagal menyimpan SPK Material: ' . $spk_no . ' (' . $mode . ')', $this->input->post(), null, 0);
-            return $this->_json(['status' => 0, 'message' => 'Gagal menyimpan SPK. Silakan coba lagi.']);
+            return $this->_json(['status' => 0, 'message' => 'Failed to save SPK. Please try again.']);
         }
 
         $this->db->trans_commit();
         write_log('SPK Material', 'Save SPK Material', 'Berhasil menyimpan SPK Material: ' . $spk_no . ' (' . $mode . ')', $this->input->post(), null, 1);
 
-        $msg = ($mode === 'edit') ? 'SPK berhasil diupdate.' : 'SPK berhasil dibuat.';
+        $msg = ($mode === 'edit') ? 'SPK updated successfully.' : 'SPK created successfully.';
         return $this->_json(['status' => 1, 'message' => $msg, 'spk_no' => $spk_no]);
     }
 
@@ -349,7 +349,7 @@ class Spk_material extends Admin_Controller
                 $actions[] = '<button type="button" class="btn btn-sm btn-success btn-release-spk text-nowrap" data-spk="'.$display_spk_no.'" title="Release SPK"><i class="fa fa-check-circle me-1"></i> Release</button>';
             }
 
-            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">' . implode('', $actions) . '</div>';
+            $aksi = '<div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">' . implode('', $actions ?? []) . '</div>';
 
             $data[] = [
                 "<div class='text-center'>{$no}</div>",
@@ -432,7 +432,7 @@ class Spk_material extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (!$id) {
-            return $this->_json(['status' => 0, 'message' => 'ID produk tidak valid.']);
+            return $this->_json(['status' => 0, 'message' => 'Invalid product ID.']);
         }
 
         $weight   = $this->Spk_material_model->get_produk_weight($id);
@@ -456,18 +456,18 @@ class Spk_material extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (!$id_produk) {
-            return $this->_json(['status' => 0, 'message' => 'ID produk tidak valid.']);
+            return $this->_json(['status' => 0, 'message' => 'Invalid product ID.']);
         }
 
         $target_qty = (int) $this->input->get('target_qty');
         if ($target_qty < 1) {
-            return $this->_json(['status' => 0, 'message' => 'Target qty harus minimal 1.']);
+            return $this->_json(['status' => 0, 'message' => 'Target qty must be at least 1.']);
         }
 
         $no_uniq_id = trim($this->input->get('no_uniq_id'));
 
         if (!$this->Spk_material_model->has_bom($id_produk)) {
-            return $this->_json(['status' => 0, 'message' => 'BOM belum dibuat untuk produk ini.']);
+            return $this->_json(['status' => 0, 'message' => 'BOM has not been created for this product.']);
         }
 
         $materials = $this->Spk_material_model->get_bom_materials($id_produk, $target_qty, $no_uniq_id ?: null);
@@ -483,23 +483,23 @@ class Spk_material extends Admin_Controller
         $this->auth->restrict($this->managePermission);
 
         if (!$spk_no) {
-            return $this->_json(['status' => 0, 'message' => 'SPK No tidak valid.']);
+            return $this->_json(['status' => 0, 'message' => 'Invalid SPK No.']);
         }
 
         $new_status = $this->input->post('status');
         if (empty($new_status)) {
-            return $this->_json(['status' => 0, 'message' => 'Status baru wajib diisi.']);
+            return $this->_json(['status' => 0, 'message' => 'New status is required.']);
         }
 
         $current_status = $this->Spk_material_model->get_spk_status($spk_no);
         if (!$current_status) {
-            return $this->_json(['status' => 0, 'message' => 'SPK tidak ditemukan.']);
+            return $this->_json(['status' => 0, 'message' => 'SPK not found.']);
         }
 
         // Terminal states - no transition allowed
         $terminal = ['Released', 'Cancelled'];
-        if (in_array($current_status, $terminal)) {
-            return $this->_json(['status' => 0, 'message' => 'SPK sudah berstatus akhir (' . $current_status . '), tidak dapat diubah.']);
+        if (in_array($current_status, $terminal ?? [])) {
+            return $this->_json(['status' => 0, 'message' => 'SPK already has a final status (' . $current_status . '), tidak dapat diubah.']);
         }
 
         // Allowed transitions
@@ -508,8 +508,8 @@ class Spk_material extends Admin_Controller
             'Material Confirmed' => ['Released', 'Cancelled'],
         ];
 
-        if (!isset($allowed[$current_status]) || !in_array($new_status, $allowed[$current_status])) {
-            return $this->_json(['status' => 0, 'message' => 'Transisi status dari "' . $current_status . '" ke "' . $new_status . '" tidak diizinkan.']);
+        if (!isset($allowed[$current_status]) || !in_array($new_status, $allowed[$current_status] ?? [])) {
+            return $this->_json(['status' => 0, 'message' => 'Status transition from "' . $current_status . '" ke "' . $new_status . '" tidak diizinkan.']);
         }
 
         $result = $this->Spk_material_model->update_spk_status($spk_no, [
@@ -520,11 +520,11 @@ class Spk_material extends Admin_Controller
 
         if ($result) {
             write_log('SPK Material', 'Update Status SPK', 'Status SPK ' . $spk_no . ' berhasil diubah ke: ' . $new_status, $this->input->post(), null, 1);
-            return $this->_json(['status' => 1, 'message' => 'Status SPK berhasil diubah ke "' . $new_status . '".']);
+            return $this->_json(['status' => 1, 'message' => 'SPK status changed successfully to "' . $new_status . '".']);
         }
 
         write_log('SPK Material', 'Update Status SPK', 'Gagal mengubah status SPK ' . $spk_no . ' ke: ' . $new_status, $this->input->post(), null, 0);
-        return $this->_json(['status' => 0, 'message' => 'Gagal mengubah status SPK.']);
+        return $this->_json(['status' => 0, 'message' => 'Failed to change SPK status.']);
     }
 
     // ---------------------------------------------------------------
@@ -536,13 +536,13 @@ class Spk_material extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (!$spk_no) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK not found.');
             redirect('spk_material');
         }
 
         $spk = $this->Spk_material_model->get_spk($spk_no);
         if (!$spk) {
-            $this->session->set_flashdata('error', 'SPK tidak ditemukan.');
+            $this->session->set_flashdata('error', 'SPK not found.');
             redirect('spk_material');
         }
 

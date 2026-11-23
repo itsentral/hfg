@@ -50,7 +50,7 @@ class Simulasi_costing extends Admin_Controller
         if ($res['entries'] > 0) $msg_parts[] = $res['entries'] . ' perubahan dicatat di History Costing';
         if ($res['notif'] > 0) $msg_parts[] = $res['notif'] . ' notifikasi Bottom Price baru untuk Sales';
 
-        $text = !empty($msg_parts) ? 'Costing berhasil diperbarui: ' . implode('; ', $msg_parts) . '.' : 'Semua costing sudah mutakhir. Tidak ada perubahan nilai.';
+        $text = !empty($msg_parts) ? 'Costing updated successfully: ' . implode('; ', $msg_parts ?? []) . '.' : 'All costing is up to date. No value changes.';
 
         echo json_encode([
             'status'  => 1,
@@ -68,7 +68,7 @@ class Simulasi_costing extends Admin_Controller
         $bom_detail_id = $this->input->post('bom_detail_id');
         $no_uniq_id    = trim($this->input->post('no_uniq_id'));
         if (empty($bom_detail_id) && empty($no_uniq_id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Identifier varian tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid variant identifier']);
             return;
         }
 
@@ -108,7 +108,7 @@ class Simulasi_costing extends Admin_Controller
         }
 
         if (!$target) {
-            echo json_encode(['status' => 0, 'pesan' => 'Data tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Data not found']);
             return;
         }
 

@@ -9,10 +9,10 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                 <th class="text-center" width="40">#</th>
                 <th>Produk (Varian Utama)</th>
                 <th width="140">No. Pricelist</th>
-                <th class="text-center" width="90">Jumlah Baris</th>
-                <th width="170">Diajukan Oleh / Waktu</th>
+                <th class="text-center" width="90">Row Count</th>
+                <th width="170">Requested By / Time</th>
                 <th class="text-center" width="160">Status</th>
-                <th width="180">Diputuskan Oleh / Waktu</th>
+                <th width="180">Decided By / Time</th>
                 <th>Alasan Reject</th>
                 <th class="text-center no-sort" width="160">Action</th>
             </tr>
@@ -27,7 +27,7 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
 
                     $prods = array_filter(array_map('trim', explode(',', (string) $r->product_names)));
                     $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
-                    $more_count = count($prods) - 1;
+                    $more_count = count($prods ?? []) - 1;
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
@@ -57,7 +57,7 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                         <td class="text-center">
                             <?php if ($is_pending): ?>
                                 <span class="badge bg-warning text-dark border border-warning px-2 py-1">
-                                    <i class="fa fa-clock-o me-1"></i> Menunggu Approval
+                                    <i class="fa fa-clock-o me-1"></i> Awaiting Approval
                                 </span>
                             <?php elseif ($is_approved): ?>
                                 <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
@@ -93,14 +93,14 @@ $ENABLE_MANAGE = has_permission('Approval_Pricelist.Manage');
                                         style="width: 85px;"
                                         data-id="<?= $r->id ?>"
                                         data-no="<?= $r->no_pricelist ?>"
-                                        title="Periksa & Putuskan">
+                                        title="Review & Decide">
                                         <i class="fa fa-gavel me-1"></i> Putuskan
                                     </button>
                                 <?php else: ?>
                                     <button type="button" class="btn btn-sm btn-info text-white btn-view-app-pl shadow-sm"
                                         style="width: 85px;"
                                         data-id="<?= $r->id ?>"
-                                        title="View Detail Dokumen">
+                                        title="View Document Detail">
                                         <i class="fa fa-eye me-1"></i> View
                                     </button>
                                 <?php endif; ?>

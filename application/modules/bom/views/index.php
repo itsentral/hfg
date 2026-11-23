@@ -19,7 +19,7 @@
             <i class="fa fa-sitemap text-primary me-2"></i> Daftar BOM (Bill of Material)
         </h5>
         <a href="<?= base_url('bom/add') ?>" class="btn btn-success">
-            <i class="fa fa-plus me-1"></i> Buat BOM Baru
+            <i class="fa fa-plus me-1"></i> Create New BOM
         </a>
     </div>
     <div class="card-body">
@@ -28,9 +28,9 @@
                 <thead class="table-light">
                     <tr>
                         <th class="text-center" width="50">No</th>
-                        <th width="180">Kode Produk</th>
-                        <th>Nama Produk</th>
-                        <th class="text-center" width="160">Jumlah Varian</th>
+                        <th width="180">Product Code</th>
+                        <th>Product Name</th>
+                        <th class="text-center" width="160">Variant Count</th>
                         <th class="text-center" width="180">Latest Update</th>
                         <th class="text-center no-sort" width="140">Aksi</th>
                     </tr>
@@ -71,13 +71,13 @@ $(document).ready(function () {
     $(document).on('click', '.btn-delete-bom', function () {
         var id = $(this).data('id');
         Swal.fire({
-            title: 'Hapus BOM?',
-            text: 'BOM dan semua varian material produk ini akan dihapus.',
+            title: 'Delete BOM?',
+            text: 'The BOM and all material variants of this product will be deleted.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Ya, Hapus',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
         }).then(function (result) {
             if (!result.isConfirmed) return;
             $.ajax({
@@ -87,14 +87,14 @@ $(document).ready(function () {
                 data: { id: id },
                 success: function (res) {
                     if (res.success) {
-                        Swal.fire({ title: 'Berhasil!', text: 'BOM berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: 'BOM deleted successfully.', icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function () { $('#tbl-bom').DataTable().ajax.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                        Swal.fire({ title: 'Failed!', text: res.message || 'An error occurred.', icon: 'error', confirmButtonText: 'OK' });
                     }
                 },
                 error: function (xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                    Swal.fire({ title: 'Error!', text: 'Request failed: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
                 }
             });
         });

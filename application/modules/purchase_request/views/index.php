@@ -270,7 +270,7 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 	<div class="modal-dialog modal-xl">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="myModalLabel"><i class="fa fa-list"></i> Detail PR</h5>
+				<h5 class="modal-title" id="myModalLabel"><i class="fa fa-list"></i> PR Detail</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body" id="ModalView">
@@ -368,7 +368,7 @@ $ENABLE_DELETE  = has_permission('List_Outstanding_PR.Delete');
 		})
 	});
 	$(document).on('click', '.add', function() {
-		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Tambah Inventory</b>");
+		$("#head_title").html("<i class='fa fa-list-alt'></i><b>Add Inventory</b>");
 		$.ajax({
 			type: 'POST',
 			url: siteurl + 'penawaran/addHeader',

@@ -14,7 +14,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle me-2"></i>Approval PR Stock - Management
             </h5>
-            <small class="text-muted">Daftar pengajuan PR stok material untuk persetujuan level Management</small>
+            <small class="text-muted">Material stock PR request list for Management level approval</small>
         </div>
         <div>
             <span class="badge bg-primary px-3 py-2 rounded-pill">
@@ -29,7 +29,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
             <div class="col-md-4 col-lg-3">
                 <label for="product" class="form-label fw-semibold text-muted small">Product Type</label>
                 <select name="product" id="product" class="form-select select2">
-                    <option value="0">Semua Product Type</option>
+                    <option value="0">All Product Types</option>
                     <?php
                     foreach (get_list_inventory_lv1('product') as $val => $valx) {
                         echo "<option value='" . htmlspecialchars((string) $valx['code_lv1']) . "'>" . strtoupper(htmlspecialchars((string) $valx['nama'])) . "</option>";
@@ -40,7 +40,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
             <div class="col-md-4 col-lg-3" style="display: none;">
                 <label for="costcenter" class="form-label fw-semibold text-muted small">Costcenter</label>
                 <select name="costcenter" id="costcenter" class="form-select select2">
-                    <option value="0">Semua Costcenter</option>
+                    <option value="0">All Cost Centers</option>
                     <?php
                     foreach (get_costcenter() as $val => $valx) {
                         echo "<option value='" . htmlspecialchars((string) $valx['id_costcenter']) . "'>" . strtoupper(htmlspecialchars((string) $valx['nama_costcenter'])) . "</option>";
@@ -56,10 +56,10 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                 <thead class="table-light text-center">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th width="18%">Asal Permintaan</th>
+                        <th width="18%">Request Origin</th>
                         <th width="12%" class="text-center">No. Req / No SO</th>
                         <th width="12%" class="text-center">No. PR</th>
-                        <th>Untuk Kebutuhan</th>
+                        <th>Purpose</th>
                         <th width="12%">Request By</th>
                         <th width="10%" class="text-center">Request Date</th>
                         <th width="11%" class="text-center">Status</th>
@@ -77,7 +77,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white py-3">
-                <h5 class="modal-title fw-bold" id="dialogPopupLabel"><i class="fa fa-info-circle me-2"></i>Detail PR Stock</h5>
+                <h5 class="modal-title fw-bold" id="dialogPopupLabel"><i class="fa fa-info-circle me-2"></i>PR Stock Detail</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="ModalView">
@@ -122,7 +122,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
         // Detail Modal Click
         $(document).on('click', '.detail', function() {
             var so_number = $(this).data('so_number');
-            $("#dialogPopupLabel").html('<i class="fa fa-info-circle me-2"></i>Detail PR Stock - ' + so_number);
+            $("#dialogPopupLabel").html('<i class="fa fa-info-circle me-2"></i>PR Stock Detail - ' + so_number);
             $("#ModalView").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>');
 
             var modalEl = document.getElementById('dialog-popup');
@@ -143,7 +143,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                     $("#ModalView").html(data);
                 },
                 error: function() {
-                    $("#ModalView").html('<div class="alert alert-danger mb-0">Gagal memuat detail data. Silakan coba lagi.</div>');
+                    $("#ModalView").html('<div class="alert alert-danger mb-0">Failed to load detail data. Please try again.</div>');
                 }
             });
         });
@@ -154,19 +154,19 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
             var so_number = $(this).data('so_number');
 
             Swal.fire({
-                title: "Anda Yakin?",
-                text: "Process Booking Material & PR untuk " + so_number + "!",
+                title: "Are you sure?",
+                text: "Process Material Booking & PR for " + so_number + "!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#0d6efd",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Proses!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Process!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Memproses...",
-                        text: "Sedang memproses booking material",
+                        text: "Processing material booking",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -181,7 +181,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                         success: function(res) {
                             if (res.status == '1') {
                                 Swal.fire({
-                                    title: "Sukses!",
+                                    title: "Success!",
                                     text: res.pesan,
                                     icon: "success"
                                 }).then(function() {
@@ -189,8 +189,8 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
-                                    text: res.pesan || "Terjadi kesalahan saat proses booking.",
+                                    title: "Failed!",
+                                    text: res.pesan || "An error occurred during the booking process.",
                                     icon: "error"
                                 });
                             }
@@ -198,7 +198,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: "Terjadi kesalahan sistem saat menghubungi server.",
+                                text: "A system error occurred while contacting the server.",
                                 icon: "error"
                             });
                         }
@@ -237,7 +237,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stock_Management.Delete');
                 cache: false,
                 error: function() {
                     $(".my-grid-error").html("");
-                    $("#example1 tbody").html('<tr><td colspan="9" class="text-center text-muted py-4">Tidak ada data ditemukan</td></tr>');
+                    $("#example1 tbody").html('<tr><td colspan="9" class="text-center text-muted py-4">No data found</td></tr>');
                 }
             }
         });

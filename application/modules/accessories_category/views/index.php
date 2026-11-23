@@ -68,7 +68,7 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="dialog-popup-label">
-                    <i class="fa fa-tags me-2"></i><span id="head_title">Category Stok</span>
+                    <i class="fa fa-tags me-2"></i><span id="head_title">Stock Category</span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -84,7 +84,7 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
     $(document).on('click', '.edit', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        $("#head_title").html("Edit Category Stok");
+        $("#head_title").html("Edit Stock Category");
         $.ajax({
             type: 'POST',
             url: siteurl + active_controller + '/add/' + id,
@@ -97,7 +97,7 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
 
     $(document).on('click', '.add', function(e) {
         e.preventDefault();
-        $("#head_title").html("Tambah Category Stok");
+        $("#head_title").html("Add Stock Category");
         $.ajax({
             type: 'POST',
             url: siteurl + active_controller + '/add',
@@ -113,8 +113,8 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
         var data = $('#data_form').serialize();
 
         swal({
-                title: "Anda Yakin?",
-                text: "Data akan diproses!",
+                title: "Are you sure?",
+                text: "The data will be processed!",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
@@ -134,7 +134,7 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
                     success: function(data) {
                         if (data.status == '1') {
                             swal({
-                                    title: "Sukses",
+                                    title: "Success",
                                     text: data.pesan,
                                     type: "success"
                                 },
@@ -165,13 +165,13 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
         e.preventDefault();
         var id = $(this).data('id');
         swal({
-                title: "Anda Yakin?",
-                text: "Data akan di hapus!",
+                title: "Are you sure?",
+                text: "The data will be deleted!",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             },
             function(isConfirm) {
@@ -188,7 +188,7 @@ $ENABLE_DELETE  = has_permission('Category_Stok.Delete');
                     success: function(data) {
                         if (data.status == '1') {
                             swal({
-                                    title: "Sukses",
+                                    title: "Success",
                                     text: data.pesan,
                                     type: "success"
                                 },

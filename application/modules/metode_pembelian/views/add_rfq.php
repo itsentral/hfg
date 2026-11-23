@@ -36,8 +36,8 @@
 					<select id="category" name="category" class="form-control input-sm">
 						<option value="0">Select Category</option>
 						<option value="material">MATERIAL</option>
-						<option value="stok">STOK</option>
-						<option value="departemen">DEPARTEMEN</option>
+						<option value="stok">STOCK</option>
+						<option value="departemen">DEPARTMENT</option>
 						<option value="asset">ASSET</option>
 					</select>
 				</div>
@@ -51,9 +51,9 @@
 						<tr>
 							<th class="text-center no-sort" width="4%">#</th>
 							<th class="text-center" width="7%">No PR</th>
-							<th class="text-center" width="10%">Tanggal PR</th>
+							<th class="text-center" width="10%">PR Date</th>
 							<th class="text-center">Item</th>
-							<th class="text-center">Nama Lain</th>
+							<th class="text-center">Other Name</th>
 							<th class="text-center">QTY</th>
 							<th class="text-center" width="10%">Category</th>
 							<th class="text-center" width="10%">Dibutuhkan</th>
@@ -71,7 +71,7 @@
 					'type' => 'button',
 					'class' => 'btn btn-dark',
 					'style' => 'min-width:100px;',
-					'content' => '<i class="fas fa-reply"></i> Kembali',
+					'content' => '<i class="fas fa-reply"></i> Back',
 					'id' => 'back'
 				]);
 				echo ' ';
@@ -143,7 +143,7 @@
 			if (hasMaterial && jenis_pembelian !== 'po' && jenis_pembelian !== '0') {
 				swal({
 					title: "Warning!",
-					text: "Khusus untuk PR Material, metode pembelian hanya boleh PO!",
+					text: "For PR Material, the purchase method can only be PO!",
 					type: "warning"
 				});
 				$('#jenis_pembelian').val('po');
@@ -170,7 +170,7 @@
 				if ((cat === 'pr material' || cat === 'material') && jenis_pembelian !== 'po' && jenis_pembelian !== '0') {
 					swal({
 						title: "Warning!",
-						text: "PR Material (" + no_pr + ") hanya boleh menggunakan metode pembelian PO!",
+						text: "PR Material (" + no_pr + ") can only use the PO purchase method!",
 						type: "warning"
 					});
 					$(this).prop('checked', false);
@@ -192,7 +192,7 @@
 		if (jenis_pembelian == '0') {
 			swal({
 				title: "Error Message!",
-				text: 'Jenis Pembelian Not Select, please input first ...',
+				text: 'Purchase Type not selected, please input first.',
 				type: "warning"
 			});
 			return false;
@@ -229,7 +229,7 @@
 		if (hasMaterial && jenis_pembelian !== 'po') {
 			swal({
 				title: "Warning!",
-				text: "Khusus untuk PR Material, metode pembelian hanya boleh PO!",
+				text: "For PR Material, the purchase method can only be PO!",
 				type: "warning"
 			});
 			return false;

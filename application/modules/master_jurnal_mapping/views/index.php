@@ -7,8 +7,8 @@
                         <th class="text-center">No</th>
                         <th class="text-center">Menu</th>
                         <th class="text-center">Action / Fungsi</th>
-                        <th class="text-center">Kode Master Jurnal</th>
-                        <th class="text-center">Keterangan</th>
+                        <th class="text-center">Master Journal Code</th>
+                        <th class="text-center">Description</th>
                         <th class="text-center">Opsi</th>
                     </tr>
                 </thead>
@@ -61,18 +61,18 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Kode Master Jurnal <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Master Journal Code <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="kode_master_jurnal" id="edit_kode" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Keterangan</label>
+                        <label class="form-label fw-bold">Description</label>
                         <textarea class="form-control" name="keterangan" id="edit_ket" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-edit"><i class="fa fa-save"></i> Simpan</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-edit"><i class="fa fa-save"></i> Save</button>
                 </div>
             </form>
         </div>
@@ -91,13 +91,13 @@
                 { targets: 5, width: '90px' }
             ],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                infoFiltered: "(disaring dari _MAX_ data)",
-                emptyTable: "Tidak ada data.",
-                zeroRecords: "Data tidak ditemukan.",
+                infoFiltered: "(filtered from _MAX_ entries)",
+                emptyTable: "No data.",
+                zeroRecords: "Data not found.",
                 paginate: {
                     previous: "Prev",
                     next: "Next"
@@ -140,13 +140,13 @@
             var formData = new FormData(this);
 
             Swal.fire({
-                title: "Anda Yakin?",
-                text: "Data mapping jurnal akan diupdate!",
+                title: "Are you sure?",
+                text: "The journal mapping data will be updated!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#0d6efd", // Bootstrap 5 primary color
                 cancelButtonColor: "#dc3545", // Bootstrap 5 danger color
-                confirmButtonText: "Ya, Simpan!"
+                confirmButtonText: "Yes, Save!"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -160,7 +160,7 @@
                         success: function(result) {
                             if (result.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
+                                    title: "Success!",
                                     text: result.message,
                                     icon: "success"
                                 }).then((value) => {
@@ -168,7 +168,7 @@
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
+                                    title: "Failed!",
                                     text: result.message,
                                     icon: "error"
                                 });
@@ -177,7 +177,7 @@
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: "Terjadi kesalahan sistem, silakan hubungi administrator.",
+                                text: "A system error occurred, please contact the administrator.",
                                 icon: "error"
                             });
                         }

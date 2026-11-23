@@ -298,14 +298,14 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                 <i class="fa fa-shopping-cart fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Purchasing Request / PR Stok</h5>
-                                <small class="text-muted">Kelola re-order point barang non-material / ATK dan pantau alur approval dokumen</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Purchasing Request / PR Stock</h5>
+                                <small class="text-muted">Manage re-order points for non-material / office supply items and monitor the document approval flow</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-5 col-12 text-md-end">
                         <?php if ($ENABLE_ADD) : ?>
-                            <a class="btn btn-primary shadow-sm" href="<?= base_url('request_pr_stok/add_new') ?>" title="Buat PR Stok">
+                            <a class="btn btn-primary shadow-sm" href="<?= base_url('request_pr_stok/add_new') ?>" title="Create PR Stock">
                                 <i class="fa fa-plus me-1"></i> Tambah PR Stok
                             </a>
                         <?php endif; ?>
@@ -318,26 +318,26 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                 <div class="flowmap-box shadow-none">
                     <div class="fw-bold text-dark mb-1"><i class="fa fa-sitemap text-primary me-1"></i> Alur PR Stock:</div>
                     <div class="flow-trunk">
-                        <span class="badge bg-secondary">PR — Direktur</span> <span class="branch-note">(1 level persetujuan, tanpa finance)</span> &rarr; <span class="badge bg-info text-dark">Metode Pembelian</span>
+                        <span class="badge bg-secondary">PR — Direktur</span> <span class="branch-note">(1 approval level, without finance)</span> &rarr; <span class="badge bg-info text-dark">Metode Pembelian</span>
                     </div>
                     <div class="flow-branches">
                         <div class="branch-row">
                             <span class="branch-tag">Direct Payment</span> &rarr; <span class="badge bg-success">Request Payment</span>
-                            <span class="branch-note">(langsung proses pembayaran — tahap final)</span>
+                            <span class="branch-note">(payment processed directly — final stage)</span>
                         </div>
                         <div class="branch-row">
-                            <span class="branch-tag">Kasbon</span> &rarr; <span class="badge bg-primary">Kasbon Finance</span> &rarr; <span class="badge bg-primary">Kasbon Direktur</span> &rarr; <span class="badge bg-success">Request Payment</span>
-                            <span class="branch-note">(setelah approval 2 level kasbon — tahap final)</span>
+                            <span class="branch-tag">Cash Advance</span> &rarr; <span class="badge bg-primary">Cash Advance Finance</span> &rarr; <span class="badge bg-primary">Cash Advance Director</span> &rarr; <span class="badge bg-success">Request Payment</span>
+                            <span class="branch-note">(after 2-level cash advance approval — final stage)</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- LEGEND -->
                 <div class="legend-box">
-                    <span><span class="dot dot-pending"></span> Belum sampai tahap ini</span>
-                    <span><span class="dot dot-active"></span> Sedang berjalan / menunggu</span>
-                    <span><span class="dot dot-done"></span> Selesai tahap ini</span>
-                    <span><span class="dot dot-reject"></span> Ditolak</span>
+                    <span><span class="dot dot-pending"></span> Not at this stage yet</span>
+                    <span><span class="dot dot-active"></span> In progress / waiting</span>
+                    <span><span class="dot dot-done"></span> This stage is complete</span>
+                    <span><span class="dot dot-reject"></span> Rejected</span>
                 </div>
 
                 <!-- TABLE -->
@@ -347,8 +347,8 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                             <tr>
                                 <th class="text-center" style="width: 35px;">#</th>
                                 <th class="text-center" style="width: 120px;">No. PR</th>
-                                <th class="text-center" style="width: 140px;">Kategori PR</th>
-                                <th class="text-center">Nama Barang</th>
+                                <th class="text-center" style="width: 140px;">PR Category</th>
+                                <th class="text-center">Item Name</th>
                                 <th class="text-center" style="min-width: 90px;">Qty (Pack)</th>
                                 <th class="text-center" style="width: 110px;">Dibutuhkan</th>
                                 <th class="text-center" style="width: 110px;">Request By</th>
@@ -391,7 +391,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                         $kategori_pr[] = $item_kategori_pr->kategori;
                                     }
 
-                                    $kategori_text = !empty($kategori_pr) ? implode(', ', $kategori_pr) : '-';
+                                    $kategori_text = !empty($kategori_pr) ? implode(', ', $kategori_pr ?? []) : '-';
 
                                     echo '<tr>';
                                     echo '<td class="text-center">' . $no . '</td>';
@@ -404,7 +404,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                                     echo '<td class="text-center">' . htmlspecialchars($row->request_date ?? '-') . '</td>';
                                     echo '<td class="progress-cell">' . render_pr_progress_cell('stock', $row) . '</td>';
 
-                                    $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row->so_number . "' class='opt-btn b-view' title='Detail PR'><i class='fa fa-eye'></i></a>";
+                                    $view  = "<a href='" . site_url($this->uri->segment(1)) . '/detail_planning/' . $row->so_number . "' class='opt-btn b-view' title='PR Detail'><i class='fa fa-eye'></i></a>";
                                     $print = '<a href="' . site_url($this->uri->segment(1)) . '/PrintH2/' . $row->so_number . '" class="opt-btn b-print" title="Print PR" target="_blank"><i class="fa fa-print"></i></a>';
 
                                     $close = '';
@@ -437,10 +437,10 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
             </div>
             <form action="" method="post" id="frm-data">
                 <div class="modal-body p-4" id="ModalView">
-                    <div class="text-center text-muted py-3">Memuat data...</div>
+                    <div class="text-center text-muted py-3">Loading data...</div>
                 </div>
                 <div class="modal-footer bg-light py-2">
-                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger shadow-sm"><i class="fa fa-check me-1"></i> Close PR</button>
                 </div>
             </form>
@@ -460,15 +460,15 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                 "orderable": false,
             }],
             "language": {
-                "search": "Cari:",
-                "lengthMenu": "Tampilkan _MENU_ data",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Tidak ada data yang ditampilkan",
-                "zeroRecords": "Tidak ada data yang cocok",
+                "search": "Search:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "No data to display",
+                "zeroRecords": "No matching data",
                 "paginate": {
                     "first": "Awal",
                     "last": "Akhir",
-                    "next": "Lanjut",
+                    "next": "Continue",
                     "previous": "Sebelum"
                 }
             }
@@ -492,7 +492,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
             error: function(result) {
                 swal({
                     title: 'Error !',
-                    text: 'Gagal memuat form closing PR. Silakan coba lagi.',
+                    text: 'Failed to load the PR closing form. Please try again.',
                     type: 'error'
                 });
             }
@@ -516,7 +516,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                     $('#dialog-popup').modal('hide');
                     swal({
                         title: 'Success !',
-                        text: 'PR berhasil di-close.',
+                        text: 'PR closed successfully.',
                         type: 'success'
                     }, function() {
                         location.reload(true);
@@ -524,7 +524,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
                 } else {
                     swal({
                         title: 'Failed !',
-                        text: 'PR gagal di-close.',
+                        text: 'Failed to close PR.',
                         type: 'warning'
                     });
                 }
@@ -532,7 +532,7 @@ $ENABLE_DELETE  = has_permission('PR_Stok.Delete');
             error: function() {
                 swal({
                     title: 'Error !',
-                    text: 'Terjadi kesalahan sistem.',
+                    text: 'A system error occurred.',
                     type: 'error'
                 });
             }

@@ -54,7 +54,7 @@ if(!empty($datarequest)){
 			<thead>
 			<tr>
 				<th>COA</th>
-				<th>Keterangan</th>
+				<th>Description</th>
 				<th>Debet</th>
 				<th>Kredit</th>
 			</tr>
@@ -89,7 +89,7 @@ if(!empty($datarequest)){
 					echo form_dropdown('no_perkiraan[]',$datacoa, $record->no_perkiraan, array('id'=>'no_perkiraan'.$numb,'class'=>'form-control select2','required'=>'required','style'=>'width:100%'));
 				?>
 				</td>
-				<td><input type="text" class="form-control" id="keterangan<?=$numb?>" name="keterangan[]" value="<?=str_replace('"','`',$record->keterangan);?>"></td>
+				<td><input type="text" class="form-control" id="keterangan<?=$numb?>" name="keterangan[]" value="<?=str_replace('"','`',$record->keterangan ?? '');?>"></td>
 				<td><input type="text" class="form-control divide autodebet" id="debet<?=$numb?>" name="debet[]" value="<?=$record->debet;?>" required onblur="cektotaldebet(<?=$numb?>)"></td>
 				<td><input type="text" class="form-control divide autokredit" id="kredit<?=$numb?>" name="kredit[]" value="<?=$record->kredit;?>" required onblur="cektotalkredit(<?=$numb?>)"></td>
 			</tr>
@@ -112,7 +112,7 @@ if(!empty($datarequest)){
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview <?php if($total_d!=$total_k) echo "hidden";?>" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?=base_url("pembayaran_material/".$link)?>" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url("pembayaran_material/".$link)?>" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>
@@ -168,7 +168,7 @@ function cekbutton(){
 		var total_d=$("#total_d").val();
 		var total_k=$("#total_k").val();
 		if(total_d!=total_k){
-   			d_error='Tidak Balance';
+   			d_error='Not Balanced';
    			alert(d_error);
 		}
 		if(d_error==''){

@@ -30,7 +30,7 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control divide" id="total_bayar" name="total_bayar" value="<?php echo $datapo->total_bayar; ?>" readonly tabindex="-1">
 					</div>
-					<label class="col-sm-2 control-label">PO belum dibayar</label>
+					<label class="col-sm-2 control-label">PO not paid yet</label>
 					<div class="col-sm-4">
 						<input type="text" class="form-control divide" id="po_belum_dibayar" name="po_belum_dibayar" value="<?php echo ($datapo->nilai_plus_ppn-$datapo->total_bayar); ?>" readonly tabindex="-1">
 					</div>
@@ -42,7 +42,7 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control divide" id="total_bayar_rupiah" name="total_bayar_rupiah" value="<?php echo $datapo->total_bayar_rupiah; ?>" readonly tabindex="-1">
 					</div>
-					<label class="col-sm-2 control-label">Total Terima Barang IDR</label>
+					<label class="col-sm-2 control-label">Total Goods Received IDR</label>
 					<div class="col-sm-4">
 						<input type="text" class="form-control divide" id="total_terima_barang_idr" name="total_terima_barang_idr" value="<?php echo $datapo->total_terima_barang_idr; ?>" readonly tabindex="-1">
 					</div>
@@ -60,7 +60,7 @@
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?=base_url()?>purchase" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>purchase" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>

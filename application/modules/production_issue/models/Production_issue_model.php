@@ -37,7 +37,7 @@ class Production_issue_model extends CI_Model
         $this->db->trans_start();
 
         $spk_no = $this->generate_spk_no();
-        $this->db->insert('tr_spk_production', array_merge($data, [
+        $this->db->insert('tr_spk_production', array_merge($data ?? [], [
             'spk_no'     => $spk_no,
             'status'     => 'Draft',
             'created_at' => date('Y-m-d H:i:s'),
@@ -109,10 +109,10 @@ class Production_issue_model extends CI_Model
     {
         $spk = $this->get_spk($spk_no);
         if (!$spk) {
-            return ['success' => false, 'message' => 'SPK tidak ditemukan'];
+            return ['success' => false, 'message' => 'SPK not found'];
         }
         if ($spk->status !== 'Draft') {
-            return ['success' => false, 'message' => 'SPK tidak dalam status Draft (status saat ini: ' . $spk->status . ')'];
+            return ['success' => false, 'message' => 'SPK is not in status Draft (current status: ' . $spk->status . ')'];
         }
 
         $this->db->where('spk_no', $spk_no)->update('tr_spk_production', [
@@ -164,10 +164,10 @@ class Production_issue_model extends CI_Model
         // 1. Cek SPK Released
         $spk = $this->get_spk($spk_no);
         if (!$spk) {
-            return ['valid' => false, 'message' => 'SPK ' . $spk_no . ' tidak ditemukan'];
+            return ['valid' => false, 'message' => 'SPK ' . $spk_no . ' not found'];
         }
         if ($spk->status !== 'Released') {
-            return ['valid' => false, 'message' => 'SPK ' . $spk_no . ' tidak dalam status Released (status saat ini: ' . $spk->status . ')'];
+            return ['valid' => false, 'message' => 'SPK ' . $spk_no . ' is not in status Released (current status: ' . $spk->status . ')'];
         }
 
         // 2. Cek coil terdaftar di detail SPK
@@ -182,7 +182,7 @@ class Production_issue_model extends CI_Model
 
         // 3. Cek belum di-scan
         if ($coil_detail->scan_status === 'scanned') {
-            return ['valid' => false, 'message' => 'Coil ' . $no_coil . ' sudah pernah di-scan dan di-issue pada SPK ini'];
+            return ['valid' => false, 'message' => 'Coil ' . $no_coil . ' has already been scanned and issued in this SPK'];
         }
 
         return ['valid' => true, 'message' => 'OK', 'coil_data' => $coil_detail];
@@ -288,7 +288,7 @@ class Production_issue_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal memproses scan, silakan coba lagi', 'data' => []];
+            return ['success' => false, 'message' => 'Failed to process the scan, please try again', 'data' => []];
         }
 
         // 5. Cek apakah semua coil sudah ter-scan

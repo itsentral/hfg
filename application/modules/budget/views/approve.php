@@ -25,12 +25,12 @@ $keterangan = isset($h->rev_keterangan) && !empty($h->rev_keterangan) ? strtoupp
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Nama Asset</label>
+                    <label class="form-label fw-bold">Asset Name</label>
                     <input type="text" id="nama_asset" name="nama_asset" class="form-control" value="<?= $nama_asset ?>">
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Bulan</label>
+                    <label class="form-label fw-bold">Month</label>
                     <select name="bulan" id="bulan" class="form-select">
                         <?php
                         $months = array(1=>"January", 2=>"February", 3=>"March", 4=>"April", 5=>"May", 6=>"June", 7=>"July", 8=>"August", 9=>"September", 10=>"October", 11=>"November", 12=>"December");
@@ -43,7 +43,7 @@ $keterangan = isset($h->rev_keterangan) && !empty($h->rev_keterangan) ? strtoupp
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Tahun</label>
+                    <label class="form-label fw-bold">Year</label>
                     <select name="tahun" id="tahun" class="form-select">
                         <?php
                         $current_year = date("Y") + 1;
@@ -66,17 +66,17 @@ $keterangan = isset($h->rev_keterangan) && !empty($h->rev_keterangan) ? strtoupp
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Sisa Budget PR <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Remaining PR Budget <span class="text-danger">*</span></label>
                     <input type="text" id="budget_pr" name="budget_pr" class="form-control text-end autoNumeric" value="<?= $budget_pr ?>">
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label fw-bold">Sisa Budget PO <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Remaining PO Budget <span class="text-danger">*</span></label>
                     <input type="text" id="budget_po" name="budget_po" class="form-control text-end autoNumeric" value="<?= $budget_po ?>">
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Keterangan</label>
+                    <label class="form-label fw-bold">Description</label>
                     <textarea id="keterangan" name="keterangan" class="form-control" rows="2"><?= $keterangan ?></textarea>
                 </div>
 

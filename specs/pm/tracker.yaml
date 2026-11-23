@@ -150,7 +150,8 @@ issues:
     summary: >-
       Backlog Tahap 6. Rate dibekukan saat laporan dibuat (FR-49, NFR-09); rumus
       per pcs mengikuti mock up Laporan Produksi. Revisi 2026-10-26: enam komponen HPP memakai Rp/Kg
-      Hasil Costing varian BOM yang dipilih pada Add SPK (FR-48, FR-74). OQ 50–55 dijawab 2026-10-26: SPK ditolak bila tanpa varian BOM/Hasil Costing lengkap; varian per produk; ubah varian hanya sebelum laporan produksi; rate.html dipensiunkan; OQ 52: Hasil Costing = Update Costing terakhir saat laporan dibuat. Kolom varian = `varian_type` (ERD: `erd-revisi.drawio`); Stok Bebas dan KW 2 mengikuti varian SPK.
+      Hasil Costing varian BOM yang dipilih pada Add SPK (FR-48, FR-74). Revisi 2026-11-20: Consumables, Biaya Koordinasi,
+      Scrap dari General Rate (Scrap = %Scrap × Biaya Material/Pcs); field jurnal JV016 tanpa desimal (FR-24, FR-48). OQ 50–55 dijawab 2026-10-26: SPK ditolak bila tanpa varian BOM/Hasil Costing lengkap; varian per produk; ubah varian hanya sebelum laporan produksi; rate.html dipensiunkan; OQ 52: Hasil Costing = Update Costing terakhir saat laporan dibuat. Kolom varian = `varian_type` (ERD: `erd-revisi.drawio`); Stok Bebas dan KW 2 mengikuti varian SPK.
   - id: FEAT-09
     title: Dashboard notifikasi perubahan Bottom Price untuk Sales
     type: feature
@@ -196,3 +197,22 @@ issues:
       2026-10-28: Debit Note tanpa approval, hak akses terbuka di mockup, jurnal tampil di layar (Lihat Jurnal); 9 tabel dibuat user di hfg_dev (SQL di
       application/modules/*/migrations/); ruang lingkup = desain dan mockup, kode aplikasi oleh programmer kemudian.
       Belum: Master Jurnal Claim, template email (OQ-C2), kode CI3. Plan di .artifacts/claim_material/.
+  - id: FEAT-12
+    title: Proses Subkont (SPK Subkont → Surat Jalan ke Vendor → Portal Vendor → Incoming) — dokumen dulu, mockup menyusul
+    type: feature
+    epic: subkont
+    slug: subkont-production-planning
+    status: planning
+    source: input/Production Planning/ (BPMN D02 + D002, workbook Rev.2, notes.md); jawaban user 2026-11-20
+    depends_on: []
+    blocks: []
+    summary: >-
+      2026-11-20: dokumen dilengkapi sebelum mockup: FR-99–FR-125, NFR-18–NFR-21, OQ-S1–OQ-S12 di docs/fr-nfr.md; ERD usulan 14 entitas
+      baru di erd-revisi.drawio halaman "Subkont ERD"; workbook UC-17–UC-27, UC-N37–N39, PG-37–PG-51, modul Subkont dan Portal Vendor.
+      Keputusan user: perluasan production_planning dan delivery_fg; SPK tanpa vendor dan tanpa PO; vendor dipilih saat Surat Jalan;
+      Tampungan Siap Kirim untuk Material dan FG (boleh sebagian); portal gaya e-procurement (daftar mandiri, tanpa nilai, perbaikan lewat
+      pengajuan); FG Subkont = kode FG baru, jasa per Kg; baby coil dibagi rata ke Gudang Produksi 2; kode akun sementara (BA menetapkan).
+      2026-11-20 (menyusul): OQ-S1–S10 dijawab user (cek vs LHP timbang HFG ±0,7%; PPIC HFG input biaya jasa; pasir dari vendor; jurnal FG Debit ke
+      Finish Good; kode FG baru otomatis; akun vendor butuh persetujuan + tertaut Master Supplier; Incoming boleh sebagian; pelunasan Unbill per PO Jasa).
+      OQ-S11 dan OQ-S12 juga dijawab user ("Setuju"; Purchasing menyetujui akun vendor; Kode Internal = kode internal material dasar produk).
+      Seluruh OQ-S1–S12 terjawab. Mockup Subkont tahap 1-5 selesai (seluruh alur: SPK, Tampungan, Surat Jalan, Portal Vendor, Master Supplier, Persetujuan Akun, UC-25, Incoming, Laporan Nilai Slitting, Saldo Material In Supplier; sk-*.html). Keputusan BA atas asumsi walkthrough sudah masuk FR/ERD/mockup (Incoming multi-laporan). SQL migrasi 001 ditulis (application/modules/subkont/migrations, belum dieksekusi). Plan + task CI3 selesai (.artifacts/subkont). 2026-11-20: Portal Vendor diubah menjadi akses lewat link unik dari Master Supplier (tanpa akun/persetujuan). Siap dikerjakan programmer; belum: Persetujuan Akun + Master Supplier, Incoming; kode CI3.

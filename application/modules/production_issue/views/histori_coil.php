@@ -4,7 +4,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fa fa-history"></i> Histori Mutasi Coil</h5>
         <a href="<?= base_url('production_issue/monitoring_coil') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -15,7 +15,7 @@
                     <label class="form-label fw-bold">No Coil</label>
                     <input type="text" name="no_coil" class="form-control"
                            value="<?= htmlspecialchars($no_coil ?: '') ?>"
-                           placeholder="Masukkan no coil atau scan barcode...">
+                           placeholder="Enter coil no or scan barcode...">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
@@ -42,7 +42,7 @@
                                      style="width: 36px; height: 36px; font-size: 14px;">
                                     <?= $i + 1 ?>
                                 </div>
-                                <?php if ($i < count($history) - 1): ?>
+                                <?php if ($i < count($history ?? []) - 1): ?>
                                     <div style="width: 2px; height: 30px; background: #dee2e6; margin: 4px auto;"></div>
                                 <?php endif; ?>
                             </div>
@@ -102,7 +102,7 @@
                 <!-- Tabel Ringkasan -->
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="mb-0">Tabel Riwayat Mutasi</h6>
+                        <h6 class="mb-0">Mutation History Table</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -112,9 +112,9 @@
                                         <th class="text-center" width="50">No</th>
                                         <th>No SPK</th>
                                         <th>Produk FG</th>
-                                        <th>Dari Gudang</th>
-                                        <th>Ke Gudang</th>
-                                        <th class="text-center">Waktu Mutasi</th>
+                                        <th>From Warehouse</th>
+                                        <th>To Warehouse</th>
+                                        <th class="text-center">Mutation Time</th>
                                         <th>Operator</th>
                                         <th class="text-center">Status SPK</th>
                                     </tr>
@@ -162,7 +162,7 @@
             <?php else: ?>
                 <div class="alert alert-warning">
                     <i class="fa fa-exclamation-triangle"></i>
-                    Tidak ada riwayat mutasi untuk coil <strong><?= htmlspecialchars((string) $no_coil) ?></strong>.
+                    There is no mutation history for coil <strong><?= htmlspecialchars((string) $no_coil) ?></strong>.
                 </div>
             <?php endif; ?>
 

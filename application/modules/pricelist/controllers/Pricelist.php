@@ -98,7 +98,7 @@ class Pricelist extends Admin_Controller
         $status = isset($status_map[$tab]) ? $status_map[$tab] : null;
         $list   = $this->pl_model->get_pricelists($status);
         if ($tab === 'all') {
-            $list = array_values(array_filter($list, function ($r) {
+            $list = array_values(array_filter($list ?? [], function ($r) {
                 return $r->status !== 'Draft';
             }));
         }
@@ -134,7 +134,7 @@ class Pricelist extends Admin_Controller
         $pl = $this->pl_model->get_pricelist_by_id($id);
 
         if (!$pl) {
-            echo json_encode(['status' => 0, 'pesan' => 'Dokumen Pricelist tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Pricelist document not found']);
             return;
         }
 
@@ -156,12 +156,12 @@ class Pricelist extends Admin_Controller
         $pl = $this->pl_model->get_pricelist_by_id($id);
 
         if (!$pl || $pl->header->status !== 'Draft') {
-            echo json_encode(['status' => 0, 'pesan' => 'Hanya dokumen berstatus Draft yang dapat diajukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Only documents with status Draft can be submitted']);
             return;
         }
 
         if (empty($pl->details)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Dokumen belum memiliki baris varian, tidak dapat diajukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'The document has no variant rows and cannot be submitted']);
             return;
         }
 
@@ -170,10 +170,10 @@ class Pricelist extends Admin_Controller
             write_log('Pricelist', 'Submit', "Sales mengajukan Pricelist {$pl->header->no_pricelist} ke Management", (array)$pl->header, null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => "Pricelist {$pl->header->no_pricelist} berhasil diajukan ke Management.",
+                'pesan'  => "Pricelist {$pl->header->no_pricelist} submitted to Management successfully.",
             ]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal mengajukan pricelist']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to submit pricelist']);
         }
     }
 
@@ -186,21 +186,21 @@ class Pricelist extends Admin_Controller
         $detail    = $this->db->get_where('pricelist_detail', ['id' => $detail_id])->row();
 
         if (!$detail) {
-            echo json_encode(['status' => 0, 'pesan' => 'Baris varian tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Variant row not found']);
             return;
         }
 
         $pl = $this->pl_model->get_pricelist_by_id($detail->id_pricelist_header);
         if (!$pl || $pl->header->status !== 'Draft') {
-            echo json_encode(['status' => 0, 'pesan' => 'Baris hanya dapat dihapus dari dokumen berstatus Draft']);
+            echo json_encode(['status' => 0, 'pesan' => 'Rows can only be deleted from documents with status Draft']);
             return;
         }
 
         if ($this->pl_model->delete_detail($detail_id)) {
             write_log('Pricelist', 'Delete Item', "Menghapus baris varian {$detail->no_uniq_id} dari Draft {$pl->header->no_pricelist}", (array)$detail, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Baris varian berhasil dihapus']);
+            echo json_encode(['status' => 1, 'pesan' => 'Variant row deleted successfully']);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus baris varian']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to delete variant row']);
         }
     }
 
@@ -213,15 +213,15 @@ class Pricelist extends Admin_Controller
         $pl = $this->pl_model->get_pricelist_by_id($id);
 
         if (!$pl || $pl->header->status !== 'Draft') {
-            echo json_encode(['status' => 0, 'pesan' => 'Hanya dokumen berstatus Draft yang dapat dihapus']);
+            echo json_encode(['status' => 0, 'pesan' => 'Only documents with status Draft can be deleted']);
             return;
         }
 
         if ($this->pl_model->delete_draft($id)) {
             write_log('Pricelist', 'Delete', "Menghapus Draft Pricelist {$pl->header->no_pricelist}", (array)$pl->header, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => "Draft Pricelist {$pl->header->no_pricelist} berhasil dihapus."]);
+            echo json_encode(['status' => 1, 'pesan' => "Draft Pricelist {$pl->header->no_pricelist} deleted successfully."]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus draft pricelist']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to delete draft pricelist']);
         }
     }
 
@@ -234,7 +234,7 @@ class Pricelist extends Admin_Controller
         $pl = $this->pl_model->get_pricelist_by_id($id);
 
         if (!$pl || $pl->header->status !== 'Menunggu Approval') {
-            echo json_encode(['status' => 0, 'pesan' => 'Pengajuan sudah tidak dalam status menunggu approval']);
+            echo json_encode(['status' => 0, 'pesan' => 'The request is no longer awaiting approval']);
             return;
         }
 
@@ -243,10 +243,10 @@ class Pricelist extends Admin_Controller
             write_log('Approval Pricelist', 'Approve', "Management menyetujui Pricelist {$pl->header->no_pricelist}", (array)$pl->header, null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => "Pricelist {$pl->header->no_pricelist} berhasil disetujui (Approved). Riwayat harga dan katalog aktif telah diperbarui.",
+                'pesan'  => "Pricelist {$pl->header->no_pricelist} approved successfully (Approved). The price history and active catalog have been updated.",
             ]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menyetujui pricelist']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to approve pricelist']);
         }
     }
 
@@ -259,13 +259,13 @@ class Pricelist extends Admin_Controller
         $reason = trim($this->input->post('reject_reason'));
 
         if (empty($reason)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Alasan penolakan (Reject) wajib diisi']);
+            echo json_encode(['status' => 0, 'pesan' => 'Rejection reason is required']);
             return;
         }
 
         $pl = $this->pl_model->get_pricelist_by_id($id);
         if (!$pl || $pl->header->status !== 'Menunggu Approval') {
-            echo json_encode(['status' => 0, 'pesan' => 'Pengajuan sudah tidak dalam status menunggu approval']);
+            echo json_encode(['status' => 0, 'pesan' => 'The request is no longer awaiting approval']);
             return;
         }
 
@@ -274,10 +274,10 @@ class Pricelist extends Admin_Controller
             write_log('Approval Pricelist', 'Reject', "Management menolak Pricelist {$pl->header->no_pricelist} (Alasan: {$reason})", (array)$pl->header, null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => "Pricelist {$pl->header->no_pricelist} berhasil ditolak (Rejected). Alasan tersimpan untuk Sales.",
+                'pesan'  => "Pricelist {$pl->header->no_pricelist} rejected successfully (Rejected). The reason has been saved for Sales.",
             ]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menolak pricelist']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to reject pricelist']);
         }
     }
 }

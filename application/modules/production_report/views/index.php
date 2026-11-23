@@ -393,8 +393,8 @@
 <div class="container-fluid px-3 py-2">
   <div class="pr-page-header d-flex justify-content-between align-items-center">
     <div>
-      <h1>SPK Menunggu Produksi</h1>
-      <p>Pilih SPK untuk meninjau data tarikan lalu menginput laporan hasil produksi aktual.</p>
+      <h1>SPK Awaiting Production</h1>
+      <p>Select an SPK to review the pulled data, then enter the actual production output report.</p>
     </div>
     <div class="d-flex gap-2">
       <button type="button" class="btn btn-primary btn-sm" id="btnStartTour" title="Panduan Fitur Interaktif Tabel ag-Grid">
@@ -409,11 +409,11 @@
   <div class="pr-stats-row">
     <div class="pr-stat-card">
       <span class="val" id="statMenunggu">0</span>
-      <span class="lbl">SPK Menunggu</span>
+      <span class="lbl">Pending SPK</span>
     </div>
     <div class="pr-stat-card">
       <span class="val" id="statDone">0</span>
-      <span class="lbl">SPK Selesai (Done)</span>
+      <span class="lbl">SPK Done</span>
     </div>
     <div class="pr-stat-card">
       <span class="val" id="statTotalQty">0</span>
@@ -424,13 +424,13 @@
   <div class="pr-table-card">
     <div class="pr-table-head">
       <div>
-        <h2>Daftar Surat Perintah Kerja</h2>
-        <p>Setiap SPK memuat daftar produk Finish Good KW 1 yang siap dilaporkan hasil produksinya.</p>
+        <h2>Work Order List</h2>
+        <p>Each SPK contains a list of KW 1 Finish Good products ready for production output reporting.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
         <div class="input-group input-group-sm" style="max-width: 280px;">
           <span class="input-group-text bg-light border-end-0"><i class="fa fa-search text-muted"></i></span>
-          <input type="text" class="form-control border-start-0 ps-0" id="quickSearch" placeholder="Cari No. SPK / Produk...">
+          <input type="text" class="form-control border-start-0 ps-0" id="quickSearch" placeholder="Search SPK No. / Product...">
         </div>
       </div>
     </div>
@@ -451,7 +451,7 @@
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="tabAll" data-filter="all" type="button" role="tab">
-          <i class="fa fa-list text-primary me-1"></i> Semua SPK
+          <i class="fa fa-list text-primary me-1"></i> All SPK
           <span class="tab-badge tab-badge-all" id="badgeTabAll">0</span>
         </button>
       </li>
@@ -484,13 +484,13 @@
           const st = params.data.report_status;
           let badgeHtml = '';
           if (st === 'Done') {
-            badgeHtml = '<span class="badge-sub-status badge-sub-done"><i class="fa fa-check-circle"></i> Selesai</span>';
+            badgeHtml = '<span class="badge-sub-status badge-sub-done"><i class="fa fa-check-circle"></i> Done</span>';
           } else if (st === 'On Hold') {
-            badgeHtml = '<span class="badge-sub-status badge bg-danger text-white py-1 px-2"><i class="fa fa-pause-circle me-1"></i>SPK Sedang Di-Hold (' + (params.data.hold_claim_no || '') + ')</span>';
+            badgeHtml = '<span class="badge-sub-status badge bg-danger text-white py-1 px-2"><i class="fa fa-pause-circle me-1"></i>SPK Is On Hold (' + (params.data.hold_claim_no || '') + ')</span>';
           } else if (st === 'Draft') {
             badgeHtml = '<span class="badge-sub-status badge-sub-draft"><i class="fa fa-pencil"></i> Draft</span>';
           } else {
-            badgeHtml = '<span class="badge-sub-status badge-sub-menunggu"><i class="fa fa-clock-o"></i> Menunggu</span>';
+            badgeHtml = '<span class="badge-sub-status badge-sub-menunggu"><i class="fa fa-clock-o"></i> Waiting</span>';
           }
           return '<div class="d-flex flex-column justify-content-center text-start my-auto" style="line-height: 1.25;">' +
             '<span class="fw-bold text-dark">' + spk + '</span>' +
@@ -499,7 +499,7 @@
         }
       },
       {
-        headerName: "Tanggal SPK",
+        headerName: "SPK Date",
         field: "tgl_spk",
         width: 130
       },
@@ -526,7 +526,7 @@
         }
       },
       {
-        headerName: "Catatan SPK",
+        headerName: "SPK Notes",
         field: "catatan",
         width: 180,
         cellRenderer: function(params) {
@@ -548,7 +548,7 @@
           if (reportStatus === 'Done' && reportId) {
             return '<div class="d-flex align-items-center justify-content-center gap-1 w-100">' +
               '<a href="<?= site_url('production_report/view/') ?>' + reportId + '" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Lihat Detail Laporan">' +
-                '<i class="fa fa-eye me-1"></i>Laporan</a>' +
+                '<i class="fa fa-eye me-1"></i>Report</a>' +
               '<a href="<?= site_url('production_report/hpp/') ?>' + reportId + '" class="btn btn-sm btn-outline-primary py-1 px-2" title="Lihat Perhitungan HPP & Jurnal">' +
                 '<i class="fa fa-calculator me-1"></i>HPP</a>' +
               '<a href="<?= site_url('production_report/export_excel/') ?>' + reportId + '" class="btn btn-sm btn-outline-success py-1 px-2" title="Export Report Excel">' +
@@ -557,12 +557,12 @@
           } else if ((reportStatus === 'Draft' || reportStatus === 'On Hold') && spkNo) {
             return '<div class="d-flex align-items-center justify-content-center w-100">' +
               '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-warning py-1 px-2 text-dark">' +
-                '<i class="fa fa-edit me-1"></i>Lanjutkan Draft</a>' +
+                '<i class="fa fa-edit me-1"></i>Continue Draft</a>' +
               '</div>';
           } else {
             return '<div class="d-flex align-items-center justify-content-center w-100">' +
               '<a href="<?= site_url('production_report/create/') ?>' + encodeURIComponent(spkNo) + '" class="btn btn-sm btn-primary py-1 px-2">' +
-                'Buat Laporan <i class="fa fa-arrow-right ms-1"></i></a>' +
+                'Create Report <i class="fa fa-arrow-right ms-1"></i></a>' +
               '</div>';
           }
         }
@@ -647,7 +647,7 @@
           }
         },
         error: function(xhr, status, err) {
-          console.error("Gagal mengambil data SPK:", err);
+          console.error("Failed to fetch SPK data:", err);
         }
       });
     }
@@ -680,16 +680,16 @@
         gridElement: '#spkGrid',
         tabsElement: '#prTabs',
         tabsTitle: 'Tab Status SPK',
-        tabsDesc: 'Data dipisahkan berdasarkan status pengerjaan: <b>Open</b> (SPK baru & draft) dan <b>Selesai</b>. Tab <b>Semua SPK</b> tersedia jika ingin melihat seluruh data tanpa filter.',
+        tabsDesc: 'Data is separated by work status: <b>Open</b> (new & draft SPK) and <b>Done</b>. Tab <b>All SPK</b> is available to view all data without filters.',
         pinnedColId: 'spk_no',
         pinnedTitle: 'Kolom No. SPK & Status',
-        pinnedDesc: 'Kolom ini disematkan (pinned) di sisi kiri agar tetap terlihat saat tabel digeser ke kanan. Status pengerjaan juga tertera langsung di bawah nomor SPK.',
+        pinnedDesc: 'This column is pinned on the left so it stays visible when the table is scrolled right. The work status is also shown directly below the SPK number.',
         sortColId: 'tgl_spk',
         dragColId: 'produk_fg_summary',
         searchElement: '#quickSearch',
         actionColId: 'action',
-        actionTitle: 'Aksi Laporan',
-        actionDesc: 'Gunakan tombol <b>Buat Laporan</b> untuk memulai input, <b>Lanjutkan Draft</b> untuk melanjutkan pengisian, atau <b>Lihat Laporan</b> untuk meninjau hasil produksi yang sudah selesai.'
+        actionTitle: 'Report Actions',
+        actionDesc: 'Gunakan tombol <b>Create Report</b> to start input, <b>Continue Draft</b> to continue filling in, or <b>View Report</b> to review completed production output.'
       });
     });
   });

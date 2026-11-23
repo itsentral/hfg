@@ -61,12 +61,12 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                             <i class="fa fa-plus-circle fs-5"></i>
                         </div>
                         <div>
-                            <h6 class="card-title fw-bold text-dark mb-0">Form Input Penerimaan Asset</h6>
-                            <small class="text-muted">Input penerimaan barang asset dari PO atau Non-PO</small>
+                            <h6 class="card-title fw-bold text-dark mb-0">Asset Receipt Input Form</h6>
+                            <small class="text-muted">Input asset goods receipt from PO or Non-PO</small>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-label="Close" title="Tutup Form">
-                        <i class="fa fa-times me-1"></i> Tutup
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-label="Close" title="Close Form">
+                        <i class="fa fa-times me-1"></i> Close
                     </button>
                 </div>
                 <div class="card-body p-4 bg-white">
@@ -74,9 +74,9 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                         <input type="hidden" id="tandax" name="tandax">
                         <div class="row g-3">
                             <div class="col-md-6 col-12">
-                                <label class="form-label fw-bold text-dark">Nomor PO / NON-PO <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark">PO / NON-PO Number <span class="text-danger">*</span></label>
                                 <select id="no_ipp" name="no_ipp" class="form-select select2 chosen-select" style="width: 100% !important;">
-                                    <option value="0">Pilih Nomor PO / NON-PO</option>
+                                    <option value="0">Select PO / NON-PO Number</option>
                                     <?php
                                     if (!empty($no_po)) {
                                         foreach ($no_po as $val => $valx) {
@@ -88,13 +88,13 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                 </select>
                             </div>
                             <div class="col-md-6 col-12">
-                                <label class="form-label fw-bold text-dark">PIC Penerima <span class="text-danger">*</span></label>
-                                <input type="text" id="pic" name="pic" class="form-control" style="height: 38px;" placeholder="Nama PIC Penerima">
+                                <label class="form-label fw-bold text-dark">Receiving PIC <span class="text-danger">*</span></label>
+                                <input type="text" id="pic" name="pic" class="form-control" style="height: 38px;" placeholder="Receiving PIC Name">
                             </div>
                             <div class="col-md-6 col-12">
                                 <label class="form-label fw-bold text-dark">Department <span class="text-danger">*</span></label>
                                 <select name="id_dept" id="id_dept" class="form-select select2 chosen-select" style="width: 100% !important;">
-                                    <option value="0">Pilih Department</option>
+                                    <option value="0">Select Department</option>
                                     <?php
                                     if (!empty($list_dept)) {
                                         foreach ($list_dept as $item_dept) {
@@ -111,7 +111,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                             <div class="col-md-6 col-12">
                                 <label class="form-label fw-bold text-dark">Cost Center</label>
                                 <select name="id_costcenter" id="id_costcenter" class="form-select select2 chosen-select" style="width: 100% !important;">
-                                    <option value="0">Pilih Cost Center</option>
+                                    <option value="0">Select Cost Center</option>
                                     <?php
                                     if (!empty($list_costcenter)) {
                                         foreach ($list_costcenter as $item_cc) {
@@ -126,20 +126,20 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                                 </select>
                             </div>
                             <div class="col-md-6 col-12">
-                                <label class="form-label fw-bold text-dark">Tanggal Transaksi</label>
+                                <label class="form-label fw-bold text-dark">Transaction Date</label>
                                 <div class="input-group">
-                                    <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control flatpickr-input" style="height: 38px;" placeholder="Pilih Tanggal Transaksi" value="<?= date('Y-m-d'); ?>">
+                                    <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control flatpickr-input" style="height: 38px;" placeholder="Select Transaction Date" value="<?= date('Y-m-d'); ?>">
                                     <span class="input-group-text bg-light text-muted"><i class="fa fa-calendar"></i></span>
                                 </div>
                             </div>
                             <div class="col-md-6 col-12">
-                                <label class="form-label fw-bold text-dark">Catatan / Note</label>
+                                <label class="form-label fw-bold text-dark">Notes</label>
                                 <textarea id="note" name="note" class="form-control" rows="2" placeholder="Catatan transaksi..."></textarea>
                             </div>
                         </div>
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <button type="button" class="btn btn-outline-secondary px-4" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming">
-                                Batal
+                                Cancel
                             </button>
                             <button type="button" class="btn btn-primary px-4 shadow-sm" id="modalDetail">
                                 <i class="fa fa-arrow-right me-1"></i> Proses Penerimaan
@@ -161,7 +161,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                             </div>
                             <div>
                                 <h5 class="card-title fw-bold text-dark mb-0">Incoming Asset</h5>
-                                <small class="text-muted">Riwayat Penerimaan Barang &amp; Asset (PO &amp; Non-PO)</small>
+                                <small class="text-muted">Goods &amp; Asset Receipt History (PO &amp; Non-PO)</small>
                             </div>
                         </div>
                     </div>
@@ -169,7 +169,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                         <div class="d-flex flex-wrap justify-content-md-end align-items-center gap-2">
                             <div style="min-width: 170px;">
                                 <select id="filter_no_po" name="filter_no_po" class="form-select form-select-sm">
-                                    <option value="0">Semua Nomor PO</option>
+                                    <option value="0">All PO Numbers</option>
                                     <?php
                                     if (!empty($list_po)) {
                                         foreach ($list_po as $val => $valx) {
@@ -181,7 +181,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                             </div>
                             <div style="min-width: 160px;">
                                 <select id="filter_gudang" name="filter_gudang" class="form-select form-select-sm">
-                                    <option value="0">Semua Dept</option>
+                                    <option value="0">All Departments</option>
                                     <?php
                                     if (!empty($data_gudang)) {
                                         foreach ($data_gudang as $val => $valx) {
@@ -194,7 +194,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                             </div>
                             <?php if ($ENABLE_ADD) : ?>
                                 <button type="button" class="btn btn-sm btn-primary shadow-sm px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-expanded="false" aria-controls="collapseFormIncoming" id="btnToggleForm">
-                                    <i class="fa fa-plus-circle me-1" id="iconToggle"></i> <span id="textToggle">Tambah Incoming</span>
+                                    <i class="fa fa-plus-circle me-1" id="iconToggle"></i> <span id="textToggle">Add Incoming</span>
                                 </button>
                             <?php endif; ?>
                         </div>
@@ -232,13 +232,13 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold" id="head_title2">DETAIL INCOMING ASSET</h5>
+                <h5 class="modal-title fw-bold" id="head_title2">INCOMING ASSET DETAIL</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="view2">
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -313,7 +313,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
             collapseEl.addEventListener('show.bs.collapse', function () {
                 $('#btnToggleForm').removeClass('btn-primary').addClass('btn-secondary');
                 $('#iconToggle').removeClass('fa-plus-circle').addClass('fa-chevron-up');
-                $('#textToggle').text('Tutup Form');
+                $('#textToggle').text('Close Form');
             });
             collapseEl.addEventListener('shown.bs.collapse', function () {
                 initFormSelects();
@@ -322,7 +322,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
             collapseEl.addEventListener('hide.bs.collapse', function () {
                 $('#btnToggleForm').removeClass('btn-secondary').addClass('btn-primary');
                 $('#iconToggle').removeClass('fa-chevron-up').addClass('fa-plus-circle');
-                $('#textToggle').text('Tambah Incoming');
+                $('#textToggle').text('Add Incoming');
             });
         }
     });
@@ -337,7 +337,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
             type: 'POST',
             url: base_url + active_controller + '/modal_detail/' + encodeURIComponent(kode_trans),
             success: function(data) {
-                showModalDialog("<b>DETAIL INCOMING ASSET</b>", data);
+                showModalDialog("<b>INCOMING ASSET DETAIL</b>", data);
             },
             error: function() {
                 if (typeof swal === 'function') {
@@ -366,12 +366,12 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
         if (no_ipp == '0' || no_ipp == '') {
             if (typeof swal === 'function') {
                 swal({
-                    title: "Peringatan!",
-                    text: 'Silahkan pilih Nomor PO / NON-PO terlebih dahulu.',
+                    title: "Warning!",
+                    text: 'Please select a PO / NON-PO Number first.',
                     type: "warning"
                 });
             } else {
-                alert('Silahkan pilih Nomor PO / NON-PO terlebih dahulu.');
+                alert('Please select a PO / NON-PO Number first.');
             }
             return false;
         }
@@ -379,12 +379,12 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
         if (pic.trim() == '') {
             if (typeof swal === 'function') {
                 swal({
-                    title: "Peringatan!",
-                    text: 'PIC Penerima belum diisi.',
+                    title: "Warning!",
+                    text: 'Receiving PIC has not been filled in.',
                     type: "warning"
                 });
             } else {
-                alert('PIC Penerima belum diisi.');
+                alert('Receiving PIC has not been filled in.');
             }
             return false;
         }
@@ -405,7 +405,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                 "tanggal_trans": tanggal_trans
             },
             success: function(data) {
-                showModalDialog("<b>PENERIMAAN BARANG ASSET</b>", data);
+                showModalDialog("<b>ASSET GOODS RECEIPT</b>", data);
             },
             error: function() {
                 if (typeof swal === 'function') {
@@ -469,12 +469,12 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                     if (typeof swal === 'function') {
                         swal({
                             title: "Error Message !",
-                            text: 'Terjadi kesalahan sistem saat menyimpan data.',
+                            text: 'A system error occurred while saving the data.',
                             type: "warning",
                             timer: 5000
                         });
                     } else {
-                        alert('Terjadi kesalahan sistem.');
+                        alert('A system error occurred.');
                     }
                 }
             });
@@ -482,13 +482,13 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
 
         if (typeof swal === 'function') {
             swal({
-                title: "Apakah Anda Yakin?",
-                text: "Data penerimaan asset akan diproses dan stok akan disesuaikan!",
+                title: "Are you sure?",
+                text: "The asset receipt data will be processed and the stock will be adjusted!",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Ya, Proses!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Process!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false,
                 closeOnCancel: true
             }, function(isConfirm) {
@@ -497,7 +497,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                 }
             });
         } else {
-            if (confirm("Apakah Anda yakin ingin memproses penerimaan asset ini?")) {
+            if (confirm("Are you sure you want to process this asset receipt?")) {
                 doSubmit();
             }
         }
@@ -533,7 +533,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Asset.Delete');
                 },
                 cache: false,
                 error: function() {
-                    $("#my-grid tbody").html('<tr><td colspan="11" class="text-center text-muted py-3">Tidak ada data ditemukan</td></tr>');
+                    $("#my-grid tbody").html('<tr><td colspan="11" class="text-center text-muted py-3">No data found</td></tr>');
                     $("#my-grid_processing").css("display", "none");
                 }
             }

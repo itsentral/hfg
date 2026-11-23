@@ -48,7 +48,7 @@ $pembeda = substr((string) $header[0]['so_number'],0,1);
 							<th class='text-center th'>Estimasi (Kg)</th>
 							<th class='text-center th'>Stock Free (Kg)</th>
 							<th class='text-center th'>Use Stock (Kg)</th>
-							<th class='text-center th'>Sisa Stock Free (Kg)</th>
+							<th class='text-center th'>Remaining Free Stock (Kg)</th>
 							<?php } ?>
 							<th class='text-center th'>Min Stock</th>
 							<th class='text-center th'>Max Stock</th>

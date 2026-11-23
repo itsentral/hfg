@@ -66,10 +66,10 @@ $status2 = (!empty($listData[0]->status) and $listData[0]->status == '0') ? 'che
                     <div class="col-md-9">
                         <div class="d-flex gap-4 pt-2">
                             <label>
-                                <input type="radio" class="form-check-input" name="status" value="1" <?= $status1; ?>> Aktif
+                                <input type="radio" class="form-check-input" name="status" value="1" <?= $status1; ?>> Active
                             </label>
                             <label>
-                                <input type="radio" class="form-check-input" name="status" value="0" <?= $status2; ?>> Non-Aktif
+                                <input type="radio" class="form-check-input" name="status" value="0" <?= $status2; ?>> Inactive
                             </label>
                         </div>
                     </div>

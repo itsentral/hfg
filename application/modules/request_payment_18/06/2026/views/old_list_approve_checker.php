@@ -218,7 +218,7 @@ endforeach;
                             echo '<td>';
                             // if ($ENABLE_MANAGE) :
                             if ($ENABLE_MANAGE && $get_kasbon->project_consultant == '0') : ?>
-                                <?php if ($item_kasbon->status !== '2' && count($get_req_payment) > 0 && $get_req_payment[0]->app_checker === null) : ?>
+                                <?php if ($item_kasbon->status !== '2' && count($get_req_payment ?? []) > 0 && $get_req_payment[0]->app_checker === null) : ?>
                                     <div class="text-center">
                                         <a href="<?= base_url($this->uri->segment(1) . '/approval_payment_checker/?type=' . $item_kasbon->tipe . '&id=' . $item_kasbon->id . '&nilai=' . $item_kasbon->jumlah); ?>" name="save" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
                                     </div>
@@ -250,21 +250,21 @@ endforeach;
 
 
                                     if ($get_kasbon_header->tipe == '1') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon_header->id)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon_header->id ?? '')));
                                     }
                                     if ($get_kasbon_header->tipe == '2') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon_header->id)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon_header->id ?? '')));
                                     }
                                     if ($get_kasbon_header->tipe == '3') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon_header->id)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon_header->id ?? '')));
                                     }
                                 }
 
                                 if (($item_kasbon->status !== '2' && is_null($item_kasbon->app_checker))) :
-                                    echo '<a href="' . base_url('approval_request_payment/approval_payment_checker/?id_exp_consultant=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant)) . '&id_kasbon=' . $item_kasbon->no_doc . '" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
+                                    echo '<a href="' . base_url('approval_request_payment/approval_payment_checker/?id_exp_consultant=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')) . '&id_kasbon=' . $item_kasbon->no_doc . '" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
                                 endif;
 
-                                echo ' <a href="' . base_url('approval_request_payment/print_kasbon/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant))) . '" class="btn btn-sm btn-info" title="Print PDF" target="_blank">';
+                                echo ' <a href="' . base_url('approval_request_payment/print_kasbon/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? ''))) . '" class="btn btn-sm btn-info" title="Print PDF" target="_blank">';
                                 echo '<i class="fa fa-print"></i>';
                                 echo '</a>';
 
@@ -336,12 +336,12 @@ endforeach;
                                 echo '</td>';
                                 echo '<td>';
                                 // if ($ENABLE_MANAGE) : 
-                                if ($ENABLE_MANAGE or $get_sts_payment['status'] < 1 && count($get_req_payment) > 0 && $get_req_payment->app_checker === null) {
+                                if ($ENABLE_MANAGE or $get_sts_payment['status'] < 1 && count($get_req_payment ?? []) > 0 && $get_req_payment->app_checker === null) {
 
                                     if ($get_expense['project_consultant'] == '1') {
                                         echo '
                                                 <div class="text-center">
-                                                    <a href="' . base_url('approval_request_payment/approval_payment_checker/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant']))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
+                                                    <a href="' . base_url('approval_request_payment/approval_payment_checker/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant'] ?? ''))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
                                                 </div>
                                             ';
                                     } else {
@@ -465,7 +465,7 @@ endforeach;
                                 $po_note[] = $item_po_note->note;
                             }
 
-                            $po_note = implode(', ', $po_note);
+                            $po_note = implode(', ', $po_note ?? []);
 
                             if ($get_expense['exp_inv_po'] == '1') {
                                 echo '<tr>';

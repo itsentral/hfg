@@ -11,8 +11,8 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                 <th class="text-center" width="40">#</th>
                 <th>Produk (Varian Utama)</th>
                 <th width="140">No. Pricelist</th>
-                <th class="text-center" width="90">Jumlah Baris</th>
-                <th width="150">Dibuat Pada</th>
+                <th class="text-center" width="90">Row Count</th>
+                <th width="150">Created At</th>
                 <th class="text-center" width="160">Status</th>
                 <th width="180">Keputusan Management</th>
                 <th class="text-center no-sort" width="160">Action</th>
@@ -29,7 +29,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
 
                     $prods = array_filter(array_map('trim', explode(',', (string) $r->product_names)));
                     $first_prod = !empty($prods) ? $prods[0] : '(Belum ada produk)';
-                    $more_count = count($prods) - 1;
+                    $more_count = count($prods ?? []) - 1;
                     ?>
                     <tr>
                         <td class="text-center"><?= $no++ ?></td>
@@ -56,7 +56,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                                 <span class="badge bg-secondary px-2 py-1">Draft</span>
                             <?php elseif ($is_pending): ?>
                                 <span class="badge bg-warning text-dark border border-warning px-2 py-1">
-                                    <i class="fa fa-clock-o me-1"></i> Menunggu Approval
+                                    <i class="fa fa-clock-o me-1"></i> Awaiting Approval
                                 </span>
                             <?php elseif ($is_approved): ?>
                                 <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
@@ -70,10 +70,10 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                         </td>
                         <td>
                             <?php if ($is_approved): ?>
-                                <div class="text-success small fw-bold"><i class="fa fa-check me-1"></i> Disetujui</div>
+                                <div class="text-success small fw-bold"><i class="fa fa-check me-1"></i> Approved</div>
                                 <div class="text-muted small"><?= htmlspecialchars($r->decided_by_name ?: 'GM') ?> &middot; <?= date('d/m/Y H:i', strtotime((string) $r->decided_at)) ?></div>
                             <?php elseif ($is_rejected): ?>
-                                <div class="text-danger small fw-bold"><i class="fa fa-times me-1"></i> Ditolak</div>
+                                <div class="text-danger small fw-bold"><i class="fa fa-times me-1"></i> Rejected</div>
                                 <div class="text-danger small"><?= htmlspecialchars($r->reject_reason ?: '-') ?></div>
                             <?php else: ?>
                                 <span class="text-muted">&mdash;</span>
@@ -85,7 +85,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                                     class="btn btn-sm btn-info text-white btn-view-pl shadow-sm"
                                     style="width: 80px;"
                                     data-id="<?= $r->id ?>"
-                                    title="View Dokumen Pricelist">
+                                    title="View Pricelist Document">
                                     <i class="fa fa-eye"></i> View
                                 </button>
 
@@ -95,7 +95,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                                         style="width: 80px;"
                                         data-id="<?= $r->id ?>"
                                         data-no="<?= $r->no_pricelist ?>"
-                                        title="Ajukan ke Management">
+                                        title="Submit to Management">
                                         <i class="fa fa-paper-plane"></i> Ajukan
                                     </button>
                                 <?php endif; ?>
@@ -106,7 +106,7 @@ $ENABLE_DELETE  = has_permission('Pricelist.Delete');
                                         style="width: 80px;"
                                         data-id="<?= $r->id ?>"
                                         data-no="<?= $r->no_pricelist ?>"
-                                        title="Hapus Draft">
+                                        title="Delete Draft">
                                         <i class="fa fa-trash"></i> Delete
                                     </button>
                                 <?php endif; ?>

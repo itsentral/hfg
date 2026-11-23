@@ -8,7 +8,7 @@
 					foreach($supplierList AS $val => $valx){
 						$sel3 = '';
 						if(!empty($supplierChecked)){
-							$sel3 = (isset($supplierChecked) && in_array($valx['id_supplier'], $supplierChecked))?'selected':'';
+							$sel3 = (isset($supplierChecked) && in_array($valx['id_supplier'], $supplierChecked ?? []))?'selected':'';
 						}
 						echo "<option value='".$valx['id_supplier']."' ".$sel3.">".strtoupper((string) $valx['nm_supplier'])."</option>";
 					}
@@ -23,8 +23,8 @@
 			<tr class='bg-blue'>
 				<th class="text-center no-sort" width='5%'>#</th>
 				<th class="text-center" width='10%'>No PR</th> 
-				<th class="text-center" width='10%'>Tanggal PR</th>
-				<th class="text-center">Nama Barang</th>
+				<th class="text-center" width='10%'>PR Date</th>
+				<th class="text-center">Item Name</th>
 				<th class="text-center" width='10%'>Qty</th>
 				<th class="text-center" width='10%'>Tgl Dibutuhkan</th>
 				<th class="text-center" width='15%'>Spec</th>

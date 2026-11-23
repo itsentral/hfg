@@ -140,7 +140,7 @@ function assertIsArray($value, string $message = ''): void
 
 function assertArrayHasKey($key, $array, string $message = ''): void
 {
-    if (!is_array($array) || !array_key_exists($key, $array)) {
+    if (!is_array($array) || !array_key_exists($key, $array ?? [])) {
         throw new AssertionError($message ?: "Expected array to have key '{$key}'");
     }
 }
@@ -299,11 +299,11 @@ class TargetAccountingResolverTest
         }
 
         // All db_names should be unique
-        $unique_db_names = array_unique($db_names);
+        $unique_db_names = array_unique($db_names ?? []);
         assertEquals(
             count(self::$VALID_TARGET_ACCOUNTING),
-            count($unique_db_names),
-            "Each valid target should map to a UNIQUE database. Got duplicates: " . implode(', ', $db_names)
+            count($unique_db_names ?? []),
+            "Each valid target should map to a UNIQUE database. Got duplicates: " . implode(', ', $db_names ?? [])
         );
     }
 
@@ -430,7 +430,7 @@ class TargetAccountingResolverTest
             assertFalse($result, "Near-miss '{$input}' should cause resolver to return false");
         }
 
-        echo "    " . count($near_miss_inputs) . " near-miss inputs correctly rejected\n";
+        echo "    " . count($near_miss_inputs ?? []) . " near-miss inputs correctly rejected\n";
     }
 
     /**
@@ -463,7 +463,7 @@ class TargetAccountingResolverTest
             assertFalse($result, "Injection attempt should cause resolver to return false: " . substr((string) $input, 0, 40));
         }
 
-        echo "    " . count($injection_inputs) . " injection attempts correctly rejected\n";
+        echo "    " . count($injection_inputs ?? []) . " injection attempts correctly rejected\n";
     }
 
     /**
@@ -533,7 +533,7 @@ class TargetAccountingResolverTest
             // Single character deletion at each position
             for ($pos = 0; $pos < strlen((string) $value); $pos++) {
                 $mutated = substr((string) $value, 0, $pos) . substr((string) $value, $pos + 1);
-                if (!in_array($mutated, $valid_values)) {
+                if (!in_array($mutated, $valid_values ?? [])) {
                     assertFalse(
                         $this->isValidTargetAccounting($mutated),
                         "Deletion mutation should be rejected: '{$mutated}' (deleted pos {$pos} from '{$value}')"
@@ -547,7 +547,7 @@ class TargetAccountingResolverTest
             foreach ($insert_chars as $char) {
                 for ($pos = 0; $pos <= strlen((string) $value); $pos++) {
                     $mutated = substr((string) $value, 0, $pos) . $char . substr((string) $value, $pos);
-                    if (!in_array($mutated, $valid_values)) {
+                    if (!in_array($mutated, $valid_values ?? [])) {
                         assertFalse(
                             $this->isValidTargetAccounting($mutated),
                             "Insertion mutation should be rejected: '{$mutated}'"
@@ -562,7 +562,7 @@ class TargetAccountingResolverTest
                 for ($pos = 0; $pos < strlen((string) $value); $pos++) {
                     if ($value[$pos] !== $char) {
                         $mutated = substr((string) $value, 0, $pos) . $char . substr((string) $value, $pos + 1);
-                        if (!in_array($mutated, $valid_values)) {
+                        if (!in_array($mutated, $valid_values ?? [])) {
                             assertFalse(
                                 $this->isValidTargetAccounting($mutated),
                                 "Substitution mutation should be rejected: '{$mutated}'"
@@ -610,7 +610,7 @@ class TargetAccountingResolverTest
             assertFalse($result, "Edge-case input '{$input}' should cause resolver to return false");
         }
 
-        echo "    " . count($edge_inputs) . " edge-case inputs correctly rejected\n";
+        echo "    " . count($edge_inputs ?? []) . " edge-case inputs correctly rejected\n";
     }
 
     /**
@@ -659,7 +659,7 @@ class TargetAccountingResolverTest
             }
         }
 
-        echo "    Consistency verified across " . count($test_inputs) . " inputs\n";
+        echo "    Consistency verified across " . count($test_inputs ?? []) . " inputs\n";
     }
 }
 

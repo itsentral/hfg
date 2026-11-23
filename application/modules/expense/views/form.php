@@ -56,20 +56,20 @@ if (!empty($kasbon_obj)) {
 $nama_pemohon = isset($data->nama) ? $data->nama : (!empty($kasbon_obj) ? $kasbon_obj->nama : $this->auth->user_name());
 
 // Status Label & Badge
-$status_label = 'Draft / Baru';
+$status_label = 'Draft / New';
 $status_badge = 'bg-warning text-dark';
 if (isset($data->status)) {
 	if ($data->status == '1') {
-		$status_label = 'Disetujui Finance';
+		$status_label = 'Approved by Finance';
 		$status_badge = 'bg-info text-dark';
 	} elseif ($data->status == '2') {
-		$status_label = 'Disetujui Management';
+		$status_label = 'Approved by Management';
 		$status_badge = 'bg-primary text-light';
 	} elseif ($data->status == '3') {
-		$status_label = 'Selesai';
+		$status_label = 'Done';
 		$status_badge = 'bg-success text-light';
 	} elseif ($data->status == '9') {
-		$status_label = 'Ditolak';
+		$status_label = 'Rejected';
 		$status_badge = 'bg-danger text-light';
 	}
 }
@@ -105,7 +105,7 @@ if (isset($data->status)) {
 					</div>
 					<h4 class="fw-bold mb-1 text-dark">
 						<i class="fa <?= $is_report ? 'fa-ticket text-primary' : 'fa-cubes text-success' ?> me-2"></i>
-						<?= ($stsview == 'approval') ? 'Approval Expense Report' : (($stsview == 'view') ? 'Detail Expense Report' : ($is_report ? 'Form Pertanggungjawaban Expense Report (Kasbon)' : 'Form Pengajuan Expense Langsung (Direct Expense)')) ?>
+						<?= ($stsview == 'approval') ? 'Approval Expense Report' : (($stsview == 'view') ? 'Detail Expense Report' : ($is_report ? 'Expense Report Accountability Form (Cash Advance)' : 'Direct Expense Request Form')) ?>
 						<?php if (!empty($no_doc_val)) : ?>
 							<span class="text-primary fs-5">#<?= $no_doc_val ?></span>
 						<?php endif; ?>
@@ -122,10 +122,10 @@ if (isset($data->status)) {
 
 					<?php if (isset($data->status) && $data->status == 0 && $stsview == 'approval') : ?>
 						<button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve()">
-							<i class="fa fa-check me-1"></i> Setujui (Approve)
+							<i class="fa fa-check me-1"></i> Approve
 						</button>
 						<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
-							<i class="fa fa-ban me-1"></i> Tolak (Reject)
+							<i class="fa fa-ban me-1"></i> Reject
 						</button>
 					<?php endif; ?>
 
@@ -160,7 +160,7 @@ if (isset($data->status)) {
 						<i class="fa fa-ticket fs-5"></i>
 					</div>
 					<div>
-						<span class="badge bg-primary px-2 py-1 mb-1">Kasbon Terkait</span>
+						<span class="badge bg-primary px-2 py-1 mb-1">Related Cash Advance</span>
 						<h6 class="fw-bold mb-0 text-dark">
 							No. Kasbon: <span id="label_no_kasbon" class="text-primary font-monospace"><?= $no_doc_kasbon_val ?: '-' ?></span> &bull; 
 							Nominal Kasbon Diterima: <span class="text-primary font-monospace" id="label_jumlah_kasbon">Rp <?= number_format((float) $total_kasbon_val, 0, ',', '.') ?></span>
@@ -192,13 +192,13 @@ if (isset($data->status)) {
 				<div class="card-body p-4">
 					<div class="row g-3">
 						<div class="col-md-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">No. Dokumen</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Document No.</label>
 							<input type="text" class="form-control form-control-sm bg-light" id="no_doc" name="no_doc" value="<?php echo $no_doc_val; ?>" placeholder="Otomatis (System)" readonly>
 						</div>
 
 						<div class="col-md-6">
 							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">
-								Tanggal Dokumen <span class="text-danger">*</span>
+								Document Date <span class="text-danger">*</span>
 							</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text bg-light"><i class="fa fa-calendar"></i></span>
@@ -208,7 +208,7 @@ if (isset($data->status)) {
 
 						<div class="col-12">
 							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">
-								Keterangan / Keperluan <span class="text-danger">*</span>
+								Description / Purpose <span class="text-danger">*</span>
 							</label>
 							<textarea class="form-control form-control-sm" id="informasi" name="informasi" rows="3" required placeholder="Tuliskan keterangan keperluan pengeluaran expense..." <?= $is_view ? 'readonly' : '' ?>><?php echo $keterangan; ?></textarea>
 						</div>
@@ -228,7 +228,7 @@ if (isset($data->status)) {
 				<div class="card-body p-4">
 					<div class="row g-3">
 						<div class="col-12">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Nama Bank Penerima</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Recipient Bank Name</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text bg-light"><i class="fa fa-university"></i></span>
 								<input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo $bank_id; ?>" placeholder="Contoh: BCA, Mandiri, BRI" <?= $is_view ? 'readonly' : '' ?>>
@@ -236,18 +236,18 @@ if (isset($data->status)) {
 						</div>
 
 						<div class="col-md-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Nomor Rekening</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Account Number</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text bg-light"><i class="fa fa-hashtag"></i></span>
-								<input type="text" class="form-control font-monospace" id="accnumber" name="accnumber" value="<?php echo $accnumber; ?>" placeholder="Nomor Rekening" <?= $is_view ? 'readonly' : '' ?>>
+								<input type="text" class="form-control font-monospace" id="accnumber" name="accnumber" value="<?php echo $accnumber; ?>" placeholder="Account Number" <?= $is_view ? 'readonly' : '' ?>>
 							</div>
 						</div>
 
 						<div class="col-md-6">
-							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Atas Nama Rekening</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase mb-1">Account Holder Name</label>
 							<div class="input-group input-group-sm">
 								<span class="input-group-text bg-light"><i class="fa fa-user"></i></span>
-								<input type="text" class="form-control" id="accname" name="accname" value="<?php echo $accname; ?>" placeholder="Nama Pemilik Rekening" <?= $is_view ? 'readonly' : '' ?>>
+								<input type="text" class="form-control" id="accname" name="accname" value="<?php echo $accname; ?>" placeholder="Account Holder Name" <?= $is_view ? 'readonly' : '' ?>>
 							</div>
 						</div>
 					</div>
@@ -263,12 +263,12 @@ if (isset($data->status)) {
 				<h6 class="card-title fw-bold mb-0 text-dark">
 					<i class="fa fa-list-alt text-primary me-2"></i>Rincian Pengeluaran Barang & Jasa
 				</h6>
-				<small class="text-muted">Item pengeluaran realisasi langsung beserta bukti bon/struk</small>
+				<small class="text-muted">Direct realized expense items with receipt proof</small>
 			</div>
 			<?php if (!$is_view) : ?>
 				<div class="stsview d-flex align-items-center gap-2">
-					<button type="button" class="btn btn-success btn-sm shadow-sm px-3" onclick="add_detail()" id="add-material" title="Tambah Baris Pengeluaran Baru">
-						<i class="fa fa-plus me-1"></i> Tambah Baris Pengeluaran
+					<button type="button" class="btn btn-success btn-sm shadow-sm px-3" onclick="add_detail()" id="add-material" title="Add New Expense Row">
+						<i class="fa fa-plus me-1"></i> Add Expense Row
 					</button>
 				</div>
 			<?php endif; ?>
@@ -281,12 +281,12 @@ if (isset($data->status)) {
 						<tr>
 							<th width="35" class="text-center">#</th>
 							<th width="85" class="text-center">Tipe</th>
-							<th width="220">Akun COA / Jenis</th>
-							<th width="110" class="text-center">Tanggal</th>
-							<th width="200">Barang / Jasa</th>
+							<th width="220">COA Account / Type</th>
+							<th width="110" class="text-center">Date</th>
+							<th width="200">Goods / Services</th>
 							<th width="180">Spesifikasi</th>
 							<th width="70" class="text-center">Qty</th>
-							<th width="120" class="text-end">Harga Satuan</th>
+							<th width="120" class="text-end">Unit Price</th>
 							<th width="140" class="text-end">Total Nominal</th>
 							<th width="170" class="text-center">Bon / Bukti</th>
 							<?php if (!$is_view) : ?>
@@ -347,8 +347,8 @@ if (isset($data->status)) {
 									<td class="text-center">
 										<div class="file-upload-cell-<?= $idd ?>">
 											<?php if (!$is_view) : ?>
-												<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Pilih File Bon/Bukti">
-													<i class="fa fa-folder-open me-1"></i> Pilih File
+												<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Select Receipt/Proof File">
+													<i class="fa fa-folder-open me-1"></i> Select File
 													<input type="file" id="temp_file_<?= $idd ?>" class="temp-detail-file-picker" data-row="<?= $idd ?>" style="display:none;" accept=".jpg,.jpeg,.png,.pdf" multiple>
 												</label>
 												<input type="file" name="doc_files_<?= $idd ?>[]" id="doc_files_<?= $idd ?>" multiple style="display:none;">
@@ -368,7 +368,7 @@ if (isset($data->status)) {
 															</a>
 															<input type="hidden" name="existing_files_<?= $idd ?>[]" value="<?= htmlspecialchars((string) $rf->id) ?>">
 															<?php if (!$is_view): ?>
-																<button type="button" class="btn btn-link btn-sm text-danger p-0 ms-1 remove-existing-detail-file" title="Hapus file ini">
+																<button type="button" class="btn btn-link btn-sm text-danger p-0 ms-1 remove-existing-detail-file" title="Delete this file">
 																	<i class="fa fa-times"></i>
 																</button>
 															<?php endif; ?>
@@ -380,7 +380,7 @@ if (isset($data->status)) {
 									</td>
 									<?php if (!$is_view) : ?>
 										<td class="text-center">
-											<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(<?= $idd ?>)' title='Hapus'><i class='fa fa-trash'></i></button>
+											<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(<?= $idd ?>)' title='Delete'><i class='fa fa-trash'></i></button>
 										</td>
 									<?php endif; ?>
 								</tr>
@@ -418,7 +418,7 @@ if (isset($data->status)) {
 										<input type='hidden' name='id_expense_detail[]' id='id_expense_detail_<?= $idd ?>' value='<?= $record_pr['id_detail'] ?>' />
 									</td>
 									<td>
-										<textarea class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" rows="2" placeholder="Spesifikasi..."><?= htmlspecialchars($record_pr['satuan'] ?: 'Pcs') ?></textarea>
+										<textarea class="form-control form-control-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" rows="2" placeholder="Specification..."><?= htmlspecialchars($record_pr['satuan'] ?: 'Pcs') ?></textarea>
 									</td>
 									<td>
 										<input type="text" class="form-control form-control-sm divide text-center" name="qty[]" id="qty_<?= $idd; ?>" value="<?= (float)$record_pr['qty'] ?>" onblur="cektotal(<?= $idd; ?>)">
@@ -432,8 +432,8 @@ if (isset($data->status)) {
 									</td>
 									<td class="text-center">
 										<div class="file-upload-cell-<?= $idd ?>">
-											<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Pilih File Bon/Bukti">
-												<i class="fa fa-folder-open me-1"></i> Pilih File
+											<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Select Receipt/Proof File">
+												<i class="fa fa-folder-open me-1"></i> Select File
 												<input type="file" id="temp_file_<?= $idd ?>" class="temp-detail-file-picker" data-row="<?= $idd ?>" style="display:none;" accept=".jpg,.jpeg,.png,.pdf" multiple>
 											</label>
 											<input type="file" name="doc_files_<?= $idd ?>[]" id="doc_files_<?= $idd ?>" multiple style="display:none;">
@@ -441,7 +441,7 @@ if (isset($data->status)) {
 										</div>
 									</td>
 									<td class="text-center">
-										<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(<?= $idd ?>)' title='Hapus'><i class='fa fa-trash'></i></button>
+										<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(<?= $idd ?>)' title='Delete'><i class='fa fa-trash'></i></button>
 									</td>
 								</tr>
 						<?php
@@ -490,8 +490,8 @@ if (isset($data->status)) {
 								</td>
 								<td class="text-center">
 									<div class="file-upload-cell-1">
-										<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Pilih File Bon/Bukti">
-											<i class="fa fa-folder-open me-1"></i> Pilih File
+										<label class="btn btn-outline-primary btn-sm stsview py-1 px-2" style="cursor:pointer;" title="Select Receipt/Proof File">
+											<i class="fa fa-folder-open me-1"></i> Select File
 											<input type="file" id="temp_file_1" class="temp-detail-file-picker" data-row="1" style="display:none;" accept=".jpg,.jpeg,.png,.pdf" multiple>
 										</label>
 										<input type="file" name="doc_files_1[]" id="doc_files_1" multiple style="display:none;">
@@ -499,7 +499,7 @@ if (isset($data->status)) {
 									</div>
 								</td>
 								<td class="text-center">
-									<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(1)' title='Hapus'><i class='fa fa-trash'></i></button>
+									<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(1)' title='Delete'><i class='fa fa-trash'></i></button>
 								</td>
 							</tr>
 						<?php
@@ -510,7 +510,7 @@ if (isset($data->status)) {
 					<tfoot class="table-light">
 						<!-- Baris Total Pengeluaran -->
 						<tr>
-							<td colspan="8" class="text-end fw-bold py-2 text-uppercase text-secondary">TOTAL PENGELUARAN (REALISASI) :</td>
+							<td colspan="8" class="text-end fw-bold py-2 text-uppercase text-secondary">TOTAL EXPENSE (REALIZATION) :</td>
 							<td class="text-end py-2">
 								<input type="text" class="form-control form-control-sm divide text-end fw-bold font-monospace text-success fs-6" id="total_expense" name="total_expense" value="<?= $total_expense ?>" placeholder="0" tabindex="-1" readonly>
 							</td>
@@ -519,7 +519,7 @@ if (isset($data->status)) {
 
 						<!-- Baris Kasbon Diterima (Hanya jika mode report / ada kasbon) -->
 						<tr id="row_total_kasbon" style="<?= ($is_report || $total_kasbon_val > 0) ? '' : 'display:none;' ?>">
-							<td colspan="8" class="text-end fw-bold py-2 text-uppercase text-primary">KASBON YANG DITERIMA :</td>
+							<td colspan="8" class="text-end fw-bold py-2 text-uppercase text-primary">CASH ADVANCE RECEIVED :</td>
 							<td class="text-end py-2">
 								<input type="text" class="form-control form-control-sm divide text-end fw-bold font-monospace text-primary fs-6" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon_val ?>" placeholder="0" tabindex="-1" readonly>
 							</td>
@@ -529,7 +529,7 @@ if (isset($data->status)) {
 						<!-- Baris Selisih Kurang / Lebih Bayar -->
 						<tr id="row_grand_total" style="<?= ($is_report || $total_kasbon_val > 0) ? '' : 'display:none;' ?>">
 							<td colspan="8" class="text-end fw-bolder py-2 text-uppercase text-dark fs-6">
-								<span id="label_selisih">SELISIH (KURANG / LEBIH) :</span>
+								<span id="label_selisih">DIFFERENCE (SHORT / OVER) :</span>
 							</td>
 							<td class="text-end py-2">
 								<input type="text" class="form-control form-control-sm divide text-end fw-bolder font-monospace fs-6" id="grand_total" name="grand_total" value="<?= $total_expense - $total_kasbon_val ?>" placeholder="0" tabindex="-1" readonly>
@@ -546,10 +546,10 @@ if (isset($data->status)) {
 					<h6 class="fw-bold text-warning-emphasis mb-2">
 						<i class="fa fa-info-circle me-1"></i> Pengembalian Sisa Kasbon ke Perusahaan
 					</h6>
-					<p class="text-muted small mb-3">Nominal realisasi pengeluaran lebih kecil dari kasbon yang diterima. Mohon pilih metode pengembalian sisa uang ke kantor:</p>
+					<p class="text-muted small mb-3">The realized expense amount is less than the cash advance received. Please select how the remaining money is returned to the office:</p>
 					<div class="row g-3">
 						<div class="col-md-4">
-							<label class="form-label text-muted small fw-semibold text-uppercase">Metode Pengembalian</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase">Return Method</label>
 							<div class="d-flex gap-3 mt-1">
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="pengembalian" id="pengembalian_cash" value="1" <?= (isset($data->tipe_pengembalian) && $data->tipe_pengembalian == 1) ? 'checked' : 'checked' ?> <?= $is_view ? 'disabled' : '' ?>>
@@ -563,10 +563,10 @@ if (isset($data->status)) {
 						</div>
 
 						<div class="col-md-8">
-							<label class="form-label text-muted small fw-semibold text-uppercase">Bukti Transfer Pengembalian</label>
+							<label class="form-label text-muted small fw-semibold text-uppercase">Return Transfer Proof</label>
 							<?php if (!$is_view) : ?>
 								<input type="file" name="bukti_pengembalian[]" class="form-control form-control-sm" multiple>
-								<small class="text-muted fst-italic">Upload bukti transfer pengembalian sisa uang (jika via transfer)</small>
+								<small class="text-muted fst-italic">Upload the return transfer proof for the remaining money (if by transfer)</small>
 							<?php endif; ?>
 
 							<?php if (isset($data->bukti_pengembalian) && !empty($data->bukti_pengembalian)) : ?>
@@ -595,11 +595,11 @@ if (isset($data->status)) {
 				<table class="table table-bordered table-striped align-middle mb-0" width="100%">
 					<thead class="table-light text-center">
 						<tr>
-							<th width="120" class="text-center">Tanggal</th>
+							<th width="120" class="text-center">Date</th>
 							<th width="120" class="text-center">COA</th>
-							<th width="150" class="text-center">Nama Company</th>
-							<th width="200">Nama Account</th>
-							<th>Deskripsi / Keterangan</th>
+							<th width="150" class="text-center">Company Name</th>
+							<th width="200">Account Name</th>
+							<th>Description / Notes</th>
 							<th width="150" class="text-end">Nominal Alokasi (Rp)</th>
 						</tr>
 					</thead>
@@ -607,7 +607,7 @@ if (isset($data->status)) {
 					</tbody>
 					<tfoot class="table-light fw-bold">
 						<tr>
-							<td colspan="5" class="text-end py-2 text-uppercase text-secondary">TOTAL ALOKASI BIAYA :</td>
+							<td colspan="5" class="text-end py-2 text-uppercase text-secondary">TOTAL COST ALLOCATION :</td>
 							<td class="text-end py-2 ttl_debit text-success font-monospace fs-6">0</td>
 						</tr>
 					</tfoot>
@@ -620,15 +620,15 @@ if (isset($data->status)) {
 	<div class="card border-0 shadow-sm rounded-3 mb-4">
 		<div class="card-body p-3 d-flex flex-wrap justify-content-end align-items-center gap-2">
 			<a class="btn btn-outline-secondary btn-sm px-3" onclick="if (typeof list_view === 'function') { list_view(); } else { $('#form-data').hide().empty(); $('#card-list, .box').show(); } return false;">
-				<i class="fa fa-reply me-1"></i> Kembali / Batal
+				<i class="fa fa-reply me-1"></i> Back / Cancel
 			</a>
 
 			<?php if (isset($data->status) && $data->status == 0 && $stsview == 'approval') : ?>
 				<button type="button" class="btn btn-success btn-sm px-3" onclick="data_approve()">
-					<i class="fa fa-check me-1"></i> Setujui (Approve)
+					<i class="fa fa-check me-1"></i> Approve
 				</button>
 				<button type="button" class="btn btn-danger btn-sm px-3" onclick="data_reject()">
-					<i class="fa fa-ban me-1"></i> Tolak (Reject)
+					<i class="fa fa-ban me-1"></i> Reject
 				</button>
 			<?php endif; ?>
 
@@ -730,8 +730,8 @@ if (isset($data->status)) {
 		Rows += "</td>";
 		Rows += "<td class='text-center'>";
 		Rows += "<div class='file-upload-cell-" + nomor + "'>";
-		Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Pilih File Bon/Bukti'>";
-		Rows += "<i class='fa fa-folder-open me-1'></i> Pilih File";
+		Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Select Receipt/Proof File'>";
+		Rows += "<i class='fa fa-folder-open me-1'></i> Select File";
 		Rows += "<input type='file' id='temp_file_" + nomor + "' class='temp-detail-file-picker' data-row='" + nomor + "' style='display:none;' accept='.jpg,.jpeg,.png,.pdf' multiple>";
 		Rows += "</label>";
 		Rows += "<input type='file' name='doc_files_" + nomor + "[]' id='doc_files_" + nomor + "' multiple style='display:none;'>";
@@ -739,7 +739,7 @@ if (isset($data->status)) {
 		Rows += "</div>";
 		Rows += "</td>";
 		Rows += "<td class='text-center'>";
-		Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(" + nomor + ")' title='Hapus'><i class='fa fa-trash'></i></button>";
+		Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(" + nomor + ")' title='Delete'><i class='fa fa-trash'></i></button>";
 		Rows += "</td>";
 		Rows += "</tr>";
 
@@ -792,11 +792,11 @@ if (isset($data->status)) {
 			$("#row_total_kasbon").show();
 			$("#row_grand_total").show();
 			if (selisih > 0) {
-				$("#label_selisih").html("SELISIH (KURANG BAYAR / KLAIM) :");
+				$("#label_selisih").html("DIFFERENCE (UNDERPAID / CLAIM) :");
 				$("#grand_total").removeClass('text-success text-warning').addClass('text-danger');
 				$("#box_pengembalian").hide();
 			} else if (selisih < 0) {
-				$("#label_selisih").html("SELISIH (LEBIH BAYAR / SISA KASBON) :");
+				$("#label_selisih").html("DIFFERENCE (OVERPAID / REMAINING CASH ADVANCE) :");
 				$("#grand_total").removeClass('text-danger text-success').addClass('text-warning');
 				$("#box_pengembalian").show();
 			} else {
@@ -835,7 +835,7 @@ if (isset($data->status)) {
 				}
 			},
 			error: function(xhr, status, error) {
-				console.error("Gagal generate preview jurnal: " + error);
+				console.error("Failed to generate journal preview: " + error);
 			}
 		});
 	}
@@ -912,7 +912,7 @@ if (isset($data->status)) {
 							Rows += "<input type='hidden' name='id_expense_detail[]' id='id_expense_detail_" + nomor + "' value='" + p.id_detail + "' />";
 							Rows += "</td>";
 							Rows += "<td>";
-							Rows += "<textarea class='form-control form-control-sm' name='keterangan[]' id='keterangan_" + nomor + "' rows='2' placeholder='Spesifikasi...'>" + (p.satuan || 'Pcs') + "</textarea>";
+							Rows += "<textarea class='form-control form-control-sm' name='keterangan[]' id='keterangan_" + nomor + "' rows='2' placeholder='Specification...'>" + (p.satuan || 'Pcs') + "</textarea>";
 							Rows += "</td>";
 							Rows += "<td>";
 							Rows += "<input type='text' class='form-control form-control-sm divide text-center' name='qty[]' id='qty_" + nomor + "' value='" + p.qty + "' onblur='cektotal(" + nomor + ")'/>";
@@ -926,8 +926,8 @@ if (isset($data->status)) {
 							Rows += "</td>";
 							Rows += "<td class='text-center'>";
 							Rows += "<div class='file-upload-cell-" + nomor + "'>";
-							Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Pilih File Bon/Bukti'>";
-							Rows += "<i class='fa fa-folder-open me-1'></i> Pilih File";
+							Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Select Receipt/Proof File'>";
+							Rows += "<i class='fa fa-folder-open me-1'></i> Select File";
 							Rows += "<input type='file' id='temp_file_" + nomor + "' class='temp-detail-file-picker' data-row='" + nomor + "' style='display:none;' accept='.jpg,.jpeg,.png,.pdf' multiple>";
 							Rows += "</label>";
 							Rows += "<input type='file' name='doc_files_" + nomor + "[]' id='doc_files_" + nomor + "' multiple style='display:none;'>";
@@ -935,7 +935,7 @@ if (isset($data->status)) {
 							Rows += "</div>";
 							Rows += "</td>";
 							Rows += "<td class='text-center'>";
-							Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(" + nomor + ")' title='Hapus'><i class='fa fa-trash'></i></button>";
+							Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(" + nomor + ")' title='Delete'><i class='fa fa-trash'></i></button>";
 							Rows += "</td>";
 							Rows += "</tr>";
 
@@ -964,7 +964,7 @@ if (isset($data->status)) {
 						Rows += "<input type='hidden' name='id_expense_detail[]' id='id_expense_detail_1' value='' />";
 						Rows += "</td>";
 						Rows += "<td>";
-						Rows += "<textarea class='form-control form-control-sm' name='keterangan[]' id='keterangan_1' rows='2' placeholder='Spesifikasi...'>Pengeluaran Kasbon</textarea>";
+						Rows += "<textarea class='form-control form-control-sm' name='keterangan[]' id='keterangan_1' rows='2' placeholder='Specification...'>Cash Advance Expense</textarea>";
 						Rows += "</td>";
 						Rows += "<td>";
 						Rows += "<input type='text' class='form-control form-control-sm divide text-center' name='qty[]' id='qty_1' value='1' onblur='cektotal(1)'/>";
@@ -978,8 +978,8 @@ if (isset($data->status)) {
 						Rows += "</td>";
 						Rows += "<td class='text-center'>";
 						Rows += "<div class='file-upload-cell-1'>";
-						Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Pilih File Bon/Bukti'>";
-						Rows += "<i class='fa fa-folder-open me-1'></i> Pilih File";
+						Rows += "<label class='btn btn-outline-primary btn-sm stsview py-1 px-2' style='cursor:pointer;' title='Select Receipt/Proof File'>";
+						Rows += "<i class='fa fa-folder-open me-1'></i> Select File";
 						Rows += "<input type='file' id='temp_file_1' class='temp-detail-file-picker' data-row='1' style='display:none;' accept='.jpg,.jpeg,.png,.pdf' multiple>";
 						Rows += "</label>";
 						Rows += "<input type='file' name='doc_files_1[]' id='doc_files_1' multiple style='display:none;'>";
@@ -987,7 +987,7 @@ if (isset($data->status)) {
 						Rows += "</div>";
 						Rows += "</td>";
 						Rows += "<td class='text-center'>";
-						Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(1)' title='Hapus'><i class='fa fa-trash'></i></button>";
+						Rows += "<button type='button' class='btn btn-outline-danger btn-sm' onClick='delDetail(1)' title='Delete'><i class='fa fa-trash'></i></button>";
 						Rows += "</td>";
 						Rows += "</tr>";
 
@@ -1011,8 +1011,8 @@ if (isset($data->status)) {
 
 					if (typeof Swal !== 'undefined') {
 						Swal.fire({
-							title: 'Berhasil!',
-							text: 'Data kasbon ' + kb.no_doc + ' berhasil ditarik ke form.',
+							title: 'Success!',
+							text: 'Cash advance data ' + kb.no_doc + ' was pulled into the form successfully.',
 							icon: 'success',
 							timer: 1500,
 							showConfirmButton: false
@@ -1020,14 +1020,14 @@ if (isset($data->status)) {
 					}
 				} else {
 					if (typeof Swal !== 'undefined') {
-						Swal.fire('Gagal!', 'Data detail kasbon tidak ditemukan.', 'error');
+						Swal.fire('Failed!', 'Cash advance detail data not found.', 'error');
 					} else {
-						alert('Data detail kasbon tidak ditemukan.');
+						alert('Cash advance detail data not found.');
 					}
 				}
 			},
 			error: function() {
-				alert('Terjadi kesalahan saat menarik data detail kasbon.');
+				alert('An error occurred while pulling cash advance detail data.');
 			}
 		});
 	}
@@ -1091,7 +1091,7 @@ if (isset($data->status)) {
 				'<span class="text-truncate me-1" style="max-width:110px;" title="' + file.name + ' (' + sizeKb + ' KB)">' +
 				'<i class="fa ' + (isPdf ? 'fa-file-pdf-o text-danger' : 'fa-file-image-o text-info') + ' me-1"></i>' + file.name +
 				'</span>' +
-				'<button type="button" class="btn btn-link btn-sm text-danger p-0 remove-new-detail-file" data-row="' + row + '" data-index="' + i + '" title="Hapus file ini">' +
+				'<button type="button" class="btn btn-link btn-sm text-danger p-0 remove-new-detail-file" data-row="' + row + '" data-index="' + i + '" title="Delete this file">' +
 				'<i class="fa fa-times"></i>' +
 				'</button>' +
 				'</span>';
@@ -1131,12 +1131,12 @@ if (isset($data->status)) {
 		var errors = "";
 		if ($("#informasi").val() == "") errors = "Keterangan tidak boleh kosong";
 		if ($("#tgl_doc").val() == "") errors = "Tanggal Dokumen tidak boleh kosong";
-		if ($("#detail_body tr").length == 0) errors = "Rincian barang/jasa pengeluaran belum diisi";
+		if ($("#detail_body tr").length == 0) errors = "The expense goods/services details have not been filled in";
 
 		if (errors != "") {
 			if (typeof Swal !== 'undefined') {
 				Swal.fire({
-					title: "Perhatian!",
+					title: "Attention!",
 					text: errors,
 					icon: "warning"
 				});
@@ -1159,37 +1159,37 @@ if (isset($data->status)) {
 					if (msg.save == '1') {
 						if (typeof Swal !== 'undefined') {
 							Swal.fire({
-								title: "Berhasil!",
-								text: "Dokumen Expense berhasil disimpan.",
+								title: "Success!",
+								text: "Expense document saved successfully.",
 								icon: "success"
 							}).then(() => {
 								window.location.reload();
 							});
 						} else {
-							alert("Dokumen Expense berhasil disimpan.");
+							alert("Expense document saved successfully.");
 							window.location.reload();
 						}
 					} else {
 						if (typeof Swal !== 'undefined') {
 							Swal.fire({
-								title: "Gagal!",
-								text: msg.message || "Gagal menyimpan dokumen.",
+								title: "Failed!",
+								text: msg.message || "Failed to save the document.",
 								icon: "error"
 							});
 						} else {
-							alert(msg.message || "Gagal menyimpan dokumen.");
+							alert(msg.message || "Failed to save the document.");
 						}
 					}
 				},
 				error: function() {
 					if (typeof Swal !== 'undefined') {
 						Swal.fire({
-							title: "Gagal!",
-							text: "Terjadi kesalahan pada server saat menyimpan.",
+							title: "Failed!",
+							text: "A server error occurred saat menyimpan.",
 							icon: "error"
 						});
 					} else {
-						alert("Terjadi kesalahan pada server saat menyimpan.");
+						alert("A server error occurred saat menyimpan.");
 					}
 				}
 			});
@@ -1197,19 +1197,19 @@ if (isset($data->status)) {
 
 		if (typeof Swal !== 'undefined') {
 			Swal.fire({
-				title: "Simpan Expense?",
-				text: "Pastikan seluruh data dan bukti pengeluaran sudah benar!",
+				title: "Save Expense?",
+				text: "Make sure all data and expense proofs are correct!",
 				icon: "question",
 				showCancelButton: true,
-				confirmButtonText: "Ya, Simpan!",
-				cancelButtonText: "Batal"
+				confirmButtonText: "Yes, Save!",
+				cancelButtonText: "Cancel"
 			}).then((result) => {
 				if (result.isConfirmed) {
 					doSubmit();
 				}
 			});
 		} else {
-			if (confirm("Simpan Expense? Pastikan seluruh data sudah benar!")) {
+			if (confirm("Save Expense? Make sure all data is correct!")) {
 				doSubmit();
 			}
 		}
@@ -1218,12 +1218,12 @@ if (isset($data->status)) {
 	function data_approve() {
 		if (typeof Swal !== 'undefined') {
 			Swal.fire({
-				title: "Setujui Expense?",
-				text: "Dokumen akan disetujui dan diteruskan ke tahap berikutnya!",
+				title: "Approve Expense?",
+				text: "The document will be approved and forwarded to the next stage!",
 				icon: "question",
 				showCancelButton: true,
-				confirmButtonText: "Ya, Setujui!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Approve!",
+				cancelButtonText: "Cancel",
 				confirmButtonColor: "#28a745"
 			}).then((res) => {
 				if (res.isConfirmed) {
@@ -1232,8 +1232,8 @@ if (isset($data->status)) {
 						if (result.save) {
 							Swal.fire({
 								icon: "success",
-								title: "Sukses!",
-								text: "Expense berhasil disetujui.",
+								title: "Success!",
+								text: "Expense approved successfully.",
 								timer: 1500,
 								showConfirmButton: false
 							}).then(() => {
@@ -1244,24 +1244,24 @@ if (isset($data->status)) {
 								}
 							});
 						} else {
-							Swal.fire("Gagal!", "Gagal memproses approval.", "error");
+							Swal.fire("Failed!", "Failed to process approval.", "error");
 						}
 					}, "json");
 				}
 			});
 		} else {
-			if (confirm("Setujui Expense?")) {
+			if (confirm("Approve Expense?")) {
 				var id = $("#id").val();
 				$.post(siteurl + 'expense/approve/' + id, function(result) {
 					if (result.save) {
-						alert("Expense berhasil disetujui.");
+						alert("Expense approved successfully.");
 						if (typeof list_view === 'function') {
 							list_view();
 						} else {
 							window.location.reload();
 						}
 					} else {
-						alert("Gagal memproses approval.");
+						alert("Failed to process approval.");
 					}
 				}, "json");
 			}
@@ -1271,17 +1271,17 @@ if (isset($data->status)) {
 	function data_reject() {
 		if (typeof Swal !== 'undefined') {
 			Swal.fire({
-				title: "Tolak Dokumen Expense",
+				title: "Reject Expense Document",
 				input: "textarea",
 				inputLabel: "Alasan Penolakan (Reject Reason)",
-				inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+				inputPlaceholder: "Write the rejection reason here...",
 				showCancelButton: true,
-				confirmButtonText: "Tolak Dokumen",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Reject Document",
+				cancelButtonText: "Cancel",
 				confirmButtonColor: "#dc3545",
 				inputValidator: (value) => {
 					if (!value || !value.trim()) {
-						return "Alasan penolakan wajib diisi!";
+						return "A rejection reason is required!";
 					}
 				}
 			}).then((res) => {
@@ -1294,8 +1294,8 @@ if (isset($data->status)) {
 					}, function(result) {
 						Swal.fire({
 							icon: "info",
-							title: "Ditolak!",
-							text: "Dokumen telah ditolak.",
+							title: "Rejected!",
+							text: "The document has been rejected.",
 							timer: 1500,
 							showConfirmButton: false
 						}).then(() => {
@@ -1317,7 +1317,7 @@ if (isset($data->status)) {
 					reason: reason,
 					table: 'tr_expense'
 				}, function(result) {
-					alert("Dokumen telah ditolak.");
+					alert("The document has been rejected.");
 					if (typeof list_view === 'function') {
 						list_view();
 					} else {

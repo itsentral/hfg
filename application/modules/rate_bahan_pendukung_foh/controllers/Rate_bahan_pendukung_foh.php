@@ -10,7 +10,7 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
     {
         parent::__construct();
         $this->load->model('rate_bahan_pendukung_foh/Rate_bahan_pendukung_foh_model', 'rbpf_model');
-        $this->template->title('Rate Bahan Pendukung Khusus & FOH');
+        $this->template->title('Rate Special Supporting Material & FOH');
         $this->template->page_icon('fa fa-cubes');
     }
 
@@ -38,12 +38,12 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
         $foh      = (float) $this->input->post('rate_foh');
 
         if (empty($id) && empty($code_lv2)) {
-            $this->session->set_flashdata('error', 'Product Category wajib dipilih');
+            $this->session->set_flashdata('error', 'Product Category is required');
             redirect('rate_bahan_pendukung_foh');
         }
 
         if ($bpk < 0 || $foh < 0) {
-            $this->session->set_flashdata('error', 'Nilai Rate tidak boleh negatif');
+            $this->session->set_flashdata('error', 'Rate Value cannot be negative');
             redirect('rate_bahan_pendukung_foh');
         }
 
@@ -65,10 +65,10 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
                 'after'  => $data,
             ];
             write_log('Rate BPK & FOH', $action, $action . ' Rate BPK & FOH ' . $cat_name . ' (BPK: Rp ' . number_format((float) $bpk, 2) . '/kg, FOH: Rp ' . number_format((float) $foh, 2) . '/kg)', $log, null, 1);
-            $this->session->set_flashdata('success', 'Rate Bahan Pendukung & FOH berhasil disimpan');
+            $this->session->set_flashdata('success', 'Supporting Material & FOH Rate saved successfully');
         } else {
             write_log('Rate BPK & FOH', 'Save', 'Gagal simpan Rate BPK & FOH', $data, null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan Rate Bahan Pendukung & FOH');
+            $this->session->set_flashdata('error', 'Failed to save Supporting Material & FOH Rate');
         }
 
         redirect('rate_bahan_pendukung_foh');
@@ -80,7 +80,7 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
 
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid ID']);
             return;
         }
 
@@ -89,10 +89,10 @@ class Rate_bahan_pendukung_foh extends Admin_Controller
 
         if ($del) {
             write_log('Rate BPK & FOH', 'Delete', 'Hapus Rate BPK & FOH ' . ($old ? $old->nm_category : $id), (array)$old, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Rate berhasil dihapus']);
+            echo json_encode(['status' => 1, 'pesan' => 'Rate deleted successfully']);
         } else {
             write_log('Rate BPK & FOH', 'Delete', 'Gagal hapus Rate ID ' . $id, [], null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus rate']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to delete rate']);
         }
     }
 }

@@ -73,19 +73,19 @@ if (!isset($data->departement)) {
         <div class="box box-primary">
             <div class="box-body">
                 <div class="form-group ">
-                    <label class="col-sm-2 col-md-2 control-label">No Dokumen</label>
+                    <label class="col-sm-2 col-md-2 control-label">Document No.</label>
                     <div class="col-sm-4 col-md-4">
                         <input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
                     </div>
-                    <label class="col-sm-2 col-md-2 control-label">Tanggal <b class="text-red">*</b></label>
+                    <label class="col-sm-2 col-md-2 control-label">Date <b class="text-red">*</b></label>
                     <div class="col-sm-4 col-md-4">
-                        <input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" required>
+                        <input type="text" class="form-control tanggal" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Document Date" required>
                     </div>
                 </div>
                 <div class="form-group ">
-                    <label class="col-sm-2 col-md-2 control-label">Keterangan <b class="text-red">*</b></label>
+                    <label class="col-sm-2 col-md-2 control-label">Description <b class="text-red">*</b></label>
                     <div class="col-sm-4 col-md-6">
-                        <input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Keterangan" required>
+                        <input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Description" required>
                     </div>
                     <div class="col-md-4">
                         <?php
@@ -102,19 +102,19 @@ if (!isset($data->departement)) {
                     </div>
                 </div>
                 <div>
-                    <h4>Transfer ke</h4>
+                    <h4>Transfer to</h4>
                     <div class="form-group ">
                         <label class="col-md-1 control-label">Bank</label>
                         <div class="col-md-2">
                             <input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank">
                         </div>
-                        <label class="col-md-2 control-label">Nomor Rekening</label>
+                        <label class="col-md-2 control-label">Account Number</label>
                         <div class="col-md-2">
-                            <input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening">
+                            <input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Account Number">
                         </div>
-                        <label class="col-md-2 control-label">Nama Rekening</label>
+                        <label class="col-md-2 control-label">Account Name</label>
                         <div class="col-md-3">
-                            <input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening">
+                            <input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Account Holder Name">
                         </div>
                     </div>
                 </div>
@@ -123,17 +123,17 @@ if (!isset($data->departement)) {
                         <thead>
                             <tr>
                                 <th width="5" scope="col" class="column-primary">#</th>
-                                <th scope="col" width="250">Jenis dan<br /> Tanggal</th>
-                                <th scope="col" width="250">Barang/Jasa <br />&Keterangan</th>
-                                <th scope="col" width=150 nowrap>Jumlah</th>
-                                <th scope="col" width=200 nowrap>Harga Satuan</th>
+                                <th scope="col" width="250">Type and<br /> Date</th>
+                                <th scope="col" width="250">Goods/Services <br />&Keterangan</th>
+                                <th scope="col" width=150 nowrap>Amount</th>
+                                <th scope="col" width=200 nowrap>Unit Price</th>
                                 <th scope="col" width="200">Expense</th>
-                                <th scope="col" width="200">Kasbon</th>
+                                <th scope="col" width="200">Cash Advance</th>
                                 <th scope="col" width="50">Bon Bukti</th>
                                 <th scope="col" class="column-primary">
                                     <div class="pull-right">
-                                        <a class="btn btn-info btn-xs stsview" href="javascript:void(0)" title="Kasbon" onclick="add_kasbon()" id="add-kasbon"><i class="fa fa-user"></i> Kasbon</a><br />
-                                        <a class="btn btn-success btn-xs stsview" href="javascript:void(0)" title="Tambah" onclick="add_detail()" id="add-material"><i class="fa fa-plus"></i> Tambah</a>
+                                        <a class="btn btn-info btn-xs stsview" href="javascript:void(0)" title="Cash Advance" onclick="add_kasbon()" id="add-kasbon"><i class="fa fa-user"></i> Cash Advance</a><br />
+                                        <a class="btn btn-success btn-xs stsview" href="javascript:void(0)" title="Add" onclick="add_detail()" id="add-material"><i class="fa fa-plus"></i> Add</a>
                                     </div>
                                 </th>
                             </tr>
@@ -155,7 +155,7 @@ if (!isset($data->departement)) {
                                             <input type="hidden" name="detail_id[]" id="raw_id_<?= $idd ?>" value="<?= $idd; ?>" class="dtlloop">
                                             <input type="hidden" name="id_detail[]" id="id_detail_<?= $idd ?>" value="<?= $record->id; ?>" class="dtlloop"><?= $idd ?>
                                         </td>
-                                        <td data-header="Jenis & Tanggal">
+                                        <td data-header="Type & Date">
                                             <?php
                                             if ($tekskasbon == '') {
                                                 echo form_dropdown('coa[]', $data_budget, (isset($record->coa) ? $record->coa : ''), array('id' => 'coa' . $idd, 'required' => 'required', 'class' => 'form-control select2', 'style' => 'width:300px'));
@@ -165,11 +165,11 @@ if (!isset($data->departement)) {
                                             ?>
                                             <input type="text" class="form-control tanggal input-sm" name="tanggal[]" id="tanggal<?= $idd; ?>" value="<?= $record->tanggal; ?>" <?= $tekskasbon ?>>
                                         </td>
-                                        <td data-header="Barang / Jasa & Keterangan"><input type="text" class="form-control input-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" value="<?= $record->deskripsi; ?>" <?= $tekskasbon ?> style="width:100px;">
+                                        <td data-header="Goods / Services & Description"><input type="text" class="form-control input-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" value="<?= $record->deskripsi; ?>" <?= $tekskasbon ?> style="width:100px;">
                                             <input type="text" class="form-control input-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= $record->keterangan; ?>">
                                         </td>
                                         <td data-header="Qty"><input type="text" class="form-control divide input-sm" name="qty[]" id="qty_<?= $idd; ?>" value="<?= $record->qty; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> size="15" style="width:60px;"></td>
-                                        <td data-header="Harga Satuan"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> style="width:100px;"></td>
+                                        <td data-header="Unit Price"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> style="width:100px;"></td>
                                         <td data-header="Expense"><input type="text" class="form-control divide subtotal input-sm" name="expense[]" id="expense_<?= $idd; ?>" value="<?= ($record->expense); ?>" tabindex="-1" readonly style="width:100px;"></td>
                                         <td data-header="Kasbon"><input type="text" class="form-control divide subkasbon input-sm" name="kasbon[]" id="kasbon_<?= $idd; ?>" value="<?= ($record->kasbon); ?>" tabindex="-1" readonly style="width:100px;"></td>
                                         <td data-header="Bon Bukti" width="50">
@@ -179,7 +179,7 @@ if (!isset($data->departement)) {
                                             </div>
                                             <span class="pull-right"><?= ($record->doc_file != '' ? '<a href="' . base_url('assets/expense/' . $record->doc_file) . '" download target="_blank"><i class="fa fa-download"></i></a>' : '') ?></span>
                                         </td>
-                                        <th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetail(<?= $idd ?>)' title='Hapus data'><i class='fa fa-close'></i> Hapus</button></th>
+                                        <th scope="row" align='center'><button type='button' class='btn btn-danger btn-xs stsview' data-toggle='tooltip' onClick='delDetail(<?= $idd ?>)' title='Delete data'><i class='fa fa-close'></i> Delete</button></th>
                                     </tr>
                             <?php
                                     if ($record->doc_file != '') {
@@ -204,10 +204,10 @@ if (!isset($data->departement)) {
                             <tr>
                                 <td colspan="5" align=right>TOTAL</td>
                                 <td><input type="text" class="form-control divide input-sm" id="total_expense" name="total_expense" value="<?= $total_expense ?>" placeholder="Total Expense" tabindex="-1" readonly style='width:100px;'></td>
-                                <td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Kasbon" tabindex="-1" readonly style='width:100px;'></td>
+                                <td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Cash Advance" tabindex="-1" readonly style='width:100px;'></td>
                                 <td align=right colspan=2>
                                     <div class="row">
-                                        <div class="col-md-2">Saldo</div>
+                                        <div class="col-md-2">Balance</div>
                                         <div class="col-md-10"><input type="text" class="form-control divide input-sm" id="grand_total" name="grand_total" value="<?= $grand_total ?>" placeholder="Grand Total" tabindex="-1" readonly></div>
                                     </div>
                                 </td>
@@ -219,8 +219,8 @@ if (!isset($data->departement)) {
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Pengembalian Kasbon</th>
-                                    <th>Penggantian Kasbon</th>
+                                    <th>Cash Advance Return</th>
+                                    <th>Cash Advance Reimbursement</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -307,8 +307,8 @@ if (!isset($data->departement)) {
                             }
 
                             ?>
-                            <button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-                            <a class="btn btn-default btn-sm" onclick="window.location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+                            <button type="submit" name="save" class="btn btn-success btn-sm stsview" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>
+                            <a class="btn btn-default btn-sm" onclick="window.location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Cancel</a>
                         </div>
                     </div>
                     <div class="row">
@@ -341,23 +341,23 @@ if (!isset($data->departement)) {
                 var iddtl = $(this).val();
                 if ($("#filename_" + iddtl).val() == "") {
                     if ($('#doc_file_' + iddtl).get(0).files.length === 0) {
-                        errors = "Bon Bukti harus diupload";
+                        errors = "The receipt must be uploaded";
                     }
                 }
             });
-            if (lops == 0) errors = "Detail harus diisi";
+            if (lops == 0) errors = "Detail is required";
             if ($("#informasi").val() == "") errors = "Keterangan tidak boleh kosong";
             if ($("#coa").val() == "0") errors = "Jenis Expense tidak boleh kosong";
             if ($("#tgl_doc").val() == "") errors = "Tanggal Transaksi tidak boleh kosong";
             if (errors == "") {
 
                 swal({
-                        title: "Anda Yakin?",
-                        text: "Data Akan Disimpan!",
+                        title: "Are you sure?",
+                        text: "The Data Will Be Saved!",
                         type: "info",
                         showCancelButton: true,
-                        confirmButtonText: "Ya, simpan!",
-                        cancelButtonText: "Tidak!",
+                        confirmButtonText: "Yes, save!",
+                        cancelButtonText: "No!",
                         closeOnConfirm: false,
                         closeOnCancel: true
                     },
@@ -374,8 +374,8 @@ if (!isset($data->departement)) {
                                 success: function(msg) {
                                     if (msg['save'] == '1') {
                                         swal({
-                                            title: "Sukses!",
-                                            text: "Data Berhasil Di Simpan",
+                                            title: "Success!",
+                                            text: "Data saved successfully",
                                             type: "success",
                                             timer: 1500,
                                             showConfirmButton: false
@@ -383,8 +383,8 @@ if (!isset($data->departement)) {
                                         window.location.reload();
                                     } else {
                                         swal({
-                                            title: "Gagal!",
-                                            text: "Data Gagal Di Simpan",
+                                            title: "Failed!",
+                                            text: "Failed to save data",
                                             type: "error",
                                             timer: 1500,
                                             showConfirmButton: false
@@ -394,8 +394,8 @@ if (!isset($data->departement)) {
                                 },
                                 error: function(msg) {
                                     swal({
-                                        title: "Gagal!",
-                                        text: "Ajax Data Gagal Di Proses",
+                                        title: "Failed!",
+                                        text: "Ajax request failed to process.",
                                         type: "error",
                                         timer: 1500,
                                         showConfirmButton: false
@@ -464,11 +464,11 @@ if (!isset($data->departement)) {
                         Rows += "<input type='hidden' name='detail_id[]' id='raw_id_" + nomor + "' value='" + nomor + "'>";
                         Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='" + data[i].id + "'>";
                         Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value='" + data[i].doc_file + "'></td>";
-                        Rows += "<td data-header='Tanggal'>";
+                        Rows += "<td data-header='Date'>";
                         Rows += "<input type='text' class='form-control tanggal input-sm' name='tanggal[]' id='tanggal_" + nomor + "' tabindex='-1' readonly value='" + data[i].tgl_doc + "' />";
                         Rows += "<input type='hidden' name='coa[]' id='coa_" + nomor + "' value='" + data[i].coa + "' />";
                         Rows += "</td>";
-                        Rows += "<td data-header='Barang / Jasa & Keteranga'>";
+                        Rows += "<td data-header='Goods / Services & Keteranga'>";
                         Rows += "<input type='text' class='form-control input-sm' name='deskripsi[]' id='deskripsi_" + nomor + "' value='" + data[i].keperluan + "' tabindex='-1' readonly />";
                         Rows += "<input type='text' class='form-control input-sm' name='keterangan[]' id='keterangan_" + nomor + "' value='' />";
                         Rows += "<input type='hidden' class='form-control input-sm' name='id_expense_detail[]' id='id_expense_detail_" + nomor + "' value='" + data[i].id_expense_detail + "' />";
@@ -476,7 +476,7 @@ if (!isset($data->departement)) {
                         Rows += "<td data-header='Qty'>";
                         Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='1' id='qty_" + nomor + "' tabindex='-1' readonly />";
                         Rows += "</td>";
-                        Rows += "<td data-header='Harga Satuan'>";
+                        Rows += "<td data-header='Unit Price'>";
                         Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='0' id='harga_" + nomor + "' tabindex='-1' readonly style='width:100px;' />";
                         Rows += "</td>";
                         Rows += "<td data-header='Expense'>";
@@ -493,7 +493,7 @@ if (!isset($data->departement)) {
                         }
                         Rows += "</td>";
                         Rows += "<td align='center'>";
-                        Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+                        Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
                         Rows += "</td>";
                         Rows += "</tr>";
                         nomor++;
@@ -523,18 +523,18 @@ if (!isset($data->departement)) {
             Rows += "<input type='hidden' name='detail_id[]' id='raw_id_" + nomor + "' value='" + nomor + "' class='dtlloop'>";
             Rows += "<input type='hidden' name='id_detail[]' id='id_detail_" + nomor + "' value='" + nomor + "' class='dtlloop'>";
             Rows += "<input type='hidden' name='filename[]' id='filename_" + nomor + "' value=''></td>";
-            Rows += "<td data-header='Jenis & Tanggal'>";
+            Rows += "<td data-header='Type & Date'>";
             Rows += "<select name='coa[]' id='coa_" + nomor + "' required='required' class='form-control select2' style='width:300px'><?= $datacombocoa ?></select>";
-            Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Tanggal' name='tanggal[]' id='tanggal_" + nomor + "' />";
+            Rows += "<input type='text' class='form-control tanggal input-sm' placeholder='Date' name='tanggal[]' id='tanggal_" + nomor + "' />";
             Rows += "</td>";
-            Rows += "<td data-header='Barang / Jasa & Keterangan'>";
-            Rows += "<input type='text' class='form-control input-sm' placeholder='Barang/Jasa' name='deskripsi[]' id='deskripsi_" + nomor + "' style='width:100px;' />";
-            Rows += "<input type='text' class='form-control input-sm' placeholder='Keterangan' name='keterangan[]' id='keterangan_" + nomor + "' />";
+            Rows += "<td data-header='Goods / Services & Description'>";
+            Rows += "<input type='text' class='form-control input-sm' placeholder='Goods/Services' name='deskripsi[]' id='deskripsi_" + nomor + "' style='width:100px;' />";
+            Rows += "<input type='text' class='form-control input-sm' placeholder='Description' name='keterangan[]' id='keterangan_" + nomor + "' />";
             Rows += "</td>";
             Rows += "<td data-header='Qty'>";
             Rows += "<input type='text' class='form-control divide input-sm' name='qty[]' value='0' id='qty_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:60px;' />";
             Rows += "</td>";
-            Rows += "<td data-header='Harga Satuan'>";
+            Rows += "<td data-header='Unit Price'>";
             Rows += "<input type='text' class='form-control divide input-sm' name='harga[]' value='0' id='harga_" + nomor + "' onblur='cektotal(" + nomor + ")' style='width:100px;' />";
             Rows += "</td>";
             Rows += "<td data-header='Expense'>";
@@ -547,7 +547,7 @@ if (!isset($data->departement)) {
             Rows += "<input type='file'  name='doc_file_" + nomor + "' id='doc_file_" + nomor + "' required />";
             Rows += "</td>";
             Rows += "<th align='center' th scope='row'>";
-            Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Hapus data'><i class='fa fa-close'></i> Hapus</button>";
+            Rows += "<button type='button' class='btn btn-danger btn-xs' data-toggle='tooltip' onClick='delDetail(" + nomor + ")' title='Delete data'><i class='fa fa-close'></i> Delete</button>";
             Rows += "</th>";
             Rows += "</tr>";
             $("#tanggal_" + nomor).focus();
@@ -570,12 +570,12 @@ if (!isset($data->departement)) {
 
         function data_approve() {
             swal({
-                    title: "Anda Yakin?",
-                    text: "Data Akan Disetujui!",
+                    title: "Are you sure?",
+                    text: "The data will be approved!",
                     type: "info",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, setuju!",
-                    cancelButtonText: "Tidak!",
+                    confirmButtonText: "Yes, approve!",
+                    cancelButtonText: "No!",
                     closeOnConfirm: false,
                     closeOnCancel: true
                 },
@@ -589,8 +589,8 @@ if (!isset($data->departement)) {
                             success: function(msg) {
                                 if (msg['save'] == '1') {
                                     swal({
-                                        title: "Sukses!",
-                                        text: "Data Berhasil Di Setujui",
+                                        title: "Success!",
+                                        text: "Data approved successfully",
                                         type: "success",
                                         timer: 1500,
                                         showConfirmButton: false
@@ -598,8 +598,8 @@ if (!isset($data->departement)) {
                                     window.location.reload();
                                 } else {
                                     swal({
-                                        title: "Gagal!",
-                                        text: "Data Gagal Di Setujui",
+                                        title: "Failed!",
+                                        text: "Failed to approve data",
                                         type: "error",
                                         timer: 1500,
                                         showConfirmButton: false
@@ -609,8 +609,8 @@ if (!isset($data->departement)) {
                             },
                             error: function(msg) {
                                 swal({
-                                    title: "Gagal!",
-                                    text: "Ajax Data Gagal Di Proses",
+                                    title: "Failed!",
+                                    text: "Ajax request failed to process.",
                                     type: "error",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -624,7 +624,7 @@ if (!isset($data->departement)) {
 
         function data_reject() {
             swal({
-                    title: "Perhatian",
+                    title: "Attention",
                     text: "Berikan alasan penolakan",
                     type: "input",
                     showCancelButton: true,
@@ -634,17 +634,17 @@ if (!isset($data->departement)) {
                 function(inputValue) {
                     if (inputValue === false) return false;
                     if (inputValue === "") {
-                        swal.showInputError("Tuliskan alasan anda");
+                        swal.showInputError("Write your reason");
                         return false
                     }
 
                     swal({
-                            title: "Anda Yakin?",
-                            text: "Data Akan Tolak!",
+                            title: "Are you sure?",
+                            text: "The Data Will Be Rejected!",
                             type: "warning",
                             showCancelButton: true,
-                            confirmButtonText: "Ya, tolak!",
-                            cancelButtonText: "Tidak!",
+                            confirmButtonText: "Yes, reject!",
+                            cancelButtonText: "No!",
                             closeOnConfirm: false,
                             closeOnCancel: true
                         },
@@ -663,8 +663,8 @@ if (!isset($data->departement)) {
                                     success: function(msg) {
                                         if (msg['save'] == '1') {
                                             swal({
-                                                title: "Sukses!",
-                                                text: "Data Berhasil Di Tolak",
+                                                title: "Success!",
+                                                text: "Data Rejected Successfully",
                                                 type: "success",
                                                 timer: 1500,
                                                 showConfirmButton: false
@@ -672,8 +672,8 @@ if (!isset($data->departement)) {
                                             window.location.reload();
                                         } else {
                                             swal({
-                                                title: "Gagal!",
-                                                text: "Data Gagal Di Tolak",
+                                                title: "Failed!",
+                                                text: "Data Failed to Reject",
                                                 type: "error",
                                                 timer: 1500,
                                                 showConfirmButton: false
@@ -683,8 +683,8 @@ if (!isset($data->departement)) {
                                     },
                                     error: function(msg) {
                                         swal({
-                                            title: "Gagal!",
-                                            text: "Ajax Data Gagal Di Proses",
+                                            title: "Failed!",
+                                            text: "Ajax request failed to process.",
                                             type: "error",
                                             timer: 1500,
                                             showConfirmButton: false

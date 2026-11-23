@@ -18,7 +18,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fa fa-industry"></i> <?= $page_title ?></h5>
         <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -30,7 +30,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
             <!-- Header Plan -->
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Plan <span class="text-danger">*</span></label>
+                    <label class="form-label">Plan Date <span class="text-danger">*</span></label>
                     <input type="text" name="tgl_plan" id="tgl_plan" class="form-control flatpickr-date"
                         value="<?= $is_edit ? $plan->tgl_plan : date('Y-m-d') ?>" required autocomplete="off">
                 </div>
@@ -45,7 +45,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                         value="<?= $is_edit ? $plan->target_qty : '' ?>">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Catatan</label>
+                    <label class="form-label">Notes</label>
                     <textarea name="catatan" class="form-control" rows="1"><?= $is_edit ? htmlspecialchars((string) $plan->catatan) : '' ?></textarea>
                 </div>
             </div>
@@ -61,12 +61,12 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                         </button>
                     </div>
 
-                    <!-- Pilih Produk -->
+                    <!-- Select Product -->
                     <div class="row mb-3">
                         <div class="col-md-7">
                             <label class="form-label fw-semibold">Produk FG <span class="text-danger">*</span></label>
                             <select name="id_produk_fg" class="form-select select2-produk" required>
-                                <option value="">-- Pilih Produk --</option>
+                                <option value="">-- Select Product --</option>
                                 <?php if (!empty($produk_list)): ?>
                                     <?php foreach ($produk_list as $p): ?>
                                         <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
@@ -82,7 +82,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                                 value="<?= $is_edit ? htmlspecialchars((string) $plan->nm_produk_fg) : '' ?>">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label fw-semibold">Berat / Unit (kg)</label>
+                            <label class="form-label fw-semibold">Weight / Unit (kg)</label>
                             <input type="text" class="form-control bg-light inp-berat-unit" readonly
                                 placeholder="Otomatis" value="<?= $is_edit ? $plan->target_berat : '' ?>">
                             <input type="hidden" name="target_berat" class="inp-berat-unit-hidden"
@@ -111,10 +111,10 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                                             <input type="checkbox" class="check-all-coil">
                                         </th>
                                         <th>No Coil</th>
-                                        <th>Nama Material</th>
+                                        <th>Material Name</th>
                                         <th class="text-end">Net Weight (kg)</th>
                                         <th class="text-end">Estimate Qty</th>
-                                        <th>Gudang</th>
+                                        <th>Warehouse</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbody-coil">
@@ -130,7 +130,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                     <!-- Loading -->
                     <div class="coil-loading text-center py-3" style="display:none;">
                         <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-                        <div class="mt-2 text-muted">Memuat coil tersedia...</div>
+                        <div class="mt-2 text-muted">Loading available coils...</div>
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                 <button type="submit" class="btn btn-success btn-lg" id="btn-create-spk">
                     <i class="fa fa-file-alt"></i> Create SPK
                 </button>
-                <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-lg">Batal</a>
+                <a href="<?= base_url('production_planning') ?>" class="btn btn-secondary btn-lg">Cancel</a>
             </div>
         </form>
     </div>
@@ -165,7 +165,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
             <div class="col-md-7">
                 <label class="form-label fw-semibold">Produk FG <span class="text-danger">*</span></label>
                 <select name="id_produk_fg" class="form-select select2-produk" required>
-                    <option value="">-- Pilih Produk --</option>
+                    <option value="">-- Select Product --</option>
                     <?php foreach ($produk_list as $p): ?>
                         <option value="<?= htmlspecialchars((string) $p->code_lv4) ?>"
                             data-nama="<?= htmlspecialchars((string) $p->nama) ?>"
@@ -177,7 +177,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                 <input type="hidden" name="nm_produk_fg" class="inp-nm-produk" value="">
             </div>
             <div class="col-md-2">
-                <label class="form-label fw-semibold">Berat / Unit (kg)</label>
+                <label class="form-label fw-semibold">Weight / Unit (kg)</label>
                 <input type="text" class="form-control bg-light inp-berat-unit" readonly placeholder="Otomatis">
                 <input type="hidden" name="target_berat" class="inp-berat-unit-hidden" value="">
             </div>
@@ -200,10 +200,10 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
                         <tr>
                             <th width="40" class="text-center"><input type="checkbox" class="check-all-coil"></th>
                             <th>No Coil</th>
-                            <th>Nama Material</th>
+                            <th>Material Name</th>
                             <th class="text-end">Net Weight (kg)</th>
                             <th class="text-end">Estimate Qty</th>
-                            <th>Gudang</th>
+                            <th>Warehouse</th>
                         </tr>
                     </thead>
                     <tbody class="tbody-coil"></tbody>
@@ -213,7 +213,7 @@ $page_title = $is_edit ? 'Edit Production Plan' : 'Buat Production Plan';
         </div>
         <div class="coil-loading text-center py-3" style="display:none;">
             <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-            <div class="mt-2 text-muted">Memuat coil tersedia...</div>
+            <div class="mt-2 text-muted">Loading available coils...</div>
         </div>
     </div>
 </template>
@@ -232,7 +232,7 @@ flatpickr('.flatpickr-date', { dateFormat: 'Y-m-d', locale: 'id', allowInput: tr
 function initBlockSelect2($block) {
     $block.find('.select2-produk').select2({
         theme: 'bootstrap-5',
-        placeholder: '-- Pilih Produk --',
+        placeholder: '-- Select Product --',
         allowClear: true,
         width: '100%'
     }).on('change', function () {
@@ -251,7 +251,7 @@ function initBlockSelect2($block) {
 function loadCoilForBlock($block) {
     var id_produk = $block.find('.select2-produk').val();
     if (!id_produk) {
-        alert('Pilih produk terlebih dahulu');
+        alert('Select a product first');
         return;
     }
 
@@ -274,7 +274,7 @@ function loadCoilForBlock($block) {
         if (res.status !== 'ok' || res.data.length === 0) {
             $block.find('.tbody-coil').html(
                 '<tr><td colspan="6" class="text-center text-muted py-3">' +
-                '<i class="fa fa-info-circle"></i> Tidak ada coil tersedia untuk produk ini' +
+                '<i class="fa fa-info-circle"></i> No coils available for this product' +
                 '</td></tr>'
             );
             $block.find('.coil-section').show();
@@ -420,7 +420,7 @@ $(document).ready(function () {
         var hasCoil = false;
         $('.coil-checkbox:checked').each(function () { hasCoil = true; });
         if (!hasCoil) {
-            alert('Pilih minimal satu coil sebelum membuat SPK');
+            alert('Select at least one coil before creating an SPK');
             return false;
         }
     });

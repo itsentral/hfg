@@ -38,7 +38,7 @@ class Bom extends Admin_Controller
     {
         $bom = $this->Bom_model->get_bom($id);
         if (!$bom) {
-            $this->session->set_flashdata('error', 'BOM tidak ditemukan');
+            $this->session->set_flashdata('error', 'BOM not found');
             redirect('bom');
         }
 
@@ -63,7 +63,7 @@ class Bom extends Admin_Controller
     {
         $bom = $this->Bom_model->get_bom($id);
         if (!$bom) {
-            $this->session->set_flashdata('error', 'BOM tidak ditemukan');
+            $this->session->set_flashdata('error', 'BOM not found');
             redirect('bom');
         }
 
@@ -81,7 +81,7 @@ class Bom extends Admin_Controller
         foreach ($result['data'] as $i => $row) {
             $btn_view = '<a href="' . base_url('bom/view/' . $row->id) . '" class="btn btn-sm btn-info" title="Lihat"><i class="fa fa-eye"></i></a>';
             $btn_edit = '<a href="' . base_url('bom/edit/' . $row->id) . '" class="btn btn-sm btn-warning ms-1" title="Edit"><i class="fa fa-edit"></i></a>';
-            $btn_del  = '<button class="btn btn-sm btn-danger ms-1 btn-delete-bom" data-id="' . $row->id . '" title="Hapus"><i class="fa fa-trash"></i></button>';
+            $btn_del  = '<button class="btn btn-sm btn-danger ms-1 btn-delete-bom" data-id="' . $row->id . '" title="Delete"><i class="fa fa-trash"></i></button>';
 
             $tgl = !empty($row->latest_act) ? date('d/m/Y H:i', strtotime((string) $row->latest_act)) : '-';
 
@@ -128,7 +128,7 @@ class Bom extends Admin_Controller
         $nm_produk = $this->input->post('nm_produk');
 
         if (empty($id_produk)) {
-            $this->session->set_flashdata('error', 'Produk wajib dipilih');
+            $this->session->set_flashdata('error', 'A product is required');
             redirect('bom/add');
         }
 
@@ -146,8 +146,8 @@ class Bom extends Admin_Controller
         $uniq_set = [];
         foreach ($details_raw as $d) {
             if (!empty($d['id_material'])) {
-                if (in_array($d['id_material'], $material_set)) {
-                    $this->session->set_flashdata('error', 'Material yang sama tidak boleh dipakai dua kali pada produk ini.');
+                if (in_array($d['id_material'], $material_set ?? [])) {
+                    $this->session->set_flashdata('error', 'The same material cannot be used twice on this product.');
                     redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                 }
                 $material_set[] = $d['id_material'];
@@ -155,13 +155,13 @@ class Bom extends Admin_Controller
                 // Berat/Meter boleh diisi manual: harus angka >= 0. Kosong/0 = dihitung otomatis oleh model.
                 $bpm_raw = isset($d['berat_per_meter']) ? trim((string) $d['berat_per_meter']) : '';
                 if ($bpm_raw !== '' && (!is_numeric($bpm_raw) || (float) $bpm_raw < 0 || (float) $bpm_raw >= 100000000)) {
-                    $this->session->set_flashdata('error', 'Berat/Meter material ' . $d['id_material'] . ' harus berupa angka 0 atau lebih (maksimal 99.999.999).');
+                    $this->session->set_flashdata('error', 'Material Weight/Meter ' . $d['id_material'] . ' must be a number of 0 or more (maximum 99,999,999).');
                     redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                 }
                 $uniq = !empty($d['no_uniq_id']) ? trim((string) $d['no_uniq_id']) : '';
                 if (!empty($uniq)) {
-                    if (in_array($uniq, $uniq_set)) {
-                        $this->session->set_flashdata('error', "No. Uniq ID (Varian BOM) '{$uniq}' tidak boleh duplikat pada produk yang sama.");
+                    if (in_array($uniq, $uniq_set ?? [])) {
+                        $this->session->set_flashdata('error', "No. Uniq ID (Varian BOM) '{$uniq}' cannot be duplicated on the same product.");
                         redirect($id_bom ? 'bom/edit/' . $id_bom : 'bom/add');
                     }
                     $uniq_set[] = $uniq;
@@ -172,7 +172,7 @@ class Bom extends Admin_Controller
         }
 
         if (empty($details)) {
-            $this->session->set_flashdata('error', 'Minimal satu varian material harus ditambahkan');
+            $this->session->set_flashdata('error', 'At least one material variant must be added');
             redirect('bom/add');
         }
 
@@ -194,28 +194,28 @@ class Bom extends Admin_Controller
             foreach ($this->Bom_model->get_bom_details($result) as $nd) {
                 $newBpm[$nd->id_material] = (float) $nd->berat_per_meter;
                 $label = 'Varian [' . $nd->no_uniq_id . ' ' . $nd->id_material . '] - Berat/Meter';
-                if (!array_key_exists($nd->id_material, $oldBpm)) {
+                if (!array_key_exists($nd->id_material, $oldBpm ?? [])) {
                     $detailChanges[$label] = ['old' => null, 'new' => (float) $nd->berat_per_meter];
                 } elseif (abs($oldBpm[$nd->id_material] - (float) $nd->berat_per_meter) > 0.0000005) {
                     $detailChanges[$label] = ['old' => $oldBpm[$nd->id_material], 'new' => (float) $nd->berat_per_meter];
                 }
             }
             foreach ($oldBpm as $mat => $val) {
-                if (!array_key_exists($mat, $newBpm)) {
+                if (!array_key_exists($mat, $newBpm ?? [])) {
                     $detailChanges['Varian [' . $mat . '] - Berat/Meter'] = ['old' => $val, 'new' => null];
                 }
             }
             $logPayload = [
                 'id_produk'     => $id_produk,
                 'nm_produk'     => $nm_produk,
-                'total_varian'  => count($details),
+                'total_varian'  => count($details ?? []),
                 'daftar_varian' => array_map(function($x) {
                     return [
                         'no_uniq_id'      => $x['no_uniq_id'] ?? '',
                         'id_material'     => $x['id_material'] ?? '',
                         'berat_per_meter' => $x['berat_per_meter'] ?? 0,
                     ];
-                }, $details),
+                }, $details ?? []),
             ];
             if ($existing) {
                 // Edit: format Before-After agar detail_changes (perubahan Berat/Meter) tampil di Activity Log
@@ -223,22 +223,22 @@ class Bom extends Admin_Controller
                     'old' => [
                         'id_produk'    => $existing->id_produk,
                         'nm_produk'    => $existing->nm_produk,
-                        'total_varian' => count($oldDetails),
+                        'total_varian' => count($oldDetails ?? []),
                     ],
                     'new' => [
                         'id_produk'    => $id_produk,
                         'nm_produk'    => $nm_produk,
-                        'total_varian' => count($details),
+                        'total_varian' => count($details ?? []),
                     ],
                     'detail_changes' => $detailChanges,
                 ];
             }
             write_log('BOM', $action_label, ($action_label == 'Edit' ? 'Update BOM ' : 'Tambah BOM ') . $id_produk, $logPayload, null, 1);
-            $this->session->set_flashdata('success', 'BOM berhasil disimpan.');
+            $this->session->set_flashdata('success', 'BOM saved successfully.');
             redirect('bom');
         } else {
             write_log('BOM', 'Save', 'Gagal simpan BOM ' . $id_produk, ['header' => $header], null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan BOM');
+            $this->session->set_flashdata('error', 'Failed to save BOM');
             redirect('bom/add');
         }
     }
@@ -248,7 +248,7 @@ class Bom extends Admin_Controller
     {
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['success' => false, 'message' => 'ID BOM tidak valid']);
+            echo json_encode(['success' => false, 'message' => 'Invalid BOM ID']);
             return;
         }
 
@@ -261,7 +261,7 @@ class Bom extends Admin_Controller
             echo json_encode(['success' => true]);
         } else {
             write_log('BOM', 'Delete', 'Gagal hapus BOM ID ' . $id, [], null, 0);
-            echo json_encode(['success' => false, 'message' => 'Gagal menghapus BOM']);
+            echo json_encode(['success' => false, 'message' => 'Failed to delete BOM']);
         }
     }
 }

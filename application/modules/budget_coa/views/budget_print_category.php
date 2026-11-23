@@ -16,17 +16,17 @@
 <table width="700">
 <tr><td align="center" colspan="4"><h1>Budget</h1></td></tr>
 <tr>
-	<td>Departemen : <?=$data[0]->nm_dept?></td>
+	<td>Department : <?=$data[0]->nm_dept?></td>
 	<td colspan=2></td>
 	<td>Update On : <?=date("d-M-Y",strtotime((string) $data[0]->created_on_dept))?></td>
 </tr>
 <tr>
-	<td>Tahun : <?=$dataset['tahun']?></td>
+	<td>Year : <?=$dataset['tahun']?></td>
 	<td colspan=2></td>
 	<td></td>
 </tr>
 <tr>
-	<td>Kategori : <?=$dataset['kategori']?></td>
+	<td>Category : <?=$dataset['kategori']?></td>
 	<td colspan=2></td>
 	<td></td>
 </tr>
@@ -36,7 +36,7 @@
 	<tr>
 		<th>No COA</th>
 		<th>Deskripsi</th>
-		<th>Budget/Tahun</th>
+		<th>Budget/Year</th>
 		<?php
 		for($bln=1;$bln<=12;$bln++){
 			echo '<th nowrap>'.date('F', mktime(0, 0, 0, $bln, 10)).'</th>';

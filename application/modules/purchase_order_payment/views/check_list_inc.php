@@ -24,8 +24,8 @@
                             <th class="text-center">No. Incoming</th>
                             <th class="text-center">No. PO</th>
                             <th class="text-center">Nominal Incoming</th>
-                            <th class="text-center">Tanggal Incoming</th>
-                            <th class="text-center">Nama Supplier</th>
+                            <th class="text-center">Incoming Date</th>
+                            <th class="text-center">Supplier Name</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,7 +61,7 @@
                             }
                             if ($id_rec_invoice !== '') {
                                 $get_invoice_payment = $this->db->get_where('payment_approve', ['no_doc' => $id_rec_invoice, 'status' => 2])->result();
-                                if (count($get_invoice_payment) > 0) {
+                                if (count($get_invoice_payment ?? []) > 0) {
                                     $complete = 1;
                                     $status = '<div class="badge bg-green">Complete</div>';
                                 }

@@ -11,7 +11,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		<?php if ($ENABLE_ADD) : ?>
 			<div class="dropdown">
 			  <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-				<i class="fa fa-plus">&nbsp;</i> Tambah
+				<i class="fa fa-plus">&nbsp;</i> Add
 			  </button>
 			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 			  <?php
@@ -29,8 +29,8 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 		<thead>
 		<tr>
 			<th width="5">#</th>
-			<th>No Dokumen</th>
-			<th>Tanggal</th>
+			<th>Document No.</th>
+			<th>Date</th>
 			<th>Status</th>
 			<th width="100">
 				Action
@@ -57,7 +57,7 @@ $ENABLE_DELETE  = has_permission('Purchase_Request.Delete');
 				endif;
 			if($ENABLE_DELETE) : 
 				if ($record->status==0) {?>
-				<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Hapus" onclick="data_delete('<?=$record->id?>')"><i class="fa fa-trash"></i></a>
+				<a class="btn btn-danger btn-sm delete" href="javascript:void(0)" title="Delete" onclick="data_delete('<?=$record->id?>')"><i class="fa fa-trash"></i></a>
 				<?php }
 				endif; ?>
 			</td>

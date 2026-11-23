@@ -9,12 +9,12 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                 <div>
                     <h5 class="fw-bold mb-1 text-primary"><i class="ti ti-tags me-2"></i>Price Reference (Raw Materials)</h5>
                     <p class="text-muted mb-0 small">
-                        Daftar harga acuan material untuk Product Costing. Nilai Price Reference USD diambil dari nilai tertinggi (Max) pada History Pembelian / PO, dan dikonversi ke Rupiah menggunakan Kurs USD aktif.
+                        Material reference price list for Product Costing. The USD Price Reference value is taken from the highest value (Max) in the Purchase / PO History and converted to Rupiah using the active USD rate.
                     </p>
                 </div>
                 <div class="mt-2 mt-md-0">
                     <span class="badge bg-light text-dark border px-3 py-2 fs-6">
-                        <i class="ti ti-currency-dollar text-success me-1"></i>Kurs USD Aktif: <strong>Rp <?= number_format((float) $usd_kurs, 2, ',', '.') ?></strong>
+                        <i class="ti ti-currency-dollar text-success me-1"></i>Active USD Rate: <strong>Rp <?= number_format((float) $usd_kurs, 2, ',', '.') ?></strong>
                     </span>
                 </div>
             </div>
@@ -84,7 +84,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
             <div class="modal-body p-4" style="max-height: 70vh; overflow: auto;">
                 <!-- Alert Not Set jika belum ada harga -->
                 <div id="alert_not_set" class="alert alert-warning py-2 mb-3 d-none">
-                    <i class="ti ti-alert-triangle me-1"></i> <strong>Perhatian:</strong> Price Reference belum ada untuk material ini.
+                    <i class="ti ti-alert-triangle me-1"></i> <strong>Attention:</strong> There is no Price Reference for this material yet.
                 </div>
 
                 <!-- Material Info -->
@@ -113,10 +113,10 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                         <h6 class="fw-bold text-dark mb-0">
                             <span class="badge bg-primary rounded-circle me-1">1</span> History Pembelian (USD/kg)
                         </h6>
-                        <span class="text-muted small">Nilai tertinggi (Max) otomatis dipakai sebagai acuan costing</span>
+                        <span class="text-muted small">The highest value (Max) is used automatically as the costing reference</span>
                     </div>
                     <p class="text-muted small mb-2">
-                        Daftar harga per bulan dari History Pembelian. Yang dipakai untuk Product Costing adalah harga <strong>tertinggi (Max)</strong>; nilai Terakhir dan Rata-rata hanya sebagai informasi pelengkap.
+                        Monthly price list from the Purchase History. Product Costing uses the <strong>highest (Max)</strong> price; the Last and Average values are supplementary information only.
                     </p>
 
                     <div class="table-responsive">
@@ -201,15 +201,15 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                                         <thead class="table-light">
                                             <tr>
                                                 <th>No. PO</th>
-                                                <th>Tanggal</th>
+                                                <th>Date</th>
                                                 <th>Supplier</th>
                                                 <th class="text-end">Qty</th>
-                                                <th class="text-end">Harga Satuan (USD/Kg)</th>
+                                                <th class="text-end">Unit Price (USD/Kg)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="po_rows">
                                             <tr>
-                                                <td colspan="5" class="text-center text-muted py-2">Memuat riwayat PO...</td>
+                                                <td colspan="5" class="text-center text-muted py-2">Loading PO history...</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -222,7 +222,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
 
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
-                    <i class="ti ti-x me-1"></i> Tutup
+                    <i class="ti ti-x me-1"></i> Close
                 </button>
             </div>
         </div>
@@ -271,7 +271,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
 
             // Reset tampilan modal
             $('#alert_not_set').addClass('d-none');
-            $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2"><i class="fas fa-spinner fa-spin me-1"></i> Memuat riwayat...</td></tr>');
+            $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2"><i class="fas fa-spinner fa-spin me-1"></i> Loading history...</td></tr>');
             for (var b = 1; b <= 12; b++) {
                 $('#month_' + b).text('-');
             }
@@ -288,7 +288,7 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                 dataType: 'json',
                 success: function(resp) {
                     if (resp.status !== 1) {
-                        Swal.fire('Error', resp.pesan || 'Gagal memuat detail', 'error');
+                        Swal.fire('Error', resp.pesan || 'Failed to load details', 'error');
                         return;
                     }
 
@@ -352,13 +352,13 @@ $ENABLE_VIEW = isset($ENABLE_VIEW) ? $ENABLE_VIEW : true;
                         });
                         $('#po_rows').html(htmlPo);
                     } else {
-                        $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2">Belum ada riwayat kedatangan/incoming PO di sistem untuk material ini.</td></tr>');
+                        $('#po_rows').html('<tr><td colspan="5" class="text-center text-muted py-2">There is no PO arrival/incoming history in the system for this material yet.</td></tr>');
                     }
 
                     $('#modal-price-ref').modal('show');
                 },
                 error: function(xhr) {
-                    Swal.fire('Error', 'Gagal menghubungi server (' + xhr.status + ')', 'error');
+                    Swal.fire('Error', 'Failed to contact the server (' + xhr.status + ')', 'error');
                 }
             });
         });

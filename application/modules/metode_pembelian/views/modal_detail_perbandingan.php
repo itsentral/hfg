@@ -6,21 +6,21 @@
 			<tr class='bg-blue'>
 			<th class="text-center" width='7%'>No RFQ</th> 
 				<th class="text-center" width='13%'>Supplier Name</th>
-				<th class="text-center">Pengiriman</th>
+				<th class="text-center">Shipment</th>
 				<th class="text-center" width='15%'>Material Name</th>
 				<th class="text-center" width='6%'>Price Ref ($)</th>
 				<th class="text-center" width='8%'>Price From Supplier</th>
-				<th class="text-center" width='8%'>Harga (IDR)</th>
+				<th class="text-center" width='8%'>Price (IDR)</th>
 				<th class="text-center" width='7%'>Qty PR</th>
 				<th class="text-center" width='5%'>MOQ (Kg)</th>
 				<th class="text-center" width='5%'>Lead Time (Days)</th>
 				<th class="text-center" width='7%'>Tgl Dibutuhkan</th>
-				<th class="text-center" width='8%'>Total Harga</th>
+				<th class="text-center" width='8%'>Total Price</th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
-			$jumlah = count($result);
+			$jumlah = count($result ?? []);
 			$rows2 = $jumlah / $num_rows;
 			$no  = 0;
 			$no2 = 1;
@@ -34,10 +34,10 @@
 					if($no == '1'){
 						echo "<td align='center' rowspan='".$jumlah."'>".$valx['no_rfq']."</td>";
 					}
-					if(in_array($no, $dataArr) || $no == '1'){
+					if(in_array($no, $dataArr ?? []) || $no == '1'){
 						echo "<td align='left' rowspan='".$rows2."'>".$valx['nm_supplier']."</td>";
 					}
-					if(in_array($no, $dataArr) || $no == '1'){
+					if(in_array($no, $dataArr ?? []) || $no == '1'){
 						echo "<td align='left' rowspan='".$rows2."'><b>".strtoupper((string) $valx['lokasi'])."</b><br>".strtoupper((string) $valx['alamat_supplier'])."<br><b>CURRENCY : ".strtoupper((string) $valx['currency'])."</b></td>";
 					}
 					echo "<td align='left'>".strtoupper((string) $valx['nm_barang'])."</td>";

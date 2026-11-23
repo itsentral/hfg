@@ -66,8 +66,8 @@ class Budget extends Admin_Controller
             $nama_asset    = strtolower((string) $data['nama_asset']);
             $tahun         = $data['tahun'];
             $bulan         = $data['bulan'];
-            $budget        = str_replace(',', '', $data['budget']);
-            $qty           = str_replace(',', '', $data['qty']);
+            $budget        = str_replace(',', '', $data['budget'] ?? '');
+            $qty           = str_replace(',', '', $data['qty'] ?? '');
             $keterangan    = strtolower((string) $data['keterangan']);
 
             $ym = date('ym');
@@ -134,7 +134,7 @@ class Budget extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Process data success. Thanks...', 'status' => 1);
-                $log_payload = (!empty($code_planx) && $old_plan_data) ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data, $ArrHeader)) : $data;
+                $log_payload = (!empty($code_planx) && $old_plan_data) ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data ?? [], $ArrHeader ?? [])) : $data;
                 write_log('Budget Asset', 'Save Pengajuan Budget Asset', 'Process data success: ' . $code_plan, $log_payload, null, 1);
             }
             echo json_encode($Arr_Kembali);
@@ -177,13 +177,13 @@ class Budget extends Admin_Controller
         ")->result();
 
         $data = array(
-            'title'  => 'Detail Budget Asset',
+            'title'  => 'Asset Budget Detail',
             'action' => 'view',
             'header' => $header,
             'id'     => $id
         );
 
-        $this->template->title('Detail Budget Asset');
+        $this->template->title('Asset Budget Detail');
         $this->template->render('view', $data);
     }
 
@@ -200,10 +200,10 @@ class Budget extends Admin_Controller
             $nama_asset = strtolower((string) $data['nama_asset']);
             $tahun      = $data['tahun'];
             $bulan      = $data['bulan'];
-            $budget     = str_replace(',', '', $data['budget']);
-            $budget_pr  = (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr']) : $budget;
-            $budget_po  = (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po']) : $budget;
-            $qty        = str_replace(',', '', $data['qty']);
+            $budget     = str_replace(',', '', $data['budget'] ?? '');
+            $budget_pr  = (!empty($data['budget_pr'])) ? str_replace(',', '', $data['budget_pr'] ?? '') : $budget;
+            $budget_po  = (!empty($data['budget_po'])) ? str_replace(',', '', $data['budget_po'] ?? '') : $budget;
+            $qty        = str_replace(',', '', $data['qty'] ?? '');
             $keterangan = strtolower((string) $data['keterangan']);
             $reason     = (!empty($data['reason'])) ? strtolower((string) $data['reason']) : '';
             $status     = (!empty($data['status'])) ? $data['status'] : 'Y';
@@ -237,7 +237,7 @@ class Budget extends Admin_Controller
             } else {
                 $this->db->trans_commit();
                 $Arr_Kembali = array('pesan' => 'Approval processed successfully. Thanks...', 'status' => 1);
-                $log_payload = $old_plan_data ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data, $ArrHeader)) : $data;
+                $log_payload = $old_plan_data ? array('old' => $old_plan_data, 'new' => array_merge($old_plan_data ?? [], $ArrHeader ?? [])) : $data;
                 write_log('Budget Asset', 'Approval Budget Asset', 'Approval processed successfully: ' . $code_planx, $log_payload, null, 1);
             }
             echo json_encode($Arr_Kembali);

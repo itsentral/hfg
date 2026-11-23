@@ -10,7 +10,7 @@ class Approval_mutasi extends Admin_Controller
     {
         parent::__construct();
         $this->load->model('Approval_mutasi/approval_mutasi_model');
-        $this->template->title('Approval Mutasi');
+        $this->template->title('Mutation Approval');
         $this->template->page_icon('fa fa-check-circle');
 
         date_default_timezone_set('Asia/Bangkok');
@@ -27,7 +27,7 @@ class Approval_mutasi extends Admin_Controller
     public function index()
     {
         $this->auth->restrict($this->viewPermission);
-        $this->template->title('Approval Mutasi');
+        $this->template->title('Mutation Approval');
         $this->template->render('index');
     }
 
@@ -85,7 +85,7 @@ class Approval_mutasi extends Admin_Controller
         $data['mutation'] = $mutation;
         $data['id']       = $id;
 
-        $this->template->title('Detail Approval Mutasi');
+        $this->template->title('Mutation Approval Detail');
         $this->template->render('detail', $data);
     }
 
@@ -118,14 +118,14 @@ class Approval_mutasi extends Admin_Controller
             $this->approval_mutasi_model->_generate_jurnal_mutasi($mutation);
 
             $this->db->trans_commit();
-            $new_mutation = array_merge($mutation, array('status' => 2));
+            $new_mutation = array_merge($mutation ?? [], array('status' => 2));
             write_log('Approval Mutasi', 'Approve Mutasi', 'Mutation approved successfully: ' . $mutation['mutation_number'], array('old' => $mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation approved successfully. Stock has been transferred.']);
         } catch (Exception $e) {
             $this->db->trans_rollback();
             write_log('Approval Mutasi', 'Approve Mutasi', 'Approval mutasi failed: ' . $mutation['mutation_number'] . ' (' . $e->getMessage() . ')', $mutation, null, 0);
             log_message('error', 'Approval mutasi ROLLBACK ' . $mutation['mutation_number'] . ': ' . $e->getMessage());
-            return $this->_json(['status' => 0, 'message' => 'Approval gagal: ' . $e->getMessage()]);
+            return $this->_json(['status' => 0, 'message' => 'Approval failed: ' . $e->getMessage()]);
         }
     }
 
@@ -152,7 +152,7 @@ class Approval_mutasi extends Admin_Controller
         $result = $this->approval_mutasi_model->reject_mutation($id, $this->username, $this->datetime, $reason);
 
         if ($result) {
-            $new_mutation = array_merge($mutation, array('status' => 3, 'reject_reason' => $reason));
+            $new_mutation = array_merge($mutation ?? [], array('status' => 3, 'reject_reason' => $reason));
             write_log('Approval Mutasi', 'Reject Mutasi', 'Mutation rejected successfully: ' . $mutation['mutation_number'] . ' (' . $reason . ')', array('old' => $mutation, 'new' => $new_mutation), null, 1);
             return $this->_json(['status' => 1, 'message' => 'Mutation rejected successfully.']);
         }

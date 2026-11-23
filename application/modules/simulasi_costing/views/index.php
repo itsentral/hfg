@@ -43,7 +43,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                     </button>
                 <?php endif; ?>
                 <a href="<?= base_url('pricelist') ?>" class="btn btn-outline-secondary btn-sm shadow-sm">
-                    <i class="fa fa-list-alt me-1"></i> Buka Pricelist
+                    <i class="fa fa-list-alt me-1"></i> Open Pricelist
                 </a>
             </div>
         </div>
@@ -62,7 +62,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             </div>
             <div class="col-md-8 text-md-end pt-3 pt-md-0">
                 <span class="badge bg-light text-dark border px-3 py-2">
-                    Total: <strong><?= count($costings) ?></strong> Varian BOM
+                    Total: <strong><?= count($costings ?? []) ?></strong> Varian BOM
                 </span>
                 <?php if ($incomplete_count > 0): ?>
                     <span class="badge bg-warning text-dark border border-warning px-3 py-2 ms-2">
@@ -80,7 +80,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
         <?php if ($incomplete_count > 0): ?>
             <div class="alert alert-warning py-2 mb-3 small" role="alert">
                 <i class="fa fa-info-circle me-1"></i>
-                <strong>Pemberitahuan:</strong> Ada varian yang parameternya belum lengkap (ditandai kuning). Lengkapi data master terkait agar angka costing akurat.
+                <strong>Notice:</strong> Some variants have incomplete parameters (marked yellow). Complete the related master data so the costing figures are accurate.
             </div>
         <?php endif; ?>
 
@@ -123,8 +123,8 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <?php if ($c->is_lengkap): ?>
                                         <span class="badge bg-success-subtle text-success border border-success px-2 py-1">Lengkap</span>
                                     <?php else: ?>
-                                        <span class="badge bg-warning text-dark border border-warning px-2 py-1" data-bs-toggle="tooltip" title="<?= htmlspecialchars(implode(', ', $c->gaps)) ?>">
-                                            &#9888; <?= count($c->gaps) ?> Kekurangan
+                                        <span class="badge bg-warning text-dark border border-warning px-2 py-1" data-bs-toggle="tooltip" title="<?= htmlspecialchars(implode(', ', $c->gaps ?? [])) ?>">
+                                            &#9888; <?= count($c->gaps ?? []) ?> Kekurangan
                                         </span>
                                     <?php endif; ?>
                                 </td>
@@ -137,7 +137,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                             data-bom-detail-id="<?= $c->bom_detail_id ?>"
                                             data-uniq="<?= htmlspecialchars((string) $c->no_uniq_id) ?>"
                                             data-product="<?= htmlspecialchars((string) $c->nm_product) ?>"
-                                            title="Lihat Report Costing Detail"
+                                            title="View Costing Detail Report"
                                             style="width: 80px;">
                                             <i class="fa fa-eye me-1"></i> Detail
                                         </button>
@@ -151,14 +151,14 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                                     data-category="<?= htmlspecialchars((string) $c->nm_category) ?>"
                                                     data-price-m="Rp <?= number_format((float) $c->pricelist_meter, 2, ',', '.') ?>"
                                                     data-price-kg="Rp <?= number_format((float) $c->pricelist_kg, 2, ',', '.') ?>"
-                                                    title="Ajukan varian ini ke Draft Pricelist"
+                                                    title="Submit this variant to the Draft Pricelist"
                                                     style="width: 80px;">
                                                     <i class="fa fa-plus-circle me-1"></i> Draft
                                                 </button>
                                             <?php else: ?>
                                                 <button type="button" class="btn btn-sm btn-outline-secondary opacity-50 shadow-xs" disabled
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Tidak dapat diajukan: <?= htmlspecialchars(implode(', ', $c->gaps)) ?>"
+                                                    title="Cannot be submitted: <?= htmlspecialchars(implode(', ', $c->gaps ?? [])) ?>"
                                                     style="width: 80px;">
                                                     <i class="fa fa-lock me-1"></i> Draft
                                                 </button>
@@ -174,7 +174,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
         </div>
         <div class="mt-3 text-muted small">
             <i class="fa fa-info-circle me-1"></i>
-            <strong>Catatan:</strong> Tombol <strong>Update Costing</strong> mencatat seluruh perubahan costing ke <em>History Costing</em> dan memicu notifikasi perubahan harga untuk Sales.
+            <strong>Notes:</strong> The <strong>Update Costing</strong> button records all costing changes in <em>History Costing</em> and triggers price change notifications for Sales.
         </div>
     </div>
 </div>
@@ -194,11 +194,11 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             <div class="modal-body p-4" id="detail-body-content">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <div class="mt-2 text-muted">Memuat rincian costing...</div>
+                    <div class="mt-2 text-muted">Loading costing details...</div>
                 </div>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -223,8 +223,8 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                 }
             ],
             language: {
-                search: "Cari Data:",
-                searchPlaceholder: "Nama Produk / Material / Varian..."
+                search: "Search Data:",
+                searchPlaceholder: "Product / Material / Variant Name..."
             }
         });
 
@@ -254,12 +254,12 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             var btn = $(this);
             Swal.fire({
                 title: 'Jalankan Update Costing?',
-                text: 'Perubahan master sejak update sebelumnya akan dicatat ke History Costing dan memicu Notifikasi Bottom Price untuk Sales.',
+                text: 'Master changes since the previous update will be recorded in History Costing and trigger a Bottom Price Notification for Sales.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
-                confirmButtonText: 'Ya, Update Sekarang!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Update Now!',
+                cancelButtonText: 'Cancel'
             }).then(function(res) {
                 if (!res.isConfirmed) return;
 
@@ -273,7 +273,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                         btn.prop('disabled', false).html('<i class="fa fa-refresh me-1"></i> Update Costing');
                         if (resp.status == 1) {
                             Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 confirmButtonText: 'OK'
@@ -282,7 +282,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                             });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: resp.pesan,
                                 icon: 'error'
                             });
@@ -311,24 +311,24 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             var btn = $(this);
 
             Swal.fire({
-                title: 'Ajukan ke Draft Pricelist?',
+                title: 'Submit to Draft Pricelist?',
                 html: '<div class="text-start">' +
-                    '<p class="mb-2">Anda akan memasukkan varian berikut ke dalam dokumen <strong>Draft Pricelist</strong> aktif:</p>' +
+                    '<p class="mb-2">You are about to add the following variants to the document <strong>Draft Pricelist</strong> active:</p>' +
                     '<div class="p-3 bg-light rounded border small mb-2">' +
                     '<div><strong>Produk:</strong> ' + prod + '</div>' +
-                    '<div><strong>Kategori:</strong> ' + cat + '</div>' +
+                    '<div><strong>Category:</strong> ' + cat + '</div>' +
                     '<div><strong>Uniq ID:</strong> <span class="badge bg-secondary">' + (uniq || '-') + '</span></div>' +
                     '<div><strong>Price List/m:</strong> <span class="text-primary fw-bold">' + plM + '</span></div>' +
                     '<div><strong>Price List/kg:</strong> <span class="text-success fw-bold">' + plKg + '</span></div>' +
                     '</div>' +
-                    '<small class="text-muted"><i class="fa fa-info-circle me-1"></i> Varian ini akan ditambahkan ke Draft Pricelist dan dapat direview sebelum diajukan ke Management.</small>' +
+                    '<small class="text-muted"><i class="fa fa-info-circle me-1"></i> This variant will be added to the Draft Pricelist and can be reviewed before it is submitted to Management.</small>' +
                     '</div>',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-plus-circle me-1"></i> Ya, Masukkan ke Draft',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-plus-circle me-1"></i> Yes, Add to Draft',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (!result.isConfirmed) return;
 
@@ -346,12 +346,12 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                         btn.prop('disabled', false).html('<i class="fa fa-plus-circle me-1"></i> + Draft');
                         if (resp.status == 1) {
                             Swal.fire({
-                                title: 'Berhasil Masuk Draft!',
+                                title: 'Added to Draft Successfully!',
                                 text: resp.pesan,
                                 icon: 'success',
-                                confirmButtonText: '<i class="fa fa-list-alt me-1"></i> Buka Pricelist',
+                                confirmButtonText: '<i class="fa fa-list-alt me-1"></i> Open Pricelist',
                                 showCancelButton: true,
-                                cancelButtonText: 'Tetap di Simulasi'
+                                cancelButtonText: 'Stay in Simulation'
                             }).then(function(nav) {
                                 if (nav.isConfirmed) {
                                     window.location.href = '<?= base_url('pricelist') ?>';
@@ -359,7 +359,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                             });
                         } else {
                             Swal.fire({
-                                title: 'Perhatian',
+                                title: 'Attention',
                                 text: resp.pesan,
                                 icon: 'warning'
                             });
@@ -390,7 +390,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
             }
             $('#modalDetailLabel').html('<i class="fa fa-file-text-o me-2"></i>' + titleLabel);
             $('#modal-detail').modal('show');
-            $('#detail-body-content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat rincian costing...</div></div>');
+            $('#detail-body-content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading costing details...</div></div>');
 
             $.ajax({
                 url: '<?= base_url('simulasi_costing/detail_json') ?>',
@@ -441,11 +441,11 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <span>${d.nm_material}</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Berat per Meter</small>
+                                    <small class="text-muted d-block">Weight per Meter</small>
                                     <strong>${Number(d.berat_per_meter).toFixed(4)} kg/m</strong>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Ukuran Panjang Produk</small>
+                                    <small class="text-muted d-block">Product Length Size</small>
                                     <strong>${d.ukuran} meter</strong>
                                 </div>
                             </div>
@@ -464,7 +464,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                             <tbody>
                                 <tr class="table-light fw-bold"><td colspan="3"><i class="fa fa-cube me-1"></i> 1. Material Cost</td></tr>
                                 <tr>
-                                    <td>Material Cost (Price Ref USD ${d.pr_usd} &times; Kurs Rp ${fn(d.kurs_usd)} &times; Berat/m)</td>
+                                    <td>Material Cost (Price Ref USD ${d.pr_usd} &times; Rate Rp ${fn(d.kurs_usd)} &times; Weight/m)</td>
                                     <td class="text-end fw-bold">Rp ${fn(d.material_meter)}</td>
                                     <td class="text-end fw-bold">Rp ${fn(d.material_kg)}</td>
                                 </tr>
@@ -476,7 +476,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <td class="text-end">Rp ${fn(d.man_power_kg)}</td>
                                 </tr>
                                 <tr>
-                                    <td>Bahan Pendukung Khusus (BPK)</td>
+                                    <td>Special Supporting Material (BPK)</td>
                                     <td class="text-end">Rp ${fn(d.bpk_meter)}</td>
                                     <td class="text-end">Rp ${fn(d.bpk_kg)}</td>
                                 </tr>
@@ -486,7 +486,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <td class="text-end">Rp ${fn(d.foh_kg)}</td>
                                 </tr>
                                 <tr class="fw-bold bg-light">
-                                    <td>Subtotal Biaya Proses</td>
+                                    <td>Process Cost Subtotal</td>
                                     <td class="text-end text-primary">Rp ${fn(d.proses_meter)}</td>
                                     <td class="text-end text-primary">Rp ${fn(d.proses_kg)}</td>
                                 </tr>
@@ -503,7 +503,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <td class="text-end">Rp ${fn(d.scrap_kg)}</td>
                                 </tr>
                                 <tr>
-                                    <td>Biaya Koordinasi</td>
+                                    <td>Coordination Cost</td>
                                     <td class="text-end">Rp ${fn(d.koord_meter)}</td>
                                     <td class="text-end">Rp ${fn(d.koord_kg)}</td>
                                 </tr>
@@ -514,7 +514,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                 </tr>
 
                                 <tr class="table-secondary fw-bold fs-6">
-                                    <td>TOTAL HPP (Material + Biaya Proses + Support)</td>
+                                    <td>TOTAL HPP (Material + Process Cost + Support)</td>
                                     <td class="text-end">Rp ${fn(d.hpp_meter)}</td>
                                     <td class="text-end">Rp ${fn(d.hpp_kg)}</td>
                                 </tr>
@@ -549,7 +549,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                                     <td class="text-end text-success">Rp ${fn(d.pricelist_kg)}</td>
                                 </tr>
                                 <tr class="table-info fw-bold">
-                                    <td>PRICE LIST PRODUK (${d.ukuran} m &times; Price List/m)</td>
+                                    <td>PRODUCT PRICE LIST (${d.ukuran} m &times; Price List/m)</td>
                                     <td colspan="2" class="text-end text-primary fs-5">Rp ${fn(d.pricelist_pcs)}</td>
                                 </tr>
                             </tbody>
@@ -559,7 +559,7 @@ $ENABLE_MANAGE = has_permission('Simulasi_Costing.Manage');
                     $('#detail-body-content').html(html);
                 },
                 error: function(xhr) {
-                    $('#detail-body-content').html('<div class="alert alert-danger">Gagal memuat rincian costing (Status: ' + xhr.status + ')</div>');
+                    $('#detail-body-content').html('<div class="alert alert-danger">Failed to load costing details (Status: ' + xhr.status + ')</div>');
                 }
             });
         });

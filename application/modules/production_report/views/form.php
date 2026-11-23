@@ -430,7 +430,7 @@
   <!-- TOP HEADER -->
   <div class="pr-page-header">
     <div>
-      <h1>Input Laporan Produksi</h1>
+      <h1>Input Production Report</h1>
       <p>SPK: <strong><?= htmlspecialchars((string) $spk['spk_no']); ?></strong> &bull; Tgl SPK: <?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></p>
     </div>
     <div class="d-flex align-items-center gap-2">
@@ -440,6 +440,34 @@
       </a>
     </div>
   </div>
+
+  <?php if (!empty($costing_check) && !$costing_check['is_all_available']): ?>
+    <!-- BANNER PERINGATAN KETERSEDIAAN PRODUCT COSTING (FR-48, FR-74) -->
+    <div class="alert alert-warning border-warning shadow-sm mb-3 d-flex align-items-center justify-content-between p-3" id="costingWarningBanner">
+      <div class="d-flex align-items-start gap-3">
+        <div class="fs-3 text-warning lh-1 mt-1">
+          <i class="fa fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold mb-1 text-dark">Product Costing Data Incomplete (FR-48, FR-74)</h6>
+          <p class="mb-1 small text-dark">
+            The following products do not have a cost calculation result in the <strong>Costing Simulation</strong> module yet:
+            <strong class="text-danger">
+              <?= htmlspecialchars(implode(', ', array_unique(array_column($costing_check['missing_products'] ?? [], 'nm_produk')))); ?>
+            </strong>.
+          </p>
+          <div class="small text-muted">
+            <i class="fa fa-info-circle me-1"></i> You can still save this report as a <strong>Draft</strong>. However, the <strong>Save &amp; Submit Report</strong> button to Accounting will be locked until <em>Update Costing</em> is run on the related variants.
+          </div>
+        </div>
+      </div>
+      <div class="ms-3 text-nowrap">
+        <a href="<?= site_url('simulasi_costing'); ?>" target="_blank" class="btn btn-warning btn-sm fw-bold">
+          <i class="fa fa-calculator me-1"></i> Open Costing Simulation <i class="fa fa-external-link ms-1"></i>
+        </a>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <form id="prodForm" novalidate>
     <input type="hidden" name="spk_no" value="<?= htmlspecialchars((string) $spk['spk_no']); ?>">
@@ -451,17 +479,17 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">1</span> Informasi Laporan</h2>
-          <div class="pr-card-hint">Data SPK &amp; jadwal produksi (read-only info SPK). Lengkapi data mesin dan operator di bawah.</div>
+          <div class="pr-card-hint">SPK data &amp; production schedule (read-only SPK info). Complete the machine and operator data below.</div>
         </div>
       </div>
       <div class="pr-card-body">
         <div class="meta-strip-spk">
           <div class="meta-item">
-            <span class="meta-label">Nomor SPK</span>
+            <span class="meta-label">SPK Number</span>
             <span class="meta-value"><?= htmlspecialchars((string) $spk['spk_no']); ?></span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Tanggal SPK</span>
+            <span class="meta-label">SPK Date</span>
             <span class="meta-value"><?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])); ?></span>
           </div>
           <div class="meta-item">
@@ -469,7 +497,7 @@
             <span class="meta-value text-primary"><?= number_format(!empty($spk['target_qty']) ? $spk['target_qty'] : (!empty($spk['total_target_qty']) ? $spk['total_target_qty'] : 0), 0, ',', '.'); ?> pcs</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Catatan SPK</span>
+            <span class="meta-label">SPK Notes</span>
             <span class="meta-value text-muted"><?= !empty($spk['catatan']) ? htmlspecialchars((string) $spk['catatan']) : '-'; ?></span>
           </div>
         </div>
@@ -490,12 +518,12 @@
           </div>
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Helper Name <span class="text-danger">*</span></label>
-            <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Pilih 1 atau Lebih Helper --" required>
+            <select class="form-select form-select-sm select2" id="employee_helper" name="employee_helper[]" multiple="multiple" data-placeholder="-- Select 1 or More Helpers --" required>
               <?php foreach ($helpers as $e): ?>
                 <option value="<?= htmlspecialchars((string) $e['nm_karyawan']); ?>"><?= htmlspecialchars((string) $e['nm_karyawan']); ?></option>
               <?php endforeach; ?>
             </select>
-            <div class="form-text small text-muted" style="font-size: 11px;">Bisa pilih lebih dari 1 helper</div>
+            <div class="form-text small text-muted" style="font-size: 11px;">More than 1 helper can be selected</div>
           </div>
           <div class="col-md-3">
             <label class="form-label fw-semibold small">Setter Name <span class="text-danger">*</span></label>
@@ -523,7 +551,7 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">2</span> Add Coil (Sumber Material)</h2>
-          <div class="pr-card-hint">Pilih baby coil dari Gudang Unpack, WIP, atau Hold. Tarik data berat &amp; meter otomatis.</div>
+          <div class="pr-card-hint">Select a baby coil from the Unpack, WIP, or Hold Warehouse. Weight &amp; meter data are pulled automatically.</div>
         </div>
         <div class="btn-group btn-group-sm">
           <button type="button" class="btn btn-outline-primary" data-add-coil="unpack"><i class="fa fa-plus me-1"></i> Coil From Unpack</button>
@@ -536,7 +564,7 @@
           <table class="tbl-custom" id="coilTable">
             <thead>
               <tr>
-                <th style="width:100px">Sumber</th>
+                <th style="width:100px">Source</th>
                 <th style="width:230px">Baby Coil</th>
                 <th>Material Name</th>
                 <th class="num" style="width:120px">Nett (kg)<br><small class="text-muted">Pack List</small></th>
@@ -550,7 +578,7 @@
             <tbody></tbody>
             <tfoot>
               <tr>
-                <td colspan="9" class="empty" id="coilEmpty">Belum ada coil ditambahkan. Klik salah satu tombol di atas untuk menambah baby coil.</td>
+                <td colspan="9" class="empty" id="coilEmpty">No coils added yet. Click one of the buttons above to add a baby coil.</td>
               </tr>
             </tfoot>
           </table>
@@ -563,32 +591,32 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">3</span> Finish Good KW 1 &amp; Stok Bebas</h2>
-          <div class="pr-card-hint">KW 1 terisi dari SPK. Stok Bebas untuk sisa produksi di luar target SPK. Toleransi selisih aktual vs standar &plusmn; 0.7%.</div>
+          <div class="pr-card-hint">KW 1 is filled from the SPK. Free Stock is for remaining production outside the SPK target. Actual vs standard difference tolerance &plusmn; 0.7%.</div>
         </div>
         <div>
-          <span class="text-muted small"><i class="fa fa-info-circle me-1"></i>Maksimal baris mengikuti jumlah material coil</span>
+          <span class="text-muted small"><i class="fa fa-info-circle me-1"></i>The maximum number of rows follows the number of coil materials</span>
         </div>
       </div>
       <div class="pr-card-body">
         <div class="pr-subhead">
           <div class="d-flex align-items-center gap-2">
-            <h3 class="mb-0">Produk KW 1 (dari SPK)</h3>
-            <span class="badge bg-light text-secondary border small" id="kw1CountBadge">0 / 0 Baris</span>
+            <h3 class="mb-0">KW 1 Product (from SPK)</h3>
+            <span class="badge bg-light text-secondary border small" id="kw1CountBadge">0 / 0 Rows</span>
           </div>
           <button type="button" class="btn btn-sm btn-outline-primary" data-add-fg="kw1"><i class="fa fa-plus me-1"></i> Add Produk KW 1</button>
         </div>
         <div id="fgList"></div>
-        <div class="empty text-center text-muted py-2" id="fgEmpty" style="display:none">Belum ada baris Produk KW 1 ditambahkan. Tambahkan baris material coil terlebih dahulu.</div>
+        <div class="empty text-center text-muted py-2" id="fgEmpty" style="display:none">No KW 1 Product rows added yet. Add a coil material row first.</div>
 
         <div class="pr-subhead mt-4">
           <div class="d-flex align-items-center gap-2">
-            <h3 class="mb-0">Stok Bebas</h3>
-            <span class="badge bg-light text-secondary border small" id="bebasCountBadge">0 / 0 Baris</span>
+            <h3 class="mb-0">Free Stock</h3>
+            <span class="badge bg-light text-secondary border small" id="bebasCountBadge">0 / 0 Rows</span>
           </div>
           <button type="button" class="btn btn-sm btn-outline-primary" data-add-fg="bebas"><i class="fa fa-plus me-1"></i> Add Stok Bebas</button>
         </div>
         <div id="bebasList"></div>
-        <div class="empty text-center text-muted py-2" id="bebasEmpty">Belum ada Stok Bebas ditambahkan. Tambahkan baris material coil terlebih dahulu.</div>
+        <div class="empty text-center text-muted py-2" id="bebasEmpty">No Free Stock added yet. Add a coil material row first.</div>
       </div>
     </section>
 
@@ -597,7 +625,7 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">4</span> Finish Good KW 2</h2>
-          <div class="pr-card-hint">Dipisah KW 2 Internal dan Supplier. Nama otomatis di-generate: {Produk}-KW2-{I/S}-01, ...</div>
+          <div class="pr-card-hint">KW 2 Internal and Supplier are separated. Names are generated automatically: {Produk}-KW2-{I/S}-01, ...</div>
         </div>
       </div>
       <div class="pr-card-body">
@@ -614,17 +642,17 @@
                 <th style="width:250px">Baby Coil Terpakai</th>
                 <th class="num" style="width:95px">Size (m)</th>
                 <th class="num" style="width:95px">Qty</th>
-                <th class="num" style="width:110px">Berat Total (kg)</th>
-                <th class="num" style="width:110px">Berat/Pcs (kg)</th>
-                <th>Nama KW 2</th>
-                <th>Keterangan</th>
+                <th class="num" style="width:110px">Total Weight (kg)</th>
+                <th class="num" style="width:110px">Weight/Pcs (kg)</th>
+                <th>KW 2 Name</th>
+                <th>Description</th>
                 <th style="width:40px"></th>
               </tr>
             </thead>
             <tbody></tbody>
             <tfoot>
               <tr>
-                <td colspan="10" class="empty">Belum ada KW 2 Internal.</td>
+                <td colspan="10" class="empty">No KW 2 Internal yet.</td>
               </tr>
             </tfoot>
           </table>
@@ -643,17 +671,17 @@
                 <th style="width:250px">Baby Coil Terpakai</th>
                 <th class="num" style="width:95px">Size (m)</th>
                 <th class="num" style="width:95px">Qty</th>
-                <th class="num" style="width:110px">Berat Total (kg)</th>
-                <th class="num" style="width:110px">Berat/Pcs (kg)</th>
-                <th>Nama KW 2</th>
-                <th>Keterangan</th>
+                <th class="num" style="width:110px">Total Weight (kg)</th>
+                <th class="num" style="width:110px">Weight/Pcs (kg)</th>
+                <th>KW 2 Name</th>
+                <th>Description</th>
                 <th style="width:40px"></th>
               </tr>
             </thead>
             <tbody></tbody>
             <tfoot>
               <tr>
-                <td colspan="10" class="empty">Belum ada KW 2 Supplier.</td>
+                <td colspan="10" class="empty">No KW 2 Supplier yet.</td>
               </tr>
             </tfoot>
           </table>
@@ -666,7 +694,7 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">5</span> Sisa Coil &amp; Hold Coil</h2>
-          <div class="pr-card-hint">Sisa Coil masuk Gudang WIP. Baris Hold Coil otomatis masuk ke seksi Claim Material (FR-98).</div>
+          <div class="pr-card-hint">Remaining Coil goes into the WIP Warehouse. Hold Coil rows go into the Material Claim section automatically (FR-98).</div>
         </div>
       </div>
       <div class="pr-card-body">
@@ -674,8 +702,8 @@
         <div class="mb-4">
           <div class="pr-subhead">
             <div class="d-flex align-items-center gap-2">
-              <h3 class="mb-0">Sisa Coil</h3>
-              <span class="badge bg-light text-secondary border small" id="sisaCountBadge">0 / 0 Baris</span>
+              <h3 class="mb-0">Remaining Coil</h3>
+              <span class="badge bg-light text-secondary border small" id="sisaCountBadge">0 / 0 Rows</span>
             </div>
             <button type="button" class="btn btn-sm btn-outline-secondary" id="addSisa"><i class="fa fa-plus me-1"></i> Add Sisa</button>
           </div>
@@ -684,14 +712,14 @@
               <thead>
                 <tr>
                   <th>Baby Coil Terpakai</th>
-                  <th class="num" style="width:180px">Berat Sisa (kg)</th>
+                  <th class="num" style="width:180px">Remaining Weight (kg)</th>
                   <th style="width:50px"></th>
                 </tr>
               </thead>
               <tbody></tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="empty">Tidak ada sisa coil.</td>
+                  <td colspan="3" class="empty">No remaining coils.</td>
                 </tr>
               </tfoot>
             </table>
@@ -703,7 +731,7 @@
           <div class="pr-subhead">
             <div class="d-flex align-items-center gap-2">
               <h3 class="mb-0">Hold Coil</h3>
-              <span class="badge bg-light text-secondary border small" id="holdCountBadge">0 / 0 Baris</span>
+              <span class="badge bg-light text-secondary border small" id="holdCountBadge">0 / 0 Rows</span>
             </div>
             <button type="button" class="btn btn-sm btn-outline-danger" id="addHold"><i class="fa fa-plus me-1"></i> Add Hold</button>
           </div>
@@ -712,20 +740,20 @@
               <thead>
                 <tr>
                   <th>Baby Coil Terpakai</th>
-                  <th class="num" style="width:180px">Berat Hold (kg)</th>
+                  <th class="num" style="width:180px">Hold Weight (kg)</th>
                   <th style="width:50px"></th>
                 </tr>
               </thead>
               <tbody></tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="empty">Tidak ada hold coil.</td>
+                  <td colspan="3" class="empty">No hold coils.</td>
                 </tr>
               </tfoot>
             </table>
           </div>
           <div class="alert alert-warning py-2 mt-2 small" id="holdNote" style="display:none">
-            <i class="fa fa-info-circle me-1"></i> Ada Hold Coil — baris klaim otomatis dibuat di <strong>Card 7. Claim Material</strong>. Anda dapat menyimpan laporan sebagai <strong>Draft</strong>, namun <strong>Submit</strong> dikunci sampai Purchasing memutuskan klaim tersebut (FR-18, FR-98).
+            <i class="fa fa-info-circle me-1"></i> There is a Hold Coil — claim rows are created automatically in <strong>Card 7. Claim Material</strong>. You can save the report as a <strong>Draft</strong>, but <strong>Submit</strong> is locked until Purchasing decides the claim (FR-18, FR-98).
           </div>
         </div>
       </div>
@@ -736,7 +764,7 @@
       <div class="pr-card-header">
         <div>
           <h2 class="pr-card-title"><span class="pr-card-num">6</span> Komponen Scrap</h2>
-          <div class="pr-card-hint">Input berat scrap produksi (Tong, Wrapping, Potongan Pisau, serta Reject Internal &amp; Supplier).</div>
+          <div class="pr-card-hint">Input production scrap weights (Drum, Wrapping, Knife Trimmings, and Internal &amp; Supplier Rejects).</div>
         </div>
       </div>
       <div class="pr-card-body">
@@ -765,7 +793,7 @@
                 <th style="width:140px">Kelompok</th>
                 <th class="num" style="width:180px">Reject Product (kg)</th>
                 <th class="num" style="width:180px">Reject Material Plat (kg)</th>
-                <th>Keterangan Reject</th>
+                <th>Reject Description</th>
               </tr>
             </thead>
             <tbody>
@@ -773,13 +801,13 @@
                 <td><strong>Internal</strong></td>
                 <td class="num"><input type="number" step="0.01" min="0" class="form-control form-control-sm scrap-in text-end" id="rejProdInt" value="0"></td>
                 <td class="num"><input type="number" step="0.01" min="0" class="form-control form-control-sm scrap-in text-end" id="rejMatInt" value="0"></td>
-                <td><input type="text" class="form-control form-control-sm" id="rejKetInt" placeholder="Catatan reject internal..."></td>
+                <td><input type="text" class="form-control form-control-sm" id="rejKetInt" placeholder="Internal reject notes..."></td>
               </tr>
               <tr>
                 <td><strong>Supplier</strong></td>
                 <td class="num"><input type="number" step="0.01" min="0" class="form-control form-control-sm scrap-in text-end" id="rejProdSup" value="0"></td>
                 <td class="num"><input type="number" step="0.01" min="0" class="form-control form-control-sm scrap-in text-end" id="rejMatSup" value="0"></td>
-                <td><input type="text" class="form-control form-control-sm" id="rejKetSup" placeholder="Catatan reject supplier..."></td>
+                <td><input type="text" class="form-control form-control-sm" id="rejKetSup" placeholder="Supplier reject notes..."></td>
               </tr>
             </tbody>
           </table>
@@ -796,8 +824,8 @@
     <section class="pr-card" id="cardClaimMaterial">
       <div class="pr-card-header">
         <div>
-          <h2 class="pr-card-title"><span class="pr-card-num">7</span> Claim Material / Ajukan Claim <span class="badge bg-light text-secondary border small ms-2" id="claimCountBadge">0 Baris</span></h2>
-          <div class="pr-card-hint">Baris Hold Coil, KW 2 (Supplier), dan Reject (Supplier) otomatis terdeteksi dan muncul di sini. Lengkapi Problem, Alasan Produksi, dan upload bukti berkas (maks. 5 MB/berkas).</div>
+          <h2 class="pr-card-title"><span class="pr-card-num">7</span> Claim Material / Ajukan Claim <span class="badge bg-light text-secondary border small ms-2" id="claimCountBadge">0 Rows</span></h2>
+          <div class="pr-card-hint">Hold Coil, KW 2 (Supplier), and Reject (Supplier) rows are detected automatically and appear here. Complete the Problem, Production Reason, and upload evidence files (max. 5 MB/file).</div>
         </div>
       </div>
       <div class="pr-card-body">
@@ -808,12 +836,12 @@
                 <tr>
                   <th style="width:110px">Asal</th>
                   <th style="width:140px">Baby Coil</th>
-                  <th>Nama Material</th>
+                  <th>Material Name</th>
                   <th>Supplier</th>
                   <th>No. PO</th>
                   <th>No. Coil PL</th>
-                  <th class="num" style="width:110px">Berat (kg)</th>
-                  <th class="num" style="width:110px">Harga/Kg</th>
+                  <th class="num" style="width:110px">Weight (kg)</th>
+                  <th class="num" style="width:110px">Price/Kg</th>
                   <th class="num" style="width:110px">Costbook/Kg</th>
                   <th class="num" style="width:110px">Price/Unit PO</th>
                   <th style="width:150px">Problem <span class="text-danger">*</span></th>
@@ -823,13 +851,13 @@
                 </tr>
               </thead>
               <tbody id="claimTbody">
-                <tr><td colspan="14" class="empty text-muted">Tidak ada Hold Coil, KW 2 (Supplier), atau Reject (Supplier) pada laporan ini.</td></tr>
+                <tr><td colspan="14" class="empty text-muted">There is no Hold Coil, KW 2 (Supplier), or Reject (Supplier) in this report.</td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div class="alert alert-info py-2 mt-2 small">
-          <i class="fa fa-info-circle me-1"></i> <strong>Bukti Dokumen Pendukung Wajib:</strong> Lampirkan minimal 1 berkas per baris claim (foto coil defect, video masalah, atau berita acara QC; maksimal 5 MB per berkas). Berkas akan disimpan bersama tiket claim ke Purchasing.
+          <i class="fa fa-info-circle me-1"></i> <strong>Required Supporting Documents:</strong> Attach at least 1 file per claim row (photo of the coil defect, video of the problem, or QC official report; maximum 5 MB per file). The files will be saved with the claim ticket to Purchasing.
         </div>
       </div>
     </section>
@@ -857,7 +885,7 @@
             <span class="sm-v" id="sumScrap">0,00 kg</span>
           </div>
           <div class="summary-box">
-            <span class="sm-k">Total Sisa Coil</span>
+            <span class="sm-k">Total Remaining Coil</span>
             <span class="sm-v" id="sumSisa">0,00 kg</span>
           </div>
           <div class="summary-box">
@@ -892,7 +920,7 @@
       <div class="pr-card-header bg-light">
         <div>
           <h2 class="pr-card-title text-danger"><span class="pr-card-num text-danger">9</span> Jejak Konfirmasi Selisih</h2>
-          <div class="pr-card-hint">Daftar konfirmasi selisih di luar toleransi &plusmn; 0,7% beserta identitas dan waktu konfirmasi.</div>
+          <div class="pr-card-hint">List of confirmed differences outside the &plusmn; 0.7% tolerance, with confirmer identity and time.</div>
         </div>
       </div>
       <div class="pr-card-body p-0">
@@ -903,7 +931,7 @@
               <th>Objek</th>
               <th class="num" style="width:120px">% Selisih</th>
               <th>Pernyataan</th>
-              <th style="width:200px">Dikonfirmasi Oleh</th>
+              <th style="width:200px">Confirmed By</th>
               <th style="width:160px">Waktu</th>
             </tr>
           </thead>
@@ -915,14 +943,14 @@
     <!-- ACTION BAR -->
     <div class="actionbar">
       <div>
-        <span id="gateMsg" class="text-muted small">Simpan Draft selalu aktif. Submit dikunci jika terdapat Hold Coil yang menunggu keputusan Purchasing.</span>
+        <span id="gateMsg" class="text-muted small">Save Draft is always active. Submit is locked if there is a Hold Coil awaiting a Purchasing decision.</span>
       </div>
       <div class="d-flex gap-2">
         <button type="button" class="btn btn-outline-secondary px-3" id="btnDraft">
           <i class="fa fa-save me-1"></i> Save Draft
         </button>
         <button type="submit" class="btn btn-primary px-4" id="btnSave">
-          <i class="fa fa-check-circle me-1"></i> Simpan &amp; Submit Laporan
+          <i class="fa fa-check-circle me-1"></i> Save &amp; Submit Report
         </button>
       </div>
     </div>
@@ -944,7 +972,7 @@
       </div>
       <div class="modal-footer bg-light py-2">
         <button type="button" class="btn btn-secondary btn-sm" id="tolCancel" data-bs-dismiss="modal">Perbaiki Data</button>
-        <button type="button" class="btn btn-primary btn-sm" id="tolAck">Sudah Sesuai Aktual</button>
+        <button type="button" class="btn btn-primary btn-sm" id="tolAck">Matches Actual</button>
       </div>
     </div>
   </div>
@@ -969,6 +997,8 @@
   var SPK_PRODUCTS = <?= json_encode($spk_products); ?>;
   var ALL_PRODUCTS = <?= json_encode($all_products); ?>;
   var DRAFT_DATA = <?= !empty($draft) ? json_encode($draft) : 'null'; ?>;
+  var COSTING_CHECK = <?= json_encode(!empty($costing_check) ? $costing_check : ['is_all_available' => true, 'missing_products' => []]); ?>;
+  var SIMULASI_COSTING_URL = "<?= site_url('simulasi_costing'); ?>";
   var CURRENT_USER = {
     name: <?= json_encode($this->auth->user_name()); ?>,
     role: "User"
@@ -981,9 +1011,9 @@
   var TOLERANCE = 0.7; // ± 0.7%
 
   var SRC_LABEL = {
-    unpack: "Gudang Unpack",
-    wip: "Gudang WIP",
-    hold: "Gudang Hold"
+    unpack: "Unpack Warehouse",
+    wip: "WIP Warehouse",
+    hold: "Hold Warehouse"
   };
 
   // GLOBAL STATE
@@ -1028,7 +1058,7 @@
         theme: 'bootstrap-5',
         width: '100%',
         placeholder: function() {
-          return $(this).data('placeholder') || $(this).find('option:first').text() || '-- Pilih --';
+          return $(this).data('placeholder') || $(this).find('option:first').text() || '-- Select --';
         },
         allowClear: true
       });
@@ -1068,7 +1098,7 @@
         }
       });
     }
-    var opts = '<option value="">— Pilih Baby Coil Terpakai —</option>';
+    var opts = '<option value="">— Select Used Baby Coil —</option>';
     $.each(state.coils, function(i, c) {
       if (c.code && !usedCoils[c.code]) {
         opts += '<option value="' + c.code + '">' + c.code + ' · ' + c.material + '</option>';
@@ -1086,7 +1116,7 @@
         }
       });
     }
-    var opts = '<option value="">— Pilih Baby Coil Terpakai —</option>';
+    var opts = '<option value="">— Select Used Baby Coil —</option>';
     $.each(state.coils, function(i, c) {
       if (c.code && !usedCoils[c.code]) {
         opts += '<option value="' + c.code + '">' + c.code + ' · ' + c.material + '</option>';
@@ -1096,7 +1126,7 @@
   }
 
   function kw2CoilOptions(currentKw2Id, currentType) {
-    var opts = '<option value="">— Pilih Baby Coil Terpakai —</option>';
+    var opts = '<option value="">— Select Used Baby Coil —</option>';
     $.each(state.coils, function(i, c) {
       if (c.code) {
         opts += '<option value="' + c.code + '">' + c.code + ' · ' + c.material + '</option>';
@@ -1106,7 +1136,7 @@
   }
 
   function allProductOptions(selectedId) {
-    var opts = '<option value="">— Pilih Master Produk —</option>';
+    var opts = '<option value="">— Select Master Product —</option>';
     $.each(ALL_PRODUCTS, function(i, p) {
       var sel = (String(p.id) === String(selectedId)) ? ' selected' : '';
       var w = p.weight ? p.weight : 0;
@@ -1116,7 +1146,7 @@
   }
 
   function spkProductOptions(selectedId) {
-    var opts = '<option value="">— Pilih Produk dari SPK —</option>';
+    var opts = '<option value="">— Select Product from SPK —</option>';
     $.each(SPK_PRODUCTS, function(i, sp) {
       var prodId = sp.id_product_lvl_4 || sp.product_lvl_4_id || sp.id_produk_fg;
       var sel = (String(prodId) === String(selectedId)) ? ' selected' : '';
@@ -1135,7 +1165,7 @@
       }
     });
 
-    var opts = '<option value="">— Pilih Baby Coil —</option>';
+    var opts = '<option value="">— Select Baby Coil —</option>';
     var foundSelected = false;
 
     $.each(list, function(i, c) {
@@ -1234,7 +1264,7 @@
       html += '  <td class="num">' + (c.kulit != null ? formatNum(c.kulit) : '—') + '</td>';
       html += '  <td class="num">' + (c.clamp != null ? formatNum(c.clamp) : '—') + '</td>';
       html += '  <td class="text-center">';
-      html += '    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" data-del-coil="' + c.id + '" title="Hapus">✕</button>';
+      html += '    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" data-del-coil="' + c.id + '" title="Delete">✕</button>';
       html += '  </td>';
       html += '</tr>';
     });
@@ -1287,7 +1317,7 @@
         }
       });
       if (alreadyCoil) {
-        Swal.fire('Material Sudah Dipilih', 'Baby Coil "' + code + '" sudah dipilih pada baris lain di Sumber Material.', 'warning');
+        Swal.fire('Material Already Selected', 'Baby Coil "' + code + '" has already been selected in another row in Material Source.', 'warning');
         renderCoils();
         return;
       }
@@ -1346,7 +1376,7 @@
   function addKw1() {
     var maxCoils = state.coils.length;
     if (maxCoils === 0) {
-      Swal.fire('Perhatian', 'Silakan tambahkan Baby Coil pada Sumber Material (Section 2) terlebih dahulu.', 'warning');
+      Swal.fire('Attention', 'Please add a Baby Coil in Material Source (Section 2) first.', 'warning');
       return;
     }
 
@@ -1354,7 +1384,7 @@
       return f.kind === 'kw1';
     }).length;
     if (currentKw1 >= maxCoils) {
-      Swal.fire('Maksimal Tercapai', 'Jumlah baris Produk KW 1 (' + currentKw1 + ') tidak boleh melebihi jumlah material coil (' + maxCoils + ' baris).', 'warning');
+      Swal.fire('Maximum Reached', 'KW 1 Product row count (' + currentKw1 + ') cannot exceed the number of coil materials (' + maxCoils + ' rows).', 'warning');
       return;
     }
 
@@ -1385,7 +1415,7 @@
   function addBebas() {
     var maxCoils = state.coils.length;
     if (maxCoils === 0) {
-      Swal.fire('Perhatian', 'Silakan tambahkan Baby Coil pada Sumber Material (Section 2) terlebih dahulu.', 'warning');
+      Swal.fire('Attention', 'Please add a Baby Coil in Material Source (Section 2) first.', 'warning');
       return;
     }
 
@@ -1393,7 +1423,7 @@
       return f.kind === 'bebas';
     }).length;
     if (currentBebas >= maxCoils) {
-      Swal.fire('Maksimal Tercapai', 'Jumlah baris Stok Bebas (' + currentBebas + ') tidak boleh melebihi jumlah material coil (' + maxCoils + ' baris).', 'warning');
+      Swal.fire('Maximum Reached', 'Free Stock row count (' + currentBebas + ') cannot exceed the number of coil materials (' + maxCoils + ' rows).', 'warning');
       return;
     }
 
@@ -1438,7 +1468,7 @@
       }
     }
 
-    var delBtn = '<button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" data-del-fg="' + f.id + '" title="Hapus Baris">✕</button>';
+    var delBtn = '<button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" data-del-fg="' + f.id + '" title="Delete Row">✕</button>';
 
     var html = '';
     html += '<div class="fg-card" data-id="' + f.id + '">';
@@ -1451,8 +1481,8 @@
     html += '  </div>';
     html += '  <div>';
     html += '    <div class="method-toggle mb-2">';
-    html += '      <label><input type="radio" name="m-' + f.id + '" value="1" ' + (p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Metode 1: Qty + Berat Total</span></label>';
-    html += '      <label><input type="radio" name="m-' + f.id + '" value="2" ' + (!p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Metode 2: Qty + Berat/Pcs</span></label>';
+    html += '      <label><input type="radio" name="m-' + f.id + '" value="1" ' + (p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Method 1: Qty + Total Weight</span></label>';
+    html += '      <label><input type="radio" name="m-' + f.id + '" value="2" ' + (!p1 ? 'checked' : '') + ' data-fg-method="' + f.id + '"> <span>Method 2: Qty + Weight/Pcs</span></label>';
     html += '    </div>';
 
     // Baris 1: Input Pokok
@@ -1466,11 +1496,11 @@
     html += '        <input type="number" min="0" step="1" data-fg-qty="' + f.id + '" class="form-control form-control-sm text-end" value="' + (f.qty || '') + '">';
     html += '      </div>';
     html += '      <div class="col-md-3">';
-    html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Berat Total (kg)' : 'Berat/Pcs (kg)') + '</label>';
+    html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Total Weight (kg)' : 'Weight/Pcs (kg)') + '</label>';
     html += '        <input type="number" min="0" step="0.01" data-fg-input="' + f.id + '" class="form-control form-control-sm text-end" value="' + (p1 ? (f.total || '') : (f.perPcs || '')) + '">';
     html += '      </div>';
     html += '      <div class="col-md-3">';
-    html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Berat/Pcs (kg)' : 'Berat Total (kg)') + '</label>';
+    html += '        <label class="form-label small fw-semibold mb-1">' + (p1 ? 'Weight/Pcs (kg)' : 'Total Weight (kg)') + '</label>';
     html += '        <input type="text" class="form-control form-control-sm bg-light text-end" readonly data-fg-derived="' + f.id + '" value="' + (p1 ? formatNum(f.perPcs) : formatNum(f.total)) + '">';
     html += '      </div>';
     html += '    </div>';
@@ -1486,11 +1516,11 @@
     html += '        <div><span class="selisih-badge ' + (Math.abs(f.selisih) > TOLERANCE ? 'bad' : 'ok') + '" data-fg-selisih="' + f.id + '">' + formatNum(f.selisih) + ' %</span></div>';
     html += '      </div>';
     html += '      <div class="col-md-2 border-start">';
-    html += '        <label class="form-label small text-muted mb-0 d-block">Panjang (m)</label>';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Length (m)</label>';
     html += '        <input type="text" class="form-control form-control-sm bg-white text-end" readonly data-fg-panjang="' + f.id + '" value="' + (f.panjang ? formatNum(f.panjang) : '-') + '">';
     html += '      </div>';
     html += '      <div class="col-md-2">';
-    html += '        <label class="form-label small text-muted mb-0 d-block">Aktual Berat / m</label>';
+    html += '        <label class="form-label small text-muted mb-0 d-block">Actual Weight / m</label>';
     html += '        <input type="text" class="form-control form-control-sm bg-white text-end text-primary fw-bold" readonly data-fg-berat-meter="' + f.id + '" value="' + (f.beratPerMeterAktual ? formatNum(f.beratPerMeterAktual, 4) : '-') + '">';
     html += '      </div>';
     html += '      <div class="col-md-2">';
@@ -1530,8 +1560,8 @@
     $('#bebasList').html(bebasHtml);
 
     var maxCoils = state.coils.length;
-    $('#kw1CountBadge').text(kw1.length + ' / ' + maxCoils + ' Baris');
-    $('#bebasCountBadge').text(bebas.length + ' / ' + maxCoils + ' Baris');
+    $('#kw1CountBadge').text(kw1.length + ' / ' + maxCoils + ' Row');
+    $('#bebasCountBadge').text(bebas.length + ' / ' + maxCoils + ' Row');
 
     if (kw1.length > 0) $('#fgEmpty').hide();
     else $('#fgEmpty').show();
@@ -1580,7 +1610,7 @@
     }
     f.selisih = (f.std > 0) ? ((f.perPcs - f.std) / f.std) * 100 : 0;
 
-    // Perhitungan Metrik Berat per Meter (Aktual, Std BOM, % Selisih)
+    // Perhitungan Metrik Weight per Meter (Aktual, Std BOM, % Selisih)
     f.beratPerMeterAktual = (f.panjang > 0) ? (f.perPcs / f.panjang) : 0;
     f.selisihMeter = (f.stdPerMeter > 0) ? ((f.beratPerMeterAktual - f.stdPerMeter) / f.stdPerMeter) * 100 : 0;
   }
@@ -1653,7 +1683,7 @@
       html += '  <td class="num"><input type="number" min="0" step="0.01" data-kw2-total="' + r.id + '" class="form-control form-control-sm text-end" value="' + (r.total || '') + '"></td>';
       html += '  <td class="num text-muted kw2-perpcs-col">' + formatNum(perPcs) + '</td>';
       html += '  <td><span class="badge bg-secondary">' + nama + '</span></td>';
-      html += '  <td><input type="text" data-kw2-ket="' + r.id + '" class="form-control form-control-sm" placeholder="Keterangan..." value="' + (r.ket || '') + '"></td>';
+      html += '  <td><input type="text" data-kw2-ket="' + r.id + '" class="form-control form-control-sm" placeholder="Description..." value="' + (r.ket || '') + '"></td>';
       html += '  <td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" data-del-kw2="' + r.id + '" data-type="' + type + '">✕</button></td>';
       html += '</tr>';
     });
@@ -1680,15 +1710,15 @@
   // ── SECTION 5: SISA & HOLD COIL ──
   function addLine(kind) {
     var maxCoils = state.coils.length;
-    var label = (kind === 'sisa') ? 'Sisa Coil' : 'Hold Coil';
+    var label = (kind === 'sisa') ? 'Remaining Coil' : 'Hold Coil';
 
     if (maxCoils === 0) {
-      Swal.fire('Perhatian', 'Silakan tambahkan Baby Coil pada Sumber Material (Section 2) terlebih dahulu.', 'warning');
+      Swal.fire('Attention', 'Please add a Baby Coil in Material Source (Section 2) first.', 'warning');
       return;
     }
 
     if (state[kind].length >= maxCoils) {
-      Swal.fire('Maksimal Tercapai', 'Jumlah baris ' + label + ' (' + state[kind].length + ') tidak boleh melebihi jumlah material coil (' + maxCoils + ' baris).', 'warning');
+      Swal.fire('Maximum Reached', 'Row count ' + label + ' (' + state[kind].length + ') cannot exceed the number of coil materials (' + maxCoils + ' rows).', 'warning');
       return;
     }
 
@@ -1725,7 +1755,7 @@
     // Update badge and disable button if max reached
     var badgeId = (kind === 'sisa') ? '#sisaCountBadge' : '#holdCountBadge';
     var btnId = (kind === 'sisa') ? '#addSisa' : '#addHold';
-    $(badgeId).text(rows.length + ' / ' + maxCoils + ' Baris');
+    $(badgeId).text(rows.length + ' / ' + maxCoils + ' Row');
     $(btnId).prop('disabled', (maxCoils === 0 || rows.length >= maxCoils));
 
     $.each(rows, function(i, r) {
@@ -1805,20 +1835,25 @@
     var over = (Math.abs(selisihPct) > TOLERANCE && netProd > 0);
     if (over) {
       $('#sumSelisihBox').addClass('bad');
-      $('#tolNote').text('⚠ Selisih ' + formatNum(selisihPct) + '% melebihi toleransi ± ' + TOLERANCE + '%. Perlu konfirmasi audit.');
+      $('#tolNote').text('⚠ Selisih ' + formatNum(selisihPct) + '% melebihi toleransi ± ' + TOLERANCE + '%. Audit confirmation required.');
     } else {
       $('#sumSelisihBox').removeClass('bad');
       $('#tolNote').text('Toleransi ± ' + TOLERANCE + '% terhadap Net Weight Produksi.');
     }
 
-    // Gate: Hold Coil check (FR-18, FR-98)
+    // Gate: Hold Coil check (FR-18, FR-98) & Costing check (FR-48, FR-74)
     var hasHold = (state.hold.length > 0);
+    var missingCosting = (COSTING_CHECK && !COSTING_CHECK.is_all_available);
+
     if (hasHold) {
       $('#holdNote').show();
-      $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> Ada Hold Coil — Simpan sebagai <strong>Draft</strong>. Submit menunggu keputusan Purchasing.</span>');
+      $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> There is a Hold Coil — Save as <strong>Draft</strong>. Submit is waiting for a Purchasing decision.</span>');
+    } else if (missingCosting) {
+      $('#holdNote').hide();
+      $('#gateMsg').html('<span class="text-warning"><i class="fa fa-exclamation-triangle me-1"></i> Costing Incomplete — Save as <strong>Draft</strong> active. Submit is locked until Update Costing.</span>');
     } else {
       $('#holdNote').hide();
-      $('#gateMsg').text('Simpan Draft atau Submit Laporan.');
+      $('#gateMsg').text('Save Draft or Submit Report.');
     }
 
     renderClaims();
@@ -1894,7 +1929,7 @@
           fixed: true,
           berat_kg: b,
           defaultProblem: 'Hold Coil',
-          defaultAlasan: 'Material di-hold pada lini produksi',
+          defaultAlasan: 'Material held on the production line',
           problem: existing.problem !== undefined ? existing.problem : '',
           alasan: existing.alasan !== undefined ? existing.alasan : '',
           bukti: existing.bukti || [],
@@ -1921,7 +1956,7 @@
     $.each(kw2Group, function(cCode, g) {
       var key = 'KW 2 (Supplier):' + cCode;
       var existing = state.claimIn[key] || {};
-      var defAlasan = g.kets.length ? g.kets.join('; ') : 'Hasil KW 2 cacat dari supplier';
+      var defAlasan = g.kets.length ? g.kets.join('; ') : 'KW 2 output defective from supplier';
       rows.push({
         key: key,
         asal: 'KW 2 (Supplier)',
@@ -1955,9 +1990,9 @@
         fixed: false,
         berat_kg: rejProd,
         defaultProblem: 'Reject Product',
-        defaultAlasan: rejKet || 'Reject produk cacat dari supplier',
+        defaultAlasan: rejKet || 'Reject defective product from supplier',
         problem: existing.problem !== undefined ? existing.problem : 'Reject Product',
-        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject produk cacat dari supplier'),
+        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject defective product from supplier'),
         bukti: existing.bukti || [],
         status: existing.status || 'Dibuat saat Save'
       });
@@ -1973,9 +2008,9 @@
         fixed: false,
         berat_kg: rejMat,
         defaultProblem: 'Reject Material',
-        defaultAlasan: rejKet || 'Reject material plat cacat dari supplier',
+        defaultAlasan: rejKet || 'Reject defective plate material from supplier',
         problem: existing.problem !== undefined ? existing.problem : 'Reject Material',
-        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject material plat cacat dari supplier'),
+        alasan: existing.alasan !== undefined ? existing.alasan : (rejKet || 'Reject defective plate material from supplier'),
         bukti: existing.bukti || [],
         status: existing.status || 'Dibuat saat Save'
       });
@@ -1986,10 +2021,10 @@
 
   function renderClaims() {
     var rows = claimRows();
-    $('#claimCountBadge').text(rows.length + ' Baris');
+    $('#claimCountBadge').text(rows.length + ' Row');
 
     if (rows.length === 0) {
-      $('#claimTbody').html('<tr><td colspan="14" class="empty text-muted">Tidak ada Hold Coil, KW 2 (Supplier), atau Reject (Supplier) pada laporan ini.</td></tr>');
+      $('#claimTbody').html('<tr><td colspan="14" class="empty text-muted">There is no Hold Coil, KW 2 (Supplier), or Reject (Supplier) in this report.</td></tr>');
       return;
     }
 
@@ -2045,7 +2080,7 @@
           html += '</span>';
         });
       } else {
-        html += '      <span class="text-danger small fst-italic">Wajib lampirkan bukti</span>';
+        html += '      <span class="text-danger small fst-italic">Evidence must be attached</span>';
       }
       html += '    </div>';
       if (!lock) {
@@ -2105,7 +2140,7 @@
 
     $.each(files, function(i, file) {
       if (file.size > maxBytes) {
-        Swal.fire('File Terlalu Besar', 'Berkas "' + file.name + '" melebihi batas maksimal 5 MB dan tidak diunggah.', 'warning');
+        Swal.fire('File Too Large', 'File "' + file.name + '" exceeds the 5 MB limit and was not uploaded.', 'warning');
         return;
       }
 
@@ -2132,11 +2167,11 @@
             });
             renderClaims();
           } else {
-            Swal.fire('Gagal Upload', res.message || 'Gagal mengunggah berkas', 'error');
+            Swal.fire('Upload Failed', res.message || 'Failed to upload file', 'error');
           }
         },
         error: function(xhr, status, err) {
-          Swal.fire('Error', 'Terjadi kesalahan saat mengunggah berkas: ' + err, 'error');
+          Swal.fire('Error', 'An error occurred while uploading the file: ' + err, 'error');
         }
       });
     });
@@ -2194,7 +2229,7 @@
       ref: ctx.ref,
       label: ctx.label,
       selisih: ctx.selisih,
-      statement: ctx.statement || 'Sudah sesuai aktual',
+      statement: ctx.statement || 'Matches actual',
       user: CURRENT_USER.name,
       role: CURRENT_USER.role,
       ts: now.toISOString(),
@@ -2250,13 +2285,40 @@
 
     var calcRes = recalc();
 
+    // ── SUBMIT LOCK JIKA DATA PRODUCT COSTING BELUM LENGKAP (FR-48, FR-74) ──
+    if (!isDraft && COSTING_CHECK && !COSTING_CHECK.is_all_available) {
+      var missingList = (COSTING_CHECK.missing_products || []).map(function(p) {
+        return '<li><strong>' + (p.nm_produk || 'Produk') + '</strong> (Varian: ' + (p.no_uniq_id || '-') + ')</li>';
+      }).join('');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Report Submit Locked',
+        html: '<div class="text-start">' +
+              '<p>The Production Report cannot be submitted to Accounting because the <strong>Product Costing</strong> data for the following products has not been updated:</p>' +
+              '<ul>' + missingList + '</ul>' +
+              '<p class="mb-0 text-muted small"><i class="fa fa-info-circle me-1"></i> You can save the report as <strong>Draft</strong> first by pressing the <strong>Save Draft</strong>, button, or click the button below to open the Costing Simulation module.</p>' +
+              '</div>',
+        showCancelButton: true,
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="fa fa-external-link me-1"></i> Open Costing Simulation',
+        cancelButtonText: 'Close'
+      }).then(function(res) {
+        if (res.isConfirmed) {
+          window.open(SIMULASI_COSTING_URL, '_blank');
+        }
+      });
+      return;
+    }
+
     // ── SUBMIT LOCK JIKA ADA HOLD COIL (FR-18, FR-98) ──
     if (!isDraft && state.hold.length > 0) {
       Swal.fire({
         icon: 'warning',
-        title: 'Submit Laporan Dikunci',
-        html: 'Laporan memuat material <strong>Hold Coil</strong> yang menunggu keputusan Purchasing (FR-18, FR-98).<br><br>Silakan simpan laporan ini sebagai <strong>Draft</strong> dengan menekan tombol <strong>Save Draft</strong>.',
-        confirmButtonText: 'Tutup'
+        title: 'Report Submit Locked',
+        html: 'The report contains <strong>Hold Coil</strong> material awaiting a Purchasing decision (FR-18, FR-98).<br><br>Please save this report as a <strong>Draft</strong> by pressing the <strong>Save Draft</strong>.',
+        confirmButtonText: 'Close'
       });
       return;
     }
@@ -2269,18 +2331,18 @@
     if (claimList.length > 0) {
       $.each(claimList, function(i, r) {
         var meta = getCoilClaimMeta(r.coilCode) || {};
-        var n = 'Baris ' + (i + 1) + ' (' + r.asal + ')';
+        var n = 'Row ' + (i + 1) + ' (' + r.asal + ')';
         if (!r.coilCode) {
-          claimErr.push(n + ': Baby coil asal belum dipilih.');
+          claimErr.push(n + ': Source baby coil has not been selected.');
         }
         if (!r.problem || !String(r.problem).trim()) {
-          claimErr.push(n + ': Problem wajib diisi.');
+          claimErr.push(n + ': Problem is required.');
         }
         if (!r.alasan || !String(r.alasan).trim()) {
-          claimErr.push(n + ': Alasan Produksi wajib diisi.');
+          claimErr.push(n + ': Production Reason is required.');
         }
         if (!r.bukti || r.bukti.length === 0) {
-          claimErr.push(n + ': Bukti dokumen pendukung wajib diunggah minimal 1 berkas.');
+          claimErr.push(n + ': At least 1 supporting document must be uploaded.');
         }
 
         payloadClaims.push({
@@ -2305,7 +2367,7 @@
       if (claimErr.length > 0) {
         Swal.fire({
           icon: 'warning',
-          title: 'Isian Claim Material Belum Lengkap',
+          title: 'Material Claim Entry Incomplete',
           html: '<div class="text-start small"><ul><li>' + claimErr.join('</li><li>') + '</li></ul></div>',
           confirmButtonText: 'Lengkapi Data'
         });
@@ -2325,45 +2387,45 @@
       var finishedTime = $('#finishedTime').val();
 
       if (!tglProd) {
-        Swal.fire('Validasi Gagal', 'Tanggal Produksi wajib diisi.', 'warning');
+        Swal.fire('Validation Failed', 'Production Date is required.', 'warning');
         $('#tglProduksi').focus();
         return;
       }
       if (!idMachine) {
-        Swal.fire('Validasi Gagal', 'Mesin produksi wajib dipilih.', 'warning');
+        Swal.fire('Validation Failed', 'A production machine is required.', 'warning');
         $('#id_asset_machine').select2('open');
         return;
       }
       if (!empHelper || (Array.isArray(empHelper) && empHelper.length === 0)) {
-        Swal.fire('Validasi Gagal', 'Helper Name wajib dipilih minimal 1 orang.', 'warning');
+        Swal.fire('Validation Failed', 'At least 1 Helper Name must be selected.', 'warning');
         $('#employee_helper').select2('open');
         return;
       }
       if (!empSetter) {
-        Swal.fire('Validasi Gagal', 'Setter Name wajib dipilih.', 'warning');
+        Swal.fire('Validation Failed', 'Setter Name is required.', 'warning');
         $('#employee_setter').select2('open');
         return;
       }
       if (!startTime) {
-        Swal.fire('Validasi Gagal', 'Start Time wajib diisi.', 'warning');
+        Swal.fire('Validation Failed', 'Start Time is required.', 'warning');
         $('#startTime').focus();
         return;
       }
       if (!finishedTime) {
-        Swal.fire('Validasi Gagal', 'Finished Time wajib diisi.', 'warning');
+        Swal.fire('Validation Failed', 'Finished Time is required.', 'warning');
         $('#finishedTime').focus();
         return;
       }
 
       // 2. Validasi Add Coil (Sumber Material) - Semua Mandatory
       if (state.coils.length === 0) {
-        Swal.fire('Validasi Gagal', 'Sumber Material (Add Coil) wajib ditambahkan minimal 1 baris.', 'warning');
+        Swal.fire('Validation Failed', 'Material Source (Add Coil) requires at least 1 row.', 'warning');
         return;
       }
       for (var cIdx = 0; cIdx < state.coils.length; cIdx++) {
         var c = state.coils[cIdx];
         if (!c.code) {
-          Swal.fire('Validasi Gagal', 'Baris ke-' + (cIdx + 1) + ' pada Sumber Material belum memilih Baby Coil.', 'warning');
+          Swal.fire('Validation Failed', 'Row ' + (cIdx + 1) + ' in Material Source has no Baby Coil selected.', 'warning');
           return;
         }
       }
@@ -2373,25 +2435,25 @@
         return f.kind === 'kw1';
       });
       if (kw1Rows.length === 0) {
-        Swal.fire('Validasi Gagal', 'Produk KW 1 (dari SPK) wajib diisi minimal 1 baris.', 'warning');
+        Swal.fire('Validation Failed', 'KW 1 Product (from SPK) requires at least 1 row.', 'warning');
         return;
       }
       for (var kIdx = 0; kIdx < kw1Rows.length; kIdx++) {
         var kw1 = kw1Rows[kIdx];
         if (!kw1.productId) {
-          Swal.fire('Validasi Gagal', 'Baris ke-' + (kIdx + 1) + ' Produk KW 1 belum memilih Produk.', 'warning');
+          Swal.fire('Validation Failed', 'Row' + (kIdx + 1) + ' Produk KW 1 belum memilih Produk.', 'warning');
           return;
         }
         if (!kw1.coil) {
-          Swal.fire('Validasi Gagal', 'Baris ke-' + (kIdx + 1) + ' Produk KW 1 belum memilih Baby Coil Terpakai.', 'warning');
+          Swal.fire('Validation Failed', 'Row' + (kIdx + 1) + ' Produk KW 1 belum memilih Baby Coil Terpakai.', 'warning');
           return;
         }
         if (getNum(kw1.qty) <= 0) {
-          Swal.fire('Validasi Gagal', 'Qty pada baris ke-' + (kIdx + 1) + ' Produk KW 1 harus lebih besar dari 0.', 'warning');
+          Swal.fire('Validation Failed', 'Qty on KW 1 Product row ' + (kIdx + 1) + ' must be greater than 0.', 'warning');
           return;
         }
         if (getNum(kw1.total) <= 0) {
-          Swal.fire('Validasi Gagal', 'Berat Total pada baris ke-' + (kIdx + 1) + ' Produk KW 1 harus lebih besar dari 0.', 'warning');
+          Swal.fire('Validation Failed', 'Total Weight on KW 1 Product row ' + (kIdx + 1) + ' must be greater than 0.', 'warning');
           return;
         }
       }
@@ -2413,9 +2475,9 @@
             auditQueue.push({
               scope: 'fg',
               ref: f.id,
-              label: f.productName + ' (' + (f.kind === 'bebas' ? 'Stok Bebas' : 'KW 1') + ')',
+              label: f.productName + ' (' + (f.kind === 'bebas' ? 'Free Stock' : 'KW 1') + ')',
               selisih: f.selisih,
-              msg: 'Produk "' + f.productName + '" memiliki selisih aktual ' + formatNum(f.selisih) + '% terhadap berat standar (' + formatNum(f.std) + ' kg/pcs). Toleransi maksimum ± ' + TOLERANCE + '%.'
+              msg: 'Produk "' + f.productName + '" memiliki selisih aktual ' + formatNum(f.selisih) + '% against the standard weight (' + formatNum(f.std) + ' kg/pcs). Toleransi maksimum ± ' + TOLERANCE + '%.'
             });
           }
         }
@@ -2444,7 +2506,7 @@
         var item = auditQueue[k];
         var ack = await openTolModal(item.msg, item);
         if (!ack) {
-          Swal.fire('Perhatian', 'Penyimpanan dibatalkan. Silakan sesuaikan data aktual.', 'info');
+          Swal.fire('Attention', 'Save cancelled. Please adjust the actual data.', 'info');
           return;
         }
       }
@@ -2608,7 +2670,7 @@
         jenis_scrap: 'sisa_coil',
         kode_baby_coil: s.coil,
         berat: s.berat,
-        keterangan: 'Masuk Gudang WIP'
+        keterangan: 'Into WIP Warehouse'
       });
     });
     $.each(state.hold, function(i, h) {
@@ -2616,18 +2678,18 @@
         jenis_scrap: 'hold_coil',
         kode_baby_coil: h.coil,
         berat: h.berat,
-        keterangan: 'Masuk Gudang Hold'
+        keterangan: 'Into Hold Warehouse'
       });
     });
 
     // Confirmation dialog
     Swal.fire({
-      title: isDraft ? 'Simpan Draft?' : 'Simpan Laporan Produksi?',
-      text: isDraft ? 'Data akan disimpan sebagai draft.' : 'Data produksi akan disimpan secara permanen.',
+      title: isDraft ? 'Save Draft?' : 'Save Production Report?',
+      text: isDraft ? 'The data will be saved as a draft.' : 'The production data will be saved permanently.',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Ya, Simpan',
-      cancelButtonText: 'Batal'
+      confirmButtonText: 'Yes, Save',
+      cancelButtonText: 'Cancel'
     }).then(function(res) {
       if (!res.isConfirmed) return;
 
@@ -2651,8 +2713,8 @@
           if (response.status == 1) {
             Swal.fire({
               icon: 'success',
-              title: 'Berhasil',
-              text: isDraft ? 'Draft laporan produksi berhasil disimpan!' : 'Laporan produksi berhasil disimpan!',
+              title: 'Success',
+              text: isDraft ? 'Production report draft saved successfully!' : 'Production report saved successfully!',
               timer: 1500,
               showConfirmButton: false
             }).then(function() {
@@ -2662,19 +2724,33 @@
             // Laporan tersimpan, tetapi jurnal GL Interface gagal dibuat
             Swal.fire({
               icon: 'warning',
-              title: 'Tersimpan dengan Catatan',
+              title: 'Saved with Notes',
               text: response.message,
               confirmButtonText: 'OK'
             }).then(function() {
               window.location.href = BASE_MODULE_URL;
             });
+          } else if (response.costing_missing) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Product Costing Incomplete',
+              html: response.message,
+              showCancelButton: true,
+              confirmButtonColor: '#f59e0b',
+              confirmButtonText: '<i class="fa fa-external-link me-1"></i> Open Costing Simulation',
+              cancelButtonText: 'Close'
+            }).then(function(res) {
+              if (res.isConfirmed) {
+                window.open(SIMULASI_COSTING_URL, '_blank');
+              }
+            });
           } else {
-            Swal.fire('Gagal', response.message || 'Terjadi kesalahan sistem.', 'error');
+            Swal.fire('Failed', response.message || 'A system error occurred.', 'error');
           }
         },
         error: function() {
           Swal.close();
-          Swal.fire('Error', 'Terjadi kesalahan jaringan atau server saat menyimpan.', 'error');
+          Swal.fire('Error', 'A network or server error occurred while saving.', 'error');
         }
       });
     });
@@ -2837,8 +2913,8 @@
           }
         });
         if (already) {
-          var labelKind = (currentKind === 'bebas') ? 'Stok Bebas' : 'Produk KW 1';
-          Swal.fire('Material Sudah Dipilih', 'Baby Coil "' + val + '" sudah dipilih di baris ' + labelKind + ' lainnya.', 'warning');
+          var labelKind = (currentKind === 'bebas') ? 'Free Stock' : 'KW 1 Product';
+          Swal.fire('Material Already Selected', 'Baby Coil "' + val + '" has already been selected in another ' + labelKind + ' row.', 'warning');
           $(this).val('').trigger('change.select2');
           return;
         }
@@ -3004,7 +3080,7 @@
           }
         });
         if (already) {
-          Swal.fire('Material Sudah Dipilih', 'Baby Coil "' + val + '" sudah dipilih di baris ' + (kind === 'sisa' ? 'Sisa Coil' : 'Hold Coil') + ' lainnya.', 'warning');
+          Swal.fire('Material Already Selected', 'Baby Coil "' + val + '" has already been selected in another ' + (kind === 'sisa' ? 'Remaining Coil' : 'Hold Coil') + ' row.', 'warning');
           $(this).val('').trigger('change.select2');
           return;
         }
@@ -3255,9 +3331,9 @@
       return c.asal === 'Hold Coil' && (!c.decisions || c.decisions.length === 0);
     });
     if (pendingHold.length > 0) {
-      $('#docStatus').text('SPK Sedang Di-Hold (' + pendingHold[0].no_claim + ')').removeClass('bg-secondary bg-warning').addClass('bg-danger text-white');
+      $('#docStatus').text('SPK Is On Hold (' + pendingHold[0].no_claim + ')').removeClass('bg-secondary bg-warning').addClass('bg-danger text-white');
     } else {
-      $('#docStatus').text('Lanjutkan Draft').removeClass('bg-secondary').addClass('bg-warning text-dark');
+      $('#docStatus').text('Continue Draft').removeClass('bg-secondary').addClass('bg-warning text-dark');
     }
   }
 

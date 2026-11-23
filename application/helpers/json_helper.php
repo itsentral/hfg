@@ -358,7 +358,7 @@ function get_inventory_lv4_lv3()
 	$CI = &get_instance();
 	$listGetCategory4 = $CI->db->select('code_lv4 AS code, nama, "LEVEL 4" AS tanda')->get('new_inventory_4')->result_array();
 	$listGetCategory3 = $CI->db->select('code_lv3 AS code, nama, "LEVEL 3" AS tanda')->get('new_inventory_3')->result_array();
-	$listGetCategory	= array_merge($listGetCategory4, $listGetCategory3);
+	$listGetCategory	= array_merge($listGetCategory4 ?? [], $listGetCategory3 ?? []);
 
 	$ArrGetCategory = [];
 	foreach ($listGetCategory as $key => $value) {
@@ -687,15 +687,15 @@ function move_warehouse($ArrUpdateStock = null, $id_gudang_dari = null, $id_guda
 	$CI 	= &get_instance();
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
-	$kd_gudang_dari = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+	$kd_gudang_dari = strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	$kd_gudang_ke	= (!empty($id_gudang_ke)) ? $id_gudang_ke : $costcenter;
 	if ($id_gudang_ke != null) {
-		$kd_gudang_ke 	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+		$kd_gudang_ke 	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -879,15 +879,15 @@ function move_warehouse_stok($ArrUpdateStock = null, $id_gudang_dari = null, $id
 	$CI 	= &get_instance();
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
-	$kd_gudang_dari = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+	$kd_gudang_dari = strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	$kd_gudang_ke	= (!empty($id_gudang_ke)) ? $id_gudang_ke : $costcenter;
 	if ($id_gudang_ke != null) {
-		$kd_gudang_ke 	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+		$kd_gudang_ke 	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1119,15 +1119,15 @@ function move_warehouse_stok_non_product($ArrUpdateStock = null, $id_gudang_dari
 	$CI 	= &get_instance();
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
-	$kd_gudang_dari = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+	$kd_gudang_dari = strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	$kd_gudang_ke	= (!empty($id_gudang_ke)) ? $id_gudang_ke : $costcenter;
 	if ($id_gudang_ke != null) {
-		$kd_gudang_ke 	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+		$kd_gudang_ke 	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1361,16 +1361,16 @@ function move_warehouse_adjustment($ArrUpdateStock = null, $id_gudang_dari = nul
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
 
-	$kd_gudang_ke 		= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+	$kd_gudang_ke 		= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	$kd_gudang_dari 	= 'adjustment ' . $keterangan;
 
 	if ($id_gudang_dari != null) {
-		$kd_gudang_dari	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+		$kd_gudang_dari	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -1577,16 +1577,16 @@ function move_warehouse_stok_adjustment($ArrUpdateStock = null, $id_gudang_dari 
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
 
-	$kd_gudang_ke 		= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+	$kd_gudang_ke 		= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	$kd_gudang_dari 	= 'adjustment ' . $keterangan;
 
 	if ($id_gudang_dari != null) {
-		$kd_gudang_dari	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+		$kd_gudang_dari	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -2057,15 +2057,15 @@ function booking_warehouse($ArrUpdateStock = null, $id_gudang_dari = null, $id_g
 	$CI 	= &get_instance();
 	$dateTime		= date('Y-m-d H:i:s');
 	$UserName 		= $CI->auth->user_id();
-	$kd_gudang_dari = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
+	$kd_gudang_dari = strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_dari));
 	$kd_gudang_ke	= (!empty($id_gudang_ke)) ? $id_gudang_ke : $costcenter;
 	if ($id_gudang_ke != null) {
-		$kd_gudang_ke 	= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
+		$kd_gudang_ke 	= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $id_gudang_ke));
 	}
 	//grouping sum
 	$temp = [];
 	foreach ($ArrUpdateStock as $value) {
-		if (!array_key_exists($value['id'], $temp)) {
+		if (!array_key_exists($value['id'], $temp ?? [])) {
 			$temp[$value['id']] = 0;
 		}
 		$temp[$value['id']] += $value['qty'];
@@ -2268,7 +2268,7 @@ function checkInputMixingQty($id)
 	$temp = [];
 	if (!empty($listCheck)) {
 		foreach ($listCheck as $key => $value) {
-			if (!array_key_exists($value['id'], $temp)) {
+			if (!array_key_exists($value['id'], $temp ?? [])) {
 				$temp[$value['id']] = 0;
 			}
 			$temp[$value['id']] += 1;
@@ -2303,7 +2303,7 @@ function checkInputProduksiQty($id)
 	$temp = [];
 	if (!empty($listCheck)) {
 		foreach ($listCheck as $key => $value) {
-			if (!array_key_exists($value['id'], $temp)) {
+			if (!array_key_exists($value['id'], $temp ?? [])) {
 				$temp[$value['id']] = 0;
 			}
 			$temp[$value['id']] += 1;
@@ -2562,7 +2562,7 @@ function getValueChecksheetInputProduksi($id_spk, $qty_ke)
 function insert_br_every_50_words($inputString)
 {
 	// Split the string into words
-	$words = str_word_count($inputString, 1);
+	$words = str_word_count($inputString ?? '', 1);
 
 	// Initialize an empty result string
 	$result = '';
@@ -2639,84 +2639,11 @@ if (!function_exists('int_to_roman')) {
 }
 
 if (!function_exists('number_to_words')) {
-	function number_to_words($number)
-	{
-		$units = [
-			0 => 'nol',
-			1 => 'satu',
-			2 => 'dua',
-			3 => 'tiga',
-			4 => 'empat',
-			5 => 'lima',
-			6 => 'enam',
-			7 => 'tujuh',
-			8 => 'delapan',
-			9 => 'sembilan'
-		];
-
-		$teens = [
-			10 => 'sepuluh',
-			11 => 'sebelas',
-			12 => 'dua belas',
-			13 => 'tiga belas',
-			14 => 'empat belas',
-			15 => 'lima belas',
-			16 => 'enam belas',
-			17 => 'tujuh belas',
-			18 => 'delapan belas',
-			19 => 'sembilan belas'
-		];
-
-		$tens = [
-			20 => 'dua puluh',
-			30 => 'tiga puluh',
-			40 => 'empat puluh',
-			50 => 'lima puluh',
-			60 => 'enam puluh',
-			70 => 'tujuh puluh',
-			80 => 'delapan puluh',
-			90 => 'sembilan puluh'
-		];
-
-		$thousands = [
-			100 => 'seratus',
-			1000 => 'seribu'
-		];
-
-		$large_numbers = [
-			1000000 => 'juta',
-			1000000000 => 'miliar',
-			1000000000000 => 'triliun'
-		];
-
-		if ($number < 10) {
-			return $units[$number];
-		} elseif ($number < 20) {
-			return $teens[$number];
-		} elseif ($number < 100) {
-			$unit = $number % 10;
-			$ten = (int)($number / 10) * 10;
-			return $tens[$ten] . ($unit ? ' ' . $units[$unit] : '');
-		} elseif ($number < 1000) {
-			$hundred = (int)($number / 100);
-			$rest = $number % 100;
-			return ($hundred > 1 ? $units[$hundred] . ' ratus' : 'seratus') . ($rest ? ' ' . number_to_words($rest) : '');
-		} elseif ($number < 1000000) {
-			$thousand = (int)($number / 1000);
-			$rest = $number % 1000;
-			return ($thousand > 1 ? number_to_words($thousand) . ' ribu' : 'seribu') . ($rest ? ' ' . number_to_words($rest) : '');
-		} else {
-			foreach ($large_numbers as $value => $word) {
-				if ($number < $value * 1000) {
-					$quotient = (int)($number / $value);
-					$remainder = $number % $value;
-					return number_to_words($quotient) . ' ' . $word . ($remainder ? ' ' . number_to_words($remainder) : '');
-				}
-			}
-		}
-
-		return 'angka terlalu besar';
-	}
+    function number_to_words($number)
+    {
+        require_once __DIR__ . '/english_ui_helper.php';
+        return hfg_number_to_words_english($number);
+    }
 }
 
 if (!function_exists('rupiah_to_words')) {
@@ -2726,9 +2653,8 @@ if (!function_exists('rupiah_to_words')) {
 		list($integer, $decimal) = explode('.', (string) $amount);
 
 		$words = number_to_words((int)$integer);
-		$words .= ' ';
 		if ($decimal > 0) {
-			$words .= ' dan ' . number_to_words((int)$decimal) . ' sen';
+			$words .= ' and ' . number_to_words((int)$decimal) . ' sen';
 		}
 
 		return $words;

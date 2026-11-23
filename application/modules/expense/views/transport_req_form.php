@@ -38,28 +38,28 @@ $mod = isset($mod) ? $mod : '';
 					<?php 
 						if (isset($data->id) && $data->id != '') {
 							if ($stsview_val == 'view') {
-								echo 'Detail Pengajuan Transportasi';
+								echo 'Transport Request Detail';
 							} elseif ($mod == '_fin' || $stsview_val == 'approval') {
 								echo 'Verifikasi / Approval Finance Penggantian Transport';
 							} elseif ($mod == '_mgt') {
-								echo 'Persetujuan Management Penggantian Transport';
+								echo 'Transport Reimbursement Management Approval';
 							} else {
-								echo 'Edit Pengajuan Transportasi';
+								echo 'Edit Transport Request';
 							}
 						} else {
-							echo 'Form Pengajuan Penggantian Transport';
+							echo 'Transport Reimbursement Request Form';
 						}
 					?>
 				</h5>
 				<small class="text-muted"><?php
 					if ($stsview_val == 'view') {
-						echo 'Lihat rincian pengajuan penggantian transport (Readonly)';
+						echo 'View transport reimbursement request details (Read-only)';
 					} elseif ($is_approval) {
-						echo 'Periksa rincian pengajuan transport karyawan sebelum menyetujui atau menolak';
+						echo 'Check the employee transport request details before approving or rejecting';
 					} elseif ($is_view) {
-						echo 'Lihat rincian rekapitulasi transport';
+						echo 'View transport recap details';
 					} else {
-						echo 'Pilih karyawan dan periode untuk menarik data rekapitulasi perjalanan';
+						echo 'Select an employee and period to pull trip recap data';
 					}
 				?></small>
 			</div>
@@ -67,7 +67,7 @@ $mod = isset($mod) ? $mod : '';
 		<div>
 			<button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" onclick="list_view()">
 				<i class="fa fa-arrow-left"></i>
-				<span>Kembali</span>
+				<span>Back</span>
 			</button>
 		</div>
 	</div>
@@ -78,21 +78,21 @@ $mod = isset($mod) ? $mod : '';
 	<div class="card-body p-4">
 		<!-- Section 1: Informasi Header Pengajuan -->
 		<div class="p-3 mb-4 rounded-3 border bg-light">
-			<h6 class="fw-bold text-dark mb-3"><i class="fa fa-info-circle text-primary me-1"></i> Informasi Pengajuan</h6>
+			<h6 class="fw-bold text-dark mb-3"><i class="fa fa-info-circle text-primary me-1"></i> Request Information</h6>
 			<div class="row g-3">
 				<div class="col-md-3">
-					<label for="no_doc" class="form-label fw-semibold text-secondary small">No. Dokumen</label>
+					<label for="no_doc" class="form-label fw-semibold text-secondary small">Document No.</label>
 					<input type="text" class="form-control form-control-sm bg-white" id="no_doc" name="no_doc" value="<?= (isset($data->no_doc) ? $data->no_doc : ''); ?>" placeholder="Otomatis" readonly>
 				</div>
 				<div class="col-md-3">
-					<label for="tgl_doc" class="form-label fw-semibold text-secondary small">Tanggal Pengajuan <span class="text-danger">*</span></label>
+					<label for="tgl_doc" class="form-label fw-semibold text-secondary small">Request Date <span class="text-danger">*</span></label>
 					<div class="input-group input-group-sm">
 						<input type="text" class="form-control flatpickr-input bg-white" id="tgl_doc" name="tgl_doc" value="<?= $default_date; ?>" placeholder="YYYY-MM-DD" required <?= $is_view ? 'disabled' : ''; ?>>
 						<span class="input-group-text bg-white" onclick="$('#tgl_doc').focus()"><i class="fa fa-calendar text-muted"></i></span>
 					</div>
 				</div>
 				<div class="col-md-3">
-					<label for="nama" class="form-label fw-semibold text-secondary small">Nama Karyawan <span class="text-danger">*</span></label>
+					<label for="nama" class="form-label fw-semibold text-secondary small">Employee Name <span class="text-danger">*</span></label>
 					<select class="form-select form-select-sm select2-transport" id="nama" name="nama" required <?= $is_view ? 'disabled' : ''; ?>>
 						<option value="">-- Pilih Karyawan --</option>
 						<?php if (!empty($data_employee)): ?>
@@ -121,10 +121,10 @@ $mod = isset($mod) ? $mod : '';
 					</select>
 				</div>
 				<div class="col-md-3">
-					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Departemen</label>
+					<label for="nama_departement" class="form-label fw-semibold text-secondary small">Department</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-light text-muted"><i class="fa fa-building"></i></span>
-						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Otomatis mengikuti karyawan" readonly>
+						<input type="text" class="form-control bg-light fw-medium" id="nama_departement" value="<?= htmlspecialchars((string) $selected_dept_name); ?>" placeholder="Automatically follows the employee" readonly>
 					</div>
 					<input type="hidden" id="departement" name="departement" value="<?= htmlspecialchars((string) $selected_dept); ?>">
 				</div>
@@ -151,7 +151,7 @@ $mod = isset($mod) ? $mod : '';
 			<div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
 				<i class="fa fa-exclamation-triangle fs-4 me-3"></i>
 				<div>
-					<h6 class="alert-heading fw-bold mb-1">Pengajuan Ditolak!</h6>
+					<h6 class="alert-heading fw-bold mb-1">Request Rejected!</h6>
 					<div>Alasan: <?= htmlspecialchars((string) $data->st_reject); ?></div>
 				</div>
 			</div>
@@ -162,24 +162,24 @@ $mod = isset($mod) ? $mod : '';
 			<h6 class="fw-bold text-dark mb-3"><i class="fa fa-credit-card text-success me-1"></i> Informasi Rekening Transfer</h6>
 			<div class="row g-3">
 				<div class="col-md-4">
-					<label for="bank_id" class="form-label fw-semibold text-secondary small">Nama Bank</label>
+					<label for="bank_id" class="form-label fw-semibold text-secondary small">Bank Name</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-university"></i></span>
 						<input type="text" class="form-control bg-white" id="bank_id" name="bank_id" value="<?= htmlspecialchars((string) $bank_id); ?>" placeholder="Contoh: BCA / Mandiri / BNI" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 				<div class="col-md-4">
-					<label for="accnumber" class="form-label fw-semibold text-secondary small">Nomor Rekening</label>
+					<label for="accnumber" class="form-label fw-semibold text-secondary small">Account Number</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-hashtag"></i></span>
-						<input type="text" class="form-control bg-white" id="accnumber" name="accnumber" value="<?= htmlspecialchars((string) $accnumber); ?>" placeholder="Nomor rekening transfer" <?= $is_view ? 'readonly' : ''; ?>>
+						<input type="text" class="form-control bg-white" id="accnumber" name="accnumber" value="<?= htmlspecialchars((string) $accnumber); ?>" placeholder="Transfer account number" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 				<div class="col-md-4">
-					<label for="accname" class="form-label fw-semibold text-secondary small">Atas Nama Rekening</label>
+					<label for="accname" class="form-label fw-semibold text-secondary small">Account Holder Name</label>
 					<div class="input-group input-group-sm">
 						<span class="input-group-text bg-white text-muted"><i class="fa fa-user"></i></span>
-						<input type="text" class="form-control bg-white" id="accname" name="accname" value="<?= htmlspecialchars((string) $accname); ?>" placeholder="Nama pemilik rekening" <?= $is_view ? 'readonly' : ''; ?>>
+						<input type="text" class="form-control bg-white" id="accname" name="accname" value="<?= htmlspecialchars((string) $accname); ?>" placeholder="Account holder name" <?= $is_view ? 'readonly' : ''; ?>>
 					</div>
 				</div>
 			</div>
@@ -190,13 +190,13 @@ $mod = isset($mod) ? $mod : '';
 			<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
 				<div>
 					<h6 class="fw-bold text-dark mb-0"><i class="fa fa-list-alt text-primary me-1"></i> Rincian Dokumen Transportasi</h6>
-					<small class="text-muted">Item perjalanan dinas yang akan dimasukkan ke pengajuan ini</small>
+					<small class="text-muted">Business trip items to be included in this request</small>
 				</div>
 				<?php if (!$is_view): ?>
 					<div>
 						<button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" id="btn_generate" onclick="add_detail()">
 							<i class="fa fa-sync-alt"></i>
-							<span>Tampilkan Data Transport</span>
+							<span>Show Transport Data</span>
 						</button>
 					</div>
 				<?php endif; ?>
@@ -207,8 +207,8 @@ $mod = isset($mod) ? $mod : '';
 					<thead class="table-light">
 						<tr>
 							<th width="40" class="text-center">#</th>
-							<th>No. Dokumen</th>
-							<th>Tanggal</th>
+							<th>Document No.</th>
+							<th>Date</th>
 							<th>COA</th>
 							<th>Keperluan</th>
 							<th>Rute</th>
@@ -278,7 +278,7 @@ $mod = isset($mod) ? $mod : '';
 								<td class="text-center small"><?= number_format((float) $km_diff, 0, ',', '.'); ?> KM</td>
 								<td class="text-center">
 									<?php if (!empty($file_url)): ?>
-										<a href="<?= $file_url ?>" target="_blank" class="btn btn-outline-primary btn-xs" title="Lihat Dokumen">
+										<a href="<?= $file_url ?>" target="_blank" class="btn btn-outline-primary btn-xs" title="View Document">
 											<i class="fa fa-file-download"></i>
 										</a>
 									<?php else: ?>
@@ -287,7 +287,7 @@ $mod = isset($mod) ? $mod : '';
 								</td>
 								<?php if (!$is_view): ?>
 									<td class="text-center stsview">
-										<button type="button" class="btn btn-outline-danger btn-xs" onclick="removeRow('row_<?= $idd ?>')" title="Hapus"><i class="fa fa-trash"></i></button>
+										<button type="button" class="btn btn-outline-danger btn-xs" onclick="removeRow('row_<?= $idd ?>')" title="Delete"><i class="fa fa-trash"></i></button>
 									</td>
 								<?php endif; ?>
 							</tr>
@@ -309,7 +309,7 @@ $mod = isset($mod) ? $mod : '';
 							<th colspan="<?= $is_view ? '1' : '2' ?>"></th>
 						</tr>
 						<tr class="table-primary">
-							<th colspan="6" class="text-end fw-bolder fs-6">TOTAL PENGAJUAN:</th>
+							<th colspan="6" class="text-end fw-bolder fs-6">TOTAL REQUEST:</th>
 							<th colspan="4" class="text-end fw-bolder fs-6 text-primary" id="lbl_grand_total">
 								Rp <?= number_format((float) $grand_total, 0, ',', '.'); ?>
 							</th>
@@ -336,14 +336,14 @@ $mod = isset($mod) ? $mod : '';
 							<i class="fa fa-check-circle"></i> Setujui Pengajuan
 						</button>
 						<button type="button" class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1" onclick="data_reject()">
-							<i class="fa fa-ban"></i> Tolak Pengajuan
+							<i class="fa fa-ban"></i> Reject Request
 						</button>
 					<?php endif; ?>
 				<?php endif; ?>
 
 				<?php if (!$is_view): ?>
 					<button type="submit" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" id="btn_save">
-						<i class="fa fa-save"></i> Simpan Pengajuan
+						<i class="fa fa-save"></i> Save Request
 					</button>
 				<?php endif; ?>
 			</div>
@@ -455,16 +455,16 @@ $mod = isset($mod) ? $mod : '';
 
 		if (!nama) {
 			swal({
-				title: "Perhatian",
-				text: "Silakan pilih karyawan terlebih dahulu.",
+				title: "Attention",
+				text: "Please select an employee first.",
 				type: "warning"
 			});
 			return;
 		}
 		if (!date1 || !date2) {
 			swal({
-				title: "Perhatian",
-				text: "Silakan lengkapi Periode Awal dan Periode Akhir.",
+				title: "Attention",
+				text: "Please complete the Start Period and End Period.",
 				type: "warning"
 			});
 			return;
@@ -484,7 +484,7 @@ $mod = isset($mod) ? $mod : '';
 			},
 			dataType: 'json',
 			success: function(data) {
-				btn.prop('disabled', false).html('<i class="fa fa-sync-alt me-1"></i> Tampilkan Data Transport');
+				btn.prop('disabled', false).html('<i class="fa fa-sync-alt me-1"></i> Show Transport Data');
 
 				// Clear existing items that were dynamically pulled
 				$('.kasbonrow').remove();
@@ -492,7 +492,7 @@ $mod = isset($mod) ? $mod : '';
 				if (!data || data.length === 0) {
 					swal({
 						title: "Info",
-						text: "Tidak ada data transport yang belum diajukan untuk karyawan ini pada periode " + date1 + " s/d " + date2,
+						text: "There is no unsubmitted transport data for this employee in the period " + date1 + " s/d " + date2,
 						type: "info"
 					});
 					calculateAllTotals();
@@ -536,7 +536,7 @@ $mod = isset($mod) ? $mod : '';
 					row += '<td class="text-center small">' + km_diff.toLocaleString('id-ID') + ' KM</td>';
 					row += '<td class="text-center">' + file_link + '</td>';
 					row += '<td class="text-center stsview">';
-					row += '<button type="button" class="btn btn-outline-danger btn-xs" onclick="removeRow(\'' + rowId + '\')" title="Hapus"><i class="fa fa-trash"></i></button>';
+					row += '<button type="button" class="btn btn-outline-danger btn-xs" onclick="removeRow(\'' + rowId + '\')" title="Delete"><i class="fa fa-trash"></i></button>';
 					row += '</td>';
 					row += '</tr>';
 
@@ -546,10 +546,10 @@ $mod = isset($mod) ? $mod : '';
 				calculateAllTotals();
 			},
 			error: function(xhr, status, err) {
-				btn.prop('disabled', false).html('<i class="fa fa-sync-alt me-1"></i> Tampilkan Data Transport');
+				btn.prop('disabled', false).html('<i class="fa fa-sync-alt me-1"></i> Show Transport Data');
 				swal({
 					title: "Error!",
-					text: "Gagal mengambil data transport (" + err + ")",
+					text: "Failed to fetch transport data (" + err + ")",
 					type: "error"
 				});
 			}
@@ -561,8 +561,8 @@ $mod = isset($mod) ? $mod : '';
 		var countTransport = $('input[name="id_transport[]"]').length;
 		if (countTransport === 0) {
 			swal({
-				title: "Peringatan",
-				text: "Belum ada item transport yang dimasukkan ke dalam pengajuan ini. Silakan klik tombol 'Tampilkan Data Transport'.",
+				title: "Warning",
+				text: "No transport items have been added to this request yet. Please click the 'Show Transport Data' button.",
 				type: "warning"
 			});
 			return false;
@@ -570,20 +570,20 @@ $mod = isset($mod) ? $mod : '';
 
 		if ($('#jumlah_expense').val() == "0" || $('#jumlah_expense').val() == "") {
 			swal({
-				title: "Peringatan",
-				text: "Total pengajuan tidak boleh 0.",
+				title: "Warning",
+				text: "The total request cannot be 0.",
 				type: "warning"
 			});
 			return false;
 		}
 
 		swal({
-			title: "Konfirmasi Simpan",
-			text: "Apakah Anda yakin ingin menyimpan pengajuan penggantian transport ini?",
+			title: "Confirm Save",
+			text: "Are you sure you want to save this transport reimbursement request?",
 			type: "info",
 			showCancelButton: true,
-			confirmButtonText: "Ya, Simpan!",
-			cancelButtonText: "Batal",
+			confirmButtonText: "Yes, Save!",
+			cancelButtonText: "Cancel",
 			closeOnConfirm: false
 		}, function(isConfirm) {
 			if (isConfirm) {
@@ -599,11 +599,11 @@ $mod = isset($mod) ? $mod : '';
 					processData: false,
 					contentType: false,
 					success: function(msg) {
-						btnSave.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Pengajuan');
+						btnSave.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Request');
 						if (msg.save == 1 || msg.save == true) {
 							swal({
-								title: "Sukses!",
-								text: msg.msg || "Pengajuan transport berhasil disimpan.",
+								title: "Success!",
+								text: msg.msg || "Transport request saved successfully.",
 								type: "success",
 								timer: 1500,
 								showConfirmButton: false
@@ -611,17 +611,17 @@ $mod = isset($mod) ? $mod : '';
 							list_view();
 						} else {
 							swal({
-								title: "Gagal!",
-								text: msg.msg || "Data gagal disimpan.",
+								title: "Failed!",
+								text: msg.msg || "Data failed to save.",
 								type: "error"
 							});
 						}
 					},
 					error: function(xhr, status, err) {
-						btnSave.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Pengajuan');
+						btnSave.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Request');
 						swal({
 							title: "Error!",
-							text: "Terjadi kesalahan saat memproses data (" + err + ")",
+							text: "An error occurred while processing data (" + err + ")",
 							type: "error"
 						});
 					}
@@ -632,19 +632,19 @@ $mod = isset($mod) ? $mod : '';
 
 	function data_approve(id, status) {
 		Swal.fire({
-			title: "Konfirmasi Persetujuan",
-			text: "Apakah Anda yakin ingin menyetujui pengajuan penggantian transport ini?",
+			title: "Confirm Approval",
+			text: "Are you sure you want to approve this transport reimbursement request?",
 			icon: "question",
 			showCancelButton: true,
 			confirmButtonColor: "#198754",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Setujui!',
-			cancelButtonText: "Batal"
+			confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Approve!',
+			cancelButtonText: "Cancel"
 		}).then((result) => {
 			if (result.isConfirmed) {
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang menyimpan persetujuan...",
+					text: "Saving approval...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -659,8 +659,8 @@ $mod = isset($mod) ? $mod : '';
 						if (msg.save == '1' || msg.save == 1 || msg.save == true) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Disetujui!",
-								text: msg.msg || "Data pengajuan transport berhasil disetujui.",
+								title: "Approved Successfully!",
+								text: msg.msg || "Transport request data approved successfully.",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -668,8 +668,8 @@ $mod = isset($mod) ? $mod : '';
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.msg || "Data gagal disetujui."
+								title: "Failed!",
+								text: msg.msg || "Data failed to approve."
 							});
 						}
 					},
@@ -677,7 +677,7 @@ $mod = isset($mod) ? $mod : '';
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan koneksi saat memproses persetujuan."
+							text: "A connection error occurred while processing the approval."
 						});
 					}
 				});
@@ -690,17 +690,17 @@ $mod = isset($mod) ? $mod : '';
 		if (!id) {
 			Swal.fire({
 				icon: "warning",
-				title: "Peringatan",
-				text: "ID pengajuan tidak ditemukan."
+				title: "Warning",
+				text: "Request ID not found."
 			});
 			return;
 		}
 
 		Swal.fire({
 			title: "Alasan Penolakan",
-			text: "Silakan masukkan alasan penolakan pengajuan transport ini:",
+			text: "Please enter the reason for rejecting this transport request:",
 			input: "textarea",
-			inputPlaceholder: "Tuliskan alasan penolakan di sini...",
+			inputPlaceholder: "Write the rejection reason here...",
 			inputAttributes: {
 				"aria-label": "Alasan penolakan",
 				"rows": 4
@@ -708,11 +708,11 @@ $mod = isset($mod) ? $mod : '';
 			showCancelButton: true,
 			confirmButtonColor: "#dc3545",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: '<i class="fa fa-ban me-1"></i> Tolak Pengajuan',
-			cancelButtonText: "Batal",
+			confirmButtonText: '<i class="fa fa-ban me-1"></i> Reject Request',
+			cancelButtonText: "Cancel",
 			inputValidator: (value) => {
 				if (!value || !value.trim()) {
-					return "Alasan penolakan wajib diisi!";
+					return "A rejection reason is required!";
 				}
 			}
 		}).then((result) => {
@@ -720,7 +720,7 @@ $mod = isset($mod) ? $mod : '';
 				var reason = result.value.trim();
 				Swal.fire({
 					title: "Memproses...",
-					text: "Sedang memproses penolakan...",
+					text: "Processing rejection...",
 					allowOutsideClick: false,
 					didOpen: () => {
 						Swal.showLoading();
@@ -740,8 +740,8 @@ $mod = isset($mod) ? $mod : '';
 						if (msg.save == 1 || msg.save == true || msg.status == 1 || msg.status == true) {
 							Swal.fire({
 								icon: "success",
-								title: "Berhasil Ditolak!",
-								text: msg.msg || "Data pengajuan transport berhasil ditolak.",
+								title: "Rejected Successfully!",
+								text: msg.msg || "Transport request data rejected successfully.",
 								timer: 2000,
 								showConfirmButton: false
 							});
@@ -749,8 +749,8 @@ $mod = isset($mod) ? $mod : '';
 						} else {
 							Swal.fire({
 								icon: "error",
-								title: "Gagal!",
-								text: msg.msg || "Data gagal ditolak."
+								title: "Failed!",
+								text: msg.msg || "Data failed to reject."
 							});
 						}
 					},
@@ -758,7 +758,7 @@ $mod = isset($mod) ? $mod : '';
 						Swal.fire({
 							icon: "error",
 							title: "Error!",
-							text: "Terjadi kesalahan sistem saat memproses penolakan."
+							text: "A system error occurred saat memproses penolakan."
 						});
 					}
 				});

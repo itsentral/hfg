@@ -30,7 +30,7 @@
 		<div class="col-sm-6">
 		<div class="form-group row">
 			<div class="col-md-4">
-				<label for="customer">Tanggal PR</label>
+				<label for="customer">PR Date</label>
 			</div>
 			<div class="col-md-8">
 				<input type="date" class="form-control" id="tanggal" value="<?= $tanggal ?>" onkeyup required name="tanggal" readonly >
@@ -65,8 +65,8 @@
 			<th >Weight</th>
 			<th >Total Weight</th>
 			<th >Supplier</th>
-			<th >Tanggal Dibutuhkan</th>
-			<th >Keterangan</th>
+			<th >Required Date</th>
+			<th >Description</th>
 			<th >Aksi</th>
 			</tr>
 			</thead>
@@ -80,7 +80,7 @@
 			$id_bentuk= $mat[0]->id_bentuk;;
 		echo"<tr id='tr_$loop'>
 		<th><select class='form-control' id='dt_idmaterial_$loop' name='dt[$loop][idmaterial]'	onchange ='CariProperties($loop)'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 		foreach ($material as $material){
 		$select = $list->id_material == $material->id_category3 ? 'selected' : '';
 		if($material->id_bentuk == 'B2000001' ){
@@ -126,14 +126,14 @@
 		<th id='idbentuk_".$loop."' hidden><input value='".$id_bentuk."' readonly type='text' class='form-control' id='dt_idbentuk_$loop' required name='dt[$loop][idbentuk]' ></th>
 		<th><input type='number' class='form-control' id='dt_weight_$loop' 			required name='dt[$loop][weight]' ></th>
 		<th id='supplier_".$loop."'><select class='form-control' id='dt_suplier_$loop' name='dt[$loop][suplier]'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 		$supplier	= $this->db->query("SELECT a.*, b.name_suplier as supname FROM child_inven_suplier as a INNER JOIN master_supplier as b on a.id_suplier = b.id_suplier WHERE a.id_category3 = '".$list->id_material."' ")->result();
 			foreach ($supplier as $supplier){};
 					echo"<option value='".$supplier->id_suplier ."'>".$supplier->supname ."</option>";
 		echo"</select></th>
 		<th><input type='date' class='form-control' id='dt_tanggal_$loop' 	required name='dt[$loop][tanggal]' 	></th>
 		<th><input type='text' class='form-control' id='dt_keterangan_$loop' 	required name='dt[$loop][keterangan]' 	></th>
-		<th><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></th>
+		<th><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></th>
 		</tr>";
 			}?>
 			</tbody>
@@ -141,7 +141,7 @@
 		</div>
 			</div>
 			<center>
-		<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+		<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 			</center>
 				 </div>
 			</div>

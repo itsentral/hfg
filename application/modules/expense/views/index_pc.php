@@ -11,7 +11,7 @@ $ENABLE_DELETE  = has_permission('Expense_Petty_Cash.Delete');
 		<?php if ($ENABLE_ADD) : ?>
 			<div class="dropdown">
 				<button class="btn btn-success btn-sm" type="button" onclick="data_add()">
-					<i class="fa fa-plus">&nbsp;</i> Tambah
+					<i class="fa fa-plus">&nbsp;</i> Add
 				</button>
 			</div>
 		<?php endif; ?>
@@ -23,11 +23,11 @@ $ENABLE_DELETE  = has_permission('Expense_Petty_Cash.Delete');
 				<thead>
 					<tr>
 						<th width="5">#</th>
-						<th>No Dokumen</th>
-						<th>Tanggal</th>
-						<th>Nama</th>
+						<th>Document No.</th>
+						<th>Date</th>
+						<th>Name</th>
 						<th>Approval</th>
-						<th>Keterangan</th>
+						<th>Description</th>
 						<th>Nominal</th>
 						<th>Status</th>
 						<th width="120">Action</th>

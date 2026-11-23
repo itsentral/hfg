@@ -256,7 +256,7 @@ class DisplayLabelMappingTest
             }
 
             // Skip valid values
-            if (in_array($random_string, $valid_values)) {
+            if (in_array($random_string, $valid_values ?? [])) {
                 continue;
             }
 
@@ -314,7 +314,7 @@ class DisplayLabelMappingTest
             }
         }
 
-        echo "    Idempotency verified: " . count($all_inputs) . " inputs × {$iterations} iterations\n";
+        echo "    Idempotency verified: " . count($all_inputs ?? []) . " inputs × {$iterations} iterations\n";
     }
 
     /**
@@ -376,7 +376,7 @@ class DisplayLabelMappingTest
             );
         }
 
-        echo "    " . count($edge_cases) . " edge cases all correctly return '-'\n";
+        echo "    " . count($edge_cases ?? []) . " edge cases all correctly return '-'\n";
     }
 
     /**
@@ -411,12 +411,12 @@ class DisplayLabelMappingTest
         foreach ($all_inputs as $input) {
             $result = $this->getDisplayLabel($input);
             assertTrue(
-                in_array($result, $valid_outputs, true),
+                in_array($result, $valid_outputs ?? [], true),
                 "Output '{$result}' for input '" . ($input ?? 'null') . "' is not in valid output set [STM, VUCA, SUSTAIN, -]"
             );
         }
 
-        echo "    Property verified: " . count($all_inputs) . " inputs all produce output in {STM, VUCA, SUSTAIN, -}\n";
+        echo "    Property verified: " . count($all_inputs ?? []) . " inputs all produce output in {STM, VUCA, SUSTAIN, -}\n";
     }
 
     /**
@@ -474,7 +474,7 @@ class DisplayLabelMappingTest
         }
 
         assertTrue($no_exceptions, "Function should never throw exceptions");
-        echo "    Property verified: " . count($problematic_inputs) . " inputs processed without exceptions\n";
+        echo "    Property verified: " . count($problematic_inputs ?? []) . " inputs processed without exceptions\n";
     }
 }
 

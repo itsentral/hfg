@@ -63,13 +63,13 @@ if ($has_data) {
                     </span>
                     <span class="badge <?= ($is_draft ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-success-subtle text-success border border-success-subtle') ?> px-2 py-1">
                         <i class="fa <?= ($is_draft ? 'fa-hourglass-half' : 'fa-check-circle') ?> me-1"></i>
-                        Status: <strong><?= ($is_draft ? 'Draft / Belum Disetujui' : 'Approved / Disetujui') ?></strong>
+                        Status: <strong><?= ($is_draft ? 'Draft / Not Approved' : 'Approved') ?></strong>
                     </span>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <?php if ($ENABLE_VIEW) : ?>
                         <button type="button" class="btn btn-sm btn-outline-info" id="btn_detail" onclick="detail_data()">
-                            <i class="fa fa-eye me-1"></i> Detail Budget
+                            <i class="fa fa-eye me-1"></i> Budget Detail
                         </button>
                     <?php endif; ?>
                     <?php if ($ENABLE_MANAGE) : ?>
@@ -84,7 +84,7 @@ if ($has_data) {
                     <?php endif; ?>
                     <?php if ($ENABLE_DELETE) : ?>
                         <button type="button" class="btn btn-sm btn-outline-danger" id="btn_delete" onclick="delete_data()">
-                            <i class="fa fa-trash me-1"></i> Hapus Budget
+                            <i class="fa fa-trash me-1"></i> Delete Budget
                         </button>
                     <?php endif; ?>
                 </div>
@@ -98,11 +98,11 @@ if ($has_data) {
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="50">#</th>
-                        <th width="80">Tahun</th>
+                        <th width="80">Year</th>
                         <th>Akun COA</th>
                         <th>Definisi</th>
                         <th>Penanggung Jawab</th>
-                        <th>Kategori</th>
+                        <th>Category</th>
                         <th>Formulasi Budget</th>
                     </tr>
                 </thead>
@@ -152,7 +152,7 @@ if ($has_data) {
     </div>
 </div>
 
-<!-- Card Laporan Budget Bulanan -->
+<!-- Card Monthly Budget Report -->
 <div class="card border-0 shadow-sm" id="card-laporan">
     <div class="card-header bg-white py-3 border-bottom">
         <div class="d-flex align-items-center gap-2">
@@ -160,15 +160,15 @@ if ($has_data) {
                 <i class="fa fa-chart-line fs-5"></i>
             </div>
             <div>
-                <h6 class="card-title fw-bold text-dark mb-0">Laporan Budget Bulanan</h6>
-                <small class="text-muted">Pilih bulan dan tahun untuk melihat realisasi Year To Date (YTD) dan alokasi tahunan</small>
+                <h6 class="card-title fw-bold text-dark mb-0">Monthly Budget Report</h6>
+                <small class="text-muted">Select a month and year to view the Year To Date (YTD) realization and annual allocation</small>
             </div>
         </div>
     </div>
     <div class="card-body">
         <form method="post" action="<?= base_url('budget_coa/detail_bulan') ?>" class="row g-3 align-items-end">
             <div class="col-md-3 col-sm-6">
-                <label class="form-label small fw-semibold text-muted">Bulan</label>
+                <label class="form-label small fw-semibold text-muted">Month</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="fa fa-calendar-alt"></i></span>
                     <select name="bulan" id="bulan" class="form-select" required>
@@ -187,7 +187,7 @@ if ($has_data) {
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <label class="form-label small fw-semibold text-muted">Tahun</label>
+                <label class="form-label small fw-semibold text-muted">Year</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="fa fa-calendar"></i></span>
                     <select name="tahun" id="tahun_laporan" class="form-select" required>
@@ -201,7 +201,7 @@ if ($has_data) {
             </div>
             <div class="col-md-2 col-sm-12">
                 <button type="submit" class="btn btn-info text-white w-100 shadow-sm">
-                    <i class="fa fa-file-invoice me-1"></i> Lihat Laporan
+                    <i class="fa fa-file-invoice me-1"></i> View Report
                 </button>
             </div>
         </form>
@@ -224,7 +224,7 @@ if ($has_data) {
         $("#mytabledata").DataTable({
             paging: true,
             pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-2"lfB>rt<"d-flex flex-wrap justify-content-between align-items-center mt-2"ip>',
             buttons: [
                 {
@@ -237,16 +237,16 @@ if ($has_data) {
                 }
             ],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
                 infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Tidak ada data yang cocok",
+                zeroRecords: "No matching data",
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "Lanjut",
+                    next: "Continue",
                     previous: "Sebelum"
                 }
             }
@@ -256,39 +256,39 @@ if ($has_data) {
     function detail_data() {
         var url = 'budget_coa/detail/<?= $tahun ?>';
         $("#card-list, #card-laporan, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat detail budget...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading budget details...</p></div>');
         $("#form-data").load(siteurl + url);
     }
 
     function add_data() {
         var url = 'budget_coa/create';
         $("#card-list, #card-laporan, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir tambah budget...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading add budget form...</p></div>');
         $("#form-data").load(siteurl + url);
     }
 
     function edit_data() {
         var url = 'budget_coa/edit/<?= $tahun ?>';
         $("#card-list, #card-laporan, .box").hide();
-        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir edit budget...</p></div>');
+        $("#form-data").show().html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading budget edit form...</p></div>');
         $("#form-data").load(siteurl + url);
     }
 
     function delete_data() {
         Swal.fire({
-            title: "Anda Yakin?",
-            text: "Seluruh data budget tahun <?= $tahun ?> akan dihapus secara permanen!",
+            title: "Are you sure?",
+            text: "All budget data for year <?= $tahun ?> will be deleted permanently!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#dc3545",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-trash me-1'></i> Ya, Hapus!",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-trash me-1'></i> Yes, Delete!",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menghapus data...',
+                    text: 'Deleting data...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -300,8 +300,8 @@ if ($has_data) {
                         if (msg['delete'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Terhapus!",
-                                text: "Data budget tahun <?= $tahun ?> berhasil dihapus.",
+                                title: "Deleted!",
+                                text: "Budget data for year <?= $tahun ?> deleted successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -310,9 +310,9 @@ if ($has_data) {
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data gagal dihapus.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Failed to delete data.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
@@ -320,8 +320,8 @@ if ($has_data) {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal eksekusi request: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to execute request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });
@@ -332,18 +332,18 @@ if ($has_data) {
     function approve_data() {
         Swal.fire({
             title: "Approve Budget?",
-            text: "Data budget tahun <?= $tahun ?> akan disetujui (Approved)!",
+            text: "Budget data for year <?= $tahun ?> will be approved (Approved)!",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#0d6efd",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Approve!",
-            cancelButtonText: "Batal"
+            confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Approve!",
+            cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Sedang menyetujui budget...',
+                    text: 'Approving budget...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -355,8 +355,8 @@ if ($has_data) {
                         if (msg['delete'] == '1') {
                             Swal.fire({
                                 icon: "success",
-                                title: "Disetujui!",
-                                text: "Data budget tahun <?= $tahun ?> berhasil disetujui.",
+                                title: "Approved!",
+                                text: "Budget data for year <?= $tahun ?> approved successfully.",
                                 timer: 1500,
                                 showConfirmButton: false
                             }).then(() => {
@@ -365,9 +365,9 @@ if ($has_data) {
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Gagal!",
-                                text: "Data gagal disetujui.",
-                                confirmButtonText: "Tutup"
+                                title: "Failed!",
+                                text: "Data failed to approve.",
+                                confirmButtonText: "Close"
                             });
                         }
                     },
@@ -375,8 +375,8 @@ if ($has_data) {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Gagal eksekusi request: " + error,
-                            confirmButtonText: "Tutup"
+                            text: "Failed to execute request: " + error,
+                            confirmButtonText: "Close"
                         });
                     }
                 });

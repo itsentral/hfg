@@ -40,11 +40,11 @@ $this->load->view('include/side_menu');
 					<input type="text" id="bank_transfer" name="bank_transfer" value="<?=$datapo->data_bank?>" class="form-control">
 					<label class="control-label">Payment Date</label>
 					<input type="text" id="req_payment_date" name="req_payment_date" value="<?php echo date("Y-m-d"); ?>" class="form-control tanggal" required>
-					<label class="control-label">Nomor Invoice</label>
+					<label class="control-label">Invoice Number</label>
 					<input type="text" class="form-control" id="no_invoice" name="no_invoice" value="<?=$info_payterm->invoice_no?>">
-					<label class="control-label">Keterangan Invoice</label>
+					<label class="control-label">Invoice Description</label>
 					<input type="text" class="form-control" id="keterangan" name="keterangan" value="">
-					<label class="control-label">PO yang akan dibayar</label>
+					<label class="control-label">PO to be paid</label>
 					<?php
 					$nilai_po_invoice=0;
 					if($datapo->mata_uang=='IDR'){
@@ -54,7 +54,7 @@ $this->load->view('include/side_menu');
 					}
 					?>
 					<input type="text" class="form-control divide" id="nilai_po_invoice" name="nilai_po_invoice" value="<?=$nilai_po_invoice?>" placeholder=0 required onchange="calculate_invoice()">
-					<label class="control-label">Nilai Potongan DP</label>
+					<label class="control-label">DP Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_dp" name="potongan_dp" placeholder=0 value=0 onblur="calculate_invoice()">
 					<label class="control-label">PPN</label>
 					<div class="input-group">
@@ -71,9 +71,9 @@ $this->load->view('include/side_menu');
 					<input type="text" class="form-control divide" onblur="calculate_invoice()" id="nilai_pph_invoice" name="nilai_pph_invoice" value="0" >
 					<label class="control-label">PO+PPN-PPH</label>
 					<input type="text" class="form-control divide" id="nilai_invoice" name="nilai_invoice" value="<?=$nilai_po_invoice?>" placeholder=0 required readonly tabindex="-1">
-					<label class="control-label">Nilai Potongan Claim</label>
+					<label class="control-label">Claim Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_claim" name="potongan_claim" placeholder=0 value=0 onblur="calculate_invoice()">
-					<label class="control-label">Keterangan Potongan</label>
+					<label class="control-label">Deduction Description</label>
 					<input type="text" class="form-control" id="keterangan_potongan" name="keterangan_potongan" value="">
 					<label class="control-label">Request Payment</label>
 					<input type="text" class="form-control divide" id="request_payment" name="request_payment" value="0" placeholder=0 required readonly tabindex="-1">
@@ -81,11 +81,11 @@ $this->load->view('include/side_menu');
 			</div>
 
 				<div class="table-responsive">
-					<h4>Detail PO</h4>
+					<h4>PO Detail</h4>
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
-								<th>Nama Barang</th>
+								<th>Item Name</th>
 								<th>Qty</th>
 								<th>Price/Unit</th>
 								<th>Total Price</th>
@@ -119,7 +119,7 @@ $this->load->view('include/side_menu');
 							<th class="text-center" width='8%'>Progress (%)</th>
 							<th class="text-center" width='11%'>Value (USD)</th>
 							<th class="text-center" width='11%'>Value (IDR)</th>
-							<th class="text-center" width='25%'>Keterangan</th>
+							<th class="text-center" width='25%'>Description</th>
 							<th class="text-center" width='10%'>Est Jatuh Tempo</th>
 							<th class="text-center" width='25%'>Persyaratan</th>
 						</tr>
@@ -149,7 +149,7 @@ $this->load->view('include/side_menu');
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit & Print</button>
-						<a href="<?=base_url()?>pembelian/purchase_order" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>pembelian/purchase_order" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>
@@ -221,7 +221,7 @@ function calculate_invoice(){
    		}
 */
    		if(nilai_invoice==""){
-   			d_error='Nilai Invoice Error';
+   			d_error='Invoice Value Error';
    			alert(d_error);
    		}
 		

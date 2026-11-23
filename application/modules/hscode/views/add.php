@@ -5,7 +5,7 @@
             <div class="col-md-12">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h5 class="mb-0 fw-bold">Form HS Code</h5>
-                    <span class="text-muted small">(*) wajib diisi</span>
+                    <span class="text-muted small">(*) required</span>
                 </div>
                 <hr class="mt-2">
 
@@ -72,13 +72,13 @@
                                     <div class="col-4">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" id="ls_yes" name="ls" value="Y" <?= isset($hs) && ($hs->ls == "Y") ? 'checked' : ''; ?> required>
-                                            <label class="form-check-label" for="ls">Aktif</label>
+                                            <label class="form-check-label" for="ls">Active</label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" id="ls_no" name="ls" value="N" <?= isset($hs) && ($hs->ls == "N") ? 'checked' : ''; ?> required>
-                                            <label class="form-check-label" for="ls">Non Aktif</label>
+                                            <label class="form-check-label" for="ls">Inactive</label>
                                         </div>
                                     </div>
                                 </div>
@@ -205,7 +205,7 @@
                         </div>
                         <div class="form-group row mb-2">
                             <div class="col-md-4">
-                                <label for="cukai">Sisa Kuota</label>
+                                <label for="cukai">Remaining Quota</label>
                             </div>
                             <div class="col-md-4">
                                 <input type="number" class="form-control text-end" name="kuota_internal" value="<?= (isset($hs->kuota_internal) && $hs->kuota_internal) ? $hs->kuota_internal : ''; ?>" id="kuota_internal">
@@ -294,7 +294,7 @@
                         </div>
                         <div class="form-group row mb-2">
                             <div class="col-md-4">
-                                <label for="dhe_sda">Wajib Lapor DHE-SDA</label>
+                                <label for="dhe_sda">Mandatory DHE-SDA Reporting</label>
                             </div>
                             <div class="col-md-8">
                                 <div class="input-group">
@@ -312,13 +312,13 @@
                                     <div class="col-4">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" id="aktif" name="status" value="1" <?= isset($hs) && ($hs->status == 1) ? 'checked' : ''; ?> required>
-                                            <label class="form-check-label" for="status">Aktif</label>
+                                            <label class="form-check-label" for="status">Active</label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" id="inaktif" name="status" value="0" <?= isset($hs) && ($hs->status == 0) ? 'checked' : ''; ?> required>
-                                            <label class="form-check-label" for="status">Non Aktif</label>
+                                            <label class="form-check-label" for="status">Inactive</label>
                                         </div>
                                     </div>
                                 </div>
@@ -326,7 +326,7 @@
                         </div>
                         <div id="form-kuota" class="form-group row mb-2 pt-3" hidden>
                             <div class="col-md-4">
-                                <label>Kuota Baru</label>
+                                <label>New Quota</label>
                             </div>
                             <div class="col-md-4">
                                 <input type="number" class="form-control text-end" name="new_kuota_internal" id="newKuota">
@@ -597,14 +597,14 @@
                 <div class="d-flex justify-content-center gap-2">
                     <?php if (empty($results['mode']) || $results['mode'] !== 'view') : ?>
                         <button type="button" class="btn btn-secondary btn-md" onclick="history.back()">
-                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                            <i class="fa fa-arrow-left me-1"></i> Back
                         </button>
                         <button type="submit" class="btn btn-success btn-md" name="save" id="simpan-com">
-                            <i class="fa fa-save me-1"></i> Simpan
+                            <i class="fa fa-save me-1"></i> Save
                         </button>
                     <?php else: ?>
                         <button type="button" class="btn btn-secondary btn-md" onclick="history.back()">
-                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                            <i class="fa fa-arrow-left me-1"></i> Back
                         </button>
                     <?php endif; ?>
                 </div>
@@ -616,7 +616,7 @@
 <script type="application/json" id="countries-data">
     <?= json_encode(array_map(function ($c) {
         return ['id' => $c->id, 'country_code' => $c->country_code, 'name' => $c->name];
-    }, $countries)); ?>
+    }, $countries ?? [])); ?>
 </script>
 
 <script>
@@ -937,7 +937,7 @@
                         </td>
 						<td class="align-top"><input type="text" class="form-control" name="requirement[RQ1_` + n + `][name]" placeholder="Requirement Name"></td> 
 						<td class="align-top"><textarea type="text" class="form-control" name="requirement[RQ1_` + n + `][description]" placeholder="Description"></textarea></td> 
-						<td class="text-center"><button type="button" class="btn btn-sm btn-warning del-item" title="Hapus Data"><i class="fa fa-times"></i></button></td>
+						<td class="text-center"><button type="button" class="btn btn-sm btn-warning del-item" title="Delete Data"><i class="fa fa-times"></i></button></td>
 					</tr>`;
             $('table#table-req1 tbody').append(html);
         })
@@ -954,7 +954,7 @@
                         </td>
 						<td class="align-top"><input type="text" class="form-control" name="requirement[RQ2_` + n + `][name]" placeholder="Requirement Name"></td> 
 						<td class="align-top"><textarea type="text" class="form-control" name="requirement[RQ2_` + n + `][description]" placeholder="Description"></textarea></td> 
-						<td class="text-center"><button type="button" class="btn btn-sm btn-warning del-item" title="Hapus Data"><i class="fa fa-times"></i></button></td>
+						<td class="text-center"><button type="button" class="btn btn-sm btn-warning del-item" title="Delete Data"><i class="fa fa-times"></i></button></td>
 					</tr>`;
             $('table#table-req2 tbody').append(html);
         })
@@ -1040,19 +1040,19 @@
             if (addKuota <= 0) {
                 swal({
                     title: "Warning",
-                    text: "Masukkan jumlah kuota baru yang valid!",
+                    text: "Enter a valid new quota amount!",
                     type: "warning"
                 });
                 return false;
             }
 
             swal({
-                title: "Konfirmasi",
-                text: "Tambahkan kuota sebesar " + addKuota + "?",
+                title: "Confirmation",
+                text: "Add quota of " + addKuota + "?",
                 type: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Ya, Tambahkan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Add!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
@@ -1069,7 +1069,7 @@
                     success: function(result) {
                         if (result.status == 1) {
                             swal({
-                                    title: "Sukses!",
+                                    title: "Success!",
                                     text: result.pesan,
                                     type: "success"
                                 },
@@ -1080,7 +1080,7 @@
                                 });
                         } else {
                             swal({
-                                title: "Gagal",
+                                title: "Failed",
                                 text: result.pesan,
                                 type: "error"
                             });
@@ -1089,7 +1089,7 @@
                     error: function() {
                         swal({
                             title: "Error",
-                            text: "Terjadi kesalahan pada server",
+                            text: "A server error occurred",
                             type: "error"
                         });
                     }

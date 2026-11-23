@@ -13,7 +13,7 @@
             <div class="col-md-3">
                 <label class="form-label">Filter Status</label>
                 <select id="filter-status" class="form-select form-select-sm">
-                    <option value="">Semua Status</option>
+                    <option value="">All Statuses</option>
                     <option value="Draft">Draft</option>
                     <option value="Released">Released</option>
                     <option value="Closed">Closed</option>
@@ -21,11 +21,11 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">Dari Tanggal</label>
+                <label class="form-label">Start Date</label>
                 <input type="date" id="filter-tgl-dari" class="form-control form-control-sm">
             </div>
             <div class="col-md-3">
-                <label class="form-label">Sampai Tanggal</label>
+                <label class="form-label">End Date</label>
                 <input type="date" id="filter-tgl-sampai" class="form-control form-control-sm">
             </div>
             <div class="col-md-3 d-flex align-items-end">
@@ -159,12 +159,12 @@ $(document).ready(function () {
         var plan_no = $(this).data('plan');
         Swal.fire({
             title: 'Release Plan?',
-            text: 'Plan akan diubah ke status Released.',
+            text: 'The plan will be changed to status Released.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#28a745',
-            confirmButtonText: 'Ya, Release',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Release',
+            cancelButtonText: 'Cancel'
         }).then(function(result) {
             if (!result.isConfirmed) return;
             $.ajax({
@@ -173,14 +173,14 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function(res) {
                     if (res.success) {
-                        Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil di-release.', icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: 'Plan released successfully.', icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function(){ dtMonitoring.ajax.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                        Swal.fire({ title: 'Failed!', text: res.message || 'An error occurred.', icon: 'error', confirmButtonText: 'OK' });
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                    Swal.fire({ title: 'Error!', text: 'Request failed: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
                 }
             });
         });
@@ -191,12 +191,12 @@ $(document).ready(function () {
         var plan_no = $(this).data('plan');
         Swal.fire({
             title: 'Batalkan Plan?',
-            text: 'Plan akan dibatalkan.',
+            text: 'The plan will be cancelled.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Ya, Batalkan',
-            cancelButtonText: 'Tidak'
+            confirmButtonText: 'Yes, Cancel',
+            cancelButtonText: 'No'
         }).then(function(result) {
             if (!result.isConfirmed) return;
             $.ajax({
@@ -205,14 +205,14 @@ $(document).ready(function () {
                 dataType: 'json',
                 success: function(res) {
                     if (res.success) {
-                        Swal.fire({ title: 'Berhasil!', text: 'Plan berhasil dibatalkan.', icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: 'Plan cancelled successfully.', icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function(){ dtMonitoring.ajax.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: res.message || 'Terjadi kesalahan.', icon: 'error', confirmButtonText: 'OK' });
+                        Swal.fire({ title: 'Failed!', text: res.message || 'An error occurred.', icon: 'error', confirmButtonText: 'OK' });
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({ title: 'Error!', text: 'Request gagal: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
+                    Swal.fire({ title: 'Error!', text: 'Request failed: ' + xhr.status, icon: 'error', confirmButtonText: 'OK' });
                 }
             });
         });

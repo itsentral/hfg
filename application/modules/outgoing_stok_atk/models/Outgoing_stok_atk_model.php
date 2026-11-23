@@ -81,7 +81,7 @@ class Outgoing_stok_atk_model extends BF_Model
       $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][sudah_request]' data-no='" . $nomor . "' class='form-control form-control-sm text-center autoNumeric4 sudah_request'></div>";
       $nestedData[]  = "<div align='left'><input type='text' style='width:100%' name='detailx[" . $nomor . "][ket_request]' data-no='" . $nomor . "' class='form-control input-sm text-left ket_request'></div>";
       // if($row['konversi'] > 0){
-      $nestedData[]  = "<div align='center'><button type='button' class='btn btn-primary btn-sm pindahkan' title='Pindahkan'><i class='fa fa-location-arrow'></i></button></div>";
+      $nestedData[]  = "<div align='center'><button type='button' class='btn btn-primary btn-sm pindahkan' title='Move'><i class='fa fa-location-arrow'></i></button></div>";
       // }
       // else{
       //   $nestedData[]	= "<div align='center' class='text-red text-bold'>Konversi Nol</div>";
@@ -210,7 +210,7 @@ class Outgoing_stok_atk_model extends BF_Model
       //   $edit	= "&nbsp;<button type='button' data-kode_trans='".$row['kode_trans']."' data-tanda='edit' class='btn btn-sm btn-primary detail' title='Edit' data-role='qtip'><i class='fa fa-edit'></i></button>";
       // }
       if ($row['sts_confirm'] == 'N') {
-        $print  = "&nbsp;<a href='" . base_url('outgoing_stok_atk/print_spk_request/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-primary' title='Print SPK Permintaan Material' data-role='qtip'><i class='fa fa-print'></i></a>";
+        $print  = "&nbsp;<a href='" . base_url('outgoing_stok_atk/print_spk_request/' . $row['kode_trans']) . "' target='_blank' class='btn btn-sm btn-primary' title='Print SPK Material Request' data-role='qtip'><i class='fa fa-print'></i></a>";
       }
       if ($this->auth->user_name() == 'RamaSS') {
         // $release = '&nbsp;<button type="button" class="btn btn-sm btn-danger kurang_stock" data-kode_trans="'.$row['kode_trans'].'"><i class="fa fa-close"></i></button>';

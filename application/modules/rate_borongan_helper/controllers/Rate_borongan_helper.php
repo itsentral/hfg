@@ -37,12 +37,12 @@ class Rate_borongan_helper extends Admin_Controller
         $rate     = (float) $this->input->post('rate_borongan_helper');
 
         if (empty($id) && empty($code_lv2)) {
-            $this->session->set_flashdata('error', 'Product Category wajib dipilih');
+            $this->session->set_flashdata('error', 'Product Category is required');
             redirect('rate_borongan_helper');
         }
 
         if ($rate < 0) {
-            $this->session->set_flashdata('error', 'Rate Borongan Helper tidak boleh negatif');
+            $this->session->set_flashdata('error', 'Rate Borongan Helper cannot be negative');
             redirect('rate_borongan_helper');
         }
 
@@ -63,10 +63,10 @@ class Rate_borongan_helper extends Admin_Controller
                 'after'  => $data,
             ];
             write_log('Rate Borongan Helper', $action, $action . ' Rate Borongan ' . $cat_name . ' (Rp ' . number_format((float) $rate, 2, ',', '.') . '/m)', $log, null, 1);
-            $this->session->set_flashdata('success', 'Rate Borongan Helper berhasil disimpan');
+            $this->session->set_flashdata('success', 'Rate Borongan Helper saved successfully');
         } else {
             write_log('Rate Borongan Helper', 'Save', 'Gagal simpan Rate Borongan Helper', $data, null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan Rate Borongan Helper');
+            $this->session->set_flashdata('error', 'Failed to save Rate Borongan Helper');
         }
 
         redirect('rate_borongan_helper');
@@ -78,7 +78,7 @@ class Rate_borongan_helper extends Admin_Controller
 
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'pesan' => 'ID tidak valid']);
+            echo json_encode(['status' => 0, 'pesan' => 'Invalid ID']);
             return;
         }
 
@@ -87,10 +87,10 @@ class Rate_borongan_helper extends Admin_Controller
 
         if ($del) {
             write_log('Rate Borongan Helper', 'Delete', 'Hapus Rate Borongan ' . ($old ? $old->nm_category : $id), (array)$old, null, 1);
-            echo json_encode(['status' => 1, 'pesan' => 'Rate Borongan Helper berhasil dihapus']);
+            echo json_encode(['status' => 1, 'pesan' => 'Rate Borongan Helper deleted successfully']);
         } else {
             write_log('Rate Borongan Helper', 'Delete', 'Gagal hapus Rate Borongan ID ' . $id, [], null, 0);
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal menghapus rate']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to delete rate']);
         }
     }
 }
