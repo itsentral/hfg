@@ -13,15 +13,15 @@
         <form id="data_form" autocomplete="off">
             <input type="hidden" id="id" name="id" value="<?= $id; ?>">
             <div class="mb-3">
-                <label for="code" class="form-label fw-bold">Nama Unit <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="code" required name="code" placeholder="Nama Unit (e.g. PCS, KG, ROLL)" value="<?= $code; ?>">
+                <label for="code" class="form-label fw-bold">Unit Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="code" required name="code" placeholder="Unit Name (e.g. PCS, KG, ROLL)" value="<?= $code; ?>">
             </div>
             <div class="d-flex justify-content-end gap-2 pt-3 border-top">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </button>
                 <button type="button" class="btn btn-primary" name="save" id="save">
-                    <i class="fa fa-save me-1"></i> Simpan
+                    <i class="fa fa-save me-1"></i> Save
                 </button>
             </div>
         </form>

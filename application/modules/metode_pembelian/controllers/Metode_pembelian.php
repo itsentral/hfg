@@ -264,7 +264,7 @@ class Metode_pembelian extends Admin_Controller
 				$ArrHeader[$val]['alamat_supplier'] = $valx['alamat'];
 				$ArrHeader[$val]['currency'] 		= $valx['currency'];
 				$ArrHeader[$val]['keterangan'] 		= $valx['keterangan'];
-				$ArrHeader[$val]['kurs'] 			= str_replace(',', '', $valx['kurs']);
+				$ArrHeader[$val]['kurs'] 			= str_replace(',', '', $valx['kurs'] ?? '');
 				$ArrHeader[$val]['sts_ajuan'] 		= 'PRS';
 				$ArrHeader[$val]['sts_process'] 	= 'Y';
 				$ArrHeader[$val]['updated_by'] 		= $data_session['ORI_User']['username'];
@@ -274,13 +274,13 @@ class Metode_pembelian extends Admin_Controller
 			foreach ($detail as $val => $valx) {
 				foreach ($valx['detail'] as $val2 => $valx2) {
 					$ArrDetail[$val . $val2]['id'] 				= $valx2['id'];
-					$ArrDetail[$val . $val2]['price_ref_sup'] 	= str_replace(',', '', $valx2['price_ref_sup']);
-					$ArrDetail[$val . $val2]['qty'] 				= str_replace(',', '', $valx2['qty']);
-					$ArrDetail[$val . $val2]['moq'] 				= str_replace(',', '', $valx2['moq']);
-					$ArrDetail[$val . $val2]['lead_time'] 		= str_replace(',', '', $valx2['lead_time']);
-					$ArrDetail[$val . $val2]['price_ref'] 		= str_replace(',', '', $valx2['price_ref']);
-					$ArrDetail[$val . $val2]['harga_idr'] 		= str_replace(',', '', $valx2['harga_idr']);
-					$ArrDetail[$val . $val2]['total_harga'] 		= str_replace(',', '', $valx2['total_harga']);
+					$ArrDetail[$val . $val2]['price_ref_sup'] 	= str_replace(',', '', $valx2['price_ref_sup'] ?? '');
+					$ArrDetail[$val . $val2]['qty'] 				= str_replace(',', '', $valx2['qty'] ?? '');
+					$ArrDetail[$val . $val2]['moq'] 				= str_replace(',', '', $valx2['moq'] ?? '');
+					$ArrDetail[$val . $val2]['lead_time'] 		= str_replace(',', '', $valx2['lead_time'] ?? '');
+					$ArrDetail[$val . $val2]['price_ref'] 		= str_replace(',', '', $valx2['price_ref'] ?? '');
+					$ArrDetail[$val . $val2]['harga_idr'] 		= str_replace(',', '', $valx2['harga_idr'] ?? '');
+					$ArrDetail[$val . $val2]['total_harga'] 		= str_replace(',', '', $valx2['total_harga'] ?? '');
 					$ArrDetail[$val . $val2]['tgl_dibutuhkan'] 	= $valx2['tgl_dibutuhkan'];
 					$ArrDetail[$val . $val2]['top'] 				= strtolower((string) $valx2['top']);
 					$ArrDetail[$val . $val2]['keterangan'] 		= strtolower((string) $valx2['keterangan']);
@@ -643,8 +643,8 @@ class Metode_pembelian extends Admin_Controller
 			$ArrHeader = array(
 				'incoterms' 	=> strtolower((string) $data['incoterms']),
 				'tgl_dibutuhkan' 	=> $REQ_DATE,
-				'tax' 			=> str_replace(',', '', $data['tax']),
-				'pph' 			=> str_replace(',', '', $data['pph']),
+				'tax' 			=> str_replace(',', '', $data['tax'] ?? ''),
+				'pph' 			=> str_replace(',', '', $data['pph'] ?? ''),
 				'remarks' 		=> strtolower((string) $data['remarks']),
 				'buyer' 		=> strtolower((string) $data['buyer']),
 				'top' 			=> $data['top'],
@@ -671,9 +671,9 @@ class Metode_pembelian extends Admin_Controller
 						$ArrEditPO[$val]['category'] 	= $category;
 						$ArrEditPO[$val]['term'] 		= $no;
 						$ArrEditPO[$val]['group_top'] 	= $valx['group_top'];
-						$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress']);
-						$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd']);
-						$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr']);
+						$ArrEditPO[$val]['progress'] 	= str_replace(',', '', $valx['progress'] ?? '');
+						$ArrEditPO[$val]['value_usd'] 	= str_replace(',', '', $valx['value_usd'] ?? '');
+						$ArrEditPO[$val]['value_idr'] 	= str_replace(',', '', $valx['value_idr'] ?? '');
 						$ArrEditPO[$val]['keterangan'] 	= strtolower((string) $valx['keterangan']);
 						$ArrEditPO[$val]['jatuh_tempo'] = $valx['jatuh_tempo'];
 						$ArrEditPO[$val]['syarat'] 		= strtolower((string) $valx['syarat']);
@@ -834,18 +834,18 @@ class Metode_pembelian extends Admin_Controller
 			$detail = $data['detail'];
 			$no_po = $data['no_po'];
 			$tgl_dibutuhkan	= date('Y-m-d', strtotime((string) $data['tanggal_dibutuhkan']));
-			$total_po		= str_replace(',', '', $data['total_po']);
-			$discount		= str_replace(',', '', $data['discount']);
-			$net_price		= str_replace(',', '', $data['net_price']);
-			$tax			= str_replace(',', '', $data['tax']);
-			$net_plus_tax	= str_replace(',', '', $data['net_plus_tax']);
-			$delivery_cost	= str_replace(',', '', $data['delivery_cost']);
-			$grand_total	= str_replace(',', '', $data['grand_total']);
+			$total_po		= str_replace(',', '', $data['total_po'] ?? '');
+			$discount		= str_replace(',', '', $data['discount'] ?? '');
+			$net_price		= str_replace(',', '', $data['net_price'] ?? '');
+			$tax			= str_replace(',', '', $data['tax'] ?? '');
+			$net_plus_tax	= str_replace(',', '', $data['net_plus_tax'] ?? '');
+			$delivery_cost	= str_replace(',', '', $data['delivery_cost'] ?? '');
+			$grand_total	= str_replace(',', '', $data['grand_total'] ?? '');
 
 			$ArrEdit = [];
 			$SUM_MAT = 0;
 			foreach ($detail as $val => $valx) {
-				$qty_po = str_replace(',', '', $valx['qty_purchase']);
+				$qty_po = str_replace(',', '', $valx['qty_purchase'] ?? '');
 				$SUM_MAT += $qty_po;
 
 				$ArrEdit[$val]['id'] 			= $valx['id'];
@@ -1674,18 +1674,18 @@ class Metode_pembelian extends Admin_Controller
 			$code_plan  	= $data['id'];
 			$coa_lain       = $data['coa_lain'];
 			$coa_bank       = $data['coa_bank'];
-			$biaya_lain     = str_replace(',', '', $data['biaya_lain']);
+			$biaya_lain     = str_replace(',', '', $data['biaya_lain'] ?? '');
 			$ket_lain		= strtolower((string) $data['keterangan_lain']);
-			$selisih     	= str_replace(',', '', $data['selisih']);
-			$total_real     = str_replace(',', '', $data['total_real']);
+			$selisih     	= str_replace(',', '', $data['selisih'] ?? '');
+			$total_real     = str_replace(',', '', $data['total_real'] ?? '');
 
 			$detail 		= $data['detail'];
 
 			$ArrDetail = array();
 			if (!empty($detail)) {
 				foreach ($detail as $val => $valx) {
-					$harga_satuan 	= str_replace(',', '', $valx['price_unit_real']);
-					$harga 			= str_replace(',', '', $valx['total_harga_real']);
+					$harga_satuan 	= str_replace(',', '', $valx['price_unit_real'] ?? '');
+					$harga 			= str_replace(',', '', $valx['total_harga_real'] ?? '');
 					$ArrDetail[$val]['id'] 				= $valx['id'];
 					$ArrDetail[$val]['price_pay_unit'] 	= $harga_satuan;
 					$ArrDetail[$val]['price_pay_total'] = $harga;
@@ -2039,7 +2039,7 @@ class Metode_pembelian extends Admin_Controller
 			}
 
 			$nestedData[]	= "	<div align='left'>
-                                    <button type='button' class='btn btn-sm btn-primary detailMat' title='Detail PO' data-no_po='" . $row['no_po'] . "'><i class='fa fa-eye'></i></button>
+                                    <button type='button' class='btn btn-sm btn-primary detailMat' title='PO Detail' data-no_po='" . $row['no_po'] . "'><i class='fa fa-eye'></i></button>
 									" . $edit_po . "
 									" . $edit_print . "
 									" . $print_po . "

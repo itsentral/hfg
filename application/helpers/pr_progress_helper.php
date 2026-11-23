@@ -140,7 +140,7 @@ if (!function_exists('render_pr_progress_cell')) {
                 : '';
             $meta_html = '<div class="doc-meta">' . $prefix . $doc_meta . '</div>';
         } else {
-            $meta_html = '<div class="doc-meta">' . (!empty($stages_info['method_name']) ? $stages_info['method_name'] : 'Belum masuk metode pembelian') . '</div>';
+            $meta_html = '<div class="doc-meta">' . (!empty($stages_info['method_name']) ? $stages_info['method_name'] : 'Purchase method not assigned') . '</div>';
         }
 
         $html  = '<div class="progress-cell">';
@@ -206,7 +206,7 @@ if (!function_exists('evaluate_pr_status')) {
                     $stage = 1;
                     $status = 'active';
                     $status_text = 'Menunggu Approval — Finance';
-                    $doc_meta = 'Belum masuk ke tahap Direktur';
+                    $doc_meta = 'Not yet submitted for Director Approval';
                 } else {
                     $stage = 2;
                     $status = 'active';
@@ -219,13 +219,13 @@ if (!function_exists('evaluate_pr_status')) {
                     $stage = 3;
                     $status = 'active';
                     $status_text = 'Menentukan Metode Pembelian';
-                    $doc_meta = 'Belum masuk metode pembelian';
+                    $doc_meta = 'Purchase method not assigned';
                 } elseif ($method_name == 'Kasbon') {
                     if (empty($item->no_doc_kasbon)) {
                         $stage = 3;
                         $status = 'active';
                         $status_text = 'Menunggu Pembuatan Kasbon';
-                        $doc_meta = 'Kasbon belum dibuat';
+                        $doc_meta = 'Cash advance not created yet';
                     } else {
                         $tgl_kb_created = !empty($item->tgl_proses_kasbon) ? date('d M Y', strtotime((string) $item->tgl_proses_kasbon)) : '';
                         $tgl_kb_app = !empty($item->tgl_kasbon_approved) ? date('d M Y', strtotime((string) $item->tgl_kasbon_approved)) : $tgl_kb_created;
@@ -263,7 +263,7 @@ if (!function_exists('evaluate_pr_status')) {
                         $stage = 3;
                         $status = 'active';
                         $status_text = 'Menunggu Request Payment';
-                        $doc_meta = 'Belum dibuat request payment';
+                        $doc_meta = 'Payment request not created yet';
                     } else {
                         $tgl_np_created = !empty($item->tgl_proses_non_po) ? date('d M Y', strtotime((string) $item->tgl_proses_non_po)) : '';
                         $tgl_payment = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime((string) $item->tgl_bayar_dp)) : $tgl_np_created;
@@ -285,7 +285,7 @@ if (!function_exists('evaluate_pr_status')) {
                         $stage = 3;
                         $status = 'active';
                         $status_text = 'Menunggu Pembuatan PO';
-                        $doc_meta = 'PO belum dibuat';
+                        $doc_meta = 'PO not created yet';
                     } else {
                         if (($item->po_rejected ?? 0) == 1) {
                             $stage = 4;
@@ -331,7 +331,7 @@ if (!function_exists('evaluate_pr_status')) {
                     $stage = 2;
                     $status = 'active';
                     $status_text = 'Menentukan Metode Pembelian';
-                    $doc_meta = 'Belum masuk metode pembelian';
+                    $doc_meta = 'Purchase method not assigned';
                 } elseif ($method_name == 'Direct Payment') {
                     $no_doc_dp = $item->no_doc_non_po ?? ($item->no_doc_dp ?? null);
                     $tgl_dp = !empty($item->tgl_bayar_dp) ? date('d M Y', strtotime((string) $item->tgl_bayar_dp)) : date('d M Y');
@@ -410,7 +410,7 @@ if (!function_exists('evaluate_pr_status')) {
                     $stage = 2;
                     $status = 'active';
                     $status_text = 'Menentukan Metode Pembelian';
-                    $doc_meta = 'Belum masuk metode pembelian';
+                    $doc_meta = 'Purchase method not assigned';
                 } elseif ($method_name == 'Direct Payment') {
                     $no_doc_dp = $item->no_doc_non_po ?? null;
                     if (!empty($item->dp_paid) && $item->dp_paid == 1) {

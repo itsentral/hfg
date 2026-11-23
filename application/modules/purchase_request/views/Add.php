@@ -30,7 +30,7 @@ $tanggal = date('Y-m-d');
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="customer">Tanggal PR</label>
+										<label for="customer">PR Date</label>
 									</div>
 									<div class="col-md-8">
 										<input type="text" class="form-control datepicker" id="tanggal" value="<?= $tanggal ?>" onkeyup required name="tanggal" placeholder="yyyy-mm-dd">
@@ -60,11 +60,11 @@ $tanggal = date('Y-m-d');
 									<thead>
 										<tr class='bg-blue'>
 											<th width='30%'>Produk</th>
-											<th width='8%'>Kode Produk</th>
+											<th width='8%'>Product Code</th>
 											<th width='8%'>Qty (Unit)</th>
 											<th width='20%'>Supplier</th>
-											<th width='10%'>Tanggal Dibutuhkan</th>
-											<th width='30%'>Keterangan</th>
+											<th width='10%'>Required Date</th>
+											<th width='30%'>Description</th>
 											<th width='5%'>Aksi</th>
 										</tr>
 									</thead>
@@ -74,7 +74,7 @@ $tanggal = date('Y-m-d');
 							</div>
 						</div>
 						<center>
-							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 						</center>
 					</div>
 				</div>

@@ -50,11 +50,11 @@ $status2     = (!empty($listData[0]->status) && $listData[0]->status == '0') ? '
 
 <div class="row mb-3">
 	<div class="col-md-3">
-		<label class="col-form-label">Product Jenis <span class="text-danger">*</span></label>
+		<label class="col-form-label">Product Sub Category <span class="text-danger">*</span></label>
 	</div>
 	<div class="col-md-9">
 		<input type="text" class="form-control" id="nama" name="nama"
-			required placeholder="Product Jenis" value="<?= $nama; ?>">
+			required placeholder="Product Sub Category" value="<?= $nama; ?>">
 	</div>
 </div>
 
@@ -76,10 +76,10 @@ $status2     = (!empty($listData[0]->status) && $listData[0]->status == '0') ? '
 		<div class="col-md-9">
 			<div class="d-flex gap-4 pt-2">
 				<label>
-					<input type="radio" name="status" value="1" <?= $status1; ?>> Aktif
+					<input type="radio" name="status" value="1" <?= $status1; ?>> Active
 				</label>
 				<label>
-					<input type="radio" name="status" value="0" <?= $status2; ?>> Non-Aktif
+					<input type="radio" name="status" value="0" <?= $status2; ?>> Inactive
 				</label>
 			</div>
 		</div>

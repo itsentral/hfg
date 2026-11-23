@@ -36,9 +36,9 @@
                                 <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
-                                        <label class="badge bg-success">Aktif</label>
+                                        <label class="badge bg-success">Active</label>
                                     <?php else : ?>
-                                        <label class="badge bg-danger">Non Aktif</label>
+                                        <label class="badge bg-danger">Inactive</label>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -144,8 +144,8 @@
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
@@ -182,8 +182,8 @@
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {

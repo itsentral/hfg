@@ -93,12 +93,12 @@
   <div class="cl-page-header">
     <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h1 class="h5 fw-bold mb-1">Gudang Coil &mdash; Material On Hold</h1>
-        <p class="text-muted small mb-0">Tampungan material berstatus HOLD dari Laporan Produksi; tidak dijurnal sampai claim diputuskan Purchasing (FR-75, UC-N35).</p>
+        <h1 class="h5 fw-bold mb-1">Coil Warehouse &mdash; Material On Hold</h1>
+        <p class="text-muted small mb-0">Holding area for HOLD materials from Production Reports; not journaled until Purchasing decides the claim (FR-75, UC-N35).</p>
       </div>
       <div>
         <a href="<?= site_url('claim_material') ?>" class="btn btn-primary btn-sm">
-          <i class="fa fa-envelope-o me-1"></i> Ke Daftar Claim Material
+          <i class="fa fa-envelope-o me-1"></i> Ke Material Claim List
         </a>
       </div>
     </div>
@@ -112,17 +112,17 @@
     </div>
     <div class="cl-stat-card">
       <div class="val text-primary" id="statHoldKg">0.00 Kg</div>
-      <div class="lbl">Total Berat Hold</div>
+      <div class="lbl">Total Hold Weight</div>
     </div>
     <div class="cl-stat-card">
       <div class="val text-success" id="statDecided">0</div>
-      <div class="lbl">Sudah Diputuskan (Claim)</div>
+      <div class="lbl">Already Decided (Claim)</div>
     </div>
   </div>
 
   <!-- NAVIGATION TABS -->
   <div class="cl-nav-tabs">
-    <a href="<?= site_url('warehouse') ?>" class="tab-link">Stok Gudang Coil (Existing)</a>
+    <a href="<?= site_url('warehouse') ?>" class="tab-link">Coil Warehouse Stock (Existing)</a>
     <a href="javascript:void(0)" class="tab-link active">Material On Hold (Tampungan)</a>
   </div>
 
@@ -133,11 +133,11 @@
         <thead>
           <tr>
             <th width="40">No</th>
-            <th>Nama Supplier</th>
-            <th>Nama Material</th>
+            <th>Supplier Name</th>
+            <th>Material Name</th>
             <th>No. Coil Packing List</th>
             <th>No. PO</th>
-            <th class="text-end">Berat (Kg)</th>
+            <th class="text-end">Weight (Kg)</th>
             <th>Tgl Hold</th>
             <th>Alasan Produksi</th>
             <th>Status Material</th>
@@ -152,7 +152,7 @@
       </table>
     </div>
     <p class="text-muted small mt-3 mb-0">
-      * Status berubah otomatis mengikuti keputusan yang ditetapkan di Daftar Claim Material (Lanjut Produksi &rarr; Release; Retur &rarr; Dalam Retur; Jual &rarr; Dijual Gudang Slitting).
+      * Status berubah otomatis mengikuti keputusan yang ditetapkan di Material Claim List (Lanjut Produksi &rarr; Release; Retur &rarr; Dalam Retur; Jual &rarr; Dijual Gudang Slitting).
     </p>
   </div>
 </div>
@@ -164,7 +164,7 @@
 
   function getStatusBadge(st) {
     if (st === 'Dapat Dipakai (Release)') return '<span class="badge badge-release">Dapat Dipakai (Release)</span>';
-    if (st === 'Dijual (Gudang Slitting)') return '<span class="badge badge-slitting">Dijual (Gudang Slitting)</span>';
+    if (st === 'Dijual (Gudang Slitting)') return '<span class="badge badge-slitting">Sold (Slitting Warehouse)</span>';
     if (st === 'Dalam Retur') return '<span class="badge badge-retur">Dalam Retur</span>';
     if (st === 'Dikompensasi') return '<span class="badge badge-komp">Dikompensasi</span>';
     return '<span class="badge badge-hold">Hold</span>';
@@ -176,7 +176,7 @@
       .then(res => {
         const tbody = document.getElementById('holdTableBody');
         if (!res.status || !res.data || !res.data.length) {
-          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada material coil berstatus On Hold.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">There are no coil materials with status On Hold.</td></tr>';
           document.getElementById('statHoldCoils').textContent = '0';
           document.getElementById('statHoldKg').textContent = '0.00 Kg';
           document.getElementById('statDecided').textContent = '0';
@@ -210,7 +210,7 @@
               <td><span class="text-danger fw-semibold">${r.alasan_produksi || '-'}</span></td>
               <td>${getStatusBadge(r.status_material)}</td>
               <td class="text-center">
-                <a href="<?= site_url('claim_material') ?>" class="btn btn-outline-info btn-sm py-0 px-2">Lihat Claim</a>
+                <a href="<?= site_url('claim_material') ?>" class="btn btn-outline-info btn-sm py-0 px-2">View Claim</a>
               </td>
             </tr>
           `;
@@ -222,7 +222,7 @@
         document.getElementById('statDecided').textContent = decidedCount;
       })
       .catch(err => {
-        document.getElementById('holdTableBody').innerHTML = '<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data</td></tr>';
+        document.getElementById('holdTableBody').innerHTML = '<tr><td colspan="10" class="text-center py-4 text-danger">Failed to load data</td></tr>';
       });
   }
 

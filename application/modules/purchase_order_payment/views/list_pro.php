@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-4 mt-3">
             <select name="supplier" id="select_supplier" class="form-control">
-                <option value="">- Pilih Supplier -</option>
+                <option value="">- Select Supplier -</option>
                 <?php
                 foreach ($list_supplier as $item_supp) {
                     echo '<option value="' . $item_supp->kode_supplier . '">' . $item_supp->nama . '</option>';
@@ -32,9 +32,9 @@
                     <th class="text-center">No. Purchase Invoice</th>
                     <th class="text-center">No. Invoice</th>
                     <th class="text-center">No. Payment</th>
-                    <th class="text-center">Nama Supplier</th>
-                    <th class="text-center">Tanggal PO</th>
-                    <th class="text-center">Keterangan</th>
+                    <th class="text-center">Supplier Name</th>
+                    <th class="text-center">PO Date</th>
+                    <th class="text-center">Description</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -46,7 +46,7 @@
                     $sts = '<div class="badge bg-yellow">Waiting</div>';
                     $close = 0;
                     if ($item['ttl_persen_dp'] == $item['progress']) {
-                        $sts = '<div class="badge bg-green">Belum Lunas</div>';
+                        $sts = '<div class="badge bg-green">Unpaid</div>';
                         $close = 1;
 
                         $get_invoice = $this->db->get_where('tr_invoice_po', ['no_po' => $item['no_surat'], 'id_top' => $item['id_top']])->row();
@@ -104,8 +104,8 @@
                         ->result();
 
                     foreach ($get_invoice as $item_invoice) {
-                        $no_purchase_invoice[] = str_replace(',', '', $item_invoice->id);
-                        $no_invoice[] = str_replace(',', '', $item_invoice->invoice_no);
+                        $no_purchase_invoice[] = str_replace(',', '', $item_invoice->id ?? '');
+                        $no_invoice[] = str_replace(',', '', $item_invoice->invoice_no ?? '');
                     }
 
                     if (!empty($no_purchase_invoice)) {

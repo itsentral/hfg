@@ -11,7 +11,7 @@
 
             <div class="mb-3">
                 <label for="nm_category" class="form-label fw-bold">Category <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="nm_category" required name="nm_category" placeholder="Nama Category" value='<?= $nm_category; ?>'>
+                <input type="text" class="form-control" id="nm_category" required name="nm_category" placeholder="Category Name" value='<?= $nm_category; ?>'>
             </div>
 
             <div class="mb-3">
@@ -21,7 +21,7 @@
 
             <div class="d-flex justify-content-end gap-2 pt-3 border-top">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </button>
                 <button type="submit" class="btn btn-primary" name="save" id="save">
                     <i class="fa fa-save me-1"></i> Save

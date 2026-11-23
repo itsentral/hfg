@@ -7,14 +7,14 @@
             Perbandingan Timbang Awal — SPK: <strong><?= htmlspecialchars((string) $spk_no) ?></strong>
         </h5>
         <a href="<?= base_url('production_weighing') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
 
         <?php if (empty($rows)): ?>
             <div class="alert alert-info">
-                Belum ada data timbang awal untuk SPK ini.
+                There is no initial weighing data for this SPK yet.
             </div>
         <?php else: ?>
 

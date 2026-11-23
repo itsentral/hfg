@@ -384,7 +384,7 @@ if (!function_exists('get_company_logo')) {
 
         if (!siteKey) {
           btn.disabled = false;
-          alert('SITE KEY reCAPTCHA kosong.');
+          alert('reCAPTCHA SITE KEY is empty.');
           return;
         }
 
@@ -398,7 +398,7 @@ if (!function_exists('get_company_logo')) {
             })
             .catch((err) => {
               btn.disabled = false;
-              alert('Gagal memuat reCAPTCHA. Coba lagi.');
+              alert('Failed to load reCAPTCHA. Try again.');
               console.error(err);
             });
         });

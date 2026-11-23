@@ -76,7 +76,7 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link py-1 px-2 px-md-3 small fw-semibold" id="tab-all" data-status="all" type="button" role="tab">
-                        Semua SPK <span class="badge bg-secondary ms-1 rounded-pill" id="badge-count-all">0</span>
+                        All SPK <span class="badge bg-secondary ms-1 rounded-pill" id="badge-count-all">0</span>
                     </button>
                 </li>
             </ul>
@@ -94,10 +94,10 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                         <tr>
                             <th width="5%" class="text-center">No</th>
                             <th>SPK No</th>
-                            <th>Tanggal</th>
+                            <th>Date</th>
                             <th>Shift</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Jumlah Produk</th>
+                            <th class="text-center">Product Count</th>
                             <th width="20%" class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -192,12 +192,12 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
 
             Swal.fire({
                 title: 'Release SPK ' + spkNo + '?',
-                text: 'Setelah berstatus Released, SPK ini akan diteruskan ke Warehouse (Request List) dan dapat dibuat Laporan Produksi.',
+                text: 'Once its status is Released, this SPK will be forwarded to the Warehouse (Request List) and a Production Report can be created.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#198754',
-                confirmButtonText: 'Ya, Release SPK',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Release SPK',
+                cancelButtonText: 'Cancel'
             }).then(function(r) {
                 if (!r.isConfirmed) return;
 
@@ -228,17 +228,17 @@ $ENABLE_VIEW   = has_permission('Spk_Material.View');
                             tableSpk.ajax.reload(null, false);
                             Swal.fire({
                                 icon: 'success',
-                                title: 'SPK Berhasil Dirilis!',
+                                title: 'SPK Released Successfully!',
                                 text: res.message,
                                 timer: 1500,
                                 showConfirmButton: false
                             });
                         } else {
-                            Swal.fire('Gagal', res.message || 'Gagal merilis SPK.', 'error');
+                            Swal.fire('Failed', res.message || 'Failed to release SPK.', 'error');
                         }
                     },
                     error: function() {
-                        Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+                        Swal.fire('Error', 'A network error occurred.', 'error');
                     }
                 });
             });

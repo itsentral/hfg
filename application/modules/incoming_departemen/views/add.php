@@ -14,8 +14,8 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                             <i class="fa fa-file-circle-plus fs-4"></i>
                         </div>
                         <div>
-                            <h5 class="card-title fw-bold text-dark mb-0">Tambah Penerimaan Incoming</h5>
-                            <small class="text-muted">Pilih supplier dan dokumen PO / Non-PO untuk memproses penerimaan barang</small>
+                            <h5 class="card-title fw-bold text-dark mb-0">Add Incoming Receipt</h5>
+                            <small class="text-muted">Select a supplier and PO / Non-PO document to process the goods receipt</small>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Supplier <span class="text-danger">*</span></label>
                                 <select id="supplier" name="supplier" class="form-select form-select-sm list_supplier w-100">
-                                    <option value="">- Pilih Supplier -</option>
+                                    <option value="">- Select Supplier -</option>
                                     <option value="NON-PO">NON-PO</option>
                                     <?php if (!empty($list_supplier)) : ?>
                                         <?php foreach ($list_supplier as $item) : ?>
@@ -59,8 +59,8 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                                             <th class="text-center" width="80">Tipe</th>
                                             <th class="text-center" width="130">No. PO</th>
                                             <th class="text-center" width="130">No. PR</th>
-                                            <th>Keterangan</th>
-                                            <th class="text-center" width="60">Pilih</th>
+                                            <th>Description</th>
+                                            <th class="text-center" width="60">Select</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list_po">
@@ -86,21 +86,21 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                         </div>
                         <div class="card-body bg-white">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Tanggal Transaksi <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold">Transaction Date <span class="text-danger">*</span></label>
                                 <div class="input-group input-group-sm">
-                                    <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control form-control-sm flatpickr-date bg-white" placeholder="Pilih tanggal..." value="<?= date('Y-m-d'); ?>" readonly>
+                                    <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control form-control-sm flatpickr-date bg-white" placeholder="Select date..." value="<?= date('Y-m-d'); ?>" readonly>
                                     <span class="input-group-text bg-white"><i class="fa fa-calendar-alt text-primary"></i></span>
                                 </div>
-                                <small class="text-muted">Tanggal fisik barang / jasa diterima</small>
+                                <small class="text-muted">Date the goods / services were physically received</small>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Nama PIC Penerima <span class="text-danger">*</span></label>
-                                <input type="text" id="pic" name="pic" class="form-control form-control-sm" placeholder="Contoh: Budi (Gudang / User)">
+                                <label class="form-label fw-bold">Receiving PIC Name <span class="text-danger">*</span></label>
+                                <input type="text" id="pic" name="pic" class="form-control form-control-sm" placeholder="Example: Budi (Warehouse / User)">
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Catatan / Note</label>
+                                <label class="form-label fw-bold">Notes</label>
                                 <textarea id="note" name="note" class="form-control form-control-sm" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
                             </div>
 
@@ -125,13 +125,13 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light py-2">
-                    <h5 class="modal-title fw-bold" id="head_title2">Form Penerimaan Incoming</h5>
+                    <h5 class="modal-title fw-bold" id="head_title2">Incoming Receipt Form</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-3" id="view2">
                     <div class="text-center py-4">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <p class="text-muted mt-2 mb-0">Memuat rincian item...</p>
+                        <p class="text-muted mt-2 mb-0">Loading item details...</p>
                     </div>
                 </div>
             </div>
@@ -166,11 +166,11 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
     $(document).on('change', '.list_supplier', function() {
         var id_supplier = $(this).val();
         if (!id_supplier) {
-            $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Silakan pilih supplier terlebih dahulu.</td></tr>');
+            $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Please select a supplier first.</td></tr>');
             return;
         }
 
-        $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-1"></i> Memuat daftar PO...</td></tr>');
+        $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-1"></i> Loading PO list...</td></tr>');
 
         $.ajax({
             type: 'POST',
@@ -184,11 +184,11 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                 if (result.hasil && result.hasil.trim() !== '') {
                     $('.list_po').html(result.hasil);
                 } else {
-                    $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4">Tidak ada data PO / Non-PO yang menunggu incoming untuk supplier ini.</td></tr>');
+                    $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4">There is no PO / Non-PO waiting for incoming for this supplier.</td></tr>');
                 }
             },
             error: function() {
-                $('.list_po').html('<tr><td colspan="6" class="text-center text-danger py-4">Gagal memuat data PO. Silakan coba lagi.</td></tr>');
+                $('.list_po').html('<tr><td colspan="6" class="text-center text-danger py-4">Failed to load PO data. Please try again.</td></tr>');
             }
         });
     });
@@ -206,25 +206,25 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
 
         if (check_po.length < 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Perhatian!', text: 'Silakan centang minimal satu PO / Non-PO pada tabel!', icon: 'warning' });
+                Swal.fire({ title: 'Attention!', text: 'Please check at least one PO / Non-PO in the table!', icon: 'warning' });
             } else {
-                swal({ title: 'Perhatian!', text: 'Silakan centang minimal satu PO / Non-PO pada tabel!', type: 'warning' });
+                swal({ title: 'Attention!', text: 'Please check at least one PO / Non-PO in the table!', type: 'warning' });
             }
             return false;
         }
 
         if (!pic || pic.trim() === '') {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Perhatian!', text: 'Nama PIC penerima wajib diisi!', icon: 'warning' });
+                Swal.fire({ title: 'Attention!', text: 'Receiving PIC name is required!', icon: 'warning' });
             } else {
-                swal({ title: 'Perhatian!', text: 'Nama PIC penerima wajib diisi!', type: 'warning' });
+                swal({ title: 'Attention!', text: 'Receiving PIC name is required!', type: 'warning' });
             }
             $('#pic').focus();
             return false;
         }
 
-        $("#head_title2").html("<i class='fa fa-boxes-packing me-1'></i> <b>Rincian Barang Penerimaan Incoming</b>");
-        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Memuat rincian barang...</p></div>');
+        $("#head_title2").html("<i class='fa fa-boxes-packing me-1'></i> <b>Incoming Receipt Item Details</b>");
+        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Loading item details...</p></div>');
         $("#ModalView2").modal('show');
 
         $.ajax({
@@ -240,7 +240,7 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                 $("#view2").html(data);
             },
             error: function() {
-                $("#view2").html('<div class="alert alert-danger text-center">Gagal memuat form incoming. Silakan coba lagi.</div>');
+                $("#view2").html('<div class="alert alert-danger text-center">Failed to load the incoming form. Please try again.</div>');
             }
         });
     });
@@ -266,18 +266,18 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
 
         if (sts_qty !== 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Peringatan!', text: 'Pastikan seluruh input Qty Diterima telah terisi!', icon: 'warning' });
+                Swal.fire({ title: 'Warning!', text: 'Make sure all Received Qty inputs are filled in!', icon: 'warning' });
             } else {
-                swal({ title: 'Peringatan!', text: 'Pastikan seluruh input Qty Diterima telah terisi!', type: 'warning' });
+                swal({ title: 'Warning!', text: 'Make sure all Received Qty inputs are filled in!', type: 'warning' });
             }
             return false;
         }
 
         if (sts_not_exc !== 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Peringatan!', text: 'Qty Diterima tidak boleh melebihi sisa Qty yang belum diterima!', icon: 'warning' });
+                Swal.fire({ title: 'Warning!', text: 'Received Qty cannot exceed the remaining unreceived Qty!', icon: 'warning' });
             } else {
-                swal({ title: 'Peringatan!', text: 'Qty Diterima tidak boleh melebihi sisa Qty yang belum diterima!', type: 'warning' });
+                swal({ title: 'Warning!', text: 'Received Qty cannot exceed the remaining unreceived Qty!', type: 'warning' });
             }
             return false;
         }
@@ -296,31 +296,31 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
                 processData: false,
                 contentType: false,
                 success: function(data) {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Penerimaan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Receipt');
                     if (data.status == 1) {
                         if (typeof Swal !== 'undefined' && Swal.fire) {
-                            Swal.fire({ title: "Berhasil!", text: data.pesan, icon: "success", timer: 3000 }).then(function() {
+                            Swal.fire({ title: "Success!", text: data.pesan, icon: "success", timer: 3000 }).then(function() {
                                 window.location.href = siteurl + active_controller;
                             });
                         } else {
-                            swal({ title: "Berhasil!", text: data.pesan, type: "success", timer: 3000 }, function() {
+                            swal({ title: "Success!", text: data.pesan, type: "success", timer: 3000 }, function() {
                                 window.location.href = siteurl + active_controller;
                             });
                         }
                     } else {
                         if (typeof Swal !== 'undefined' && Swal.fire) {
-                            Swal.fire({ title: "Gagal!", text: data.pesan, icon: "warning" });
+                            Swal.fire({ title: "Failed!", text: data.pesan, icon: "warning" });
                         } else {
-                            swal({ title: "Gagal!", text: data.pesan, type: "warning" });
+                            swal({ title: "Failed!", text: data.pesan, type: "warning" });
                         }
                     }
                 },
                 error: function() {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Penerimaan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Receipt');
                     if (typeof Swal !== 'undefined' && Swal.fire) {
-                        Swal.fire({ title: "Error!", text: 'Terjadi kesalahan sistem saat memproses data.', icon: "error" });
+                        Swal.fire({ title: "Error!", text: 'A system error occurred while processing the data.', icon: "error" });
                     } else {
-                        swal({ title: "Error!", text: 'Terjadi kesalahan sistem saat memproses data.', type: "error" });
+                        swal({ title: "Error!", text: 'A system error occurred while processing the data.', type: "error" });
                     }
                 }
             });
@@ -328,14 +328,14 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
 
         if (typeof Swal !== 'undefined' && Swal.fire) {
             Swal.fire({
-                title: "Konfirmasi Simpan",
-                text: "Apakah Anda yakin data penerimaan incoming ini sudah benar?",
+                title: "Confirm Save",
+                text: "Are you sure this incoming receipt data is correct?",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     doSubmit();
@@ -343,13 +343,13 @@ $ENABLE_ADD     = has_permission('Incoming_Departemen.Add');
             });
         } else {
             swal({
-                title: "Konfirmasi Simpan",
-                text: "Apakah Anda yakin data penerimaan incoming ini sudah benar?",
+                title: "Confirm Save",
+                text: "Are you sure this incoming receipt data is correct?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-success",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {

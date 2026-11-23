@@ -9,7 +9,7 @@ foreach ($results['result_payment'] as $item) {
 
 	if (!empty($get_rec_invoice)) {
 		if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
-			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
+			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po ?? '');
 			$get_no_po = $this->db
 				->select('a.no_ipp')
 				->from('tr_incoming_check a')
@@ -23,9 +23,9 @@ foreach ($results['result_payment'] as $item) {
 			}
 
 			$arr_no_po = implode(',', $arr_no_po ?? []);
-			$arr_no_po = str_replace(', ', ',', $arr_no_po);
+			$arr_no_po = str_replace(', ', ',', $arr_no_po ?? '');
 
-			$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
+			$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po ?? '') . "')")->result();
 			foreach ($get_no_surat as $item_no_surat) {
 				$no_po[] = $item_no_surat->no_surat;
 			}
@@ -171,7 +171,7 @@ foreach ($results['result_payment'] as $item) {
 						}
 						if (!empty($get_rec_invoice)) {
 							if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
-								$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
+								$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po ?? '');
 								$get_no_po = $this->db
 									->select('a.no_ipp')
 									->from('tr_incoming_check a')
@@ -185,9 +185,9 @@ foreach ($results['result_payment'] as $item) {
 								}
 
 								$arr_no_po = implode(',', $arr_no_po ?? []);
-								$arr_no_po = str_replace(', ', ',', $arr_no_po);
+								$arr_no_po = str_replace(', ', ',', $arr_no_po ?? '');
 
-								$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
+								$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po ?? '') . "')")->result();
 								foreach ($get_no_surat as $item_no_surat) {
 									$no_po[] = $item_no_surat->no_surat;
 								}

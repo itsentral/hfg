@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Cetak PDF</title>
+  <title>Print PDF</title>
 <style>
     #tables td, th {
 		border: 1px solid #000000;

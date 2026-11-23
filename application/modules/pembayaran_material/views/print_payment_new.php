@@ -125,15 +125,15 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 ?>
 <table width=800>
 <tr><td rowspan=2 width="100"><img src="<?=base_url("assets/images/ori_logo.jpg")?>" width="80"></td><td colspan=2><h1>PT. ORI POLITEC COMPOSITES</h1></td></tr>
-<tr><td><center><div style="font-size:18px;"><u>BUKTI PENGELUARAN BANK/KAS</u></div><?=$coa->nama?></center></td></tr>
-<tr><td rowspan=2 valign=top>Supplier</td><td rowspan=2 valign=top>: <?=$supplier->nm_supplier?></td><td valign=top width="100">Nomor</td><td valign=top nowrap>: <?=$kodebayar?></td></tr>
-<tr><td valign=top>Tanggal</td><td valign=top nowrap>: <?=date("d M Y",strtotime((string) $headers->payment_date))?></td></tr>
+<tr><td><center><div style="font-size:18px;"><u>BANK/CASH PAYMENT VOUCHER</u></div><?=$coa->nama?></center></td></tr>
+<tr><td rowspan=2 valign=top>Supplier</td><td rowspan=2 valign=top>: <?=$supplier->nm_supplier?></td><td valign=top width="100">Number</td><td valign=top nowrap>: <?=$kodebayar?></td></tr>
+<tr><td valign=top>Date</td><td valign=top nowrap>: <?=date("d M Y",strtotime((string) $headers->payment_date))?></td></tr>
 <tr><td rowspan=2 valign=top>Say</td><td rowspan=2 valign=top>: <?php if($headers->curs_header!='IDR'){ 
 	echo "# ". ucfirst(trim(ynz_terbilang_format($headers->nilai_bayar_bank)))." US dollar #";
 }else{
 	echo "# ". ucfirst(trim(ynz_terbilang_format($headers->nilai_bayar_bank)))." rupiah #";
 }?></td>
-	<td valign=top>Mata Uang</td><td valign=top nowrap>: <?php echo($headers->curs_header) ?></td></tr>
+	<td valign=top>Currency</td><td valign=top nowrap>: <?php echo($headers->curs_header) ?></td></tr>
 <tr><td valign=top>1 IDR</td><td valign=top>: <?php echo($headers->curs) ?></td></tr>
 </table>
     <br>
@@ -141,10 +141,10 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 
 		<?php
 			echo "<tr>";
-			echo "<th align='center' valign='top'>Tanggal Terima</th>";
+			echo "<th align='center' valign='top'>Received Date</th>";
 			echo "<th align='center' valign='top'>No PO</th>";
 			echo "<th align='center' valign='top'>No Invoice</th>";
-			echo "<th align='center' valign='top'>Nilai</th>";
+			echo "<th align='center' valign='top'>Value</th>";
 			echo "</tr>";
 			$detail= $this->db->query("SELECT * FROM purchase_order_request_payment WHERE no_payment ='$kodebayar'")->result();
 			foreach($detail as $val=>$det){
@@ -200,7 +200,7 @@ $supplier	=  $this->db->query("SELECT * FROM supplier WHERE id_supplier= '$heade
 		</table>
 		<br>
 		<table valign="top" width="800" border=1 cellpadding=1 cellspacing=0>
-		<tr><th>DIBUAT</th><th>DIPERIKSA</th><th>DIBUKUKAN ACCT</th><th colspan=4>DISETUJUI OLEH</th><th>PENGELUARAN</th></tr>
+		<tr><th>DIBUAT</th><th>DIPERIKSA</th><th>DIBUKUKAN ACCT</th><th colspan=4>APPROVED BY</th><th>PAYMENT</th></tr>
 		<tr><th width=100><br><br><br><br><br></th>
 		<th width=100><br><br><br><br><br></th>
 		<th width=120><br><br><br><br><br></th>

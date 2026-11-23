@@ -37,7 +37,7 @@ class Outgoing_stok_atk extends Admin_Controller
 
 
     // history("View data outgoing atk / household");
-    $this->template->title('Gudang Stok / Outgoing ATK Household');
+    $this->template->title('Stock Warehouse / Stationery Household Outgoing');
     $this->template->render('index');
   }
 
@@ -78,7 +78,7 @@ class Outgoing_stok_atk extends Admin_Controller
           if ($konversi <= 0) {
             $konversi = 1;
           }
-          $qty_packing   = str_replace(',', '', $valx['sudah_request']);
+          $qty_packing   = str_replace(',', '', $valx['sudah_request'] ?? '');
           if ($qty_packing > 0) {
             $qty_berat = $qty_packing;
 
@@ -124,7 +124,7 @@ class Outgoing_stok_atk extends Admin_Controller
         'note'             => $keterangan,
         'id_gudang_dari'   => 1,
         'id_gudang_ke'     => $id_costcenter,
-        'kd_gudang_ke'     => strtoupper(get_name('warehouse', 'kd_gudang', 'id', $id_costcenter)),
+        'kd_gudang_ke'     => strtoupper((string) get_name('warehouse', 'kd_gudang', 'id', $id_costcenter)),
         'created_by'       => $this->id_user,
         'created_date'     => $this->datetime
       );
@@ -333,7 +333,7 @@ class Outgoing_stok_atk extends Admin_Controller
       if ($this->db->trans_status() === FALSE || $valid_qty_stock < 1) {
         $this->db->trans_rollback();
 
-        $msg = 'Save gagal disimpan ...';
+        $msg = 'Failed to save data.';
         if ($valid_qty_stock < 1) {
           $msg = 'Sorry, the stock is less than the request !';
         }
@@ -346,7 +346,7 @@ class Outgoing_stok_atk extends Admin_Controller
         move_warehouse_stok($ArrStock, 1, $id_costcenter, $kode_trans, null);
         $this->db->trans_commit();
         $Arr_Data  = array(
-          'pesan'    => 'Save berhasil disimpan. Thanks ...',
+          'pesan'    => 'Data saved successfully.',
           'status'  => 1,
         );
         history("Outgoing barang stok : " . $kode_trans);
@@ -403,7 +403,7 @@ class Outgoing_stok_atk extends Admin_Controller
       if (!empty($data['detail'])) {
         foreach ($data['detail'] as $val => $valx) {
           $konversi     = (!empty($GET_DETAIL_MAT[$valx['id_material']]['konversi'])) ? $GET_DETAIL_MAT[$valx['id_material']]['konversi'] : 0;
-          $qty_packing   = str_replace(',', '', $valx['edit_qty']);
+          $qty_packing   = str_replace(',', '', $valx['edit_qty'] ?? '');
           if ($qty_packing > 0) {
             $qty_berat = $qty_packing * $konversi;
 
@@ -571,15 +571,15 @@ class Outgoing_stok_atk extends Admin_Controller
       foreach ($Detail as $key => $value) {
         $ArrInsert[$key]['id_det_spk'] = $value['id'];
         $ArrInsert[$key]['code_material'] = $value['code_material'];
-        $ArrInsert[$key]['weight'] = str_replace(',', '', $value['berat']);
+        $ArrInsert[$key]['weight'] = str_replace(',', '', $value['berat'] ?? '');
         $ArrInsert[$key]['code_material_aktual'] = $value['code_material_aktual'];
-        $ArrInsert[$key]['weight_aktual'] = str_replace(',', '', $value['berat_aktual']);
+        $ArrInsert[$key]['weight_aktual'] = str_replace(',', '', $value['berat_aktual'] ?? '');
         $ArrInsert[$key]['created_by'] = $this->id_user;
         $ArrInsert[$key]['created_date'] = $this->datetime;
         $ArrInsert[$key]['gudang'] = 'produksi';
 
         $ArrStock[$key]['id'] = $value['code_material'];
-        $ArrStock[$key]['qty'] = str_replace(',', '', $value['berat_aktual']);
+        $ArrStock[$key]['qty'] = str_replace(',', '', $value['berat_aktual'] ?? '');
       }
 
       $ArrUpdate = [
@@ -593,7 +593,7 @@ class Outgoing_stok_atk extends Admin_Controller
       $kode_trans = $getData[0]['kode_det'];
       $id_gudang_dari = $getData[0]['id_gudang'];
       $id_costcenter  = $getData[0]['id_costcenter'];
-      $nm_costcenter  = strtoupper(get_name('ms_costcenter', 'nama_costcenter', 'id_costcenter', $getData[0]['id_costcenter']));
+      $nm_costcenter  = strtoupper((string) get_name('ms_costcenter', 'nama_costcenter', 'id_costcenter', $getData[0]['id_costcenter']));
 
       // exit;
 
@@ -610,13 +610,13 @@ class Outgoing_stok_atk extends Admin_Controller
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $Arr_Data  = array(
-          'pesan'    => 'Save gagal disimpan ...',
+          'pesan'    => 'Failed to save data.',
           'status'  => 0
         );
       } else {
         $this->db->trans_commit();
         $Arr_Data  = array(
-          'pesan'    => 'Save berhasil disimpan. Thanks ...',
+          'pesan'    => 'Data saved successfully.',
           'status'  => 1,
         );
         // move_warehouse($ArrStock, $id_gudang_dari, null, $kode_trans, $nm_costcenter);

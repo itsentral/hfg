@@ -32,7 +32,7 @@ foreach ($results['result_payment'] as $item_check) {
 		if (!empty($get_inv_po) && !empty($get_inv_po->no_po)) {
 			$no_po_check = $get_inv_po->no_po;
 			if (strpos((string) $no_po_check, 'TRS1') !== false) {
-				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check));
+				$arr_inc = explode(',', str_replace(', ', ',', $no_po_check ?? ''));
 				$get_ipp = $this->db->select('no_ipp')->where_in('kode_trans', $arr_inc)->get('tr_incoming_check')->row();
 				if (!empty($get_ipp)) {
 					$no_po_check = $get_ipp->no_ipp;
@@ -69,7 +69,7 @@ foreach ($results['result_payment'] as $item) {
 
 	if (!empty($get_rec_invoice)) {
 		if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
-			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
+			$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po ?? '');
 			$get_no_po = $this->db
 				->select('a.no_ipp')
 				->from('tr_incoming_check a')
@@ -83,9 +83,9 @@ foreach ($results['result_payment'] as $item) {
 			}
 
 			$arr_no_po = implode(',', $arr_no_po ?? []);
-			$arr_no_po = str_replace(', ', ',', $arr_no_po);
+			$arr_no_po = str_replace(', ', ',', $arr_no_po ?? '');
 
-			$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
+			$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po ?? '') . "')")->result();
 			foreach ($get_no_surat as $item_no_surat) {
 				$no_po[] = $item_no_surat->no_surat;
 			}
@@ -190,10 +190,10 @@ foreach ($results['result_payment'] as $item) {
 		<div class="payment-section-body">
 			<table class="payment-info-table" style="width: 100%;" border="0">
 				<tr>
-					<td width="15%" style="">Tgl Bayar</td>
+					<td width="15%" style="">Payment Date</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
-						<input type="text" name="tgl_bayar" id="tgl_bayar" class="form-control form-control-sm tgl_bayar" value="<?= date('Y-m-d') ?>" placeholder="Pilih tanggal">
+						<input type="text" name="tgl_bayar" id="tgl_bayar" class="form-control form-control-sm tgl_bayar" value="<?= date('Y-m-d') ?>" placeholder="Select date">
 					</td>
 					<td width="15%" style="">Supplier</td>
 					<td width="5%" class="text-center">:</td>
@@ -212,12 +212,12 @@ foreach ($results['result_payment'] as $item) {
 					</td>
 				</tr>
 				<tr>
-					<td width="15%" style="">Keterangan Pembayaran</td>
+					<td width="15%" style="">Payment Description</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
 						<textarea name="keterangan_pembayaran" id="" class="form-control form-control-sm keterangan_pembayaran"></textarea>
 					</td>
-					<td width="15%" style="">Pilih Bank</td>
+					<td width="15%" style="">Select Bank</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
 						<select name="bank" id="" class="form-control form-control-sm bank" onchange="set_jurnal_refill('<?= $results['id_payment'] ?>')">
@@ -231,24 +231,24 @@ foreach ($results['result_payment'] as $item) {
 					</td>
 				</tr>
 				<tr>
-					<td width="15%" style="">Mata Uang</td>
+					<td width="15%" style="">Currency</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
 						<div class="d-flex align-items-center" style="gap: 6px;">
 							<select name="mata_uang" id="" class="form-control form-control-sm mata_uang" data-placeholder="- Pilih Mata Uang -" style="flex: 1;">
-								<option value="">- Mata Uang -</option>
+								<option value="">- Currency -</option>
 								<?php
 								foreach ($results['list_mata_uang'] as $item_mata_uang) {
 									echo '<option value="' . $item_mata_uang->kode . '">' . $item_mata_uang->kode . '</option>';
 								}
 								?>
 							</select>
-							<a href="javascript:void(0)" class="btn-reset-mata-uang d-none" title="Batal pilih mata uang">
+							<a href="javascript:void(0)" class="btn-reset-mata-uang d-none" title="Unselect currency">
 								<i class="fa fa-times-circle"></i>
 							</a>
 						</div>
 					</td>
-					<td width="15%" style="">Nilai Bank</td>
+					<td width="15%" style="">Bank Value</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
 						<input type="text" name="payment_bank" id="" class="form-control form-control-sm text-right input_payment_bank auto_num" value="0">
@@ -258,9 +258,9 @@ foreach ($results['result_payment'] as $item) {
 					<td width="15%" style="">Kurs</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
-						<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="" disabled placeholder="Pilih mata uang dulu">
+						<input type="text" name="kurs_payment" id="" class="form-control form-control-sm text-right auto_num kurs_payment_input" value="" disabled placeholder="Select a currency first">
 					</td>
-					<td width="15%" style="">Nilai Bank IDR</td>
+					<td width="15%" style="">Bank IDR Value</td>
 					<td width="5%" class="text-center">:</td>
 					<td width="25%">
 						<input type="text" name="nilai_bank_idr" id="" class="form-control form-control-sm text-right nilai_bank_idr" value="0" readonly style="background-color: #e9ecef;">
@@ -281,11 +281,11 @@ foreach ($results['result_payment'] as $item) {
 					<thead>
 						<tr class='bg-blue'>
 							<th class="text-center">Supplier</th>
-							<th class="text-center">Nomor Dokumen</th>
+							<th class="text-center">Document Number</th>
 							<th class="text-center">Invoice</th>
 							<th class="text-center" colspan="2" <?= $hide_ppn_pph_style ?>>PPH</th>
 							<th class="text-center" <?= $hide_ppn_pph_style ?>>PPN</th>
-							<th class="text-center">Lampiran</th>
+							<th class="text-center">Attachment</th>
 							<th class="text-center">Total</th>
 						</tr>
 					</thead>
@@ -329,7 +329,7 @@ foreach ($results['result_payment'] as $item) {
 								}
 								if (!empty($get_rec_invoice)) {
 									if (strpos((string) $get_rec_invoice->no_po, 'TRS1') !== false) {
-										$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po);
+										$arr_no_incoming = str_replace(', ', ',', $get_rec_invoice->no_po ?? '');
 										$get_no_po = $this->db
 											->select('a.no_ipp')
 											->from('tr_incoming_check a')
@@ -343,9 +343,9 @@ foreach ($results['result_payment'] as $item) {
 										}
 
 										$arr_no_po = implode(',', $arr_no_po ?? []);
-										$arr_no_po = str_replace(', ', ',', $arr_no_po);
+										$arr_no_po = str_replace(', ', ',', $arr_no_po ?? '');
 
-										$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po) . "')")->result();
+										$get_no_surat = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $arr_no_po ?? '') . "')")->result();
 										foreach ($get_no_surat as $item_no_surat) {
 											$no_po[] = $item_no_surat->no_surat;
 										}
@@ -519,7 +519,7 @@ foreach ($results['result_payment'] as $item) {
 		<div class="payment-section-body payment-footer-actions">
 			<div class="form-group" style="margin-bottom: 0;">
 				<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-				<a href="<?= base_url() ?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+				<a href="<?= base_url() ?>pembayaran_material/payment_list" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 			</div>
 		</div>
 	</div>
@@ -577,7 +577,7 @@ foreach ($results['result_payment'] as $item) {
 			if (!mata_uang || mata_uang === '') {
 				// Belum pilih — kosongkan dan disable
 				kurs_input.val('').prop('disabled', true)
-					.attr('placeholder', 'Pilih mata uang dulu');
+					.attr('placeholder', 'Select a currency first');
 			} else if (mata_uang.toUpperCase() === 'IDR') {
 				// IDR — set 1 dan tetap disable
 				kurs_input.val('1').prop('disabled', true)
@@ -585,7 +585,7 @@ foreach ($results['result_payment'] as $item) {
 			} else {
 				// Non-IDR — enable dan minta input kurs
 				kurs_input.val('').prop('disabled', false)
-					.attr('placeholder', 'Masukkan kurs')
+					.attr('placeholder', 'Enter exchange rate')
 					.focus();
 			}
 
@@ -669,7 +669,7 @@ foreach ($results['result_payment'] as $item) {
 		// Grand Total = Subtotal + PPN - PPH + Bank Charge
 		var grand_total = total_payment + total_ppn - total_pph + bank_charge;
 
-		// Kontrol = Nilai Bank IDR - Grand Total Payment
+		// Kontrol = Bank IDR Value - Grand Total Payment
 		var kontrol = parseFloat((nilai_bank_idr - grand_total).toFixed(2));
 
 		$('.kontrol').val(kontrol);
@@ -858,7 +858,7 @@ foreach ($results['result_payment'] as $item) {
 		if (payment_bank <= 0) {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Nilai bank harus diisi dan tidak boleh 0!',
+				text: 'Sorry, the bank value is required and cannot be 0!',
 				type: 'warning'
 			});
 
@@ -867,7 +867,7 @@ foreach ($results['result_payment'] as $item) {
 		if (bank == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Bank wajib diisi!',
+				text: 'Sorry, Bank is required!',
 				type: 'warning'
 			});
 
@@ -877,7 +877,7 @@ foreach ($results['result_payment'] as $item) {
 		if (mata_uang == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Mata Uang tidak boleh kosong!',
+				text: 'Sorry, Currency cannot be empty!',
 				type: 'warning'
 			});
 
@@ -887,7 +887,7 @@ foreach ($results['result_payment'] as $item) {
 		if (kurs_payment == '') {
 			swal({
 				title: 'Warning !',
-				text: 'Maaf, Kurs payment tidak bbisa kosong!',
+				text: 'Sorry, the payment exchange rate cannot be empty!',
 				type: 'warning'
 			});
 

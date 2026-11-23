@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         noResultLi.innerHTML = `
           <div class="text-muted" style="font-size: 13px;">
             <i class="ti ti-search-off d-block fs-3 mb-2 text-secondary"></i>
-            <span>Menu "<strong>${escapeHtml(q)}</strong>" tidak ditemukan</span>
+            <span>No menu found for "<strong>${escapeHtml(q)}</strong>"</span>
           </div>
         `;
         navbar.appendChild(noResultLi);

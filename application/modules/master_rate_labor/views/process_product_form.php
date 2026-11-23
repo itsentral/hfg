@@ -150,7 +150,7 @@
         <div class="d-flex align-items-center">
             <div class="input-group input-group-sm" style="width: 400px;">
                 <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                <input type="text" id="search-produk" class="form-control" placeholder="Cari produk...">
+                <input type="text" id="search-produk" class="form-control" placeholder="Search product...">
             </div>
         </div>
         <div class="d-flex gap-2">
@@ -170,11 +170,11 @@
                         <tr>
                             <th rowspan="2" width="40" class="col-sticky-1">No</th>
                             <th rowspan="2" class="col-sticky-2">Produk</th>
-                            <th colspan="3">Standard Biaya (Rp/Kg)</th>
-                            <th colspan="9">Standard Biaya Gaji (Rp/Kg)</th>
+                            <th colspan="3">Standard Cost (Rp/Kg)</th>
+                            <th colspan="9">Standard Salary Cost (Rp/Kg)</th>
                         </tr>
                         <tr>
-                            <th width="50">Bahan Pendukung Khusus</th>
+                            <th width="50">Special Supporting Material</th>
                             <th width="50">Consumable</th>
                             <th width="100">FOH</th>
                             <th width="100">Cycle Time (mnt)</th>
@@ -185,7 +185,7 @@
                             <th width="150">Gaji Direct</th>
                             <th width="100">% Rate Indirect</th>
                             <th width="150">Gaji Indirect</th>
-                            <th width="110">Std. Biaya Gaji</th>
+                            <th width="110">Std. Salary Cost</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-products">
@@ -200,7 +200,7 @@
                                             <div class="text-muted small italic">(<?= htmlspecialchars((string) $row->trade_name) ?>)</div>
                                         <?php endif; ?>
                                     </td>
-                                    <!-- Bahan Pendukung Khusus -->
+                                    <!-- Special Supporting Material -->
                                     <td>
                                         <input type="number" step="0.01" min="0"
                                             name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][bahan_pendukung_khusus]"
@@ -260,14 +260,14 @@
                                                 name="products[<?= htmlspecialchars((string) $row->code_lv4) ?>][kg_pcs]"
                                                 class="form-control form-control-sm input-disabled val-kg-pcs <?= !$has_weight ? 'border-danger text-danger pe-4' : '' ?>"
                                                 value="<?= $weight_val ?>"
-                                                <?= !$has_weight ? 'title="Weight kosong. Silakan isi weight di Master Product."' : '' ?>>
+                                                <?= !$has_weight ? 'title="Weight is empty. Please fill in the weight in Master Product."' : '' ?>>
 
                                             <?php if (!$has_weight): ?>
                                                 <span class="text-danger position-absolute end-0 me-2"
                                                     style="cursor: pointer; font-size: 12px; z-index: 5;"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="top"
-                                                    title="Silakan isi weight di Master Product!">
+                                                    title="Please fill in the weight in Master Product!">
                                                     <i class="fas fa-solid fa-exclamation"></i>
                                                 </span>
                                             <?php endif; ?>
@@ -308,7 +308,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="14" class="text-center text-muted py-3">Produk tidak ditemukan atau belum aktif.</td>
+                                <td colspan="14" class="text-center text-muted py-3">Product not found or not active yet.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -364,11 +364,11 @@
             var gajiIndirect = gajiDirect * (rateIndirect / 100.0);
             row.find('.val-gaji-indirect').val(gajiIndirect.toFixed(6));
 
-            // Std. Biaya Gaji = gaji_direct + gaji_indirect
+            // Std. Salary Cost = gaji_direct + gaji_indirect
             var stdBiayaGaji = gajiDirect + gajiIndirect;
             row.find('.val-standard-biaya-gaji').val(stdBiayaGaji.toFixed(6));
 
-            // Std. Biaya Gaji Rounded = Math.round(stdBiayaGaji)
+            // Std. Salary Cost Rounded = Math.round(stdBiayaGaji)
             var stdBiayaGajiRound = Math.round(stdBiayaGaji);
             row.find('.val-standard-biaya-gaji-round').val(stdBiayaGajiRound);
         }
@@ -427,13 +427,13 @@
             e.preventDefault();
 
             Swal.fire({
-                title: 'Simpan Perubahan?',
-                text: 'Seluruh data tarif proses produk dalam tabel akan disimpan.',
+                title: 'Save Changes?',
+                text: 'All product process rate data in the table will be saved.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Save!',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (!result.isConfirmed) return;
 
@@ -458,7 +458,7 @@
                         if (res.status == 1) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil',
+                                title: 'Success',
                                 text: res.pesan,
                                 timer: 1500,
                                 showConfirmButton: false
@@ -468,7 +468,7 @@
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Gagal',
+                                title: 'Failed',
                                 text: res.pesan
                             });
                         }
@@ -477,7 +477,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Request gagal: ' + xhr.status
+                            text: 'Request failed: ' + xhr.status
                         });
                     }
                 });

@@ -54,7 +54,7 @@ $ex      = $existing;
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label class="form-label fw-bold">Pilih Pack (Material Confirmed)</label>
+                <label class="form-label fw-bold">Select Pack (Material Confirmed)</label>
                 <select id="select-pack" class="form-control" <?= $is_edit ? 'disabled' : '' ?>></select>
                 <small class="text-muted">1 report unpack = 1 pack.</small>
             </div>
@@ -62,7 +62,7 @@ $ex      = $existing;
 
         <!-- ===== TAHAP 1: LEVEL PACK ===== -->
         <div id="pack-level-wrapper" style="display:none;">
-            <h6 class="fw-bold mb-2">Ringkasan Pack</h6>
+            <h6 class="fw-bold mb-2">Pack Summary</h6>
             <div class="table-responsive mb-4">
                 <table class="table table-bordered table-sm text-center align-middle table-unpack">
                     <thead>
@@ -107,7 +107,7 @@ $ex      = $existing;
                             <th rowspan="2">Pack</th>
                             <th rowspan="2">Material</th>
                             <th rowspan="2">No Coil</th>
-                            <th rowspan="2" width="10%">Jumlah Coil (Roll Baby Coil)</th>
+                            <th rowspan="2" width="10%">Coil Count (Baby Coil Rolls)</th>
                             <th colspan="2" class="actual-head">Actual Weight</th>
                             <th colspan="2" class="pl-head">Packing List</th>
                             <th rowspan="2" width="8%">Aksi</th>
@@ -121,7 +121,7 @@ $ex      = $existing;
                     </thead>
                     <tbody id="tbody-material">
                         <tr id="empty-row">
-                            <td colspan="10" class="text-center text-muted py-4">Pilih pack untuk memuat material.</td>
+                            <td colspan="10" class="text-center text-muted py-4">Select a pack to load materials.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -129,12 +129,12 @@ $ex      = $existing;
         </div>
 
         <div class="mb-3 mt-3">
-            <label class="form-label fw-bold">Catatan</label>
+            <label class="form-label fw-bold">Notes</label>
             <textarea id="catatan" class="form-control" rows="2" placeholder="Opsional"></textarea>
         </div>
 
         <div class="d-flex justify-content-between">
-            <a href="<?= site_url('unpack_coil') ?>" class="btn btn-secondary"><i class="fa fa-arrow-left me-1"></i> Kembali</a>
+            <a href="<?= site_url('unpack_coil') ?>" class="btn btn-secondary"><i class="fa fa-arrow-left me-1"></i> Back</a>
             <button type="button" class="btn btn-success" id="btn-save"><i class="fa fa-save me-1"></i> Save</button>
         </div>
     </div>
@@ -160,7 +160,7 @@ $ex      = $existing;
                                 <th class="actual-head">Gross Weight per Roll (Actual)</th>
                                 <th class="pl-head">Net weight per Roll (PL)</th>
                                 <th class="pl-head">Gross Weight per Roll (PL)</th>
-                                <th width="6%">Hapus</th>
+                                <th width="6%">Delete</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-baby"></tbody>
@@ -178,7 +178,7 @@ $ex      = $existing;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -208,7 +208,7 @@ $ex      = $existing;
         // ---------------- SELECT2 pack ----------------
         if (MODE === 'add') {
             $('#select-pack').select2({
-                placeholder: 'Cari & pilih pack...',
+                placeholder: 'Search & select pack...',
                 ajax: {
                     url: BASE_URL + '/get_confirmed_packs',
                     dataType: 'json',
@@ -250,7 +250,7 @@ $ex      = $existing;
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: res.message || 'Gagal memuat material.'
+                            text: res.message || 'Failed to load materials.'
                         });
                         return;
                     }
@@ -324,7 +324,7 @@ $ex      = $existing;
             var $tb = $('#tbody-material').empty();
 
             if (keys.length === 0) {
-                $tb.html('<tr id="empty-row"><td colspan="10" class="text-center text-muted py-4">Tidak ada material dalam pack ini.</td></tr>');
+                $tb.html('<tr id="empty-row"><td colspan="10" class="text-center text-muted py-4">There are no materials in this pack.</td></tr>');
                 return;
             }
 
@@ -649,7 +649,7 @@ $ex      = $existing;
             if (!currentPack) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Pilih pack dulu'
+                    title: 'Select a pack first'
                 });
                 return;
             }
@@ -658,8 +658,8 @@ $ex      = $existing;
             if (keys.length === 0) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Belum ada material',
-                    text: 'Pack ini tidak memiliki material.'
+                    title: 'No materials yet',
+                    text: 'This pack has no materials.'
                 });
                 return;
             }
@@ -674,8 +674,8 @@ $ex      = $existing;
                 if (invalid.length > 0) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Detail belum lengkap',
-                        text: 'Detail baby coil untuk material ' + invalid.join(', ') + ' gagal dimuat. Coba klik "View Detail" secara manual.'
+                        title: 'Detail is incomplete',
+                        text: 'Baby coil detail for material ' + invalid.join(', ') + ' gagal dimuat. Coba klik "View Detail" secara manual.'
                     });
                     $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save');
                     return;
@@ -683,12 +683,12 @@ $ex      = $existing;
 
                 // Tambahan: Alert konfirmasi sebelum data dikirim
                 Swal.fire({
-                    title: 'Konfirmasi Penyimpanan',
-                    text: 'Apakah data yang dimasukkan sudah betul?',
+                    title: 'Confirm Save',
+                    text: 'Is the entered data correct?',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, simpan!',
-                    cancelButtonText: 'Batal',
+                    confirmButtonText: 'Yes, save!',
+                    cancelButtonText: 'Cancel',
                     reverseButtons: true
                 }).then(function(result) {
                     if (!result.isConfirmed) {
@@ -733,7 +733,7 @@ $ex      = $existing;
                             if (res.status == 1) {
                                 Swal.fire({
                                         icon: 'success',
-                                        title: 'Berhasil',
+                                        title: 'Success',
                                         text: res.message,
                                         timer: 1500,
                                         showConfirmButton: false
@@ -754,7 +754,7 @@ $ex      = $existing;
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'Terjadi kesalahan jaringan.'
+                                text: 'A network error occurred.'
                             });
                             $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save');
                         }
@@ -765,7 +765,7 @@ $ex      = $existing;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Gagal menyiapkan detail baby coil.'
+                    text: 'Failed to prepare baby coil details.'
                 });
                 $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save');
             });

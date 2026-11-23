@@ -9,15 +9,15 @@
 
     <div class="row g-3 mb-3 bg-light p-3 rounded-3 border">
         <div class="col-md-4 col-12">
-            <label class="form-label fw-bold small text-secondary">Nomor PO / NON-PO</label>
+            <label class="form-label fw-bold small text-secondary">PO / NON-PO Number</label>
             <div class="form-control-plaintext fw-bold text-primary"><?= html_escape($no_po); ?></div>
         </div>
         <div class="col-md-4 col-12">
-            <label class="form-label fw-bold small text-secondary">PIC Penerima</label>
+            <label class="form-label fw-bold small text-secondary">Receiving PIC</label>
             <div class="form-control-plaintext"><?= strtoupper(html_escape($pic)); ?></div>
         </div>
         <div class="col-md-4 col-12">
-            <label class="form-label fw-bold small text-secondary">Upload Dokumen (BA/Surat Jalan/Foto)</label>
+            <label class="form-label fw-bold small text-secondary">Upload Document (BA/Delivery Note/Photo)</label>
             <input type="file" name="upload_doc" class="form-control form-control-sm">
         </div>
     </div>
@@ -27,13 +27,13 @@
             <thead class="table-primary text-center">
                 <tr>
                     <th width="4%">#</th>
-                    <th width="15%">Departemen</th>
-                    <th>Nama Barang / Asset</th>
+                    <th width="15%">Department</th>
+                    <th>Item / Asset Name</th>
                     <th width="8%">Qty Order</th>
-                    <th width="8%">Satuan</th>
-                    <th width="10%">Sisa Belum Kirim</th>
-                    <th width="12%">Qty Diterima</th>
-                    <th width="15%">Catatan</th>
+                    <th width="8%">Unit</th>
+                    <th width="10%">Remaining Not Shipped</th>
+                    <th width="12%">Received Qty</th>
+                    <th width="15%">Notes</th>
                     <th width="15%">Pemeriksa</th>
                 </tr>
             </thead>
@@ -79,10 +79,10 @@
                                 <input type="number" step="any" min="0" max="<?= $Qty_kurang; ?>" name="addInMat[<?= $No; ?>][qty_in]" class="form-control form-control-sm text-center fw-bold" placeholder="0" value="<?= $Qty_kurang; ?>">
                             </td>
                             <td>
-                                <input type="text" name="addInMat[<?= $No; ?>][keterangan]" class="form-control form-control-sm" placeholder="Catatan kondisi...">
+                                <input type="text" name="addInMat[<?= $No; ?>][keterangan]" class="form-control form-control-sm" placeholder="Condition notes...">
                             </td>
                             <td>
-                                <input type="text" name="addInMat[<?= $No; ?>][pemeriksa]" class="form-control form-control-sm" placeholder="Nama pemeriksa...">
+                                <input type="text" name="addInMat[<?= $No; ?>][pemeriksa]" class="form-control form-control-sm" placeholder="Inspector name...">
                             </td>
                         </tr>
                 <?php
@@ -100,10 +100,10 @@
     </div>
 
     <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
-        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" data-dismiss="modal">Cancel</button>
         <?php if (!empty($result)) : ?>
             <button type="button" class="btn btn-success px-4 shadow-sm" id="saveINMaterial">
-                <i class="fa fa-save me-1"></i> Simpan Penerimaan
+                <i class="fa fa-save me-1"></i> Save Receipt
             </button>
         <?php endif; ?>
     </div>

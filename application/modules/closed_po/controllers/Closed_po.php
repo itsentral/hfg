@@ -173,7 +173,7 @@ class Closed_po extends Admin_Controller
         LEFT JOIN ms_satuan i ON i.id = c.id_unit
         LEFT JOIN ms_satuan j ON j.id = f.id_unit
         LEFT JOIN hscode hs  ON hs.id = c.hscode
-        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND (a.tipe IS NULL OR a.tipe = 'pr material')
+        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND (a.tipe IS NULL OR a.tipe = 'pr material')
         GROUP BY id
 
         UNION ALL
@@ -183,7 +183,7 @@ class Closed_po extends Admin_Controller
         FROM dt_trans_po a
         LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
         LEFT JOIN ms_satuan f ON f.id = e.satuan
-        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND a.tipe = 'pr depart'
+        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND a.tipe = 'pr depart'
         
         UNION ALL
 
@@ -191,7 +191,7 @@ class Closed_po extends Admin_Controller
             a.id as id, a.idpr as idpr, a.no_po as no_po, '' as idmaterial, a.qty as qty, a.hargasatuan as hargasatuan, a.jumlahharga as jumlahharga, a.kode_barang as kode_barang, a.ppn as ppn, a.ppn_persen as ppn_persen, a.harga_total as harga_total, a.tipe as tipe_pr, a.keterangan as keterangan, '0' AS avl_stock, a.kode_barang as code, '' as code1, a.namamaterial as nm_material, '' as nm_material1, a.persen_disc as persen_disc, a.nilai_disc as nilai_disc, a.qty as propose_purchase, 'Pcs' as packing_unit, '' as packing_unit2, 'Pcs' as unit_measure, '' as hscode, 0 as kuota_internal, '' as local_code, '' as nm_lain
         FROM dt_trans_po a
         LEFT JOIN rutin_non_planning_detail e ON e.id = a.idpr
-        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po) . "') AND a.tipe = 'pr asset'
+        WHERE a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "') AND a.tipe = 'pr asset'
         GROUP BY id
     ")->result();
 
@@ -210,7 +210,7 @@ class Closed_po extends Admin_Controller
         $num_top = count($list_top ?? []);
 
         $nm_depart = [];
-        $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept) . "')")->result();
+        $get_nm_depart = $this->db->query("SELECT nama FROM ms_department WHERE id IN ('" . str_replace(",", "','", $get_po->id_dept ?? '') . "')")->result();
         if (!empty($get_nm_depart)) {
             foreach ($get_nm_depart as $item_depart) {
                 $nm_depart[] = strtoupper((string) $item_depart->nama);
@@ -234,7 +234,7 @@ class Closed_po extends Admin_Controller
         ];
 
         $this->template->set('results', $data);
-        $this->template->title('Detail Purchase Order');
+        $this->template->title('Purchase Order Detail');
         $this->template->render('view_po');
     }
 }

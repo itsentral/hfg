@@ -40,9 +40,9 @@ $ENABLE_DELETE  = has_permission('Product_Category.Delete');
                                 <td><?= strtoupper((string) $record->code); ?></td>
                                 <td>
                                     <?php if ($record->status == '1') : ?>
-                                        <span class="badge bg-success">Aktif</span>
+                                        <span class="badge bg-success">Active</span>
                                     <?php else : ?>
-                                        <span class="badge bg-danger">Non Aktif</span>
+                                        <span class="badge bg-danger">Inactive</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -163,8 +163,8 @@ $ENABLE_DELETE  = has_permission('Product_Category.Delete');
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
@@ -214,8 +214,8 @@ $ENABLE_DELETE  = has_permission('Product_Category.Delete');
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {

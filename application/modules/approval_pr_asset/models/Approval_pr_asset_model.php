@@ -53,8 +53,8 @@ class Approval_pr_asset_model extends BF_Model
             $nestedData2   = array();
             $nestedData2[] = "<div class='prtCh_" . $nomor . "' align='center'></div><script type='text/javascript'>$('.prtCh_" . $nomor . "').parent().parent().attr('class','child-" . $nomor . "');$('.child-" . $nomor . "').hide()</script>";
             $nestedData2[] = "<div align='left'></div>";
-            $nestedData2[] = "<div align='right'><b>QTY BARANG</b><br>" . number_format((float) $row['qty']) . "</div>";
-            $nestedData2[] = "<div align='right'><b>NILAI PR</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>ITEM QTY</b><br>" . number_format((float) $row['qty']) . "</div>";
+            $nestedData2[] = "<div align='right'><b>PR VALUE</b><br>" . number_format((float) $row['nilai_pr']) . "</div>";
             $nestedData2[] = "<div align='right'><b>TGL DIBUTUHKAN</b><br>" . date('d F Y', strtotime((string) $row['tgl_dibutuhkan'])) . "</div>";
 
             $nestedData2[] = "<div align='right'><b>ACTION</b><br>
@@ -150,12 +150,12 @@ class Approval_pr_asset_model extends BF_Model
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
-            $Arr_Data = array('pesan' => 'Proses approval gagal...', 'status' => 0);
+            $Arr_Data = array('pesan' => 'Approval process failed.', 'status' => 0);
             write_log('Approval PR Asset', 'Approval PR Asset', 'Proses ' . $status_lbl . ' PR asset failed: ' . $no_pr, $data, null, 0);
         } else {
             $this->db->trans_commit();
             $status_lbl = ($action == 'Y') ? 'Approve' : 'Reject';
-            $Arr_Data   = array('pesan' => 'Berhasil ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
+            $Arr_Data   = array('pesan' => 'Success ' . $status_lbl . ' PR Asset No. ' . $no_pr, 'status' => 1);
             $log_payload = $old_pr_header ? array('old' => $old_pr_header, 'new' => array_merge($old_pr_header ?? [], $ArrUpdate ?? [])) : $data;
             write_log('Approval PR Asset', 'Approval PR Asset', 'Berhasil ' . $status_lbl . ' PR asset: ' . $no_pr, $log_payload, null, 1);
         }

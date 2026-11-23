@@ -678,7 +678,7 @@ if (!class_exists('QRcode', false)) {
 			$barcode_array['bcode'] = array();
 			foreach ($qrTab as $line) {
 				$arrAdd = array();
-				foreach (str_split($line) as $char) {
+				foreach (str_split($line ?? '') as $char) {
 					$arrAdd[] = ($char=='1')?1:0;
 				}
 				$barcode_array['bcode'][] = $arrAdd;

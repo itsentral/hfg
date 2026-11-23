@@ -32,7 +32,7 @@ foreach ($results['head'] as $head) {
 							<div class="col-sm-6">
 								<div class="form-group row">
 									<div class="col-md-4">
-										<label for="customer">Tanggal PR</label>
+										<label for="customer">PR Date</label>
 									</div>
 									<div class="col-md-8">
 										<input type="text" class="form-control datepicker" id="tanggal" value="<?= $head->tanggal  ?>" onkeyup required name="tanggal" readonly>
@@ -62,11 +62,11 @@ foreach ($results['head'] as $head) {
 									<thead>
 										<tr class='bg-blue'>
 											<th width='30%'>Produk</th>
-											<th width='8%'>Kode Produk</th>
+											<th width='8%'>Product Code</th>
 											<th width='8%'>Qty (Unit)</th>
 											<th width='20%'>Supplier</th>
-											<th width='10%'>Tanggal Dibutuhkan</th>
-											<th width='30%'>Keterangan</th>
+											<th width='10%'>Required Date</th>
+											<th width='30%'>Description</th>
 											<th width='5%'>Aksi</th>
 										</tr>
 									</thead>
@@ -80,7 +80,7 @@ foreach ($results['head'] as $head) {
 											echo "
 		<tr id='tr_$loop'>
 		<td><select class='form-control select2' id='dt_idmaterial_$loop' name='dt[$loop][idmaterial]'	onchange ='CariProperties($loop)'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 											foreach ($material as $material) {
 
 												$selected = ($detail->idmaterial == $material->code_lv4) ? 'selected' : '';
@@ -93,42 +93,42 @@ foreach ($results['head'] as $head) {
 		<td hidden>
 		<select class='form-control select2' id='dt_idameter_$loop' name='dt[$loop][idameter]'>";
 											if ($detail->id_bentuk == 200) {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250' selected>250</option>
 		<option value='300'>300</option>
 		<option value='400'>400</option>
 		<option value='500'>500</option>";
 											} elseif ($detail->id_bentuk == 250) {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250' selected>250</option>
 		<option value='300'>300</option>
 		<option value='400'>400</option>
 		<option value='500'>500</option>";
 											} elseif ($detail->id_bentuk == 300) {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250'>250</option>
 		<option value='300' selected>300</option>
 		<option value='400'>400</option>
 		<option value='500'>500</option>";
 											} elseif ($detail->id_bentuk == 400) {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250'>250</option>
 		<option value='300'>300</option>
 		<option value='400' selected>400</option>
 		<option value='500'>500</option>";
 											} elseif ($detail->id_bentuk == 500) {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250'>250</option>
 		<option value='300'>300</option>
 		<option value='400'>400</option>
 		<option value='500' selected>500</option>";
 											} else {
-												echo "<option value=''>Pilih</option>
+												echo "<option value=''>Select</option>
 		<option value='200'>200</option>
 		<option value='250'>250</option>
 		<option value='300'>300</option>
@@ -144,7 +144,7 @@ foreach ($results['head'] as $head) {
 		<td hidden><input type='text' class='form-control autoNumeric text-right' id='dt_width_$loop' value='" . $detail->width . "'	required name='dt[$loop][width]' ></td>
 		<td hidden><input type='text' class='form-control autoNumeric text-right' id='dt_length_$loop' value='" . $detail->length . "'	required name='dt[$loop][length]' ></td>
 		<td id='supplier_" . $loop . "'><select class='form-control select2' id='dt_suplier_$loop'  name='dt[$loop][suplier]'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 											foreach ($suppliers as $suppliers) {
 												$selectedsup = ($suppliers->id == $detail->suplier) ? 'selected' : '';
 												echo "<option value='" . $suppliers->id . "' " . $selectedsup . ">" . $suppliers->nama . "</option>";
@@ -152,7 +152,7 @@ foreach ($results['head'] as $head) {
 											echo "</select></td>
 		<td><input type='text' class='form-control datepicker' readonly id='dt_tanggal_$loop' value='" . $detail->tanggal . "'	required name='dt[$loop][tanggal]'></td>
 		<td><input type='text' class='form-control' id='dt_keterangan_$loop' value='" . $detail->keterangan . "'	required name='dt[$loop][keterangan]' 	></td>
-		<td><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></td>
+		<td><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></td>
 		</tr>";
 										}
 										?>
@@ -161,7 +161,7 @@ foreach ($results['head'] as $head) {
 							</div>
 						</div>
 						<center>
-							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+							<button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
 						</center>
 					</div>
 				</div>

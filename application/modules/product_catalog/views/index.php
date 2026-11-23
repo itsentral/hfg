@@ -10,7 +10,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h3 class="box-title"><i class="fa fa-book text-primary"></i> Product Catalog Resmi <?= html_escape(get_company_code()) ?></h3>
-                <p class="text-muted mb-0" style="font-size:12px;">Daftar harga katalog resmi hasil rilis Pricelist yang disetujui Management.</p>
+                <p class="text-muted mb-0" style="font-size:12px;">Official catalog price list from Pricelist releases approved by Management.</p>
             </div>
             <div class="col-md-6 text-right">
                 <a href="<?= base_url('product_catalog/print_catalog?category=' . urlencode((string) $filter_cat) . '&catalog_id=' . $filter_cid . '&status=' . $filter_stat) ?>" target="_blank" class="btn btn-default btn-sm">
@@ -58,9 +58,9 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
             <div class="form-group" style="margin-right:15px;">
                 <label style="margin-right:6px; font-weight:600;">Status:</label>
                 <select name="status" class="form-control input-sm">
-                    <option value="Active" <?= ($filter_stat == 'Active') ? 'selected' : '' ?>>Active (Aktif)</option>
+                    <option value="Active" <?= ($filter_stat == 'Active') ? 'selected' : '' ?>>Active</option>
                     <option value="Archived" <?= ($filter_stat == 'Archived') ? 'selected' : '' ?>>Archived (Arsip)</option>
-                    <option value="" <?= ($filter_stat === '') ? 'selected' : '' ?>>Semua Status</option>
+                    <option value="" <?= ($filter_stat === '') ? 'selected' : '' ?>>All Statuses</option>
                 </select>
             </div>
 
@@ -83,11 +83,11 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                     <tr>
                         <th style="width:4%; text-align:center;">No</th>
                         <!-- FR-73: Nama produk di depan -->
-                        <th style="width:20%;">Nama Produk</th>
+                        <th style="width:20%;">Product Name</th>
                         <th style="width:10%; text-align:center;">Varian (Uniq ID)</th>
-                        <th style="width:12%;">Kategori Produk</th>
-                        <th style="width:8%; text-align:center;">Ukuran (m)</th>
-                        <th style="width:8%; text-align:right;">Berat/m (Kg)</th>
+                        <th style="width:12%;">Product Category</th>
+                        <th style="width:8%; text-align:center;">Size (m)</th>
+                        <th style="width:8%; text-align:right;">Weight/m (Kg)</th>
                         <th style="width:10%; text-align:right; background:#27ae60;">Price List / m</th>
                         <th style="width:10%; text-align:right;">Price List / Kg</th>
                         <th style="width:10%; text-align:right;">Price List / Pcs</th>
@@ -100,7 +100,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                             <td class="text-center"><?= $no++ ?></td>
                             <td>
                                 <strong><?= html_escape($item->nm_product ? $item->nm_product : $item->code_lv4) ?></strong>
-                                <div class="text-muted" style="font-size:10px;">Kode: <?= html_escape($item->code_lv4) ?></div>
+                                <div class="text-muted" style="font-size:10px;">Code: <?= html_escape($item->code_lv4) ?></div>
                             </td>
                             <td class="text-center">
                                 <span class="label label-primary" style="font-size:11px;"><?= html_escape($item->no_uniq_id) ?></span>
@@ -141,16 +141,16 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                 <h4 class="modal-title"><i class="fa fa-rocket"></i> Rilis Product Catalog Baru</h4>
             </div>
             <div class="modal-body">
-                <p class="text-muted">Pilih dokumen Pricelist yang telah <strong>Disetujui (Approved)</strong> oleh Management untuk dijadikan rilis Product Catalog resmi aktif.</p>
+                <p class="text-muted">Select a Pricelist document that has been <strong>Approved</strong> oleh Management untuk dijadikan rilis Product Catalog resmi aktif.</p>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" style="font-size:12px;">
                         <thead style="background:#f4f6f9;">
                             <tr>
                                 <th style="width:5%; text-align:center;">No</th>
                                 <th>No Pricelist</th>
-                                <th>Tanggal Disetujui</th>
-                                <th>Disetujui Oleh</th>
-                                <th style="text-align:center;">Jumlah Varian</th>
+                                <th>Approval Date</th>
+                                <th>Approved By</th>
+                                <th style="text-align:center;">Variant Count</th>
                                 <th style="width:15%; text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -174,7 +174,7 @@ $ENABLE_DELETE  = has_permission('Product_Catalog.Delete');
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -193,10 +193,10 @@ $(document).ready(function() {
             { orderable: false, targets: [0, 9] }
         ],
         language: {
-            search: "Cari Produk / Varian:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            zeroRecords: "Tidak ada produk dalam katalog",
-            info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+            search: "Search Product / Variant:",
+            lengthMenu: "Show _MENU_ entries",
+            zeroRecords: "No products in the catalog",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
             infoEmpty: "Menampilkan 0 data",
             infoFiltered: "(disaring dari _MAX_ total data)"
         }
@@ -208,13 +208,13 @@ $(document).ready(function() {
         var no = $(this).data('no');
 
         swal({
-            title: "Konfirmasi Rilis Catalog",
-            text: "Rilis snapshot Product Catalog baru berdasarkan dokumen Pricelist " + no + "?",
+            title: "Confirm Catalog Release",
+            text: "Release a new Product Catalog snapshot based on Pricelist document " + no + "?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#27ae60",
-            confirmButtonText: "Ya, Rilis Sekarang!",
-            cancelButtonText: "Batal",
+            confirmButtonText: "Yes, Release Now!",
+            cancelButtonText: "Cancel",
             closeOnConfirm: false
         }, function(isConfirm) {
             if (!isConfirm) {
@@ -228,18 +228,18 @@ $(document).ready(function() {
                 success: function(res) {
                     if (res.status == 1) {
                         swal({
-                            title: "Berhasil!",
+                            title: "Success!",
                             text: res.pesan,
                             type: "success"
                         }, function() {
                             location.reload();
                         });
                     } else {
-                        swal("Gagal", res.pesan, "error");
+                        swal("Failed", res.pesan, "error");
                     }
                 },
                 error: function() {
-                    swal("Error", "Terjadi kesalahan jaringan/server", "error");
+                    swal("Error", "A network/server error occurred", "error");
                 }
             });
         });

@@ -65,7 +65,7 @@ class Master_customers extends Admin_Controller
 		];
 
 		$this->template->set('results', $data);
-		$this->template->title('Tambah Customer');
+		$this->template->title('Add Customer');
 		$this->template->page_icon('fa fa-users');
 		$this->template->render('add');
 	}
@@ -236,7 +236,7 @@ class Master_customers extends Admin_Controller
 			// Bandingkan PIC customer lama vs baru
 			$newPic = isset($post['data1']) && is_array($post['data1']) ? $post['data1'] : [];
 			if (count($oldPic ?? []) !== count($newPic ?? [])) {
-				$detail_changes['Daftar PIC Customer'] = [
+				$detail_changes['Customer PIC List'] = [
 					'old' => count($oldPic ?? []) . ' PIC terdaftar',
 					'new' => count($newPic ?? []) . ' PIC terdaftar'
 				];
@@ -252,11 +252,11 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', 'Gagal ' . ($isUpdate ? 'update' : 'tambah') . ' customer: ' . $code, $logPayload, null, 0);
-			echo json_encode(['status' => 0, 'pesan' => 'Gagal menyimpan data.']);
+			echo json_encode(['status' => 0, 'pesan' => 'Failed to save data.']);
 		} else {
 			$this->db->trans_commit();
 			write_log('Master Customers', $isUpdate ? 'Edit' : 'Add', ($isUpdate ? 'Update' : 'Tambah') . ' customer: ' . $code . ' (' . $post['name_customer'] . ')', $logPayload, null, 1);
-			echo json_encode(['status' => 1, 'pesan' => $isUpdate ? 'Berhasil update.' : 'Berhasil tambah data.']);
+			echo json_encode(['status' => 1, 'pesan' => $isUpdate ? 'Updated successfully.' : 'Data added successfully.']);
 		}
 	}
 
@@ -385,7 +385,7 @@ class Master_customers extends Admin_Controller
 			]);
 		}
 
-		echo "Selesai update score dan kelas semua customer.";
+		echo "Finished updating the score and class of all customers.";
 	}
 
 
@@ -570,7 +570,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
@@ -600,7 +600,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Delete Item. Thanks ...',
+				'pesan'		=> 'Failed to delete item.',
 				'status'	=> 0
 			);
 			write_log('Master Customers', 'Delete Category', 'Gagal delete category customer ID: ' . $id, ['id' => $id], null, 0);
@@ -630,7 +630,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
@@ -661,7 +661,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
@@ -728,7 +728,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status = [
-				'pesan'  => 'Gagal menyimpan data. Silakan coba lagi.',
+				'pesan'  => 'Failed to save data. Please try again.',
 				'status' => 0
 			];
 			write_log('Master Customers', 'Save Category', 'Gagal menyimpan category customer', ['id' => $id, 'data' => $data], null, 0);
@@ -776,7 +776,7 @@ class Master_customers extends Admin_Controller
 		echo json_encode([
 			'status' => $status,
 			'new_status' => $new_status,
-			'message' => $keterangan
+			'message' => ($status == 1 ? 'Status changed successfully to ' . ($new_status == 1 ? 'Active' : 'Inactive') . '.' : 'Failed to change status.')
 		]);
 	}
 
@@ -1026,7 +1026,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1293,7 +1293,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1362,7 +1362,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1433,7 +1433,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1502,7 +1502,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1532,7 +1532,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 			write_log('Master Customers', 'Delete', 'Gagal delete customer ID: ' . $id, ['id' => $id], null, 0);
@@ -1604,7 +1604,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1623,7 +1623,7 @@ class Master_customers extends Admin_Controller
 		$id_prov = $_GET['id_prov'];
 		$data = $this->db->like('id_kabkot', $id_prov, 'after')->get('kabkot')->result();
 
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $kabkot) {
 			echo "<option value='$kabkot->id_kabkot'>$kabkot->kabkot</option>";
 		}
@@ -1633,7 +1633,7 @@ class Master_customers extends Admin_Controller
 		$id_kabkot = $_GET['id_kabkot'];
 		$data = $this->db->like('id_kec', $id_kabkot, 'after')->get('kec')->result();
 
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $kec) {
 			echo "<option value='$kec->id_kec'>$kec->kecamatan</option>";
 		}
@@ -1660,7 +1660,7 @@ class Master_customers extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$status	= array(
-				'pesan'		=> 'Gagal Save Item. Thanks ...',
+				'pesan'		=> 'Failed to save item.',
 				'status'	=> 0
 			);
 		} else {
@@ -1706,22 +1706,22 @@ class Master_customers extends Admin_Controller
 			->result_array();
 
 		// Menulis judul laporan
-		$sheet->setCellValue('A1', 'Laporan Customer');
+		$sheet->setCellValue('A1', 'Customer Report');
 		$sheet->mergeCells('A1:J1');
 		$sheet->getStyle('A1:J1')->applyFromArray($tableHeader);
 
 		// Header kolom
 		$headers = [
 			'A' => 'ID Customer',
-			'B' => 'Nama Customer',
+			'B' => 'Customer Name',
 			'C' => 'Telephone',
 			'D' => 'Fax',
 			'E' => 'Email',
 			'F' => 'NPWP',
-			'G' => 'Alamat NPWP',
-			'H' => 'Nama Bank',
-			'I' => 'No Rekening',
-			'J' => 'Nama Pemilik Rekening'
+			'G' => 'NPWP Address',
+			'H' => 'Bank Name',
+			'I' => 'Account Number',
+			'J' => 'Account Holder Name'
 		];
 
 		$rowNum = 3;

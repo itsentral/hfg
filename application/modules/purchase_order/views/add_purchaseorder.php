@@ -98,7 +98,7 @@ if (!empty($results['headerso'])) {
 								<label for="customer">Delivery Date</label>
 							</div>
 							<div class="col-md-8">
-								<input type="text" name="delivery_date" id="delivery_date" required class="form-control" readonly style="background-color: #fff; cursor: pointer;" placeholder="Pilih Tanggal">
+								<input type="text" name="delivery_date" id="delivery_date" required class="form-control" readonly style="background-color: #fff; cursor: pointer;" placeholder="Select Date">
 							</div>
 						</div>
 					</div>
@@ -110,7 +110,7 @@ if (!empty($results['headerso'])) {
 								<label for="customer">PO Date</label>
 							</div>
 							<div class="col-md-8">
-								<input type="text" class="form-control" id="tanggal" value="" required name="tanggal" readonly style="background-color: #fff; cursor: pointer;" placeholder="Pilih Tanggal">
+								<input type="text" class="form-control" id="tanggal" value="" required name="tanggal" readonly style="background-color: #fff; cursor: pointer;" placeholder="Select Date">
 							</div>
 						</div>
 					</div>
@@ -215,7 +215,7 @@ if (!empty($results['headerso'])) {
 					<div class="col-sm-6" hidden>
 						<div class="form-group row">
 							<div class="col-md-4">
-								<label for="id_customer">Alamat</label>
+								<label for="id_customer">Address</label>
 							</div>
 							<div class="col-md-8">
 								<textarea name="delivery_address" id="" class="form-control"></textarea>
@@ -228,7 +228,7 @@ if (!empty($results['headerso'])) {
 				<div class="table-responsive mb-3">
 					<div class="form-check form-switch mb-3">
 						<input class="form-check-input text-end form-control" type="checkbox" id="show_tax" name="show_tax" value="Y">
-						<label class="form-check-label" for="show_tax"><b>Gunakan Pajak (PPn)</b></label>
+						<label class="form-check-label" for="show_tax"><b>Use Tax (VAT)</b></label>
 					</div>
 					<table class='table table-bordered table-striped'>
 						<thead>
@@ -237,7 +237,7 @@ if (!empty($results['headerso'])) {
 									<input type="checkbox" id="select_all" checked>
 								</th>
 								<th style="min-width: 200px;">Item</th>
-								<th style="min-width: 200px;">Nama Lain</th>
+								<th style="min-width: 200px;">Other Name</th>
 								<th style="min-width: 150px;">HS Code</th>
 								<th style="min-width: 150px;">Kuota Internal</th>
 								<th style="min-width: 100px;" hidden>Width</th>
@@ -254,10 +254,10 @@ if (!empty($results['headerso'])) {
 								<th style="min-width: 100px;" hidden>Shipping Cost</th>
 								<th style="min-width: 150px;">Total Price</th>
 								<th style="min-width: 150px;">Discount Value</th>
-								<!-- <th style="min-width: 100px;">Nilai PPN</th> -->
+								<!-- <th style="min-width: 100px;">VAT Value</th> -->
 								<th style="min-width: 150px;">Sub Total</th>
 								<th style="min-width: 150px;">Deskripsi Item</th>
-								<th style="min-width: 150px;">Sisa Kuota</th>
+								<th style="min-width: 150px;">Remaining Quota</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -386,13 +386,13 @@ if (!empty($results['headerso'])) {
 														</div>
 														<div class='input-group input-group-sm'>
 															<input type='text' name='dt[" . $key . "][disc_num]' class='form-control input-sm auto_num disc_num'
-																id='disc_num_" . $key . "' data-key='" . $key . "' placeholder='Nilai Disc (Rp)'>
+																id='disc_num_" . $key . "' data-key='" . $key . "' placeholder='Discount Value (Rp)'>
 															<span class='input-group-text'>Rp</span>
 														</div>
 													</td>
 
 													<td hidden>
-														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='Nilai PPN' readonly>
+														<input type='text' class='form-control auto_num input-sm ch_ppn cng_nilai_ppn' id='dt_nilai_ppn_" . $key . "' name='dt[" . $key . "][nilai_ppn]' data-key='" . $key . "' placeholder='VAT Value' readonly>
 														<input type='text' class='form-control input-sm ch_per_ppn cng_persen_ppn' id='dt_persen_ppn_" . $key . "' name='dt[" . $key . "][persen_ppn]' data-key='" . $key . "' placeholder='Persen PPN' readonly>
 													</td>
 													
@@ -436,7 +436,7 @@ if (!empty($results['headerso'])) {
 								</td>
 							</tr>
 							<!-- <tr>
-										<td class="text-end" colspan="12"><b>Keterangan</b></td>
+										<td class="text-end" colspan="12"><b>Description</b></td>
 										<td colspan="2">
 											<textarea name="note" id="" class="form-control"></textarea>
 										</td>
@@ -496,7 +496,7 @@ if (!empty($results['headerso'])) {
 						<div class="col-sm-6">
 							<div class="form-group row">
 								<div class="col-md-4">
-									<label for="id_customer">Keterangan</label>
+									<label for="id_customer">Description</label>
 								</div>
 								<div class="col-md-8" id="ForHarga">
 									<textarea name="note" id="" class="form-control" disabled></textarea>
@@ -523,7 +523,7 @@ if (!empty($results['headerso'])) {
 									<!-- Nominal -->
 									<div class="input-group">
 										<span class="input-group-addon">Rp</span> <!-- atau $ -->
-										<input type="text" class="form-control auto_num text-right" id="totaldisc" name="totaldisc" placeholder="Nilai Disc" required onkeyup="cariTotal()" onblur="cariTotal()">
+										<input type="text" class="form-control auto_num text-right" id="totaldisc" name="totaldisc" placeholder="Discount Value" required onkeyup="cariTotal()" onblur="cariTotal()">
 									</div>
 								</div>
 							</div>
@@ -562,7 +562,7 @@ if (!empty($results['headerso'])) {
 									<div class="input-group">
 										<span class="input-group-addon">Rp</span> <!-- atau $ -->
 										<input type="text"
-											class="form-control auto_num" id="totalppn" name="totalppn" placeholder="Nilai PPN" required onkeyup="cariTotal()" onblur="cariTotal()">
+											class="form-control auto_num" id="totalppn" name="totalppn" placeholder="VAT Value" required onkeyup="cariTotal()" onblur="cariTotal()">
 									</div>
 								</div>
 							</div>
@@ -632,7 +632,7 @@ if (!empty($results['headerso'])) {
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header bg-info">
-				<h5 class="modal-title text-white">Detail Letter of Credit (LC)</h5>
+				<h5 class="modal-title text-white">Letter of Credit (LC) Detail</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -714,7 +714,7 @@ if (!empty($results['headerso'])) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-				<button type="button" id="btn_save_lc" class="btn btn-md btn-primary"><i class="fas fa-save"></i> Save Detail LC</button>
+				<button type="button" id="btn_save_lc" class="btn btn-md btn-primary"><i class="fas fa-save"></i> Save LC Detail</button>
 			</div>
 		</div>
 	</div>
@@ -1050,7 +1050,7 @@ if (!empty($results['headerso'])) {
 				swal("Warning", "Currency is required", "error");
 				return false;
 			} else if (ttl_persen_top > 100) {
-				swal("Warning", "Total TOP tidak boleh lebih dari 100%", "error");
+				swal("Warning", "Total TOP cannot exceed 100%", "error");
 				return false;
 			} else {
 				swal({
@@ -1177,7 +1177,7 @@ if (!empty($results['headerso'])) {
 		});
 
 		$('.list_tbody_top tr').each(function(i) {
-			console.log("Baris " + i + " data-lc: ", $(this).attr('data-lc_detail'));
+			console.log("Row " + i + " data-lc: ", $(this).attr('data-lc_detail'));
 		});
 
 		$(document).on('change', '.cng_nilai_ppn', function() {
@@ -1904,7 +1904,7 @@ if (!empty($results['headerso'])) {
 
 		// Batas per baris
 		if (progress > 100) {
-			swal("Peringatan", "Progress tidak boleh lebih dari 100%.", "warning");
+			swal("Warning", "Progress cannot exceed 100%.", "warning");
 			return 100;
 		}
 
@@ -1920,7 +1920,7 @@ if (!empty($results['headerso'])) {
 		if (sisa < 0) sisa = 0;
 
 		if ((totalLain + progress) > 100) {
-			swal("Peringatan", "Total progress semua Group TOP tidak boleh lebih dari 100%. Sisa yang tersedia: " + number_format(sisa, 2) + "%.", "warning");
+			swal("Warning", "Total progress of all TOP Groups cannot exceed 100%. Remaining available: " + number_format(sisa, 2) + "%.", "warning");
 			return sisa;
 		}
 
@@ -1935,7 +1935,7 @@ if (!empty($results['headerso'])) {
 		var disc_persen = getNum($('#disc_persen_' + id).val().split(',').join(''));
 		var disc_num = getNum($('#disc_num_' + id).val().split(',').join(''));
 
-		// Jumlah kotor (harga satuan x qty) -> kolom "Total Harga" (jumlahharga)
+		// Jumlah kotor (harga satuan x qty) -> kolom "Total Price" (jumlahharga)
 		var jumlah = hargasatuan * qty;
 
 		// --- Diskon efektif (satu sumber kebenaran) ---

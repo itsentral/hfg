@@ -39,7 +39,7 @@ class Rate_generals extends Admin_Controller
         $label = trim($this->input->post('label'));
 
         if ($val < 0) {
-            echo json_encode(['status' => 0, 'pesan' => 'Nilai rate tidak boleh negatif']);
+            echo json_encode(['status' => 0, 'pesan' => 'Rate value cannot be negative']);
             return;
         }
 
@@ -66,7 +66,7 @@ class Rate_generals extends Admin_Controller
         } else {
             echo json_encode([
                 'status' => 0,
-                'pesan'  => 'Gagal menyimpan perubahan rate',
+                'pesan'  => 'Failed to save rate changes',
             ]);
         }
     }
@@ -91,7 +91,7 @@ class Rate_generals extends Admin_Controller
         // Validasi negatif
         foreach ($data as $k => $v) {
             if ($v < 0) {
-                $this->session->set_flashdata('error', 'Nilai rate tidak boleh ada yang bernilai negatif.');
+                $this->session->set_flashdata('error', 'No rate value can be negative.');
                 redirect('rate_generals');
                 return;
             }
@@ -108,9 +108,9 @@ class Rate_generals extends Admin_Controller
                 'old' => $oldData,
                 'new' => $newData,
             ], null, 1);
-            $this->session->set_flashdata('success', 'Seluruh komponen General Rate berhasil diperbarui.');
+            $this->session->set_flashdata('success', 'All General Rate components updated successfully.');
         } else {
-            $this->session->set_flashdata('error', 'Gagal memperbarui General Rate.');
+            $this->session->set_flashdata('error', 'Failed to update General Rate.');
         }
 
         redirect('rate_generals');

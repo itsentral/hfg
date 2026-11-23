@@ -79,11 +79,11 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 					echo form_input(array('id' => 'nm_asset', 'name' => 'nm_asset', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Asset Name'), $nm_asset);
 					?>
 				</div>
-				<label class='label-control col-sm-2'><b>Kelompok Penyusutan</b></label>
+				<label class='label-control col-sm-2'><b>Depreciation Group</b></label>
 				<div class='col-sm-4'>
 					<select name='id_coa' id='id_coa' class='form-control input-md chosen_select' <?= $disabled; ?>>
-						<option value='0'>Select Kelompok Penyusutan</option>
-						<option value='0'>TIDAK ADA PENYUSUTAN</option>
+						<option value='0'>Select Depreciation Group</option>
+						<option value='0'>NO DEPRECIATION</option>
 						<?php
 						foreach ($list_coa as $val => $valx) {
 							$sexd	= ($valx['id'] == $id_coa) ? 'selected' : '';
@@ -120,7 +120,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 					<label class='label-control col-sm-2'><b>Department New <span class='text-red'>*</span></b></label>
 					<div class='col-sm-4'>
 						<select name='lokasi_asset_new' id='lokasi_asset_new' class='form-control input-md chosen-select'>
-							<option value='0'>Pilih Department</option>
+							<option value='0'>Select Department</option>
 							<?php
 							foreach ($list_dept as $val => $valx) {
 								// $sexd	= ($valx['nm_dept'] == 'UMUM')?'selected':'';
@@ -186,7 +186,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 				<?php } ?>
 			</div>
 			<div class='form-group row'>
-				<label class='label-control col-sm-2'><b>Depresiasi <span class='text-red'>*</span></b></label>
+				<label class='label-control col-sm-2'><b>Depreciation <span class='text-red'>*</span></b></label>
 				<div class='col-sm-4'>
 					<select name='penyusutan' id='penyusutan' class='form-control input-md chosen-select' <?= $disabled; ?>>
 						<option value='Y'>Yes</option>
@@ -201,10 +201,10 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 				</div>
 			</div>
 			<div class='form-group row'>
-				<label class='label-control col-sm-2'><b>Nama User</b></label>
+				<label class='label-control col-sm-2'><b>User Name</b></label>
 				<div class='col-sm-4'>
 					<?php
-					echo form_input(array('id' => 'nama_user', 'name' => 'nama_user', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'Nama User', $disabled => $disabled), $nama_user);
+					echo form_input(array('id' => 'nama_user', 'name' => 'nama_user', 'class' => 'form-control input-md', 'autocomplete' => 'off', 'placeholder' => 'User Name', $disabled => $disabled), $nama_user);
 					?>
 				</div>
 			</div>
@@ -423,7 +423,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 			// $('#myModal').modal("show");
 			swal({
 				title: "Error Message!",
-				text: 'Nama asset masih kosong ...',
+				text: 'Asset name is still empty.',
 				type: "warning"
 			});
 
@@ -433,7 +433,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (category == '' || category == null || category == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Kategori asset belum dipilih ...',
+				text: 'Asset category has not been selected.',
 				type: "warning"
 			});
 
@@ -444,7 +444,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (lokasi_asset == '' || lokasi_asset == null || lokasi_asset == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Lokasi asset belum dipilih ...',
+				text: 'Asset location has not been selected.',
 				type: "warning"
 			});
 
@@ -466,7 +466,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (depresiasi == '' || depresiasi == null || depresiasi == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Jangka waktu asset belum dipilih ...',
+				text: 'Asset period has not been selected.',
 				type: "warning"
 			});
 
@@ -476,7 +476,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (nilai_asset == '' || nilai_asset == null || nilai_asset == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Nilai asset belum dipilih ...',
+				text: 'Asset value has not been selected.',
 				type: "warning"
 			});
 
@@ -486,7 +486,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (qty == '' || qty == null || qty == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Qty asset belum dipilih ...',
+				text: 'Asset Qty has not been selected.',
 				type: "warning"
 			});
 
@@ -605,7 +605,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (branch == '' || branch == null) {
 			swal({
 				title: "Error Message!",
-				text: 'Asset milik masih kosong ...',
+				text: 'Asset owner is still empty.',
 				type: "warning"
 			});
 
@@ -616,7 +616,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (lokasi_asset == '' || lokasi_asset == null || lokasi_asset == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Department New belum dipilih ...',
+				text: 'New Department has not been selected.',
 				type: "warning"
 			});
 
@@ -627,7 +627,7 @@ $id_coa  		= (!empty($data)) ? $data[0]['id_coa'] : '';
 		if (cost_center == '' || cost_center == null || cost_center == 0) {
 			swal({
 				title: "Error Message!",
-				text: 'Cost Center New belum dipilih ...',
+				text: 'New Cost Center has not been selected.',
 				type: "warning"
 			});
 

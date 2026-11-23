@@ -503,7 +503,7 @@ class Finalize_incoming extends Admin_Controller
     //         header('Content-Type: application/json');
     //         echo json_encode([
     //             'status' => 0,
-    //             'pesan'  => "Template jurnal '{$jurnal_mapping->kode_master_jurnal}' untuk Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template sebelum finalize."
+    //             'pesan'  => "Journal template '{$jurnal_mapping->kode_master_jurnal}' for Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template sebelum finalize."
     //         ]);
     //         exit;
     //     }
@@ -989,7 +989,7 @@ class Finalize_incoming extends Admin_Controller
         ", [$no_coil])->row();
 
         if (!empty($coil_internal)) {
-            $errMsg = "Incoming coil {$no_coil} ditolak karena coil tersebut sudah terdaftar di proses internal (status: {$coil_internal->status_proses}, gudang: {$coil_internal->kd_gudang}).";
+            $errMsg = "Incoming coil {$no_coil} was rejected because the coil is already registered in an internal process (status: {$coil_internal->status_proses}, warehouse: {$coil_internal->kd_gudang}).";
             log_message('error', $errMsg);
             throw new Exception($errMsg);
         } elseif (empty($existing_coil)) {
@@ -1018,7 +1018,7 @@ class Finalize_incoming extends Admin_Controller
                 'created_on'     => date('Y-m-d H:i:s'),
             ]);
         } else {
-            $errMsg = "Nomor coil {$no_coil} untuk material {$nm_material} sudah terdaftar di gudang {$kd_gudang}.";
+            $errMsg = "Coil number {$no_coil} for material {$nm_material} is already registered in warehouse {$kd_gudang}.";
             log_message('warning', $errMsg);
             throw new Exception($errMsg);
         }
@@ -1262,7 +1262,7 @@ class Finalize_incoming extends Admin_Controller
 
         foreach ($coils as $c) {
             if (empty($c['id_gudang_ke'])) {
-                echo json_encode(['status' => 0, 'pesan' => 'Ada coil yang belum ditentukan gudang tujuannya!']);
+                echo json_encode(['status' => 0, 'pesan' => 'Some coils do not have a destination warehouse yet!']);
                 return;
             }
 
@@ -1273,7 +1273,7 @@ class Finalize_incoming extends Admin_Controller
             if (!in_array($id_g, $allowed_gudang_id ?? []) || (!empty($kd_g) && !in_array($kd_g, $allowed_gudang_kd ?? []))) {
                 echo json_encode([
                     'status' => 0,
-                    'pesan'  => "Penyimpanan Incoming Material hanya diizinkan untuk Gudang Produksi (PRO) atau Gudang Slitting (SLI). Ditemukan coil [{$c['no_coil']}] yang dialokasikan ke gudang lain ({$c['kd_gudang_ke']})."
+                    'pesan'  => "Incoming Material storage is only allowed for the Production Warehouse (PRO) or the Slitting Warehouse (SLI). Found coil [{$c['no_coil']}] allocated to another warehouse ({$c['kd_gudang_ke']})."
                 ]);
                 return;
             }
@@ -1306,7 +1306,7 @@ class Finalize_incoming extends Admin_Controller
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 0,
-                'pesan'  => "Template jurnal untuk Incoming {$tipe_label} belum dibuat. Silakan konfigurasi di Master Jurnal Mapping (menu: finalize_incoming, action: {$action_key})."
+                'pesan'  => "Journal template for Incoming {$tipe_label} has not been created. Please configure it in Master Jurnal Mapping (menu: finalize_incoming, action: {$action_key})."
             ]);
             exit;
         }
@@ -1327,7 +1327,7 @@ class Finalize_incoming extends Admin_Controller
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 0,
-                'pesan'  => "Template jurnal '{$jurnal_mapping->kode_master_jurnal}' untuk Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template sebelum finalize."
+                'pesan'  => "Journal template '{$jurnal_mapping->kode_master_jurnal}' for Incoming {$tipe_label} is incomplete (header/detail not configured). Please complete it in the Master Jurnal Template menu before finalizing."
             ]);
             exit;
         }
@@ -1354,7 +1354,7 @@ class Finalize_incoming extends Admin_Controller
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 0,
-                'pesan'  => "Nomor coil [{$dup_list}] sudah terdaftar di sistem. Mohon gunakan nomor coil yang unik sebelum melakukan Finalize Incoming."
+                'pesan'  => "Coil number [{$dup_list}] is already registered in the system. Please use a unique coil number before running Finalize Incoming."
             ]);
             exit;
         }
@@ -1649,7 +1649,7 @@ class Finalize_incoming extends Admin_Controller
             $this->db->trans_rollback();
             ob_clean();
             header('Content-Type: application/json');
-            echo json_encode(['status' => 0, 'pesan' => 'Proses Finalize Incoming gagal: ' . $e->getMessage()]);
+            echo json_encode(['status' => 0, 'pesan' => 'Finalize Incoming process failed: ' . $e->getMessage()]);
             return;
         }
 
@@ -1765,7 +1765,7 @@ class Finalize_incoming extends Admin_Controller
     //         ->count_all_results('master_oto_jurnal_detail');
 
     //     if (!$tpl_header || $tpl_detail_count === 0) {
-    //         throw new Exception("Template jurnal '{$mapping->kode_master_jurnal}' untuk Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template.");
+    //         throw new Exception("Journal template '{$mapping->kode_master_jurnal}' for Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template.");
     //     }
 
     //     // ── Gunakan generate_jurnal_dari_template ──
@@ -1803,7 +1803,7 @@ class Finalize_incoming extends Admin_Controller
     //     // jangan biarkan finalize() melaporkan sukses.
 
     //     if ($id_gl === false) {
-    //         throw new Exception("Gagal generate jurnal dari template '{$kode_jurnal}' untuk Incoming {$tipe_label}.");
+    //         throw new Exception("Gagal generate jurnal dari template '{$kode_jurnal}' for Incoming {$tipe_label}.");
     //     }
     // }
 
@@ -1872,7 +1872,7 @@ class Finalize_incoming extends Admin_Controller
         $tipe_label = $is_lokal ? 'Lokal' : 'Import';
 
         if (!$mapping) {
-            throw new Exception("Template jurnal untuk Incoming {$tipe_label} belum dibuat. Silakan konfigurasi di ms_jurnal_mapping (menu: finalize_incoming, action: {$action_key}).");
+            throw new Exception("Journal template for Incoming {$tipe_label} has not been created. Please configure it in ms_jurnal_mapping (menu: finalize_incoming, action: {$action_key}).");
         }
 
         $db_acc = $this->load->database('accounting', TRUE);
@@ -1886,7 +1886,7 @@ class Finalize_incoming extends Admin_Controller
             ->count_all_results('master_oto_jurnal_detail');
 
         if (!$tpl_header || $tpl_detail_count === 0) {
-            throw new Exception("Template jurnal '{$mapping->kode_master_jurnal}' untuk Incoming {$tipe_label} belum lengkap (header/detail belum dikonfigurasi). Silakan lengkapi di menu Master Jurnal Template.");
+            throw new Exception("Journal template '{$mapping->kode_master_jurnal}' for Incoming {$tipe_label} is incomplete (header/detail not configured). Please complete it in the Master Jurnal Template menu.");
         }
 
         $this->load->model('gl_interface/Gl_interface_model');
@@ -1929,7 +1929,7 @@ class Finalize_incoming extends Admin_Controller
         $id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $data_source);
 
         if ($id_gl === false) {
-            throw new Exception("Gagal generate jurnal dari template '{$kode_jurnal}' untuk Incoming {$tipe_label}.");
+            throw new Exception("Failed to generate journal from template '{$kode_jurnal}' for Incoming {$tipe_label}.");
         }
     }
 }

@@ -142,7 +142,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         <button class="btn btn-primary fw-semibold" type="button" id="btn-submit-scan">
                             <i class="fa fa-search me-1"></i> Scan
                         </button>
-                        <button class="btn btn-outline-secondary" type="button" id="btn-open-camera" title="Scan dengan Kamera">
+                        <button class="btn btn-outline-secondary" type="button" id="btn-open-camera" title="Scan with Camera">
                             <i class="fa fa-camera"></i>
                         </button>
                     </div>
@@ -152,7 +152,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
             <?php if ($ENABLE_MANAGE): ?>
                 <div id="camera-container" class="mb-3 mx-auto ms-md-auto border rounded p-2 bg-light" style="display:none; width:100%; max-width: 360px;">
                     <div id="qr-reader" style="width:100%"></div>
-                    <button type="button" class="btn btn-sm btn-secondary mt-2 w-100" id="btn-close-camera">Tutup Kamera</button>
+                    <button type="button" class="btn btn-sm btn-secondary mt-2 w-100" id="btn-close-camera">Close Camera</button>
                 </div>
             <?php endif; ?>
 
@@ -162,10 +162,10 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         <tr>
                             <th width="5%" class="text-center">No</th>
                             <th>SPK No</th>
-                            <th>Tanggal SPK</th>
+                            <th>SPK Date</th>
                             <th>Shift</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Jumlah Produk</th>
+                            <th class="text-center">Product Count</th>
                             <th width="24%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -194,11 +194,11 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                             <span class="badge bg-primary fs-6" id="modal-pack-code">-</span>
                         </div>
                         <div class="col-md-4">
-                            <small class="text-muted d-block">Asal &rarr; Tujuan Gudang</small>
+                            <small class="text-muted d-block">Source &rarr; Destination Warehouse</small>
                             <strong>PRO</strong> &rarr; <strong class="text-success">PRT (Production 2)</strong>
                         </div>
                         <div class="col-md-4">
-                            <small class="text-muted d-block">Ringkasan Isi Pack</small>
+                            <small class="text-muted d-block">Pack Contents Summary</small>
                             <strong id="modal-pack-summary">-</strong>
                         </div>
                     </div>
@@ -206,7 +206,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
 
                 <!-- Daftar Coil dalam Pack -->
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-uppercase text-muted mb-1">Detail Coil dalam Pack</label>
+                    <label class="form-label fw-bold small text-uppercase text-muted mb-1">Coil Details in Pack</label>
                     <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
                         <table class="table table-bordered table-sm mb-0 align-middle">
                             <thead class="table-light">
@@ -214,7 +214,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                                     <th width="6%" class="text-center">No</th>
                                     <th>Material</th>
                                     <th width="20%">No. Coil</th>
-                                    <th width="22%">Kode Internal</th>
+                                    <th width="22%">Internal Code</th>
                                     <th width="16%" class="text-end">Net Weight (Kg)</th>
                                 </tr>
                             </thead>
@@ -229,14 +229,14 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         Pilih No. SPK Tujuan (Acuan No. Transaksi Kartu Material) <span class="text-danger">*</span>
                     </label>
                     <select id="select-spk-scan" class="form-select" style="width:100%;">
-                        <option value="">-- Pilih No. SPK --</option>
+                        <option value="">-- Select SPK No. --</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-success fw-bold" id="btn-confirm-scan-pack">
-                    <i class="fa fa-check-circle me-1"></i> Pindahkan Pack ke PRT
+                    <i class="fa fa-check-circle me-1"></i> Move Pack to PRT
                 </button>
             </div>
         </div>
@@ -565,7 +565,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
 
             Swal.fire({
                 title: 'Memeriksa Pack...',
-                text: 'Memvalidasi No. Pack di WRH. Production 1 (PRO)...',
+                text: 'Validating Pack No. in WRH. Production 1 (PRO)...',
                 allowOutsideClick: false,
                 didOpen: function() {
                     Swal.showLoading();
@@ -590,14 +590,14 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         playAppSound('scan_error');
                         Swal.fire({
                             icon: 'error',
-                            title: 'Scan Pack Ditolak',
-                            text: res.message || 'Pack tidak valid.'
+                            title: 'Pack Scan Rejected',
+                            text: res.message || 'Invalid pack.'
                         });
                     }
                 },
                 error: function() {
                     playAppSound('scan_error');
-                    Swal.fire('Error', 'Terjadi kesalahan jaringan saat memeriksa pack.', 'error');
+                    Swal.fire('Error', 'A network error occurred while checking the pack.', 'error');
                 },
                 complete: function() {
                     isProcessingScan = false;
@@ -628,14 +628,14 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                     }) + '</td>' +
                     '</tr>';
             });
-            $('#modal-pack-coils-body').html(tbodyHtml || '<tr><td colspan="5" class="text-center text-muted">Tidak ada coil.</td></tr>');
+            $('#modal-pack-coils-body').html(tbodyHtml || '<tr><td colspan="5" class="text-center text-muted">No coils.</td></tr>');
 
             var $select = $('#select-spk-scan');
             if ($select.data('select2')) {
                 $select.select2('destroy');
             }
 
-            var optsHtml = '<option value="">-- Pilih No. SPK --</option>';
+            var optsHtml = '<option value="">-- Select SPK No. --</option>';
             $.each(spkList || [], function(_, s) {
                 var prodText = s.produk_summary ? ' - ' + s.produk_summary : '';
                 var label = s.spk_no + ' (' + s.status + ' | ' + s.tgl_spk + ')' + prodText;
@@ -647,7 +647,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                 $select.select2({
                     dropdownParent: $('#modal-scan-pack-spk'),
                     width: '100%',
-                    placeholder: '-- Pilih No. SPK --',
+                    placeholder: '-- Select SPK No. --',
                     allowClear: true
                 });
             }
@@ -658,12 +658,12 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
             var spkNo = ($('#select-spk-scan').val() || '').trim();
             if (!scannedPackCode) {
                 playAppSound('scan_error');
-                Swal.fire('Error', 'Data pack tidak ditemukan, silakan scan ulang.', 'error');
+                Swal.fire('Error', 'Pack data not found, please scan again.', 'error');
                 return;
             }
             if (!spkNo) {
                 playAppSound('scan_error');
-                Swal.fire('Perhatian', 'Silakan pilih No. SPK terlebih dahulu.', 'warning');
+                Swal.fire('Attention', 'Please select the SPK No. first.', 'warning');
                 return;
             }
 
@@ -695,7 +695,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         tableRequestList.ajax.reload(null, false);
                         Swal.fire({
                             icon: 'success',
-                            title: 'Berhasil Scan',
+                            title: 'Scan Successful',
                             text: res.message,
                             timer: 1500,
                             showConfirmButton: false
@@ -704,17 +704,17 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                         playAppSound('scan_error');
                         Swal.fire({
                             icon: 'error',
-                            title: 'Gagal Scan',
-                            text: res.message || 'Gagal memproses pemindahan pack.'
+                            title: 'Scan Failed',
+                            text: res.message || 'Failed to process the pack transfer.'
                         });
                     }
                 },
                 error: function() {
                     playAppSound('scan_error');
-                    Swal.fire('Error', 'Terjadi kesalahan jaringan saat konfirmasi pack.', 'error');
+                    Swal.fire('Error', 'A network error occurred while confirming the pack.', 'error');
                 },
                 complete: function() {
-                    $btn.prop('disabled', false).html('<i class="fa fa-check-circle me-1"></i> Pindahkan Pack ke PRT');
+                    $btn.prop('disabled', false).html('<i class="fa fa-check-circle me-1"></i> Move Pack to PRT');
                 }
             });
         });
@@ -734,7 +734,7 @@ $ENABLE_MANAGE = has_permission('Request_List.Manage');
                 Swal.fire({
                     icon: 'warning',
                     title: 'Akses Kamera Membutuhkan HTTPS',
-                    text: 'Browser HP/tablet memblokir kamera pada koneksi HTTP non-localhost. Gunakan HTTPS atau input manual / scanner Bluetooth.'
+                    text: 'Phone/tablet browsers block the camera on non-localhost HTTP connections. Use HTTPS or manual input / a Bluetooth scanner.'
                 });
                 return;
             }

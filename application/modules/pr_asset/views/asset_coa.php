@@ -21,7 +21,7 @@ $this->load->view('include/side_menu');
 			<thead>
 				<tr class='bg-blue'>
 					<th class="text-center">#</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">COA Debet</th>
 					<th class="text-center">COA Kredit</th>
 					<th class="text-center">Option</th>
@@ -83,7 +83,7 @@ $this->load->view('include/side_menu');
 		var keterangan	= $("#keterangan").val();
 
 		if(keterangan==''){
-			swal({title:"Error Message!", text:'Keterangan Kosong ...', type:"warning"});
+			swal({title:"Error Message!", text:'Description is empty.', type:"warning"});
 			$('#save').prop('disabled',false);
 			return false;
 		}

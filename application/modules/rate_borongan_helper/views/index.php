@@ -21,7 +21,7 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
             <h5 class="mb-0 fw-bold text-dark">
                 <i class="fa fa-handshake-o text-primary me-2"></i> Rate Borongan Helper per Product Category
             </h5>
-            <small class="text-muted">Biaya upah borongan helper per meter (Rp/Meter) untuk setiap Product Category.</small>
+            <small class="text-muted">Helper piece-rate wage per meter (Rp/Meter) for each Product Category.</small>
         </div>
         <?php if ($ENABLE_MANAGE && !empty($available)): ?>
             <button type="button" class="btn btn-success btn-sm btn-add-rate">
@@ -31,7 +31,7 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
     </div>
     <div class="card-body">
         <div class="alert alert-info py-2 mb-4">
-            <i class="fa fa-info-circle me-1"></i> <strong>Spesifikasi:</strong> Satuan rate adalah <strong>Rp/Meter</strong> langsung. Pada Man Power Cost, nilai ini dijumlahkan dengan bagian operator: <code>(Total Man Hour &times; Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) &times; Faktor Indirect Labor</code>.
+            <i class="fa fa-info-circle me-1"></i> <strong>Specification:</strong> The rate unit is <strong>Rp/Meter</strong> directly. In Man Power Cost, this value is added to the operator portion: <code>(Total Man Hour &times; Rate 1/3 Operator + Rate Borongan Helper Rp/Meter) &times; Indirect Labor Factor</code>.
         </div>
 
         <div class="table-responsive">
@@ -72,7 +72,7 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
                                         <button type="button" class="btn btn-sm btn-danger btn-del-rate ms-1"
                                             data-id="<?= $r->id ?>"
                                             data-nama="<?= htmlspecialchars(strtoupper($r->nm_category ?: $r->code_lv2)) ?>"
-                                            title="Hapus">
+                                            title="Delete">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -118,8 +118,8 @@ $ENABLE_MANAGE = has_permission('Rate_Borongan_Helper.Manage');
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Simpan</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Save</button>
                 </div>
             </form>
         </div>
@@ -171,13 +171,13 @@ $(document).ready(function() {
         var nama = $(this).data('nama');
 
         Swal.fire({
-            title: 'Hapus Rate?',
-            text: 'Rate Borongan Helper untuk "' + nama + '" akan dihapus.',
+            title: 'Delete Rate?',
+            text: 'Rate Borongan Helper for "' + nama + '" akan dihapus.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Ya, Hapus',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
         }).then(function(res) {
             if (!res.isConfirmed) return;
             $.ajax({
@@ -187,10 +187,10 @@ $(document).ready(function() {
                 data: { id: id },
                 success: function(resp) {
                     if (resp.status == 1) {
-                        Swal.fire({ title: 'Berhasil!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
+                        Swal.fire({ title: 'Success!', text: resp.pesan, icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(function() { window.location.reload(); });
                     } else {
-                        Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                        Swal.fire({ title: 'Failed!', text: resp.pesan, icon: 'error' });
                     }
                 },
                 error: function(xhr) {

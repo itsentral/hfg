@@ -380,12 +380,12 @@ class Expense_petty_cash_model extends BF_Model
         $pencatatan = $this->db->get()->row();
 
         if (!$pencatatan) {
-            return ['status' => 0, 'msg' => 'Data pencatatan tidak ditemukan.'];
+            return ['status' => 0, 'msg' => 'Record data not found.'];
         }
 
         // Step 2: Validate status must be 'draft' or 'reject'
         if (!in_array($pencatatan->status, ['draft', 'reject'])) {
-            return ['status' => 0, 'msg' => 'Pencatatan dengan status "' . $pencatatan->status . '" tidak dapat dihapus.'];
+            return ['status' => 0, 'msg' => 'Records with status "' . $pencatatan->status . '" tidak dapat dihapus.'];
         }
 
         // Step 3: Check if pencatatan is linked to any active pelaporan
@@ -397,7 +397,7 @@ class Expense_petty_cash_model extends BF_Model
         $pelaporan_check = $this->db->get()->row();
 
         if ($pelaporan_check) {
-            return ['status' => 0, 'msg' => 'Pencatatan tidak dapat dihapus karena sudah masuk dalam pelaporan.'];
+            return ['status' => 0, 'msg' => 'The record cannot be deleted because it is already in a report.'];
         }
 
         // Step 4: Collect evidence files before deletion (for physical file cleanup)
@@ -441,7 +441,7 @@ class Expense_petty_cash_model extends BF_Model
         // Step 6: Check transaction status
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-            return ['status' => 0, 'msg' => 'Gagal menghapus data. Silakan coba lagi.'];
+            return ['status' => 0, 'msg' => 'Failed to delete data. Please try again.'];
         }
 
         $this->db->trans_commit();
@@ -459,7 +459,7 @@ class Expense_petty_cash_model extends BF_Model
             }
         }
 
-        return ['status' => 1, 'msg' => 'Data pencatatan berhasil dihapus.'];
+        return ['status' => 1, 'msg' => 'Record data deleted successfully.'];
     }
 
     // =========================================================================
@@ -561,7 +561,7 @@ class Expense_petty_cash_model extends BF_Model
                 'nm_coa'           => $coa_names[$item['coa_code']],
                 'debit'            => (int) $item['total'],
                 'kredit'           => 0,
-                'keterangan'       => $item['pengeluaran'] ?: ($header['keterangan'] ?: 'Pengeluaran Kas Kecil'),
+                'keterangan'       => $item['pengeluaran'] ?: ($header['keterangan'] ?: 'Petty Cash Expense'),
                 'sts'              => '0', // belum diposting
                 'no_transaksi'     => $header['no_pencatatan'],
                 'jenis_transaksi'  => 'Petty Cash',
@@ -878,7 +878,7 @@ class Expense_petty_cash_model extends BF_Model
 
         if (!$pencatatan || !$pencatatan->header) {
             $this->_update_journal_status($pencatatan_id, 'failed');
-            return ['success' => false, 'message' => 'Data pencatatan tidak ditemukan.'];
+            return ['success' => false, 'message' => 'Record data not found.'];
         }
 
         $header  = $pencatatan->header;
@@ -926,19 +926,19 @@ class Expense_petty_cash_model extends BF_Model
                 }
             } else {
                 $this->_update_journal_status($pencatatan_id, 'failed');
-                return ['success' => false, 'message' => 'Company tidak valid untuk pembuatan jurnal.'];
+                return ['success' => false, 'message' => 'The company is not valid for journal creation.'];
             }
         } catch (Exception $e) {
             $this->_update_journal_status($pencatatan_id, 'failed');
             log_message('error', 'Journal creation failed for pencatatan #' . $pencatatan_id . ': ' . $e->getMessage());
-            return ['success' => false, 'message' => 'Pencatatan berhasil disimpan, namun jurnal gagal disinkronisasi. Dapat di-retry.'];
+            return ['success' => false, 'message' => 'The record was saved, but the journal failed to sync. It can be retried.'];
         }
 
         // Step 6: Return result
         if ($journal_result) {
-            return ['success' => true, 'message' => 'Pencatatan dan jurnal berhasil disimpan.'];
+            return ['success' => true, 'message' => 'Record and journal saved successfully.'];
         } else {
-            return ['success' => false, 'message' => 'Pencatatan berhasil disimpan, namun jurnal gagal disinkronisasi. Dapat di-retry.'];
+            return ['success' => false, 'message' => 'The record was saved, but the journal failed to sync. It can be retried.'];
         }
     }
 

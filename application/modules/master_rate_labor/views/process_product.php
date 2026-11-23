@@ -153,7 +153,7 @@
         <div class="d-flex align-items-center">
             <div class="input-group input-group-sm" style="width: 400px;">
                 <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                <input type="text" id="search-produk" class="form-control" placeholder="Cari produk...">
+                <input type="text" id="search-produk" class="form-control" placeholder="Search product...">
             </div>
         </div>
         <div class="d-flex">
@@ -169,11 +169,11 @@
                     <tr>
                         <th rowspan="2" width="40" class="col-sticky-1">No</th>
                         <th rowspan="2" class="col-sticky-2">Produk</th>
-                        <th colspan="3">Standard Biaya (Rp/Kg)</th>
-                        <th colspan="9">Standard Biaya Gaji (Rp/Kg)</th>
+                        <th colspan="3">Standard Cost (Rp/Kg)</th>
+                        <th colspan="9">Standard Salary Cost (Rp/Kg)</th>
                     </tr>
                     <tr>
-                        <th>Bahan Pendukung Khusus</th>
+                        <th>Special Supporting Material</th>
                         <th style="white-space:nowrap;">Consumable</th>
                         <th>FOH</th>
                         <th>Cycle Time (mnt)</th>
@@ -184,7 +184,7 @@
                         <th>Gaji Direct</th>
                         <th>% Rate Indirect</th>
                         <th>Gaji Indirect</th>
-                        <th>Std. Biaya Gaji</th>
+                        <th>Std. Salary Cost</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-products">
@@ -244,7 +244,7 @@
                                                 style="cursor: pointer; font-size: 12px;"
                                                 data-bs-toggle="tooltip"
                                                 data-bs-placement="top"
-                                                title="Weight 0. Silakan isi weight di Master Product!">
+                                                title="Weight is 0. Please fill in the weight in Master Product!">
                                                 <i class="fas fa-solid fa-exclamation"></i>
                                             </span>
                                         <?php endif; ?>
@@ -270,7 +270,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="14" class="text-center text-muted py-3">Produk tidak ditemukan atau belum aktif.</td>
+                            <td colspan="14" class="text-center text-muted py-3">Product not found or not active yet.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

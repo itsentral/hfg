@@ -12,8 +12,8 @@
                         <tr>
                             <th width="5%">#</th>
                             <th width="15%">No PR</th>
-                            <th width="15%">Tanggal PR</th>
-                            <th>Nama Barang</th>
+                            <th width="15%">PR Date</th>
+                            <th>Item Name</th>
                             <th width="15%">PR By</th>
                             <th width="15%">PR Date</th>
                             <th width="15%">Status</th>

@@ -87,7 +87,7 @@ class Delivery_fg_model extends CI_Model
         if (!$stok) {
             return [
                 'valid'   => false,
-                'message' => 'Produk FG ' . $produk_fg . ' tidak ditemukan di stok',
+                'message' => 'Produk FG ' . $produk_fg . ' not found in stock',
                 'stok'    => null,
             ];
         }
@@ -95,14 +95,14 @@ class Delivery_fg_model extends CI_Model
         if ((float) $qty_kirim > (float) $stok->qty_stok) {
             return [
                 'valid'   => false,
-                'message' => 'Qty kirim (' . $qty_kirim . ') melebihi stok tersedia (' . $stok->qty_stok . ') untuk ' . $produk_fg,
+                'message' => 'Delivery qty (' . $qty_kirim . ') exceeds available stock (' . $stok->qty_stok . ') untuk ' . $produk_fg,
                 'stok'    => $stok,
             ];
         }
 
         return [
             'valid'   => true,
-            'message' => 'Stok tersedia',
+            'message' => 'Available stock',
             'stok'    => $stok,
         ];
     }
@@ -121,7 +121,7 @@ class Delivery_fg_model extends CI_Model
     public function save_do($data, $details)
     {
         if (empty($details)) {
-            return ['success' => false, 'message' => 'Detail item DO tidak boleh kosong'];
+            return ['success' => false, 'message' => 'DO item details cannot be empty'];
         }
 
         // Validasi stok semua item sebelum transaksi
@@ -164,7 +164,7 @@ class Delivery_fg_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal menyimpan Delivery Order'];
+            return ['success' => false, 'message' => 'Failed to save Delivery Order'];
         }
 
         return ['success' => true, 'message' => 'DO ' . $do_no . ' berhasil dibuat', 'do_no' => $do_no];
@@ -182,11 +182,11 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do || $do->status !== 'Draft') {
-            return ['success' => false, 'message' => 'DO tidak ditemukan atau bukan status Draft'];
+            return ['success' => false, 'message' => 'DO not found or not in status Draft'];
         }
 
         if (empty($details)) {
-            return ['success' => false, 'message' => 'Detail item DO tidak boleh kosong'];
+            return ['success' => false, 'message' => 'DO item details cannot be empty'];
         }
 
         foreach ($details as $item) {
@@ -222,7 +222,7 @@ class Delivery_fg_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal mengupdate Delivery Order'];
+            return ['success' => false, 'message' => 'Failed to update Delivery Order'];
         }
 
         return ['success' => true, 'message' => 'DO ' . $do_no . ' berhasil diupdate', 'do_no' => $do_no];
@@ -245,10 +245,10 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do) {
-            return ['success' => false, 'message' => 'DO tidak ditemukan'];
+            return ['success' => false, 'message' => 'DO not found'];
         }
         if (!in_array($do->status, ['Draft', 'Waiting Approval'])) {
-            return ['success' => false, 'message' => 'Timbang hanya bisa dilakukan pada status Draft atau Waiting Approval'];
+            return ['success' => false, 'message' => 'Weighing can only be done in status Draft or Waiting Approval'];
         }
 
         // Hitung total estimasi berat dari semua detail
@@ -287,7 +287,7 @@ class Delivery_fg_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal menyimpan data timbang'];
+            return ['success' => false, 'message' => 'Failed to save data timbang'];
         }
 
         if ($new_status === 'Waiting Approval') {
@@ -296,7 +296,7 @@ class Delivery_fg_model extends CI_Model
 
         return [
             'success'       => true,
-            'message'       => 'Timbang berhasil disimpan. Status DO: ' . $new_status,
+            'message'       => 'Weighing saved successfully. DO status: ' . $new_status,
             'new_status'    => $new_status,
             'selisih_kg'    => $selisih['selisih_kg'],
             'selisih_pct'   => $selisih['selisih_pct'],
@@ -458,13 +458,13 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do) {
-            return ['success' => false, 'message' => 'DO tidak ditemukan'];
+            return ['success' => false, 'message' => 'DO not found'];
         }
         if ($do->status !== 'Waiting Approval') {
-            return ['success' => false, 'message' => 'DO tidak dalam status Waiting Approval'];
+            return ['success' => false, 'message' => 'DO is not in status Waiting Approval'];
         }
         if ((int) $approver_id === (int) $do->created_by) {
-            return ['success' => false, 'message' => 'Self-approval tidak diizinkan. Approver tidak boleh sama dengan pembuat DO'];
+            return ['success' => false, 'message' => 'Self-approval is not allowed. The approver cannot be the DO creator'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -488,7 +488,7 @@ class Delivery_fg_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal menyimpan approval'];
+            return ['success' => false, 'message' => 'Failed to save approval'];
         }
 
         return ['success' => true, 'message' => 'DO ' . $do_no . ' berhasil diapprove'];
@@ -506,13 +506,13 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do) {
-            return ['success' => false, 'message' => 'DO tidak ditemukan'];
+            return ['success' => false, 'message' => 'DO not found'];
         }
         if ($do->status !== 'Waiting Approval') {
-            return ['success' => false, 'message' => 'DO tidak dalam status Waiting Approval'];
+            return ['success' => false, 'message' => 'DO is not in status Waiting Approval'];
         }
         if (empty($alasan)) {
-            return ['success' => false, 'message' => 'Alasan reject wajib diisi'];
+            return ['success' => false, 'message' => 'Reject reason is required'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -534,7 +534,7 @@ class Delivery_fg_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal menyimpan reject'];
+            return ['success' => false, 'message' => 'Failed to save rejection'];
         }
 
         return ['success' => true, 'message' => 'DO ' . $do_no . ' ditolak dan dikembalikan ke Draft'];
@@ -551,15 +551,15 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do) {
-            return ['success' => false, 'message' => 'DO tidak ditemukan'];
+            return ['success' => false, 'message' => 'DO not found'];
         }
         if ($do->status !== 'Approved Exception') {
-            return ['success' => false, 'message' => 'DO harus berstatus Approved Exception sebelum di-ship'];
+            return ['success' => false, 'message' => 'DO must have status Approved Exception before shipping'];
         }
 
         $details = $this->get_do_details($do_no);
         if (empty($details)) {
-            return ['success' => false, 'message' => 'Detail DO kosong'];
+            return ['success' => false, 'message' => 'DO detail is empty'];
         }
 
         $now = date('Y-m-d H:i:s');
@@ -568,7 +568,7 @@ class Delivery_fg_model extends CI_Model
         foreach ($details as $item) {
             $check = $this->validate_stok($item->produk_fg, $item->qty_kirim);
             if (!$check['valid']) {
-                return ['success' => false, 'message' => 'Stok tidak mencukupi: ' . $check['message']];
+                return ['success' => false, 'message' => 'Insufficient stock: ' . $check['message']];
             }
         }
 
@@ -589,17 +589,17 @@ class Delivery_fg_model extends CI_Model
             );
             if (!$result['success']) {
                 $this->db->trans_rollback();
-                return ['success' => false, 'message' => 'Gagal kurangi stok: ' . $result['message']];
+                return ['success' => false, 'message' => 'Failed to reduce stock: ' . $result['message']];
             }
         }
 
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal mengupdate status DO'];
+            return ['success' => false, 'message' => 'Failed to update DO status'];
         }
 
-        return ['success' => true, 'message' => 'DO ' . $do_no . ' berhasil di-ship. Stok FG telah dikurangi'];
+        return ['success' => true, 'message' => 'DO ' . $do_no . ' shipped successfully. FG stock has been reduced'];
     }
 
     /**
@@ -613,13 +613,13 @@ class Delivery_fg_model extends CI_Model
     {
         $do = $this->get_do($do_no);
         if (!$do) {
-            return ['success' => false, 'message' => 'DO tidak ditemukan'];
+            return ['success' => false, 'message' => 'DO not found'];
         }
         if ($do->status === 'Shipped') {
-            return ['success' => false, 'message' => 'DO yang sudah Shipped tidak bisa dibatalkan'];
+            return ['success' => false, 'message' => 'A DO that has been Shipped cannot be cancelled'];
         }
         if ($do->status === 'Cancelled') {
-            return ['success' => false, 'message' => 'DO sudah berstatus Cancelled'];
+            return ['success' => false, 'message' => 'DO already has status Cancelled'];
         }
 
         $this->db->update('tr_delivery_order', [

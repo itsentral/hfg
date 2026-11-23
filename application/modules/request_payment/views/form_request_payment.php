@@ -13,7 +13,7 @@
                     <strong><?= $tipe_label ?></strong>
                 </div>
                 <div class="col-md-3">
-                    <small class="text-muted d-block">Nomor PO</small>
+                    <small class="text-muted d-block">PO Number</small>
                     <strong><?= $data_receive['no_surat'] ?></strong>
                 </div>
                 <div class="col-md-3">
@@ -29,7 +29,7 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai Pembayaran</label>
+        <label class="form-label fw-semibold">Payment Value</label>
         <input type="text" name="jumlah" class="form-control form-control-sm text-end"
             value="<?= number_format((float) $jumlah, 2) ?>" readonly>
     </div>
@@ -56,20 +56,20 @@
             value="<?= $data_receive['bank'] ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">No. Rekening</label>
+        <label class="form-label fw-semibold">Account Number</label>
         <input type="text" name="accnumber" class="form-control form-control-sm"
             value="<?= $data_receive['no_bank'] ?>" readonly>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nama Pemilik Rekening</label>
+        <label class="form-label fw-semibold">Account Holder Name</label>
         <input type="text" name="accname" class="form-control form-control-sm"
             value="<?= $data_receive['nm_acc_bank'] ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Rencana Pembayaran <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold">Planned Payment Date <span class="text-danger">*</span></label>
         <input type="text" name="tanggal" id="tanggal_rencana"
-            class="form-control form-control-sm fp-date" placeholder="Pilih tanggal..." required>
+            class="form-control form-control-sm fp-date" placeholder="Select date..." required>
     </div>
 
     <div class="col-12">
@@ -79,7 +79,7 @@
     </div>
 
     <div class="col-12">
-        <label class="form-label fw-semibold">Upload Dokumen</label>
+        <label class="form-label fw-semibold">Upload Document</label>
         <input type="file" name="link_doc" class="form-control form-control-sm"
             accept=".pdf,.jpg,.jpeg,.png">
     </div>

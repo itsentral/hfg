@@ -15,29 +15,29 @@
                     <input type="hidden" id="type" name="type" value="<?= isset($type) ? $type : 'add' ?>">
                     <input type="hidden" id="id" name="id" value="<?php echo set_value('id', isset($data->id) ? $data->id : ''); ?>">
 
-                    <label for="kdcab" class="col-sm-2 control-label">Kode Cabang<font size="4" color="red"><B>*</B></font></label>
+                    <label for="kdcab" class="col-sm-2 control-label">Branch Code<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="kdcab" name="kdcab" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="4" value="<?php echo set_value('kdcab', isset($data->kdcab) ? $data->kdcab : ''); ?>" placeholder="Kode Cabang" required>
+                        <input type="text" class="form-control" id="kdcab" name="kdcab" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="4" value="<?php echo set_value('kdcab', isset($data->kdcab) ? $data->kdcab : ''); ?>" placeholder="Branch Code" required>
                         </div>
                     </div>
 
-                    <label for="namacabang" class="col-sm-2 control-label">Nama Cabang <font size="4" color="red"><B>*</B></font></label>
+                    <label for="namacabang" class="col-sm-2 control-label">Branch Name <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="namacabang" name="namacabang" maxlength="45" value="<?php echo set_value('namacabang', isset($data->namacabang) ? $data->namacabang : ''); ?>" placeholder="Nama Cabang" required>
+                        <input type="text" class="form-control" id="namacabang" name="namacabang" maxlength="45" value="<?php echo set_value('namacabang', isset($data->namacabang) ? $data->namacabang : ''); ?>" placeholder="Branch Name" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group ">
-                    <label for="kepalacabang" class="col-sm-2 control-label">Kepala Cabang<font size="4" color="red"><B>*</B></font></label>
+                    <label for="kepalacabang" class="col-sm-2 control-label">Branch Manager<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="kepalacabang" name="kepalacabang" value="<?php echo set_value('kepalacabang', isset($data->kepalacabang) ? $data->kepalacabang : ''); ?>" placeholder="Kepala Cabang" required>
+                        <input type="text" class="form-control" id="kepalacabang" name="kepalacabang" value="<?php echo set_value('kepalacabang', isset($data->kepalacabang) ? $data->kepalacabang : ''); ?>" placeholder="Branch Manager" required>
                         </div>
                     </div>
 
@@ -51,25 +51,25 @@
                 </div>
 
                 <div class="form-group ">
-                    <label for="admcabang" class="col-sm-2 control-label">Adm Cabang<font size="4" color="red"><B>*</B></font></label>
+                    <label for="admcabang" class="col-sm-2 control-label">Branch Administrator<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="admcabang" name="admcabang" value="<?php echo set_value('admcabang', isset($data->admcabang) ? $data->admcabang : ''); ?>" placeholder="Adm Cabang" required>
+                        <input type="text" class="form-control" id="admcabang" name="admcabang" value="<?php echo set_value('admcabang', isset($data->admcabang) ? $data->admcabang : ''); ?>" placeholder="Branch Administrator" required>
                         </div>
                     </div>
 
-                    <label for="gudang" class="col-sm-2 control-label">Adm Gudang<font size="4" color="red"><B>*</B></font></label>
+                    <label for="gudang" class="col-sm-2 control-label">Warehouse Administrator<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="gudang" name="gudang" value="<?php echo set_value('gudang', isset($data->gudang) ? $data->gudang : ''); ?>" placeholder="Adm Gudang" required>
+                        <input type="text" class="form-control" id="gudang" name="gudang" value="<?php echo set_value('gudang', isset($data->gudang) ? $data->gudang : ''); ?>" placeholder="Warehouse Administrator" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group ">
-                    <label for="kota" class="col-sm-2 control-label">Kota <font size="4" color="red"><B>*</B></font></label>
+                    <label for="kota" class="col-sm-2 control-label">City <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                             <div class="input-group-btn">
@@ -88,11 +88,11 @@
                         </div>
                     </div>
 
-                    <label for="alamat" class="col-sm-2 control-label">Alamat</label>
+                    <label for="alamat" class="col-sm-2 control-label">Address</label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-street-view"></i></span>
-                        <textarea class="form-control" id="alamat" name="alamat" maxlength="255" placeholder="Alamat Kantor"  style="margin: 0px; height: 49px; width: 216px;"><?php echo set_value('alamat', isset($data->alamat) ? $data->alamat : ''); ?></textarea>
+                        <textarea class="form-control" id="alamat" name="alamat" maxlength="255" placeholder="Office Address"  style="margin: 0px; height: 49px; width: 216px;"><?php echo set_value('alamat', isset($data->alamat) ? $data->alamat : ''); ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -104,9 +104,9 @@
 				<input type="hidden" class="form-control" id="no_pr" name="no_pr" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_pr', isset($data->no_pr) ? $data->no_pr : '0'); ?>" placeholder="No Purchase Request" required>
 				<input type="hidden" class="form-control" id="no_po" name="no_po" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_po', isset($data->no_po) ? $data->no_po : '0'); ?>" placeholder="No PUrchase Order" required>
 				<input type="hidden" class="form-control" id="no_receive" name="no_receive" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_receive', isset($data->no_receive) ? $data->no_receive : '0'); ?>" placeholder="No Receive" required>
-				<input type="hidden" class="form-control" id="th_picking_list" name="th_picking_list" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('th_picking_list', isset($data->th_picking_list) ? $data->th_picking_list : '0'); ?>" placeholder="Tahun Picking List" required>
+				<input type="hidden" class="form-control" id="th_picking_list" name="th_picking_list" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('th_picking_list', isset($data->th_picking_list) ? $data->th_picking_list : '0'); ?>" placeholder="Picking List Year" required>
 				<input type="hidden" class="form-control" id="sts_aktif" name="sts_aktif" value="aktif">
-				<input type="hidden" class="form-control" id="biaya_logistik_lokal" name="biaya_logistik_lokal" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('biaya_logistik_lokal', isset($data->biaya_logistik_lokal) ? $data->biaya_logistik_lokal : '0'); ?>" placeholder="Biaya Logistik Lokal" required>
+				<input type="hidden" class="form-control" id="biaya_logistik_lokal" name="biaya_logistik_lokal" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('biaya_logistik_lokal', isset($data->biaya_logistik_lokal) ? $data->biaya_logistik_lokal : '0'); ?>" placeholder="Local Logistics Cost" required>
 				
 				<!--
                 <div class="form-group ">
@@ -177,11 +177,11 @@
                         </div>
                     </div>
 
-                    <label for="th_picking_list" class="col-sm-2 control-label">Tahun PL<font size="4" color="red"><B>*</B></font></label>
+                    <label for="th_picking_list" class="col-sm-2 control-label">PL Year<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="th_picking_list" name="th_picking_list" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('th_picking_list', isset($data->th_picking_list) ? $data->th_picking_list : '0'); ?>" placeholder="Tahun Picking List" required>
+                        <input type="text" class="form-control" id="th_picking_list" name="th_picking_list" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('th_picking_list', isset($data->th_picking_list) ? $data->th_picking_list : '0'); ?>" placeholder="Picking List Year" required>
                         </div>
                     </div>
 
@@ -198,11 +198,11 @@
                         </select>
                     </div>
 
-                    <label for="biaya_logistik_lokal" class="col-sm-2 control-label">Biaya Logistik Lokal<font size="4" color="red"><B>*</B></font></label>
+                    <label for="biaya_logistik_lokal" class="col-sm-2 control-label">Local Logistics Cost<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="biaya_logistik_lokal" name="biaya_logistik_lokal" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('biaya_logistik_lokal', isset($data->biaya_logistik_lokal) ? $data->biaya_logistik_lokal : '0'); ?>" placeholder="Biaya Logistik Lokal" required>
+                        <input type="text" class="form-control" id="biaya_logistik_lokal" name="biaya_logistik_lokal" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('biaya_logistik_lokal', isset($data->biaya_logistik_lokal) ? $data->biaya_logistik_lokal : '0'); ?>" placeholder="Local Logistics Cost" required>
                         </div>
                     </div>
                 </div>
@@ -237,7 +237,7 @@
     $(document).ready(function() {
 
         $(".pil_kota").select2({
-            placeholder: "Pilih Kota",
+            placeholder: "Select City",
             allowClear: true
         });
 
@@ -256,8 +256,8 @@
             success: function(msg){
                 if(msg['save']=='1'){
                     swal({
-                        title: "Sukses!",
-                        text: "Data Berhasil Di Simpan",
+                        title: "Success!",
+                        text: "Data saved successfully",
                         type: "success",
                         timer: 1500,
                         showConfirmButton: false
@@ -266,8 +266,8 @@
                     window.location.reload();
                 } else {
                     swal({
-                        title: "Gagal!",
-                        text: "Data Gagal Di Simpan",
+                        title: "Failed!",
+                        text: "Failed to save data",
                         type: "error",
                         timer: 1500,
                         showConfirmButton: false
@@ -276,8 +276,8 @@
             },
             error: function(){
                 swal({
-                    title: "Gagal!",
-                    text: "Ajax Data Gagal Di Proses",
+                    title: "Failed!",
+                    text: "Ajax request failed to process.",
                     type: "error",
                     timer: 1500,
                     showConfirmButton: false

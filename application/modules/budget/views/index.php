@@ -44,11 +44,11 @@
                         <th>Category / COA</th>
                         <th>Department</th>
                         <th>Costcenter</th>
-                        <th>Nama Asset</th>
+                        <th>Asset Name</th>
                         <th width="5%">Qty</th>
                         <th width="10%" class="text-end">Budget</th>
-                        <th width="10%" class="text-end">Sisa Budget PR</th>
-                        <th width="10%" class="text-end">Sisa Budget PO</th>
+                        <th width="10%" class="text-end">Remaining PR Budget</th>
+                        <th width="10%" class="text-end">Remaining PO Budget</th>
                         <th width="10%">Planning</th>
                         <th width="10%">Status</th>
                         <th width="10%" class="no-sort">Option</th>

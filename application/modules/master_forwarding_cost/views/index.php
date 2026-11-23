@@ -25,7 +25,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 			<div id="btnAddWrapper" class="mb-3 text-end">
 				<?php if ($ENABLE_ADD && count($forwarding_cost ?? []) < 2): ?>
 					<button type="button" class="btn btn-success" id="btnTambah">
-						<i class="fa fa-plus me-1"></i> Tambah Forwarding Cost
+						<i class="fa fa-plus me-1"></i> Add Forwarding Cost
 					</button>
 				<?php endif; ?>
 			</div>
@@ -79,7 +79,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 											<button type="button" class="btn btn-danger btn-sm btn-delete"
 												data-id="<?= $row->id ?>"
 												data-tipe="<?= htmlspecialchars(ucfirst((string) $tipe_clean)) ?>">
-												<i class="fa fa-trash"></i> Hapus
+												<i class="fa fa-trash"></i> Delete
 											</button>
 										<?php endif; ?>
 									</td>
@@ -105,7 +105,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 		<div class="modal-content border-0 shadow">
 			<div class="modal-header bg-primary text-white py-3">
 				<h5 class="modal-title fw-bold" id="modalTitle">
-					<i class="fa fa-plus-circle me-1"></i> Tambah Forwarding Cost
+					<i class="fa fa-plus-circle me-1"></i> Add Forwarding Cost
 				</h5>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 			</div>
@@ -121,7 +121,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 							<option value="import">Import</option>
 							<option value="lokal">Lokal</option>
 						</select>
-						<small class="text-muted">Pilih jenis pengiriman: Import atau Lokal</small>
+						<small class="text-muted">Select shipment type: Import or Local</small>
 					</div>
 
 					<div class="mb-3">
@@ -131,23 +131,23 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 						<div class="input-group">
 							<span class="input-group-text bg-light fw-bold">Rp</span>
 							<input type="text" name="value_cost" id="value_cost"
-								class="form-control" placeholder="Masukkan tarif forwarding cost"
+								class="form-control" placeholder="Enter forwarding cost rate"
 								autocomplete="off" required>
 						</div>
-						<div class="invalid-feedback">Nilai harus diisi dengan angka yang valid</div>
+						<div class="invalid-feedback">Value must be a valid number</div>
 					</div>
 
 					<div class="mb-3">
-						<label for="remark" class="form-label fw-bold">Remark / Keterangan</label>
+						<label for="remark" class="form-label fw-bold">Remark / Description</label>
 						<textarea name="remark" id="remark" class="form-control" rows="3" placeholder="Masukkan remark jika ada"></textarea>
 					</div>
 				</div>
 				<div class="modal-footer bg-light py-2">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-						<i class="fa fa-times me-1"></i> Batal
+						<i class="fa fa-times me-1"></i> Cancel
 					</button>
 					<button type="submit" class="btn btn-primary" id="btnSave">
-						<i class="fa fa-save me-1"></i> Simpan
+						<i class="fa fa-save me-1"></i> Save
 					</button>
 				</div>
 			</form>
@@ -177,7 +177,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 		});
 
 		$('#btnTambah').on('click', function() {
-			$('#modalTitle').html('<i class="fa fa-plus-circle me-1"></i> Tambah Forwarding Cost');
+			$('#modalTitle').html('<i class="fa fa-plus-circle me-1"></i> Add Forwarding Cost');
 			$('#formForwardingCost')[0].reset();
 			$('#id').val('');
 			$('#tipe').prop('disabled', false).removeClass('bg-light').css('pointer-events', 'auto');
@@ -215,8 +215,8 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 			if (!value_cost || value_cost <= 0) {
 				Swal.fire({
 					icon: 'error',
-					title: 'Validasi Gagal',
-					text: 'Value Cost harus diisi dengan angka yang valid (lebih dari 0)!',
+					title: 'Validation Failed',
+					text: 'Value Cost must be a valid number (greater than 0)!',
 					confirmButtonColor: '#d33'
 				});
 				$('#value_cost').addClass('is-invalid');
@@ -241,7 +241,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 					if (response.status === 'success') {
 						Swal.fire({
 							icon: 'success',
-							title: 'Berhasil!',
+							title: 'Success!',
 							text: response.message,
 							timer: 1500,
 							showConfirmButton: false
@@ -251,7 +251,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 					} else {
 						Swal.fire({
 							icon: 'error',
-							title: 'Gagal!',
+							title: 'Failed!',
 							text: response.message
 						});
 					}
@@ -260,12 +260,12 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 					Swal.fire({
 						icon: 'error',
 						title: 'Error!',
-						text: 'Terjadi kesalahan pada server. Silakan coba lagi.'
+						text: 'A server error occurred. Please try again.'
 					});
 				},
 				complete: function() {
 					$('#btnSave').prop('disabled', false);
-					$('#btnSave').html('<i class="fa fa-save me-1"></i> Simpan');
+					$('#btnSave').html('<i class="fa fa-save me-1"></i> Save');
 				}
 			});
 		});
@@ -275,19 +275,19 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 			let tipe = $(this).data('tipe');
 
 			Swal.fire({
-				title: 'Apakah Anda yakin?',
-				text: "Data Forwarding Cost " + tipe + " akan dihapus!",
+				title: 'Are you sure?',
+				text: "Data Forwarding Cost " + tipe + " will be deleted!",
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#d33',
 				cancelButtonColor: '#3085d6',
-				confirmButtonText: 'Ya, Hapus!',
-				cancelButtonText: 'Batal'
+				confirmButtonText: 'Yes, Delete!',
+				cancelButtonText: 'Cancel'
 			}).then((result) => {
 				if (result.isConfirmed) {
 					Swal.fire({
 						title: 'Menghapus...',
-						text: 'Silakan tunggu',
+						text: 'Please wait',
 						allowOutsideClick: false,
 						didOpen: () => {
 							Swal.showLoading();
@@ -302,7 +302,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 							if (response.status === 'success') {
 								Swal.fire({
 									icon: 'success',
-									title: 'Terhapus!',
+									title: 'Deleted!',
 									text: response.message,
 									timer: 1500,
 									showConfirmButton: false
@@ -312,7 +312,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 							} else {
 								Swal.fire({
 									icon: 'error',
-									title: 'Gagal!',
+									title: 'Failed!',
 									text: response.message
 								});
 							}
@@ -321,7 +321,7 @@ $ENABLE_DELETE  = has_permission('Master_forwarding_cost.Delete');
 							Swal.fire({
 								icon: 'error',
 								title: 'Error!',
-								text: 'Terjadi kesalahan pada server. Silakan coba lagi.'
+								text: 'A server error occurred. Please try again.'
 							});
 						}
 					});

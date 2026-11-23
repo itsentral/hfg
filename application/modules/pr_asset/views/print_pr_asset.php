@@ -34,7 +34,7 @@
 <body>
     <div class="no-print">
         <button class="btn-print" onclick="window.print()">&#128438; Cetak</button>
-        <button class="btn-print" style="background:#555;" onclick="window.close()">Tutup</button>
+        <button class="btn-print" style="background:#555;" onclick="window.close()">Close</button>
     </div>
 
     <!-- Header Perusahaan -->
@@ -64,7 +64,7 @@
         <tr>
             <td style="width: 15%;"><strong>NO PR</strong></td>
             <td style="width: 35%;">: <?= $no_pr; ?></td>
-            <td style="width: 15%;"><strong>Tanggal PR</strong></td>
+            <td style="width: 15%;"><strong>PR Date</strong></td>
             <td style="width: 35%;">: <?= isset($result_header['tgl_pr']) ? date('d F Y', strtotime((string) $result_header['tgl_pr'])) : date('d F Y'); ?></td>
         </tr>
     </table>
@@ -73,9 +73,9 @@
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th>Nama Barang / Asset</th>
+                <th>Item / Asset Name</th>
                 <th width="10%">Qty</th>
-                <th width="20%">Nilai PR (IDR)</th>
+                <th width="20%">PR Value (IDR)</th>
                 <th width="15%">Tgl Dibutuhkan</th>
             </tr>
         </thead>
@@ -93,7 +93,7 @@
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='5' class='text-center'>Data tidak ditemukan</td></tr>";
+                echo "<tr><td colspan='5' class='text-center'>Data not found</td></tr>";
             }
             ?>
         </tbody>

@@ -31,10 +31,10 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 			</div>
 		</div>
 		<div class='form-group row'>		 	 
-			<label class='label-control col-sm-2'><b>Keterangan</b></label>
+			<label class='label-control col-sm-2'><b>Description</b></label>
 			<div class='col-sm-4'>              
 				<?php
-				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Keterangan'),strtoupper((string) $keterangan));
+				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Description'),strtoupper((string) $keterangan));
 				?>
 			</div>
 		</div>
@@ -67,13 +67,13 @@ $disabled3		= ($approve == 'view')?'readonly':'';
             <thead>
                 <tr class='bg-blue'>
                     <th class='text-center' style='width: 4%;'>#</th>
-                    <th class='text-center' >Nama Barang/Jasa</th>
+                    <th class='text-center' >Item/Service Name</th>
                     <th class='text-center' style='width: 8%;'>Qty</th>
-                    <th class='text-center' style='width: 8%;'>Satuan</th>
-                    <th class='text-center' style='width: 10%;'>Est Harga</th>
-					<th class='text-center' style='width: 10%;'>Est Total Harga</th>
-					<th class='text-center' style='width: 10%;'>Tanggal Dibutuhkan</th>
-					<th class='text-center' style='width: 15%;'>Keterangan</th>
+                    <th class='text-center' style='width: 8%;'>Unit</th>
+                    <th class='text-center' style='width: 10%;'>Est. Price</th>
+					<th class='text-center' style='width: 10%;'>Est. Total Price</th>
+					<th class='text-center' style='width: 10%;'>Required Date</th>
+					<th class='text-center' style='width: 15%;'>Description</th>
 					<?php
 					if(empty($approve)){
 					?>
@@ -98,7 +98,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 							echo "<td align='left'><input type='text' ".$disabled2." id='qty_".$nomor."' name='detail[".$nomor."][qty]' class='form-control input-md text-center maskM sum_tot' value='".number_format((float) $qty_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 							echo "<td align='left'>
 									<select name='detail[".$nomor."][satuan]' class='form-control' ".$disabled2.">";
-									echo "<option value='0'>Pilih</option>";
+									echo "<option value='0'>Select</option>";
 									foreach ($satuan as $key => $value) {
 										$selected = ($value['id_satuan'] == $valx['satuan'])?'selected':'';
 										echo "<option value='".$value['id_satuan']."' ".$selected.">".$value['kode_satuan']."</option>";
@@ -119,7 +119,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 				<!--
                 <tr id='add_<?=$nomor;?>'>
                     <td align='center'></td>
-                    <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Barang'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Barang</button></td>
+                    <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Item'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Item</button></td>
                     <td align='center' colspan='6'></td>
                 </tr>
 				-->

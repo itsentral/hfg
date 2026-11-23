@@ -16,8 +16,8 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
                                 <i class="fa fa-boxes-packing fs-3"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Outgoing Stok ATK & Household</h5>
-                                <small class="text-muted">Kelola riwayat dan transaksi pengeluaran stok ATK / kebutuhan rumah tangga kantor</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Stationery & Household Stock Outgoing</h5>
+                                <small class="text-muted">Manage the history and transactions of stationery / office household stock outgoing</small>
                             </div>
                         </div>
                     </div>
@@ -37,12 +37,12 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" width="4%">#</th>
-                                <th class="text-center" width="13%">No Transaksi</th>
-                                <th class="text-center" width="10%">Tanggal</th>
-                                <th class="text-start">Departemen</th>
+                                <th class="text-center" width="13%">Transaction No.</th>
+                                <th class="text-center" width="10%">Date</th>
+                                <th class="text-start">Department</th>
                                 <th class="text-center" width="9%">Qty Unit</th>
                                 <th class="text-start" width="12%">PIC Request</th>
-                                <th class="text-start" width="11%">Dibuat Oleh</th>
+                                <th class="text-start" width="11%">Created By</th>
                                 <th class="text-center" width="12%">Waktu Input</th>
                                 <th class="text-center no-sort" width="9%">Aksi</th>
                             </tr>
@@ -68,11 +68,11 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
             <div class="modal-body p-4" id="view2">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2 mb-0">Memuat data transaksi...</p>
+                    <p class="text-muted mt-2 mb-0">Loading transaction data...</p>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light py-2">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -87,10 +87,10 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
             e.preventDefault();
             var kode_trans = $(this).data('kode_trans');
             var tanda = $(this).data('tanda');
-            var title = (tanda == 'detail') ? 'DETAIL TRANSAKSI OUTGOING' : 'EDIT TRANSAKSI OUTGOING';
+            var title = (tanda == 'detail') ? 'OUTGOING TRANSACTION DETAILS' : 'EDIT OUTGOING TRANSACTION';
 
             $("#head_title2").html('<i class="fa fa-boxes-packing text-primary me-2"></i><b>' + title + '</b>: <span class="text-primary">' + kode_trans + '</span>');
-            $("#view2").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Memuat data transaksi...</p></div>');
+            $("#view2").html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Loading transaction data...</p></div>');
 
             var modalEl = document.getElementById('ModalView2');
             if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
@@ -107,7 +107,7 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
                     $("#view2").html(data);
                 },
                 error: function() {
-                    $("#view2").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Gagal mengambil data detail transaksi dari server.</div>');
+                    $("#view2").html('<div class="alert alert-danger mb-0"><i class="fa fa-exclamation-triangle me-1"></i> Failed to fetch transaction detail data from the server.</div>');
                 }
             });
         });
@@ -134,18 +134,18 @@ $ENABLE_DELETE  = has_permission('Outgoing_Stok_ATK.Delete');
                 type: "POST",
                 cache: false,
                 error: function() {
-                    $("#example2 tbody").html('<tr><td colspan="9" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Tidak ada data outgoing ditemukan</td></tr>');
+                    $("#example2 tbody").html('<tr><td colspan="9" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> No outgoing data found</td></tr>');
                 }
             },
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Cari nomor transaksi / departemen...",
-                lengthMenu: "_MENU_ data per halaman",
-                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+                searchPlaceholder: "Search transaction number / department...",
+                lengthMenu: "_MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
-                emptyTable: "Belum ada transaksi outgoing",
-                zeroRecords: "Tidak ada data yang cocok",
-                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Memuat data...'
+                emptyTable: "No outgoing transactions yet",
+                zeroRecords: "No matching data",
+                processing: '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data...'
             }
         });
     }

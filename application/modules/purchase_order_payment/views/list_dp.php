@@ -4,7 +4,7 @@
     <div class="row mb-3">
         <div class="col-md-4 mt-3">
             <select name="supplier" id="select_supplier" class="form-control">
-                <option value="">- Pilih Supplier -</option>
+                <option value="">- Select Supplier -</option>
                 <?php foreach ($list_supplier as $item_supp): ?>
                     <option value="<?= $item_supp->kode_supplier ?>"><?= $item_supp->nama ?></option>
                 <?php endforeach; ?>
@@ -28,9 +28,9 @@
                     <th class="text-center">No. PO</th>
                     <th class="text-center">No. Invoice</th>
                     <th class="text-center">No. Payment</th>
-                    <th class="text-center">Nama Supplier</th>
-                    <th class="text-center">Tanggal PO</th>
-                    <th class="text-center">Keterangan</th>
+                    <th class="text-center">Supplier Name</th>
+                    <th class="text-center">PO Date</th>
+                    <th class="text-center">Description</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -45,7 +45,7 @@
 
                     if (!$sudah_receive) {
                         // Belum receive invoice
-                        $badge = '<span class="badge bg-secondary">Belum Receive</span>';
+                        $badge = '<span class="badge bg-secondary">Not Received</span>';
                         $action_btn = '
                         <button type="button" class="btn btn-sm btn-primary btn-req-dp"
                             data-id_top="' . $item['id_top'] . '"
@@ -69,7 +69,7 @@
                         $action_btn = '
                         <button type="button" class="btn btn-sm btn-info btn-view-dp"
                             data-id="' . $item['id_receive_dp'] . '"
-                            title="Lihat Invoice">
+                            title="View Invoice">
                             <i class="fa fa-eye"></i>
                         </button>';
                         // Proses "Ajukan Request Payment" kini otomatis saat save invoice.
@@ -104,11 +104,11 @@
 
             Swal.fire({
                 title: 'Request Payment',
-                text: 'Ajukan request payment untuk invoice ini?',
+                text: 'Submit a payment request for this invoice?',
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Ajukan',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Submit',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -123,7 +123,7 @@
                             var response = typeof res === 'string' ? JSON.parse(res) : res;
                             if (response.status == 1) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: response.message,
                                     icon: 'success',
                                     timer: 1500,
@@ -138,7 +138,7 @@
                                     }
                                 });
                             } else {
-                                Swal.fire('Gagal', response.message, 'error');
+                                Swal.fire('Failed', response.message, 'error');
                             }
                         },
                         error: showAjaxError
@@ -196,7 +196,7 @@
         if (!supplier) {
             Swal.fire({
                 title: 'Warning!',
-                text: 'Pilih supplier terlebih dahulu!',
+                text: 'Please select a supplier first!',
                 icon: 'warning'
             });
             return;

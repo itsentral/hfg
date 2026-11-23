@@ -479,7 +479,7 @@ class Dashboard extends Admin_Controller
 			$ontime_approval = 0;
 			$all_approval = 0;
 			foreach ($get_list_all_pr_approval_summary as $all_pr_approval) {
-				if (str_replace(' ', '', $all_pr_approval['max_approval_date']) !== "") {
+				if (str_replace(' ', '', $all_pr_approval['max_approval_date'] ?? '') !== "") {
 					if (date('m', strtotime((string) $all_pr_approval['max_approval_date'])) == sprintf('%02d', $i)) {
 						if ($all_pr_approval['aktual'] <= $all_pr_approval['max_approval_date']) {
 							$ontime_approval += 1;
@@ -700,7 +700,7 @@ class Dashboard extends Admin_Controller
 			$all_release = 0;
 			foreach ($get_list_all_po_release_summary as $all_po_release) {
 
-				if (str_replace(' ', '', $all_po_release['max_approval_date']) !== '') {
+				if (str_replace(' ', '', $all_po_release['max_approval_date'] ?? '') !== '') {
 					if (date('m', strtotime((string) $all_po_release['max_approval_date'])) == sprintf('%02d', $i)) {
 						if ($i == '1') {
 							print($all_po_release['no_pr'] . ' - ' . $all_po_release['max_approval_date'] . ' - ' . date('m', strtotime((string) $all_po_release['max_approval_date'])) . ' - ' . $i . "<br>");
@@ -1298,7 +1298,7 @@ class Dashboard extends Admin_Controller
 			}
 		} else {
 			$get_invoice = $this->db->get_where('tr_invoice_po', ['id' => $id])->row_array();
-			$id_po = str_replace(', ', ',', $get_invoice['no_po']);
+			$id_po = str_replace(', ', ',', $get_invoice['no_po'] ?? '');
 			$no_incoming = explode(',', (string) $id_po);
 
 			$this->template->set('data_invoice', $get_invoice);

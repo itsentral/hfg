@@ -227,12 +227,12 @@ class Production_planning_model extends CI_Model
     {
         $plan = $this->get_plan($plan_no);
         if (!$plan || $plan->status !== 'Draft') {
-            return ['success' => false, 'message' => 'Plan tidak ditemukan atau status bukan Draft'];
+            return ['success' => false, 'message' => 'Plan not found or status is not Draft'];
         }
 
         $details = $this->get_plan_details($plan_no);
         if (empty($details)) {
-            return ['success' => false, 'message' => 'Plan tidak dapat di-release karena belum ada coil yang dialokasikan'];
+            return ['success' => false, 'message' => 'The plan cannot be released because no coils have been allocated'];
         }
 
         $this->db->trans_start();
@@ -249,7 +249,7 @@ class Production_planning_model extends CI_Model
         $this->db->trans_complete();
 
         if (!$this->db->trans_status()) {
-            return ['success' => false, 'message' => 'Gagal me-release plan'];
+            return ['success' => false, 'message' => 'Failed to release plan'];
         }
 
         return ['success' => true, 'plan_no' => $plan_no, 'spk_no' => $spk_no];
@@ -304,7 +304,7 @@ class Production_planning_model extends CI_Model
     {
         $plan = $this->get_plan($plan_no);
         if (!$plan || !in_array($plan->status, ['Draft', 'Released'])) {
-            return ['success' => false, 'message' => 'Plan tidak dapat dibatalkan'];
+            return ['success' => false, 'message' => 'The plan cannot be cancelled'];
         }
 
         // Cek apakah sudah ada SPK
@@ -313,7 +313,7 @@ class Production_planning_model extends CI_Model
             ->count_all_results('tr_spk_production');
 
         if ($spk_count > 0) {
-            return ['success' => false, 'message' => 'Plan tidak dapat dibatalkan karena sudah ada SPK aktif'];
+            return ['success' => false, 'message' => 'The plan cannot be cancelled because there is already an active SPK'];
         }
 
         $this->db->trans_start();

@@ -7,7 +7,7 @@
                 </div>
                 <div>
                     <h5 class="card-title fw-bold text-dark mb-0">Kompilasi Budget Stock Rutin</h5>
-                    <small class="text-muted">Rekapitulasi total alokasi kebutuhan barang per warehouse / gudang</small>
+                    <small class="text-muted">Recap of total item requirement allocation per warehouse</small>
                 </div>
             </div>
             <div>
@@ -24,8 +24,8 @@
                 <thead class="table-light text-nowrap">
                     <tr>
                         <th class="text-center" width="40">#</th>
-                        <th>Kategori</th>
-                        <th>Nama Barang</th>
+                        <th>Category</th>
+                        <th>Item Name</th>
                         <th>Spesifikasi</th>
                         <th>Brand</th>
                         <th class="text-center bg-primary-subtle text-primary">Total</th>
@@ -89,7 +89,7 @@
         $("#example1").DataTable({
             paging: true,
             pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-2"lfB>rt<"d-flex flex-wrap justify-content-between align-items-center mt-2"ip>',
             buttons: [
                 {
@@ -99,16 +99,16 @@
                 }
             ],
             language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
                 infoEmpty: "Menampilkan 0 data",
                 infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Tidak ada data yang cocok",
+                zeroRecords: "No matching data",
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "Lanjut",
+                    next: "Continue",
                     previous: "Sebelum"
                 }
             }

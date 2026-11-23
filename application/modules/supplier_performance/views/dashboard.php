@@ -7,16 +7,16 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-3">
-                <label class="form-label">Tanggal Dari</label>
+                <label class="form-label">Date From</label>
                 <input type="date" id="filter-tgl-dari" class="form-control">
             </div>
             <div class="col-md-3">
-                <label class="form-label">Tanggal Sampai</label>
+                <label class="form-label">Date To</label>
                 <input type="date" id="filter-tgl-sampai" class="form-control">
             </div>
             <div class="col-md-2 d-flex align-items-end">
                 <button id="btn-filter" class="btn btn-primary w-100">
-                    <i class="fa fa-search"></i> Tampilkan
+                    <i class="fa fa-search"></i> Show
                 </button>
             </div>
             <div class="col-md-4 d-flex align-items-end justify-content-end">
@@ -56,7 +56,7 @@
                 <thead>
                     <tr>
                         <th class="text-center" width="50">No</th>
-                        <th>Nama Supplier</th>
+                        <th>Supplier Name</th>
                         <th class="text-center">Jml Coil</th>
                         <th class="text-end">Total Reject (kg)</th>
                         <th class="text-end">Total NG (kg)</th>
@@ -134,7 +134,7 @@ function loadDashboard() {
                            + '</tr>';
                 });
             } else {
-                tbody = '<tr><td colspan="9" class="text-center text-muted">Tidak ada data</td></tr>';
+                tbody = '<tr><td colspan="9" class="text-center text-muted">No data available</td></tr>';
             }
 
             $('#tbody-dashboard').html(tbody);

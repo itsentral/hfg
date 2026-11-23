@@ -10,14 +10,14 @@ $status_color = isset($status_map[$preweigh->status]) ? $status_map[$preweigh->s
 
 <div class="card mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Detail Timbang Awal Coil</h5>
+        <h5 class="mb-0">Initial Coil Weighing Detail</h5>
         <div class="d-flex gap-2">
             <a href="<?= base_url('production_weighing/perbandingan/' . $preweigh->spk_no) ?>"
                class="btn btn-secondary btn-sm">
                 <i class="fa fa-bar-chart"></i> Perbandingan SPK
             </a>
             <a href="<?= base_url('production_weighing') ?>" class="btn btn-outline-secondary btn-sm">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
     </div>
@@ -42,7 +42,7 @@ $status_color = isset($status_map[$preweigh->status]) ? $status_map[$preweigh->s
                         <td>: <?= htmlspecialchars($preweigh->nama_user ?: '-') ?></td>
                     </tr>
                     <tr>
-                        <td class="fw-semibold">Tanggal Timbang</td>
+                        <td class="fw-semibold">Weighing Date</td>
                         <td>: <?= date('d/m/Y H:i', strtotime((string) $preweigh->created_at)) ?></td>
                     </tr>
                     <tr>
@@ -68,28 +68,28 @@ $status_color = isset($status_map[$preweigh->status]) ? $status_map[$preweigh->s
                     <thead class="table-light">
                         <tr>
                             <th>Komponen</th>
-                            <th class="text-end">Berat (kg)</th>
-                            <th class="text-center">Masuk Net?</th>
+                            <th class="text-end">Weight (kg)</th>
+                            <th class="text-center">Included in Net?</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Berat Kulit (packaging luar)</td>
+                            <td>Tare Weight (outer packaging)</td>
                             <td class="text-end"><?= number_format((float) $components->berat_kulit, 3) ?></td>
-                            <td class="text-center"><span class="badge bg-secondary">Tidak</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">No</span></td>
                         </tr>
                         <tr>
-                            <td>Berat Clamp / Ring</td>
+                            <td>Clamp / Ring Weight</td>
                             <td class="text-end"><?= number_format((float) $components->berat_clamp_ring, 3) ?></td>
-                            <td class="text-center"><span class="badge bg-secondary">Tidak</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">No</span></td>
                         </tr>
                         <tr>
-                            <td>Berat Coil + Tong</td>
+                            <td>Coil + Drum Weight</td>
                             <td class="text-end"><?= number_format((float) $components->berat_coil_tong, 3) ?></td>
                             <td class="text-center"><span class="badge bg-success">Ya</span></td>
                         </tr>
                         <tr>
-                            <td>Berat Cover Wrapping</td>
+                            <td>Cover Wrapping Weight</td>
                             <td class="text-end"><?= number_format((float) $components->berat_cover_wrapping, 3) ?></td>
                             <td class="text-center"><span class="badge bg-success">Ya</span></td>
                         </tr>
@@ -164,8 +164,8 @@ $status_color = isset($status_map[$preweigh->status]) ? $status_map[$preweigh->s
         <?php if ($preweigh->status === 'Exception'): ?>
             <div class="alert alert-danger mt-3">
                 <i class="fa fa-exclamation-triangle fa-lg"></i>
-                <strong>Exception!</strong> Selisih berat melebihi toleransi yang ditetapkan.
-                Notifikasi telah dikirim ke Supervisor/QC untuk tindak lanjut.
+                <strong>Exception!</strong> The weight difference exceeds the set tolerance.
+                A notification has been sent to the Supervisor/QC for follow-up.
             </div>
         <?php endif; ?>
     </div>

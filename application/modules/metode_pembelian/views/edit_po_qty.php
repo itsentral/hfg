@@ -3,7 +3,7 @@
 	<form action="#" method="POST" id="form_edit_po" enctype="multipart/form-data" autocomplete='off'> 
 		<input type='hidden' name='no_po' id='no_po' value='<?=$result[0]['no_po']?>'>
 		<div class='form-group row'>
-            <label class='label-control col-sm-2'><b>Tanggal Dibutuhkan <span class='text-red'>*</span></b></label>
+            <label class='label-control col-sm-2'><b>Required Date <span class='text-red'>*</span></b></label>
             <div class='col-sm-4'>              
                 <input type="text" id='tanggal_dibutuhkan' name='tanggal_dibutuhkan' class='form-control input-md datepicker' readonly value='<?=date('d-F-Y',strtotime((string) $header[0]['tgl_dibutuhkan']))?>'>
             </div>
@@ -41,7 +41,7 @@
 						echo "<td class='vmiddle' align='right'><span class='harga_idr'>".number_format((float) $valx['net_price'],2)."</span> <span class='text-primary text-bold'>".strtoupper((string) $valx['currency'])."</span></td>";
 						echo "<td class='vmiddle' align='right'><input type='text' class='form-control input-md text-center autoNumeric qty_po' name='detail[".$no."][qty_purchase]' value='".$valx['qty_purchase']."'></td>";
 						echo "<td class='vmiddle total_harga' align='right'>".number_format((float) $valx['total_price'],2)."</td>";
-						echo "<td class='vmiddle' align='center'><button type='button' class='btn btn-sm btn-danger delete_sebagian_po' data-id='".$valx['id']."' title='Hapus Sebagian PO'><i class='fa fa-trash'></i></button></td>";
+						echo "<td class='vmiddle' align='center'><button type='button' class='btn btn-sm btn-danger delete_sebagian_po' data-id='".$valx['id']."' title='Delete Part of PO'><i class='fa fa-trash'></i></button></td>";
 					echo "</tr>";
 				}
 				$AFTER_DISCOUNT = $SUM_PO - ($SUM_PO * $header[0]['discount'] / 100);

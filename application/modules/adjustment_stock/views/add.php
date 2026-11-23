@@ -35,8 +35,8 @@
                                     <i class="fa fa-sliders fs-3"></i>
                                 </div>
                                 <div>
-                                    <h5 class="card-title fw-bold text-dark mb-0">Tambah Adjustment Stok</h5>
-                                    <small class="text-muted">Formulir penyesuaian kuantitas fisik stok barang di gudang</small>
+                                    <h5 class="card-title fw-bold text-dark mb-0">Add Stock Adjustment</h5>
+                                    <small class="text-muted">Form for adjusting physical item stock quantities in the warehouse</small>
                                 </div>
                             </div>
                         </div>
@@ -57,9 +57,9 @@
                             </label>
                             <select name="adjustment_type" id="adjustment_type" class="form-select select2" required>
                                 <option value="0">-- Pilih Tipe Adjustment --</option>
-                                <option value="plus">PLUS (Penambahan Stok)</option>
-                                <option value="minus">MINUS (Pengurangan Stok)</option>
-                                <option value="mutasi">MUTASI (Antar Gudang)</option>
+                                <option value="plus">PLUS (Stock Addition)</option>
+                                <option value="minus">MINUS (Stock Reduction)</option>
+                                <option value="mutasi">MUTATION (Between Warehouses)</option>
                             </select>
                         </div>
 
@@ -70,7 +70,7 @@
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fa fa-file-lines text-muted"></i></span>
-                                <input type="text" name="no_ba" id="no_ba" class="form-control" placeholder="Contoh: BA/STOK/2026/001" required>
+                                <input type="text" name="no_ba" id="no_ba" class="form-control" placeholder="Example: BA/STOK/2026/001" required>
                             </div>
                         </div>
 
@@ -95,14 +95,14 @@
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fa fa-user text-muted"></i></span>
-                                <input type="text" name="pic" id="pic" class="form-control" placeholder="Nama PIC...">
+                                <input type="text" name="pic" id="pic" class="form-control" placeholder="PIC Name...">
                             </div>
                         </div>
 
                         <!-- SECTION: MUTASI -->
                         <div class="col-md-4 col-12 gudang_mutasi" style="display: none;">
                             <label class="form-label fw-bold text-dark">
-                                Dari Gudang <span class="text-danger">*</span>
+                                From Warehouse <span class="text-danger">*</span>
                             </label>
                             <select name="id_gudang_dari_m" id="id_gudang_dari_m" class="form-select select2">
                                 <option value="0">-- Pilih Gudang Asal --</option>
@@ -129,17 +129,17 @@
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fa fa-user text-muted"></i></span>
-                                <input type="text" name="pic_m" id="pic_m" class="form-control" placeholder="Nama PIC Mutasi...">
+                                <input type="text" name="pic_m" id="pic_m" class="form-control" placeholder="Mutation PIC Name...">
                             </div>
                         </div>
 
                         <!-- Pilihan Barang Stok -->
                         <div class="col-md-8 col-12">
                             <label class="form-label fw-bold text-dark">
-                                Nama Barang Stok <span class="text-danger">*</span>
+                                Stock Item Name <span class="text-danger">*</span>
                             </label>
                             <select name="id_material" id="id_material" class="form-select select2" required>
-                                <option value="0">Pilih Barang Stok (Pilih Tipe Dahulu)</option>
+                                <option value="0">Select Stock Item (Select Type First)</option>
                             </select>
                         </div>
 
@@ -154,9 +154,9 @@
                             </div>
                         </div>
 
-                        <!-- Keterangan -->
+                        <!-- Description -->
                         <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Keterangan / Alasan Penyesuaian</label>
+                            <label class="form-label fw-bold text-dark">Description / Adjustment Reason</label>
                             <textarea name="keterangan" id="keterangan" class="form-control" rows="3" placeholder="Masukkan keterangan adjustment (misal: Hasil stock opname fisik gudang, barang rusak, dll)..."></textarea>
                         </div>
                     </div>
@@ -164,10 +164,10 @@
 
                 <div class="card-footer bg-white border-top py-3 text-end">
                     <a href="<?= base_url('adjustment_stock') ?>" class="btn btn-outline-secondary me-2">
-                        <i class="fa fa-times me-1"></i> Batal
+                        <i class="fa fa-times me-1"></i> Cancel
                     </a>
                     <button type="button" class="btn btn-primary px-4 shadow-sm" id="simpan">
-                        <i class="fa fa-save me-1"></i> Simpan Adjustment
+                        <i class="fa fa-save me-1"></i> Save Adjustment
                     </button>
                 </div>
             </div>
@@ -248,17 +248,17 @@
                         }
                     },
                     error: function() {
-                        notifyAlert("Error Message!", "Gagal memuat daftar barang stok", "warning");
+                        notifyAlert("Error Message!", "Failed to load the stock item list", "warning");
                     }
                 });
             } else if (type === 'mutasi') {
                 $('.gudang_plus_min').hide();
                 $('.gudang_mutasi').fadeIn();
-                $("#id_material").html("<option value='0'>Pilih Gudang Asal Terlebih Dahulu</option>").trigger('change');
+                $("#id_material").html("<option value='0'>Select Source Warehouse First</option>").trigger('change');
             } else {
                 $('.gudang_mutasi').hide();
                 $('.gudang_plus_min').hide();
-                $("#id_material").html("<option value='0'>Pilih Tipe Adjustment Dahulu</option>").trigger('change');
+                $("#id_material").html("<option value='0'>Select Adjustment Type First</option>").trigger('change');
             }
         });
 
@@ -284,7 +284,7 @@
                     }
                 },
                 error: function() {
-                    notifyAlert("Error Message!", "Gagal memuat daftar gudang tujuan", "warning");
+                    notifyAlert("Error Message!", "Failed to load the destination warehouse list", "warning");
                 }
             });
 
@@ -305,7 +305,7 @@
                         }
                     },
                     error: function() {
-                        notifyAlert("Error Message!", "Gagal memuat material dari gudang asal", "warning");
+                        notifyAlert("Error Message!", "Failed to load materials from the source warehouse", "warning");
                     }
                 });
             }
@@ -328,55 +328,55 @@
             var pic = $('#pic').val();
 
             if (!adjustment_type || adjustment_type === '0') {
-                notifyAlert("Peringatan!", "Silakan pilih Tipe Adjustment terlebih dahulu!", "warning");
+                notifyAlert("Warning!", "Please select the Adjustment Type first!", "warning");
                 $('#adjustment_type').focus();
                 return false;
             }
 
             if (adjustment_type === 'mutasi') {
                 if (!id_gudang_dari_m || id_gudang_dari_m === '0') {
-                    notifyAlert("Peringatan!", "Gudang asal wajib dipilih!", "warning");
+                    notifyAlert("Warning!", "Source warehouse is required!", "warning");
                     $('#id_gudang_dari_m').focus();
                     return false;
                 }
                 if (!id_gudang_ke_m || id_gudang_ke_m === '0') {
-                    notifyAlert("Peringatan!", "Gudang tujuan wajib dipilih!", "warning");
+                    notifyAlert("Warning!", "Destination warehouse is required!", "warning");
                     $('#id_gudang_ke_m').focus();
                     return false;
                 }
                 if (!pic_m || pic_m.trim() === '') {
-                    notifyAlert("Peringatan!", "Nama PIC Mutasi wajib diisi!", "warning");
+                    notifyAlert("Warning!", "Mutation PIC name is required!", "warning");
                     $('#pic_m').focus();
                     return false;
                 }
             } else {
                 if (!id_gudang_ke || id_gudang_ke === '0') {
-                    notifyAlert("Peringatan!", "Gudang stok wajib dipilih!", "warning");
+                    notifyAlert("Warning!", "Stock warehouse is required!", "warning");
                     $('#id_gudang_ke').focus();
                     return false;
                 }
                 if (!pic || pic.trim() === '') {
-                    notifyAlert("Peringatan!", "Nama PIC Petugas wajib diisi!", "warning");
+                    notifyAlert("Warning!", "Officer PIC name is required!", "warning");
                     $('#pic').focus();
                     return false;
                 }
             }
 
             if (!no_ba || no_ba.trim() === '') {
-                notifyAlert("Peringatan!", "Nomor Berita Acara (BA) / Referensi wajib diisi!", "warning");
+                notifyAlert("Warning!", "Official Report (BA) / Reference Number is required!", "warning");
                 $('#no_ba').focus();
                 return false;
             }
 
             if (!id_material || id_material === '0') {
-                notifyAlert("Peringatan!", "Barang stok wajib dipilih!", "warning");
+                notifyAlert("Warning!", "A stock item is required!", "warning");
                 $('#id_material').focus();
                 return false;
             }
 
             var numQty = qty_oke ? parseFloat(qty_oke.toString().replace(/,/g, '')) : 0;
             if (numQty <= 0) {
-                notifyAlert("Peringatan!", "Qty adjustment harus lebih dari 0!", "warning");
+                notifyAlert("Warning!", "Adjustment qty must be greater than 0!", "warning");
                 $('#qty_oke').focus();
                 return false;
             }
@@ -397,12 +397,12 @@
                     processData: false,
                     contentType: false,
                     success: function(data) {
-                        btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Adjustment');
+                        btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Adjustment');
                         if (data.status == 1) {
                             if (typeof Swal !== 'undefined') {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: data.pesan,
                                     timer: 3000
                                 }).then(function() {
@@ -423,26 +423,26 @@
                                 window.location.href = getBaseUrl() + controllerPath;
                             }
                         } else {
-                            notifyAlert("Simpan Gagal!", data.pesan, "warning");
+                            notifyAlert("Save Failed!", data.pesan, "warning");
                         }
                     },
                     error: function() {
-                        btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Adjustment');
-                        notifyAlert("Error!", "Terjadi kesalahan sistem saat memproses transaksi.", "error");
+                        btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Adjustment');
+                        notifyAlert("Error!", "A system error occurred while processing the transaction.", "error");
                     }
                 });
             };
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: "Konfirmasi Adjustment",
-                    text: "Apakah Anda yakin ingin memproses penyesuaian stok ini?",
+                    title: "Confirm Adjustment",
+                    text: "Are you sure you want to process this stock adjustment?",
                     icon: "question",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Ya, Proses!",
-                    cancelButtonText: "Batal"
+                    confirmButtonText: "Yes, Process!",
+                    cancelButtonText: "Cancel"
                 }).then(function(result) {
                     if (result.isConfirmed) {
                         doSubmit();
@@ -450,13 +450,13 @@
                 });
             } else if (typeof swal === 'function') {
                 swal({
-                    title: "Konfirmasi Adjustment",
-                    text: "Apakah Anda yakin ingin memproses penyesuaian stok ini?",
+                    title: "Confirm Adjustment",
+                    text: "Are you sure you want to process this stock adjustment?",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonClass: "btn-success",
-                    confirmButtonText: "Ya, Proses!",
-                    cancelButtonText: "Batal",
+                    confirmButtonText: "Yes, Process!",
+                    cancelButtonText: "Cancel",
                     closeOnConfirm: false
                 }, function(isConfirm) {
                     if (isConfirm) {
@@ -464,7 +464,7 @@
                     }
                 });
             } else {
-                if (confirm("Apakah Anda yakin ingin memproses penyesuaian stok ini?")) {
+                if (confirm("Are you sure you want to process this stock adjustment?")) {
                     doSubmit();
                 }
             }

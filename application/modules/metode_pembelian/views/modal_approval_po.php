@@ -30,7 +30,7 @@
 	</div>
     <hr>
     <div class="form-group row">
-		<div class='col-sm-1 text-bold'><label>Nomor PO</label></div>
+		<div class='col-sm-1 text-bold'><label>PO Number</label></div>
         <div class='col-sm-5'>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=$no_po;?></div>
         <div class='col-sm-2 text-bold'><label>Tgl Dibutuhkan</label></div>
         <div class='col-sm-4'>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?=date('d F Y', strtotime((string) $result[0]['tgl_butuh']));?></div>
@@ -127,7 +127,7 @@
             if(status == '0'){
                 swal({
                 title	: "Error Message!",
-                text	: 'Action approve belum dipilih ...',
+                text	: 'Approve action has not been selected.',
                 type	: "warning"
                 });
                 $('#process').prop('disabled',false);
@@ -137,7 +137,7 @@
             if(status == 'N' && approve_reason == ''){
                 swal({
                 title	: "Error Message!",
-                text	: 'Alasan reject masih kosong ...',
+                text	: 'Reject reason is still empty.',
                 type	: "warning"
                 });
                 $('#process').prop('disabled',false);

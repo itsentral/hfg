@@ -132,14 +132,14 @@ class Supplier extends Admin_Controller
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();
 				$Arr_Data	= array(
-					'pesan'		=> 'Save gagal disimpan ...',
+					'pesan'		=> 'Failed to save data.',
 					'status'	=> 0
 				);
 				write_log('Supplier', $tanda, 'Gagal ' . strtolower((string) $tanda) . ' supplier: ' . $kode_supplier, $logPayload, null, 0);
 			} else {
 				$this->db->trans_commit();
 				$Arr_Data	= array(
-					'pesan'		=> 'Save berhasil disimpan. Thanks ...',
+					'pesan'		=> 'Data saved successfully.',
 					'status'	=> 1
 				);
 				write_log('Supplier', $tanda, $tanda . ' supplier: ' . $kode_supplier . ' (' . $nama . ')', $logPayload, null, 1);
@@ -173,7 +173,7 @@ class Supplier extends Admin_Controller
 		$id = $this->input->post('id');
 
 		if (!$id) {
-			show_error("ID tidak ditemukan", 400);
+			show_error("ID not found", 400);
 		}
 
 		$header   	= $this->db->get_where('new_supplier', array('id' => $id))->result();
@@ -236,14 +236,14 @@ class Supplier extends Admin_Controller
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			$Arr_Data	= array(
-				'pesan'		=> 'Save gagal disimpan ...',
+				'pesan'		=> 'Failed to save data.',
 				'status'	=> 0
 			);
 			write_log('Supplier', 'Delete', 'Gagal delete supplier ID: ' . $id, ['id' => $id], null, 0);
 		} else {
 			$this->db->trans_commit();
 			$Arr_Data	= array(
-				'pesan'		=> 'Save berhasil disimpan. Thanks ...',
+				'pesan'		=> 'Data saved successfully.',
 				'status'	=> 1
 			);
 			write_log('Supplier', 'Delete', 'Delete supplier ID: ' . $id, ['id' => $id, 'data' => $ArrHeader], null, 1);
@@ -257,7 +257,7 @@ class Supplier extends Admin_Controller
 		$id_prov = $_GET['id_prov'];
 		$data = $this->db->like('id_kabkot', $id_prov, 'after')->get('kabkot')->result();
 
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $kabkot) {
 			echo "<option value='$kabkot->id_kabkot'>$kabkot->kabkot</option>";
 		}
@@ -267,7 +267,7 @@ class Supplier extends Admin_Controller
 		$id_kabkot = $_GET['id_kabkot'];
 		$data = $this->db->like('id_kec', $id_kabkot, 'after')->get('kec')->result();
 
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $kec) {
 			echo "<option value='$kec->id_kec'>$kec->kecamatan</option>";
 		}

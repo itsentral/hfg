@@ -63,7 +63,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">ID Number <small class="text-muted">(No. KTP, 16 digit)</small></label>
+                    <label class="form-label">ID Number <small class="text-muted">(16 digits)</small></label>
                     <input type="text" class="form-control numberOnly" id="no_ktp" name="no_ktp" maxlength="16" inputmode="numeric" value="<?= html_escape($no_ktp) ?>">
                 </div>
 
@@ -254,7 +254,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                 </div>
 
                 <div class="col-md-12">
-                    <label for="tanda_tangan" class="form-label">Upload Tanda Tangan (.jpeg/.jpg/.png)</label>
+                    <label for="tanda_tangan" class="form-label">Upload Signature (.jpeg/.jpg/.png)</label>
 
                     <div class="d-flex flex-column gap-2">
 
@@ -282,19 +282,19 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
 
                         <!-- hint -->
                         <small class="text-muted">
-                            Allowed: JPG/JPEG/PNG, maksimal 2 MB.
+                            Allowed: JPG/JPEG/PNG, maximum 2 MB.
                         </small>
 
                         <!-- warning jika belum ada file existing -->
                         <?php if (empty($tanda_tangan)) : ?>
-                            <small class="text-danger">Belum diupload !!!</small>
+                            <small class="text-danger">Not uploaded yet.</small>
                         <?php endif; ?>
 
                         <!-- existing file -->
                         <?php if (!empty($tanda_tangan)) : ?>
                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                 <span class="badge bg-light text-dark border">
-                                    <i class="ti ti-file-description me-1"></i> Existing Tanda Tangan
+                                    <i class="ti ti-file-description me-1"></i> Existing Signature
                                 </span>
 
                                 <a href="<?= base_url() . $tanda_tangan; ?>" download class="btn btn-sm btn-success">
@@ -473,31 +473,31 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
             return !isNaN(d) && d.toISOString().slice(0, 10) === s;
         };
 
-        if (val('nm_karyawan') === '') err.nm_karyawan = 'Nama karyawan wajib diisi.';
-        if (digits('no_ktp') !== '' && !/^\d{16}$/.test(digits('no_ktp'))) err.no_ktp = 'No. KTP harus 16 digit angka.';
-        if (digits('npwp') !== '' && !/^\d{15,16}$/.test(digits('npwp'))) err.npwp = 'NPWP harus 15 atau 16 digit angka.';
-        if (digits('bpjs') !== '' && !/^\d{8,20}$/.test(digits('bpjs'))) err.bpjs = 'No. BPJS harus 8-20 digit angka.';
-        if (digits('rek_number') !== '' && !/^\d{5,30}$/.test(digits('rek_number'))) err.rek_number = 'No. rekening harus 5-30 digit angka.';
+        if (val('nm_karyawan') === '') err.nm_karyawan = 'Employee name is required.';
+        if (digits('no_ktp') !== '' && !/^\d{16}$/.test(digits('no_ktp'))) err.no_ktp = 'ID Number must be 16 digits.';
+        if (digits('npwp') !== '' && !/^\d{15,16}$/.test(digits('npwp'))) err.npwp = 'NPWP must be 15 or 16 digits.';
+        if (digits('bpjs') !== '' && !/^\d{8,20}$/.test(digits('bpjs'))) err.bpjs = 'BPJS Number must be 8-20 digits.';
+        if (digits('rek_number') !== '' && !/^\d{5,30}$/.test(digits('rek_number'))) err.rek_number = 'Account Number must be 5-30 digits.';
         ['ktp_kode_pos', 'domisili_kode_pos'].forEach(function(n) {
-            if (val(n) !== '' && !/^\d{5}$/.test(val(n))) err[n] = 'Kode pos harus 5 digit angka.';
+            if (val(n) !== '' && !/^\d{5}$/.test(val(n))) err[n] = 'Postcode must be 5 digits.';
         });
         var hp = val('no_ponsel').replace(/[\s.\-()]/g, '');
-        if (hp !== '' && !/^\+?\d{8,15}$/.test(hp)) err.no_ponsel = 'No. HP harus 8-15 digit angka (boleh diawali +).';
-        if (val('email') !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) err.email = 'Format email tidak valid.';
+        if (hp !== '' && !/^\+?\d{8,15}$/.test(hp)) err.no_ponsel = 'Contact Number must be 8-15 digits (may start with +).';
+        if (val('email') !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) err.email = 'Invalid email format.';
 
         var today = new Date().toISOString().slice(0, 10);
         ['tgl_lahir', 'tgl_join', 'tgl_end'].forEach(function(n) {
-            if (val(n) !== '' && !isDate(val(n))) err[n] = 'Tanggal tidak valid (format YYYY-MM-DD).';
+            if (val(n) !== '' && !isDate(val(n))) err[n] = 'Invalid date (format YYYY-MM-DD).';
         });
-        if (!err.tgl_lahir && val('tgl_lahir') !== '' && val('tgl_lahir') > today) err.tgl_lahir = 'Tanggal lahir tidak boleh melebihi hari ini.';
-        if (!err.tgl_join && !err.tgl_lahir && val('tgl_join') !== '' && val('tgl_lahir') !== '' && val('tgl_join') <= val('tgl_lahir')) err.tgl_join = 'Tanggal join harus setelah tanggal lahir.';
-        if (!err.tgl_end && !err.tgl_join && val('tgl_end') !== '' && val('tgl_join') !== '' && val('tgl_end') < val('tgl_join')) err.tgl_end = 'Tanggal berakhir tidak boleh sebelum tanggal join.';
+        if (!err.tgl_lahir && val('tgl_lahir') !== '' && val('tgl_lahir') > today) err.tgl_lahir = 'Date of Birth cannot be later than today.';
+        if (!err.tgl_join && !err.tgl_lahir && val('tgl_join') !== '' && val('tgl_lahir') !== '' && val('tgl_join') <= val('tgl_lahir')) err.tgl_join = 'Join Date must be after Date of Birth.';
+        if (!err.tgl_end && !err.tgl_join && val('tgl_end') !== '' && val('tgl_join') !== '' && val('tgl_end') < val('tgl_join')) err.tgl_end = 'End Date cannot be before Join Date.';
 
         var file = $('#tanda_tangan')[0];
         if (file && file.files && file.files.length) {
             var f = file.files[0];
-            if (!/\.(jpe?g|png)$/i.test(f.name)) err.tanda_tangan = 'File harus berupa gambar JPG/JPEG/PNG.';
-            else if (f.size > 2097152) err.tanda_tangan = 'Ukuran file terlalu besar (maksimal 2 MB).';
+            if (!/\.(jpe?g|png)$/i.test(f.name)) err.tanda_tangan = 'File must be a JPG/JPEG/PNG image.';
+            else if (f.size > 2097152) err.tanda_tangan = 'File size is too large (maximum 2 MB).';
         }
         return err;
     }
@@ -525,18 +525,18 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
         if (nErr) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Data belum lengkap',
-                text: 'Ada ' + nErr + ' isian yang perlu diperbaiki (ditandai merah).'
+                title: 'Incomplete data',
+                text: nErr + ' field(s) need to be corrected (marked in red).'
             });
             return false;
         }
 
         Swal.fire({
             icon: 'question',
-            title: 'Simpan data karyawan?',
+            title: 'Save employee data?',
             showCancelButton: true,
-            confirmButtonText: 'Ya, simpan',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, save',
+            cancelButtonText: 'Cancel'
         }).then(function(r) {
             if (!r.isConfirmed) return;
             var $btn = $('#saved').prop('disabled', true);
@@ -552,7 +552,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                     if (data.status == 1) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Berhasil',
+                            title: 'Success',
                             text: data.pesan,
                             timer: 1500,
                             showConfirmButton: false
@@ -564,8 +564,8 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                     showErrors(data.errors);
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Gagal menyimpan',
-                        text: data.pesan || 'Periksa kembali isian Anda.'
+                        title: 'Failed to save',
+                        text: data.pesan || 'Please check your input.'
                     });
                     $btn.prop('disabled', false);
                 },
@@ -573,7 +573,7 @@ $tanda               = (!empty($tanda)) ? $tanda : '';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Terjadi kesalahan saat memproses data. Silakan coba lagi.'
+                        text: 'An error occurred while processing the data. Please try again.'
                     });
                     $btn.prop('disabled', false);
                 }

@@ -15,13 +15,13 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar FG Receipt</h5>
+        <h5 class="mb-0">FG Receipt List</h5>
         <div class="d-flex gap-2">
             <a href="<?= base_url('fg_warehouse/stok_fg') ?>" class="btn btn-info btn-sm">
-                <i class="fa fa-boxes"></i> Stok FG
+                <i class="fa fa-boxes"></i> FG Stock
             </a>
             <a href="<?= base_url('fg_warehouse/kartu_stok') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-book"></i> Kartu Stok
+                <i class="fa fa-book"></i> Stock Card
             </a>
         </div>
     </div>
@@ -33,10 +33,10 @@
                         <th class="text-center" width="50">No</th>
                         <th class="text-center">No Receipt</th>
                         <th class="text-center">Tgl Buat</th>
-                        <th class="text-center">No Laporan</th>
+                        <th class="text-center">Report No</th>
                         <th class="text-center">No SPK</th>
                         <th class="text-center">Produk FG</th>
-                        <th class="text-center">FG (Qty / Berat)</th>
+                        <th class="text-center">FG (Qty / Weight)</th>
                         <th class="text-center">Status</th>
                         <th class="text-center no-sort" width="80">Aksi</th>
                     </tr>

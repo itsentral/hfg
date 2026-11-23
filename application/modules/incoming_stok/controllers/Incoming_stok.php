@@ -38,7 +38,7 @@ class Incoming_stok extends Admin_Controller
     $session  = $this->session->userdata('app_session');
 
     history("View data incoming stok");
-    $this->template->title('Gudang Stok / Incoming Stok');
+    $this->template->title('Stock Warehouse / Stock Incoming');
     $this->template->render('index');
   }
 
@@ -72,7 +72,7 @@ class Incoming_stok extends Admin_Controller
       $SUM_MAT          = 0;
       if (!empty($data['Detail'])) {
         foreach ($detail as $val => $valx) {
-          $qty_incoming   = str_replace(',', '', $valx['qty_in']);
+          $qty_incoming   = str_replace(',', '', $valx['qty_in'] ?? '');
           
           if ($qty_incoming > 0) {
             $SUM_MAT  += $qty_incoming;
@@ -275,7 +275,7 @@ class Incoming_stok extends Admin_Controller
         'note'             => $keterangan,
         'kd_gudang_dari'   => 'PURCHASE',
         'id_gudang_ke'     => $id_gudang,
-        'kd_gudang_ke'     => strtoupper(get_name('warehouse', 'kd_gudang', 'id', $id_gudang)),
+        'kd_gudang_ke'     => strtoupper((string) get_name('warehouse', 'kd_gudang', 'id', $id_gudang)),
         'created_by'       => $this->id_user,
         'created_date'     => $this->datetime
       );
@@ -333,13 +333,13 @@ class Incoming_stok extends Admin_Controller
       if ($this->db->trans_status() === FALSE) {
         $this->db->trans_rollback();
         $Arr_Data  = array(
-          'pesan'    => 'Save gagal disimpan ...',
+          'pesan'    => 'Failed to save data.',
           'status'  => 0
         );
       } else {
         $this->db->trans_commit();
         $Arr_Data  = array(
-          'pesan'    => 'Save berhasil disimpan. Thanks ...',
+          'pesan'    => 'Data saved successfully.',
           'status'  => 1,
         );
         move_warehouse_stok_non_material($ArrStock, NULL, $id_gudang, $kode_trans, 'plus');
@@ -397,7 +397,7 @@ class Incoming_stok extends Admin_Controller
         'GET_MATERIAL' => get_inventory_lv4(),
         'listSupplier' => $get_list_supplier
       ];
-      $this->template->title('Incoming Stok');
+      $this->template->title('Stock Incoming');
       $this->template->render('request', $data);
     }
   }
@@ -413,7 +413,7 @@ class Incoming_stok extends Admin_Controller
 
     // Validasi kode_trans
     if (empty($kode_trans)) {
-      show_error('Kode transaksi tidak valid');
+      show_error('Invalid transaction code');
     }
 
     $data_session = $this->session->userdata;
@@ -431,7 +431,7 @@ class Incoming_stok extends Admin_Controller
     ))->result_array();
 
     if (empty($getData)) {
-      show_error('Data tidak ditemukan untuk kode: ' . $kode_trans);
+      show_error('Data not found for code: ' . $kode_trans);
     }
 
     $getDataDetail = $this->db->get_where('warehouse_adjustment_detail a', array(
@@ -440,7 +440,7 @@ class Incoming_stok extends Admin_Controller
 
     $no_po = [];
     if (!empty($getData[0]['no_ipp'])) {
-      $get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $getData[0]['no_ipp']) . "')")->result();
+      $get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $getData[0]['no_ipp'] ?? '') . "')")->result();
       foreach ($get_no_po as $item) {
         $no_po[] = $item->no_surat;
       }
@@ -485,7 +485,7 @@ class Incoming_stok extends Admin_Controller
 
       // Validasi HTML tidak kosong
       if (empty($html)) {
-        throw new Exception('View mengembalikan konten kosong');
+        throw new Exception('The view returned empty content');
       }
 
       $mpdf->WriteHTML($html);
@@ -495,7 +495,7 @@ class Incoming_stok extends Admin_Controller
 
     } catch (Exception $e) {
       log_message('error', 'PDF Generation Error: ' . $e->getMessage());
-      show_error('Gagal generate PDF: ' . $e->getMessage());
+      show_error('Failed to generate PDF: ' . $e->getMessage());
     }
   }
 
@@ -519,7 +519,7 @@ class Incoming_stok extends Admin_Controller
       ->result_array();
 
     $no_po = [];
-    $get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $getData[0]['no_ipp']) . "')")->result();
+    $get_no_po = $this->db->query("SELECT a.no_surat FROM tr_purchase_order a WHERE a.no_po IN ('" . str_replace(",", "','", $getData[0]['no_ipp'] ?? '') . "')")->result();
     foreach ($get_no_po as $item) {
       $no_po[] = $item->no_surat;
     }
@@ -594,7 +594,7 @@ class Incoming_stok extends Admin_Controller
           }
         } else {
           $d_Header .= "<tr>";
-          $d_Header .= "<td colspan='8'><b>Data tidak ada atau <span class='text-red'>gudang yang dipilih tidak sesuai</span> !!!</b></td>";
+          $d_Header .= "<td colspan='8'><b>No data or <span class='text-red'>the selected warehouse does not match</span> !!!</b></td>";
           $d_Header .= "</tr>";
         }
       }
@@ -657,7 +657,7 @@ class Incoming_stok extends Admin_Controller
                     LEFT JOIN accessories_category c ON b.id_category = c.id
                     LEFT JOIN ms_satuan d ON d.id = b.id_unit
                   WHERE
-                    a.no_po IN ('" . str_replace(",", "','", $no_po) . "')
+                    a.no_po IN ('" . str_replace(",", "','", $no_po ?? '') . "')
                     AND a.qty_in < a.qty
                 ")->result_array();
       // print_r($detail);
@@ -691,7 +691,7 @@ class Incoming_stok extends Admin_Controller
         }
       } else {
         $d_Header .= "<tr>";
-        $d_Header .= "<td colspan='8'><b>Data tidak ada atau <span class='text-red'>gudang yang dipilih tidak sesuai</span> !!!</b></td>";
+        $d_Header .= "<td colspan='8'><b>No data or <span class='text-red'>the selected warehouse does not match</span> !!!</b></td>";
         $d_Header .= "</tr>";
       }
     }

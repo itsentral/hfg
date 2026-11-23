@@ -8,12 +8,12 @@
 				<td class="text-left" style='vertical-align:middle;'><?=$no_po;?></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>No Transaksi</td>
+				<td class="text-left" style='vertical-align:middle;'>Transaction No.</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?=$kode_trans;?></td>
 			</tr>
 			<tr>
-				<td class="text-left" style='vertical-align:middle;'>Tanggal Penerimaan</td>
+				<td class="text-left" style='vertical-align:middle;'>Receipt Date</td>
 				<td class="text-left" style='vertical-align:middle;'>:</td>
 				<td class="text-left" style='vertical-align:middle;'><?=$resv;?></td>
 			</tr>
@@ -23,10 +23,10 @@
 		<thead id='head_table'>
 			<tr class='bg-blue'>
 				<th class="text-center" style='vertical-align:middle;' width='5%'>#</th>
-				<th class="text-center" style='vertical-align:middle;'>Nama Barang</th>
+				<th class="text-center" style='vertical-align:middle;'>Item Name</th>
 				<th class="text-center" style='vertical-align:middle;'>Qty</th>
 				<th class="text-center" style='vertical-align:middle;'>Tgl Dibutuhkan</th>
-				<!-- <th class="text-center" style='vertical-align:middle;'>Jenis Pembelian</th>
+				<!-- <th class="text-center" style='vertical-align:middle;'>Purchase Type</th>
 				<th class="text-center" style='vertical-align:middle;'>Status</th> -->
 			</tr>
 		</thead>

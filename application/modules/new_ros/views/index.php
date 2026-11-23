@@ -263,7 +263,7 @@ $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
         function paymentStatusBadge(status) {
             switch (status) {
                 case 'belum_diajukan':
-                    return '<span class="badge bg-secondary">Belum Diajukan</span>';
+                    return '<span class="badge bg-secondary">Not Submitted</span>';
                 case 'diajukan':
                     return '<span class="badge bg-warning text-dark">Diajukan</span>';
                 case 'approve checker':
@@ -388,26 +388,26 @@ $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
             var idPayment = $(this).data('id');
 
             Swal.fire({
-                title: 'Ajukan Pembayaran',
+                title: 'Submit Payment',
                 html: '<div style="text-align:left;">' +
                     '<label class="form-label small fw-bold mb-1">Bank <span class="text-danger">*</span></label>' +
-                    '<input id="swal_bank" class="form-control form-control-sm mb-2" placeholder="Nama Bank">' +
-                    '<label class="form-label small fw-bold mb-1">No. Rekening <span class="text-danger">*</span></label>' +
-                    '<input id="swal_accnumber" class="form-control form-control-sm mb-2" placeholder="No. Rekening">' +
-                    '<label class="form-label small fw-bold mb-1">Atas Nama <span class="text-danger">*</span></label>' +
-                    '<input id="swal_accname" class="form-control form-control-sm" placeholder="Nama Pemilik Rekening">' +
+                    '<input id="swal_bank" class="form-control form-control-sm mb-2" placeholder="Bank Name">' +
+                    '<label class="form-label small fw-bold mb-1">Account Number <span class="text-danger">*</span></label>' +
+                    '<input id="swal_accnumber" class="form-control form-control-sm mb-2" placeholder="Account Number">' +
+                    '<label class="form-label small fw-bold mb-1">Account Name <span class="text-danger">*</span></label>' +
+                    '<input id="swal_accname" class="form-control form-control-sm" placeholder="Account Holder Name">' +
                     '</div>',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
                 confirmButtonText: '<i class="fas fa-paper-plane"></i> Ajukan',
-                cancelButtonText: 'Batal',
+                cancelButtonText: 'Cancel',
                 focusConfirm: false,
                 preConfirm: function() {
                     var bank = document.getElementById('swal_bank').value.trim();
                     var accnumber = document.getElementById('swal_accnumber').value.trim();
                     var accname = document.getElementById('swal_accname').value.trim();
                     if (!bank || !accnumber || !accname) {
-                        Swal.showValidationMessage('Bank, No. Rekening, dan Atas Nama wajib diisi.');
+                        Swal.showValidationMessage('Bank, Account Number, and Account Name are required.');
                         return false;
                     }
                     return {
@@ -453,7 +453,7 @@ $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
                     },
                     error: function() {
                         Swal.close();
-                        Swal.fire('Error', 'Gagal mengajukan payment.', 'error');
+                        Swal.fire('Error', 'Failed to submit payment.', 'error');
                     }
                 });
             });
@@ -702,7 +702,7 @@ $ENABLE_DELETE = has_permission('ROS_(Packing_List).Delete');
                 var total_ls = dpp_ls + (parseFloat(h.ppn_ls) || 0) - (parseFloat(h.pph_ls) || 0);
                 html += '<div class="row mb-3">';
                 html += '<div class="col-md-3"><strong>DPP (LS × 11/12):</strong> ' + fmt(dpp_ls) + '</div>';
-                html += '<div class="col-md-3"><strong>Total Biaya LS:</strong> ' + fmt(total_ls) + '</div>';
+                html += '<div class="col-md-3"><strong>Total LS Cost:</strong> ' + fmt(total_ls) + '</div>';
                 html += '</div>';
 
                 // ── Insurance ──

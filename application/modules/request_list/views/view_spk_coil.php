@@ -24,13 +24,13 @@ if (!empty($scan_pack_history)) {
 }
 ?>
 
-<!-- Card Detail SPK Material -->
+<!-- Card SPK Material Detail -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fa fa-file-text-o"></i> Detail SPK Material</h5>
+        <h5 class="mb-0"><i class="fa fa-file-text-o"></i> SPK Material Detail</h5>
         <div>
             <a href="<?= site_url('request_list') ?>" class="btn btn-sm btn-secondary">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
     </div>
@@ -43,7 +43,7 @@ if (!empty($scan_pack_history)) {
                         <td>: <span class="badge bg-dark fs-6"><?= htmlspecialchars((string) $spk['spk_no']) ?></span></td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Tanggal SPK</td>
+                        <td class="fw-bold">SPK Date</td>
                         <td>: <?= date('d M Y', strtotime((string) $spk['tgl_spk'])) ?></td>
                     </tr>
                     <?php if (!empty($spk['due_date'])): ?>
@@ -65,11 +65,11 @@ if (!empty($scan_pack_history)) {
                         <td>: <span class="badge rounded-pill <?= $badge_class ?>"><?= htmlspecialchars((string) $spk['status']) ?></span></td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Dibuat Oleh</td>
+                        <td class="fw-bold">Created By</td>
                         <td>: <?= htmlspecialchars(!empty($spk['created_by_name']) ? $spk['created_by_name'] : $spk['created_by']) ?></td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Catatan</td>
+                        <td class="fw-bold">Notes</td>
                         <td>: <?= nl2br(htmlspecialchars($spk['catatan'] ?: '-')) ?></td>
                     </tr>
                 </table>
@@ -81,7 +81,7 @@ if (!empty($scan_pack_history)) {
 <!-- Card Detail Produk -->
 <div class="card mt-3">
     <div class="card-header">
-        <h6 class="mb-0"><i class="fa fa-cubes"></i> Detail Produk (<?= count($details ?? []) ?> item)</h6>
+        <h6 class="mb-0"><i class="fa fa-cubes"></i> Product Detail (<?= count($details ?? []) ?> item)</h6>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -89,7 +89,7 @@ if (!empty($scan_pack_history)) {
                 <thead class="table-light">
                     <tr>
                         <th width="8%" class="text-center">Urut</th>
-                        <th>Nama Produk</th>
+                        <th>Product Name</th>
                         <th width="18%" class="text-end">Target Qty (pcs)</th>
                         <th width="20%" class="text-end">Total Weight (Kg)</th>
                     </tr>
@@ -97,7 +97,7 @@ if (!empty($scan_pack_history)) {
                 <tbody>
                     <?php if (empty($details)): ?>
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-3">Belum ada detail produk.</td>
+                            <td colspan="4" class="text-center text-muted py-3">No product details yet.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($details as $d): ?>
@@ -147,10 +147,10 @@ if (!empty($scan_pack_history)) {
                         <th width="13%">No. Pack</th>
                         <th>Material</th>
                         <th width="14%">No. Coil</th>
-                        <th width="16%">Kode Internal</th>
+                        <th width="16%">Internal Code</th>
                         <th width="12%" class="text-end">Net Weight (Kg)</th>
                         <th width="15%">Waktu Scan</th>
-                        <th width="12%">Oleh</th>
+                        <th width="12%">By</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,7 +183,7 @@ if (!empty($scan_pack_history)) {
                 <?php if (!empty($scan_pack_history)): ?>
                     <tfoot class="table-light fw-bold">
                         <tr>
-                            <td colspan="5" class="text-end">Total Masuk WRH. Production 2</td>
+                            <td colspan="5" class="text-end">Total In WRH. Production 2</td>
                             <td class="text-end"><?= number_format((float) $total_scan_qty_kg, 2, ',', '.') ?> Kg</td>
                             <td colspan="2"></td>
                         </tr>

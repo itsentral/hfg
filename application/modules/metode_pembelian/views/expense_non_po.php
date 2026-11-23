@@ -36,10 +36,10 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 			</div>
 		</div>
 		<div class='form-group row'>		 	 
-			<label class='label-control col-sm-2'><b>Keterangan</b></label>
+			<label class='label-control col-sm-2'><b>Description</b></label>
 			<div class='col-sm-4'>              
 				<?php
-				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Keterangan','readonly'=>true),strtoupper((string) $keterangan));
+				echo form_textarea(array('id'=>'keterangan','name'=>'keterangan','class'=>'form-control input-md','rows'=>'2','cols'=>'75','placeholder'=>'Description','readonly'=>true),strtoupper((string) $keterangan));
 				?>
 			</div>
 		</div>
@@ -47,15 +47,15 @@ $disabled3		= ($approve == 'view')?'readonly':'';
             <thead>
                 <tr class='bg-blue'>
                     <th class='text-center' style='width: 3%;'>#</th>
-                    <th class='text-center' >Nama Barang/Jasa</th>
+                    <th class='text-center' >Item/Service Name</th>
                     <th class='text-center' style='width: 7%;'>Qty</th>
-                    <th class='text-center' style='width: 7%;'>Satuan</th>
-                    <th class='text-center' style='width: 10%;'>Est Harga</th>
-					<th class='text-center' style='width: 10%;'>Est Total Harga</th>
-					<th class='text-center' style='width: 10%;'>Tanggal Dibutuhkan</th>
-					<th class='text-center' style='width: 10%;'>Harga Beli</th>
-					<th class='text-center' style='width: 10%;'>Total Harga</th>
-					<th class='text-center' style='width: 12%;'>Keterangan</th>
+                    <th class='text-center' style='width: 7%;'>Unit</th>
+                    <th class='text-center' style='width: 10%;'>Est. Price</th>
+					<th class='text-center' style='width: 10%;'>Est. Total Price</th>
+					<th class='text-center' style='width: 10%;'>Required Date</th>
+					<th class='text-center' style='width: 10%;'>Purchase Price</th>
+					<th class='text-center' style='width: 10%;'>Total Price</th>
+					<th class='text-center' style='width: 12%;'>Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -74,7 +74,7 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 							echo "<td align='left'><input type='text' ".$disabled2." readonly id='qty_".$nomor."' name='detail[".$nomor."][qty]' class='form-control input-md text-center maskM sum_tot' value='".number_format((float) $qty_rev)."' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 							echo "<td align='left'>
 									<select name='detail[".$nomor."][satuan]' class='form-control' ".$disabled2." disabled>";
-									echo "<option value='0'>Pilih</option>";
+									echo "<option value='0'>Select</option>";
 									foreach ($satuan as $key => $value) {
 										$selected = ($value['id_satuan'] == $valx['satuan'])?'selected':'';
 										echo "<option value='".$value['id_satuan']."' ".$selected.">".$value['kode_satuan']."</option>";
@@ -102,13 +102,13 @@ $disabled3		= ($approve == 'view')?'readonly':'';
 				echo "</tr>";
 				echo "<tr>";
 					echo "<td colspan='2'></td>";
-					echo "<td><b>Biaya Lain</b></td>";
+					echo "<td><b>Other Costs</b></td>";
 					echo "<td colspan='3'>";
 					echo form_dropdown('coa_lain',$datcoa, $coa_lain_, array('id'=>'coa_lain','class'=>'form-control chosen_select','required'=>'required'));
 					echo "</td>";
 					echo "<td></td>";
-					echo "<td>Biaya Lain</td>";
-					echo "<td><input type='text' id='biaya_lain' name='biaya_lain' value='".number_format((float) $biaya_lain)."' class='form-control input-md text-right maskM' placeholder='Biaya Lain' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
+					echo "<td>Other Costs</td>";
+					echo "<td><input type='text' id='biaya_lain' name='biaya_lain' value='".number_format((float) $biaya_lain)."' class='form-control input-md text-right maskM' placeholder='Other Costs' data-decimal='.' data-thousand='' data-precision='0' data-allow-zero=''></td>";
 					echo "<td><input type='text' id='keterangan_lain' value='".$keterangan_lain."' name='keterangan_lain' class='form-control input-md text-left' placeholder='Keterangan Biaya Lain'></td>";
 				echo "</tr>";
 				echo "<tr>";

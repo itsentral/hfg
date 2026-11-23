@@ -282,7 +282,7 @@ class Incoming extends Admin_Controller
             // Lewati jika tidak ada input berat (mencegah data sampah)
             if (empty($val['aktual_bersih']) || $val['aktual_bersih'] == 0) continue;
 
-            $aktual_bersih = str_replace(',', '', $val['aktual_bersih']);
+            $aktual_bersih = str_replace(',', '', $val['aktual_bersih'] ?? '');
             $id_material  = $val['id_material'];
             $id_po_detail = $val['id_po_detail'];
             $id_ros_detail = $val['id_ros_detail'];
@@ -359,10 +359,10 @@ class Incoming extends Admin_Controller
                 $this->db->where('id', $id_po_detail);
                 $this->db->update('dt_trans_po');
 
-                $biaya_masuk_coil   = (float) str_replace(',', '', $val['biaya_masuk']);
-                $forwarding_coil    = (float) str_replace(',', '', $val['forwarding_cost']);
-                $price_coil_usd     = (float) str_replace(',', '', $val['price_coil']);
-                $price_coil_idr     = (float) str_replace(',', '', $val['price_coil_idr']);
+                $biaya_masuk_coil   = (float) str_replace(',', '', $val['biaya_masuk'] ?? '');
+                $forwarding_coil    = (float) str_replace(',', '', $val['forwarding_cost'] ?? '');
+                $price_coil_usd     = (float) str_replace(',', '', $val['price_coil'] ?? '');
+                $price_coil_idr     = (float) str_replace(',', '', $val['price_coil_idr'] ?? '');
 
                 $total_harga_check += $nilai_coil;
                 $total_berat_check += $aktual_bersih;
@@ -426,8 +426,8 @@ class Incoming extends Admin_Controller
                 'total'         => $total_harga_check,
                 'id_supplier'   => $post['id_supplier'],
                 'materials'     => $materials_incoming,
-                'uang_muka_idr' => (float) str_replace(',', '', $post['uang_muka_idr']),
-                'uang_muka_usd' => (float) str_replace(',', '', $post['uang_muka']),
+                'uang_muka_idr' => (float) str_replace(',', '', $post['uang_muka_idr'] ?? ''),
+                'uang_muka_usd' => (float) str_replace(',', '', $post['uang_muka'] ?? ''),
                 'no_ros'        => $post['no_ros'],
                 'id_gudang_ke'  => $id_gudang_ke,
             ];

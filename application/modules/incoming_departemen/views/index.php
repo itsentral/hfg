@@ -50,12 +50,12 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                             <i class="fa fa-file-circle-plus fs-5"></i>
                         </div>
                         <div>
-                            <h6 class="card-title fw-bold text-dark mb-0">Form Input Penerimaan Incoming Departemen</h6>
-                            <small class="text-muted">Pilih supplier dan dokumen PO / Non-PO untuk memproses penerimaan barang</small>
+                            <h6 class="card-title fw-bold text-dark mb-0">Incoming Department Receipt Input Form</h6>
+                            <small class="text-muted">Select a supplier and PO / Non-PO document to process the goods receipt</small>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-label="Close" title="Tutup Form">
-                        <i class="fa fa-times me-1"></i> Tutup
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-label="Close" title="Close Form">
+                        <i class="fa fa-times me-1"></i> Close
                     </button>
                 </div>
                 <div class="card-body p-4 bg-white">
@@ -73,7 +73,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                         <div class="mb-3">
                                             <label class="form-label fw-bold text-dark">Supplier <span class="text-danger">*</span></label>
                                             <select id="supplier" name="supplier" class="form-select select2 list_supplier w-100">
-                                                <option value="">-- Pilih Supplier --</option>
+                                                <option value="">-- Select Supplier --</option>
                                                 <option value="NON-PO">NON-PO</option>
                                                 <?php if (!empty($list_supplier)) : ?>
                                                     <?php foreach ($list_supplier as $item) : ?>
@@ -91,8 +91,8 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                                         <th class="text-center" width="80">Tipe</th>
                                                         <th class="text-center" width="130">No. PO</th>
                                                         <th class="text-center" width="130">No. PR</th>
-                                                        <th>Keterangan</th>
-                                                        <th class="text-center" width="60">Pilih</th>
+                                                        <th>Description</th>
+                                                        <th class="text-center" width="60">Select</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="list_po">
@@ -118,21 +118,21 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                     </div>
                                     <div class="card-body bg-white">
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold text-dark">Tanggal Transaksi <span class="text-danger">*</span></label>
+                                            <label class="form-label fw-bold text-dark">Transaction Date <span class="text-danger">*</span></label>
                                             <div class="input-group">
-                                                <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control flatpickr-input bg-white" style="height: 38px;" placeholder="Pilih tanggal..." value="<?= date('Y-m-d'); ?>">
+                                                <input type="text" name="tanggal_trans" id="tanggal_trans" class="form-control flatpickr-input bg-white" style="height: 38px;" placeholder="Select date..." value="<?= date('Y-m-d'); ?>">
                                                 <span class="input-group-text bg-light text-muted"><i class="fa fa-calendar"></i></span>
                                             </div>
-                                            <small class="text-muted">Tanggal fisik barang / jasa diterima</small>
+                                            <small class="text-muted">Date the goods / services were physically received</small>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold text-dark">Nama PIC Penerima <span class="text-danger">*</span></label>
-                                            <input type="text" id="pic" name="pic" class="form-control" style="height: 38px;" placeholder="Contoh: Budi (Gudang / User)">
+                                            <label class="form-label fw-bold text-dark">Receiving PIC Name <span class="text-danger">*</span></label>
+                                            <input type="text" id="pic" name="pic" class="form-control" style="height: 38px;" placeholder="Example: Budi (Warehouse / User)">
                                         </div>
 
                                         <div class="mb-4">
-                                            <label class="form-label fw-bold text-dark">Catatan / Note</label>
+                                            <label class="form-label fw-bold text-dark">Notes</label>
                                             <textarea id="note" name="note" class="form-control" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
                                         </div>
 
@@ -142,7 +142,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
 
                                         <div class="d-flex justify-content-end gap-2 pt-2 border-top">
                                             <button type="button" class="btn btn-outline-secondary px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming">
-                                                Batal
+                                                Cancel
                                             </button>
                                             <button type="button" class="btn btn-success px-4 py-2 shadow-sm fw-bold" id="modalDetail">
                                                 <i class="fa fa-arrow-right me-1"></i> Lanjut Proses Barang Incoming
@@ -168,15 +168,15 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                 <i class="fa fa-boxes-packing fs-4"></i>
                             </div>
                             <div>
-                                <h5 class="card-title fw-bold text-dark mb-0">Incoming Departemen</h5>
-                                <small class="text-muted">Riwayat Penerimaan Barang &amp; Jasa Non-Material Departemen (PO &amp; Non-PO)</small>
+                                <h5 class="card-title fw-bold text-dark mb-0">Incoming Department</h5>
+                                <small class="text-muted">Department Non-Material Goods &amp; Services Receipt History (PO &amp; Non-PO)</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-5 col-12 text-md-end">
                         <?php if ($ENABLE_ADD) : ?>
                             <button type="button" class="btn btn-sm btn-primary shadow-sm px-3" data-bs-toggle="collapse" data-bs-target="#collapseFormIncoming" aria-expanded="false" aria-controls="collapseFormIncoming" id="btnToggleForm">
-                                <i class="fa fa-plus-circle me-1" id="iconToggle"></i> <span id="textToggle">Tambah Incoming</span>
+                                <i class="fa fa-plus-circle me-1" id="iconToggle"></i> <span id="textToggle">Add Incoming</span>
                             </button>
                         <?php endif; ?>
                     </div>
@@ -189,7 +189,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                         <thead class="table-light text-nowrap">
                             <tr>
                                 <th class="text-center" width="40">#</th>
-                                <th class="text-center" width="140">No Transaksi</th>
+                                <th class="text-center" width="140">Transaction No.</th>
                                 <th class="text-center" width="120">Tgl Incoming</th>
                                 <th class="text-center" width="140">No PO / Non-PO</th>
                                 <th class="text-center" width="100">Sum Qty</th>
@@ -209,7 +209,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                                         $supp_name = $list_arr_supplier[$item['id_supplier']]['nama'];
                                     }
 
-                                    $print = '<a href="' . base_url('incoming_departemen/print_incoming_dept/' . $item['kode_trans']) . '" target="_blank" class="btn btn-sm btn-warning text-white" title="Cetak Surat Penerimaan"><i class="fa fa-print"></i></a>';
+                                    $print = '<a href="' . base_url('incoming_departemen/print_incoming_dept/' . $item['kode_trans']) . '" target="_blank" class="btn btn-sm btn-warning text-white" title="Print Receipt Letter"><i class="fa fa-print"></i></a>';
                                     $view = '<button type="button" class="btn btn-sm btn-info text-white detailAjust" title="Lihat Detail Penerimaan" data-kode_trans="' . $item['kode_trans'] . '"><i class="fa fa-eye"></i></button>';
                             ?>
                                     <tr>
@@ -243,13 +243,13 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-light py-2">
-                <h5 class="modal-title fw-bold" id="head_title2">Detail Incoming</h5>
+                <h5 class="modal-title fw-bold" id="head_title2">Incoming Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3" id="view2">
                 <div class="text-center py-4">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="text-muted mt-2 mb-0">Memuat detail...</p>
+                    <p class="text-muted mt-2 mb-0">Loading details...</p>
                 </div>
             </div>
         </div>
@@ -300,7 +300,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
             collapseEl.addEventListener('show.bs.collapse', function () {
                 $('#btnToggleForm').removeClass('btn-primary').addClass('btn-secondary');
                 $('#iconToggle').removeClass('fa-plus-circle').addClass('fa-chevron-up');
-                $('#textToggle').text('Tutup Form');
+                $('#textToggle').text('Close Form');
             });
             collapseEl.addEventListener('shown.bs.collapse', function () {
                 initFormControls();
@@ -309,7 +309,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
             collapseEl.addEventListener('hide.bs.collapse', function () {
                 $('#btnToggleForm').removeClass('btn-secondary').addClass('btn-primary');
                 $('#iconToggle').removeClass('fa-chevron-up').addClass('fa-plus-circle');
-                $('#textToggle').text('Tambah Incoming');
+                $('#textToggle').text('Add Incoming');
             });
         }
     });
@@ -317,11 +317,11 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
     $(document).on('change', '.list_supplier', function() {
         var id_supplier = $(this).val();
         if (!id_supplier) {
-            $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Silakan pilih supplier terlebih dahulu.</td></tr>');
+            $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Please select a supplier first.</td></tr>');
             return;
         }
 
-        $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-1"></i> Memuat daftar PO...</td></tr>');
+        $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-1"></i> Loading PO list...</td></tr>');
 
         $.ajax({
             type: 'POST',
@@ -335,11 +335,11 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                 if (result.hasil && result.hasil.trim() !== '') {
                     $('.list_po').html(result.hasil);
                 } else {
-                    $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4">Tidak ada data PO / Non-PO yang menunggu incoming untuk supplier ini.</td></tr>');
+                    $('.list_po').html('<tr><td colspan="6" class="text-center text-muted py-4">There is no PO / Non-PO waiting for incoming for this supplier.</td></tr>');
                 }
             },
             error: function() {
-                $('.list_po').html('<tr><td colspan="6" class="text-center text-danger py-4">Gagal memuat data PO. Silakan coba lagi.</td></tr>');
+                $('.list_po').html('<tr><td colspan="6" class="text-center text-danger py-4">Failed to load PO data. Please try again.</td></tr>');
             }
         });
     });
@@ -348,7 +348,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
         e.preventDefault();
         var kode_trans = $(this).data('kode_trans');
         $("#head_title2").html("<i class='fa fa-eye me-1'></i> <b>DETAIL INCOMING: " + kode_trans + "</b>");
-        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Memuat detail...</p></div>');
+        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Loading details...</p></div>');
         $("#ModalView2").modal('show');
 
         $.ajax({
@@ -358,7 +358,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                 $("#view2").html(data);
             },
             error: function() {
-                $("#view2").html('<div class="alert alert-danger text-center">Gagal memuat detail incoming. Silakan coba kembali.</div>');
+                $("#view2").html('<div class="alert alert-danger text-center">Failed to load incoming detail. Please try again.</div>');
             }
         });
     });
@@ -376,25 +376,25 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
 
         if (check_po.length < 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Perhatian!', text: 'Silakan centang minimal satu PO / Non-PO pada tabel!', icon: 'warning' });
+                Swal.fire({ title: 'Attention!', text: 'Please check at least one PO / Non-PO in the table!', icon: 'warning' });
             } else {
-                swal({ title: 'Perhatian!', text: 'Silakan centang minimal satu PO / Non-PO pada tabel!', type: 'warning' });
+                swal({ title: 'Attention!', text: 'Please check at least one PO / Non-PO in the table!', type: 'warning' });
             }
             return false;
         }
 
         if (!pic || pic.trim() === '') {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Perhatian!', text: 'Nama PIC penerima wajib diisi!', icon: 'warning' });
+                Swal.fire({ title: 'Attention!', text: 'Receiving PIC name is required!', icon: 'warning' });
             } else {
-                swal({ title: 'Perhatian!', text: 'Nama PIC penerima wajib diisi!', type: 'warning' });
+                swal({ title: 'Attention!', text: 'Receiving PIC name is required!', type: 'warning' });
             }
             $('#pic').focus();
             return false;
         }
 
-        $("#head_title2").html("<i class='fa fa-boxes-packing me-1'></i> <b>Rincian Barang Penerimaan Incoming</b>");
-        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Memuat rincian barang...</p></div>');
+        $("#head_title2").html("<i class='fa fa-boxes-packing me-1'></i> <b>Incoming Receipt Item Details</b>");
+        $("#view2").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2 mb-0">Loading item details...</p></div>');
         $("#ModalView2").modal('show');
 
         $.ajax({
@@ -410,7 +410,7 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                 $("#view2").html(data);
             },
             error: function() {
-                $("#view2").html('<div class="alert alert-danger text-center">Gagal memuat form incoming. Silakan coba lagi.</div>');
+                $("#view2").html('<div class="alert alert-danger text-center">Failed to load the incoming form. Please try again.</div>');
             }
         });
     });
@@ -436,18 +436,18 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
 
         if (sts_qty !== 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Peringatan!', text: 'Pastikan seluruh input Qty Diterima telah terisi!', icon: 'warning' });
+                Swal.fire({ title: 'Warning!', text: 'Make sure all Received Qty inputs are filled in!', icon: 'warning' });
             } else {
-                swal({ title: 'Peringatan!', text: 'Pastikan seluruh input Qty Diterima telah terisi!', type: 'warning' });
+                swal({ title: 'Warning!', text: 'Make sure all Received Qty inputs are filled in!', type: 'warning' });
             }
             return false;
         }
 
         if (sts_not_exc !== 1) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire({ title: 'Peringatan!', text: 'Qty Diterima tidak boleh melebihi sisa Qty yang belum diterima!', icon: 'warning' });
+                Swal.fire({ title: 'Warning!', text: 'Received Qty cannot exceed the remaining unreceived Qty!', icon: 'warning' });
             } else {
-                swal({ title: 'Peringatan!', text: 'Qty Diterima tidak boleh melebihi sisa Qty yang belum diterima!', type: 'warning' });
+                swal({ title: 'Warning!', text: 'Received Qty cannot exceed the remaining unreceived Qty!', type: 'warning' });
             }
             return false;
         }
@@ -466,31 +466,31 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
                 processData: false,
                 contentType: false,
                 success: function(data) {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Penerimaan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Receipt');
                     if (data.status == 1) {
                         if (typeof Swal !== 'undefined' && Swal.fire) {
-                            Swal.fire({ title: "Berhasil!", text: data.pesan, icon: "success", timer: 3000 }).then(function() {
+                            Swal.fire({ title: "Success!", text: data.pesan, icon: "success", timer: 3000 }).then(function() {
                                 window.location.href = siteurl + active_controller;
                             });
                         } else {
-                            swal({ title: "Berhasil!", text: data.pesan, type: "success", timer: 3000 }, function() {
+                            swal({ title: "Success!", text: data.pesan, type: "success", timer: 3000 }, function() {
                                 window.location.href = siteurl + active_controller;
                             });
                         }
                     } else {
                         if (typeof Swal !== 'undefined' && Swal.fire) {
-                            Swal.fire({ title: "Gagal!", text: data.pesan, icon: "warning" });
+                            Swal.fire({ title: "Failed!", text: data.pesan, icon: "warning" });
                         } else {
-                            swal({ title: "Gagal!", text: data.pesan, type: "warning" });
+                            swal({ title: "Failed!", text: data.pesan, type: "warning" });
                         }
                     }
                 },
                 error: function() {
-                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Penerimaan');
+                    btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Receipt');
                     if (typeof Swal !== 'undefined' && Swal.fire) {
-                        Swal.fire({ title: "Error!", text: 'Terjadi kesalahan sistem saat memproses data.', icon: "error" });
+                        Swal.fire({ title: "Error!", text: 'A system error occurred while processing the data.', icon: "error" });
                     } else {
-                        swal({ title: "Error!", text: 'Terjadi kesalahan sistem saat memproses data.', type: "error" });
+                        swal({ title: "Error!", text: 'A system error occurred while processing the data.', type: "error" });
                     }
                 }
             });
@@ -498,14 +498,14 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
 
         if (typeof Swal !== 'undefined' && Swal.fire) {
             Swal.fire({
-                title: "Konfirmasi Simpan",
-                text: "Apakah Anda yakin data penerimaan incoming ini sudah benar?",
+                title: "Confirm Save",
+                text: "Are you sure this incoming receipt data is correct?",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     doSubmit();
@@ -513,14 +513,14 @@ $ENABLE_DELETE  = has_permission('Incoming_Departemen.Delete');
             });
         } else {
             swal({
-                title: "Konfirmasi Simpan",
-                text: "Apakah Anda yakin data penerimaan incoming ini sudah benar?",
+                title: "Confirm Save",
+                text: "Are you sure this incoming receipt data is correct?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {

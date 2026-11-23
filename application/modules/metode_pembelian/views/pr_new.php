@@ -20,8 +20,8 @@ $ENABLE_DELETE = has_permission('Metode_Pembelian.Delete');
 					<option value='0'>All Category</option>
 					<option value='product'>Product</option>
 					<option value='asset'>Asset</option>
-					<option value='stok'>Stok</option>
-					<option value='departemen'>Departemen</option>
+					<option value='stok'>Stock</option>
+					<option value='departemen'>Department</option>
 				</select>
 			</div>
 		</div>
@@ -34,7 +34,7 @@ $ENABLE_DELETE = has_permission('Metode_Pembelian.Delete');
 							<th class="text-center">#</th>
 							<th class="text-center">No PR</th>
 							<th class="text-center">Tgl PR</th>
-							<th class="text-center">Departemen</th>
+							<th class="text-center">Department</th>
 							<th class="text-center">Category</th>
 							<th class="text-center">By</th>
 							<th class="text-center">Date</th>

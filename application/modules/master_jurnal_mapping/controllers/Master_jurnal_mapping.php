@@ -50,13 +50,13 @@ class Master_jurnal_mapping extends Admin_Controller
 
             if ($upd) {
                 write_log('Master Jurnal Mapping', 'Edit', 'Update jurnal mapping ID: ' . $id . ' ke kode: ' . $post['kode_master_jurnal'], $logPayload, null, 1);
-                echo json_encode(['status' => 1, 'message' => 'Data berhasil diupdate']);
+                echo json_encode(['status' => 1, 'message' => 'Data updated successfully']);
             } else {
                 write_log('Master Jurnal Mapping', 'Edit', 'Gagal update jurnal mapping ID: ' . $id, $logPayload, null, 0);
-                echo json_encode(['status' => 0, 'message' => 'Gagal mengupdate data']);
+                echo json_encode(['status' => 0, 'message' => 'Failed to update data']);
             }
         } else {
-            echo json_encode(['status' => 0, 'message' => 'Data ID tidak ditemukan']);
+            echo json_encode(['status' => 0, 'message' => 'Data ID not found']);
         }
     }
 }

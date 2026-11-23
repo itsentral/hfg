@@ -18,7 +18,7 @@ class Product_master extends Admin_Controller
     $this->load->model(array(
       'Product_master/Product_master_model'
     ));
-    $this->template->title('Manage Product Jenis');
+    $this->template->title('Manage Product Sub Category');
     $this->template->page_icon('fa fa-building-o');
 
     date_default_timezone_set('Asia/Bangkok');
@@ -107,9 +107,9 @@ class Product_master extends Admin_Controller
       $nestedData[]  = "<div align='left'>" . strtoupper((string) $row['code']) . "</div>";
 
       if ($row['status'] == '1') {
-        $Label = "<label class='label label-success'>Aktif</label>";
+        $Label = "<label class='label label-success'>Active</label>";
       } else {
-        $Label = "<label class='label label-danger'>Non Aktif</label>";
+        $Label = "<label class='label label-danger'>Inactive</label>";
       }
       $nestedData[]  = "<div align='left'>" . $Label . "</div>";
 
@@ -217,40 +217,40 @@ class Product_master extends Admin_Controller
 
       $id_unit_packing = $post['id_unit_packing'];
       $id_unit         = $post['id_unit'];
-      $konversi        = str_replace(',', '', $post['konversi']);
+      $konversi        = str_replace(',', '', $post['konversi'] ?? '');
 
-      $max_stok = str_replace(',', '', $post['max_stok']);
-      $min_stok = str_replace(',', '', $post['min_stok']);
-      $moq      = str_replace(',', '', $post['moq']);
+      $max_stok = str_replace(',', '', $post['max_stok'] ?? '');
+      $min_stok = str_replace(',', '', $post['min_stok'] ?? '');
+      $moq      = str_replace(',', '', $post['moq'] ?? '');
 
-      $length = str_replace(',', '', $post['length']);
-      $wide   = str_replace(',', '', $post['wide']);
-      $high   = str_replace(',', '', $post['high']);
+      $length = str_replace(',', '', $post['length'] ?? '');
+      $wide   = str_replace(',', '', $post['wide'] ?? '');
+      $high   = str_replace(',', '', $post['high'] ?? '');
       
-      $panjang = str_replace(',', '', $post['panjang']);
-      $tebal   = str_replace(',', '', $post['tebal']);
+      $panjang = str_replace(',', '', $post['panjang'] ?? '');
+      $tebal   = str_replace(',', '', $post['tebal'] ?? '');
 
       $weight = $post['weight'];
-      $cub    = str_replace(',', '', $post['cub']);
+      $cub    = str_replace(',', '', $post['cub'] ?? '');
 
       // Validasi server (FR-37): level 1-3 dan nama wajib; Panjang, Tebal, dan Lebar produk (kolom `wide`)
       // harus angka >= 0 bila diisi.
       $errors = [];
       if (empty($code_lv1) || $code_lv1 == '0') {
-        $errors[] = 'Product type wajib dipilih.';
+        $errors[] = 'Product Type is required.';
       }
       if (empty($code_lv2) || $code_lv2 == '0') {
-        $errors[] = 'Product category wajib dipilih.';
+        $errors[] = 'Product Category is required.';
       }
       if (empty($code_lv3) || $code_lv3 == '0') {
-        $errors[] = 'Product jenis wajib dipilih.';
+        $errors[] = 'Product Sub Category is required.';
       }
       if (trim((string) $nama) === '') {
-        $errors[] = 'Nama product master wajib diisi.';
+        $errors[] = 'Product master name is required.';
       }
-      foreach (['Panjang' => $panjang, 'Tebal' => $tebal, 'Lebar' => $wide] as $nama_field => $nilai_field) {
+      foreach (['Length' => $panjang, 'Thickness' => $tebal, 'Width' => $wide] as $nama_field => $nilai_field) {
         if ($nilai_field !== '' && $nilai_field !== null && (!is_numeric($nilai_field) || $nilai_field < 0)) {
-          $errors[] = $nama_field . ' harus berupa angka lebih dari atau sama dengan 0.';
+          $errors[] = $nama_field . ' must be a number greater than or equal to 0.';
         }
       }
       if (!empty($errors)) {
@@ -394,7 +394,7 @@ class Product_master extends Admin_Controller
       if ($dipakai_bom > 0) {
         write_log('Product Master', 'Delete', 'Hapus product master ditolak karena dipakai BOM: ' . $produk->code_lv4, ['id' => $id, 'code_lv4' => $produk->code_lv4], null, 0);
         echo json_encode([
-          'pesan'  => 'Produk ' . $produk->code_lv4 . ' tidak dapat dihapus karena masih dipakai di BOM.',
+          'pesan'  => 'Produk ' . $produk->code_lv4 . ' cannot be deleted because it is still used in BOM.',
           'status' => 0
         ]);
         return;
@@ -456,7 +456,7 @@ class Product_master extends Admin_Controller
     $result  = get_list_product_lv3('product');
 
     if (!empty($result[$code_lv1][$code_lv2])) {
-      $option  = "<option value='0'>Select Product Jenis</option>";
+      $option  = "<option value='0'>Select Product Sub Category</option>";
       foreach ($result[$code_lv1][$code_lv2] as $val => $valx) {
         $sel = ($id == $valx['code_lv3']) ? 'selected' : '';
         $option .= "<option value='" . $valx['code_lv3'] . "' " . $sel . ">" . strtoupper((string) $valx['nama']) . "</option>";

@@ -25,7 +25,7 @@ if ($data_perkiraan) {
 								<thead>
 									<tr bgcolor='#9acfea'>
 										<th>
-											<center>Tanggal</center>
+											<center>Date</center>
 										</th>
 										<th>
 											<center>Tipe</center>
@@ -34,7 +34,7 @@ if ($data_perkiraan) {
 											<center>No. COA</center>
 										</th>
 										<th colspan="2">
-											<center>Keterangan</center>
+											<center>Description</center>
 										</th>
 										<th>
 											<center>No. Reff</center>
@@ -96,7 +96,7 @@ if ($data_perkiraan) {
 													?>
 												</select>
 												</td>
-												<td colspan="2"><textarea class="form-control" id="keterangan'.$no.'" name="keterangan[]" placeholder="Keterangan" readonly ><?= $row->keterangan ?></textarea></td>
+												<td colspan="2"><textarea class="form-control" id="keterangan'.$no.'" name="keterangan[]" placeholder="Description" readonly ><?= $row->keterangan ?></textarea></td>
 											    <td><input type="text" id="reff'.$no.'" name="reff[]" value="<?= $row->no_reff ?>" class="form-control" readonly/></td>
 											    <td><input type="hidden" id="debet'.$no.'" name="debet[]" value="<?= $row->debet ?>" class="form-control" readonly/>
 												<input type="text" id="debet2'.$no.'" name="debet2[]" value="<?= $format_debet ?>" class="form-control" readonly/></td>
@@ -162,20 +162,20 @@ function save_jurnal(){
     if(total1 != total2){
       swal({
         title: "Warning !!",
-        text: 'Maaf Total Debet Harus Sama Dengan Total Kredit',
+        text: 'Sorry, Total Debit Must Equal Total Credit',
         type: "warning"
       });
       return false;
     }
 	
 	swal({
-          title: "Peringatan !",
-          text: "Pastikan data sudah lengkap dan benar",
+          title: "Warning!",
+          text: "Make sure the data is complete and correct",
           type: "warning",
           showCancelButton: true,
           confirmButtonColor: "#DD6B55",
-          confirmButtonText: "Ya, simpan!",
-          cancelButtonText: "Batal!",
+          confirmButtonText: "Yes, save!",
+          cancelButtonText: "Cancelled!",
           closeOnConfirm: false,
           closeOnCancel: true
         },
@@ -192,7 +192,7 @@ function save_jurnal(){
 							var akses = $("#akses").val();
 							
 							swal({
-								title: "Sukses!",
+								title: "Success!",
 								text: result['msg'],
 								type: "success",
 								timer: 1500,
@@ -203,8 +203,8 @@ function save_jurnal(){
 							},1600);
 						} else {
 							swal({
-								title: "Gagal!",
-								text: "Data Gagal Di Simpan",
+								title: "Failed!",
+								text: "Failed to save data",
 								type: "error",
 								timer: 1500,
 								showConfirmButton: false
@@ -213,8 +213,8 @@ function save_jurnal(){
 					},
 					error: function(){
 						swal({
-							title: "Gagal!",
-							text: "Ajax Data Gagal Di Proses",
+							title: "Failed!",
+							text: "Ajax request failed to process.",
 							type: "error",
 							timer: 1500,
 							showConfirmButton: false

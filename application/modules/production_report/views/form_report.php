@@ -23,9 +23,9 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fa fa-clipboard-list"></i> Input Laporan Produksi</h5>
+        <h5 class="mb-0"><i class="fa fa-clipboard-list"></i> Input Production Report</h5>
         <a href="<?= base_url('production_report') ?>" class="btn btn-secondary btn-sm">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -34,7 +34,7 @@
             <!-- ── Header ── -->
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Tanggal Produksi</label>
+                    <label class="form-label fw-semibold">Production Date</label>
                     <input type="text" name="tgl_produksi" id="tgl_produksi" class="form-control flatpickr-date"
                         value="<?= date('Y-m-d') ?>" required autocomplete="off">
                 </div>
@@ -55,7 +55,7 @@
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Produk</label>
                     <input type="text" id="info_produk" class="form-control bg-light" readonly
-                        placeholder="Otomatis dari SPK"
+                        placeholder="Automatic from SPK"
                         value="<?= isset($spk) && $spk ? htmlspecialchars((string) $spk->nm_produk_fg) : '' ?>">
                     <input type="hidden" name="id_produk_fg" id="id_produk_fg"
                         value="<?= isset($spk) && $spk ? htmlspecialchars((string) $spk->produk_fg) : '' ?>">
@@ -79,11 +79,11 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">No Mesin</label>
-                        <input type="text" name="no_mesin" class="form-control" placeholder="Input nama mesin">
+                        <input type="text" name="no_mesin" class="form-control" placeholder="Enter machine name">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Nama Operator</label>
-                        <input type="text" name="nama_operator" class="form-control" placeholder="Input nama operator">
+                        <label class="form-label">Operator Name</label>
+                        <input type="text" name="nama_operator" class="form-control" placeholder="Enter operator name">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -92,7 +92,7 @@
                         <input type="text" name="jam_start" class="form-control flatpickr-time" placeholder="HH:MM" autocomplete="off">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Jam Selesai</label>
+                        <label class="form-label">End Time</label>
                         <input type="text" name="jam_selesai" class="form-control flatpickr-time" placeholder="HH:MM" autocomplete="off">
                     </div>
                 </div>
@@ -104,11 +104,11 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-4">
-                            <div class="text-muted small">Berat Kotor (kg)</div>
+                            <div class="text-muted small">Gross Weight (kg)</div>
                             <div class="fs-5 fw-bold" id="pl_berat_kotor">—</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-muted small">Berat Bersih (kg)</div>
+                            <div class="text-muted small">Net Weight (kg)</div>
                             <div class="fs-5 fw-bold" id="pl_berat_bersih">—</div>
                         </div>
                         <div class="col-md-4">
@@ -126,7 +126,7 @@
                 <!-- Berat Kotor Aktual -->
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <label class="form-label fw-semibold">Berat Kotor Aktual (kg)</label>
+                        <label class="form-label fw-semibold">Actual Gross Weight (kg)</label>
                         <input type="number" step="0.001" name="berat_kotor_aktual" class="form-control calc-input"
                             placeholder="Input kg" value="0">
                     </div>
@@ -182,13 +182,13 @@
                                     oninput="calcFg()">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small" id="lbl-fg-input">Berat Total (kg)</label>
+                                <label class="form-label small" id="lbl-fg-input">Total Weight (kg)</label>
                                 <input type="number" step="0.001" name="fg_kg" id="fg_kg"
                                     class="form-control calc-input" placeholder="0" value="0"
                                     oninput="calcFg()">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small" id="lbl-fg-berat-per-pcs">Berat / Pcs (kg) <span class="text-muted small">otomatis</span></label>
+                                <label class="form-label small" id="lbl-fg-berat-per-pcs">Weight / Pcs (kg) <span class="text-muted small">automatic</span></label>
                                 <input type="number" step="0.0001" name="fg_berat_per_pcs" id="fg_berat_per_pcs"
                                     class="form-control bg-light" readonly placeholder="0"
                                     oninput="calcFg()">
@@ -212,19 +212,19 @@
                                     class="form-control form-control-sm calc-input" placeholder="0" value="0">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">Berat/Pcs (kg)</label>
+                                <label class="form-label small">Weight/Pcs (kg)</label>
                                 <input type="number" step="0.0001" name="kw2_<?= $key ?>_berat_per_pcs"
                                     class="form-control form-control-sm" placeholder="0" value="0">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">Berat Total (kg)</label>
+                                <label class="form-label small">Total Weight (kg)</label>
                                 <input type="number" step="0.001" name="kw2_<?= $key ?>_kg"
                                     class="form-control form-control-sm calc-input" placeholder="0" value="0">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small">Keterangan</label>
+                                <label class="form-label small">Description</label>
                                 <input type="text" name="kw2_<?= $key ?>_keterangan"
-                                    class="form-control form-control-sm" placeholder="Keterangan KW2">
+                                    class="form-control form-control-sm" placeholder="KW2 Description">
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small">Upload Foto</label>
@@ -251,19 +251,19 @@
                                     class="form-control form-control-sm calc-input" placeholder="0" value="0">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">Berat/Pcs (kg)</label>
+                                <label class="form-label small">Weight/Pcs (kg)</label>
                                 <input type="number" step="0.0001" name="reject_<?= $key ?>_berat_per_pcs"
                                     class="form-control form-control-sm" placeholder="0" value="0">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label small">Berat Total (kg)</label>
+                                <label class="form-label small">Total Weight (kg)</label>
                                 <input type="number" step="0.001" name="reject_<?= $key ?>_kg"
                                     class="form-control form-control-sm calc-input" placeholder="0" value="0">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small">Keterangan</label>
+                                <label class="form-label small">Description</label>
                                 <input type="text" name="reject_<?= $key ?>_keterangan"
-                                    class="form-control form-control-sm" placeholder="Keterangan reject">
+                                    class="form-control form-control-sm" placeholder="Reject description">
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small">Upload Foto</label>
@@ -285,14 +285,14 @@
                                 <span class="badge bg-<?= $key === 'internal' ? 'info' : 'warning' ?> text-dark"><?= $label ?></span>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small">Berat (kg)</label>
+                                <label class="form-label small">Weight (kg)</label>
                                 <input type="number" step="0.001" name="reject_mat_<?= $key ?>_kg"
                                     class="form-control form-control-sm calc-input" placeholder="0" value="0">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small">Keterangan</label>
+                                <label class="form-label small">Description</label>
                                 <input type="text" name="reject_mat_<?= $key ?>_ket"
-                                    class="form-control form-control-sm" placeholder="Keterangan">
+                                    class="form-control form-control-sm" placeholder="Description">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small">Upload Foto</label>
@@ -309,7 +309,7 @@
                     <div class="card-header">6. Potongan Pisau</div>
                     <div class="card-body">
                         <div class="col-md-3">
-                            <label class="form-label small">Berat (kg)</label>
+                            <label class="form-label small">Weight (kg)</label>
                             <input type="number" step="0.001" name="potongan_pisau"
                                 class="form-control calc-input" placeholder="0" value="0">
                         </div>
@@ -366,7 +366,7 @@
                     <button type="submit" class="btn btn-success btn-lg">
                         <i class="fa fa-save"></i> Save Laporan
                     </button>
-                    <a href="<?= base_url('production_report') ?>" class="btn btn-secondary btn-lg">Batal</a>
+                    <a href="<?= base_url('production_report') ?>" class="btn btn-secondary btn-lg">Cancel</a>
                 </div>
 
             </div><!-- /section-laporan -->
@@ -435,17 +435,17 @@ $(document).ready(function () {
 function setFgMode(mode) {
     $('#fg_input_mode').val(mode);
     if (mode === 'total') {
-        $('#lbl-fg-input').text('Berat Total (kg)');
+        $('#lbl-fg-input').text('Total Weight (kg)');
         $('#fg_kg').attr('readonly', false).removeClass('bg-light');
         $('#fg_berat_per_pcs').attr('readonly', true).addClass('bg-light');
-        $('#lbl-fg-berat-per-pcs').html('Berat / Pcs (kg) <span class="text-muted small">otomatis</span>');
+        $('#lbl-fg-berat-per-pcs').html('Weight / Pcs (kg) <span class="text-muted small">automatic</span>');
         $('#btn-mode-total').addClass('active btn-primary').removeClass('btn-outline-primary');
         $('#btn-mode-per-pcs').removeClass('active btn-primary').addClass('btn-outline-primary');
     } else {
-        $('#lbl-fg-input').text('Berat / Pcs (kg)');
+        $('#lbl-fg-input').text('Weight / Pcs (kg)');
         $('#fg_kg').attr('readonly', true).addClass('bg-light');
         $('#fg_berat_per_pcs').attr('readonly', false).removeClass('bg-light');
-        $('#lbl-fg-berat-per-pcs').html('Berat / Pcs (kg)');
+        $('#lbl-fg-berat-per-pcs').html('Weight / Pcs (kg)');
         $('#btn-mode-per-pcs').addClass('active btn-primary').removeClass('btn-outline-primary');
         $('#btn-mode-total').removeClass('active btn-primary').addClass('btn-outline-primary');
     }
@@ -505,8 +505,8 @@ function recalcSummary() {
     var absPct = Math.abs(selisih_pct);
     if (pl_bersih > 0 && absPct > TOLERANSI_SELISIH) {
         var msg = 'Selisih ' + (selisih_pct * 100).toFixed(2) + '% melebihi toleransi ' + (TOLERANSI_SELISIH * 100) + '%. '
-                + (selisih < 0 ? 'Material KURANG dari packing list.' : 'Material LEBIH dari packing list.')
-                + ' Harap cek ulang input atau timbangan.';
+                + (selisih < 0 ? 'Material is LESS than the packing list.' : 'Material is MORE than the packing list.')
+                + ' Please recheck the input or the scale.';
         $alert.removeClass('d-none warning-selisih danger-selisih')
               .addClass(absPct > 0.1 ? 'danger-selisih' : 'warning-selisih')
               .find('#alert-selisih-msg').text(msg);

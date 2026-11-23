@@ -28,7 +28,7 @@
 					<tr>
 						<td>From Warehouse</td>
 						<td>:</td>
-						<td><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
+						<td><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
 					</tr>
 					<tr>
 						<td>For Costcenter</td>

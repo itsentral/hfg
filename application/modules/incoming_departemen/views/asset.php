@@ -16,10 +16,10 @@ $this->load->view('include/side_menu');
 				<input type="hidden" id='tandax' name='tandax'>
 				<div class='in_ipp'>
 					<div class='form-group row'>		 	 
-						<label class='label-control col-sm-2'><b>Nomor PO / NON-PO <span class='text-red'>*</span></b></label>
+						<label class='label-control col-sm-2'><b>PO / NON-PO Number <span class='text-red'>*</span></b></label>
 						<div class='col-sm-4'>              
 							<select id='no_ipp' name='no_ipp' class='form-control input-sm' style='min-width:200px;'>
-								<option value='0'>Nomor PO / NON-PO</option>
+								<option value='0'>PO / NON-PO Number</option>
 								<?php
 									foreach($no_po AS $val => $valx){
 										$nm_supplier = (!empty($valx['nm_supplier']))?' - '.$valx['nm_supplier']:'';
@@ -71,7 +71,7 @@ $this->load->view('include/side_menu');
                             ?>
                         </select>
                     </div>
-                    <label class='label-control col-sm-2'><b>Date Transaksi</b></label>
+                    <label class='label-control col-sm-2'><b>Transaction Date</b></label>
 					<div class='col-sm-4'>              
 						<input type="text" name="tanggal_trans" id="tanggal_trans" class='form-control input-sm' data-role="datepicker_lost" readonly value='<?=date('Y-m-d');?>'>
 					</div>
@@ -170,7 +170,7 @@ $this->load->view('include/side_menu');
 	$(document).on('click', '.detailAjust', function(e){
 		e.preventDefault();
 		loading_spinner();
-		$("#head_title2").html("<b>DETAIL INCOMING</b>");
+		$("#head_title2").html("<b>INCOMING DETAIL</b>");
 		$.ajax({
 			type:'POST',
 			url: base_url  + active_controller +'/modal_detail/'+$(this).data('kode_trans'),

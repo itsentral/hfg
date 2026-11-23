@@ -25,11 +25,11 @@ $ENABLE_DELETE = has_permission('Purchase_Order.Delete');
 						<th>No PO</th>
 						<th>No PR</th>
 						<th>No Incoming</th>
-						<th style="min-width: 75px;">Tanggal PO</th>
+						<th style="min-width: 75px;">PO Date</th>
 						<th>Progress PO</th>
 						<!-- <th>PO</th> -->
 						<th>Vendor</th>
-						<th>Harga PO</th>
+						<th>PO Price</th>
 						<th>Revisi</th>
 						<th>Reject Reason</th>
 						<?php if ($ENABLE_VIEW || $ENABLE_MANAGE || $ENABLE_DELETE) : ?>

@@ -6,10 +6,10 @@ header("Content-Disposition: attachment; filename=Budget Stock.xls");
     <thead>
         <tr>
             <th>#</th>
-            <th>Nama Barang</th>
+            <th>Item Name</th>
             <th>Spesifikasi</th>
-            <th>Kebutuhan 1 Bulan</th>
-            <th>Satuan Product</th>
+            <th>1 Month Requirement</th>
+            <th>Product Unit</th>
             <th>Price Reference</th>
             <th>Total Price</th>
             <th>Price Reference After</th>

@@ -29,15 +29,15 @@ $ENABLE_DELETE = has_permission('Rencana_Pembelian_Asset.Delete');
 					<tr class='bg-blue'>
 						<th class="text-center">#</th>
 						<th class="text-center">Department</th>
-						<th class="text-center">Nama Asset</th>
-						<th class="text-center">Keterangan</th>
+						<th class="text-center">Asset Name</th>
+						<th class="text-center">Description</th>
 						<th class="text-center">Qty</th>
 						<th class="text-center">Budget</th>
-						<th class="text-center">Sisa Budget PR</th>
-						<th class="text-center">Sisa Budget PO</th>
+						<th class="text-center">Remaining PR Budget</th>
+						<th class="text-center">Remaining PO Budget</th>
 						<th class="text-center no-sort">Planning</th>
 						<th class="text-center no-sort">Status</th>
-						<th class="text-center no-sort">Dibuat Oleh</th>
+						<th class="text-center no-sort">Created By</th>
 						<th class="text-center no-sort">Dibuat Tgl</th>
 						<th class="text-center no-sort">Option</th>
 					</tr>
@@ -97,7 +97,7 @@ $ENABLE_DELETE = has_permission('Rencana_Pembelian_Asset.Delete');
 
 	$(document).on('click', '.detail', function(e) {
 		e.preventDefault();
-		$("#head_title2").html("<b>DETAIL BUDGET RUTIN [" + $(this).data('code') + "]</b>");
+		$("#head_title2").html("<b>ROUTINE BUDGET DETAIL [" + $(this).data('code') + "]</b>");
 		$.ajax({
 			type: 'POST',
 			url: base_url + active_controller + 'detail_rutin/' + $(this).data('code'),

@@ -9,23 +9,23 @@
             <div class="col-md-4">
                 <label class="form-label">Supplier</label>
                 <select id="filter-supplier" class="form-select">
-                    <option value="">-- Semua Supplier --</option>
+                    <option value="">-- All Suppliers --</option>
                     <?php foreach ($supplier_list as $sup): ?>
                         <option value="<?= $sup->id_supplier ?>"><?= htmlspecialchars((string) $sup->nm_supplier) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">Tanggal Dari</label>
+                <label class="form-label">Date From</label>
                 <input type="date" id="filter-tgl-dari" class="form-control">
             </div>
             <div class="col-md-3">
-                <label class="form-label">Tanggal Sampai</label>
+                <label class="form-label">Date To</label>
                 <input type="date" id="filter-tgl-sampai" class="form-control">
             </div>
             <div class="col-md-2 d-flex align-items-end">
                 <button id="btn-filter" class="btn btn-primary w-100">
-                    <i class="fa fa-search"></i> Tampilkan
+                    <i class="fa fa-search"></i> Show
                 </button>
             </div>
         </div>
@@ -51,9 +51,9 @@
                     <tr>
                         <th class="text-center" width="50">No</th>
                         <th class="text-center">Tgl Feed</th>
-                        <th>No Laporan</th>
+                        <th>Report No</th>
                         <th>No Coil</th>
-                        <th>Nama Supplier</th>
+                        <th>Supplier Name</th>
                         <th class="text-end">Selisih Gross (kg)</th>
                         <th class="text-end">Selisih Net (kg)</th>
                         <th class="text-end">Reject (kg)</th>

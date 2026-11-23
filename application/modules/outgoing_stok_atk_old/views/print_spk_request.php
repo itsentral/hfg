@@ -36,15 +36,15 @@ $today = date('l, d F Y [H:i:s]');
         <tr>
             <td class="mid" width='18%'>Gudang</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_dari']));?></td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_dari']));?></td>
             <td class="mid" width='18%'>Costcenter</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_ke']));?></td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang_ke']));?></td>
         </tr>
         <tr>
             <td class="mid">Department</td>
             <td class="mid">:</td>
-            <td class="mid"><?=strtoupper(get_name('ms_department','nama','id',$getData[0]['id_dept']));?></td>
+            <td class="mid"><?=strtoupper((string) get_name('ms_department','nama','id',$getData[0]['id_dept']));?></td>
             <td class="mid">Tanggal</td>
             <td class="mid">:</td>
             <td class="mid"><?=tgl_indo($getData[0]['tanggal']);?></td>

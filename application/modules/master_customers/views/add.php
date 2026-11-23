@@ -27,8 +27,8 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                 ========================== -->
                 <div class="col-12">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="mb-0 fw-bold">DETAIL IDENTITAS CUSTOMER</h6>
-                        <span class="text-muted small">(*) wajib diisi</span>
+                        <h6 class="mb-0 fw-bold">CUSTOMER IDENTITY DETAIL</h6>
+                        <span class="text-muted small">(*) required</span>
                     </div>
                     <hr class="mt-2">
                 </div>
@@ -55,7 +55,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         </div>
                         <div class="col-md-7">
                             <select id="id_category_customer" name="id_category_customer" class="form-select select">
-                                <option value="">--Pilih--</option>
+                                <option value="">--Select--</option>
                                 <?php foreach ($results['category'] as $category) { ?>
                                     <option value="<?= $category->id_category_customer ?>"
                                         <?= (isset($cus) && $cus->id_category_customer == $category->id_category_customer) ? 'selected' : '' ?>>
@@ -69,12 +69,12 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Nama Customer -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Nama Customer <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Customer Name <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <input type="text" class="form-control" id="name_customer"
                                 value="<?= isset($cus->name_customer) ? $cus->name_customer : '' ?>"
-                                required name="name_customer" placeholder="Nama Customer" <?= $readonly ?>>
+                                required name="name_customer" placeholder="Customer Name" <?= $readonly ?>>
                         </div>
                     </div>
 
@@ -86,7 +86,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-7">
                             <input type="text" class="form-control" id="telephone"
                                 value="<?= isset($cus->telephone) ? $cus->telephone : '' ?>"
-                                required name="telephone" placeholder="Nomor Telephone" <?= $readonly ?>>
+                                required name="telephone" placeholder="Phone Number" <?= $readonly ?>>
                         </div>
                     </div>
 
@@ -96,7 +96,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-7">
                             <input type="text" class="form-control" id="telephone_2"
                                 value="<?= isset($cus->telephone_2) ? $cus->telephone_2 : '' ?>"
-                                name="telephone_2" placeholder="Nomor Telephone (optional)" <?= $readonly ?>>
+                                name="telephone_2" placeholder="Phone Number (optional)" <?= $readonly ?>>
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-7">
                             <input type="text" class="form-control" id="fax" name="fax"
                                 value="<?= isset($cus->fax) ? $cus->fax : '' ?>"
-                                placeholder="Nomor Fax" <?= $readonly ?>>
+                                placeholder="Fax Number" <?= $readonly ?>>
                         </div>
                     </div>
 
@@ -128,7 +128,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Start Date -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Tanggal Mulai <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Start Date <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <input type="date" class="form-control" id="start_date"
@@ -145,7 +145,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         </div>
                         <div class="col-md-7">
                             <select id="id_karyawan" name="id_karyawan" class="form-select select" required <?= $disabled ?>>
-                                <option value="">--pilih--</option>
+                                <option value="">--select--</option>
                                 <?php foreach ($results['karyawan'] as $karyawan) {
                                     $selected = (isset($cus) && $cus->id_karyawan == $karyawan->id) ? 'selected' : '';
                                 ?>
@@ -168,7 +168,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                     value="Toko dan User"
                                     <?= (isset($cus) && strpos((string) $cus->chanel_pemasaran, 'Toko dan User') !== false) ? 'checked' : '' ?>
                                     <?= $disabled ?>>
-                                <label class="form-check-label" for="chanel_toko">Toko dan User</label>
+                                <label class="form-check-label" for="chanel_toko">Store and User</label>
                             </div>
 
                             <div class="row g-2 align-items-center">
@@ -207,7 +207,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                             value="aktif"
                                             <?= (isset($cus) && $cus->activation == 'aktif') ? 'checked' : '' ?>
                                             required <?= $disabled ?>>
-                                        <label class="form-check-label" for="activation_aktif">Aktif</label>
+                                        <label class="form-check-label" for="activation_aktif">Active</label>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -216,7 +216,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                             value="inaktif"
                                             <?= (isset($cus) && $cus->activation == 'inaktif') ? 'checked' : '' ?>
                                             required <?= $disabled ?>>
-                                        <label class="form-check-label" for="activation_inaktif">Non Aktif</label>
+                                        <label class="form-check-label" for="activation_inaktif">Inactive</label>
                                     </div>
                                 </div>
                             </div>
@@ -229,11 +229,11 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Provinsi -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Provinsi <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Province <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <select id="id_prov" name="id_prov" class="form-select select" onchange="get_kota()" required <?= $disabled ?>>
-                                <option value="">--Pilih--</option>
+                                <option value="">--Select--</option>
                                 <?php foreach ($results['prov'] as $prov) {
                                     $selected = (isset($cus) && $cus->id_prov == $prov->id_prov) ? 'selected' : '';
                                 ?>
@@ -246,11 +246,11 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Kabupaten/Kota -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Kabupaten/Kota <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Regency/City <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <select id="id_kabkot" name="id_kabkot" class="form-select select" onchange="get_kec()" required <?= $disabled ?>>
-                                <option value="">--Pilih--</option>
+                                <option value="">--Select--</option>
                                 <?php foreach ($results['kabkot'] as $kabkot) {
                                     $selected = (isset($cus) && $cus->id_kabkot == $kabkot->id_kabkot) ? 'selected' : '';
                                 ?>
@@ -263,11 +263,11 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Kecamatan -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Kecamatan <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">District <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <select id="id_kec" name="id_kec" class="form-select select" required <?= $disabled ?>>
-                                <option value="">--Pilih--</option>
+                                <option value="">--Select--</option>
                                 <?php foreach ($results['kec'] as $kec) {
                                     $selected = (isset($cus) && $cus->id_kec == $kec->id_kec) ? 'selected' : '';
                                 ?>
@@ -280,22 +280,22 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Alamat -->
                     <div class="row mb-3">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Alamat <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Address <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <textarea name="address_office" id="address_office" class="form-control"
-                                placeholder="Alamat" <?= $readonly ?>><?= isset($cus->address_office) ? $cus->address_office : '' ?></textarea>
+                                placeholder="Address" <?= $readonly ?>><?= isset($cus->address_office) ? $cus->address_office : '' ?></textarea>
                         </div>
                     </div>
 
                     <!-- Kode Pos -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Kode Pos</label>
+                            <label class="form-label mb-0">Postcode</label>
                         </div>
                         <div class="col-md-7">
                             <input type="text" class="form-control" id="zip_code" name="zip_code"
-                                value="<?= isset($cus->zip_code) ? $cus->zip_code : '' ?>" placeholder="Kode Pos" <?= $readonly ?>>
+                                value="<?= isset($cus->zip_code) ? $cus->zip_code : '' ?>" placeholder="Postcode" <?= $readonly ?>>
                         </div>
                     </div>
 
@@ -328,7 +328,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         </div>
                         <div class="col-md-7">
                             <select name="tahun_mulai" class="form-select select" <?= $disabled ?>>
-                                <option value="">-- Pilih Tahun --</option>
+                                <option value="">-- Select Year --</option>
                                 <?php
                                 $currentYear = date("Y");
                                 for ($year = $currentYear; $year >= $currentYear - 50; $year--) {
@@ -343,11 +343,11 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Kategori Customer -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Kategori Customer <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Customer Category <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-7">
                             <select name="kategori_cust" id="kategori_cust" class="form-select select" <?= $disabled ?>>
-                                <option value="">-- Pilih --</option>
+                                <option value="">-- Select --</option>
                                 <option value="Distributor" <?= (isset($cus) && $cus->kategori_cust == 'Distributor') ? 'selected' : '' ?>>Distributor</option>
                                 <option value="Retail" <?= (isset($cus) && $cus->kategori_cust == 'Retail') ? 'selected' : '' ?>>Retail</option>
                             </select>
@@ -357,11 +357,11 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <!-- Kategori Toko -->
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Kategori Toko</label>
+                            <label class="form-label mb-0">Store Category</label>
                         </div>
                         <div class="col-md-7">
                             <select name="kategori_toko" id="kategori_toko" class="form-select select" <?= $disabled ?>>
-                                <option value="">-- Pilih --</option>
+                                <option value="">-- Select --</option>
                                 <?php
                                 $opsiToko = ['Toko 1', 'Toko 2', 'Toko 3', 'Retail'];
                                 foreach ($opsiToko as $kategori) {
@@ -384,7 +384,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                 <div class="col-lg-6">
                     <div class="row mb-3 align-items-center">
-                        <div class="col-md-6"><label class="form-label mb-0">Bayar 3 Bulan On Time</label></div>
+                        <div class="col-md-6"><label class="form-label mb-0">Paid On Time for 3 Months</label></div>
                         <div class="col-md-6">
                             <?php $ontime = isset($rate->ontime) ? $rate->ontime : ''; ?>
                             <div class="d-flex gap-3 flex-wrap">
@@ -502,9 +502,9 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <table class="table table-striped table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="text-center">Nama PT</th>
+                                    <th class="text-center">Company Name</th>
                                     <th class="text-center">PIC</th>
-                                    <th class="text-center">No Telepon</th>
+                                    <th class="text-center">Phone Number</th>
                                     <th class="text-center" style="width:90px;">
                                         <?php if (empty($results['mode']) || $results['mode'] !== 'view') : ?>
                                             <button type="button" class="btn btn-success btn-sm" id="add-existing" <?= $disabled ?>>
@@ -531,7 +531,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                                         if (empty($results['mode']) || $results['mode'] !== 'view') {
                                             echo "<td class='text-center'>
-                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Hapus Data' onClick='return DelExisting($loop);'>
+                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Delete Data' onClick='return DelExisting($loop);'>
                                                         <i class='ti ti-trash'></i>
                                                     </button>
                                                 </td>";
@@ -596,7 +596,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                                         if (empty($results['mode']) || $results['mode'] !== 'view') {
                                             echo "<td class='text-center'>
-                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Hapus Data' onClick='return DelItem2($loop);'>
+                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Delete Data' onClick='return DelItem2($loop);'>
                                                         <i class='ti ti-trash'></i>
                                                     </button>
                                                 </td>";
@@ -626,10 +626,10 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <table class="table table-striped table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="text-center">Nama PIC</th>
-                                    <th class="text-center">Nomor Telp</th>
+                                    <th class="text-center">PIC Name</th>
+                                    <th class="text-center">Phone Number</th>
                                     <th class="text-center">Email</th>
-                                    <th class="text-center">Jabatan</th>
+                                    <th class="text-center">Position</th>
                                     <th class="text-center" style="width:90px;">
                                         <?php if (empty($results['mode']) || $results['mode'] !== 'view') : ?>
                                             <?= form_button(['type' => 'button', 'class' => 'btn btn-success btn-sm', 'content' => '<i class="fa fa-plus me-1"></i>Add', 'id' => 'add-payment']) ?>
@@ -654,7 +654,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                         }
                                         if (empty($results['mode']) || $results['mode'] !== 'view') {
                                             echo "<td class='text-center'>
-                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Hapus Data' onclick='return DelItem($loop);'>
+                                                    <button type='button' class='btn btn-outline-danger btn-sm' title='Delete Data' onclick='return DelItem($loop);'>
                                                         <i class='ti ti-trash'></i>
                                                     </button>
                                                 </td>";
@@ -673,7 +673,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                                             echo "<td><input type='text' class='form-control form-control-sm' name='data1[$loop][$field]' value='" . htmlspecialchars((string) $value, ENT_QUOTES) . "' $readonlyAttr required></td>";
                                         }
                                         echo "<td class='text-center'>
-                                                <button type='button' class='btn btn-outline-danger btn-sm' title='Hapus Data' onclick='return DelItem($loop);'>
+                                                <button type='button' class='btn btn-outline-danger btn-sm' title='Delete Data' onclick='return DelItem($loop);'>
                                                     <i class='ti ti-trash'></i>
                                                 </button>
                                             </td>";
@@ -690,18 +690,18 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     SECTION: INFORMASI PEMBAYARAN
                 ========================== -->
                 <div class="col-12 mt-2">
-                    <h6 class="mb-0 fw-bold">INFORMASI PEMBAYARAN</h6>
+                    <h6 class="mb-0 fw-bold">PAYMENT INFORMATION</h6>
                     <hr class="mt-2 mb-3">
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="mb-2 fw-semibold">Informasi Bank</div>
+                    <div class="mb-2 fw-semibold">Bank Information</div>
 
                     <?php
                     $bankFields = [
-                        ['label' => 'Nama Bank', 'name' => 'name_bank'],
-                        ['label' => 'Nomor Akun', 'name' => 'no_rekening'],
-                        ['label' => 'Nama Akun', 'name' => 'nama_rekening'],
+                        ['label' => 'Bank Name', 'name' => 'name_bank'],
+                        ['label' => 'Account Number', 'name' => 'no_rekening'],
+                        ['label' => 'Account Name', 'name' => 'nama_rekening'],
                         ['label' => 'Swift Code', 'name' => 'swift_code'],
                     ];
 
@@ -722,22 +722,22 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                     <div class="row mb-3">
                         <div class="col-md-5">
-                            <label class="form-label mb-0">Alamat Bank</label>
+                            <label class="form-label mb-0">Bank Address</label>
                         </div>
                         <div class="col-md-7">
-                            <textarea name="alamat_bank" id="alamat_bank" class="form-control" placeholder="Alamat Bank" <?= $disabled ?>><?= isset($cus->alamat_bank) ? htmlspecialchars((string) $cus->alamat_bank) : '' ?></textarea>
+                            <textarea name="alamat_bank" id="alamat_bank" class="form-control" placeholder="Bank Address" <?= $disabled ?>><?= isset($cus->alamat_bank) ? htmlspecialchars((string) $cus->alamat_bank) : '' ?></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="mb-2 fw-semibold">Informasi Pajak</div>
+                    <div class="mb-2 fw-semibold">Tax Information</div>
 
                     <?php
                     $pajakFields = [
-                        ['label' => 'Nomor NPWP/KTP', 'name' => 'npwp', 'required' => true],
-                        ['label' => 'Nama NPWP/KTP', 'name' => 'npwp_name', 'required' => true],
-                        ['label' => 'Alamat NPWP/KTP', 'name' => 'npwp_address', 'required' => true],
+                        ['label' => 'NPWP/ID Number', 'name' => 'npwp', 'required' => true],
+                        ['label' => 'NPWP/ID Name', 'name' => 'npwp_name', 'required' => true],
+                        ['label' => 'NPWP/ID Address', 'name' => 'npwp_address', 'required' => true],
                     ];
 
                     foreach ($pajakFields as $field) {
@@ -760,7 +760,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                         <div class="col-md-5"><label class="form-label mb-0">Term Of Payment <span class="text-danger">*</span></label></div>
                         <div class="col-md-7">
                             <select id="payment_term" name="payment_term" class="form-select select" required <?= $disabled ?>>
-                                <option value="">-- Pilih --</option>
+                                <option value="">-- Select --</option>
                                 <?php foreach ($results['payment_terms'] as $terms): ?>
                                     <option value="<?= htmlspecialchars((string) $terms->id) ?>" <?= (isset($cus->payment_term) && $cus->payment_term == $terms->id) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars((string) $terms->name) ?>
@@ -779,7 +779,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     </div>
 
                     <div class="row mb-3 align-items-center">
-                        <div class="col-md-5"><label class="form-label mb-0">Sisa Pembayaran <span class="text-danger">*</span></label></div>
+                        <div class="col-md-5"><label class="form-label mb-0">Remaining Payment <span class="text-danger">*</span></label></div>
                         <div class="col-md-7">
                             <select id="sisa_pembayaran" name="sisa_pembayaran" class="form-select select" required <?= $disabled ?>>
                                 <?php
@@ -799,7 +799,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     SECTION: INFORMASI INVOICE
                 ========================== -->
                 <div class="col-12 mt-2">
-                    <h6 class="mb-0 fw-bold">INFORMASI INVOICE</h6>
+                    <h6 class="mb-0 fw-bold">INVOICE INFORMATION</h6>
                     <hr class="mt-2 mb-3">
                 </div>
 
@@ -807,7 +807,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                 <div class="col-12">
                     <div class="row mb-3 align-items-center">
                         <div class="col-md-3">
-                            <label class="form-label mb-0">Hari Terima <span class="text-danger">*</span></label>
+                            <label class="form-label mb-0">Receiving Day <span class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-9">
                             <?php
@@ -827,9 +827,9 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     </div>
                 </div>
 
-                <!-- Waktu Penerimaan Invoice -->
+                <!-- Invoice Receiving Time -->
                 <div class="col-lg-6">
-                    <div class="fw-semibold mb-2">Waktu Penerimaan Invoice</div>
+                    <div class="fw-semibold mb-2">Invoice Receiving Time</div>
                     <div class="row g-2">
                         <div class="col-md-6">
                             <label class="form-label">Start</label>
@@ -848,22 +848,22 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
                 <!-- Alamat Invoice -->
                 <div class="col-lg-6">
-                    <div class="fw-semibold mb-2">Alamat Invoice</div>
+                    <div class="fw-semibold mb-2">Invoice Address</div>
                     <textarea name="address_invoice" id="address_invoice" class="form-control"
-                        placeholder="Alamat Invoice" <?= $disabled ?>><?= isset($cus->adress_invoice) ? htmlspecialchars((string) $cus->adress_invoice) : '' ?></textarea>
+                        placeholder="Invoice Address" <?= $disabled ?>><?= isset($cus->adress_invoice) ? htmlspecialchars((string) $cus->adress_invoice) : '' ?></textarea>
                 </div>
 
                 <!-- =========================
                     SECTION: PERSYARATAN PEMBAYARAN
                 ========================== -->
                 <div class="col-12 mt-2">
-                    <h6 class="mb-0 fw-bold">PERSYARATAN PEMBAYARAN</h6>
+                    <h6 class="mb-0 fw-bold">PAYMENT TERMS</h6>
                     <hr class="mt-2 mb-3">
                 </div>
 
                 <div class="col-12">
                     <?php
-                    $terms = ['invoice' => 'Invoice', 'sj' => 'SJ', 'faktur' => 'Faktur Pajak'];
+                    $terms = ['invoice' => 'Invoice', 'sj' => 'SJ', 'faktur' => 'Tax Invoice'];
                     echo '<div class="row g-2">';
                     foreach ($terms as $field => $label) {
                         $checked = (isset($cus->$field) && $cus->$field === 'Y') ? 'checked' : '';
@@ -888,14 +888,14 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
                     <div class="d-flex justify-content-center gap-2">
                         <?php if (empty($results['mode']) || $results['mode'] !== 'view') : ?>
                             <button type="button" class="btn btn-secondary" onclick="history.back()">
-                                <i class="fa fa-arrow-left me-1"></i> Kembali
+                                <i class="fa fa-arrow-left me-1"></i> Back
                             </button>
                             <button type="submit" class="btn btn-success" name="save" id="simpan-com">
-                                <i class="fa fa-save me-1"></i> Simpan
+                                <i class="fa fa-save me-1"></i> Save
                             </button>
                         <?php else: ?>
                             <button type="button" class="btn btn-secondary" onclick="history.back()">
-                                <i class="fa fa-arrow-left me-1"></i> Kembali
+                                <i class="fa fa-arrow-left me-1"></i> Back
                             </button>
                         <?php endif; ?>
                     </div>
@@ -983,7 +983,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<td align="left">';
             Template += '<input type="text" class="form-control input-sm" name="data1[' + loop + '][position_pic]" id="data1_' + loop + '_position_pic" label="FALSE" div="FALSE">';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Delete Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_payment').append(Template);
         });
@@ -1000,14 +1000,14 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template = '<tr id="tr_' + loop + '">';
             Template += '<td align="left">';
             Template += '<select id="data2_' + loop + '_id_category_customer" name="data2[' + loop + '][id_category_customer]" class="form-control select" required>';
-            Template += '<option value="">--pilih--</option>';
+            Template += '<option value="">--select--</option>';
             Template += '<?php foreach ($results['category'] as $category) { ?>';
             Template += '<option value="<?= $category->name_category ?>"><?= ucfirst(strtolower((string) $category->name_category)) ?></option>';
             Template += '<?php } ?>';
             Template += '</select>';
             Template += '</td>';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Delete Data" data-role="qtip" onClick="return DelItem2(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_category').append(Template);
         });
@@ -1031,7 +1031,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             Template += '<td align="left">';
             Template += '<input type="text" class="form-control input-sm" name="data3[' + loop + '][existing_telp]" id="data3_' + loop + '_existing_telp" label="FALSE" div="FALSE">';
             Template += '</td>';
-            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Hapus Data" data-role="qtip" onClick="return DelItem3(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
+            Template += '<td align="center"><button type="button" class="btn btn-outline-danger btn-sm" title="Delete Data" data-role="qtip" onClick="return DelItem3(' + loop + ');"><i class="ti ti-trash"></i></button></td>';
             Template += '</tr>';
             $('#list_existing').append(Template);
         });
@@ -1047,12 +1047,12 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
 
             // Jika salah satu checkbox group belum dipilih, tampilkan alert dan hentikan proses
             if (!oneChecked) {
-                alert("Pilih minimal satu hari terima!");
+                alert("Select at least one receiving day!");
                 return false; // ini penting
             }
 
             if (!onePaytermcbb) {
-                alert("Pilih minimal satu syarat pembayaran!");
+                alert("Select at least one payment term!");
                 return false; // ini penting
             }
 
@@ -1152,7 +1152,7 @@ $disabled = isset($results['mode']) && $results['mode'] === 'view' ? 'disabled' 
             },
             success: function(html) {
                 $("#id_kabkot").html(html);
-                $("#id_kec").html("<option value=''>--Pilih--</option>");
+                $("#id_kec").html("<option value=''>--Select--</option>");
             }
         });
     }

@@ -227,7 +227,7 @@ class Material_master_model extends CI_Model
         if (!$material) {
             return [
                 'valid'   => false,
-                'pesan'   => 'Data material tidak ditemukan.',
+                'pesan'   => 'Material data not found.',
                 'details' => []
             ];
         }
@@ -248,11 +248,11 @@ class Material_master_model extends CI_Model
             }, $dipakai_bom ?? [])));
             $prodList = implode(', ', array_slice($prods ?? [], 0, 3));
             if (count($prods ?? []) > 3) {
-                $prodList .= ' dan ' . (count($prods ?? []) - 3) . ' produk lainnya';
+                $prodList .= ' dan ' . (count($prods ?? []) - 3) . ' other products';
             }
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena masih digunakan di BOM Produk (' . $prodList . ').',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because it is still used in Product BOM (' . $prodList . ').',
                 'details' => ['bom' => $prods]
             ];
         }
@@ -267,7 +267,7 @@ class Material_master_model extends CI_Model
         if ($stock && ((float)$stock->total_stock > 0 || (float)$stock->total_booking > 0)) {
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena masih memiliki saldo stok di gudang (Stok: ' . number_format((float)$stock->total_stock, 2) . ', Booking: ' . number_format((float)$stock->total_booking, 2) . ').',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because it still has stock balance in the warehouse (Stock: ' . number_format((float)$stock->total_stock, 2) . ', Booking: ' . number_format((float)$stock->total_booking, 2) . ').',
                 'details' => ['stock' => $stock]
             ];
         }
@@ -279,7 +279,7 @@ class Material_master_model extends CI_Model
         if ($coil_aktif > 0) {
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena masih terdapat ' . $coil_aktif . ' coil fisik aktif di gudang.',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because there are still ' . $coil_aktif . ' active physical coil(s) in the warehouse.',
                 'details' => ['active_coils' => $coil_aktif]
             ];
         }
@@ -295,7 +295,7 @@ class Material_master_model extends CI_Model
         if ($po_open > 0) {
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena masih terdapat ' . $po_open . ' item Purchase Order (PO) yang belum selesai (Open).',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because there are still ' . $po_open . ' Purchase Order (PO) item(s) that are not finished yet (Open).',
                 'details' => ['open_po_items' => $po_open]
             ];
         }
@@ -314,11 +314,11 @@ class Material_master_model extends CI_Model
             $docs = array_column($incoming_check ?? [], 'kode_trans');
             $docList = implode(', ', array_slice($docs ?? [], 0, 3));
             if (count($docs ?? []) > 3) {
-                $docList .= ' dan ' . (count($docs ?? []) - 3) . ' dokumen lainnya';
+                $docList .= ' dan ' . (count($docs ?? []) - 3) . ' other documents';
             }
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena sedang dalam proses QC / Incoming penerimaan (' . $docList . ').',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because it is being processed in QC / Incoming (' . $docList . ').',
                 'details' => ['incoming_check' => $docs]
             ];
         }
@@ -333,14 +333,14 @@ class Material_master_model extends CI_Model
         if ($spk_request > 0) {
             return [
                 'valid'   => false,
-                'pesan'   => 'Material ' . $code_lv4 . ' tidak dapat dihapus karena masih terdapat ' . $spk_request . ' permintaan pengeluaran material ke produksi yang belum selesai diproses.',
+                'pesan'   => 'Material ' . $code_lv4 . ' cannot be deleted because there are still ' . $spk_request . ' material issue request(s) to production that have not been processed yet.',
                 'details' => ['spk_requests' => $spk_request]
             ];
         }
 
         return [
             'valid'    => true,
-            'pesan'    => 'Material valid untuk dihapus.',
+            'pesan'    => 'Material can be deleted.',
             'material' => $material
         ];
     }

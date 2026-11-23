@@ -242,8 +242,8 @@
 
   <div class="hpp-header d-flex justify-content-between align-items-center">
     <div>
-      <h1 class="h4 fw-bold mb-1">Laporan Harga Pokok Produksi (HPP)</h1>
-      <p class="text-muted small mb-0">Rincian Komponen Biaya Produksi (Read-Only).</p>
+      <h1 class="h4 fw-bold mb-1">Cost of Goods Manufactured (HPP) Report</h1>
+      <p class="text-muted small mb-0">Production Cost Component Details (Read-Only).</p>
     </div>
     <div class="d-flex gap-2">
       <?php if (!empty($h['status_draft'])): ?>
@@ -266,15 +266,15 @@
       <div class="d-flex align-items-center gap-3">
         <i class="fa fa-exclamation-triangle fs-3 text-warning"></i>
         <div>
-          <h6 class="fw-bold mb-1 text-dark">Data Product Costing Belum Lengkap (FR-48, FR-74)</h6>
+          <h6 class="fw-bold mb-1 text-dark">Product Costing Data Incomplete (FR-48, FR-74)</h6>
           <div class="small text-dark">
-            Laporan ini masih berstatus <strong>Draft</strong> dan terdapat produk yang belum di-update di modul <strong>Simulasi Costing</strong> (komponen biaya bernilai Rp 0).
-            Lakukan <em>Update Costing</em> di modul Simulasi Costing, lalu klik tombol <strong>"Tarik Rate Costing Terkini"</strong> sebelum men-submit laporan ke Accounting.
+            This report still has status <strong>Draft</strong> and contains products that have not been updated in the <strong>Costing Simulation</strong> module (cost components are Rp 0).
+            Run <em>Update Costing</em> in the Costing Simulation module, then click the <strong>"Pull Latest Costing Rate"</strong> button before submitting the report to Accounting.
           </div>
         </div>
       </div>
       <a href="<?= site_url('simulasi_costing'); ?>" target="_blank" class="btn btn-warning btn-sm text-nowrap fw-bold ms-3">
-        <i class="fa fa-calculator me-1"></i> Buka Simulasi Costing <i class="fa fa-external-link ms-1"></i>
+        <i class="fa fa-calculator me-1"></i> Open Costing Simulation <i class="fa fa-external-link ms-1"></i>
       </a>
     </div>
   <?php endif; ?>
@@ -316,7 +316,7 @@
       <div class="alert alert-info py-2 px-3 mb-2 d-flex align-items-center gap-2 small">
         <i class="fa fa-info-circle fs-5 text-primary"></i>
         <div>
-          <strong>Rate HPP dari Hasil Costing:</strong> Komposisi biaya (Man Power, FOH, Bahan Pendukung Khusus, Consumables, Biaya Koordinasi, dan Scrap) dihitung menggunakan <strong>Rp/Kg dari Hasil Costing Varian BOM</strong> yang dipilih SPK, dan <strong>dibekukan</strong> saat laporan disimpan (FR-48, FR-49).
+          <strong>HPP Rate from Costing Result:</strong> The cost composition (Man Power, FOH, Special Supporting Material, Consumables, Coordination Cost, and Scrap) is calculated using the <strong>Rp/Kg from BOM Variant Costing Result</strong> selected by the SPK, and is <strong>frozen</strong> when the report is saved (FR-48, FR-49).
         </div>
       </div>
     </div>
@@ -327,18 +327,18 @@
             <th rowspan="2">No</th>
             <th rowspan="2">Produk <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
             <th rowspan="2">Coil</th>
-            <th rowspan="2" class="num">Berat (kg)</th>
-            <th rowspan="2" class="num">Berat/Pcs</th>
+            <th rowspan="2" class="num">Weight (kg)</th>
+            <th rowspan="2" class="num">Weight/Pcs</th>
             <th rowspan="2" class="num">Qty</th>
             <th rowspan="2" class="num">Costbook</th>
-            <th colspan="8" class="grp">Komponen Biaya / Pcs (Rp)</th>
-            <th colspan="8" class="grp-total">Total Biaya Finish Good (Rp)</th>
+            <th colspan="8" class="grp">Cost Component / Pcs (Rp)</th>
+            <th colspan="8" class="grp-total">Total Finish Good Cost (Rp)</th>
           </tr>
           <tr>
             <th class="num">Material</th>
             <th class="num">Man Power</th>
             <th class="num">FOH</th>
-            <th class="num">Bahan Pend.</th>
+            <th class="num">Supp. Material</th>
             <th class="num">Consumable</th>
             <th class="num">Koordinasi</th>
             <th class="num">Scrap</th>
@@ -346,7 +346,7 @@
             <th class="num">Tot Material</th>
             <th class="num">Man Power</th>
             <th class="num">FOH</th>
-            <th class="num">Bahan Pend.</th>
+            <th class="num">Supp. Material</th>
             <th class="num">Consumable</th>
             <th class="num">Koordinasi</th>
             <th class="num">Scrap</th>
@@ -356,7 +356,7 @@
         <tbody>
           <?php if (empty($kw1_items)): ?>
             <tr>
-              <td colspan="23" class="text-center text-muted py-3">Tidak ada data KW 1 / Stok Bebas.</td>
+              <td colspan="23" class="text-center text-muted py-3">No KW 1 / Free Stock data.</td>
             </tr>
           <?php else: ?>
             <?php
@@ -391,9 +391,9 @@
                     $is_costing_zero = ((float)$it['main_power_cost_per_pcs'] == 0 && (float)$it['foh_cost_per_pcs'] == 0 && (float)$it['bahan_pendukung_cost_per_pcs'] == 0);
                   ?>
                   <?php if ($is_costing_zero): ?>
-                    <br><span class="badge bg-danger-subtle text-danger border border-danger mt-1 small" title="Komponen Biaya Rp 0 (Belum Update Costing)"><i class="fa fa-exclamation-triangle me-1"></i>Costing 0</span>
+                    <br><span class="badge bg-danger-subtle text-danger border border-danger mt-1 small" title="Cost Component Rp 0 (Costing Not Updated)"><i class="fa fa-exclamation-triangle me-1"></i>Costing 0</span>
                   <?php else: ?>
-                    <br><span class="badge bg-success-subtle text-success border border-success mt-1 small" title="Komponen Biaya Terisi dari Simulasi Costing"><i class="fa fa-check me-1"></i>Costing OK</span>
+                    <br><span class="badge bg-success-subtle text-success border border-success mt-1 small" title="Cost Components Filled from Costing Simulation"><i class="fa fa-check me-1"></i>Costing OK</span>
                   <?php endif; ?>
                 </td>
                 <td><small><?= htmlspecialchars($it['source_material_coil'] ?? '-'); ?></small></td>
@@ -424,7 +424,7 @@
         <?php if (!empty($kw1_items)): ?>
           <tfoot>
             <tr>
-              <td colspan="15" class="text-end fw-bold">Total Biaya Finish Good (Rp) &rarr;</td>
+              <td colspan="15" class="text-end fw-bold">Total Finish Good Cost (Rp) &rarr;</td>
               <td class="num"><?= rp_format($t_mat); ?></td>
               <td class="num"><?= rp_format($t_mp); ?></td>
               <td class="num"><?= rp_format($t_foh); ?></td>
@@ -446,7 +446,7 @@
       <h2><span class="card-num">2</span> HPP — Finish Good KW 2</h2>
     </div>
     <div class="p-3">
-      <h6 class="fw-bold mb-2">KW 2 &mdash; Internal <span class="badge bg-info text-dark ms-2 small">Inventory 80% &bull; Biaya Loss 20%</span></h6>
+      <h6 class="fw-bold mb-2">KW 2 &mdash; Internal <span class="badge bg-info text-dark ms-2 small">Inventory 80% &bull; Loss Cost 20%</span></h6>
       <div class="table-responsive mb-4">
         <table class="tbl-hpp">
           <thead>
@@ -454,19 +454,19 @@
               <th rowspan="2">No</th>
               <th rowspan="2">Produk KW 2 <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
               <th rowspan="2">Coil</th>
-              <th rowspan="2" class="num">Berat (kg)</th>
+              <th rowspan="2" class="num">Weight (kg)</th>
               <th rowspan="2" class="num">Qty</th>
               <th rowspan="2" class="num">Costbook</th>
-              <th colspan="7" class="grp">Total Biaya Komponen (Rp)</th>
-              <th rowspan="2" class="num grp-total">Total Biaya FG</th>
+              <th colspan="7" class="grp">Total Component Cost (Rp)</th>
+              <th rowspan="2" class="num grp-total">Total FG Cost</th>
               <th rowspan="2" class="num text-success bg-light">Inventory (80%)</th>
-              <th rowspan="2" class="num text-danger bg-light">Biaya Loss (20%)</th>
+              <th rowspan="2" class="num text-danger bg-light">Loss Cost (20%)</th>
             </tr>
             <tr>
               <th class="num">Material</th>
               <th class="num">Man Power</th>
               <th class="num">FOH</th>
-              <th class="num">Bahan Pend.</th>
+              <th class="num">Supp. Material</th>
               <th class="num">Consumable</th>
               <th class="num">Koordinasi</th>
               <th class="num">Scrap</th>
@@ -475,7 +475,7 @@
           <tbody>
             <?php if (empty($kw2_int_items)): ?>
               <tr>
-                <td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Internal.</td>
+                <td colspan="17" class="text-center text-muted py-2">No KW 2 Internal.</td>
               </tr>
             <?php else: ?>
               <?php $no = 1;
@@ -509,7 +509,7 @@
         </table>
       </div>
 
-      <h6 class="fw-bold mb-2">KW 2 &mdash; Supplier <span class="badge bg-info text-dark ms-2 small">Inventory 80% &bull; Biaya Loss 20%</span></h6>
+      <h6 class="fw-bold mb-2">KW 2 &mdash; Supplier <span class="badge bg-info text-dark ms-2 small">Inventory 80% &bull; Loss Cost 20%</span></h6>
       <div class="table-responsive">
         <table class="tbl-hpp">
           <thead>
@@ -517,19 +517,19 @@
               <th rowspan="2">No</th>
               <th rowspan="2">Produk KW 2 <br><small class="text-muted fw-normal">/ Varian BOM (no_uniq_id)</small></th>
               <th rowspan="2">Coil</th>
-              <th rowspan="2" class="num">Berat (kg)</th>
+              <th rowspan="2" class="num">Weight (kg)</th>
               <th rowspan="2" class="num">Qty</th>
               <th rowspan="2" class="num">Costbook</th>
-              <th colspan="7" class="grp">Total Biaya Komponen (Rp)</th>
-              <th rowspan="2" class="num grp-total">Total Biaya FG</th>
+              <th colspan="7" class="grp">Total Component Cost (Rp)</th>
+              <th rowspan="2" class="num grp-total">Total FG Cost</th>
               <th rowspan="2" class="num text-success bg-light">Inventory (80%)</th>
-              <th rowspan="2" class="num text-danger bg-light">Biaya Loss (20%)</th>
+              <th rowspan="2" class="num text-danger bg-light">Loss Cost (20%)</th>
             </tr>
             <tr>
               <th class="num">Material</th>
               <th class="num">Man Power</th>
               <th class="num">FOH</th>
-              <th class="num">Bahan Pend.</th>
+              <th class="num">Supp. Material</th>
               <th class="num">Consumable</th>
               <th class="num">Koordinasi</th>
               <th class="num">Scrap</th>
@@ -538,7 +538,7 @@
           <tbody>
             <?php if (empty($kw2_sup_items)): ?>
               <tr>
-                <td colspan="17" class="text-center text-muted py-2">Tidak ada KW 2 Supplier.</td>
+                <td colspan="17" class="text-center text-muted py-2">No KW 2 Supplier.</td>
               </tr>
             <?php else: ?>
               <?php $no = 1;
@@ -584,11 +584,11 @@
         <thead>
           <tr>
             <th style="width:50px">No</th>
-            <th>Jenis Scrap</th>
+            <th>Scrap Type</th>
             <th>Coil Asal</th>
-            <th class="num" style="width:140px">Total Berat (kg)</th>
+            <th class="num" style="width:140px">Total Weight (kg)</th>
             <th class="num" style="width:140px">Costbook /kg</th>
-            <th class="num" style="width:160px">Nilai (Rp)</th>
+            <th class="num" style="width:160px">Value (Rp)</th>
             <th class="num text-success bg-light" style="width:170px">Inventory Value (40%)</th>
             <th class="num text-danger bg-light" style="width:170px">Beban FOH (60%)</th>
           </tr>
@@ -596,14 +596,14 @@
         <tbody>
           <?php if (empty($waste_scraps)): ?>
             <tr>
-              <td colspan="8" class="text-center text-muted py-2">Tidak ada komponen scrap.</td>
+              <td colspan="8" class="text-center text-muted py-2">No scrap components.</td>
             </tr>
           <?php else: ?>
             <?php $no = 1;
             foreach ($waste_scraps as $sc): ?>
               <tr>
                 <td class="text-center"><?= $no++; ?></td>
-                <td><strong><?= strtoupper(str_replace('_', ' ', $sc['scrap_type'])); ?></strong></td>
+                <td><strong><?= strtoupper(str_replace('_', ' ', $sc['scrap_type'] ?? '')); ?></strong></td>
                 <td><?= htmlspecialchars($sc['target_coil_code'] ?: '-'); ?></td>
                 <td class="num"><?= kg_format($sc['berat_total']); ?></td>
                 <td class="num"><?= rp_format($sc['costbook_rate']); ?></td>
@@ -638,14 +638,14 @@
             <thead>
               <tr>
                 <th>Coil</th>
-                <th class="num">Berat (kg)</th>
-                <th class="num">Nilai (Rp)</th>
+                <th class="num">Weight (kg)</th>
+                <th class="num">Value (Rp)</th>
               </tr>
             </thead>
             <tbody>
               <?php if (empty($sisa_scraps)): ?>
                 <tr>
-                  <td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td>
+                  <td colspan="3" class="text-center text-muted small py-2">— None —</td>
                 </tr>
               <?php else: ?>
                 <?php foreach ($sisa_scraps as $s): ?>
@@ -678,14 +678,14 @@
             <thead>
               <tr>
                 <th>Coil</th>
-                <th class="num">Berat (kg)</th>
-                <th class="num">Nilai (Rp)</th>
+                <th class="num">Weight (kg)</th>
+                <th class="num">Value (Rp)</th>
               </tr>
             </thead>
             <tbody>
               <?php if (empty($hold_scraps)): ?>
                 <tr>
-                  <td colspan="3" class="text-center text-muted small py-2">— Tidak ada —</td>
+                  <td colspan="3" class="text-center text-muted small py-2">— None —</td>
                 </tr>
               <?php else: ?>
                 <?php foreach ($hold_scraps as $s): ?>
@@ -723,7 +723,7 @@
             <span><?= ((float)($h['summary_selisih'] ?? 0) < 0) ? '<span class="badge bg-success-subtle text-success">Favorable</span>' : '<span class="badge bg-danger-subtle text-danger">Unfavorable</span>'; ?></span>
           </div>
           <div class="p-2 border rounded bg-light text-center mt-3">
-            <small class="text-muted d-block">Nilai Rupiah Selisih Material</small>
+            <small class="text-muted d-block">Material Difference Rupiah Value</small>
             <span class="fs-5 fw-bold <?= ((float)($h['selisih_weight_value'] ?? 0) < 0) ? 'text-success' : 'text-danger'; ?>">
               <?= rp_format($h['selisih_weight_value'] ?? 0); ?>
             </span>
@@ -743,16 +743,16 @@ $(document).ready(function() {
     var reportId = $(this).data('id');
     Swal.fire({
       title: 'Tarik Rate Costing Terkini?',
-      text: 'Sistem akan membaca kembali komponen biaya Rp/Kg dari hasil Simulasi Costing terbaru dan menghitung ulang seluruh nilai HPP draft ini.',
+      text: 'The system will re-read the Rp/Kg cost components from the latest Costing Simulation result and recalculate all HPP values of this draft.',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Ya, Tarik Rate',
-      cancelButtonText: 'Batal'
+      confirmButtonText: 'Yes, Pull Rate',
+      cancelButtonText: 'Cancel'
     }).then(function(res) {
       if (!res.isConfirmed) return;
 
       Swal.fire({
-        title: 'Menghitung Ulang HPP...',
+        title: 'Recalculating HPP...',
         allowOutsideClick: false,
         didOpen: function() {
           Swal.showLoading();
@@ -768,20 +768,20 @@ $(document).ready(function() {
           if (response.status === 1) {
             Swal.fire({
               icon: 'success',
-              title: 'Berhasil',
-              text: response.message || 'Rate costing berhasil diperbarui!',
+              title: 'Success',
+              text: response.message || 'Costing rate updated successfully!',
               timer: 1500,
               showConfirmButton: false
             }).then(function() {
               window.location.reload();
             });
           } else {
-            Swal.fire('Gagal', response.message || 'Gagal memperbarui rate costing.', 'warning');
+            Swal.fire('Failed', response.message || 'Failed to update costing rate.', 'warning');
           }
         },
         error: function() {
           Swal.close();
-          Swal.fire('Error', 'Terjadi kesalahan sistem saat menghubungi server.', 'error');
+          Swal.fire('Error', 'A system error occurred while contacting the server.', 'error');
         }
       });
     });

@@ -56,7 +56,7 @@ class Product_catalog extends Admin_Controller
 
         $catalog = $this->pc_model->get_catalog_by_id($id);
         if (!$catalog) {
-            echo json_encode(['status' => 0, 'pesan' => 'Katalog tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Catalog not found']);
             return;
         }
 
@@ -72,7 +72,7 @@ class Product_catalog extends Admin_Controller
 
         $id_pricelist = (int)$this->input->post('id_pricelist');
         if (!$id_pricelist) {
-            echo json_encode(['status' => 0, 'pesan' => 'Pilih dokumen Pricelist yang disetujui']);
+            echo json_encode(['status' => 0, 'pesan' => 'Select an approved Pricelist document']);
             return;
         }
 
@@ -81,10 +81,10 @@ class Product_catalog extends Admin_Controller
             write_log('Product Catalog', 'Release', "Merilis Product Catalog baru {$no_cat} dari Pricelist ID {$id_pricelist}", null, null, 1);
             echo json_encode([
                 'status' => 1,
-                'pesan'  => "Product Catalog {$no_cat} berhasil dirilis sebagai snapshot katalog resmi aktif.",
+                'pesan'  => "Product Catalog {$no_cat} released successfully as the active official catalog snapshot.",
             ]);
         } else {
-            echo json_encode(['status' => 0, 'pesan' => 'Gagal merilis Product Catalog']);
+            echo json_encode(['status' => 0, 'pesan' => 'Failed to release Product Catalog']);
         }
     }
 
@@ -115,18 +115,18 @@ class Product_catalog extends Admin_Controller
         // Header CSV
         fputcsv($output, [
             'No',
-            'Nama Produk',
-            'Kode Produk (Lv4)',
+            'Product Name',
+            'Product Code (Lv4)',
             'No Uniq ID (Varian)',
-            'Kategori Produk',
-            'Ukuran (m)',
-            'Berat / Meter (Kg/m)',
+            'Product Category',
+            'Size (m)',
+            'Weight / Meter (Kg/m)',
             'Price List / Meter (Rp)',
             'Price List / Kg (Rp)',
             'Price List / Pcs (Rp)',
             'No Catalog',
             'Status Catalog',
-            'Tanggal Rilis',
+            'Release Date',
             'Pricelist Asal',
         ]);
 

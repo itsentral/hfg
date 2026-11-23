@@ -7,7 +7,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
                 <h5 class="mb-1 text-primary fw-bold">
-                    <i class="fa fa-bell me-2"></i>Notifikasi Perubahan Bottom Price
+                    <i class="fa fa-bell me-2"></i>Bottom Price Change Notification
                 </h5>
                 <small class="text-muted">
                     Muncul saat <strong>Update Costing</strong> dijalankan dan Bottom Price (Rp/m) suatu varian BOM bergeser dari baseline sebelumnya.
@@ -15,7 +15,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
             </div>
             <div class="d-flex align-items-center gap-2">
                 <a href="<?= base_url('simulasi_costing') ?>" class="btn btn-outline-primary btn-sm shadow-sm">
-                    <i class="fa fa-calculator me-1"></i> Buka Simulasi Costing
+                    <i class="fa fa-calculator me-1"></i> Open Costing Simulation
                 </a>
             </div>
         </div>
@@ -59,11 +59,11 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                         <th width="140">Waktu Deteksi</th>
                         <th>Product Category</th>
                         <th>Produk / Varian</th>
-                        <th class="text-end" width="130">Bottom Lama</th>
-                        <th class="text-end" width="130">Bottom Baru</th>
+                        <th class="text-end" width="130">Old Bottom</th>
+                        <th class="text-end" width="130">New Bottom</th>
                         <th class="text-end" width="120">Selisih</th>
                         <th class="text-center" width="140">Status</th>
-                        <th width="150">Ditinjau Oleh</th>
+                        <th width="150">Reviewed By</th>
                         <?php if ($ENABLE_MANAGE): ?>
                             <th class="text-center no-sort" width="180">Action</th>
                         <?php endif; ?>
@@ -136,7 +136,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                                     data-active="<?= (float)($r->rate_negotiation_allowance * 100) ?>"
                                                     data-bottom-lama="<?= number_format((float) $lama, 2, ',', '.') ?>"
                                                     data-bottom-baru="<?= number_format((float) $baru, 2, ',', '.') ?>"
-                                                    title="Ajukan Revisi Extra Margin ke GM"
+                                                    title="Submit Extra Margin Revision to GM"
                                                     style="width: 80px;">
                                                     <i class="fa fa-paper-plane me-1"></i> Ajukan
                                                 </button>
@@ -145,7 +145,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                                     class="btn btn-sm btn-outline-secondary btn-keep-rate shadow-sm"
                                                     data-id="<?= $r->id ?>"
                                                     data-nama="<?= htmlspecialchars(strtoupper($r->nm_product ?: $r->code_lv4)) ?> (<?= $r->no_uniq_id ?>)"
-                                                    title="Tetap Gunakan Rate Extra Margin Aktif"
+                                                    title="Keep Using the Active Extra Margin Rate"
                                                     style="width: 80px;">
                                                     <i class="fa fa-thumbs-up me-1"></i> Keep
                                                 </button>
@@ -154,7 +154,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                                     class="btn btn-sm btn-light text-success border shadow-sm"
                                                     disabled
                                                     style="width: 80px;">
-                                                    <i class="fa fa-check me-1"></i> Selesai
+                                                    <i class="fa fa-check me-1"></i> Done
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -168,7 +168,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
         </div>
         <div class="mt-3 text-muted small">
             <i class="fa fa-info-circle me-1"></i>
-            <strong>Keterangan:</strong> Notifikasi ini bersifat panduan bagi Sales Manager untuk mengevaluasi apakah pergeseran Bottom Price memerlukan penyesuaian Extra Margin sebelum rilis Pricelist.
+            <strong>Description:</strong> This notification is guidance for the Sales Manager to evaluate whether a Bottom Price shift requires an Extra Margin adjustment before the Pricelist release.
         </div>
     </div>
 </div>
@@ -193,11 +193,11 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                             <strong class="fs-6 text-dark" id="txt_prod_name"></strong>
                             <div class="mt-2 row g-2">
                                 <div class="col-6">
-                                    <small class="text-muted d-block">Bottom Price Lama</small>
+                                    <small class="text-muted d-block">Old Bottom Price</small>
                                     <span class="text-muted" id="txt_bot_lama"></span>
                                 </div>
                                 <div class="col-6">
-                                    <small class="text-muted d-block">Bottom Price Baru</small>
+                                    <small class="text-muted d-block">New Bottom Price</small>
                                     <strong class="text-primary" id="txt_bot_baru"></strong>
                                 </div>
                             </div>
@@ -205,7 +205,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-muted small mb-1">Rate Extra Margin Aktif Saat Ini</label>
+                        <label class="form-label text-muted small mb-1">Current Active Extra Margin Rate</label>
                         <div class="input-group">
                             <input type="text" id="txt_active_rate" class="form-control bg-light text-end fw-bold" readonly>
                             <span class="input-group-text">%</span>
@@ -213,20 +213,20 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Rate Baru Yang Diajukan (%) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Requested New Rate (%) <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <input type="number" step="0.01" min="0" max="100" name="rate_pct" id="txt_new_rate" class="form-control text-end fs-6 fw-bold text-primary" required placeholder="0.00">
                             <span class="input-group-text fw-bold">%</span>
                         </div>
                         <div class="form-text text-muted">
-                            Pengajuan akan otomatis diteruskan ke antrean <strong>Approval GM</strong>.
+                            The request will be forwarded to the <strong>GM Approval</strong> queue automatically.
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4" id="btn-submit-nego">
-                        <i class="fa fa-paper-plane me-1"></i> Kirim ke GM
+                        <i class="fa fa-paper-plane me-1"></i> Send to GM
                     </button>
                 </div>
             </form>
@@ -282,7 +282,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
             if (rate === '' || isNaN(rate) || Number(rate) < 0 || Number(rate) > 100) {
                 Swal.fire({
                     title: 'Validasi',
-                    text: 'Rate Extra Margin harus antara 0% dan 100%',
+                    text: 'Extra Margin Rate must be between 0% and 100%',
                     icon: 'warning'
                 });
                 return;
@@ -299,11 +299,11 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                     rate_pct: rate
                 },
                 success: function(resp) {
-                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
+                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Send to GM');
                     if (resp.status == 1) {
                         $('#modal-nego').modal('hide');
                         Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1800,
@@ -314,14 +314,14 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                             });
                     } else {
                         Swal.fire({
-                            title: 'Gagal!',
+                            title: 'Failed!',
                             text: resp.pesan,
                             icon: 'error'
                         });
                     }
                 },
                 error: function(xhr) {
-                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Kirim ke GM');
+                    $('#btn-submit-nego').prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Send to GM');
                     Swal.fire({
                         title: 'Error!',
                         text: 'Request error: ' + xhr.status,
@@ -337,15 +337,15 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
             var nama = $(this).data('nama');
 
             Swal.fire({
-                title: 'Rate Extra Margin tidak perlu diubah?',
-                text: 'Rate Extra Margin aktif tetap dipakai untuk "' + nama + '" dan baseline Bottom Price bergeser ke nilai baru.',
+                title: 'Extra Margin Rate does not need to change?',
+                text: 'The active Extra Margin rate is still used for "' + nama + '" dan baseline Bottom Price bergeser ke nilai baru.',
                 icon: 'question',
                 input: 'text',
-                inputPlaceholder: 'Tuliskan catatan opsional (mis: Harga pasar masih sesuai)...',
+                inputPlaceholder: 'Write an optional note (e.g. Market price is still appropriate)...',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
-                confirmButtonText: 'Ya, Tetap Gunakan Rate Aktif',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Keep Using the Active Rate',
+                cancelButtonText: 'Cancel'
             }).then(function(res) {
                 if (!res.isConfirmed) return;
 
@@ -360,7 +360,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                     success: function(resp) {
                         if (resp.status == 1) {
                             Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: resp.pesan,
                                     icon: 'success',
                                     timer: 1800,
@@ -371,7 +371,7 @@ $ENABLE_MANAGE = has_permission('Bottom_Price_Notification.Manage');
                                 });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: resp.pesan,
                                 icon: 'error'
                             });

@@ -65,19 +65,19 @@ $readonly = 'readonly';
 		<div class="box box-primary">
 			<div class="box-body">
 				<div class="form-group ">
-					<label class="col-sm-2 col-md-2 control-label">No Dokumen</label>
+					<label class="col-sm-2 col-md-2 control-label">Document No.</label>
 					<div class="col-sm-4 col-md-4">
 						<input type="text" class="form-control" id="no_doc" name="no_doc" value="<?php echo (isset($data->no_doc) ? $data->no_doc : ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 col-md-2 control-label">Tanggal <b class="text-red">*</b></label>
+					<label class="col-sm-2 col-md-2 control-label">Date <b class="text-red">*</b></label>
 					<div class="col-sm-4 col-md-4">
-						<input type="text" class="form-control" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Tanggal Dokumen" <?= $readonly ?>>
+						<input type="text" class="form-control" id="tgl_doc" name="tgl_doc" value="<?php echo (isset($data->tgl_doc) ? $data->tgl_doc : date("Y-m-d")); ?>" placeholder="Document Date" <?= $readonly ?>>
 					</div>
 				</div>
 				<div class="form-group ">
-					<label class="col-sm-2 col-md-2 control-label">Keterangan <b class="text-red">*</b></label>
+					<label class="col-sm-2 col-md-2 control-label">Description <b class="text-red">*</b></label>
 					<div class="col-sm-4 col-md-4">
-						<input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Keterangan" <?= $readonly ?>>
+						<input type="text" class="form-control" id="informasi" name="informasi" value="<?php echo (isset($data->informasi) ? $data->informasi : ""); ?>" placeholder="Description" <?= $readonly ?>>
 					</div>
 					<label class='col-sm-2 col-md-2 control-label'><b>Department</b></label>
 					<div class='col-sm-4 col-md-4'>
@@ -97,19 +97,19 @@ $readonly = 'readonly';
 					</div>
 				</div>
 				<div class="hidden">
-					<h4>Transfer ke</h4>
+					<h4>Transfer to</h4>
 					<div class="form-group ">
 						<label class="col-md-1 control-label">Bank</label>
 						<div class="col-md-2">
 							<input type="text" class="form-control" id="bank_id" name="bank_id" value="<?php echo (isset($data->bank_id) ? $data->bank_id : $bank_id); ?>" placeholder="Bank" <?= $readonly ?>>
 						</div>
-						<label class="col-md-2 control-label">Nomor Rekening</label>
+						<label class="col-md-2 control-label">Account Number</label>
 						<div class="col-md-2">
-							<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Nomor Rekening" <?= $readonly ?>>
+							<input type="text" class="form-control" id="accnumber" name="accnumber" value="<?php echo (isset($data->accnumber) ? $data->accnumber : $accnumber); ?>" placeholder="Account Number" <?= $readonly ?>>
 						</div>
-						<label class="col-md-2 control-label">Nama Rekening</label>
+						<label class="col-md-2 control-label">Account Name</label>
 						<div class="col-md-3">
-							<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Nama Pemilik Rekening" <?= $readonly ?>>
+							<input type="text" class="form-control" id="accname" name="accname" value="<?php echo (isset($data->accname) ? $data->accname : $accname); ?>" placeholder="Account Holder Name" <?= $readonly ?>>
 						</div>
 					</div>
 				</div>
@@ -118,12 +118,12 @@ $readonly = 'readonly';
 						<thead>
 							<tr>
 								<th width="5" scope="col" class="column-primary">#</th>
-								<th scope="col" width="250">Jenis dan<br /> Tanggal</th>
-								<th scope="col" width="250">Barang/Jasa <br />&Keterangan</th>
-								<th scope="col" width=150 nowrap>Jumlah</th>
-								<th scope="col" width=200 nowrap>Harga Satuan</th>
+								<th scope="col" width="250">Type and<br /> Date</th>
+								<th scope="col" width="250">Goods/Services <br />&Keterangan</th>
+								<th scope="col" width=150 nowrap>Amount</th>
+								<th scope="col" width=200 nowrap>Unit Price</th>
 								<th scope="col" width="200">Expense</th>
-								<th scope="col" width="200">Kasbon</th>
+								<th scope="col" width="200">Cash Advance</th>
 								<th scope="col" width="50">Bon Bukti</th>
 								<th scope="col" class="column-primary"></th>
 							</tr>
@@ -145,7 +145,7 @@ $readonly = 'readonly';
 											<input type="hidden" name="filename[]" id="filename_<?= $idd ?>" value="<?= $record->doc_file; ?>">
 											<input type="hidden" name="detail_id[]" id="raw_id_<?= $idd ?>" value="<?= $idd; ?>" class="dtlloop"><?= $idd; ?>
 										</td>
-										<td data-header="Jenis & Tanggal">
+										<td data-header="Type & Date">
 											<?php
 											if ($tekskasbon == '') {
 												echo form_dropdown('coa[]', $data_budget, (isset($record->coa) ? $record->coa : ''), array('id' => 'coa' . $idd, 'required' => 'required', 'class' => 'form-control select2', 'style' => 'width:300px'));
@@ -157,11 +157,11 @@ $readonly = 'readonly';
 											?>
 											<input type="text" class="form-control input-sm" name="tanggal[]" id="tanggal<?= $idd; ?>" value="<?= $record->tanggal; ?>" <?= $tekskasbon ?> <?= $readonly ?>>
 										</td>
-										<td data-header="Barang / Jasa & Keterangan"><input type="text" class="form-control input-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" value="<?= $record->deskripsi; ?>" <?= $tekskasbon ?> style="width:100px;" <?= $readonly ?>>
+										<td data-header="Goods / Services & Description"><input type="text" class="form-control input-sm" name="deskripsi[]" id="deskripsi_<?= $idd; ?>" value="<?= $record->deskripsi; ?>" <?= $tekskasbon ?> style="width:100px;" <?= $readonly ?>>
 											<input type="text" class="form-control input-sm" name="keterangan[]" id="keterangan_<?= $idd; ?>" value="<?= $record->keterangan; ?>" <?= $readonly ?>>
 										</td>
 										<td data-header="Qty"><input type="text" class="form-control divide input-sm" name="qty[]" id="qty_<?= $idd; ?>" value="<?= $record->qty; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> size="15" style="width:60px;" <?= $readonly ?>></td>
-										<td data-header="Harga Satuan"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> style="width:100px;" <?= $readonly ?>></td>
+										<td data-header="Unit Price"><input type="text" class="form-control divide input-sm" name="harga[]" id="harga_<?= $idd; ?>" value="<?= $record->harga; ?>" onblur="cektotal(<?= $idd; ?>)" <?= $tekskasbon ?> style="width:100px;" <?= $readonly ?>></td>
 										<td data-header="Expense"><input type="text" class="form-control divide subtotal input-sm" name="expense[]" id="expense_<?= $idd; ?>" value="<?= ($record->expense); ?>" tabindex="-1" readonly style="width:100px;" <?= $readonly ?>></td>
 										<td data-header="Kasbon"><input type="text" class="form-control divide subkasbon input-sm" name="kasbon[]" id="kasbon_<?= $idd; ?>" value="<?= ($record->kasbon); ?>" tabindex="-1" readonly style="width:100px;" <?= $readonly ?>></td>
 										<td data-header="Bon Bukti" width="50">
@@ -199,10 +199,10 @@ $readonly = 'readonly';
 							<tr>
 								<td colspan="5" align=right>TOTAL</td>
 								<td><input type="text" class="form-control divide input-sm" id="total_expense" name="total_expense" value="<?= $total_expense ?>" placeholder="Total Expense" tabindex="-1" readonly style='width:100px;'></td>
-								<td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Kasbon" tabindex="-1" readonly style='width:100px;'></td>
+								<td><input type="text" class="form-control divide input-sm" id="total_kasbon" name="total_kasbon" value="<?= $total_kasbon ?>" placeholder="Total Cash Advance" tabindex="-1" readonly style='width:100px;'></td>
 								<td align=right colspan=2>
 									<div class="row">
-										<div class="col-md-2">Saldo</div>
+										<div class="col-md-2">Balance</div>
 										<div class="col-md-10"><input type="text" class="form-control divide input-sm" id="grand_total" name="grand_total" value="<?= $grand_total ?>" placeholder="Grand Total" tabindex="-1" style="min-width:200px;" readonly></div>
 									</div>
 								</td>
@@ -250,11 +250,11 @@ $readonly = 'readonly';
 
 							$urlback = 'list_expense_approval';
 							if ($error_coa == '') {
-								echo '<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>';
+								echo '<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>';
 							}
 							// echo ' <a class="btn btn-danger btn-sm" onclick="data_reject()"><i class="fa fa-ban">&nbsp;</i> Reject</a>';
 							?>
-							<a class="btn btn-default btn-sm" onclick="window.location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+							<a class="btn btn-default btn-sm" onclick="window.location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Cancel</a>
 						</div>
 					</div>
 					<!-- <div class="row">
@@ -299,12 +299,12 @@ $readonly = 'readonly';
 			var errors = "";
 			if (errors == "") {
 				swal({
-						title: "Anda Yakin?",
-						text: "Data Akan Disetujui!",
+						title: "Are you sure?",
+						text: "The data will be approved!",
 						type: "info",
 						showCancelButton: true,
-						confirmButtonText: "Ya, simpan!",
-						cancelButtonText: "Tidak!",
+						confirmButtonText: "Yes, save!",
+						cancelButtonText: "No!",
 						closeOnConfirm: false,
 						closeOnCancel: true
 					},
@@ -322,8 +322,8 @@ $readonly = 'readonly';
 								success: function(msg) {
 									if (msg['save'] == '1') {
 										swal({
-											title: "Sukses!",
-											text: "Data Berhasil Di Setujui",
+											title: "Success!",
+											text: "Data approved successfully",
 											type: "success",
 											timer: 1500,
 											showConfirmButton: false
@@ -332,16 +332,16 @@ $readonly = 'readonly';
 									} else {
 										if(msg['valid'] == 2) {
 											swal({
-												title: "Gagal!",
-												text: "Sisa pengembalian melebihi nilai expense !",
+												title: "Failed!",
+												text: "The remaining return exceeds the expense value!",
 												type: "error",
 												timer: 1500,
 												showConfirmButton: false
 											});
 										}else{
 											swal({
-												title: "Gagal!",
-												text: "Data Gagal Di Setujui",
+												title: "Failed!",
+												text: "Failed to approve data",
 												type: "error",
 												timer: 1500,
 												showConfirmButton: false
@@ -352,8 +352,8 @@ $readonly = 'readonly';
 								},
 								error: function(msg) {
 									swal({
-										title: "Gagal!",
-										text: "Ajax Data Gagal Di Proses",
+										title: "Failed!",
+										text: "Ajax request failed to process.",
 										type: "error",
 										timer: 1500,
 										showConfirmButton: false
@@ -371,7 +371,7 @@ $readonly = 'readonly';
 
 		function data_reject() {
 			swal({
-					title: "Perhatian",
+					title: "Attention",
 					text: "Berikan alasan penolakan",
 					type: "input",
 					showCancelButton: true,
@@ -381,17 +381,17 @@ $readonly = 'readonly';
 				function(inputValue) {
 					if (inputValue === false) return false;
 					if (inputValue === "") {
-						swal.showInputError("Tuliskan alasan anda");
+						swal.showInputError("Write your reason");
 						return false
 					}
 
 					swal({
-							title: "Anda Yakin?",
-							text: "Data Akan Tolak!",
+							title: "Are you sure?",
+							text: "The Data Will Be Rejected!",
 							type: "warning",
 							showCancelButton: true,
-							confirmButtonText: "Ya, tolak!",
-							cancelButtonText: "Tidak!",
+							confirmButtonText: "Yes, reject!",
+							cancelButtonText: "No!",
 							closeOnConfirm: false,
 							closeOnCancel: true
 						},
@@ -409,8 +409,8 @@ $readonly = 'readonly';
 									success: function(msg) {
 										if (msg['save'] == '1') {
 											swal({
-												title: "Sukses!",
-												text: "Data Berhasil Di Tolak",
+												title: "Success!",
+												text: "Data Rejected Successfully",
 												type: "success",
 												timer: 1500,
 												showConfirmButton: false
@@ -418,8 +418,8 @@ $readonly = 'readonly';
 											window.location.reload();
 										} else {
 											swal({
-												title: "Gagal!",
-												text: "Data Gagal Di Tolak",
+												title: "Failed!",
+												text: "Data Failed to Reject",
 												type: "error",
 												timer: 1500,
 												showConfirmButton: false
@@ -429,8 +429,8 @@ $readonly = 'readonly';
 									},
 									error: function(msg) {
 										swal({
-											title: "Gagal!",
-											text: "Ajax Data Gagal Di Proses",
+											title: "Failed!",
+											text: "Ajax request failed to process.",
 											type: "error",
 											timer: 1500,
 											showConfirmButton: false

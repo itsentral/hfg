@@ -365,10 +365,10 @@
                         }
                     }
 
-                    $detail_code = str_split($detail->code, 35);
+                    $detail_code = str_split($detail->code ?? '', 35);
                     $final_detail_code = implode("<br>", $detail_code ?? []);
 
-                    $detail_nama = str_split($detail->nama, 35);
+                    $detail_nama = str_split($detail->nama ?? '', 35);
                     $final_detail_nama = implode("<br>", $detail_nama ?? []);
 
                     if ($jumlahdata <= '30') {
@@ -426,7 +426,7 @@
 
                 </tr>
                 <tr>
-                    <td align="right" colspan='8'>Biaya Kirim </td>
+                    <td align="right" colspan='8'>Shipping Cost </td>
                     <td align="right" style="font-size: 8px;"><?= number_format((float) $header->taxtotal, 2) ?></td>
 
                 </tr>
@@ -481,7 +481,7 @@
                     <table width="620" align="left" border="0">
                         <tr>
                             <td width="620" height="100%">
-                                <b>Keterangan :</b> <br>
+                                <b>Description:</b> <br>
                                 <?= wordwrap((string) $header->note, 90, '<br>', true) ?>
                             </td>
                         </tr>

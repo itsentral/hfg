@@ -95,7 +95,7 @@ class Master_sound extends Admin_Controller
             // 4: File Original Name & Audio Player (Dirapikan)
             $file_orig = !empty($row['file_original_name'])
                 ? htmlspecialchars((string) $row['file_original_name'])
-                : '<span class="text-muted fst-italic">Tidak ada file</span>';
+                : '<span class="text-muted fst-italic">No file</span>';
 
             $audio_player = '';
             if (!empty($row['file_hash_name']) && file_exists(FCPATH . 'uploads/sound_app/' . $row['file_hash_name'])) {
@@ -111,8 +111,8 @@ class Master_sound extends Admin_Controller
 
             // 5: Status
             $status_badge = ($row['status'] == 1)
-                ? '<span class="badge bg-success">Aktif</span>'
-                : '<span class="badge bg-danger">Non-Aktif</span>';
+                ? '<span class="badge bg-success">Active</span>'
+                : '<span class="badge bg-danger">Inactive</span>';
             $nestedData[] = "<div class='text-center'>{$status_badge}</div>";
 
             // 6: Last Update
@@ -129,7 +129,7 @@ class Master_sound extends Admin_Controller
 
             $delete_btn = '';
             if ($ENABLE_DELETE) {
-                $delete_btn = "<button type='button' class='btn btn-sm btn-danger btn-delete-sound' data-id='{$row['id']}' data-name='" . htmlspecialchars((string) $row['sound_name'], ENT_QUOTES) . "' title='Hapus'><i class='fa fa-trash'></i></button>";
+                $delete_btn = "<button type='button' class='btn btn-sm btn-danger btn-delete-sound' data-id='{$row['id']}' data-name='" . htmlspecialchars((string) $row['sound_name'], ENT_QUOTES) . "' title='Delete'><i class='fa fa-trash'></i></button>";
             }
 
             $nestedData[] = "<div class='text-center'>
@@ -166,7 +166,7 @@ class Master_sound extends Admin_Controller
             }
             echo json_encode(['status' => 1, 'data' => $data]);
         } else {
-            echo json_encode(['status' => 0, 'msg' => 'Data tidak ditemukan.']);
+            echo json_encode(['status' => 0, 'msg' => 'Data not found.']);
         }
     }
 
@@ -183,12 +183,12 @@ class Master_sound extends Admin_Controller
         $status        = (int) $this->input->post('status');
 
         if (empty($sound_name)) {
-            echo json_encode(['status' => 0, 'msg' => 'Nama Sound tidak boleh kosong.']);
+            echo json_encode(['status' => 0, 'msg' => 'Sound Name cannot be empty.']);
             return;
         }
 
         if (empty($sound_code)) {
-            echo json_encode(['status' => 0, 'msg' => 'Kode Event tidak boleh kosong.']);
+            echo json_encode(['status' => 0, 'msg' => 'Event Code cannot be empty.']);
             return;
         }
 
@@ -200,7 +200,7 @@ class Master_sound extends Admin_Controller
 
         $save_data = [
             'sound_name'    => $sound_name,
-            'sound_code'    => strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $sound_code)),
+            'sound_code'    => strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $sound_code ?? '')),
             'vibrate_level' => $vibrate_level,
             'keterangan'    => $keterangan,
             'status'        => $status,
@@ -256,10 +256,10 @@ class Master_sound extends Admin_Controller
 
         if ($result_id) {
             write_log('Master Sound', empty($id) ? 'Add' : 'Edit', (empty($id) ? 'Tambah' : 'Update') . ' sound: ' . ($save_data['sound_code'] ?? $id), $logPayload, null, 1);
-            echo json_encode(['status' => 1, 'msg' => 'Master Sound berhasil disimpan.']);
+            echo json_encode(['status' => 1, 'msg' => 'Master Sound saved successfully.']);
         } else {
             write_log('Master Sound', empty($id) ? 'Add' : 'Edit', 'Gagal simpan sound: ' . ($save_data['sound_code'] ?? $id), $logPayload, null, 0);
-            echo json_encode(['status' => 0, 'msg' => 'Gagal menyimpan Master Sound.']);
+            echo json_encode(['status' => 0, 'msg' => 'Failed to save Master Sound.']);
         }
     }
 
@@ -270,7 +270,7 @@ class Master_sound extends Admin_Controller
     {
         $id = $this->input->post('id');
         if (empty($id)) {
-            echo json_encode(['status' => 0, 'msg' => 'ID tidak valid.']);
+            echo json_encode(['status' => 0, 'msg' => 'Invalid ID.']);
             return;
         }
 
@@ -284,10 +284,10 @@ class Master_sound extends Admin_Controller
                 }
             }
             write_log('Master Sound', 'Delete', 'Delete sound ID: ' . $id . ' (' . ($deleted_row['sound_code'] ?? '') . ')', $deleted_row, null, 1);
-            echo json_encode(['status' => 1, 'msg' => 'Master Sound berhasil dihapus.']);
+            echo json_encode(['status' => 1, 'msg' => 'Master Sound deleted successfully.']);
         } else {
             write_log('Master Sound', 'Delete', 'Gagal delete sound ID: ' . $id, ['id' => $id], null, 0);
-            echo json_encode(['status' => 0, 'msg' => 'Gagal menghapus Master Sound.']);
+            echo json_encode(['status' => 0, 'msg' => 'Failed to delete Master Sound.']);
         }
     }
 

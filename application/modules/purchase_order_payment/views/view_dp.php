@@ -1,18 +1,18 @@
 <div class="row g-3">
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor PO</label>
+        <label class="form-label fw-semibold">PO Number</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['no_surat'] ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nama Supplier</label>
+        <label class="form-label fw-semibold">Supplier Name</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['nm_supplier'] ?? '-' ?>" readonly>
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Invoice</label>
+        <label class="form-label fw-semibold">Invoice Number</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['nomor_invoice'] ?>" readonly>
     </div>
@@ -45,12 +45,12 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai PPN</label>
+        <label class="form-label fw-semibold">VAT Value</label>
         <input type="text" class="form-control form-control-sm text-end"
             value="<?= number_format((float) $data['nilai_ppn'], 2) ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nilai Disc</label>
+        <label class="form-label fw-semibold">Discount Value</label>
         <input type="text" class="form-control form-control-sm text-end"
             value="<?= number_format((float) $data['nilai_disc'], 2) ?>" readonly>
     </div>
@@ -67,12 +67,12 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Nomor Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Number</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['nomor_faktur_pajak'] ?? '-' ?>" readonly>
     </div>
     <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Faktur Pajak</label>
+        <label class="form-label fw-semibold">Tax Invoice Date</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= !empty($data['tanggal_faktur_pajak']) ? date('d F Y', strtotime((string) $data['tanggal_faktur_pajak'])) : '-' ?>" readonly>
     </div>
@@ -87,7 +87,7 @@
     </div>
     <?php endif; ?>
 
-    <div class="col-12"><hr class="my-1"><p class="fw-bold mb-2">Informasi Bank</p></div>
+    <div class="col-12"><hr class="my-1"><p class="fw-bold mb-2">Bank Information</p></div>
 
     <div class="col-md-4">
         <label class="form-label fw-semibold">Bank</label>
@@ -95,12 +95,12 @@
             value="<?= $data['bank'] ?>" readonly>
     </div>
     <div class="col-md-4">
-        <label class="form-label fw-semibold">No. Rekening</label>
+        <label class="form-label fw-semibold">Account Number</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['no_bank'] ?>" readonly>
     </div>
     <div class="col-md-4">
-        <label class="form-label fw-semibold">Nama Pemilik</label>
+        <label class="form-label fw-semibold">Owner Name</label>
         <input type="text" class="form-control form-control-sm"
             value="<?= $data['nm_acc_bank'] ?>" readonly>
     </div>
@@ -109,11 +109,11 @@
         <label class="form-label fw-semibold">Status Payment</label><br>
         <?php
         if (empty($data['no_payment'])) {
-            echo '<span class="badge bg-warning text-dark">Menunggu Pembayaran</span>';
+            echo '<span class="badge bg-warning text-dark">Waiting for Payment</span>';
         } elseif ($data['status_payment'] == 'payment') {
             echo '<span class="badge bg-success">Lunas</span>';
         } else {
-            echo '<span class="badge bg-info">Dalam Proses</span>';
+            echo '<span class="badge bg-info">In Process</span>';
         }
         ?>
     </div>

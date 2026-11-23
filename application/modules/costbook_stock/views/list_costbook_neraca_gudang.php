@@ -3,15 +3,15 @@
         <thead class="table-light">
             <tr>
                 <th class="text-center" width="4%">#</th>
-                <th class="text-start" width="16%">Transaksi</th>
-                <th class="text-center" width="13%">No. Transaksi</th>
-                <th class="text-center" width="11%">Tgl Transaksi</th>
+                <th class="text-start" width="16%">Transaction</th>
+                <th class="text-center" width="13%">Transaction No.</th>
+                <th class="text-center" width="11%">Transaction Date</th>
                 <th class="text-center" width="7%">Tipe</th>
-                <th class="text-center" width="12%">Dari Gudang</th>
-                <th class="text-center" width="12%">Ke Gudang</th>
+                <th class="text-center" width="12%">From Warehouse</th>
+                <th class="text-center" width="12%">To Warehouse</th>
                 <th class="text-end" width="11%">Value In</th>
                 <th class="text-end" width="11%">Value Out</th>
-                <th class="text-end" width="13%">Saldo</th>
+                <th class="text-end" width="13%">Balance</th>
             </tr>
         </thead>
         <tbody class="list_data">
@@ -24,7 +24,7 @@
                 }
             ?>
             <tr class="table-primary fw-bold"> 
-                <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> SALDO AWAL</td>
+                <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> OPENING BALANCE</td>
                 <td class="text-end font-monospace text-primary" colspan="3">Rp <?= number_format((float) $saldo_awal, 2) ?></td>
             </tr>
 
@@ -80,7 +80,7 @@
             <?php endif; ?>
 
             <tr class="table-secondary fw-bold"> 
-                <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> SALDO AKHIR</td>
+                <td class="text-end" colspan="7"><i class="fa fa-arrow-right me-1"></i> CLOSING BALANCE</td>
                 <td class="text-end font-monospace text-success">Rp <?= number_format((float) $ttl_in, 2) ?></td>
                 <td class="text-end font-monospace text-danger">Rp <?= number_format((float) $ttl_out, 2) ?></td>
                 <td class="text-end font-monospace text-primary fs-6">Rp <?= number_format((float) $saldo_awal, 2) ?></td>

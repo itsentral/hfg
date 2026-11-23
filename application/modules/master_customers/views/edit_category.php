@@ -15,7 +15,7 @@
  					<div class="row">
  						<div class="form-group row">
  							<div class="col-md-4">
- 								<label for="customer">ID Kategori Customer</label>
+ 								<label for="customer">Customer Category ID</label>
  							</div>
  							<div class="col-md-6">
  								<input type="text" class="form-control" id="" value="<?= $category->id_category_customer ?>" readonly required name="id_category_customer" placeholder="Id Category Suplier">
@@ -23,7 +23,7 @@
  						</div>
  						<div class="form-group row">
  							<div class="col-md-4">
- 								<label for="customer">Kategori Customer</label>
+ 								<label for="customer">Customer Category</label>
  							</div>
  							<div class="col-md-6">
  								<input type="text" class="form-control" id="" value="<?= $category->name_category_customer ?>" required name="name_category_customer" placeholder="Category Supliery">
@@ -31,7 +31,7 @@
  						</div>
  						<div class="form-group row" hidden>
  							<div class="col-md-4">
- 								<label for="customer">Kode Kategori Customer</label>
+ 								<label for="customer">Customer Category Code</label>
  							</div>
  							<div class="col-md-6">
  								<input type="text" class="form-control" id="" value="<?= $category->customer_code ?>" required name="customer_code" placeholder="Category Suplier Code">
@@ -49,7 +49,7 @@
  <hr>
  <center>
  	<!--<button type="submit" class="btn btn-primary btn-sm add_field_button2" name="save"><i class="fa fa-plus"></i>Add Main Produk</button>
-					--><button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Simpan</button>
+					--><button type="submit" class="btn btn-success btn-sm" name="save" id="simpan-com"><i class="fa fa-save"></i>Save</button>
  </center>
 
  </form>
@@ -131,7 +131,7 @@
  			Template += '<td align="left">';
  			Template += '<input type="text" class="form-control input-sm" name="data1[' + loop + '][name_compotition]" id="data1_' + loop + '_name_compotition" label="FALSE" div="FALSE">';
  			Template += '</td>';
- 			Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Hapus Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
+ 			Template += '<td align="center"><button type="button" class="btn btn-sm btn-danger" title="Delete Data" data-role="qtip" onClick="return DelItem(' + loop + ');"><i class="fa fa-trash-o"></i></button></td>';
  			Template += '</tr>';
  			$('#list_payment').append(Template);
  			$('input[data-role="tglbayar"]').datepicker({

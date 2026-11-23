@@ -302,8 +302,8 @@ if (!function_exists('get_company_logo')) {
         <!-- SIDEBAR MENU SEARCH -->
         <div class="pc-sidebar-search">
           <div class="position-relative">
-            <input type="text" class="form-control" id="sidebar-menu-search" placeholder="Cari menu / sub menu... (Ctrl+K)" autocomplete="off" spellcheck="false">
-            <button type="button" class="btn pc-search-clear" id="sidebar-menu-search-clear" style="display:none;" title="Bersihkan pencarian">
+            <input type="text" class="form-control" id="sidebar-menu-search" placeholder="Search menus / submenus... (Ctrl+K)" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn pc-search-clear" id="sidebar-menu-search-clear" style="display:none;" title="Clear search">
               <i class="ti ti-x"></i>
             </button>
           </div>

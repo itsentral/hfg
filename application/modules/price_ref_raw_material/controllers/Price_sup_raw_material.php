@@ -18,7 +18,7 @@ class Price_ref_raw_material extends Admin_Controller
         $this->load->model(array(
           'Price_ref_raw_material/Price_ref_raw_material_model'
         ));
-        $this->template->title('Manage Material Jenis');
+        $this->template->title('Manage Material Type');
         $this->template->page_icon('fa fa-building-o');
 
         date_default_timezone_set('Asia/Bangkok');
@@ -62,7 +62,7 @@ class Price_ref_raw_material extends Admin_Controller
 
         $id                 = $post['id'];
         $code_lv4           = $post['code_lv4'];
-        $price_ref_new      = str_replace(',','',$post['price_ref_new']);
+        $price_ref_new      = str_replace(',','',$post['price_ref_new'] ?? '');
         $price_ref_expired  = $post['price_ref_expired'];
         $note               = $post['note'];
 

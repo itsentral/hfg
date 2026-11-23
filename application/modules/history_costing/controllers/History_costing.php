@@ -54,7 +54,7 @@ class History_costing extends Admin_Controller
         $row = $this->hc_model->get_history_by_id($id);
 
         if (!$row) {
-            echo json_encode(['status' => 0, 'pesan' => 'Riwayat costing tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Costing history not found']);
             return;
         }
 
@@ -97,18 +97,18 @@ class History_costing extends Admin_Controller
         fputcsv($output, [
             'No',
             'Batch ID',
-            'Waktu Perubahan',
-            'Nama Produk',
-            'Kode Produk (Lv4)',
+            'Change Time',
+            'Product Name',
+            'Product Code (Lv4)',
             'No Uniq ID',
-            'Kategori Produk',
-            'Sumber Perubahan',
-            'Bottom Price Lama / Meter (Rp)',
-            'Bottom Price Baru / Meter (Rp)',
+            'Product Category',
+            'Change Source',
+            'Old Bottom Price / Meter (Rp)',
+            'New Bottom Price / Meter (Rp)',
             'Selisih / Delta (Rp)',
-            'Price List Baru / Meter (Rp)',
+            'New Price List / Meter (Rp)',
             'Extra Margin (%)',
-            'Diperbarui Oleh',
+            'Updated By',
         ]);
 
         $no = 1;

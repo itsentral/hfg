@@ -346,13 +346,13 @@ class All_model extends BF_Model
 					$number = ($data->kode_1 + 1);
 					$newnumber = sprintf('%0' . $data->kode_3 . 'd', $number);
 				}
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
-				$newcode = str_ireplace('YEAR', $years, $newcode);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
+				$newcode = str_ireplace('YEAR', $years, $newcode ?? '');
 				$newdata = array('kode_1' => $number, 'kode_2' => $years);
 			} else {
 				$number = ($data->kode_1 + 1);
 				$newnumber = sprintf('%0' . $data->kode_3 . 'd', $number);
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
 				$newdata = array('kode_1' => $number);
 			}
 			$this->dataUpdate('ms_generate', $newdata, array('tipe' => $tipe));
@@ -524,7 +524,7 @@ class All_model extends BF_Model
 	}
 	function GetCategory()
 	{
-		$category = array('' => '', 'EXPENSE' => 'EXPENSE', 'RUTIN' => 'RUTIN', 'NON RUTIN' => 'NON RUTIN', 'PEMBAYARAN PERIODIK' => 'PEMBAYARAN PERIODIK', 'UMUM' => 'UMUM');
+		$category = array('' => '', 'EXPENSE' => 'EXPENSE', 'RUTIN' => 'ROUTINE', 'NON RUTIN' => 'NON-ROUTINE', 'PEMBAYARAN PERIODIK' => 'PERIODIC PAYMENT', 'UMUM' => 'GENERAL');
 		return $category;
 	}
 	function GetJenis()
@@ -778,18 +778,18 @@ class All_model extends BF_Model
 					if ($inisial == '') {
 						$nomorurut = date("Y") . sprintf('%02d', date("n")) . sprintf('%0' . $digit . 'd', $nodoc[2]);
 					} else {
-						$nomorurut = str_replace("YY", date("Y"), $inisial);
-						$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut);
-						$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', $nodoc[2]), $nomorurut);
+						$nomorurut = str_replace("YY", date("Y"), $inisial ?? '');
+						$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut ?? '');
+						$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', $nodoc[2]), $nomorurut ?? '');
 					}
 					$updno = date("Y") . ';' . date("n") . ';' . ($nodoc[2] + 1);
 				} else {
 					if ($inisial == '') {
 						$nomorurut = date("Y") . sprintf('%02d', date("n")) . sprintf('%0' . $digit . 'd', 1);
 					} else {
-						$nomorurut = str_replace("YY", date("Y"), $inisial);
-						$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut);
-						$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', 1), $nomorurut);
+						$nomorurut = str_replace("YY", date("Y"), $inisial ?? '');
+						$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut ?? '');
+						$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', 1), $nomorurut ?? '');
 					}
 					$updno = date("Y") . ';' . date("n") . ';2';
 				}
@@ -797,9 +797,9 @@ class All_model extends BF_Model
 				if ($inisial == '') {
 					$nomorurut = date("Y") . sprintf('%02d', date("n")) . sprintf('%0' . $digit . 'd', 1);
 				} else {
-					$nomorurut = str_replace("YY", date("Y"), $inisial);
-					$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut);
-					$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', 1), $nomorurut);
+					$nomorurut = str_replace("YY", date("Y"), $inisial ?? '');
+					$nomorurut = str_replace("MM", sprintf('%02d', date("n")), $nomorurut ?? '');
+					$nomorurut = str_replace("XX", sprintf('%0' . $digit . 'd', 1), $nomorurut ?? '');
 				}
 				$updno = date("Y") . ';' . date("n") . ';2';
 			}
@@ -812,7 +812,7 @@ class All_model extends BF_Model
 	function GetPettyCashComboCoa($tipe)
 	{
 		$datacoa = $this->db->query("select coa from ms_petty_cash where nama = '" . $tipe . "'")->row();
-		$coabudget = str_ireplace(";", "','", $datacoa->coa);
+		$coabudget = str_ireplace(";", "','", $datacoa->coa ?? '');
 		$combos = array();
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coabudget . "')")->result();
 		if ($results) {
@@ -840,7 +840,7 @@ class All_model extends BF_Model
 	function GetExpenseCombo()
 	{
 		$coa_expense = $this->db->query("SELECT * FROM ms_generate where tipe='coa_expense'")->row();
-		$coa = str_replace(";", "','", $coa_expense->kode_text);
+		$coa = str_replace(";", "','", $coa_expense->kode_text ?? '');
 		$aMenu	= array();
 		$aMenu[0] = 'Select An Option';
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coa . "') order by no_perkiraan")->result_array();
@@ -854,7 +854,7 @@ class All_model extends BF_Model
 	function GetCoaMsGenerateCombo($tipe)
 	{
 		$coa_expense = $this->db->query("SELECT * FROM ms_generate where tipe='" . $tipe . "'")->row();
-		$coa = str_replace(";", "','", $coa_expense->kode_text);
+		$coa = str_replace(";", "','", $coa_expense->kode_text ?? '');
 		$aMenu	= array();
 		$aMenu[0] = 'Select An Option';
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coa . "') order by no_perkiraan")->result_array();

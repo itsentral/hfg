@@ -103,11 +103,11 @@
                         <thead class="bg-danger text-white">
                             <tr>
                                 <th width="4%">No</th>
-                                <th>Nama Supplier</th>
-                                <th>Nama Material</th>
+                                <th>Supplier Name</th>
+                                <th>Material Name</th>
                                 <th class="text-center">No. Coil</th>
                                 <th class="text-center">No. PO</th>
-                                <th class="text-end">Berat (Kg)</th>
+                                <th class="text-end">Weight (Kg)</th>
                                 <th>Alasan / Problem</th>
                                 <th class="text-center">Status Material</th>
                                 <th class="text-center" width="10%">Action</th>
@@ -126,7 +126,7 @@
                     <!-- Input Tanggal -->
                     <div class="col-md-3">
                         <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-calendar"></i> Tanggal
+                            <i class="fa fa-calendar"></i> Date
                         </label>
                         <input type="text" id="hist_date" class="form-control form-control-sm"
                             placeholder="dd/mm/yyyy" readonly>
@@ -135,7 +135,7 @@
                     <!-- Dropdown Sumber -->
                     <div class="col-md-3">
                         <label class="form-label mb-1 fw-semibold" style="font-size:12px;">
-                            <i class="fa fa-filter"></i> Sumber
+                            <i class="fa fa-filter"></i> Source
                         </label>
                         <select id="hist_source" class="form-select form-select-sm">
                             <option value="">-- Semua Sumber --</option>
@@ -170,18 +170,18 @@
                                 <th>Material Name</th>
                                 <th class="text-center">No. Coil</th>
                                 <th class="text-center">Internal Code</th>
-                                <th class="text-center">Gudang Asal</th>
+                                <th class="text-center">Source Warehouse</th>
                                 <th class="text-right">Nett Weight (Kg)</th>
                                 <th class="text-right">Gross Weight (Kg)</th>
                                 <th class="text-right">Length (M)</th>
-                                <th class="text-center">Kode Trans</th>
+                                <th class="text-center">Trans Code</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td colspan="9" class="text-center text-muted py-4">
                                     <i class="fa fa-info-circle"></i>
-                                    Pilih tanggal lalu klik <strong>Show</strong>
+                                    Select a date, then click <strong>Show</strong>
                                 </td>
                             </tr>
                         </tbody>
@@ -214,11 +214,11 @@
                         <strong id="kp-info-nocoil">-</strong>
                     </div>
                     <div class="col-md-3">
-                        <span class="text-muted">Kode Internal:</span><br>
+                        <span class="text-muted">Internal Code:</span><br>
                         <strong id="kp-info-kode">-</strong>
                     </div>
                     <div class="col-md-2">
-                        <span class="text-muted">Berat Awal (Net):</span><br>
+                        <span class="text-muted">Initial Weight (Net):</span><br>
                         <strong id="kp-info-net">-</strong>
                     </div>
                 </div>
@@ -240,14 +240,14 @@
                         </thead>
                         <tbody id="tbody-kartu-pemakaian">
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">Memuat data...</td>
+                                <td colspan="9" class="text-center text-muted py-4">Loading data...</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -442,7 +442,7 @@
             $('#kp-info-net').text('-');
             $('#tbody-kartu-pemakaian').html(
                 '<tr><td colspan="9" class="text-center text-muted py-4">' +
-                '<i class="fa fa-spinner fa-spin me-1"></i> Memuat kartu pemakaian material...</td></tr>'
+                '<i class="fa fa-spinner fa-spin me-1"></i> Loading material usage card...</td></tr>'
             );
             openModalKartuPemakaian();
 
@@ -454,7 +454,7 @@
                     if (!res || parseInt(res.status, 10) !== 1) {
                         $('#tbody-kartu-pemakaian').html(
                             '<tr><td colspan="9" class="text-center text-danger py-4">' +
-                            escapeHtml((res && res.message) ? res.message : 'Gagal memuat data.') +
+                            escapeHtml((res && res.message) ? res.message : 'Failed to load data.') +
                             '</td></tr>'
                         );
                         return;
@@ -470,7 +470,7 @@
                     if (rows.length === 0) {
                         $('#tbody-kartu-pemakaian').html(
                             '<tr><td colspan="9" class="text-center text-muted py-4">' +
-                            '<i class="fa fa-info-circle me-1"></i> Belum ada riwayat kartu pemakaian material untuk coil ini.' +
+                            '<i class="fa fa-info-circle me-1"></i> No material usage card history for this coil yet.' +
                             '</td></tr>'
                         );
                         return;
@@ -502,7 +502,7 @@
                 error: function() {
                     $('#tbody-kartu-pemakaian').html(
                         '<tr><td colspan="9" class="text-center text-danger py-4">' +
-                        'Terjadi kesalahan koneksi saat memuat Kartu Pemakaian Material.' +
+                        'A connection error occurred while loading the Material Usage Card.' +
                         '</td></tr>'
                     );
                 }
@@ -659,15 +659,15 @@
                 ],
                 language: {
                     processing: '<i class="fa fa-spinner fa-spin fa-fw"></i> Loading data...',
-                    zeroRecords: 'Tidak ada data untuk tanggal ini.',
-                    emptyTable: 'Tidak ada data.',
+                    zeroRecords: 'No data for this date.',
+                    emptyTable: 'No data.',
                 }
             });
         }
 
         $('#btn-filter-hist').on('click', function() {
             if (!$('#hist_date').val()) {
-                Swal.fire('Perhatian', 'Pilih tanggal terlebih dahulu.', 'warning');
+                Swal.fire('Attention', 'Select a date first.', 'warning');
                 return;
             }
             buildHistoryDt();
@@ -684,7 +684,7 @@
                 $('#table-history tbody').html(
                     '<tr><td colspan="9" class="text-center text-muted py-4">' +
                     '<i class="fa fa-info-circle"></i> ' +
-                    'Pilih tanggal lalu klik <strong>Show</strong>' +
+                    'Select a date, then click <strong>Show</strong>' +
                     '</td></tr>'
                 );
             }
@@ -717,7 +717,7 @@
         function downloadWithLoading(url) {
             Swal.fire({
                 title: 'Memproses...',
-                text: 'Sedang menyiapkan file Excel, mohon tunggu.',
+                text: 'Preparing the Excel file, please wait.',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: function() {
@@ -749,13 +749,13 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(link.href);
                 } else {
-                    Swal.fire('Error', 'Gagal mengunduh file.', 'error');
+                    Swal.fire('Error', 'Failed to download file.', 'error');
                 }
             };
 
             xhr.onerror = function() {
                 Swal.close();
-                Swal.fire('Error', 'Terjadi kesalahan saat mengunduh file.', 'error');
+                Swal.fire('Error', 'An error occurred while downloading the file.', 'error');
             };
 
             xhr.send();

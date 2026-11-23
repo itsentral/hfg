@@ -32,7 +32,7 @@ class Incoming_check extends Admin_Controller
 		// $no_ipp                = $this->db->query("SELECT no_ipp FROM warehouse_planning_header WHERE sts_close='N' ")->result_array();
 
 		$data = array(
-			'title'            => 'Warehouse Material >> Gudang Pusat >> Incoming Check',
+			'title'            => 'Warehouse Material >> Central Warehouse >> Incoming Check',
 			'action'        => 'index',
 			'row_group'        => $data_Group,
 			'data_gudang'    => $data_gudang,
@@ -338,7 +338,7 @@ class Incoming_check extends Admin_Controller
 				foreach ($detail_acc as $val => $valx) {
 					$get_material = $this->db->query("SELECT * FROM accessories WHERE id='" . $valx['id_material'] . "' LIMIT 1")->result();
 
-					$qty_revisi = str_replace(',', '', $valx['qty_revisi']);
+					$qty_revisi = str_replace(',', '', $valx['qty_revisi'] ?? '');
 
 					$qty 	= $qty_revisi;
 					$harga 	= 0;
@@ -830,10 +830,10 @@ class Incoming_check extends Admin_Controller
 	{
 		$tanda = $this->uri->segment(3);
 		$controller			= ucfirst(strtolower($this->uri->segment(1)) . '/' . strtolower($this->uri->segment(2)));
-		$judul = "Warehouse Material >> Gudang Produksi >> Request Produksi";
+		$judul = "Warehouse Material >> Production Warehouse >> Production Request";
 		if (!empty($tanda)) {
 			$controller			= ucfirst(strtolower($this->uri->segment(1)) . '/' . strtolower($this->uri->segment(2)) . '/' . $tanda);
-			$judul = "Warehouse Material >> Sub Gudang >> Request List";
+			$judul = "Warehouse Material >> Sub Warehouse >> Request List";
 		}
 		// echo $controller.'<br>';
 		// exit;
@@ -937,7 +937,7 @@ class Incoming_check extends Admin_Controller
 		$where_in_ID = [];
 		$WHERE_KEY_QTY = [];
 		foreach ($detail_input as $key => $value) {
-			$QTY = str_replace(',', '', $value['qty']);
+			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$where_in_ID[] = $value['id'];
 				$WHERE_KEY_QTY[$value['id']] 	= $QTY;
@@ -964,7 +964,7 @@ class Incoming_check extends Admin_Controller
 		$ArrWhereIN_ = [];
 		$ArrWhereIN_IDMILIK = [];
 		foreach ($detail_input as $key => $value) {
-			$QTY = str_replace(',', '', $value['qty']);
+			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$ArrWhereIN_[] = $value['id'];
 				$ArrWhereIN_IDMILIK[] = $value['id_milik'];
@@ -978,7 +978,7 @@ class Incoming_check extends Admin_Controller
 		if (!empty($requesta_add)) {
 			foreach ($requesta_add as $key => $value) {
 				$nomor++;
-				$TERPAKAI = str_replace(',', '', $value['terpakai']);
+				$TERPAKAI = str_replace(',', '', $value['terpakai'] ?? '');
 				$ArrRequest[$key]['kode_spk'] = $kode_spk;
 				$ArrRequest[$key]['kode_trans'] = $kode_trans;
 				$ArrRequest[$key]['hist_produksi'] = $hist_produksi;
@@ -1014,7 +1014,7 @@ class Incoming_check extends Admin_Controller
 		if (!empty($edit_add)) {
 			foreach ($edit_add as $key => $value) {
 				$nomor++;
-				$TERPAKAI = str_replace(',', '', $value['terpakai']);
+				$TERPAKAI = str_replace(',', '', $value['terpakai'] ?? '');
 				if ($TERPAKAI > 0) {
 					$getLastQty = $this->db->get_where('production_spk_add', array('id' => $value['id']))->result();
 					$QTY_ADD = (!empty($getLastQty[0]->terpakai)) ? $getLastQty[0]->terpakai : 0;
@@ -1117,13 +1117,13 @@ class Incoming_check extends Admin_Controller
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
 									if ($value2['kebutuhan'] > 0) {
-										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'])) * (float) str_replace(',', '', $value2['terpakai']);
+										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'] ?? '')) * (float) str_replace(',', '', $value2['terpakai'] ?? '');
 									}
 									$SUM_MAT 	+= $total_act;
 									$unit_act 	= $total_act / $QTY_INP;
-									$PERSEN 	= str_replace(',', '', $value2['persen']);
+									$PERSEN 	= str_replace(',', '', $value2['persen'] ?? '');
 									if (!empty($PERSEN) and $PERSEN > 0) {
-										$PERSEN 	= str_replace(',', '', $value2['persen']);
+										$PERSEN 	= str_replace(',', '', $value2['persen'] ?? '');
 									} else {
 										$KEY        = $kode_trans . '-' . $value2['id_key'];
 										$PERSEN 	= (!empty($GET_PERCENT[$KEY]['persen']) and $GET_PERCENT[$KEY]['persen'] > 0) ? $GET_PERCENT[$KEY]['persen'] : '';;
@@ -1379,7 +1379,7 @@ class Incoming_check extends Admin_Controller
 		$where_in_ID = [];
 		$WHERE_KEY_QTY = [];
 		foreach ($detail_input as $key => $value) {
-			$QTY = str_replace(',', '', $value['qty']);
+			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$where_in_ID[] = $value['id'];
 				$WHERE_KEY_QTY[$value['id']] 	= $QTY;
@@ -1406,7 +1406,7 @@ class Incoming_check extends Admin_Controller
 		$ArrWhereIN_ = [];
 		$ArrWhereIN_IDMILIK = [];
 		foreach ($detail_input as $key => $value) {
-			$QTY = str_replace(',', '', $value['qty']);
+			$QTY = str_replace(',', '', $value['qty'] ?? '');
 			if ($QTY > 0) {
 				$ArrWhereIN_[] = $value['id'];
 				$ArrWhereIN_IDMILIK[] = $value['id_milik'];
@@ -1420,7 +1420,7 @@ class Incoming_check extends Admin_Controller
 		if (!empty($requesta_add)) {
 			foreach ($requesta_add as $key => $value) {
 				$nomor++;
-				$TERPAKAI = str_replace(',', '', $value['terpakai']);
+				$TERPAKAI = str_replace(',', '', $value['terpakai'] ?? '');
 				$ArrRequest[$key]['kode_spk'] = $kode_spk;
 				$ArrRequest[$key]['kode_trans'] = $kode_trans;
 				$ArrRequest[$key]['hist_produksi'] = $hist_produksi;
@@ -1456,7 +1456,7 @@ class Incoming_check extends Admin_Controller
 		if (!empty($edit_add)) {
 			foreach ($edit_add as $key => $value) {
 				$nomor++;
-				$TERPAKAI = str_replace(',', '', $value['terpakai']);
+				$TERPAKAI = str_replace(',', '', $value['terpakai'] ?? '');
 				if ($TERPAKAI > 0) {
 					$getLastQty = $this->db->get_where('production_spk_add', array('id' => $value['id']))->result();
 					$QTY_ADD = (!empty($getLastQty[0]->terpakai)) ? $getLastQty[0]->terpakai : 0;
@@ -1558,11 +1558,11 @@ class Incoming_check extends Admin_Controller
 									$total_est 	= $BERAT_UNIT * $QTY_INP;
 									$total_act  = 0;
 									if ($value2['kebutuhan'] > 0) {
-										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'])) * (float) str_replace(',', '', $value2['terpakai']);
+										$total_act 	= ($total_est / (float) str_replace(',', '', $value2['kebutuhan'] ?? '')) * (float) str_replace(',', '', $value2['terpakai'] ?? '');
 									}
 									$SUM_MAT 	+= $total_act;
 									$unit_act 	= $total_act / $QTY_INP;
-									$PERSEN = str_replace(',', '', $value2['persen']);
+									$PERSEN = str_replace(',', '', $value2['persen'] ?? '');
 									//UPDATE FLAG SPK 2
 									$ArrUpdate[$key . $key2 . $key3 . $nomor]['id'] 			= $value['id'];
 									$ArrUpdate[$key . $key2 . $key3 . $nomor]['spk2'] 		= 'Y';
@@ -2157,7 +2157,7 @@ class Incoming_check extends Admin_Controller
 		";
 		$restDetail1	= $this->db->query($sql)->result_array();
 		$get_category = $this->db->select('category')->get_where('warehouse', array('id' => $gudang))->result();
-		$nm_gudang = strtoupper(get_name('warehouse', 'nm_gudang', 'id', $gudang));
+		$nm_gudang = strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $gudang));
 
 		$tanggal_update = (!empty($date_filter)) ? " (" . date('d F Y', strtotime((string) $date_filter)) . ")" : " (" . date('d F Y') . ")";
 		$tanggal_update2 = (!empty($date_filter)) ? date('Y-m-d', strtotime((string) $date_filter)) : date('Y-m-d');
@@ -2440,7 +2440,7 @@ class Incoming_check extends Admin_Controller
 		$Row		= 1;
 		$NewRow		= $Row + 1;
 		$Col_Akhir	= $Cols	= getColsChar(5);
-		$sheet->setCellValue('A' . $Row, 'MATERIAL PLANNING ' . str_replace('BQ-', '', $id_bq));
+		$sheet->setCellValue('A' . $Row, 'MATERIAL PLANNING ' . str_replace('BQ-', '', $id_bq ?? ''));
 		$sheet->getStyle('A' . $Row . ':E' . $NewRow)->applyFromArray($style_header2);
 		$sheet->mergeCells('A' . $Row . ':E' . $NewRow);
 
@@ -2612,7 +2612,7 @@ class Incoming_check extends Admin_Controller
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($styleArray4);
 
 				$awal_col++;
-				$unit	= strtoupper(get_name('raw_pieces', 'kode_satuan', 'id_satuan', $satuan));
+				$unit	= strtoupper((string) get_name('raw_pieces', 'kode_satuan', 'id_satuan', $satuan));
 				$Cols			= getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $unit);
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($styleArray);
@@ -2638,7 +2638,7 @@ class Incoming_check extends Admin_Controller
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($styleArray);
 
 				$awal_col++;
-				$nm_material	= strtoupper(get_name('raw_materials', 'nm_material', 'id_material', $row_Cek['id_material']));
+				$nm_material	= strtoupper((string) get_name('raw_materials', 'nm_material', 'id_material', $row_Cek['id_material']));
 				$Cols			= getColsChar($awal_col);
 				$sheet->setCellValue($Cols . $awal_row, $nm_material);
 				$sheet->getStyle($Cols . $awal_row)->applyFromArray($styleArray3);
@@ -2658,7 +2658,7 @@ class Incoming_check extends Admin_Controller
 		}
 
 
-		$sheet->setTitle(str_replace('BQ-', '', $id_bq));
+		$sheet->setTitle(str_replace('BQ-', '', $id_bq ?? ''));
 		//mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
 		$objWriter		= PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 		ob_end_clean();
@@ -2669,7 +2669,7 @@ class Incoming_check extends Admin_Controller
 		header("Pragma: no-cache");
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		//ubah nama file saat diunduh
-		header('Content-Disposition: attachment;filename="Material Planning -  ' . str_replace('BQ-', '', $id_bq) . ' ' . date('YmdHis') . '.xls"');
+		header('Content-Disposition: attachment;filename="Material Planning -  ' . str_replace('BQ-', '', $id_bq ?? '') . ' ' . date('YmdHis') . '.xls"');
 		//unduh file
 		$objWriter->save("php://output");
 	}
@@ -2683,7 +2683,7 @@ class Incoming_check extends Admin_Controller
 		$get_detail 	= $this->db->get_where('production_detail', array('no_spk' => $spk))->result();
 		if (empty($get_detail)) {
 			$Arr_Kembali    = array(
-				'pesan'        => 'SPK belum masuk produksi !!!',
+				'pesan'        => 'SPK has not entered production yet!!!',
 				'status'    => 2
 			);
 			echo json_encode($Arr_Kembali);
@@ -2735,7 +2735,7 @@ class Incoming_check extends Admin_Controller
 						$HTML .= "<td class='text-right " . $color . " sisaRequest'>" . number_format((float) $sisa_req, 3) . "</td>";
 						$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQUEST, 3) . "</td>";
 						$HTML .= "<td><input type='text' style='width:100%' name='detail2[999" . $key . "][sudah_request]' data-no='" . $key . "' class='form-control text-bold input-sm text-right autoNumeric requestBlock' placeholder='Request (kg)'></td>";
-						$HTML .= "<td><input type='text' style='width:100%' name='detail2[999" . $key . "][ket_request]' data-no='" . $key . "' class='form-control input-sm text-left' placeholder='Keterangan'></td>";
+						$HTML .= "<td><input type='text' style='width:100%' name='detail2[999" . $key . "][ket_request]' data-no='" . $key . "' class='form-control input-sm text-left' placeholder='Description'></td>";
 						$HTML .= "</tr>";
 					} else {
 						$HTML .= "<tr>";
@@ -2754,13 +2754,13 @@ class Incoming_check extends Admin_Controller
 					$HTML .= "<td class='text-right text-bold'>" . number_format((float) $QTY_REQ, 3) . "</td>";
 					$HTML .= "<td class='text-center'>-</td>";
 					$HTML .= "<td class='text-center'>-</td>";
-					$HTML .= "<td colspan='2' class='text-red'><b>Buat request terlebih dahulu !!!</b></td>";
+					$HTML .= "<td colspan='2' class='text-red'><b>Create a request first!!!</b></td>";
 					$HTML .= "</tr>";
 				}
 			}
 		} else {
 			$HTML .= "<tr>";
-			$HTML .= "<td colspan='7' class='text-red'><b>Material tidak ditemukan !!!</b></td>";
+			$HTML .= "<td colspan='7' class='text-red'><b>Material not found!!!</b></td>";
 			$HTML .= "</tr>";
 		}
 
@@ -2967,7 +2967,7 @@ class Incoming_check extends Admin_Controller
 	}
 	function print_qrcode($id)
 	{
-		$detail = str_replace("~", "','", $id);
+		$detail = str_replace("~", "','", $id ?? '');
 		$qDetail1 = " SELECT a.* FROM warehouse_adjustment_detail a WHERE a.id in ('" . $id . "') ORDER BY a.id";
 		$restDetail1 = $this->db->query($qDetail1)->result_array();
 		$data = array(
@@ -3001,13 +3001,13 @@ class Incoming_check extends Admin_Controller
 		$data_html = "";
 		$data_html .= "<tr>";
 		$data_html .= "<th>#</th>";
-		$data_html .= "<th>Gudang Dari</th>";
-		$data_html .= "<th>Gudang Ke</th>";
+		$data_html .= "<th>From Warehouse</th>";
+		$data_html .= "<th>To Warehouse</th>";
 		$data_html .= "<th class='text-right'>Qty Booking</th>";
 		$data_html .= "<th class='text-right'>Booking Awal</th>";
 		$data_html .= "<th class='text-right'>Booking Akhir</th>";
-		$data_html .= "<th>Keterangan</th>";
-		$data_html .= "<th class='text-center'>Tanggal</th>";
+		$data_html .= "<th>Description</th>";
+		$data_html .= "<th class='text-center'>Date</th>";
 		$data_html .= "</tr>";
 		$No = 0;
 		$QTY_PLUS = 0;
@@ -3061,7 +3061,7 @@ class Incoming_check extends Admin_Controller
 		}
 		$data_html .= "<tr>";
 		$data_html .= "<td></td>";
-		$data_html .= "<td colspan='4' class='text-bold'>SISA BOOKING</td>";
+		$data_html .= "<td colspan='4' class='text-bold'>REMAINING BOOKING</td>";
 		$data_html .= "<td class='text-right text-bold'>" . number_format((float) $QTY_AKHIR, 4) . "</td>";
 		$data_html .= "<td colspan='2'></td>";
 		$data_html .= "</tr>";
@@ -3459,7 +3459,7 @@ class Incoming_check extends Admin_Controller
 
 		$hasil3 = '
 			<tr>
-				<td colspan="3" class="text-right">Masuk ke Stock</td>
+				<td colspan="3" class="text-right">Into Stock</td>
 				<td class="text-center">
 					<span style="color: red;">' . number_format((float) $stok_tidak_masuk) . '</span>
 				</td>
@@ -3474,7 +3474,7 @@ class Incoming_check extends Admin_Controller
 			<td><input type="date" id="tgl_jurnal1" name="tgl_jurnal[]" value="' . date('Y-m-d') . '" class="form-control" readonly /></td>
 			<td><input type="text" id="type1" name="type[]" value="JV" class="form-control" readonly /></td>
 			<td><input type="text" id="no_coa1" name="no_coa[]" value="1104-01-01" class="form-control" readonly /></td>
-			<td><input type="text" id="nama_coa1" name="nama_coa[]" value="Persediaan Barang Warehouse" class="form-control" readonly /></td>
+			<td><input type="text" id="nama_coa1" name="nama_coa[]" value="Warehouse Inventory" class="form-control" readonly /></td>
 			<td>
 				<input type="hidden" id="debet1" name="debet[]" value="' . $total_nilai . '" class="form-control" readonly />
 				<input type="text" id="debet21" name="debet2[]" value="' . $total_nilai . '" class="form-control" readonly />
@@ -3502,7 +3502,7 @@ class Incoming_check extends Admin_Controller
 			<td><input type="date" id="tgl_jurnal3" name="tgl_jurnal[]" value="' . date('Y-m-d') . '" class="form-control" readonly /></td>
 			<td><input type="text" id="type3" name="type[]" value="JV" class="form-control" readonly /></td>
 			<td><input type="text" id="no_coa3" name="no_coa[]" value="1103-01-01" class="form-control" readonly /></td>
-			<td><input type="text" id="nama_coa3" name="nama_coa[]" value="Uang Muka Pembelian" class="form-control" readonly /></td>
+			<td><input type="text" id="nama_coa3" name="nama_coa[]" value="Purchase Down Payment" class="form-control" readonly /></td>
 			<td>
 				<input type="hidden" id="debet3" name="debet[]" value="0" class="form-control" readonly />
 				<input type="text" id="debet23" name="debet2[]" value="0" class="form-control" readonly />
@@ -3636,7 +3636,7 @@ class Incoming_check extends Admin_Controller
 			FROM
 				tr_purchase_order a
 			WHERE
-				a.no_po IN ('" . str_replace(",", "','", $result_header->no_ipp) . "')
+				a.no_po IN ('" . str_replace(",", "','", $result_header->no_ipp ?? '') . "')
 		")
 			->result();
 		foreach ($get_no_surat as $item) {

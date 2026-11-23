@@ -226,16 +226,16 @@ endforeach;
                                     <!-- <input type="checkbox" name="status[]" id="status_<?= $numb ?>" value="<?= $item_kasbon->id ?>"> -->
                         <?php endif;
                                 if ($ENABLE_MANAGE && $get_kasbon->project_consultant == '1') :
-                                    echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_cons=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant)) . '&id_sendigs=' . $item_kasbon->no_doc . '" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
+                                    echo '<a href="' . base_url('approval_request_payment/approval_payment/?id_cons=' . str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')) . '&id_sendigs=' . $item_kasbon->no_doc . '" class="btn btn-primary btn-sm"><i class="fa fa-check-square-o"></i> Approve</a>';
 
                                     if ($get_kasbon_header->tipe == '1') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_subcont/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                     }
                                     if ($get_kasbon_header->tipe == '2') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_akomodasi/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                     }
                                     if ($get_kasbon_header->tipe == '3') {
-                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant)));
+                                        $link_view = base_url('kasbon_project/view_kasbon_others/' . urlencode(str_replace('/', '|', $get_kasbon->no_kasbon_consultant ?? '')));
                                     }
                                     echo ' <a href="' . $link_view . '" class="btn btn-sm btn-info" title="View Kasbon" target="_blank"><i class="fa fa-eye"></i></a>';
                                 endif;
@@ -306,7 +306,7 @@ endforeach;
                                         if ($get_expense['project_consultant'] == '1') {
                                             echo '
                                                 <div class="text-center">
-                                                    <a href="' . base_url('approval_request_payment/approval_payment/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant']))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
+                                                    <a href="' . base_url('approval_request_payment/approval_payment/?id_exp_consultant=' . urlencode(str_replace('/', '|', $get_expense['no_expense_consultant'] ?? ''))) . '&id_expense=' . $item_expense->no_doc . '" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o">&nbsp;</i>Approve</a>
                                                 </div>
                                             ';
                                         } else {

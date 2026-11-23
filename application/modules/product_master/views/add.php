@@ -67,11 +67,11 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 
 <div class="row mb-3">
 	<div class="col-md-2">
-		<label class="col-form-label">Product Jenis <span class="text-danger">*</span></label>
+		<label class="col-form-label">Product Sub Category <span class="text-danger">*</span></label>
 	</div>
 	<div class="col-md-10">
 		<select name="code_lv3" id="code_lv3" class="form-select chosen-select">
-			<option value="0">Select Product Jenis</option>
+			<option value="0">Select Product Sub Category</option>
 			<?php if (!empty($id) && !empty($listLevel3)) : ?>
 				<?php foreach ($listLevel3 as $key => $value) : ?>
 					<option value="<?= $value['code_lv3']; ?>"
@@ -95,25 +95,25 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 			required placeholder="Product Master Name" value="<?= $nama; ?>">
 		<small class="text-muted">
 			Otomatis: Product Type + Category + Jenis + Tebal &times; Lebar &times; Panjang M (dapat diedit manual).
-			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Generate ulang</span>
+			<span style="cursor:pointer;" class="text-primary" id="regenerateNama">Regenerate</span>
 		</small>
 	</div>
 </div>
 
 <div class="row mb-3">
 	<div class="col-md-2">
-		<label class="col-form-label">Panjang</label>
+		<label class="col-form-label">Length</label>
 	</div>
 	<div class="col-md-4">
 		<input type="text" class="form-control maskM" id="panjang" name="panjang"
-			value="<?= $panjang; ?>" placeholder="Panjang">
+			value="<?= $panjang; ?>" placeholder="Length">
 	</div>
 	<div class="col-md-2">
-		<label class="col-form-label">Tebal</label>
+		<label class="col-form-label">Thickness</label>
 	</div>
 	<div class="col-md-4">
 		<input type="text" class="form-control maskM" id="tebal" name="tebal"
-			value="<?= $tebal; ?>" placeholder="Tebal">
+			value="<?= $tebal; ?>" placeholder="Thickness">
 	</div>
 </div>
 
@@ -233,12 +233,12 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 	</div>
 	<div class="col-md-3">
 		<input type="text" class="form-control maskM getCub" id="length" name="length"
-			value="<?= $length; ?>" placeholder="Panjang">
+			value="<?= $length; ?>" placeholder="Length">
 	</div>
 	<div class="col-md-3">
 		<input type="text" class="form-control maskM getCub" id="wide" name="wide"
-			value="<?= $wide; ?>" placeholder="Lebar (mm)">
-		<small class="text-muted">Lebar produk (mm), dipakai Product Costing.</small>
+			value="<?= $wide; ?>" placeholder="Width (mm)">
+		<small class="text-muted">Product width (mm), used by Product Costing.</small>
 	</div>
 	<div class="col-md-3">
 		<input type="text" class="form-control maskM getCub" id="high" name="high"
@@ -248,11 +248,11 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 
 <div class="row mb-3">
 	<div class="col-md-2">
-		<label class="col-form-label">Berat/unit</label>
+		<label class="col-form-label">Weight/unit</label>
 	</div>
 	<div class="col-md-4">
 		<input type="text" class="form-control" id="weight" name="weight"
-			value="<?= $weight; ?>" placeholder="Berat per unit">
+			value="<?= $weight; ?>" placeholder="Weight per unit">
 	</div>
 </div>
 
@@ -274,10 +274,10 @@ $status2         = (!empty($listData[0]->status) && $listData[0]->status == '0')
 		<div class="col-md-10">
 			<div class="d-flex gap-4 pt-2">
 				<label>
-					<input type="radio" name="status" value="1" <?= $status1; ?>> Aktif
+					<input type="radio" name="status" value="1" <?= $status1; ?>> Active
 				</label>
 				<label>
-					<input type="radio" name="status" value="0" <?= $status2; ?>> Non-Aktif
+					<input type="radio" name="status" value="0" <?= $status2; ?>> Inactive
 				</label>
 			</div>
 		</div>

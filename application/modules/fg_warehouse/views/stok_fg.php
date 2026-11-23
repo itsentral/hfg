@@ -10,7 +10,7 @@
                 <i class="fa fa-file-excel me-1"></i> Export Excel
             </a>
             <a href="<?= base_url('fg_warehouse/kartu_stok') ?>" class="btn btn-secondary btn-sm">
-                <i class="fa fa-book me-1"></i> Kartu Stok
+                <i class="fa fa-book me-1"></i> Stock Card
             </a>
             <a href="<?= base_url('fg_warehouse') ?>" class="btn btn-outline-secondary btn-sm">
                 <i class="fa fa-list me-1"></i> FG Receipt
@@ -19,20 +19,20 @@
     </div>
     <div class="card-body">
         <?php if (empty($stok_list)): ?>
-            <div class="alert alert-info">Belum ada data stok FG.</div>
+            <div class="alert alert-info">No FG stock data yet.</div>
         <?php else: ?>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover align-middle" id="tbl-stok">
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" width="50">No</th>
-                        <th>Kode Produk</th>
-                        <th>Nama Produk</th>
-                        <th class="text-end">Qty Stok (pcs)</th>
-                        <th class="text-end">Total Berat (kg)</th>
-                        <th class="text-end">Berat Referensi (kg/pcs)</th>
+                        <th>Product Code</th>
+                        <th>Product Name</th>
+                        <th class="text-end">Stock Qty (pcs)</th>
+                        <th class="text-end">Total Weight (kg)</th>
+                        <th class="text-end">Reference Weight (kg/pcs)</th>
                         <th class="text-end">Costbook (Rp/pcs)</th>
-                        <th class="text-end">Total Nilai (Rp)</th>
+                        <th class="text-end">Total Value (Rp)</th>
                         <th class="text-center">Last Update</th>
                         <th class="text-center no-sort" width="100">Aksi</th>
                     </tr>
@@ -75,8 +75,8 @@
                         </td>
                         <td class="text-center">
                             <a href="<?= base_url('fg_warehouse/kartu_stok/' . urlencode((string) $stok->produk_fg)) ?>"
-                               class="btn btn-sm btn-info text-white" title="Lihat Kartu Stok">
-                                <i class="fa fa-history me-1"></i> Kartu Stok
+                               class="btn btn-sm btn-info text-white" title="View Stock Card">
+                                <i class="fa fa-history me-1"></i> Stock Card
                             </a>
                         </td>
                     </tr>

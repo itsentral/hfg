@@ -73,24 +73,24 @@ class Report_monitoring_po_model extends CI_Model
             // Tentukan status kriteria
             if ($qty_diterima == 0) {
                 $status_code  = 'belum_mulai';
-                $status_label = 'Belum Mulai';
-                $status_badge = '<span class="badge bg-light-secondary text-secondary fw-semibold px-2 py-1"><i class="ti ti-clock me-1"></i>Belum Mulai</span>';
-                $status_desc  = 'Belum ada penerimaan sama sekali';
+                $status_label = 'Not Started';
+                $status_badge = '<span class="badge bg-light-secondary text-secondary fw-semibold px-2 py-1"><i class="ti ti-clock me-1"></i>Not Started</span>';
+                $status_desc  = 'No receipts recorded yet';
             } elseif ($qty_diterima > 0 && $qty_diterima < $qty_po) {
                 $status_code  = 'partial';
                 $status_label = 'Partial';
                 $status_badge = '<span class="badge bg-light-warning text-warning fw-semibold px-2 py-1"><i class="ti ti-hourglass-empty me-1"></i>Partial</span>';
-                $status_desc  = 'Sudah ada penerimaan, tapi belum mencapai total Qty PO';
+                $status_desc  = 'Receipts recorded; the total PO quantity has not yet been received';
             } elseif ($qty_diterima == $qty_po) {
                 $status_code  = 'selesai';
-                $status_label = 'Selesai';
-                $status_badge = '<span class="badge bg-light-success text-success fw-semibold px-2 py-1"><i class="ti ti-check me-1"></i>Selesai</span>';
-                $status_desc  = 'Total diterima = Total Qty PO';
+                $status_label = 'Done';
+                $status_badge = '<span class="badge bg-light-success text-success fw-semibold px-2 py-1"><i class="ti ti-check me-1"></i>Done</span>';
+                $status_desc  = 'Total received equals the PO quantity';
             } else {
                 $status_code  = 'over_delivery';
                 $status_label = 'Over-delivery';
-                $status_badge = '<span class="badge bg-light-danger text-danger fw-semibold px-2 py-1" title="Total diterima melebihi Qty PO — perlu klarifikasi ke supplier"><i class="ti ti-alert-triangle me-1"></i>Over-delivery</span>';
-                $status_desc  = 'Total diterima melebihi Qty PO — perlu klarifikasi ke supplier';
+                $status_badge = '<span class="badge bg-light-danger text-danger fw-semibold px-2 py-1" title="Quantity received exceeds the PO quantity; supplier clarification is required"><i class="ti ti-alert-triangle me-1"></i>Over-delivery</span>';
+                $status_desc  = 'Quantity received exceeds the PO quantity; supplier clarification is required';
             }
 
             // Filter status jika dipilih
@@ -269,16 +269,16 @@ class Report_monitoring_po_model extends CI_Model
 
         if ($total_diterima == 0) {
             $status_code  = 'belum_mulai';
-            $status_label = 'Belum Mulai';
-            $status_badge = '<span class="badge bg-light-secondary text-secondary fw-semibold px-2 py-1"><i class="ti ti-clock me-1"></i>Belum Mulai</span>';
+            $status_label = 'Not Started';
+            $status_badge = '<span class="badge bg-light-secondary text-secondary fw-semibold px-2 py-1"><i class="ti ti-clock me-1"></i>Not Started</span>';
         } elseif ($total_diterima > 0 && $total_diterima < $total_qty_po) {
             $status_code  = 'partial';
             $status_label = 'Partial';
             $status_badge = '<span class="badge bg-light-warning text-warning fw-semibold px-2 py-1"><i class="ti ti-hourglass-empty me-1"></i>Partial</span>';
         } elseif ($total_diterima == $total_qty_po) {
             $status_code  = 'selesai';
-            $status_label = 'Selesai';
-            $status_badge = '<span class="badge bg-light-success text-success fw-semibold px-2 py-1"><i class="ti ti-check me-1"></i>Selesai</span>';
+            $status_label = 'Done';
+            $status_badge = '<span class="badge bg-light-success text-success fw-semibold px-2 py-1"><i class="ti ti-check me-1"></i>Done</span>';
         } else {
             $status_code  = 'over_delivery';
             $status_label = 'Over-delivery';

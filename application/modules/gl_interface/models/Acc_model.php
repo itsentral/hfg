@@ -316,13 +316,13 @@ class Acc_model extends BF_Model
             $this->db->query("insert into ms_generate_jurnal (tipe,tahun,bulan,angka) values ('" . $kode . "','" . $tahun . "','" . $bulan . "','1')");
         }
         $format = $template_jurnal->kode_2;
-        $format = str_replace('info', $template_jurnal->info, $format);
-        $format = str_replace('th', $tahun, $format);
-        $format = str_replace('bl', $bulan, $format);
-        $format = str_replace('xxx', sprintf('%0' . $template_jurnal->kode_1 . 'd', $angka), $format);
+        $format = str_replace('info', $template_jurnal->info, $format ?? '');
+        $format = str_replace('th', $tahun, $format ?? '');
+        $format = str_replace('bl', $bulan, $format ?? '');
+        $format = str_replace('xxx', sprintf('%0' . $template_jurnal->kode_1 . 'd', $angka), $format ?? '');
         if ($bank != '') {
             $kode_bank = $this->db->query("SELECT * from ms_generate where tipe='kode_bank' and info='" . $bank . "'")->row();
-            $format = str_replace('bank', $kode_bank->kode_1, $format);
+            $format = str_replace('bank', $kode_bank->kode_1, $format ?? '');
         }
         return $format;
     }

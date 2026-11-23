@@ -31,7 +31,7 @@ class Master_standard_material extends Admin_Controller
         $coating     = $this->input->post('coating');
 
         if ($berat_jenis <= 0) {
-            $this->session->set_flashdata('error', 'Standar Berat Jenis harus lebih besar dari 0');
+            $this->session->set_flashdata('error', 'Specific Gravity Standard must be greater than 0');
             redirect('master_standard_material');
         }
 
@@ -58,10 +58,10 @@ class Master_standard_material extends Admin_Controller
                 ],
             ];
             write_log('Master Standard Material', 'Edit', 'Update Master Standard Material', $logPayload, null, 1);
-            $this->session->set_flashdata('success', 'Master Standard Material berhasil disimpan');
+            $this->session->set_flashdata('success', 'Master Standard Material saved successfully');
         } else {
             write_log('Master Standard Material', 'Edit', 'Gagal update Master Standard Material', ['data' => $data], null, 0);
-            $this->session->set_flashdata('error', 'Gagal menyimpan Master Standard Material');
+            $this->session->set_flashdata('error', 'Failed to save Master Standard Material');
         }
 
         redirect('master_standard_material');

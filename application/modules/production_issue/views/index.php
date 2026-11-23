@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar SPK Produksi</h5>
+        <h5 class="mb-0">Production SPK List</h5>
         <div class="d-flex gap-2">
             <a href="<?= base_url('production_issue/scan_issue') ?>" class="btn btn-warning btn-sm">
                 <i class="fa fa-barcode"></i> Scan Issue Material
@@ -77,20 +77,20 @@ $(document).ready(function () {
         var spk_no = $(this).data('spk');
         swal({
             title: 'Release SPK?',
-            text: 'SPK akan diubah ke status Released dan siap untuk scan issue material.',
+            text: 'The SPK will be changed to status Released and be ready for material issue scanning.',
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#28a745',
-            confirmButtonText: 'Ya, Release',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes, Release',
+            cancelButtonText: 'Cancel'
         }, function (isConfirm) {
             if (isConfirm) {
                 $.post(siteurl + 'production_issue/process_release_spk/' + spk_no, function (res) {
                     if (res.success) {
-                        swal('Berhasil!', 'SPK berhasil di-release.', 'success');
+                        swal('Success!', 'SPK released successfully.', 'success');
                         $('#tbl-spk').DataTable().ajax.reload();
                     } else {
-                        swal('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
+                        swal('Failed!', res.message || 'An error occurred.', 'error');
                     }
                 }, 'json');
             }

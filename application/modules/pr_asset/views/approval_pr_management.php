@@ -12,7 +12,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                 <h5 class="card-title fw-bold mb-0 text-primary">
                     <i class="fa fa-check-square-o me-2"></i><?= isset($title) ? $title : 'Approval PR Asset by Management'; ?>
                 </h5>
-                <small class="text-muted">Persetujuan Purchase Request Asset untuk level Management</small>
+                <small class="text-muted">Asset Purchase Request approval for Management level</small>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-primary px-3 py-2 rounded-pill">
@@ -59,8 +59,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                         <tr>
                             <th width="4%">#</th>
                             <th width="14%">No PR</th>
-                            <th width="12%">Tanggal PR</th>
-                            <th>Nama Barang</th>
+                            <th width="12%">PR Date</th>
+                            <th>Item Name</th>
                             <th width="12%">PR By</th>
                             <th width="12%">PR Date</th>
                             <th width="14%">Status</th>
@@ -74,7 +74,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
     </div>
 </div>
 
-<!-- Modal View Detail PR Asset -->
+<!-- Modal View PR Detail Asset -->
 <div class="modal fade" id="ModalView2" tabindex="-1" aria-labelledby="head_title2" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
@@ -124,11 +124,11 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
             $('.child-' + idOfParent).toggle('slow');
         });
 
-        // Modal View Detail PR
+        // Modal View PR Detail
         $(document).on('click', '.view_modal_pr', function(e) {
             e.preventDefault();
             var no_pr = $(this).data('no_pr');
-            $('#head_title2').html('<i class="fa fa-file-text-o me-2"></i>Detail PR Asset [' + no_pr + ']');
+            $('#head_title2').html('<i class="fa fa-file-text-o me-2"></i>PR Asset Detail [' + no_pr + ']');
             $('#view2').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
             
             var modalEl = document.getElementById('ModalView2');
@@ -145,7 +145,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Gagal memuat detail PR Asset. Silakan coba kembali.'
+                        text: 'Failed to load PR Asset detail. Please try again.'
                     });
                 }
             });
@@ -171,8 +171,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
             if (action === 'D' && reason === '') {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Perhatian!',
-                    text: 'Alasan penolakan (Reason Reject) wajib diisi!'
+                    title: 'Attention!',
+                    text: 'Rejection reason (Reason Reject) is required!'
                 });
                 return false;
             }
@@ -181,14 +181,14 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
             var confirmBtnColor = (action === 'Y') ? '#198754' : '#dc3545';
 
             Swal.fire({
-                title: 'Konfirmasi ' + actionLabel + '?',
-                text: 'Apakah Anda yakin ingin memproses ' + actionLabel + ' untuk No. PR ' + no_pr + '?',
+                title: 'Confirmation ' + actionLabel + '?',
+                text: 'Are you sure you want to process ' + actionLabel + ' for PR No. ' + no_pr + '?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: confirmBtnColor,
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-check me-1"></i> Ya, Proses!',
-                cancelButtonText: '<i class="fa fa-times me-1"></i> Batal'
+                confirmButtonText: '<i class="fa fa-check me-1"></i> Yes, Process!',
+                cancelButtonText: '<i class="fa fa-times me-1"></i> Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
@@ -213,7 +213,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                             if (data.status == 1) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: data.pesan,
                                     timer: 2000,
                                     showConfirmButton: false
@@ -222,8 +222,8 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                             } else {
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Gagal!',
-                                    text: data.pesan || 'Proses gagal dilakukan.'
+                                    title: 'Failed!',
+                                    text: data.pesan || 'The process failed.'
                                 });
                             }
                         },
@@ -231,7 +231,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
-                                text: 'Terjadi kesalahan sistem saat memproses approval. Silakan coba kembali.'
+                                text: 'A system error occurred while processing the approval. Please try again.'
                             });
                         }
                     });
@@ -270,7 +270,7 @@ $ENABLE_DELETE = has_permission('PR_Asset.Delete');
                 },
                 cache: false,
                 error: function() {
-                    $('#my-grid').append('<tbody class="my-grid-error"><tr><th colspan="8" class="text-center text-danger py-3">Tidak ada data ditemukan pada server</th></tr></tbody>');
+                    $('#my-grid').append('<tbody class="my-grid-error"><tr><th colspan="8" class="text-center text-danger py-3">No data found on the server</th></tr></tbody>');
                 }
             }
         });

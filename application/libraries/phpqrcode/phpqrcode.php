@@ -194,7 +194,7 @@
                 
             foreach ($qrTab as $line) {
                 $arrAdd = array();
-                foreach(str_split($line) as $char)
+                foreach(str_split($line ?? '') as $char)
                     $arrAdd[] = ($char=='1')?1:0;
                 $barcode_array['bcode'][] = $arrAdd;
             }
@@ -2604,7 +2604,7 @@
             
             $codeLines = explode("\n", gzuncompress($code));
             foreach ($codeLines as $line)
-                $codeArr[] = str_split($line);
+                $codeArr[] = str_split($line ?? '');
             
             return $codeArr;
         }
@@ -3059,7 +3059,7 @@
             $input = new QRinput($version, $level);
             if($input == NULL) return NULL;
 
-            $ret = $input->append($input, QR_MODE_8, strlen((string) $string), str_split($string));
+            $ret = $input->append($input, QR_MODE_8, strlen((string) $string), str_split($string ?? ''));
             if($ret < 0) {
                 unset($input);
                 return NULL;

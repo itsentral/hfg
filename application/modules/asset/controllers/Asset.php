@@ -41,7 +41,7 @@ class Asset extends Admin_Controller
         $dataD = $this->db->query($qData)->result_array();
 
         $data = array(
-            'title'      => 'Detail Asset',
+            'title'      => 'Asset Detail',
             'action'     => 'asset',
             'dataD'      => $dataD,
             'list_cab'   => $this->asset_model->getList('asset_branch'),
@@ -144,9 +144,9 @@ class Asset extends Admin_Controller
                 }
             }
 
-            $nilai_asset  = str_replace(',', '', $data['nilai_asset']);
-            $val_asset    = str_replace(',', '', $data['value']);
-            $qty          = isset($data['qty']) ? str_replace(',', '', $data['qty']) : 1;
+            $nilai_asset  = str_replace(',', '', $data['nilai_asset'] ?? '');
+            $val_asset    = str_replace(',', '', $data['value'] ?? '');
+            $qty          = isset($data['qty']) ? str_replace(',', '', $data['qty'] ?? '') : 1;
             $nama_user    = isset($data['nama_user']) ? $data['nama_user'] : '';
             $lokasi_asset = $data['lokasi_asset'];
             $cost_center  = isset($data['cost_center']) ? $data['cost_center'] : '';
@@ -230,11 +230,11 @@ class Asset extends Admin_Controller
 
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
-                $Arr_Data = array('pesan' => 'Asset gagal disimpan ...', 'status' => 0);
+                $Arr_Data = array('pesan' => 'Failed to save asset.', 'status' => 0);
                 write_log('Asset', 'Save Asset', $tanda . ' asset failed: ' . $tanda2, $data, null, 0);
             } else {
                 $this->db->trans_commit();
-                $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
+                $Arr_Data = array('pesan' => 'Asset saved successfully.', 'status' => 1);
                 $log_payload = (!empty($id) && $old_asset_data) ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrHeader ?? [])) : $data;
                 write_log('Asset', 'Save Asset', $tanda . ' asset success: ' . $tanda2, $log_payload, null, 1);
             }
@@ -299,11 +299,11 @@ class Asset extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            $Arr_Data = array('pesan' => 'Asset gagal disimpan ...', 'status' => 0);
+            $Arr_Data = array('pesan' => 'Failed to save asset.', 'status' => 0);
             write_log('Asset', 'Update Asset', 'Update asset failed: ' . $kd_asset, $data, null, 0);
         } else {
             $this->db->trans_commit();
-            $Arr_Data = array('pesan' => 'Asset berhasil disimpan. Thanks ...', 'status' => 1);
+            $Arr_Data = array('pesan' => 'Asset saved successfully.', 'status' => 1);
             $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrUpHeader ?? [])) : $data;
             write_log('Asset', 'Update Asset', 'Update asset success: ' . $kd_asset, $log_payload, null, 1);
         }
@@ -349,11 +349,11 @@ class Asset extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            $Arr_Data = array('pesan' => 'Asset gagal dipindahkan ...', 'status' => 0);
+            $Arr_Data = array('pesan' => 'Failed to move asset.', 'status' => 0);
             write_log('Asset', 'Move Asset', 'Move asset failed: ' . $kd_asset, $data, null, 0);
         } else {
             $this->db->trans_commit();
-            $Arr_Data = array('pesan' => 'Asset berhasil dipindahkan. Thanks ...', 'status' => 1);
+            $Arr_Data = array('pesan' => 'Asset moved successfully.', 'status' => 1);
             $log_payload = $old_asset_data ? array('old' => $old_asset_data, 'new' => array_merge($old_asset_data ?? [], $ArrUpHeader ?? [])) : $data;
             write_log('Asset', 'Move Asset', 'Move asset success: ' . $kd_asset, $log_payload, null, 1);
         }
@@ -387,11 +387,11 @@ class Asset extends Admin_Controller
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            $Arr_Data = array('pesan' => 'Asset gagal dihapus ...', 'status' => 0);
+            $Arr_Data = array('pesan' => 'Failed to delete asset.', 'status' => 0);
             write_log('Asset', 'Delete Asset', 'Delete asset failed: ' . $kd_asset, array('kd_asset' => $kd_asset), null, 0);
         } else {
             $this->db->trans_commit();
-            $Arr_Data = array('pesan' => 'Asset berhasil dihapus. Thanks ...', 'status' => 1);
+            $Arr_Data = array('pesan' => 'Asset deleted successfully.', 'status' => 1);
             write_log('Asset', 'Delete Asset', 'Delete asset success: ' . $kd_asset, array('kd_asset' => $kd_asset), null, 1);
         }
 

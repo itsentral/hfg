@@ -17,7 +17,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
         <div class="card-header bg-white d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
             <div>
                 <h5 class="mb-0 fw-bold"><i class="fa fa-history text-primary me-2"></i>History Costing</h5>
-                <small class="text-muted">Catatan riwayat perubahan Bottom Price dan komponen biaya produk (Hanya Baca / Audit Trail).</small>
+                <small class="text-muted">Change history of Bottom Price and product cost components (Read Only / Audit Trail).</small>
             </div>
             <?php if ($ENABLE_MANAGE): ?>
                 <a href="<?= base_url('history_costing/export_excel?' . http_build_query($filters)) ?>" class="btn btn-success btn-sm">
@@ -30,7 +30,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
         <div class="card-body border-bottom bg-light py-3">
             <form method="GET" action="<?= base_url('history_costing') ?>" class="row gy-2 gx-3 align-items-end">
                 <div class="col-auto">
-                    <label class="form-label fw-bold mb-1"><i class="fa fa-filter text-muted me-1"></i>Kategori</label>
+                    <label class="form-label fw-bold mb-1"><i class="fa fa-filter text-muted me-1"></i>Category</label>
                     <select name="category" class="form-select form-select-sm select2-filter filter-select" data-placeholder="-- Semua Kategori --">
                         <option value="">-- Semua Kategori --</option>
                         <?php if (!empty($categories)): foreach ($categories as $cat): ?>
@@ -54,11 +54,11 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                 </div>
 
                 <div class="col-auto">
-                    <label class="form-label fw-bold mb-1">Tanggal</label>
+                    <label class="form-label fw-bold mb-1">Date</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="text" name="start_date" class="form-control form-control-sm flatpickr-date" placeholder="Dari tanggal" autocomplete="off" value="<?= html_escape($filters['start_date']) ?>">
+                        <input type="text" name="start_date" class="form-control form-control-sm flatpickr-date" placeholder="From date" autocomplete="off" value="<?= html_escape($filters['start_date']) ?>">
                         <span>s/d</span>
-                        <input type="text" name="end_date" class="form-control form-control-sm flatpickr-date" placeholder="Sampai tanggal" autocomplete="off" value="<?= html_escape($filters['end_date']) ?>">
+                        <input type="text" name="end_date" class="form-control form-control-sm flatpickr-date" placeholder="To date" autocomplete="off" value="<?= html_escape($filters['end_date']) ?>">
                     </div>
                 </div>
 
@@ -82,15 +82,15 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                     <thead class="table-dark">
                         <tr>
                             <th style="width:4%;" class="text-center">No</th>
-                            <th style="width:12%;" class="text-center">Waktu Perubahan</th>
+                            <th style="width:12%;" class="text-center">Change Time</th>
                             <!-- FR-73: Nama produk di depan -->
-                            <th style="width:20%;">Nama Produk</th>
+                            <th style="width:20%;">Product Name</th>
                             <th style="width:10%;" class="text-center">Varian (Uniq ID)</th>
-                            <th style="width:12%;">Kategori</th>
-                            <th style="width:10%;" class="text-end">Bottom Lama (/m)</th>
-                            <th style="width:10%;" class="text-end">Bottom Baru (/m)</th>
+                            <th style="width:12%;">Category</th>
+                            <th style="width:10%;" class="text-end">Old Bottom (/m)</th>
+                            <th style="width:10%;" class="text-end">New Bottom (/m)</th>
                             <th style="width:10%;" class="text-end">Selisih (Delta)</th>
-                            <th style="width:10%;" class="text-end">Price List Baru (/m)</th>
+                            <th style="width:10%;" class="text-end">New Price List (/m)</th>
                             <th style="width:8%;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -108,7 +108,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                                 </td>
                                 <td>
                                     <span class="fw-bold"><?= html_escape($r->nm_product ? $r->nm_product : $r->code_lv4) ?></span>
-                                    <div class="text-muted" style="font-size:10px;">Kode: <?= html_escape($r->code_lv4) ?></div>
+                                    <div class="text-muted" style="font-size:10px;">Code: <?= html_escape($r->code_lv4) ?></div>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-primary" style="font-size:11px;"><?= html_escape($r->no_uniq_id) ?></span>
@@ -146,7 +146,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
             <div class="modal-header text-white">
-                <h5 class="modal-title fw-bold"><i class="fa fa-pie-chart me-2"></i>Snapshot Komponen Biaya (Lama vs Baru)</h5>
+                <h5 class="modal-title fw-bold"><i class="fa fa-pie-chart me-2"></i>Cost Component Snapshot (Old vs New)</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow: auto;">
@@ -160,9 +160,9 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                     </div>
                     <div class="col-md-6">
                         <table class="table table-sm table-borderless mb-0" style="font-size:12px;">
-                            <tr><td style="width:120px;" class="fw-bold">Waktu Perubahan:</td><td id="snap-time">-</td></tr>
-                            <tr><td class="fw-bold">Sumber Perubahan:</td><td id="snap-source">-</td></tr>
-                            <tr><td class="fw-bold">Diperbarui Oleh:</td><td id="snap-user">-</td></tr>
+                            <tr><td style="width:120px;" class="fw-bold">Change Time:</td><td id="snap-time">-</td></tr>
+                            <tr><td class="fw-bold">Change Source:</td><td id="snap-source">-</td></tr>
+                            <tr><td class="fw-bold">Updated By:</td><td id="snap-user">-</td></tr>
                         </table>
                     </div>
                 </div>
@@ -171,10 +171,10 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                     <table class="table table-bordered table-striped" style="font-size:12px;">
                         <thead class="table-light">
                             <tr>
-                                <th style="width:30%;">Komponen Biaya (Rp/Meter)</th>
-                                <th style="width:22%;" class="text-end">Nilai Lama</th>
-                                <th style="width:22%;" class="text-end">Nilai Baru</th>
-                                <th style="width:26%;" class="text-end">Perubahan (Selisih)</th>
+                                <th style="width:30%;">Cost Component (Rp/Meter)</th>
+                                <th style="width:22%;" class="text-end">Old Value</th>
+                                <th style="width:22%;" class="text-end">New Value</th>
+                                <th style="width:26%;" class="text-end">Change (Difference)</th>
                             </tr>
                         </thead>
                         <tbody id="tbl-snapshot-body">
@@ -184,7 +184,7 @@ $ENABLE_VIEW   = has_permission('History_Costing.View');
                 </div>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -225,10 +225,10 @@ $(document).ready(function() {
             { orderable: false, targets: [0, 9] }
         ],
         language: {
-            search: "Cari Produk / Varian / Batch:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            zeroRecords: "Tidak ada data riwayat costing",
-            info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ riwayat",
+            search: "Search Product / Variant / Batch:",
+            lengthMenu: "Show _MENU_ entries",
+            zeroRecords: "No costing history data",
+            info: "Showing _START_ to _END_ of _TOTAL_ history entries",
             infoEmpty: "Menampilkan 0 data",
             infoFiltered: "(disaring dari _MAX_ total data)"
         }
@@ -259,8 +259,8 @@ $(document).ready(function() {
                     var newVal = s ? s.now : null;
 
                     var components = [
-                        { label: "1. Biaya Material (Raw Material + Packing)", key: "material", bold: false },
-                        { label: "2. Biaya Proses Total (DL + IDL + Depr + Listrik)", key: "proses", bold: false },
+                        { label: "1. Material Cost (Raw Material + Packing)", key: "material", bold: false },
+                        { label: "2. Total Process Cost (DL + IDL + Depr + Electricity)", key: "proses", bold: false },
                         { label: "3. Manufacturing Support (BPK + FOH + Helper)", key: "support", bold: false },
                         { label: "4. Other Cost Total (5 Elemen)", key: "other", bold: false },
                         { label: "5. HPP (COGS)", key: "hpp", bold: true, color: "#2980b9" },
@@ -297,7 +297,7 @@ $(document).ready(function() {
                 }
             },
             error: function() {
-                Swal.fire('Error', 'Gagal memuat snapshot komponen biaya', 'error');
+                Swal.fire('Error', 'Failed to load cost component snapshot', 'error');
             }
         });
     });

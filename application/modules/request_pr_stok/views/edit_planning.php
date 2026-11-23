@@ -8,11 +8,11 @@ $keterangan_1 = (!empty($header)) ? $header[0]['keterangan_1'] : '';
 $keterangan_2 = (!empty($header)) ? $header[0]['keterangan_2'] : '';
 $keterangan_3 = (!empty($header)) ? $header[0]['keterangan_3'] : '';
 
-$status1 = '<span class="badge bg-secondary">Menunggu</span>';
+$status1 = '<span class="badge bg-secondary">Waiting</span>';
 $tgl_appre_1 = '-';
-$status2 = '<span class="badge bg-secondary">Menunggu</span>';
+$status2 = '<span class="badge bg-secondary">Waiting</span>';
 $tgl_appre_2 = '-';
-$status3 = '<span class="badge bg-secondary">Menunggu</span>';
+$status3 = '<span class="badge bg-secondary">Waiting</span>';
 $tgl_appre_3 = '-';
 
 if (!empty($header)) {
@@ -62,14 +62,14 @@ if (!empty($header)) {
                                     <i class="fa fa-pencil-square-o fs-3"></i>
                                 </div>
                                 <div>
-                                    <h5 class="card-title fw-bold text-dark mb-0">Edit Pengajuan PR Stok</h5>
+                                    <h5 class="card-title fw-bold text-dark mb-0">Edit PR Stock Request</h5>
                                     <small class="text-muted">No. PR: <span class="badge bg-primary bg-opacity-10 text-primary fw-bold"><?= htmlspecialchars($header[0]['no_pr'] ?? '-') ?></span> &bull; No. SO: <?= htmlspecialchars($header[0]['so_number'] ?? '-') ?></small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-5 col-12 text-md-end d-flex gap-2 justify-content-md-end">
                             <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm" id="back">
-                                <i class="fa fa-arrow-left me-1"></i> Kembali
+                                <i class="fa fa-arrow-left me-1"></i> Back
                             </a>
                             <button type="button" class="btn btn-primary shadow-sm" name="save" id="save">
                                 <i class="fa fa-save me-1"></i> Simpan Perubahan
@@ -83,7 +83,7 @@ if (!empty($header)) {
                     <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
                         <div class="col-md-4 col-12">
                             <label class="form-label fw-bold text-dark mb-1">Customer / Keperluan</label>
-                            <input type="text" class="form-control bg-white" value="<?= htmlspecialchars($header[0]['nm_customer'] ?? 'Pengisian Stok Internal'); ?>" readonly>
+                            <input type="text" class="form-control bg-white" value="<?= htmlspecialchars($header[0]['nm_customer'] ?? 'Internal Stock Replenishment'); ?>" readonly>
                         </div>
                         <div class="col-md-4 col-12">
                             <label class="form-label fw-bold text-dark mb-1">Tingkat Urgensi PR</label>
@@ -93,7 +93,7 @@ if (!empty($header)) {
                             </select>
                         </div>
                         <div class="col-md-4 col-12">
-                            <label class="form-label fw-bold text-dark mb-1">Tanggal Dibutuhkan</label>
+                            <label class="form-label fw-bold text-dark mb-1">Required Date</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="fa fa-calendar-check-o text-muted"></i></span>
                                 <input type="text" name="tgl_dibutuhkan" id="tgl_dibutuhkan" class="form-control flatpickr-date bg-white" value="<?= htmlspecialchars($header[0]['tgl_dibutuhkan'] ?? ''); ?>">
@@ -104,7 +104,7 @@ if (!empty($header)) {
                     <!-- Approval Log Table -->
                     <div class="card border mb-4">
                         <div class="card-header bg-white py-2">
-                            <span class="fw-bold text-dark"><i class="fa fa-shield text-primary me-1"></i> Status Review & Keterangan Tambahan</span>
+                            <span class="fw-bold text-dark"><i class="fa fa-shield text-primary me-1"></i> Review Status & Additional Notes</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -115,7 +115,7 @@ if (!empty($header)) {
                                             <th class="text-center" style="width: 130px;">Status</th>
                                             <th class="text-center" style="width: 160px;">Tgl Review</th>
                                             <th class="text-start" style="width: 250px;">Alasan Reject</th>
-                                            <th class="text-start">Keterangan / Catatan</th>
+                                            <th class="text-start">Description / Notes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -124,21 +124,21 @@ if (!empty($header)) {
                                             <td class="text-center"><?= $status1 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_1 ?></td>
                                             <td><input type="text" name="reject_reason1" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject1) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_1" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_1) ?>" placeholder="Catatan Dept Head"></td>
+                                            <td><input type="text" name="keterangan_1" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_1) ?>" placeholder="Dept Head Notes"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-semibold">Cost Control</td>
                                             <td class="text-center"><?= $status2 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_2 ?></td>
                                             <td><input type="text" name="reject_reason2" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject2) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_2" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_2) ?>" placeholder="Catatan Cost Control"></td>
+                                            <td><input type="text" name="keterangan_2" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_2) ?>" placeholder="Cost Control Notes"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-semibold">Management / Direktur</td>
                                             <td class="text-center"><?= $status3 ?></td>
                                             <td class="text-center text-muted small"><?= $tgl_appre_3 ?></td>
                                             <td><input type="text" name="reject_reason3" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars((string) $alasan_reject3) ?>" readonly></td>
-                                            <td><input type="text" name="keterangan_3" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_3) ?>" placeholder="Catatan Management"></td>
+                                            <td><input type="text" name="keterangan_3" class="form-control form-control-sm" value="<?= htmlspecialchars((string) $keterangan_3) ?>" placeholder="Management Notes"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -149,21 +149,21 @@ if (!empty($header)) {
                     <!-- Items Currently in PR -->
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="fw-bold text-dark mb-0"><i class="fa fa-list-ul text-primary me-1"></i> Rincian Item PR Berjalan</h6>
-                            <small class="text-muted">Edit kuantitas atau catatan item, lalu klik tombol Update</small>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fa fa-list-ul text-primary me-1"></i> Ongoing PR Item Details</h6>
+                            <small class="text-muted">Edit the item quantity or notes, then click the Update button</small>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle table-striped border-top mb-0" width="100%">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="text-center" style="width: 40px;">#</th>
-                                        <th class="text-start">Nama Barang</th>
+                                        <th class="text-start">Item Name</th>
                                         <th class="text-end" style="width: 100px;">Min Stock</th>
                                         <th class="text-end" style="width: 100px;">Max Stock</th>
                                         <th class="text-end" style="width: 100px;">Min Order</th>
                                         <th class="text-center" style="width: 130px;">Qty PR</th>
                                         <th class="text-center" style="width: 130px;">Status</th>
-                                        <th class="text-start">Catatan Item</th>
+                                        <th class="text-start">Item Notes</th>
                                         <th class="text-center" style="width: 110px;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -195,12 +195,12 @@ if (!empty($header)) {
                                             }
 
                                             echo "<td>";
-                                            echo "<input type='text' class='form-control form-control-sm notes_" . $value['id'] . "' name='detail[" . $key . "][notes]' value='" . htmlspecialchars($value['note'] ?? '') . "' placeholder='Catatan...'>";
+                                            echo "<input type='text' class='form-control form-control-sm notes_" . $value['id'] . "' name='detail[" . $key . "][notes]' value='" . htmlspecialchars($value['note'] ?? '') . "' placeholder='Notes...'>";
                                             echo "</td>";
                                             echo "<td class='text-center'>";
                                             echo "<div class='btn-group btn-group-sm'>";
-                                            echo "<button type='button' class='btn btn-warning edit_detail edit_detail_" . $value['id'] . "' data-key='" . $key . "' data-id='" . $value['id'] . "' title='Simpan Item Ini'><i class='fa fa-pencil'></i></button>";
-                                            echo "<button type='button' class='btn btn-danger del_detail del_detail_" . $value['id'] . "' data-key='" . $key . "' data-id='" . $value['id'] . "' title='Hapus Item Ini'><i class='fa fa-trash'></i></button>";
+                                            echo "<button type='button' class='btn btn-warning edit_detail edit_detail_" . $value['id'] . "' data-key='" . $key . "' data-id='" . $value['id'] . "' title='Save This Item'><i class='fa fa-pencil'></i></button>";
+                                            echo "<button type='button' class='btn btn-danger del_detail del_detail_" . $value['id'] . "' data-key='" . $key . "' data-id='" . $value['id'] . "' title='Delete This Item'><i class='fa fa-trash'></i></button>";
                                             echo "</div>";
                                             echo "</td>";
                                             echo "</tr>";
@@ -215,7 +215,7 @@ if (!empty($header)) {
                     <!-- Items Not in PR (Add New Item Section) -->
                     <div class="card border mb-3">
                         <div class="card-header bg-light py-2">
-                            <span class="fw-bold text-dark"><i class="fa fa-plus-circle text-success me-1"></i> Tambah Barang Lain ke PR Ini</span>
+                            <span class="fw-bold text-dark"><i class="fa fa-plus-circle text-success me-1"></i> Add Another Item to This PR</span>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -223,13 +223,13 @@ if (!empty($header)) {
                                     <thead class="table-light">
                                         <tr>
                                             <th class="text-center" style="width: 40px;">#</th>
-                                            <th class="text-start">Nama Barang</th>
+                                            <th class="text-start">Item Name</th>
                                             <th class="text-end" style="width: 100px;">Min Stock</th>
                                             <th class="text-end" style="width: 100px;">Max Stock</th>
                                             <th class="text-end" style="width: 100px;">Min Order</th>
                                             <th class="text-center" style="width: 130px;">Qty Usulan</th>
-                                            <th class="text-start">Catatan</th>
-                                            <th class="text-center" style="width: 70px;">Tambah</th>
+                                            <th class="text-start">Notes</th>
+                                            <th class="text-center" style="width: 70px;">Add</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -247,10 +247,10 @@ if (!empty($header)) {
                                                 echo '<input type="text" class="form-control form-control-sm text-center autoNumeric2 nmat_qty_' . $item['id'] . '" placeholder="Qty">';
                                                 echo '</td>';
                                                 echo '<td>';
-                                                echo '<input type="text" class="form-control form-control-sm nmat_notes_' . $item['id'] . '" placeholder="Catatan...">';
+                                                echo '<input type="text" class="form-control form-control-sm nmat_notes_' . $item['id'] . '" placeholder="Notes...">';
                                                 echo '</td>';
                                                 echo '<td class="text-center">';
-                                                echo '<button type="button" class="btn btn-sm btn-success add_stock add_stock_' . $item['id'] . '" data-id="' . $item['id'] . '" title="Tambahkan ke PR"><i class="fa fa-plus"></i></button>';
+                                                echo '<button type="button" class="btn btn-sm btn-success add_stock add_stock_' . $item['id'] . '" data-id="' . $item['id'] . '" title="Add to PR"><i class="fa fa-plus"></i></button>';
                                                 echo '</td>';
                                                 echo '</tr>';
                                                 $no++;
@@ -265,7 +265,7 @@ if (!empty($header)) {
 
                     <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
                         <a href="<?= base_url('request_pr_stok') ?>" class="btn btn-secondary shadow-sm">
-                            <i class="fa fa-arrow-left me-1"></i> Kembali
+                            <i class="fa fa-arrow-left me-1"></i> Back
                         </a>
                         <button type="button" class="btn btn-primary shadow-sm px-4" id="saveBottom">
                             <i class="fa fa-save me-1"></i> Simpan Seluruh Perubahan
@@ -302,10 +302,10 @@ if (!empty($header)) {
             $('.table_data').DataTable({
                 "pageLength": 10,
                 "language": {
-                    "search": "Cari Barang:",
-                    "lengthMenu": "Tampilkan _MENU_ data",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "paginate": { "next": "Lanjut", "previous": "Sebelum" }
+                    "search": "Search Item:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "paginate": { "next": "Continue", "previous": "Sebelum" }
                 }
             });
         }
@@ -323,13 +323,13 @@ if (!empty($header)) {
             e.preventDefault();
 
             swal({
-                title: "Konfirmasi Update",
-                text: "Simpan pembaruan untuk dokumen PR ini?",
+                title: "Confirm Update",
+                text: "Save the updates for this PR document?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-primary",
-                confirmButtonText: "Ya, Simpan",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {
@@ -345,7 +345,7 @@ if (!empty($header)) {
                         success: function(data) {
                             if (data.status == 1) {
                                 swal({
-                                    title: "Berhasil!",
+                                    title: "Success!",
                                     text: data.pesan,
                                     type: "success"
                                 }, function() {
@@ -353,7 +353,7 @@ if (!empty($header)) {
                                 });
                             } else {
                                 swal({
-                                    title: "Gagal!",
+                                    title: "Failed!",
                                     text: data.pesan,
                                     type: "warning"
                                 });
@@ -362,7 +362,7 @@ if (!empty($header)) {
                         error: function() {
                             swal({
                                 title: "Error!",
-                                text: 'Terjadi kesalahan sistem saat menyimpan data.',
+                                text: 'A system error occurred while saving the data.',
                                 type: "error"
                             });
                         }
@@ -396,15 +396,15 @@ if (!empty($header)) {
                     if (result.status == 1) {
                         swal({
                             type: 'success',
-                            title: 'Berhasil!',
-                            text: 'Rincian item berhasil diperbarui!',
+                            title: 'Success!',
+                            text: 'Item details updated successfully!',
                             timer: 2000
                         });
                     } else {
                         swal({
                             type: 'error',
-                            title: 'Gagal!',
-                            text: 'Item gagal diperbarui.'
+                            title: 'Failed!',
+                            text: 'Failed to update item.'
                         });
                     }
                     $('.edit_detail_' + id).html('<i class="fa fa-pencil"></i>');
@@ -412,7 +412,7 @@ if (!empty($header)) {
                 error: function() {
                     swal({
                         title: 'Error!',
-                        text: 'Terjadi kesalahan jaringan.',
+                        text: 'A network error occurred.',
                         type: 'error'
                     });
                     $('.edit_detail_' + id).html('<i class="fa fa-pencil"></i>');
@@ -424,13 +424,13 @@ if (!empty($header)) {
             var id = $(this).data('id');
 
             swal({
-                title: "Konfirmasi Hapus",
-                text: "Item ini akan dihapus dari pengajuan PR!",
+                title: "Confirm Delete",
+                text: "This item will be removed from the PR request!",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Ya, Hapus",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (isConfirm) {
@@ -443,16 +443,16 @@ if (!empty($header)) {
                         success: function(result) {
                             if (result.status == '1') {
                                 swal({
-                                    title: 'Berhasil!',
-                                    text: 'Item berhasil dihapus!',
+                                    title: 'Success!',
+                                    text: 'Item deleted successfully!',
                                     type: 'success'
                                 }, function() {
                                     location.reload();
                                 });
                             } else {
                                 swal({
-                                    title: 'Gagal!',
-                                    text: 'Item gagal dihapus.',
+                                    title: 'Failed!',
+                                    text: 'Failed to delete item.',
                                     type: 'error'
                                 });
                             }
@@ -461,7 +461,7 @@ if (!empty($header)) {
                             swal({
                                 type: 'error',
                                 title: 'Error!',
-                                text: 'Terjadi kesalahan sistem.'
+                                text: 'A system error occurred.'
                             });
                         }
                     });
@@ -477,8 +477,8 @@ if (!empty($header)) {
 
             if (qty <= 0) {
                 swal({
-                    title: "Peringatan",
-                    text: "Isikan kuantitas propose purchase lebih dari 0.",
+                    title: "Warning",
+                    text: "Enter a propose purchase quantity greater than 0.",
                     type: "warning"
                 });
                 return false;
@@ -503,7 +503,7 @@ if (!empty($header)) {
                     if (result.status == '1') {
                         swal({
                             type: 'success',
-                            title: 'Berhasil!',
+                            title: 'Success!',
                             text: result.msg
                         }, function() {
                             location.reload();
@@ -511,7 +511,7 @@ if (!empty($header)) {
                     } else {
                         swal({
                             type: 'warning',
-                            title: 'Gagal!',
+                            title: 'Failed!',
                             text: result.msg
                         });
                         $('.add_stock_' + id).html('<i class="fa fa-plus"></i>');
@@ -522,7 +522,7 @@ if (!empty($header)) {
                     swal({
                         type: 'error',
                         title: 'Error!',
-                        text: 'Terjadi kesalahan sistem.'
+                        text: 'A system error occurred.'
                     });
                     $('.add_stock_' + id).html('<i class="fa fa-plus"></i>');
                     $('.add_stock_' + id).prop('disabled', false);

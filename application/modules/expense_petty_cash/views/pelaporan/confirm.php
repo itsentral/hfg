@@ -23,11 +23,11 @@ if (!empty($coa_list)) {
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-square-o me-2"></i>Konfirmasi & Pengajuan Pelaporan Petty Cash
             </h5>
-            <small class="text-muted">Periksa kembali ringkasan pencatatan sebelum diajukan ke approver</small>
+            <small class="text-muted">Recheck the record summary before submitting it to the approver</small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('expense_petty_cash/pelaporan') ?>" class="btn btn-outline-secondary btn-sm px-3">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </a>
             <button type="button" class="btn btn-primary btn-sm px-4 shadow-sm" id="btn-submit-pelaporan">
                 <i class="fa fa-send me-1"></i> Ajukan Pelaporan
@@ -46,7 +46,7 @@ if (!empty($coa_list)) {
             </div>
             <div class="col-md-3">
                 <div class="p-3 bg-light rounded-3 border">
-                    <span class="text-muted small fw-semibold text-uppercase">Periode Transaksi</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Transaction Period</span>
                     <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= $periode_start_fmt ?> - <?= $periode_end_fmt ?></h6>
                 </div>
             </div>
@@ -117,7 +117,7 @@ if (!empty($coa_list)) {
                     <div id="collapse_<?= $pItem->id ?>" class="accordion-collapse collapse <?= ($pIdx === 0) ? 'show' : '' ?>" data-bs-parent="#accordionPencatatan">
                         <div class="accordion-body p-3 bg-white">
                             <?php if (!empty($pItem->keterangan)) : ?>
-                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Keterangan:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
+                                <p class="text-muted small mb-2"><i class="fa fa-info-circle me-1"></i><strong>Description:</strong> <?= htmlspecialchars((string) $pItem->keterangan) ?></p>
                             <?php endif; ?>
 
                             <div class="table-responsive">
@@ -126,7 +126,7 @@ if (!empty($coa_list)) {
                                         <tr>
                                             <th width="35" class="text-center">#</th>
                                             <th width="220">COA</th>
-                                            <th>Pengeluaran</th>
+                                            <th>Outgoing</th>
                                             <th>Spesifikasi</th>
                                             <th width="60" class="text-center">Qty</th>
                                             <th width="110" class="text-end">Nominal</th>
@@ -166,7 +166,7 @@ if (!empty($coa_list)) {
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else : ?>
-                                            <tr><td colspan="8" class="text-center text-muted py-2">Tidak ada detail</td></tr>
+                                            <tr><td colspan="8" class="text-center text-muted py-2">No details</td></tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
@@ -185,7 +185,7 @@ if (!empty($coa_list)) {
                 <h6 class="fw-bold mb-2 text-dark">
                     <i class="fa fa-book text-primary me-2"></i>Rekapitulasi Jurnal Periode Pelaporan
                 </h6>
-                <small class="text-muted d-block mb-3">Ringkasan total penjurnalan untuk seluruh pencatatan dalam pelaporan ini</small>
+                <small class="text-muted d-block mb-3">Total journal summary for all records in this report</small>
 
                 <?php
                 // Aggregasi COA
@@ -212,7 +212,7 @@ if (!empty($coa_list)) {
                         <thead class="table-light">
                             <tr>
                                 <th width="120">COA</th>
-                                <th>Nama Account</th>
+                                <th>Account Name</th>
                                 <th width="80" class="text-center">Company</th>
                                 <th width="140" class="text-end">Total Debit</th>
                                 <th width="140" class="text-end">Total Kredit</th>
@@ -252,7 +252,7 @@ if (!empty($coa_list)) {
 
         <div class="d-flex align-items-center justify-content-end gap-2">
             <a href="<?= site_url('expense_petty_cash/pelaporan') ?>" class="btn btn-secondary px-3">
-                <i class="fa fa-times me-1"></i> Batal
+                <i class="fa fa-times me-1"></i> Cancel
             </a>
             <button type="button" class="btn btn-primary px-4 shadow-sm" id="btn-submit-bottom">
                 <i class="fa fa-send me-1"></i> Ajukan Pelaporan Sekarang
@@ -272,18 +272,18 @@ if (!empty($coa_list)) {
         $('#btn-submit-pelaporan, #btn-submit-bottom').on('click', function() {
             Swal.fire({
                 title: 'Ajukan Pelaporan?',
-                text: 'Pelaporan akan diajukan ke tahap approval. Pastikan seluruh rincian dan lampiran sudah benar.',
+                text: 'The report will be submitted for approval. Make sure all details and attachments are correct.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#0d6efd',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa fa-send me-1"></i> Ya, Ajukan Pelaporan',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fa fa-send me-1"></i> Yes, Submit Report',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Mengajukan...',
-                        text: 'Sedang memproses pengajuan pelaporan',
+                        text: 'Processing report submission',
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -295,18 +295,18 @@ if (!empty($coa_list)) {
                         success: function(resp) {
                             if (resp.status) {
                                 Swal.fire({
-                                    title: 'Berhasil!',
+                                    title: 'Success!',
                                     text: resp.message,
                                     icon: 'success'
                                 }).then(function() {
                                     window.location.href = BASE_URL + 'pelaporan';
                                 });
                             } else {
-                                Swal.fire('Gagal!', resp.message || 'Gagal mengajukan pelaporan.', 'error');
+                                Swal.fire('Failed!', resp.message || 'Failed to submit the report.', 'error');
                             }
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem saat mengajukan pelaporan.', 'error');
+                            Swal.fire('Error!', 'A system error occurred saat mengajukan pelaporan.', 'error');
                         }
                     });
                 }

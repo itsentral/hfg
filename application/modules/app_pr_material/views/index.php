@@ -86,7 +86,7 @@
             const so_number = $(this).data('so_number');
             console.log(so_number); // Pastikan ini menampilkan 'SPR26010001'
 
-            $("#head_title").html("<b>Detail Request</b>");
+            $("#head_title").html("<b>Request Detail</b>");
 
             $.ajax({
                 type: 'POST',

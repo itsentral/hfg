@@ -41,11 +41,11 @@ class Delivery_fg extends Admin_Controller
     {
         $do = $this->Delivery_fg_model->get_do($do_no);
         if (!$do) {
-            $this->session->set_flashdata('error', 'DO tidak ditemukan');
+            $this->session->set_flashdata('error', 'DO not found');
             redirect('delivery_fg');
         }
         if ($do->status !== 'Draft') {
-            $this->session->set_flashdata('error', 'DO hanya bisa diedit dalam status Draft');
+            $this->session->set_flashdata('error', 'DO can only be edited in status Draft');
             redirect('delivery_fg/view/' . $do_no);
         }
 
@@ -63,7 +63,7 @@ class Delivery_fg extends Admin_Controller
     {
         $do = $this->Delivery_fg_model->get_do($do_no);
         if (!$do) {
-            $this->session->set_flashdata('error', 'DO tidak ditemukan');
+            $this->session->set_flashdata('error', 'DO not found');
             redirect('delivery_fg');
         }
 
@@ -154,7 +154,7 @@ class Delivery_fg extends Admin_Controller
         $do_no_edit   = $this->input->post('do_no'); // jika edit
 
         if (empty($customer) || empty($tgl_delivery)) {
-            $this->session->set_flashdata('error', 'Customer dan tanggal delivery wajib diisi');
+            $this->session->set_flashdata('error', 'Customer and delivery date are required');
             redirect($do_no_edit ? 'delivery_fg/edit/' . $do_no_edit : 'delivery_fg/add');
         }
 
@@ -164,7 +164,7 @@ class Delivery_fg extends Admin_Controller
         $berat_referensi_arr = $this->input->post('berat_referensi');
 
         if (empty($produk_fg_arr)) {
-            $this->session->set_flashdata('error', 'Minimal satu item produk FG harus diisi');
+            $this->session->set_flashdata('error', 'At least one FG product item must be filled in');
             redirect($do_no_edit ? 'delivery_fg/edit/' . $do_no_edit : 'delivery_fg/add');
         }
 
@@ -213,7 +213,7 @@ class Delivery_fg extends Admin_Controller
         $user_id      = $this->auth->user_id();
 
         if ($berat_aktual <= 0) {
-            $this->session->set_flashdata('error', 'Berat aktual harus lebih dari 0');
+            $this->session->set_flashdata('error', 'Actual weight must be greater than 0');
             redirect('delivery_fg/view/' . $do_no);
         }
 
@@ -225,11 +225,11 @@ class Delivery_fg extends Admin_Controller
             $pct = round($result['selisih_pct'] * 100, 2);
             if ($result['new_status'] === 'Waiting Approval') {
                 $this->session->set_flashdata('warning',
-                    'Timbang disimpan. Selisih ' . $pct . '% melebihi toleransi. DO menunggu approval manager.'
+                    'Weighing saved. Difference ' . $pct . '% exceeds tolerance. DO is awaiting manager approval.'
                 );
             } else {
                 $this->session->set_flashdata('success',
-                    'Timbang disimpan. Selisih ' . $pct . '% dalam toleransi. DO siap dikirim.'
+                    'Weighing saved. Difference ' . $pct . '% within tolerance. DO is ready to ship.'
                 );
             }
         }
@@ -261,7 +261,7 @@ class Delivery_fg extends Admin_Controller
         $alasan      = $this->input->post('alasan');
 
         if (empty($alasan)) {
-            echo json_encode(['success' => false, 'message' => 'Alasan reject wajib diisi']);
+            echo json_encode(['success' => false, 'message' => 'Reject reason is required']);
             return;
         }
 
@@ -302,11 +302,11 @@ class Delivery_fg extends Admin_Controller
     {
         $do = $this->Delivery_fg_model->get_do($do_no);
         if (!$do) {
-            show_error('DO tidak ditemukan', 404);
+            show_error('DO not found', 404);
         }
 
         if (!in_array($do->status, ['Approved Exception', 'Shipped'])) {
-            $this->session->set_flashdata('error', 'Surat jalan hanya bisa dicetak jika status Approved Exception atau Shipped');
+            $this->session->set_flashdata('error', 'The delivery note can only be printed when the status is Approved Exception or Shipped');
             redirect('delivery_fg/view/' . $do_no);
         }
 

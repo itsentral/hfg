@@ -4,7 +4,7 @@
     </tr>
     <tr>
         <td align='center'><b>
-                <h2>INCOMING BARANG STOK</h2>
+                <h2>STOCK ITEM INCOMING</h2>
             </b></td>
     </tr>
 </table>
@@ -13,7 +13,7 @@
 <table class="gridtable2" width="100%" border='0'>
     <thead>
         <tr>
-            <td class="mid">No Transaksi</td>
+            <td class="mid">Transaction No.</td>
             <td class="mid">:</td>
             <td class="mid"><?= $getData[0]['kode_trans']; ?></td>
             <td class="mid"></td>
@@ -21,15 +21,15 @@
             <td class="mid"></td>
         </tr>
         <tr>
-            <td class="mid" width='18%'>Nomor PO / Kasbon</td>
+            <td class="mid" width='18%'>PO / Cash Advance Number</td>
             <td class="mid" width='2%'>:</td>
             <td class="mid" width='30%'><?= strtoupper((string) $no_po); ?></td>
-            <td class="mid" width='18%'>Gudang Incoming</td>
+            <td class="mid" width='18%'>Incoming Warehouse</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?= strtoupper(get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_ke'])); ?></td>
+            <td class="mid" width='30%'><?= strtoupper((string) get_name('warehouse', 'nm_gudang', 'id', $getData[0]['id_gudang_ke'])); ?></td>
         </tr>
         <tr>
-            <td class="mid">Tanggal</td>
+            <td class="mid">Date</td>
             <td class="mid">:</td>
             <td class="mid"><?= tgl_indo($getData[0]['tanggal']); ?></td>
             <td class="mid">PIC</td>
@@ -50,10 +50,10 @@
     <thead align='center'>
         <tr>
             <th class="mid" width='5%'>No</th>
-            <th class="mid" style='vertical-align:middle;'>Stok Name</th>
+            <th class="mid" style='vertical-align:middle;'>Stock Name</th>
             <th class="mid" width='9%'>Qty</th>
             <th class="mid" width='9%'>Unit</th>
-            <th class="mid" width='20%'>Keterangan</th>
+            <th class="mid" width='20%'>Description</th>
         </tr>
     </thead>
     <tbody>
@@ -84,7 +84,7 @@
         <td width='65%'></td>
         <td>Disiapkan,</td>
         <td></td>
-        <td>Penerima,</td>
+        <td>Received by,</td>
         <td></td>
     </tr>
     <tr>

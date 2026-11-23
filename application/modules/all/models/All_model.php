@@ -165,13 +165,13 @@ class All_model extends BF_Model
 					$number = ($data->info2 + 1);
 					$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
 				}
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
-				$newcode = str_ireplace('YEAR', $years, $newcode);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
+				$newcode = str_ireplace('YEAR', $years, $newcode ?? '');
 				$newdata = array('info2' => $number, 'info3' => $years);
 			} else {
 				$number = ($data->info2 + 1);
 				$newnumber = sprintf('%0' . $data->info4 . 'd', $number);
-				$newcode = str_ireplace('XXXX', $newnumber, $data->info);
+				$newcode = str_ireplace('XXXX', $newnumber, $data->info ?? '');
 				$newdata = array('info2' => $number);
 			}
 			$this->dataUpdate('ms_generate', $newdata, array('tipe' => $tipe));
@@ -532,7 +532,7 @@ class All_model extends BF_Model
 	function GetPettyCashComboCoa($tipe)
 	{
 		$datacoa = $this->db->query("select coa from ms_petty_cash where id = '" . $tipe . "'")->row();
-		$coabudget = str_ireplace(";", "','", $datacoa->coa);
+		$coabudget = str_ireplace(";", "','", $datacoa->coa ?? '');
 		$combos = array();
 		$results = $this->db->query("select * from " . DBACC . ".coa_master where no_perkiraan in ('" . $coabudget . "')")->result();
 		if ($results) {

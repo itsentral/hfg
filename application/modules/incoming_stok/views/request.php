@@ -27,8 +27,8 @@
                             <i class="fa fa-dolly fs-3"></i>
                         </div>
                         <div>
-                            <h5 class="card-title fw-bold text-dark mb-0">Tambah Incoming Barang Stok</h5>
-                            <small class="text-muted">Pilih supplier / kasbon, centang nomor PO yang akan diterima, dan sesuaikan kuantitas barang</small>
+                            <h5 class="card-title fw-bold text-dark mb-0">Add Stock Item Incoming</h5>
+                            <small class="text-muted">Select a supplier / cash advance, tick the PO numbers to receive, and adjust the item quantities</small>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 <div class="col-lg-6 col-12">
                     <div class="card border bg-light bg-opacity-50 h-100">
                         <div class="card-header bg-white py-2 border-bottom">
-                            <span class="fw-bold text-dark"><i class="fa fa-truck-ramp-box text-primary me-2"></i>Sumber & Nomor Referensi</span>
+                            <span class="fw-bold text-dark"><i class="fa fa-truck-ramp-box text-primary me-2"></i>Source & Reference Number</span>
                         </div>
                         <div class="card-body p-3">
                             <div class="mb-3">
@@ -55,7 +55,7 @@
                                 </label>
                                 <select class="form-select chosen-select pilih_supplier" name="pilih_supplier" id="pilih_supplier" required>
                                     <option value="">-- Pilih Supplier / Kasbon --</option>
-                                    <option value="kasbon">KASBON</option>
+                                    <option value="kasbon">CASH ADVANCE</option>
                                     <?php if (!empty($listSupplier)) : ?>
                                         <?php foreach ($listSupplier as $item) : ?>
                                             <option value="<?= $item->kode_supplier; ?>">
@@ -67,7 +67,7 @@
                             </div>
 
                             <label class="form-label fw-bold text-dark">
-                                Daftar Nomor PO / Kasbon <span class="text-danger">*</span>
+                                Daftar PO / Cash Advance Number <span class="text-danger">*</span>
                             </label>
                             <div class="table-responsive border rounded bg-white" style="max-height: 250px; overflow-y: auto;">
                                 <table class="table table-sm table-hover align-middle mb-0">
@@ -75,13 +75,13 @@
                                         <tr>
                                             <th class="text-center" width="45%">No Surat PO</th>
                                             <th class="text-center" width="40%">No PR</th>
-                                            <th class="text-center" width="15%">Pilih</th>
+                                            <th class="text-center" width="15%">Select</th>
                                         </tr>
                                     </thead>
                                     <tbody class="list_no_po">
                                         <tr>
                                             <td colspan="3" class="text-center text-muted py-3">
-                                                <i class="fa fa-info-circle me-1"></i> Silakan pilih supplier / kasbon terlebih dahulu
+                                                <i class="fa fa-info-circle me-1"></i> Please select a supplier / cash advance terlebih dahulu
                                             </td>
                                         </tr>
                                     </tbody>
@@ -95,16 +95,16 @@
                 <div class="col-lg-6 col-12">
                     <div class="card border bg-light bg-opacity-50 h-100">
                         <div class="card-header bg-white py-2 border-bottom">
-                            <span class="fw-bold text-dark"><i class="fa fa-warehouse text-primary me-2"></i>Parameter Penerimaan Gudang</span>
+                            <span class="fw-bold text-dark"><i class="fa fa-warehouse text-primary me-2"></i>Warehouse Receipt Parameters</span>
                         </div>
                         <div class="card-body p-3">
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-dark">
-                                    Tanggal Penerimaan <span class="text-danger">*</span>
+                                    Receipt Date <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="tanggal" id="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required placeholder="Pilih tanggal">
+                                    <input type="text" name="tanggal" id="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required placeholder="Select date">
                                 </div>
                             </div>
 
@@ -126,16 +126,16 @@
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-dark">
-                                    PIC Penerima <span class="text-danger">*</span>
+                                    Receiving PIC <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i class="fa fa-user"></i></span>
-                                    <input type="text" name="pic" id="pic" class="form-control" placeholder="Nama staf gudang / penerima barang..." required>
+                                    <input type="text" name="pic" id="pic" class="form-control" placeholder="Warehouse staff / item receiver name..." required>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="form-label fw-bold text-dark">Catatan / Keterangan</label>
+                                <label class="form-label fw-bold text-dark">Notes / Description</label>
                                 <textarea name="keterangan" id="keterangan" class="form-control" rows="2" placeholder="Catatan opsional penerimaan..."></textarea>
                             </div>
                         </div>
@@ -145,15 +145,15 @@
         </div>
     </div>
 
-    <!-- Card Rincian Barang yang Diterima -->
+    <!-- Card Received Item Details -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white py-3 border-bottom">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fa fa-boxes-stacked text-primary fs-5"></i>
-                    <h6 class="card-title fw-bold text-dark mb-0">Rincian Barang yang Diterima</h6>
+                    <h6 class="card-title fw-bold text-dark mb-0">Received Item Details</h6>
                 </div>
-                <small class="text-muted"><i class="fa fa-info-circle me-1"></i> Input kuantitas barang yang diterima (maksimal sisa PO)</small>
+                <small class="text-muted"><i class="fa fa-info-circle me-1"></i> Enter the quantity of items received (maximum remaining PO)</small>
             </div>
         </div>
         <div class="card-body p-0">
@@ -163,20 +163,20 @@
                         <tr>
                             <th class="text-center" width="4%">#</th>
                             <th class="text-center" width="10%">ID Material</th>
-                            <th class="text-start" width="14%">Kode Stok</th>
-                            <th class="text-start">Nama Barang</th>
+                            <th class="text-start" width="14%">Stock Code</th>
+                            <th class="text-start">Item Name</th>
                             <th class="text-center" width="9%">Qty PO</th>
-                            <th class="text-center" width="8%">Satuan</th>
-                            <th class="text-center" width="9%">Sudah Masuk</th>
-                            <th class="text-center" width="9%">Sisa Belum Masuk</th>
-                            <th class="text-center" width="13%">Qty Masuk</th>
-                            <th class="text-start" width="15%">Keterangan</th>
+                            <th class="text-center" width="8%">Unit</th>
+                            <th class="text-center" width="9%">Already In</th>
+                            <th class="text-center" width="9%">Remaining Not Yet In</th>
+                            <th class="text-center" width="13%">Qty In</th>
+                            <th class="text-start" width="15%">Description</th>
                         </tr>
                     </thead>
                     <tbody id="body_req">
                         <tr>
                             <td colspan="10" class="text-center text-muted py-4">
-                                <i class="fa fa-info-circle me-1"></i> Belum ada data barang. Silakan centang nomor PO dan pilih gudang tujuan di atas.
+                                <i class="fa fa-info-circle me-1"></i> No item data yet. Silakan centang nomor PO dan pilih gudang tujuan di atas.
                             </td>
                         </tr>
                     </tbody>
@@ -198,12 +198,12 @@
                 <table class="table table-sm table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center" width="12%">Tanggal Jurnal</th>
+                            <th class="text-center" width="12%">Journal Date</th>
                             <th class="text-center" width="10%">Company</th>
                             <th class="text-center" width="10%">Divisi</th>
                             <th class="text-center" width="10%">No COA</th>
-                            <th class="text-start" width="15%">Nama Company</th>
-                            <th class="text-start" width="15%">Nama Account</th>
+                            <th class="text-start" width="15%">Company Name</th>
+                            <th class="text-start" width="15%">Account Name</th>
                             <th class="text-start">Deskripsi</th>
                             <th class="text-end" width="11%">Debit</th>
                             <th class="text-end" width="11%">Kredit</th>
@@ -212,7 +212,7 @@
                     <tbody class="tbody_list_jurnal">
                         <tr>
                             <td colspan="9" class="text-center text-muted py-3">
-                                <i>Jurnal akan terbentuk otomatis setelah nomor PO dipilih</i>
+                                <i>The journal will be generated automatically after a PO number is selected</i>
                             </td>
                         </tr>
                     </tbody>
@@ -228,7 +228,7 @@
         </div>
         <div class="card-footer bg-white border-top py-3 text-end">
             <button type="button" class="btn btn-primary px-4 shadow-sm" id="save">
-                <i class="fa fa-paper-plane me-1"></i> Proses Incoming
+                <i class="fa fa-paper-plane me-1"></i> Process Incoming
             </button>
         </div>
     </div>
@@ -290,12 +290,12 @@
         $(document).on('change', '.pilih_supplier', function() {
             var supplier = $(this).val();
             if (!supplier) {
-                $('.list_no_po').html('<tr><td colspan="3" class="text-center text-muted py-3">Silakan pilih supplier / kasbon</td></tr>');
-                $('#body_req').html('<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data barang.</td></tr>');
+                $('.list_no_po').html('<tr><td colspan="3" class="text-center text-muted py-3">Please select a supplier / cash advance</td></tr>');
+                $('#body_req').html('<tr><td colspan="10" class="text-center text-muted py-4">No item data yet.</td></tr>');
                 return;
             }
 
-            $('.list_no_po').html('<tr><td colspan="3" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Memuat daftar PO...</td></tr>');
+            $('.list_no_po').html('<tr><td colspan="3" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Loading PO list...</td></tr>');
 
             $.ajax({
                 type: 'POST',
@@ -306,13 +306,13 @@
                 cache: false,
                 success: function(result) {
                     if (result.trim() === '') {
-                        $('.list_no_po').html('<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada PO yang aktif atau belum incoming</td></tr>');
+                        $('.list_no_po').html('<tr><td colspan="3" class="text-center text-muted py-3">There is no active PO or PO awaiting incoming</td></tr>');
                     } else {
                         $('.list_no_po').html(result);
                     }
                 },
                 error: function() {
-                    $('.list_no_po').html('<tr><td colspan="3" class="text-center text-danger py-3">Gagal memuat daftar PO dari server</td></tr>');
+                    $('.list_no_po').html('<tr><td colspan="3" class="text-center text-danger py-3">Failed to load the PO list from the server</td></tr>');
                 }
             });
         });
@@ -329,7 +329,7 @@
             let id_gudang = $('#id_gudang').val();
 
             if (no_po.length > 0 && id_gudang && id_gudang !== '0') {
-                $('#body_req').html('<tr><td colspan="10" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div> Mengambil rincian barang dari PO...</td></tr>');
+                $('#body_req').html('<tr><td colspan="10" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div> Fetching item details from the PO...</td></tr>');
 
                 $.ajax({
                     type: 'POST',
@@ -344,14 +344,14 @@
                         initAutoNumeric();
                     },
                     error: function() {
-                        $('#body_req').html('<tr><td colspan="10" class="text-center text-danger py-4">Gagal memuat rincian barang dari server</td></tr>');
+                        $('#body_req').html('<tr><td colspan="10" class="text-center text-danger py-4">Failed to load item details from the server</td></tr>');
                     }
                 });
 
                 set_jurnal(no_po, id_gudang);
             } else if (no_po.length === 0) {
-                $('#body_req').html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Silakan centang minimal satu nomor PO di atas.</td></tr>');
-                $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>Jurnal akan terbentuk otomatis setelah nomor PO dipilih</i></td></tr>');
+                $('#body_req').html('<tr><td colspan="10" class="text-center text-muted py-4"><i class="fa fa-info-circle me-1"></i> Please tick at least one PO number above.</td></tr>');
+                $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>The journal will be generated automatically after a PO number is selected</i></td></tr>');
                 $('.ttl_debit_jurnal').text('0');
                 $('.ttl_kredit_jurnal').text('0');
             }
@@ -374,18 +374,18 @@
 
             if (no_po.length < 1) {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: 'Nomor PO / Kasbon belum dipilih!' });
+                    Swal.fire({ icon: 'warning', title: 'Warning!', text: 'PO / Cash Advance Number has not been selected!' });
                 } else {
-                    alert('Nomor PO / Kasbon belum dipilih!');
+                    alert('PO / Cash Advance Number has not been selected!');
                 }
                 return false;
             }
 
             if (!id_gudang || id_gudang == '0') {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: 'Warehouse tujuan belum dipilih!' });
+                    Swal.fire({ icon: 'warning', title: 'Warning!', text: 'Destination warehouse has not been selected!' });
                 } else {
-                    alert('Warehouse tujuan belum dipilih!');
+                    alert('Destination warehouse has not been selected!');
                 }
                 $('#id_gudang').focus();
                 return false;
@@ -393,9 +393,9 @@
 
             if (!pic || pic.trim() === '') {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: 'Nama PIC penerima barang wajib diisi!' });
+                    Swal.fire({ icon: 'warning', title: 'Warning!', text: 'Receiving PIC name is required!' });
                 } else {
-                    alert('Nama PIC penerima barang wajib diisi!');
+                    alert('Receiving PIC name is required!');
                 }
                 $('#pic').focus();
                 return false;
@@ -411,9 +411,9 @@
 
             if (!hasValidQty) {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: 'Minimal satu barang harus memiliki Qty Masuk > 0!' });
+                    Swal.fire({ icon: 'warning', title: 'Warning!', text: 'At least one item must have Qty In > 0!' });
                 } else {
-                    alert('Minimal satu barang harus memiliki Qty Masuk > 0!');
+                    alert('At least one item must have Qty In > 0!');
                 }
                 return false;
             }
@@ -433,10 +433,10 @@
                     processData: false,
                     contentType: false,
                     success: function(data) {
-                        btn.prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Proses Incoming');
+                        btn.prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Process Incoming');
                         if (data.status == 1) {
                             if (typeof Swal !== 'undefined') {
-                                Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.pesan, timer: 3000 }).then(() => {
+                                Swal.fire({ icon: 'success', title: 'Success!', text: data.pesan, timer: 3000 }).then(() => {
                                     window.location.href = siteurl + active_controller;
                                 });
                             } else {
@@ -445,18 +445,18 @@
                             }
                         } else {
                             if (typeof Swal !== 'undefined') {
-                                Swal.fire({ icon: 'warning', title: 'Gagal!', text: data.pesan });
+                                Swal.fire({ icon: 'warning', title: 'Failed!', text: data.pesan });
                             } else {
                                 alert(data.pesan);
                             }
                         }
                     },
                     error: function() {
-                        btn.prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Proses Incoming');
+                        btn.prop('disabled', false).html('<i class="fa fa-paper-plane me-1"></i> Process Incoming');
                         if (typeof Swal !== 'undefined') {
-                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Terjadi kesalahan sistem saat memproses transaksi.' });
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'A system error occurred while processing the transaction.' });
                         } else {
-                            alert('Terjadi kesalahan sistem saat memproses transaksi.');
+                            alert('A system error occurred while processing the transaction.');
                         }
                     }
                 });
@@ -464,21 +464,21 @@
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: "Konfirmasi Incoming",
-                    text: "Apakah Anda yakin data penerimaan stok ini sudah benar?",
+                    title: "Confirm Incoming",
+                    text: "Are you sure this stock receipt data is correct?",
                     icon: "question",
                     showCancelButton: true,
                     confirmButtonColor: "#28a745",
                     cancelButtonColor: "#6c757d",
-                    confirmButtonText: "Ya, Proses!",
-                    cancelButtonText: "Batal"
+                    confirmButtonText: "Yes, Process!",
+                    cancelButtonText: "Cancel"
                 }).then((result) => {
                     if (result.isConfirmed) {
                         doSubmit();
                     }
                 });
             } else {
-                if (confirm("Apakah Anda yakin ingin memproses transaksi incoming ini?")) {
+                if (confirm("Are you sure you want to process this incoming transaction?")) {
                     doSubmit();
                 }
             }
@@ -501,13 +501,13 @@
                     $('.ttl_debit_jurnal').text(number_format(result.ttl_debit));
                     $('.ttl_kredit_jurnal').text(number_format(result.ttl_kredit));
                 } else {
-                    $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>Tidak ada jurnal yang di-generate</i></td></tr>');
+                    $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>No journals generated</i></td></tr>');
                     $('.ttl_debit_jurnal').text('0');
                     $('.ttl_kredit_jurnal').text('0');
                 }
             },
             error: function() {
-                $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>Informasi jurnal tidak dapat dimuat</i></td></tr>');
+                $('.tbody_list_jurnal').html('<tr><td colspan="9" class="text-center text-muted py-3"><i>Journal information could not be loaded</i></td></tr>');
             }
         });
     }

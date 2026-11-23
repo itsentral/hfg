@@ -537,7 +537,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                     '</tr>';
                             });
                         } else {
-                            html = '<tr><td colspan="' + colSpan + '" class="text-center text-warning">Data Pack tidak ditemukan untuk ROS ini.</td></tr>';
+                            html = '<tr><td colspan="' + colSpan + '" class="text-center text-warning">Pack data not found for this ROS.</td></tr>';
                         }
 
                         $('#list-item-coil').html(html);
@@ -754,7 +754,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                             if (res.status == 1) {
                                 Swal.fire({
                                     title: 'Draft Saved!',
-                                    html: res.pesan + '<br><br><b>Pilih aksi selanjutnya:</b>',
+                                    html: res.pesan + '<br><br><b>Select the next action:</b>',
                                     icon: 'success',
                                     showCancelButton: true,
                                     showDenyButton: true,
@@ -773,7 +773,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 });
                             } else {
                                 Swal.fire({
-                                    title: 'Gagal',
+                                    title: 'Failed',
                                     text: res.pesan,
                                     icon: 'error'
                                 });
@@ -803,7 +803,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                     text: 'Data will be saved and submitted to Finalize Incoming.',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, Save & Submit!',
+                    confirmButtonText: 'Yes, Save & Submit!',
                     cancelButtonText: 'Cancel'
                 }).then(function(result) {
                     if (!result.isConfirmed) return;
@@ -850,7 +850,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 });
                             } else {
                                 Swal.fire({
-                                    title: 'Gagal',
+                                    title: 'Failed',
                                     text: res.pesan,
                                     icon: 'error'
                                 });
@@ -875,8 +875,8 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                 }
 
                 Swal.fire({
-                    title: 'Apakah Anda Yakin?',
-                    text: 'Data akan diproses ke stok dan jurnal akuntansi!',
+                    title: 'Are you sure?',
+                    text: 'The data will be processed into stock and accounting journals!',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Process!',
@@ -905,7 +905,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 });
                             } else if (res.status == 2) {
                                 Swal.fire({
-                                    title: 'Transaksi Saved',
+                                    title: 'Transaction Saved',
                                     text: res.pesan,
                                     icon: 'warning',
                                     confirmButtonText: 'OK'
@@ -914,7 +914,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                                 });
                             } else {
                                 Swal.fire({
-                                    title: 'Gagal',
+                                    title: 'Failed',
                                     text: res.pesan,
                                     icon: 'error',
                                     confirmButtonText: 'OK'
@@ -924,7 +924,7 @@ $tgl_default = !empty($ros_data->incoming_date) ? $ros_data->incoming_date : dat
                         error: function() {
                             Swal.fire({
                                 title: 'Error',
-                                text: 'Terjadi kesalahan koneksi server.',
+                                text: 'A server connection error occurred.',
                                 icon: 'error',
                                 confirmButtonText: 'OK'
                             });

@@ -32,7 +32,7 @@
         echo "<tr>";
             echo "<td class='header_style_alamat' width='15%'>Vendor</td>";
 			echo "<td class='header_style_alamat' width='1%'>:</td>";
-            echo "<td class='header_style_alamat' colspan='4'>".strtoupper(get_name('supplier','nm_supplier','id_supplier',$datapo->id_supplier))."</td>";
+            echo "<td class='header_style_alamat' colspan='4'>".strtoupper((string) get_name('supplier','nm_supplier','id_supplier',$datapo->id_supplier))."</td>";
         echo "</tr>";
 
 	echo "</table>";
@@ -46,7 +46,7 @@
 				echo "<th style='text-align: right' width='10%'>PPN</th>";
 				echo "<th style='text-align: center' width='10%'>PPH</th>";
 				echo "<th style='text-align: right' width='15%'>Total</th>";
-				echo "<th style='text-align: left'>Keterangan</th>";
+				echo "<th style='text-align: left'>Description</th>";
 			echo "</tr>";
 		echo "</thead>";
 		echo "<tbody>";
@@ -309,5 +309,5 @@ if($datapo->curs_header== 'USD'){
 	$mpdf->SetTitle($no_po);
 	$mpdf->AddPage();
 	$mpdf->WriteHTML($html);
-	$mpdf->Output($no_po.' - '.strtoupper(get_name('supplier','nm_supplier','id_supplier',$data_header[0]->id_supplier)).' '.date('dmyhis').'.pdf' ,'I');
+	$mpdf->Output($no_po.' - '.strtoupper((string) get_name('supplier','nm_supplier','id_supplier',$data_header[0]->id_supplier)).' '.date('dmyhis').'.pdf' ,'I');
 ?>

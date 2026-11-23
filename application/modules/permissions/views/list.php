@@ -31,9 +31,9 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 						<tr>
 							<th style="width:60px">#</th>
 							<th>Permission ID</th>
-							<th>Nama Permission</th>
-							<th>Nama Menu</th>
-							<th>Jenis</th>
+							<th>Permission Name</th>
+							<th>Menu Name</th>
+							<th>Type</th>
 							<?php if ($ENABLE_MANAGE) : ?>
 								<th style="width:120px" class="text-end">Action</th>
 							<?php endif; ?>
@@ -112,7 +112,7 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-light" data-bs-dismiss="modal">
-					<i class="ti ti-x"></i> Tutup
+					<i class="ti ti-x"></i> Close
 				</button>
 			</div>
 		</div>
@@ -157,13 +157,13 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 
 	function delete_data(id) {
 		swal({
-			title: "Anda Yakin?",
-			text: "Data Akan Terhapus secara Permanen!",
+			title: "Are you sure?",
+			text: "The data will be permanently deleted!",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#DD6B55",
-			confirmButtonText: "Ya, delete!",
-			cancelButtonText: "Tidak!",
+			confirmButtonText: "Yes, delete!",
+			cancelButtonText: "No!",
 			closeOnConfirm: false,
 			closeOnCancel: true
 		}, function(isConfirm) {
@@ -175,8 +175,8 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 					success: function(msg) {
 						if (msg['delete'] == '1') {
 							swal({
-								title: "Terhapus!",
-								text: "Data berhasil dihapus",
+								title: "Deleted!",
+								text: "Data deleted successfully",
 								type: "success",
 								timer: 1500,
 								showConfirmButton: false
@@ -184,8 +184,8 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 							window.location.reload();
 						} else {
 							swal({
-								title: "Gagal!",
-								text: "Data gagal dihapus",
+								title: "Failed!",
+								text: "Failed to delete data",
 								type: "error",
 								timer: 1500,
 								showConfirmButton: false
@@ -194,8 +194,8 @@ $ENABLE_DELETE  = has_permission('permissions.Delete');
 					},
 					error: function() {
 						swal({
-							title: "Gagal!",
-							text: "Gagal Eksekusi Ajax",
+							title: "Failed!",
+							text: "Ajax execution failed",
 							type: "error",
 							timer: 1500,
 							showConfirmButton: false

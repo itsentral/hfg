@@ -697,7 +697,7 @@ class Approval_mutasi_model extends BF_Model
         $result = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $data_source);
 
         if (!$result) {
-            throw new Exception("Template jurnal '$kode_jurnal' gagal diproses atau tidak ditemukan.");
+            throw new Exception("Template jurnal '$kode_jurnal' failed to process or was not found.");
         }
     }
 

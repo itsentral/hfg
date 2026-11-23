@@ -5,9 +5,9 @@
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-exchange me-2"></i>Form Transaksi Bank Langsung
+                <i class="fa fa-exchange me-2"></i>Bank Transaction Form Langsung
             </h5>
-            <small class="text-muted">Catat mutasi penerimaan atau pengeluaran kas/bank langsung beserta penjurnalannya</small>
+            <small class="text-muted">Record direct cash/bank receipt or payment mutations together with their journals</small>
         </div>
         <div>
             <a href="<?= site_url('request_mutasi/index_transaksi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
@@ -20,7 +20,7 @@
         <form method="post" id="frm_data">
             <div class="row g-3 mb-3">
                 <div class="col-md-6 col-lg-3">
-                    <label for="no_request" class="form-label fw-semibold text-muted small">No Transaksi</label>
+                    <label for="no_request" class="form-label fw-semibold text-muted small">Transaction No.</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-barcode"></i></span>
                         <input type="text" name="no_request" id="no_request" placeholder="Automatic (Auto)" class="form-control bg-light fw-bold text-primary border-start-0" readonly>
@@ -28,23 +28,23 @@
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="jenis_transaksi" class="form-label fw-semibold text-muted small">Jenis Transaksi <span class="text-danger">*</span></label>
+                    <label for="jenis_transaksi" class="form-label fw-semibold text-muted small">Transaction Type <span class="text-danger">*</span></label>
                     <select class="form-select select2" name="jenis_transaksi" id="jenis_transaksi" required style="width: 100%;">
-                        <option value="terima">Penerimaan (BUM)</option>
-                        <option value="keluar">Pengeluaran (BUK)</option>
+                        <option value="terima">Receipt (BUM)</option>
+                        <option value="keluar">Payment (BUK)</option>
                     </select>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="tgl_request" class="form-label fw-semibold text-muted small">Tanggal Transaksi <span class="text-danger">*</span></label>
+                    <label for="tgl_request" class="form-label fw-semibold text-muted small">Transaction Date <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0"><i class="fa fa-calendar"></i></span>
-                        <input type="text" name="tgl_request" id="tgl_request" class="form-control flatpickr-date border-start-0" value="<?= date('Y-m-d') ?>" placeholder="Pilih tanggal..." required>
+                        <input type="text" name="tgl_request" id="tgl_request" class="form-control flatpickr-date border-start-0" value="<?= date('Y-m-d') ?>" placeholder="Select date..." required>
                     </div>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                    <label for="matauang" class="form-label fw-semibold text-muted small">Mata Uang <span class="text-danger">*</span></label>
+                    <label for="matauang" class="form-label fw-semibold text-muted small">Currency <span class="text-danger">*</span></label>
                     <?php
                     echo form_dropdown('matauang', $matauang, '', array('id' => 'matauang', 'required' => 'required', 'class' => 'form-select select2', 'style' => 'width: 100%;'));
                     ?>
@@ -58,14 +58,14 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="ke" class="form-label fw-semibold text-muted small">COA Tujuan <span class="text-danger">*</span></label>
+                    <label for="ke" class="form-label fw-semibold text-muted small">Destination COA <span class="text-danger">*</span></label>
                     <?php
                     echo form_dropdown('ke', $datbank, '', array('id' => 'ke', 'required' => 'required', 'class' => 'form-select select2', 'style' => 'width: 100%;'));
                     ?>
                 </div>
 
                 <div class="col-md-4">
-                    <label for="nilai" class="form-label fw-semibold text-muted small">Nilai Valas / Nominal <span class="text-danger">*</span></label>
+                    <label for="nilai" class="form-label fw-semibold text-muted small">Foreign Currency Value / Amount <span class="text-danger">*</span></label>
                     <input type="text" name="nilai" class="form-control text-end fw-bold divide" id="nilai" onblur="total()" placeholder="0" required>
                 </div>
 
@@ -75,7 +75,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label for="transaksi" class="form-label fw-semibold text-muted small">Total IDR Transaksi</label>
+                    <label for="transaksi" class="form-label fw-semibold text-muted small">Total Transaction IDR</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">Rp</span>
                         <input type="text" name="transaksi" class="form-control text-end fw-bold text-success bg-light" id="transaksi" placeholder="0" readonly disabled>
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="col-12">
-                    <label for="keterangan" class="form-label fw-semibold text-muted small">Keterangan Transaksi <span class="text-danger">*</span></label>
+                    <label for="keterangan" class="form-label fw-semibold text-muted small">Transaction Description <span class="text-danger">*</span></label>
                     <textarea name="keterangan" class="form-control" id="keterangan" rows="2" placeholder="Keterangan transaksi bank..." required></textarea>
                 </div>
 
@@ -97,7 +97,7 @@
 
             <div class="d-flex align-items-center justify-content-end gap-2">
                 <a class="btn btn-secondary px-3" onclick="history.back(); return false;">
-                    <i class="fa fa-times me-1"></i> Batal
+                    <i class="fa fa-times me-1"></i> Cancel
                 </a>
                 <button type="submit" name="save" class="btn btn-primary px-4 shadow-sm" id="submit">
                     <i class="fa fa-save me-1"></i> Simpan Transaksi Bank
@@ -133,19 +133,19 @@
             e.preventDefault();
 
             let errors = {
-                '#tgl_request': 'Tanggal tidak boleh kosong!',
-                '#dari': 'COA Asal tidak boleh kosong!',
-                '#ke': 'COA Tujuan tidak boleh kosong!',
-                '#nilai': 'Nilai tidak boleh kosong!',
-                '#transaksi': 'Nilai transaksi tidak boleh kosong!',
-                '#keterangan': 'Keterangan tidak boleh kosong!',
+                '#tgl_request': 'Date cannot be empty!',
+                '#dari': 'Source COA cannot be empty!',
+                '#ke': 'Destination COA cannot be empty!',
+                '#nilai': 'Value cannot be empty!',
+                '#transaksi': 'Transaction value cannot be empty!',
+                '#keterangan': 'Description cannot be empty!',
             };
 
             for (let field in errors) {
                 if ($(field).val() === "" || $(field).val() === "0" || $(field).val() === null) {
                     Swal.fire({
                         title: errors[field],
-                        text: "Silakan lengkapi data dengan benar!",
+                        text: "Please complete the data correctly!",
                         icon: "warning"
                     });
                     $(field).focus();
@@ -154,19 +154,19 @@
             }
 
             Swal.fire({
-                title: "Simpan Transaksi Bank?",
-                text: "Sistem akan otomatis mencatat mutasi dan ayat jurnal pembukuan.",
+                title: "Save Bank Transaction?",
+                text: "The system will record the mutation and accounting journal entries automatically.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#0d6efd",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-save me-1'></i> Ya, Simpan!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-save me-1'></i> Yes, Save!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Menyimpan...",
-                        text: "Sedang memproses transaksi dan ayat jurnal",
+                        text: "Processing transaction and journal entries",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -184,7 +184,7 @@
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
+                                    title: "Success!",
                                     text: data.pesan + " (" + (data.nomor || '') + ")",
                                     icon: "success"
                                 }).then(function() {
@@ -192,8 +192,8 @@
                                 });
                             } else {
                                 Swal.fire({
-                                    title: "Gagal!",
-                                    text: data.pesan || "Gagal menyimpan transaksi bank.",
+                                    title: "Failed!",
+                                    text: data.pesan || "Failed to save the bank transaction.",
                                     icon: "error"
                                 });
                             }
@@ -201,7 +201,7 @@
                         error: function() {
                             Swal.fire({
                                 title: "Error!",
-                                text: "Terjadi kesalahan sistem saat memproses transaksi.",
+                                text: "A system error occurred while processing the transaction.",
                                 icon: "error"
                             });
                         }
@@ -264,7 +264,7 @@
                 $("#terbilang").val(response);
             },
             error: function() {
-                console.warn("Gagal mengambil teks terbilang");
+                console.warn("Failed to fetch the amount-in-words text");
             }
         });
     }

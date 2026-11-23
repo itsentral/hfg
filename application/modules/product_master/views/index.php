@@ -40,7 +40,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
             </div>
             <div class="col-md-4">
                 <select name="level3" id="level3" class="form-select select2">
-                    <option value="0">ALL PRODUCT JENIS</option>
+                    <option value="0">ALL PRODUCT SUB CATEGORIES</option>
                     <?php foreach ($get_level_3 as $value) : ?>
                         <option value="<?= $value['code_lv3']; ?>"><?= strtoupper((string) $value['nama']); ?></option>
                     <?php endforeach; ?>
@@ -55,10 +55,10 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Kode</th>
+                        <th>Code</th>
                         <th>Product Type</th>
                         <th>Product Category</th>
-                        <th>Product Jenis</th>
+                        <th>Product Sub Category</th>
                         <th>Product Master</th>
                         <th>Code Master</th>
                         <th>Status</th>
@@ -175,7 +175,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
         });
 
         // Nama Level 4 otomatis = nama dasar (Type + Category + Jenis) + Tebal x Lebar x Panjang M.
-        // Produk yang sudah ada tidak ditimpa sampai level 3 diubah atau "Generate ulang" diklik.
+        // Produk yang sudah ada tidak ditimpa sampai level 3 diubah atau "Regenerate" diklik.
         $(document).on('keyup change', '#tebal, #wide, #panjang', function() {
             if (!namaManual) {
                 if (namaDasar === '') {
@@ -241,7 +241,7 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
             if (code_lv3 == '0') {
                 swal({
                     title: "Error Message!",
-                    text: 'Product jenis not selected...',
+                    text: 'Product Sub Category not selected...',
                     type: "warning"
                 });
                 return false;
@@ -253,8 +253,8 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Simpan!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Save!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {
@@ -308,8 +308,8 @@ $ENABLE_DELETE  = has_permission('Product_Master.Delete');
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-info",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal",
+                confirmButtonText: "Yes, Delete!",
+                cancelButtonText: "Cancel",
                 closeOnConfirm: false
             }, function(isConfirm) {
                 if (!isConfirm) {

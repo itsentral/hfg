@@ -61,7 +61,7 @@ class Incoming_model extends BF_Model
             }
 
             $no_surat = [];
-            $get_no_surat = $this->db->query("SELECT no_surat FROM tr_purchase_order WHERE no_po IN ('" . str_replace(",", "','", $row['no_ipp']) . "')")->result();
+            $get_no_surat = $this->db->query("SELECT no_surat FROM tr_purchase_order WHERE no_po IN ('" . str_replace(",", "','", $row['no_ipp'] ?? '') . "')")->result();
             foreach ($get_no_surat as $item) {
                 $no_surat[] = $item->no_surat;
             }
@@ -79,7 +79,7 @@ class Incoming_model extends BF_Model
                     JOIN material_planning_base_on_produksi_detail c ON c.id = a.idpr
                     JOIN material_planning_base_on_produksi d ON d.so_number = c.so_number
                 WHERE
-                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat)) . "') AND
+                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat ?? '')) . "') AND
                     (a.tipe IS NULL OR a.tipe = 'pr material')
                 GROUP BY d.no_pr
 
@@ -92,7 +92,7 @@ class Incoming_model extends BF_Model
                     JOIN tr_purchase_order b ON b.no_po = a.no_po
                     JOIN rutin_non_planning_detail c ON c.id = a.idpr
                 WHERE
-                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat)) . "') AND
+                    b.no_surat IN ('" . str_replace(",", "','", str_replace(', ', ',', $no_surat ?? '')) . "') AND
                     a.tipe = 'pr depart'
                 GROUP BY c.no_pr
 

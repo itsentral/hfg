@@ -15,7 +15,7 @@ class Stok_gudang_barang extends Admin_Controller
     $this->load->model(array(
       'Stok_gudang_barang/stok_gudang_barang_model'
     ));
-    $this->template->title('Warehouse Stok');
+    $this->template->title('Warehouse Stock');
 
     date_default_timezone_set('Asia/Bangkok');
   }
@@ -35,7 +35,7 @@ class Stok_gudang_barang extends Admin_Controller
     ];
 
     history("View data gudang stok");
-    $this->template->title('Warehouse Stok / Stok');
+    $this->template->title('Warehouse Stock / Stock');
     $this->template->render('index', $data);
   }
 
@@ -87,7 +87,7 @@ class Stok_gudang_barang extends Admin_Controller
     $Row        = 1;
     $NewRow     = $Row + 1;
     $Col_Akhir  = $Cols = getColsChar(10);
-    $sheet->setCellValue('A' . $Row, "GUDANG STOK (" . $nm_gudang . ") " . $date_filter);
+    $sheet->setCellValue('A' . $Row, "STOCK WAREHOUSE (" . $nm_gudang . ") " . $date_filter);
     $sheet->getStyle('A' . $Row . ':' . $Col_Akhir . $NewRow)->applyFromArray($mainTitle);
     $sheet->mergeCells('A' . $Row . ':' . $Col_Akhir . $NewRow);
 
@@ -140,7 +140,7 @@ class Stok_gudang_barang extends Admin_Controller
     $sheet->mergeCells('I' . $NewRow . ':I' . $NextRow);
 
     $sheet->getColumnDimension("J")->setAutoSize(true);
-    $sheet->setCellValue('J' . $NewRow, 'STOK');
+    $sheet->setCellValue('J' . $NewRow, 'STOCK');
     $sheet->getStyle('J' . $NewRow . ':J' . $NextRow)->applyFromArray($whiteCenterBold);
     $sheet->mergeCells('J' . $NewRow . ':J' . $NextRow);
 
@@ -303,7 +303,7 @@ class Stok_gudang_barang extends Admin_Controller
       }
     }
 
-    $sheet->setTitle('Stok');
+    $sheet->setTitle('Stock');
     //mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
     $objWriter      = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
     ob_end_clean();
@@ -345,7 +345,7 @@ class Stok_gudang_barang extends Admin_Controller
     $Row        = 1;
     $NewRow     = $Row + 1;
     $Col_Akhir  = $Cols = getColsChar(11);
-    $sheet->setCellValue('A' . $Row, "HISTORY GUDANG STOK (" . $nm_gudang . ")");
+    $sheet->setCellValue('A' . $Row, "WAREHOUSE STOCK HISTORY (" . $nm_gudang . ")");
     $sheet->getStyle('A' . $Row . ':' . $Col_Akhir . $NewRow)->applyFromArray($mainTitle);
     $sheet->mergeCells('A' . $Row . ':' . $Col_Akhir . $NewRow);
 
@@ -519,7 +519,7 @@ class Stok_gudang_barang extends Admin_Controller
       }
     }
 
-    $sheet->setTitle('Stok');
+    $sheet->setTitle('Stock');
     //mulai menyimpan excel format xlsx, kalau ingin xls ganti Excel2007 menjadi Excel5
     $objWriter      = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
     ob_end_clean();

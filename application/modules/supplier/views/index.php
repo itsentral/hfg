@@ -12,7 +12,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 			<div class="d-flex gap-2 flex-wrap">
 				<?php if ($ENABLE_ADD) : ?>
 					<a class="btn btn-success add_supplier" href="javascript:void(0)">
-						<i class="fa fa-plus me-1"></i> Tambah Data
+						<i class="fa fa-plus me-1"></i> Add Data
 					</a>
 				<?php endif; ?>
 
@@ -96,7 +96,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 
 		// ADD - load form into modal
 		$(document).on('click', '.add_supplier', function() {
-			$('#head_title').html("<i class='fa fa-plus me-2'></i> Tambah Supplier");
+			$('#head_title').html("<i class='fa fa-plus me-2'></i> Add Supplier");
 
 			$.ajax({
 				type: 'POST',
@@ -225,13 +225,13 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 			var id = $(this).data('id');
 
 			swal({
-				title: "Anda Yakin?",
-				text: "Data akan di hapus !",
+				title: "Are you sure?",
+				text: "The data will be deleted!",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
-				confirmButtonText: "Ya, Hapus!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Delete!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false
 			}, function(isConfirm) {
 				if (!isConfirm) {
@@ -247,8 +247,8 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 					success: function(result) {
 						if (result.status == '1') {
 							swal({
-								title: "Sukses",
-								text: "Data berhasil dihapus.",
+								title: "Success",
+								text: "Data deleted successfully.",
 								type: "success"
 							}, function() {
 								window.location.reload(true);
@@ -256,7 +256,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 						} else {
 							swal({
 								title: "Error",
-								text: "Gagal hapus data",
+								text: "Failed to delete data",
 								type: "error"
 							});
 						}
@@ -264,7 +264,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 					error: function() {
 						swal({
 							title: "Error",
-							text: "Gagal request Ajax",
+							text: "Ajax request failed",
 							type: "error"
 						});
 					}
@@ -312,7 +312,7 @@ $ENABLE_DELETE  = has_permission('Master_Supplier.Delete');
 			},
 			success: function(html) {
 				$("#id_kabkot").html(html);
-				$("#id_kec").html("<option value=''>--Pilih--</option>");
+				$("#id_kec").html("<option value=''>--Select--</option>");
 				initSelect2InModal();
 			}
 		});

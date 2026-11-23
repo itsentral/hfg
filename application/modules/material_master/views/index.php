@@ -179,7 +179,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 			dataType: 'json',
 			success: function(res) {
 				$('#code_lv2').html(res.option);
-				$('#code_lv3').html("<option value='0'>Select Material Jenis</option>");
+				$('#code_lv3').html("<option value='0'>Select Material Type</option>");
 
 				// re-init select2 utk dropdown yang diganti
 				if ($('#code_lv2').hasClass('select2-hidden-accessible')) $('#code_lv2').select2('destroy');
@@ -275,7 +275,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 		if (code_lv3 == '0') {
 			swal({
 				title: "Error Message!",
-				text: 'Material jenis not selected...',
+				text: 'Material Type not selected...',
 				type: "warning"
 			});
 			return false;
@@ -315,7 +315,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 		if (max_stok == '') {
 			swal({
 				title: "Error Message!",
-				text: 'Maximum stok is empty ...',
+				text: 'Maximum stock is empty.',
 				type: "warning"
 			});
 			return false;
@@ -323,7 +323,7 @@ $ENABLE_DELETE  = has_permission('Material_Master.Delete');
 		if (min_stok == '') {
 			swal({
 				title: "Error Message!",
-				text: 'Minimun stok is empty ...',
+				text: 'Minimum stock is empty.',
 				type: "warning"
 			});
 			return false;

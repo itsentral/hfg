@@ -22,8 +22,8 @@ $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 					<tr>
 						<th class="text-center" width="4%">#</th>
 						<th class="text-center">No PR</th>
-						<th class="text-center">Departemen</th>
-						<th class="text-center no-sort">Keterangan Project</th>
+						<th class="text-center">Department</th>
+						<th class="text-center no-sort">Project Description</th>
 						<th class="text-center no-sort" width="10%">Tingkat PR</th>
 						<th class="text-center no-sort">PIC</th>
 						<th class="text-center no-sort">Created Date</th>
@@ -42,7 +42,7 @@ $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 	<div class="modal-dialog modal-xl modal-dialog-scrollable">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title fw-bold" id="head_title2">Detail Non Rutin</h5>
+				<h5 class="modal-title fw-bold" id="head_title2">Non-Routine Detail</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body" id="view2"></div>
@@ -98,7 +98,7 @@ $ENABLE_DELETE  = has_permission('PR_Departemen.Delete');
 		var no_pengajuan = $(this).data('no_pengajuan');
 		var pr_rev = $(this).data('pr_rev');
 		loading_spinner();
-		$('#head_title2').html("Detail Non Rutin");
+		$('#head_title2').html("Non-Routine Detail");
 		$.ajax({
 			type: 'POST',
 			url: base_url + active_controller + 'detail',

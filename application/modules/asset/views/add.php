@@ -67,10 +67,10 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Kelompok Penyusutan</label>
+                    <label class="form-label fw-bold">Depreciation Group</label>
                     <select name="id_coa" id="id_coa" class="form-select select2" <?= $disabled ?>>
-                        <option value="0">Select Kelompok Penyusutan</option>
-                        <option value="0">TIDAK ADA PENYUSUTAN</option>
+                        <option value="0">Select Depreciation Group</option>
+                        <option value="0">NO DEPRECIATION</option>
                         <?php foreach ($list_coa as $valx): ?>
                             <?php $sexd = ($valx['id'] == $id_coa) ? 'selected' : ''; ?>
                             <option value="<?= $valx['id'] ?>" <?= $sexd ?>><?= strtoupper($valx['coa'] . ' | ' . $valx['keterangan']) ?></option>
@@ -101,7 +101,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-success">Department New <span class="text-danger">*</span></label>
                         <select name="lokasi_asset_new" id="lokasi_asset_new" class="form-select select2">
-                            <option value="0">Pilih Department New</option>
+                            <option value="0">Select New Department</option>
                             <?php foreach ($list_dept as $valx): ?>
                                 <option value="<?= $valx['id'] ?>"><?= strtoupper((string) $valx['nm_dept']) ?></option>
                             <?php endforeach; ?>
@@ -149,7 +149,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                 <?php endif; ?>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Penyusutan (Depresiasi) <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold">Depreciation <span class="text-danger">*</span></label>
                     <select name="penyusutan" id="penyusutan" class="form-select select2" <?= $disabled ?>>
                         <option value="Y" <?= ($penyusutan == 'Y') ? 'selected' : '' ?>>Yes</option>
                         <option value="N" <?= ($penyusutan == 'N') ? 'selected' : '' ?>>No</option>
@@ -162,8 +162,8 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Nama User</label>
-                    <input type="text" id="nama_user" name="nama_user" class="form-control" autocomplete="off" placeholder="Nama User" value="<?= $nama_user ?>" <?= $disabled ?>>
+                    <label class="form-label fw-bold">User Name</label>
+                    <input type="text" id="nama_user" name="nama_user" class="form-control" autocomplete="off" placeholder="User Name" value="<?= $nama_user ?>" <?= $disabled ?>>
                 </div>
 
                 <div class="col-12 mt-4 text-end">
@@ -290,7 +290,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         if (nm_asset === '') {
             swal({
                 title: "Warning!",
-                text: "Nama Asset tidak boleh kosong!",
+                text: "Asset Name cannot be empty!",
                 type: "warning"
             });
             return false;
@@ -298,7 +298,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         if (category === '0' || category === '') {
             swal({
                 title: "Warning!",
-                text: "Kategori Asset belum dipilih!",
+                text: "Asset Category has not been selected!",
                 type: "warning"
             });
             return false;
@@ -306,7 +306,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         if (lokasi_asset === '0' || lokasi_asset === '') {
             swal({
                 title: "Warning!",
-                text: "Lokasi Department belum dipilih!",
+                text: "Department location has not been selected!",
                 type: "warning"
             });
             return false;
@@ -356,7 +356,7 @@ $penyusutan      = (!empty($data)) ? $data[0]['penyusutan'] : 'Y';
         if (lokasi_asset_new === '0' || lokasi_asset_new === '') {
             swal({
                 title: "Warning!",
-                text: "Department New belum dipilih!",
+                text: "New Department has not been selected!",
                 type: "warning"
             });
             return false;

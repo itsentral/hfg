@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Transaksi Bank <?= $data->kd_mutasi ?></title>
+    <title>Bank Transaction <?= $data->kd_mutasi ?></title>
     <style>
         @page {
             size: A4;
@@ -219,8 +219,8 @@
 <body>
 
     <div class="no-print" style="margin-bottom:12px;">
-        <button class="btn-print" onclick="window.print()">&#128438; Cetak</button>
-        <!-- <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Kembali</button> -->
+        <button class="btn-print" onclick="window.print()">&#128438; Print</button>
+        <!-- <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Back</button> -->
     </div>
 
     <!-- HEADER -->
@@ -238,9 +238,9 @@
         <div class="header-title">
             <?php
             $jenis = $data->jenis_transaksi ?? 'terima';
-            $judulJenis = ($jenis == 'keluar') ? 'Bukti Pengeluaran Bank' : 'Bukti Penerimaan Bank';
+            $judulJenis = ($jenis == 'keluar') ? 'Bank Payment Voucher' : 'Bank Receipt Voucher';
             $badgeClass = ($jenis == 'keluar') ? 'jenis-keluar' : 'jenis-terima';
-            $badgeLabel = ($jenis == 'keluar') ? 'PENGELUARAN' : 'PENERIMAAN';
+            $badgeLabel = ($jenis == 'keluar') ? 'PAYMENT' : 'RECEIPT';
             ?>
             <h2><?= $judulJenis ?></h2>
             <div class="doc-no">No: <strong><?= $data->kd_mutasi ?></strong></div>
@@ -254,16 +254,16 @@
     <!-- INFO DOKUMEN -->
     <table class="no-border info-table" style="margin-bottom:12px;">
         <tr>
-            <td>No. Transaksi</td>
+            <td>Transaction No.</td>
             <td>:</td>
             <td><strong><?= $data->kd_mutasi ?></strong></td>
             <td style="width:30px;"></td>
-            <td style="width:120px; font-weight:bold;">Mata Uang</td>
+            <td style="width:120px; font-weight:bold;">Currency</td>
             <td style="width:10px;">:</td>
             <td><?= htmlspecialchars(!empty($data->nama_mata_uang) ? $data->nama_mata_uang : $data->mata_uang) ?></td>
         </tr>
         <tr>
-            <td>Tanggal Transaksi</td>
+            <td>Transaction Date</td>
             <td>:</td>
             <td><?= date('d F Y', strtotime((string) $data->tgl_request)) ?></td>
             <td></td>
@@ -272,7 +272,7 @@
             <td><?= number_format((float) $data->kurs, 2) ?></td>
         </tr>
         <tr>
-            <td>Keterangan</td>
+            <td>Description</td>
             <td>:</td>
             <td colspan="5"><?= $data->keterangan ?></td>
         </tr>
@@ -283,11 +283,11 @@
         <thead>
             <tr>
                 <th class="text-center" width="5%">No</th>
-                <th width="30%">Keterangan</th>
-                <th width="25%">COA Asal / Tujuan</th>
+                <th width="30%">Description</th>
+                <th width="25%">Source / Destination COA</th>
                 <th width="25%">COA Bank</th>
-                <th class="text-right" width="15%">Nilai (Valas)</th>
-                <th class="text-right" width="15%">Nilai (IDR)</th>
+                <th class="text-right" width="15%">Value (Foreign Currency)</th>
+                <th class="text-right" width="15%">Value (IDR)</th>
             </tr>
         </thead>
         <tbody>
@@ -339,9 +339,9 @@
     <!-- TANDA TANGAN -->
     <table class="sign-table">
         <tr>
-            <td class="text-center">Dibuat Oleh</td>
-            <td class="text-center">Diperiksa Oleh</td>
-            <td class="text-center">Disetujui Oleh</td>
+            <td class="text-center">Created By</td>
+            <td class="text-center">Checked By</td>
+            <td class="text-center">Approved By</td>
         </tr>
         <tr>
             <td class="sign-line"></td>

@@ -234,7 +234,7 @@ class Purchase_request extends Admin_Controller
 		echo "
 		<tr id='tr_$loop'>
 		<th><select class='form-control' id='dt_idmaterial_$loop' name='dt[$loop][idmaterial]'	onchange ='CariProperties($loop)'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 		foreach ($material as $material) {
 			if ($material->id_bentuk == 'B2000001') {
 				$dimensi = $this->db->query("SELECT * FROM child_inven_dimensi WHERE id_category3 = '$material->id_category3' AND id_dimensi = '22' ")->result();
@@ -281,10 +281,10 @@ class Purchase_request extends Admin_Controller
 		<th><input type='number' class='form-control' id='dt_weight_$loop' 			required name='dt[$loop][weight]' 	onkeyup='HitungTweight(" . $loop . ")'></th>
 		<th id='HasilTwight_" . $loop . "'><input type='number' class='form-control' id='dt_totalweight_$loop' 	required name='dt[$loop][totalweight]' ></th>
 		<th id='supplier_" . $loop . "'><select class='form-control' id='dt_suplier_$loop' name='dt[$loop][suplier]'>
-		<option value=''>--Pilih--</option></select></th>
+		<option value=''>--Select--</option></select></th>
 		<th><input type='date' class='form-control' id='dt_tanggal_$loop' 	required name='dt[$loop][tanggal]' 	></th>
 		<th><input type='text' class='form-control' id='dt_keterangan_$loop' 	required name='dt[$loop][keterangan]' 	></th>
-		<th><button type='button' class='btn btn-sm btn-danger' title='Hapus Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></th>
+		<th><button type='button' class='btn btn-sm btn-danger' title='Delete Data' data-role='qtip' onClick='return HapusItem($loop);'><i class='fa fa-close'></i></button></th>
 		</tr>
 		";
 	}
@@ -312,7 +312,7 @@ class Purchase_request extends Admin_Controller
 		$loop = $_GET['id'];
 		$supplier	= $this->db->query("SELECT a.*, b.name_suplier as supname FROM child_inven_suplier as a INNER JOIN master_supplier as b on a.id_suplier = b.id_suplier WHERE a.id_category3 = '$id_category3' ")->result();
 		echo "<select class='form-control' id='dt_suplier_" . $loop . "' name='dt[" . $loop . "][suplier]'>
-		<option value=''>--Pilih--</option>";
+		<option value=''>--Select--</option>";
 		foreach ($supplier as $supplier) {
 			echo "<option value='" . $supplier->id_suplier . "'>" . $supplier->supname . "</option>";
 		}
@@ -352,7 +352,7 @@ class Purchase_request extends Admin_Controller
 		$id_customer = $_GET['id_customer'];
 		$kategory3	= $this->db->query("SELECT * FROM child_customer_pic WHERE id_customer = '$id_customer' ")->result();
 		echo "<select id='pic_customer' name='pic_customer' class='form-control select' required>
-				<option value=''>--Pilih--</option>";
+				<option value=''>--Select--</option>";
 		foreach ($kategory3 as $pic) {
 			echo "<option value='$pic->name_pic'>$pic->name_pic</option>";
 		}
@@ -472,7 +472,7 @@ class Purchase_request extends Admin_Controller
 		$inventory_1 = $_GET['inventory_1'];
 		$data = $this->Pr_model->level_2($inventory_1);
 		echo "<select id='inventory_2' name='hd1[1][inventory_2]' class='form-control onchange='get_inv3()'  input-sm select2'>";
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $key => $st) :
 			echo "<option value='$st->id_category1' set_select('inventory_2', $st->id_category1, isset($data->id_category1) && $data->id_category1 == $st->id_category1)>$st->nama
                     </option>";
@@ -487,7 +487,7 @@ class Purchase_request extends Admin_Controller
 		// print_r($data);
 		// exit();
 		echo "<select id='inventory_3' name='hd1[1][inventory_3]' class='form-control input-sm select2'>";
-		echo "<option value=''>--Pilih--</option>";
+		echo "<option value=''>--Select--</option>";
 		foreach ($data as $key => $st) :
 			echo "<option value='$st->id_category2' set_select('inventory_3', $st->id_category2, isset($data->id_category2) && $data->id_category2 == $st->id_category2)>$st->nama
                     </option>";

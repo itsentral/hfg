@@ -125,13 +125,13 @@ class Stock_from_warehouse extends Admin_Controller
 
         $id_coil = (int) $id_coil;
         if ($id_coil <= 0) {
-            echo json_encode(['status' => 0, 'message' => 'ID coil tidak valid.']);
+            echo json_encode(['status' => 0, 'message' => 'Invalid coil ID.']);
             return;
         }
 
         $result = $this->Stock_from_warehouse_model->get_coil_kartu_stok($id_coil);
         if (!$result) {
-            echo json_encode(['status' => 0, 'message' => 'Data coil tidak ditemukan.']);
+            echo json_encode(['status' => 0, 'message' => 'Coil data not found.']);
             return;
         }
 

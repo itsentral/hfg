@@ -13,12 +13,12 @@
                 <thead class="table-light text-muted fw-bold text-uppercase" style="font-size: 12px;">
                     <tr>
                         <th width="5%" class="text-center">#</th>
-                        <th width="20%">Nama Sound</th>
-                        <th width="15%">Kode Event</th>
+                        <th width="20%">Sound Name</th>
+                        <th width="15%">Event Code</th>
                         <th width="15%" class="text-center">Level Vibrate</th>
                         <th width="25%">File Audio</th>
                         <th width="10%" class="text-center">Status</th>
-                        <th width="10%" class="text-center">Diubah</th>
+                        <th width="10%" class="text-center">Changed</th>
                         <th width="10%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -36,19 +36,19 @@
             <form id="form-sound" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="sound_id" value="">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title text-white" id="modalSoundLabel"><i class="fa fa-volume-up me-2"></i> Tambah Master Sound</h5>
+                    <h5 class="modal-title text-white" id="modalSoundLabel"><i class="fa fa-volume-up me-2"></i> Add Master Sound</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="max-height: 70vh; overflow: auto;">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Sound <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Sound Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="sound_name" id="sound_name" placeholder="Misal: Scan Success" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Kode Event <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Event Code <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="sound_code" id="sound_code" placeholder="Misal: scan_success, scan_error" required>
-                        <small class="text-muted">Kode unik yang dipanggil oleh sistem saat event terjadi.</small>
+                        <small class="text-muted">Unique code called by the system when the event occurs.</small>
                     </div>
 
                     <div class="mb-3">
@@ -68,25 +68,25 @@
                         <label class="form-label fw-bold">File Audio (MP3 / WAV / OGG / M4A / MPEG)</label>
                         <input type="file" class="form-control" name="file_sound" id="file_sound" accept="audio/*">
                         <div id="file-existing-info" class="mt-2 text-muted small" style="display:none;"></div>
-                        <small class="text-muted d-block mt-1">Maksimal ukuran file: 10MB.</small>
+                        <small class="text-muted d-block mt-1">Maximum file size: 10MB.</small>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Status</label>
                         <select class="form-select" name="status" id="sound_status">
-                            <option value="1" selected>Aktif</option>
-                            <option value="0">Non-Aktif</option>
+                            <option value="1" selected>Active</option>
+                            <option value="0">Inactive</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Keterangan</label>
+                        <label class="form-label fw-bold">Description</label>
                         <textarea class="form-control" name="keterangan" id="keterangan" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-sound"><i class="fa fa-save me-1"></i> Simpan</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-sound"><i class="fa fa-save me-1"></i> Save</button>
                 </div>
             </form>
         </div>
@@ -178,7 +178,7 @@
             $('#sound_id').val('');
             $('#vibrate_level').val(5);
             updateVibrateBadge(5);
-            $('#modalSoundLabel').html('<i class="fa fa-volume-up me-2"></i> Tambah Master Sound');
+            $('#modalSoundLabel').html('<i class="fa fa-volume-up me-2"></i> Add Master Sound');
             $('#file-existing-info').hide().html('');
             $('#modal-sound').modal('show');
         });
@@ -203,7 +203,7 @@
                         $('#keterangan').val(d.keterangan);
 
                         if (d.file_original_name) {
-                            $('#file-existing-info').html('<i class="fa fa-file-audio me-1"></i> File saat ini: <strong>' + escHtml(d.file_original_name) + '</strong>').show();
+                            $('#file-existing-info').html('<i class="fa fa-file-audio me-1"></i> Current file: <strong>' + escHtml(d.file_original_name) + '</strong>').show();
                         } else {
                             $('#file-existing-info').hide().html('');
                         }
@@ -223,16 +223,16 @@
 
             // 1. Tampilkan konfirmasi peringatan terlebih dahulu
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Data yang dimasukan sudah benar.",
+                title: 'Are you sure?',
+                text: "The entered data is correct.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Save!',
+                cancelButtonText: 'Cancel'
             }).then((result) => {
-                // 2. Jika pengguna mengklik tombol "Ya, Simpan!"
+                // 2. Jika pengguna mengklik tombol "Yes, Save!"
                 if (result.isConfirmed) {
                     const formData = new FormData(this);
                     const $btn = $('#btn-save-sound');
@@ -246,24 +246,24 @@
                         processData: false,
                         dataType: 'json',
                         success: function(res) {
-                            $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan');
+                            $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save');
                             if (res.status == 1) {
                                 $('#modal-sound').modal('hide');
                                 table.ajax.reload(null, false);
                                 Swal.fire({
-                                    title: 'Berhasil',
+                                    title: 'Success',
                                     text: res.msg,
                                     icon: 'success',
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
                             } else {
-                                Swal.fire('Peringatan', res.msg, 'warning');
+                                Swal.fire('Warning', res.msg, 'warning');
                             }
                         },
                         error: function() {
-                            $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan');
-                            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+                            $btn.prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save');
+                            Swal.fire('Error', 'A system error occurred.', 'error');
                         }
                     });
                 }
@@ -276,12 +276,12 @@
             const name = $(this).data('name');
 
             Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: 'Apakah Anda yakin ingin menghapus sound "' + name + '"?',
+                title: 'Confirm Delete',
+                text: 'Are you sure you want to delete sound "' + name + '"?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -294,9 +294,9 @@
                         success: function(res) {
                             if (res.status == 1) {
                                 table.ajax.reload(null, false);
-                                Swal.fire('Berhasil', res.msg, 'success');
+                                Swal.fire('Success', res.msg, 'success');
                             } else {
-                                Swal.fire('Gagal', res.msg, 'error');
+                                Swal.fire('Failed', res.msg, 'error');
                             }
                         }
                     });

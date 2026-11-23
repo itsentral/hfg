@@ -526,8 +526,8 @@ class PersistenceRoundTripTest
             $record = $this->storageRequestMutasi->find($id);
 
             // Count underscores - must be preserved
-            $expected_underscores = substr_count($value, '_');
-            $actual_underscores = substr_count($record['target_accounting'], '_');
+            $expected_underscores = substr_count($value ?? '', '_');
+            $actual_underscores = substr_count($record['target_accounting'] ?? '', '_');
             assertEquals(
                 $expected_underscores,
                 $actual_underscores,

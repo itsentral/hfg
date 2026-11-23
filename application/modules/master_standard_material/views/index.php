@@ -27,8 +27,8 @@
     </div>
     <div class="card-body">
         <div class="alert alert-info py-2 mb-4">
-            <i class="fa fa-info-circle me-1"></i> Satu set nilai standar yang berlaku untuk seluruh material (global). Dipakai BOM untuk menghitung <strong>Berat/Meter</strong> otomatis.<br>
-            <small class="text-muted">Formula: <code>Berat/Meter = ((Tebal Material &minus; Standar Toleransi) &times; Lebar Coil &times; Standar Berat Jenis &divide; 1000) + Coating</code></small>
+            <i class="fa fa-info-circle me-1"></i> One set of standard values that applies to all materials (global). Used by the BOM to calculate <strong>Weight/Meter</strong> automatically.<br>
+            <small class="text-muted">Formula: <code>Weight/Meter = ((Material Thickness &minus; Standard Tolerance) &times; Coil Width &times; Standard Specific Gravity &divide; 1000) + Coating</code></small>
         </div>
 
         <div class="table-responsive">
@@ -36,9 +36,9 @@
                 <thead class="table-light">
                     <tr>
                         <th class="text-center" style="width: 20%;">Standar Toleransi</th>
-                        <th class="text-center" style="width: 25%;">Standar Berat Jenis Baja</th>
+                        <th class="text-center" style="width: 25%;">Steel Specific Gravity Standard</th>
                         <th class="text-center" style="width: 20%;">Coating</th>
-                        <th class="text-center" style="width: 20%;">Terakhir Diperbarui</th>
+                        <th class="text-center" style="width: 20%;">Last Updated</th>
                         <th class="text-center" style="width: 15%;">Aksi</th>
                     </tr>
                 </thead>
@@ -74,7 +74,7 @@
         <h6 class="mb-0 fw-bold text-secondary">
             <i class="fa fa-table me-2"></i> Contoh Dampak: Berat/Meter per Material (Hanya Baca)
         </h6>
-        <small class="text-muted">Nilai Berat/Meter di bawah otomatis dihitung dari Master Material menggunakan Standar di atas.</small>
+        <small class="text-muted">The Weight/Meter values below are calculated automatically from the Master Material using the Standards above.</small>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -82,11 +82,11 @@
                 <thead class="table-light">
                     <tr>
                         <th class="text-center" style="width: 50px;">#</th>
-                        <th>Kode Material</th>
-                        <th>Nama Material</th>
-                        <th class="text-end" style="width: 130px;">Tebal (mm)</th>
-                        <th class="text-end" style="width: 140px;">Lebar Coil (mm)</th>
-                        <th class="text-end" style="width: 180px;">Berat/Meter (kg/m)</th>
+                        <th>Material Code</th>
+                        <th>Material Name</th>
+                        <th class="text-end" style="width: 130px;">Thickness (mm)</th>
+                        <th class="text-end" style="width: 140px;">Coil Width (mm)</th>
+                        <th class="text-end" style="width: 180px;">Weight/Meter (kg/m)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,7 +129,7 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="alert alert-warning py-2 small mb-3">
-                        <i class="fa fa-exclamation-triangle me-1"></i> Perubahan nilai ini langsung mengubah perhitungan <strong>Berat/Meter</strong> semua varian BOM.
+                        <i class="fa fa-exclamation-triangle me-1"></i> Perubahan nilai ini langsung mengubah perhitungan <strong>Weight/Meter</strong> semua varian BOM.
                     </div>
 
                     <div class="mb-3">
@@ -140,25 +140,25 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Standar Berat Jenis Baja <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Steel Specific Gravity Standard <span class="text-danger">*</span></label>
                         <input type="number" step="0.000001" min="0.000001" name="standar_berat_jenis" class="form-control" required
                             value="<?= number_format((float) $standard->standar_berat_jenis, 6, '.', '') ?>">
-                        <div class="form-text text-muted">Standar berat jenis baja (default: 7.850000).</div>
+                        <div class="form-text text-muted">Steel specific gravity standard (default: 7.850000).</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Coating <span class="text-danger">*</span></label>
                         <input type="number" step="0.000001" min="0" name="coating" class="form-control" required
                             value="<?= number_format((float) $standard->coating, 6, '.', '') ?>">
-                        <div class="form-text text-muted">Nilai penambahan lapisan coating (default: 0.000000).</div>
+                        <div class="form-text text-muted">Additional coating layer value (default: 0.000000).</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
-                        <i class="fa fa-times me-1"></i> Batal
+                        <i class="fa fa-times me-1"></i> Cancel
                     </button>
                     <button type="submit" class="btn btn-primary px-4">
-                        <i class="fa fa-save me-1"></i> Simpan
+                        <i class="fa fa-save me-1"></i> Save
                     </button>
                 </div>
             </form>

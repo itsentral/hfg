@@ -22,7 +22,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 		<td align='center'><b><?= html_escape(get_company_name(true, true)) ?></b></td>
 	</tr>
 	<tr>
-		<td align='center'><b><h2>TANDA TERIMA BARANG ASSET</h2></b></td>
+		<td align='center'><b><h2>ASSET GOODS RECEIPT</h2></b></td>
 	</tr>
 </table>
 <br>
@@ -30,7 +30,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 <table class="gridtable2" width="100%" border='0'>
 	<thead>
 		<tr>
-			<td class="mid" width='15%'>No Transaksi</td>
+			<td class="mid" width='15%'>Transaction No.</td>
 			<td class="mid" width='2%'>:</td>
 			<td class="mid" colspan='4'><?= $kode_trans; ?></td>
 		</tr>
@@ -43,7 +43,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 			<td class="mid" width='38%'><?= $pic; ?></td>
 		</tr>
 		<tr>
-			<td class="mid">Tanggal Terima</td>
+			<td class="mid">Received Date</td>
 			<td class="mid">:</td>
 			<td class="mid"><?= $TANGGAL; ?></td>
 			<td class="mid">Note</td>
@@ -56,9 +56,9 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 	<thead align='center'>
 		<tr>
             <th class="mid" style='vertical-align:middle;' width='4%'>#</th>
-            <th class="mid" style='vertical-align:middle;'>Nama Barang / Asset</th>
+            <th class="mid" style='vertical-align:middle;'>Item / Asset Name</th>
             <th class="mid" style='vertical-align:middle;' width='10%'>Qty</th>
-            <th class="mid" style='vertical-align:middle;' width='25%'>Keterangan</th>
+            <th class="mid" style='vertical-align:middle;' width='25%'>Description</th>
             <th class="mid" style='vertical-align:middle;' width='20%'>Pemeriksa</th> 
 		</tr>
 	</thead>
@@ -81,7 +81,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 				echo "</tr>";
 			}
 		} else {
-			echo "<tr><td colspan='5' align='center'>Data item tidak ditemukan</td></tr>";
+			echo "<tr><td colspan='5' align='center'>Item data not found</td></tr>";
 		}
 		?>
 	</tbody>
@@ -108,7 +108,7 @@ $note = isset($rest_data[0]['note']) ? $rest_data[0]['note'] : '-';
 		<td align='center'></td>
 		<td></td>
 		<td></td>
-		<td align='center'>QC / Penerima</td>
+		<td align='center'>QC / Receiver</td>
 		<td></td>
 	</tr>
 </table>

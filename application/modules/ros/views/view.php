@@ -36,7 +36,7 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="">Nomor PO</label>
+                        <label for="">PO Number</label>
                         <?php
                         if ($no_po == 'new') {
                         ?>
@@ -114,7 +114,7 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
                         <thead>
                             <tr>
                                 <th class="text-center">No.</th>
-                                <th class="text-center">Nama Barang</th>
+                                <th class="text-center">Item Name</th>
                                 <th class="text-center">Unit Packing</th>
                                 <th class="text-center">Currency</th>
                                 <th class="text-center">Price/Unit</th>
@@ -164,7 +164,7 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
                 <div class="col-md-5">
                     <h4>F&C Cost Estimation</h4>
                     <br>
-                    <h4>Pemberitahuan Import Barang</h4>
+                    <h4>Import Declaration</h4>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -253,19 +253,19 @@ $keterangan = (isset($header_ros)) ? $header_ros['keterangan'] : null;
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="no_pengajuan_pib">Nomor Pengajuan PIB</label>
+                                <label for="no_pengajuan_pib">PIB Request Number</label>
                                 <input type="text" name="no_pengajuan_pib" id="no_pengajuan_pib" class="form-control form-control-sm" value="<?= $no_pengajuan_pib ?>" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="no_billing">Nomor Billing</label>
+                                <label for="no_billing">Billing Number</label>
                                 <input type="text" name="no_billing" id="no_billing" class="form-control form-control-sm" value="<?= $no_billing ?>" readonly>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="">Keterangan</label>
+                                <label for="">Description</label>
                                 <textarea name="keterangan" id="" class="form-control form-control-sm" cols="30" rows="5" readonly><?= $keterangan ?></textarea>
                             </div>
                         </div>

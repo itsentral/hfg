@@ -9,9 +9,9 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="pr_no" name="pr_no" value="<?php echo (isset($data->pr_no) ? $data->pr_no: ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 control-label">Tanggal Purchase Request<b class="text-red">*</b></label>
+					<label class="col-sm-2 control-label">Purchase Request Date<b class="text-red">*</b></label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control tanggal" id="pr_date" name="pr_date" value="<?php echo (isset($data->trans_date) ? $data->pr_date: date("Y-m-d")); ?>" placeholder="Tanggal Purchase Request" required>
+						<input type="text" class="form-control tanggal" id="pr_date" name="pr_date" value="<?php echo (isset($data->trans_date) ? $data->pr_date: date("Y-m-d")); ?>" placeholder="Purchase Request Date" required>
 					</div>
 				</div>
 				<div class="form-group ">
@@ -21,7 +21,7 @@
 						echo form_dropdown('id_type',$inventory_type,  (isset($data->id_type)?$data->id_type:''),array('id'=>'id_type','required'=>'required','class'=>'form-control select2'));
 						?>
 					</div>
-					<label class="col-sm-2 control-label">Keterangan</label>
+					<label class="col-sm-2 control-label">Description</label>
 					<div class="col-sm-4">
 						<textarea class="form-control" id="pr_info" name="pr_info"><?php echo (isset($data->pr_info) ? $data->pr_info: ""); ?></textarea>
 					</div>
@@ -32,14 +32,14 @@
 				<thead>
 					<tr>
 					<th width="5">#</th>
-					<th>Nama</th>
+					<th>Name</th>
 					<th>Spesifikasi</th>
 					<th>Brand</th>
-					<th>Max Stok</th>
-					<th>Qty Stok</th>
-					<th>Satuan</th>
+					<th>Max Stock</th>
+					<th>Stock Qty</th>
+					<th>Unit</th>
 					<th>Saran Qty Pembelian</th>
-					<th>Qty Permintaan</th>
+					<th>Requested Qty</th>
 					</tr>
 				</thead>
 				<tbody id="tbl_detail">
@@ -68,7 +68,7 @@
 			</div>
 		</div>
 	</div>
-	<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+	<a class="btn btn-warning btn-sm" onclick="cancel()"><i class="fa fa-reply">&nbsp;</i>Back</a>
 
 </div>
 <script src="<?= base_url('assets/js/number-divider.min.js')?>"></script>
@@ -88,9 +88,9 @@
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="pr_no" name="pr_no" value="<?php echo (isset($data->pr_no) ? $data->pr_no: ""); ?>" placeholder="Automatic" readonly>
 					</div>
-					<label class="col-sm-2 control-label">Tanggal Purchase Request<b class="text-red">*</b></label>
+					<label class="col-sm-2 control-label">Purchase Request Date<b class="text-red">*</b></label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control tanggal" id="pr_date" name="pr_date" value="<?php echo (isset($data->trans_date) ? $data->pr_date: date("Y-m-d")); ?>" placeholder="Tanggal Purchase Request" required>
+						<input type="text" class="form-control tanggal" id="pr_date" name="pr_date" value="<?php echo (isset($data->trans_date) ? $data->pr_date: date("Y-m-d")); ?>" placeholder="Purchase Request Date" required>
 					</div>
 				</div>
 				<div class="form-group ">
@@ -100,7 +100,7 @@
 						echo form_dropdown('id_type',$inventory_type,  (isset($data->id_type)?$data->id_type:''),array('id'=>'id_type','required'=>'required','class'=>'form-control select2'));
 						?>
 					</div>
-					<label class="col-sm-2 control-label">Keterangan</label>
+					<label class="col-sm-2 control-label">Description</label>
 					<div class="col-sm-4">
 						<textarea class="form-control" id="pr_info" name="pr_info"><?php echo (isset($data->pr_info) ? $data->pr_info: ""); ?></textarea>
 					</div>
@@ -114,8 +114,8 @@
 							}
 						}
 						?>
-						<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Simpan</button>
-						<a class="btn btn-warning btn-sm" onclick="location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Batal</a>
+						<button type="submit" name="save" class="btn btn-success btn-sm" id="submit"><i class="fa fa-save">&nbsp;</i>Save</button>
+						<a class="btn btn-warning btn-sm" onclick="location.reload();return false;"><i class="fa fa-reply">&nbsp;</i>Cancel</a>
 					</div>
 				</div>
 			</div>
@@ -124,15 +124,15 @@
 				<thead>
 					<tr>
 					<th width="5">#</th>
-					<th>Nama</th>
+					<th>Name</th>
 					<th>Spesifikasi</th>
 					<th>Brand</th>
-					<th>Max Stok</th>
-					<th>Qty Stok</th>
-					<th>Satuan</th>
+					<th>Max Stock</th>
+					<th>Stock Qty</th>
+					<th>Unit</th>
 					<th>Saran Qty Pembelian</th>
-					<th>Qty Permintaan
-					<div class="pull-right"><a class="btn btn-success btn-xs" href="javascript:void(0)" title="Tambah" onclick="add_material()" id="add-material"><i class="fa fa-plus">&nbsp;</i>Tambah</a></div></th>
+					<th>Requested Qty
+					<div class="pull-right"><a class="btn btn-success btn-xs" href="javascript:void(0)" title="Add" onclick="add_material()" id="add-material"><i class="fa fa-plus">&nbsp;</i>Add</a></div></th>
 					</tr>
 				</thead>
 				<tbody id="tbl_detail">
@@ -210,19 +210,19 @@
 					$("#add-material").addClass("hidden");
 					$("#tbl_detail tr:last").after(data);
 				}else{
-					swal("Data tidak ditemukan");
+					swal("Data not found");
 				}
 			}
 		});
 	}
 	function data_approve(){
 		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Disetujui!",
+		  title: "Are you sure?",
+		  text: "The data will be approved!",
 		  type: "info",
 		  showCancelButton: true,
-		  confirmButtonText: "Ya, setuju!",
-		  cancelButtonText: "Tidak!",
+		  confirmButtonText: "Yes, approve!",
+		  cancelButtonText: "No!",
 		  closeOnConfirm: false,
 		  closeOnCancel: true
 		},
@@ -236,8 +236,8 @@
 				success: function(msg){
 					if(msg['save']=='1'){
 						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di Setujui",
+							title: "Success!",
+							text: "Data approved successfully",
 							type: "success",
 							timer: 1500,
 							showConfirmButton: false
@@ -245,8 +245,8 @@
 						window.location.reload();
 					} else {
 						swal({
-							title: "Gagal!",
-							text: "Data Gagal Di Setujui",
+							title: "Failed!",
+							text: "Failed to approve data",
 							type: "error",
 							timer: 1500,
 							showConfirmButton: false
@@ -256,8 +256,8 @@
 				},
 				error: function(msg){
 					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
+						title: "Failed!",
+						text: "Ajax request failed to process.",
 						type: "error",
 						timer: 1500,
 						showConfirmButton: false

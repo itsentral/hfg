@@ -4,16 +4,16 @@
     <thead>
         <tr>
             <th class="text-center">#</th>
-            <th class="text-left">No Dokumen</th>
+            <th class="text-left">Document No.</th>
             <th class="text-left">Request By</th>
-            <th class="text-left">Tanggal</th>
+            <th class="text-left">Date</th>
             <th class="text-left">Keperluan</th>
             <th class="text-tipe">Tipe</th>
-            <th class="text-left">Nilai Pengajuan</th>
-            <th class="text-center">Diajukan Oleh</th>
-            <th class="text-center">Tanggal Pengajuan</th>
-            <th class="text-center">Dibayar Oleh</th>
-            <th class="text-center">Tanggal Pembayaran</th>
+            <th class="text-left">Request Value</th>
+            <th class="text-center">Requested By</th>
+            <th class="text-center">Request Date</th>
+            <th class="text-center">Paid By</th>
+            <th class="text-center">Payment Date</th>
             <th class="text-center">Status</th>
         </tr>
     </thead>

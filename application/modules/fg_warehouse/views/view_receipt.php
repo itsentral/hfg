@@ -25,7 +25,7 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
 <!-- Header Info -->
 <div class="card mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Detail FG Receipt: <?= $receipt->fg_receipt_no ?></h5>
+        <h5 class="mb-0">FG Receipt Detail: <?= $receipt->fg_receipt_no ?></h5>
         <span class="badge bg-<?= $badge_color ?> fs-6"><?= $receipt->status ?></span>
     </div>
     <div class="card-body">
@@ -37,7 +37,7 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
                         <td><strong><?= $receipt->fg_receipt_no ?></strong></td>
                     </tr>
                     <tr>
-                        <td>No Laporan</td>
+                        <td>Report No</td>
                         <td>
                             <a href="<?= base_url('production_report/view/' . $receipt->report_no) ?>">
                                 <?= $receipt->report_no ?>
@@ -61,7 +61,7 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
             <div class="col-md-6">
                 <table class="table table-sm table-borderless">
                     <tr>
-                        <td width="40%">Dibuat Oleh</td>
+                        <td width="40%">Created By</td>
                         <td><?= isset($receipt->nama_created_by) ? $receipt->nama_created_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -70,7 +70,7 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
                     </tr>
                     <?php if ($receipt->posted_by): ?>
                     <tr>
-                        <td>Diposting Oleh</td>
+                        <td>Posted By</td>
                         <td><?= isset($receipt->nama_posted_by) ? $receipt->nama_posted_by : '-' ?></td>
                     </tr>
                     <tr>
@@ -86,14 +86,14 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
 
 <!-- Rincian FG dan KW2 -->
 <div class="card mb-3">
-    <div class="card-header"><h6 class="mb-0">Rincian Penerimaan</h6></div>
+    <div class="card-header"><h6 class="mb-0">Receipt Details</h6></div>
     <div class="card-body p-0">
         <table class="table table-sm table-striped mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Kategori</th>
+                    <th>Category</th>
                     <th class="text-end">Qty</th>
-                    <th class="text-end">Berat (kg)</th>
+                    <th class="text-end">Weight (kg)</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@ $badge_color = isset($status_color[$receipt->status]) ? $status_color[$receipt->
 <div class="card">
     <div class="card-body d-flex flex-wrap gap-2">
         <a href="<?= base_url('fg_warehouse') ?>" class="btn btn-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
 
         <?php if ($receipt->status === 'Draft'): ?>
@@ -158,20 +158,20 @@ var receiptNo = '<?= $receipt->fg_receipt_no ?>';
 
 function doPost() {
     Swal.fire({
-        title: 'Post FG Receipt ini?',
-        text: 'Stok FG akan diupdate.',
+        title: 'Post this FG Receipt?',
+        text: 'FG stock will be updated.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Ya, Post',
-        cancelButtonText: 'Batal'
+        confirmButtonText: 'Yes, Post',
+        cancelButtonText: 'Cancel'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'fg_warehouse/process_post_receipt/' + receiptNo, {}, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });
@@ -179,21 +179,21 @@ function doPost() {
 
 function doCancel() {
     Swal.fire({
-        title: 'Cancel FG Receipt ini?',
-        text: 'Stok FG akan di-reverse.',
+        title: 'Cancel this FG Receipt?',
+        text: 'FG stock will be reversed.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Ya, Cancel',
-        cancelButtonText: 'Tidak'
+        confirmButtonText: 'Yes, Cancel',
+        cancelButtonText: 'No'
     }).then(function(result) {
         if (!result.isConfirmed) return;
         $.post(siteurl + 'fg_warehouse/process_cancel_receipt/' + receiptNo, {}, function (res) {
             if (res.success) {
-                Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
+                Swal.fire({ title: 'Success!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(function(){ location.reload(); });
             } else {
-                Swal.fire({ title: 'Gagal!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
+                Swal.fire({ title: 'Failed!', text: res.message, icon: 'error', confirmButtonText: 'OK' });
             }
         }, 'json');
     });

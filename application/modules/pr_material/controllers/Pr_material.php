@@ -51,10 +51,10 @@ class Pr_material extends Admin_Controller
         $data = $this->input->post();
 
         $id_material    = $data['id_material'];
-        $purchase       = str_replace(',', '', $data['purchase']);
+        $purchase       = str_replace(',', '', $data['purchase'] ?? '');
         $tanggal        = $data['tanggal'];
         $keterangan     = $data['keterangan'];
-        $forecast       = str_replace(',', '', $data['forecast']);
+        $forecast       = str_replace(',', '', $data['forecast'] ?? '');
 
         $ArrHeader = array(
             'request'           => $purchase,
@@ -338,7 +338,7 @@ class Pr_material extends Admin_Controller
         ];
 
         $this->template->page_icon('fa fa-cart-plus');
-        $this->template->title('Detail Purchase Request : ' . $so_number);
+        $this->template->title('Purchase Request Detail: ' . $so_number);
         $this->template->render('detail_planning', $data);
     }
 
@@ -484,7 +484,7 @@ class Pr_material extends Admin_Controller
 
             $ArrUpdate[] = [
                 'id'               => $value['id'],
-                'propose_purchase' => (float) str_replace(',', '', $value['qty']),
+                'propose_purchase' => (float) str_replace(',', '', $value['qty'] ?? ''),
                 'note'             => $value['note'] ?? '',
             ];
         }

@@ -80,10 +80,10 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <label class="form-label small text-muted mb-1 fw-semibold">Status Progres</label>
                 <select name="status" id="filter_status" class="form-select form-select-sm">
-                    <option value="all">Semua Status</option>
-                    <option value="belum_mulai">Belum Mulai</option>
+                    <option value="all">All Statuses</option>
+                    <option value="belum_mulai">Not Started</option>
                     <option value="partial">Partial</option>
-                    <option value="selesai">Selesai</option>
+                    <option value="selesai">Done</option>
                     <option value="over_delivery">Over-delivery</option>
                 </select>
             </div>
@@ -91,7 +91,7 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <label class="form-label small text-muted mb-1 fw-semibold">Supplier</label>
                 <select name="supplier" id="filter_supplier" class="form-select form-select-sm select2">
-                    <option value="">Semua Supplier</option>
+                    <option value="">All Suppliers</option>
                     <?php if (!empty($suppliers)) : ?>
                         <?php foreach ($suppliers as $sup) : ?>
                             <option value="<?= $sup->kode_supplier; ?>">
@@ -103,18 +103,18 @@
             </div>
 
             <div class="col-lg-2 col-md-4 col-sm-6">
-                <label class="form-label small text-muted mb-1 fw-semibold">Tgl PO Dari</label>
+                <label class="form-label small text-muted mb-1 fw-semibold">PO Date From</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light text-muted border-end-0"><i class="ti ti-calendar"></i></span>
-                    <input type="text" name="tgl_awal" id="filter_tgl_awal" class="form-control form-control-sm border-start-0" placeholder="Pilih tanggal...">
+                    <input type="text" name="tgl_awal" id="filter_tgl_awal" class="form-control form-control-sm border-start-0" placeholder="Select date...">
                 </div>
             </div>
 
             <div class="col-lg-2 col-md-4 col-sm-6">
-                <label class="form-label small text-muted mb-1 fw-semibold">Tgl PO Sampai</label>
+                <label class="form-label small text-muted mb-1 fw-semibold">PO Date To</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light text-muted border-end-0"><i class="ti ti-calendar"></i></span>
-                    <input type="text" name="tgl_akhir" id="filter_tgl_akhir" class="form-control form-control-sm border-start-0" placeholder="Pilih tanggal...">
+                    <input type="text" name="tgl_akhir" id="filter_tgl_akhir" class="form-control form-control-sm border-start-0" placeholder="Select date...">
                 </div>
             </div>
 
@@ -123,10 +123,10 @@
                 <button type="submit" id="btn_submit_filter" class="btn btn-sm btn-primary flex-fill" title="Terapkan Filter">
                     <i class="ti ti-filter me-1"></i> Filter
                 </button>
-                <button type="button" id="btn_reset_filter" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter & Refresh Data">
+                <button type="button" id="btn_reset_filter" class="btn btn-sm btn-outline-secondary" title="Reset All Filters and Refresh Data">
                     <i class="ti ti-refresh"></i>
                 </button>
-                <a href="<?= site_url('report_monitoring_po/download_excel'); ?>" id="btn_export_excel" class="btn btn-sm btn-outline-success" title="Export Multi-Sheet ke Excel">
+                <a href="<?= site_url('report_monitoring_po/download_excel'); ?>" id="btn_export_excel" class="btn btn-sm btn-outline-success" title="Export Multiple Sheets to Excel">
                     <i class="ti ti-file-spreadsheet"></i> Excel
                 </a>
             </div>
@@ -153,13 +153,13 @@
             <div class="modal-body p-4" id="modal_detail_content" style="max-height: 70vh; overflow-y: auto;">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 text-muted">Memuat data riwayat kedatangan...</p>
+                    <p class="mt-2 text-muted">Loading delivery history...</p>
                 </div>
             </div>
 
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="ti ti-x me-1"></i> Tutup
+                    <i class="ti ti-x me-1"></i> Close
                 </button>
             </div>
         </div>
@@ -178,7 +178,7 @@
         if ($('.select2').length) {
             $('#filter_supplier').select2({
                 width: '100%',
-                placeholder: "Semua Supplier",
+                placeholder: "All Suppliers",
                 allowClear: true
             });
         }
@@ -189,7 +189,7 @@
                 dateFormat: 'Y-m-d',
                 altInput: true,
                 altFormat: 'd/m/Y',
-                locale: 'id',
+                locale: 'en',
                 allowInput: true
             });
 
@@ -197,7 +197,7 @@
                 dateFormat: 'Y-m-d',
                 altInput: true,
                 altFormat: 'd/m/Y',
-                locale: 'id',
+                locale: 'en',
                 allowInput: true
             });
         }
@@ -298,11 +298,11 @@
                             pageLength: 10,
                             lengthMenu: [10, 25, 50, 100],
                             language: {
-                                search: "Cari:",
-                                lengthMenu: "Tampilkan _MENU_ data",
-                                info: "Menampilkan _START_ s/d _END_ dari _TOTAL_ PO",
+                                search: "Search:",
+                                lengthMenu: "Show _MENU_ entries",
+                                info: "Showing _START_ to _END_ of _TOTAL_ PO",
                                 infoEmpty: "Menampilkan 0 data",
-                                zeroRecords: "Tidak ada PO yang sesuai dengan filter",
+                                zeroRecords: "No purchase orders match the selected filters",
                                 paginate: {
                                     previous: "Prev",
                                     next: "Next"
@@ -310,16 +310,16 @@
                             }
                         });
                     } else {
-                        $('#container_table_po').html('<div class="alert alert-warning">Terjadi kendala saat memuat data.</div>');
+                        $('#container_table_po').html('<div class="alert alert-warning">An error occurred while loading the data.</div>');
                     }
                 },
                 error: function() {
                     $('#container_table_po').html(`
                         <div class="alert alert-danger shadow-sm text-center py-4 my-3">
                             <i class="ti ti-alert-triangle fs-2 d-block mb-2"></i>
-                            <strong>Gagal memuat data monitoring PO!</strong>
-                            <p class="mb-2 small text-muted">Terjadi kesalahan pada server saat mengambil data.</p>
-                            <button type="button" class="btn btn-sm btn-outline-danger" id="btn_retry_load">Coba Lagi</button>
+                            <strong>Failed to load data monitoring PO!</strong>
+                            <p class="mb-2 small text-muted">A server error occurred saat mengambil data.</p>
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="btn_retry_load">Try Again</button>
                         </div>
                     `);
                     $('#btn_retry_load').on('click', function() {
@@ -364,9 +364,9 @@
             var no_po = $(this).data('id');
             var no_surat = $(this).data('surat');
 
-            $('#modalDetailLabel').html('<i class="ti ti-truck-delivery me-2"></i>Detail Kedatangan PO: <span class="badge bg-white text-primary ms-2">' + no_surat + '</span>');
+            $('#modalDetailLabel').html('<i class="ti ti-truck-delivery me-2"></i>PO Delivery Details: <span class="badge bg-white text-primary ms-2">' + no_surat + '</span>');
             $('#modal_detail_po').modal('show');
-            $('#modal_detail_content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Memuat data riwayat kedatangan...</p></div>');
+            $('#modal_detail_content').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Loading delivery history...</p></div>');
 
             $.ajax({
                 type: 'GET',
@@ -375,7 +375,7 @@
                     $('#modal_detail_content').html(html);
                 },
                 error: function() {
-                    $('#modal_detail_content').html('<div class="alert alert-danger mb-0">Gagal memuat detail riwayat kedatangan PO! Silakan coba lagi.</div>');
+                    $('#modal_detail_content').html('<div class="alert alert-danger mb-0">Failed to load PO delivery history. Please try again.</div>');
                 }
             });
         });

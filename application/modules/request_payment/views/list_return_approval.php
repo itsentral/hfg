@@ -4,9 +4,9 @@
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-check-circle me-2"></i>Daftar Approval Pengembalian Expense
+                <i class="fa fa-check-circle me-2"></i>Daftar Expense Return Approval
             </h5>
-            <small class="text-muted">Persetujuan transfer dana pengembalian expense yang diserahkan karyawan</small>
+            <small class="text-muted">Approval of expense return fund transfers submitted by employees</small>
         </div>
         <div>
             <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
@@ -21,8 +21,8 @@
                 <thead class="table-light text-center">
                     <tr>
                         <th width="5%" class="text-center">No.</th>
-                        <th width="25%" class="text-center">No Dokumen</th>
-                        <th width="25%" class="text-end">Nilai Pengembalian</th>
+                        <th width="25%" class="text-center">Document No.</th>
+                        <th width="25%" class="text-end">Return Value</th>
                         <th width="25%" class="text-center">Status</th>
                         <th width="20%" class="text-center">Aksi</th>
                     </tr>
@@ -44,8 +44,8 @@
                             echo '<td class="text-center">' . $status . '</td>';
                             echo '<td class="text-center text-nowrap">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" class="btn btn-success shadow-sm approval px-3" data-id="' . $item->id . '" title="Setujui"><i class="fa fa-check me-1"></i> Approve</button>
-                                        <button type="button" class="btn btn-outline-danger shadow-sm reject px-3" data-id="' . $item->id . '" title="Tolak"><i class="fa fa-times me-1"></i> Reject</button>
+                                        <button type="button" class="btn btn-success shadow-sm approval px-3" data-id="' . $item->id . '" title="Approve"><i class="fa fa-check me-1"></i> Approve</button>
+                                        <button type="button" class="btn btn-outline-danger shadow-sm reject px-3" data-id="' . $item->id . '" title="Reject"><i class="fa fa-times me-1"></i> Reject</button>
                                     </div>
                                 </td>';
                             echo '</tr>';
@@ -73,12 +73,12 @@
             <div class="modal-body p-4" id="listexpense">
                 <div class="text-center py-5">
                     <i class="fa fa-spinner fa-spin fa-2x text-primary mb-2"></i>
-                    <p class="text-muted">Memuat data expense...</p>
+                    <p class="text-muted">Loading expense data...</p>
                 </div>
             </div>
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">
-                    <i class="fa fa-times me-1"></i> Tutup
+                    <i class="fa fa-times me-1"></i> Close
                 </button>
             </div>
         </div>
@@ -101,14 +101,14 @@
 
         if (typeof Swal !== 'undefined' && Swal.fire) {
             Swal.fire({
-                title: "Anda Yakin?",
-                text: "Pengembalian expense akan di-approve!",
+                title: "Are you sure?",
+                text: "The expense return will be approved!",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#198754",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Approve!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Approve!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     processApproval(id);
@@ -116,12 +116,12 @@
             });
         } else if (typeof swal !== 'undefined') {
             swal({
-                title: "Anda Yakin?",
-                text: "Pengembalian expense akan di-approve!",
+                title: "Are you sure?",
+                text: "The expense return will be approved!",
                 type: "info",
                 showCancelButton: true,
-                confirmButtonText: "Ya, Approve!",
-                cancelButtonText: "Tidak!",
+                confirmButtonText: "Yes, Approve!",
+                cancelButtonText: "No!",
                 closeOnConfirm: false,
                 closeOnCancel: true
             }, function(isConfirm) {
@@ -130,7 +130,7 @@
                 }
             });
         } else {
-            if (confirm("Pengembalian expense akan di-approve. Lanjutkan?")) {
+            if (confirm("The expense return will be approved. Continue?")) {
                 processApproval(id);
             }
         }
@@ -147,42 +147,42 @@
                 if (msg.status == '1') {
                     if (typeof Swal !== 'undefined' && Swal.fire) {
                         Swal.fire({
-                            title: "Sukses!",
-                            text: "Data Pengembalian berhasil di-approve",
+                            title: "Success!",
+                            text: "Return data approved successfully",
                             icon: "success",
                             timer: 1500,
                             showConfirmButton: false
                         }).then(function() { window.location.reload(); });
                     } else if (typeof swal !== 'undefined') {
                         swal({
-                            title: "Sukses!",
-                            text: "Data Pengembalian berhasil di approve",
+                            title: "Success!",
+                            text: "Return data approved successfully",
                             type: "success",
                             timer: 1500,
                             showConfirmButton: false
                         });
                         setTimeout(function() { window.location.reload(); }, 1500);
                     } else {
-                        alert("Data Pengembalian berhasil di-approve");
+                        alert("Return data approved successfully");
                         window.location.reload();
                     }
                 } else {
                     if (typeof Swal !== 'undefined' && Swal.fire) {
-                        Swal.fire("Gagal!", "Data Pengembalian gagal di-approve!", "error");
+                        Swal.fire("Failed!", "Return data failed to approve!", "error");
                     } else if (typeof swal !== 'undefined') {
-                        swal("Gagal!", "Data Pengembalian gagal Di Approve !", "error");
+                        swal("Failed!", "Return data failed to approve!", "error");
                     } else {
-                        alert("Data Pengembalian gagal di-approve");
+                        alert("Return data failed to approve");
                     }
                 }
             },
             error: function() {
                 if (typeof Swal !== 'undefined' && Swal.fire) {
-                    Swal.fire("Gagal!", "Ajax Data Gagal Di Proses", "error");
+                    Swal.fire("Failed!", "Ajax request failed to process.", "error");
                 } else if (typeof swal !== 'undefined') {
-                    swal("Gagal!", "Ajax Data Gagal Di Proses", "error");
+                    swal("Failed!", "Ajax request failed to process.", "error");
                 } else {
-                    alert("Ajax Data Gagal Di Proses");
+                    alert("Ajax request failed to process.");
                 }
             }
         });
@@ -193,14 +193,14 @@
 
         if (typeof Swal !== 'undefined' && Swal.fire) {
             Swal.fire({
-                title: "Anda Yakin?",
-                text: "Pengembalian expense akan di-reject!",
+                title: "Are you sure?",
+                text: "The expense return will be rejected!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#dc3545",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-times me-1'></i> Ya, Reject!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-times me-1'></i> Yes, Reject!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     processReject(id);
@@ -208,12 +208,12 @@
             });
         } else if (typeof swal !== 'undefined') {
             swal({
-                title: "Anda Yakin?",
-                text: "Pengembalian expense akan di reject !",
+                title: "Are you sure?",
+                text: "The expense return will be rejected!",
                 type: "info",
                 showCancelButton: true,
-                confirmButtonText: "Ya, Reject!",
-                cancelButtonText: "Tidak!",
+                confirmButtonText: "Yes, Reject!",
+                cancelButtonText: "No!",
                 closeOnConfirm: false,
                 closeOnCancel: true
             }, function(isConfirm) {
@@ -222,7 +222,7 @@
                 }
             });
         } else {
-            if (confirm("Pengembalian expense akan di-reject. Lanjutkan?")) {
+            if (confirm("The expense return will be rejected. Continue?")) {
                 processReject(id);
             }
         }
@@ -239,42 +239,42 @@
                 if (msg.status == '1') {
                     if (typeof Swal !== 'undefined' && Swal.fire) {
                         Swal.fire({
-                            title: "Sukses!",
-                            text: "Data Pengembalian berhasil di-reject",
+                            title: "Success!",
+                            text: "Return data rejected successfully",
                             icon: "success",
                             timer: 1500,
                             showConfirmButton: false
                         }).then(function() { window.location.reload(); });
                     } else if (typeof swal !== 'undefined') {
                         swal({
-                            title: "Sukses!",
-                            text: "Data Pengembalian berhasil di reject",
+                            title: "Success!",
+                            text: "Return data rejected successfully",
                             type: "success",
                             timer: 1500,
                             showConfirmButton: false
                         });
                         setTimeout(function() { window.location.reload(); }, 1500);
                     } else {
-                        alert("Data Pengembalian berhasil di-reject");
+                        alert("Return data rejected successfully");
                         window.location.reload();
                     }
                 } else {
                     if (typeof Swal !== 'undefined' && Swal.fire) {
-                        Swal.fire("Gagal!", "Data Pengembalian gagal di-reject!", "error");
+                        Swal.fire("Failed!", "Return data failed to reject!", "error");
                     } else if (typeof swal !== 'undefined') {
-                        swal("Gagal!", "Data Pengembalian gagal Di Reject !", "error");
+                        swal("Failed!", "Return data failed to reject!", "error");
                     } else {
-                        alert("Data Pengembalian gagal di-reject");
+                        alert("Return data failed to reject");
                     }
                 }
             },
             error: function() {
                 if (typeof Swal !== 'undefined' && Swal.fire) {
-                    Swal.fire("Gagal!", "Ajax Data Gagal Di Proses", "error");
+                    Swal.fire("Failed!", "Ajax request failed to process.", "error");
                 } else if (typeof swal !== 'undefined') {
-                    swal("Gagal!", "Ajax Data Gagal Di Proses", "error");
+                    swal("Failed!", "Ajax request failed to process.", "error");
                 } else {
-                    alert("Ajax Data Gagal Di Proses");
+                    alert("Ajax request failed to process.");
                 }
             }
         });

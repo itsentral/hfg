@@ -141,18 +141,18 @@ class Unpack_coil extends Admin_Controller
         $this->auth->restrict($this->addPermission);
 
         if (!$unpack_no) {
-            $this->session->set_flashdata('error', 'Nomor unpack tidak valid.');
+            $this->session->set_flashdata('error', 'Invalid unpack number.');
             redirect('unpack_coil');
         }
 
         $header = $this->Unpack_coil_model->get_header($unpack_no);
         if (!$header) {
-            $this->session->set_flashdata('error', 'Report unpack tidak ditemukan.');
+            $this->session->set_flashdata('error', 'Unpack report not found.');
             redirect('unpack_coil');
         }
 
         if ($header['status'] === 'Lock') {
-            $this->session->set_flashdata('error', 'Report unpack sudah di-Lock dan tidak dapat diedit.');
+            $this->session->set_flashdata('error', 'The unpack report is Locked and cannot be edited.');
             redirect('unpack_coil');
         }
 
@@ -199,7 +199,7 @@ class Unpack_coil extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
         if (!$id_pack) {
-            return $this->_json(array('status' => 0, 'message' => 'ID pack tidak valid.'));
+            return $this->_json(array('status' => 0, 'message' => 'Invalid pack ID.'));
         }
         $materials = $this->Unpack_coil_model->get_materials_in_pack($id_pack);
         return $this->_json(array('status' => 1, 'data' => $materials));
@@ -209,7 +209,7 @@ class Unpack_coil extends Admin_Controller
     {
         $this->auth->restrict($this->viewPermission);
         if (!$id_pack || !$id_material || !$id_gudang) {
-            return $this->_json(array('status' => 0, 'message' => 'Parameter tidak lengkap.'));
+            return $this->_json(array('status' => 0, 'message' => 'Incomplete parameters.'));
         }
 
         $rows = $this->Unpack_coil_model->get_coils_by_material($id_pack, $id_material, $id_gudang);
@@ -218,8 +218,8 @@ class Unpack_coil extends Admin_Controller
 
         foreach ($rows as $r) {
             $qty = max(1, (int) $r['qty_roll']);
-            $base_no_coil = trim(preg_replace('/-BC\.\d+$/i', '', $r['no_coil']));
-            $base_kode_internal = trim(preg_replace('/-BC\.\d+$/i', '', $r['kode_internal']));
+            $base_no_coil = trim(preg_replace('/-BC\.\d+$/i', '', $r['no_coil'] ?? ''));
+            $base_kode_internal = trim(preg_replace('/-BC\.\d+$/i', '', $r['kode_internal'] ?? ''));
 
             $nw_avg = $r['net_weight_pl'] / $qty;
             $gw_avg = $r['gross_weight_pl'] / $qty;
@@ -292,26 +292,51 @@ class Unpack_coil extends Admin_Controller
         $catatan           = $this->input->post('catatan', TRUE);
 
         if (!$id_pack || empty($pack_code)) {
-            return $this->_json(array('status' => 0, 'message' => 'Pack wajib dipilih.'));
+            return $this->_json(array('status' => 0, 'message' => 'A pack is required.'));
         }
         if (empty($materials) || !is_array($materials)) {
-            return $this->_json(array('status' => 0, 'message' => 'Minimal 1 material harus diisi.'));
+            return $this->_json(array('status' => 0, 'message' => 'At least 1 material must be filled in.'));
         }
 
         if ($mode == 'edit') {
             if (empty($unpack_no)) {
-                return $this->_json(array('status' => 0, 'message' => 'Nomor unpack tidak valid.'));
+                return $this->_json(array('status' => 0, 'message' => 'Invalid unpack number.'));
             }
             $existing = $this->Unpack_coil_model->get_header($unpack_no);
             if (!$existing) {
-                return $this->_json(array('status' => 0, 'message' => 'Report unpack tidak ditemukan.'));
+                return $this->_json(array('status' => 0, 'message' => 'Unpack report not found.'));
             }
             if ($existing['status'] === 'Lock') {
-                return $this->_json(array('status' => 0, 'message' => 'Report unpack sudah di-Lock dan tidak dapat diedit.'));
+                return $this->_json(array('status' => 0, 'message' => 'The unpack report is Locked and cannot be edited.'));
             }
         }
 
         $this->db->trans_begin();
+        try {
+        $this->load->helper('material_stock');
+        material_stock_require_schema($this->db);
+        $old_header = $mode === 'edit' ? $existing : [];
+        $old_details = $mode === 'edit' ? $this->Unpack_coil_model->get_materials_by_unpack($unpack_no) : [];
+        $old_coils = [];
+        if ($mode === 'edit') {
+            $old_coils = $this->db->query(
+                'SELECT * FROM warehouse_stock_coil WHERE no_ipp = ? AND is_baby_coil = 1 FOR UPDATE', [$unpack_no]
+            )->result_array();
+            foreach ($old_coils as $old_coil) {
+                $used = $this->db->get_where('production_report_materials', ['id_unpack_baby_coil' => $old_coil['id']])->row_array();
+                if ($used || (int)$old_coil['status'] !== 1 || !in_array($old_coil['status_proses'], ['unpacked','in_transit'], true)) {
+                    throw new RuntimeException('The baby coil has already been used/selected in a production report. Unpack cannot overwrite that transaction source.');
+                }
+            }
+            foreach ($old_details as &$old_detail) {
+                $old_detail['babies'] = $this->Unpack_coil_model->get_babies_by_material($old_detail['id']);
+            }
+            unset($old_detail);
+            // Hanya ledger penanganan unpack ini, bukan mutasi scan atau pemakaian produksi.
+            $this->db->where('kode_trans', $unpack_no)->delete('warehouse_stock_transaction_detail');
+            $this->db->where('kode_trans', $unpack_no)->delete('warehouse_stock_transaction_summary');
+            $this->db->where('no_ipp', $unpack_no)->delete('warehouse_history');
+        }
 
         if ($mode == 'add') {
             $unpack_no = $this->Unpack_coil_model->generate_unpack_no();
@@ -353,21 +378,21 @@ class Unpack_coil extends Admin_Controller
             $id_gudang   = isset($m['id_gudang']) ? $m['id_gudang'] : null;
             if ($id_material === '' || $id_gudang === null) {
                 $this->db->trans_rollback();
-                return $this->_json(array('status' => 0, 'message' => 'Data material tidak lengkap (id_material/id_gudang kosong).'));
+                return $this->_json(array('status' => 0, 'message' => 'Material data is incomplete (id_material/id_gudang empty).'));
             }
 
             $babies = isset($m['babies']) && is_array($m['babies']) ? $m['babies'] : array();
             $roll   = count($babies ?? []);
             if ($roll <= 0) {
                 $this->db->trans_rollback();
-                return $this->_json(array('status' => 0, 'message' => 'Detail baby coil untuk material ' . $id_material . ' belum diisi. Silakan klik "View Detail" sebelum Save.'));
+                return $this->_json(array('status' => 0, 'message' => 'Baby coil detail for material ' . $id_material . ' has not been filled in. Please click "View Detail" before Save.'));
             }
 
             // Baris fisik asli grup ini (masih in_transit, di pack ini)
             $real_coils = $this->Unpack_coil_model->get_coils_by_material($id_pack, $id_material, $id_gudang);
             if (empty($real_coils)) {
                 $this->db->trans_rollback();
-                return $this->_json(array('status' => 0, 'message' => 'Data coil untuk material ' . $id_material . ' tidak ditemukan saat proses simpan.'));
+                return $this->_json(array('status' => 0, 'message' => 'Coil data for material ' . $id_material . ' was not found during the save process.'));
             }
             $rep = $real_coils[0]; // representatif: nama, gudang, panjang, dll
 
@@ -394,6 +419,12 @@ class Unpack_coil extends Admin_Controller
                 $sum_gross_pl     += (float) (isset($b['gross_weight_pl']) ? $b['gross_weight_pl'] : 0);
             }
 
+            $parent_packing = round(array_sum(array_column($real_coils, 'net_weight_pl')), 3);
+            if (round($sum_net_pl, 3) !== $parent_packing) {
+                throw new RuntimeException('The baby coil Packing List Total Net Weight must equal the parent coil packing list (' . $parent_packing . ' Kg). Berat aktual tetap dicatat terpisah.');
+            }
+            $warehouse = material_stock_warehouse($this->db, 'PRT');
+            if ((string)$id_gudang !== (string)$warehouse['id']) throw new RuntimeException('The unpack warehouse does not match the PRT master.');
             $id_unpack_material = $this->Unpack_coil_model->insert_material(array(
                 'unpack_no'           => $unpack_no,
                 'id_material'         => $id_material,
@@ -412,14 +443,14 @@ class Unpack_coil extends Admin_Controller
 
             // Harga baby coil = harga_beli induk APA ADANYA (tidak dihitung ulang).
             // Unpack hanya memecah coil; nilai/harga per kg tidak berubah.
-            $cb_per_kg = (float) (isset($rep['harga_beli']) ? $rep['harga_beli'] : 0);
+            $cb_per_kg = material_stock_costbook($this->db, $rep, true);
 
-            $base_induk_coil = trim(preg_replace('/-BC\.\d+$/i', '', $rep['no_coil']));
+            $base_induk_coil = trim(preg_replace('/-BC\.\d+$/i', '', $rep['no_coil'] ?? ''));
             if (strpos((string) $base_induk_coil, ',') !== false) {
                 $parts_coil = explode(',', (string) $base_induk_coil);
                 $base_induk_coil = trim((string) $parts_coil[0]);
             }
-            $base_induk_kode = trim(preg_replace('/-BC\.\d+$/i', '', $rep['kode_internal']));
+            $base_induk_kode = trim(preg_replace('/-BC\.\d+$/i', '', $rep['kode_internal'] ?? ''));
 
             foreach ($babies as $idx => $b) {
                 $seq = $idx + 1;
@@ -434,7 +465,7 @@ class Unpack_coil extends Admin_Controller
                 $gross_actual  = (float) (isset($b['gross_weight_actual']) ? $b['gross_weight_actual'] : 0);
                 $net_pl        = (float) (isset($b['net_weight_pl']) ? $b['net_weight_pl'] : 0);
                 $gross_pl      = (float) (isset($b['gross_weight_pl']) ? $b['gross_weight_pl'] : 0);
-                $nilai_baby    = $net_actual * $cb_per_kg;
+                $nilai_baby    = round($net_pl * $cb_per_kg, 2);
 
                 // parent_coil_id cuma valid kalau grup = persis 1 baris asli & jumlahnya tidak di-adjust
                 $induk_ref = $rep;
@@ -454,9 +485,12 @@ class Unpack_coil extends Admin_Controller
                     $cb_per_kg,
                     $unpack_no,
                     $kulit_baby,
-                    $clamp_ring_baby
+                    $clamp_ring_baby,
+                    $net_pl
                 );
 
+                $baby_snapshot = $this->db->get_where('warehouse_stock_coil', ['id' => $id_coil_baru])->row_array();
+                material_stock_coil_snapshot($this->db, $baby_snapshot, 'IN', $this->id_user, $this->datetime);
                 $this->Unpack_coil_model->insert_baby(array(
                     'id_unpack_material'  => $id_unpack_material,
                     'babycoil_code'       => $babycoil_code,
@@ -499,6 +533,8 @@ class Unpack_coil extends Admin_Controller
 
             // Nonaktifkan SEMUA baris fisik asli grup ini
             foreach ($real_coils as $rc) {
+                $parent_snapshot = $this->db->get_where('warehouse_stock_coil', ['id' => $rc['id']])->row_array();
+                material_stock_coil_snapshot($this->db, $parent_snapshot, 'OUT', $this->id_user, $this->datetime);
                 $this->Unpack_coil_model->mark_induk_unpacked($rc['id'], $unpack_no);
             }
 
@@ -531,7 +567,7 @@ class Unpack_coil extends Admin_Controller
                 'ket'             => 'Unpack material ' . $id_material . ' menjadi ' . $roll . ' baby coil (' . $unpack_no . ')',
                 'no_coil'         => $rep['no_coil'],
                 'harga_beli'      => $harga_induk,
-                'total_harga'     => $sum_net_actual * $harga_induk, // info nilai coil yang dipecah
+                'total_harga'     => 0, // Pemecahan coil tidak menambah nilai persediaan.
                 'saldo_awal'      => $saldo_now,
                 'saldo_akhir'     => $saldo_now, // tidak berubah
                 'harga_baru'      => $harga_induk,
@@ -549,25 +585,47 @@ class Unpack_coil extends Admin_Controller
                 'tanggal'       => date('Y-m-d'),
                 'jumlah_coil'   => $roll,
                 'qty_awal'      => $qty_now,
-                'qty_transaksi' => $sum_net_actual,
+                'qty_transaksi' => $sum_net_pl,
                 'qty_akhir'     => $qty_now, // tidak berubah
                 'costbook'      => $harga_induk,
-                'total_harga'   => $total_nilai_group,
+                'total_harga'   => 0,
                 'saldo_awal'    => $saldo_now,
                 'saldo_akhir'   => $saldo_now, // tidak berubah
                 'harga_lama'    => $harga_induk,
                 'created_by'    => $this->id_user,
                 'created_at'    => $this->datetime,
             ));
+            $summary_id = $this->db->insert_id();
+            $this->db->where('kode_trans', $unpack_no)->where('id_material', $id_material)
+                ->where('id_gudang', $id_gudang)->update('warehouse_stock_transaction_detail', ['id_summary' => $summary_id]);
+            $this->db->where('no_ipp', $unpack_no)->where('id_material', $id_material)
+                ->where('id_gudang', $id_gudang)->update('warehouse_history', ['id_summary' => $summary_id]);
+            $book = material_stock_row($this->db, $id_material, $warehouse);
+            if (!$book) throw new RuntimeException('The PRT book balance is not available yet. Reconciliation is required.');
+            material_stock_snapshot($this->db, $book, $this->id_user, $this->datetime);
         }
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
-            return $this->_json(array('status' => 0, 'message' => 'Gagal menyimpan report unpack. Silakan coba lagi.'));
+            return $this->_json(array('status' => 0, 'message' => 'Failed to save the unpack report. Please try again.'));
         }
 
         $this->db->trans_commit();
-        return $this->_json(array('status' => 1, 'message' => 'Report unpack berhasil disimpan.', 'unpack_no' => $unpack_no));
+        $new_header = $this->Unpack_coil_model->get_header($unpack_no);
+        $new_details = $this->Unpack_coil_model->get_materials_by_unpack($unpack_no);
+        $new_coils = $this->db->get_where('warehouse_stock_coil', ['no_ipp' => $unpack_no, 'is_baby_coil' => 1])->result_array();
+        write_log('Unpack Coil', $mode === 'edit' ? 'Edit' : 'Create', 'Simpan unpack ' . $unpack_no, [
+            'old' => $old_header, 'new' => $new_header,
+            'detail_changes' => [
+                'Material Unpack' => ['old' => $old_details, 'new' => $new_details],
+                'Baby Coil' => ['old' => $old_coils, 'new' => $new_coils],
+            ],
+        ], null, 1);
+        return $this->_json(array('status' => 1, 'message' => 'Unpack report saved successfully.', 'unpack_no' => $unpack_no));
+        } catch (RuntimeException $e) {
+            $this->db->trans_rollback();
+            return $this->_json(['status' => 0, 'message' => $e->getMessage()]);
+        }
     }
 
     // ---------------------------------------------------------------
@@ -579,13 +637,13 @@ class Unpack_coil extends Admin_Controller
         $this->auth->restrict($this->viewPermission);
 
         if (!$unpack_no) {
-            $this->session->set_flashdata('error', 'Nomor unpack tidak valid.');
+            $this->session->set_flashdata('error', 'Invalid unpack number.');
             redirect('unpack_coil');
         }
 
         $header = $this->Unpack_coil_model->get_header($unpack_no);
         if (!$header) {
-            $this->session->set_flashdata('error', 'Report unpack tidak ditemukan.');
+            $this->session->set_flashdata('error', 'Unpack report not found.');
             redirect('unpack_coil');
         }
 
@@ -610,21 +668,21 @@ class Unpack_coil extends Admin_Controller
 
         $unpack_no = $this->input->post('unpack_no', TRUE);
         if (empty($unpack_no)) {
-            return $this->_json(array('status' => 0, 'message' => 'Nomor unpack tidak valid.'));
+            return $this->_json(array('status' => 0, 'message' => 'Invalid unpack number.'));
         }
 
         $header = $this->Unpack_coil_model->get_header($unpack_no);
         if (!$header) {
-            return $this->_json(array('status' => 0, 'message' => 'Report unpack tidak ditemukan.'));
+            return $this->_json(array('status' => 0, 'message' => 'Unpack report not found.'));
         }
 
         if ($header['status'] === 'Lock') {
-            return $this->_json(array('status' => 0, 'message' => 'Report unpack sudah di-Lock dan tidak dapat dihapus.'));
+            return $this->_json(array('status' => 0, 'message' => 'The unpack report is Locked and cannot be deleted.'));
         }
 
         $this->Unpack_coil_model->delete_req($unpack_no, $this->id_user);
 
-        return $this->_json(array('status' => 1, 'message' => 'Report unpack berhasil dihapus.'));
+        return $this->_json(array('status' => 1, 'message' => 'Unpack report deleted successfully.'));
     }
 
 
@@ -634,21 +692,21 @@ class Unpack_coil extends Admin_Controller
 
         $unpack_no = $this->input->post('unpack_no', TRUE);
         if (empty($unpack_no)) {
-            return $this->_json(array('status' => 0, 'message' => 'Nomor unpack tidak valid.'));
+            return $this->_json(array('status' => 0, 'message' => 'Invalid unpack number.'));
         }
 
         $header = $this->Unpack_coil_model->get_header($unpack_no);
         if (!$header) {
-            return $this->_json(array('status' => 0, 'message' => 'Report unpack tidak ditemukan.'));
+            return $this->_json(array('status' => 0, 'message' => 'Unpack report not found.'));
         }
 
         if ($header['status'] == 'Lock') {
-            return $this->_json(array('status' => 0, 'message' => 'Report unpack ini sudah dalam status Lock.'));
+            return $this->_json(array('status' => 0, 'message' => 'This unpack report already has status Lock.'));
         }
 
         $this->Unpack_coil_model->lock_req($unpack_no, $this->id_user);
 
-        return $this->_json(array('status' => 1, 'message' => 'Report unpack berhasil di-lock.'));
+        return $this->_json(array('status' => 1, 'message' => 'Unpack report locked successfully.'));
     }
 
 

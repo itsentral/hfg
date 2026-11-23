@@ -41,11 +41,11 @@ $this->load->view('include/side_menu');
 					<input type="text" id="bank_transfer" name="bank_transfer" value="<?=$data->bank_transfer?>" class="form-control">
 					<label class="control-label">Payment Date</label>
 					<input type="text" id="req_payment_date" name="req_payment_date" value="<?php echo $data->req_payment_date; ?>" class="form-control tanggal" required>
-					<label class="control-label">Nomor Invoice</label>
+					<label class="control-label">Invoice Number</label>
 					<input type="text" class="form-control" id="no_invoice" name="no_invoice" value="<?php echo $data->no_invoice; ?>">
-					<label class="control-label">Keterangan Invoice</label>
+					<label class="control-label">Invoice Description</label>
 					<input type="text" class="form-control" id="keterangan" name="keterangan" value="<?php echo $data->keterangan; ?>">
-					<label class="control-label">PO yang akan dibayar</label>
+					<label class="control-label">PO to be paid</label>
 					<input type="text" class="form-control divide" id="nilai_po_invoice" name="nilai_po_invoice" value="<?=(isset($data)?$data->nilai_po_invoice:0)?>" placeholder=0 required onblur="calculate_invoice()">
 					<label class="control-label">PPN</label>
 					<div class="input-group">
@@ -61,11 +61,11 @@ $this->load->view('include/side_menu');
 
 					<label class="control-label">PO+PPN-PPH</label>
 					<input type="text" class="form-control divide" id="nilai_invoice" name="nilai_invoice" value="<?=(isset($data)?$data->nilai_invoice:0)?>" placeholder=0 required readonly tabindex="-1">
-					<label class="control-label">Nilai Potongan DP</label>
+					<label class="control-label">DP Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_dp" name="potongan_dp" placeholder=0 value="<?=(isset($data)?$data->potongan_dp:0)?>" onblur="calculate_invoice()">
-					<label class="control-label">Nilai Potongan Claim</label>
+					<label class="control-label">Claim Deduction Value</label>
 					<input type="text" class="form-control divide" id="potongan_claim" name="potongan_claim" placeholder=0 value="<?=(isset($data)?$data->potongan_claim:0)?>" onblur="calculate_invoice()">
-					<label class="control-label">Keterangan Potongan</label>
+					<label class="control-label">Deduction Description</label>
 					<input type="text" class="form-control" id="keterangan_potongan" name="keterangan_potongan" value="<?=(isset($data)?$data->keterangan_potongan:0)?>">
 					<label class="control-label">Request Payment</label>
 					<input type="text" class="form-control divide" id="request_payment" name="request_payment" value="<?=(isset($data)?$data->request_payment:0)?>" placeholder=0 required readonly tabindex="-1">
@@ -73,11 +73,11 @@ $this->load->view('include/side_menu');
 			</div>
 
 			<div class="table-responsive">
-				<h4>Detail PO</h4>
+				<h4>PO Detail</h4>
 				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-							<th>Nama Barang</th>
+							<th>Item Name</th>
 							<th>Qty</th>
 							<th>Price/Unit</th>
 							<th>Total Price</th>
@@ -119,7 +119,7 @@ $this->load->view('include/side_menu');
 						<th class="text-center" width='5%'>Group TOP</th>
 						<th class="text-center" width='8%'>Progress (%)</th>
 						<th class="text-center" width='11%'>Value</th>
-						<th class="text-center" width='25%'>Keterangan</th>
+						<th class="text-center" width='25%'>Description</th>
 						<th class="text-center" width='10%'>Est Jatuh Tempo</th>
 						<th class="text-center" width='25%'>Persyaratan</th>
 					</tr>
@@ -154,7 +154,7 @@ $this->load->view('include/side_menu');
 						} else { ?>
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
 						<?php } ?>
-						<a href="<?=base_url()?>pembayaran_material" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?=base_url()?>pembayaran_material" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>

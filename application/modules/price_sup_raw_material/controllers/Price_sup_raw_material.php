@@ -18,7 +18,7 @@ class Price_sup_raw_material extends Admin_Controller
     $this->load->model(array(
       'Price_sup_raw_material/Price_sup_raw_material_model'
     ));
-    $this->template->title('Manage Material Jenis');
+    $this->template->title('Manage Material Type');
     $this->template->page_icon('fa fa-building-o');
 
     date_default_timezone_set('Asia/Bangkok');
@@ -61,11 +61,11 @@ class Price_sup_raw_material extends Admin_Controller
 
       $id                 = $post['id'];
       $code_lv4           = $post['code_lv4'];
-      $price_ref_new      = str_replace(',', '', $post['price_ref_new']);
-      $price_ref_new_usd      = str_replace(',', '', $post['price_ref_new_usd']);
-      $price_ref_high_new     = str_replace(',', '', $post['price_ref_high_new']);
-      $price_ref_high_new_usd = str_replace(',', '', $post['price_ref_high_new_usd']);
-      $kurs = str_replace(',', '', $post['kurs']);
+      $price_ref_new      = str_replace(',', '', $post['price_ref_new'] ?? '');
+      $price_ref_new_usd      = str_replace(',', '', $post['price_ref_new_usd'] ?? '');
+      $price_ref_high_new     = str_replace(',', '', $post['price_ref_high_new'] ?? '');
+      $price_ref_high_new_usd = str_replace(',', '', $post['price_ref_high_new_usd'] ?? '');
+      $kurs = str_replace(',', '', $post['kurs'] ?? '');
       $price_ref_expired      = $post['price_ref_expired'];
       $note                   = $post['note'];
 
@@ -178,7 +178,7 @@ class Price_sup_raw_material extends Admin_Controller
     if ($this->db->trans_status() === FALSE) {
       $this->db->trans_rollback();
       $Arr_Data  = array(
-        'pesan'    => 'Save gagal disimpan ...',
+        'pesan'    => 'Failed to save data.',
         'status'  => 0,
         'kurs'    => number_format((float) $nominal_kurs)
       );
@@ -186,7 +186,7 @@ class Price_sup_raw_material extends Admin_Controller
     } else {
       $this->db->trans_commit();
       $Arr_Data  = array(
-        'pesan'    => 'Kurs berhasil di update ...',
+        'pesan'    => 'Exchange rate updated successfully.',
         'status'  => 1,
         'kurs'    => number_format((float) $nominal_kurs)
       );

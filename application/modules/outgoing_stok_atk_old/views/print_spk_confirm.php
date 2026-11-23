@@ -28,7 +28,7 @@ $today = date('l, d F Y [H:i:s]');
         <tr>
             <td class="mid" width='18%'>Dari Gudang</td>
             <td class="mid" width='2%'>:</td>
-            <td class="mid" width='30%'><?=strtoupper(get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
+            <td class="mid" width='30%'><?=strtoupper((string) get_name('warehouse','nm_gudang','id',$getData[0]['id_gudang']));?></td>
             <td class="mid" width='18%'>Ke Gudang</td>
             <td class="mid" width='2%'>:</td>
             <td class="mid" width='30%'>GUDANG PRODUKSI</td>

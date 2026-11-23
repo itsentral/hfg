@@ -60,9 +60,9 @@ $is_editable = in_array($spk['status'], $editable_statuses ?? []);
     <!-- Header Card -->
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fa fa-clipboard-list"></i> Detail SPK Material</h5>
+            <h5 class="mb-0"><i class="fa fa-clipboard-list"></i> SPK Material Detail</h5>
             <a href="<?= site_url('spk_material') ?>" class="btn btn-sm btn-outline-secondary">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
         <div class="card-body">
@@ -74,7 +74,7 @@ $is_editable = in_array($spk['status'], $editable_statuses ?? []);
                             <td>: <?= htmlspecialchars((string) $spk['spk_no']) ?></td>
                         </tr>
                         <tr>
-                            <td class="fw-bold">Tanggal SPK</td>
+                            <td class="fw-bold">SPK Date</td>
                             <td>: <?= date('d/m/Y', strtotime((string) $spk['tgl_spk'])) ?></td>
                         </tr>
                         <tr>
@@ -94,7 +94,7 @@ $is_editable = in_array($spk['status'], $editable_statuses ?? []);
                 <div class="col-md-6">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
-                            <td width="35%" class="fw-bold">Catatan</td>
+                            <td width="35%" class="fw-bold">Notes</td>
                             <td>: <?= !empty($spk['catatan']) ? htmlspecialchars((string) $spk['catatan']) : '-' ?></td>
                         </tr>
                         <tr>
@@ -122,7 +122,7 @@ $is_editable = in_array($spk['status'], $editable_statuses ?? []);
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" width="5%">Urut</th>
-                            <th>Nama Produk</th>
+                            <th>Product Name</th>
                             <th class="text-center" width="15%">Target Qty</th>
                             <th class="text-center" width="20%">Total Weight (Kg)</th>
                         </tr>
@@ -139,7 +139,7 @@ $is_editable = in_array($spk['status'], $editable_statuses ?? []);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Tidak ada detail produk.</td>
+                                <td colspan="4" class="text-center text-muted">No product details.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

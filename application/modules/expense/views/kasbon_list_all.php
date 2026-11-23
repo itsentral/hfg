@@ -19,9 +19,9 @@ $ENABLE_DELETE  = has_permission('Kasbon_List.Delete');
 				<thead class="table-light text-center">
 					<tr>
 						<th width="4%" class="text-center">#</th>
-						<th class="text-center">No Kasbon</th>
-						<th class="text-center">Tanggal</th>
-						<th class="text-center">Nama</th>
+						<th class="text-center">Cash Advance No</th>
+						<th class="text-center">Date</th>
+						<th class="text-center">Name</th>
 						<th class="text-center">Keperluan</th>
 						<th class="text-center" width="12%">Approval Date</th>
 						<th class="text-center" width="15%">Status</th>

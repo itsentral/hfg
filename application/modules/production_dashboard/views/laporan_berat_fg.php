@@ -2,22 +2,22 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Laporan Berat FG</h5>
+        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter FG Weight Report</h5>
     </div>
     <div class="card-body">
         <form method="get" action="<?= base_url('production_dashboard/laporan_berat_fg') ?>">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Tanggal Dari</label>
+                    <label class="form-label">Date From</label>
                     <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Tanggal Sampai</label>
+                    <label class="form-label">Date To</label>
                     <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa fa-search"></i> Tampilkan
+                        <i class="fa fa-search"></i> Show
                     </button>
                 </div>
             </div>
@@ -27,9 +27,9 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Laporan Berat Referensi FG per Produk</h5>
+        <h5 class="mb-0">FG Reference Weight Report per Product</h5>
         <a href="<?= base_url('production_dashboard') ?>" class="btn btn-sm btn-outline-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -38,20 +38,20 @@
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center">No</th>
-                        <th>Kode Produk FG</th>
-                        <th class="text-end">Qty Stok Saat Ini</th>
-                        <th class="text-end">Total Berat Stok (kg)</th>
-                        <th class="text-end">Berat Referensi Terkini (kg/pcs)</th>
-                        <th class="text-end">Berat Referensi Historis (kg/pcs)</th>
-                        <th class="text-end">Qty Stok Historis</th>
-                        <th class="text-end">Total Berat Historis (kg)</th>
+                        <th>FG Product Code</th>
+                        <th class="text-end">Qty Current Stock</th>
+                        <th class="text-end">Total Stock Weight (kg)</th>
+                        <th class="text-end">Latest Reference Weight (kg/pcs)</th>
+                        <th class="text-end">Historical Reference Weight (kg/pcs)</th>
+                        <th class="text-end">Historical Stock Qty</th>
+                        <th class="text-end">Total Historical Weight (kg)</th>
                         <th class="text-center">Effective Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($data_laporan)): ?>
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-3">Tidak ada data untuk filter yang dipilih</td>
+                            <td colspan="9" class="text-center text-muted py-3">No data for the selected filter</td>
                         </tr>
                     <?php else: ?>
                         <?php

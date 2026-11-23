@@ -76,7 +76,7 @@ class Asset_model extends BF_Model
             $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_category']) . "</div>";
             $nestedData[] = "<div align='left'>" . strtoupper((string) $row['nm_dept']) . "</div>";
             $nestedData[] = "<div align='right'>" . number_format((float) $row['nilai_asset']) . "</div>";
-            $nestedData[] = "<div align='center'>" . $row['depresiasi'] . " Tahun</div>";
+            $nestedData[] = "<div align='center'>" . $row['depresiasi'] . " Year</div>";
             $nestedData[] = "<div align='right'>" . number_format((float) $row['value']) . "</div>";
 
             $view   = "<button type='button' class='btn btn-sm btn-warning detail' data-id='" . $row['id'] . "' title='View Data'><i class='fa fa-eye'></i></button>";

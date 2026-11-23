@@ -50,7 +50,7 @@ class Base_Controller extends MX_Controller
         }
 
         $base_sub_folder = str_replace(prep_url($_SERVER['HTTP_HOST']), '', base_url());
-        $uri = str_replace($base_sub_folder,'', $uri);
+        $uri = str_replace($base_sub_folder,'', $uri ?? '');
 
         if(!in_array($uri, $this->ignore_pages))
         {
@@ -59,7 +59,7 @@ class Base_Controller extends MX_Controller
 
         /*Previous Page*/
 
-        $prev_url = isset($_SERVER['HTTP_REFERER']) ? str_replace(base_url(), '', $_SERVER['HTTP_REFERER']) : '';
+        $prev_url = isset($_SERVER['HTTP_REFERER']) ? str_replace(base_url(), '', $_SERVER['HTTP_REFERER'] ?? '') : '';
         if($prev_url == '')
         {
             $prev_url = str_replace(base_url(), '', current_url());

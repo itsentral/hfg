@@ -11,13 +11,13 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
             </div>
             <div>
                 <h5 class="card-title mb-0 fw-bold text-dark">Master Petty Cash</h5>
-                <small class="text-muted">Kelola master data petty cash dan alokasi anggaran COA</small>
+                <small class="text-muted">Manage petty cash master data and COA budget allocation</small>
             </div>
         </div>
         <div>
             <?php if ($ENABLE_ADD) : ?>
-                <button type="button" class="btn btn-primary btn-sm px-3 shadow-sm rounded-2" title="Tambah Master Petty Cash" onclick="data_add()">
-                    <i class="fa fa-plus me-1"></i> Tambah Master Petty Cash
+                <button type="button" class="btn btn-primary btn-sm px-3 shadow-sm rounded-2" title="Add Petty Cash Master" onclick="data_add()">
+                    <i class="fa fa-plus me-1"></i> Add Petty Cash Master
                 </button>
             <?php endif; ?>
         </div>
@@ -29,8 +29,8 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                 <thead class="table-light">
                     <tr>
                         <th width="50" class="text-center">No</th>
-                        <th>Nama Petty Cash</th>
-                        <th>Keterangan</th>
+                        <th>Petty Cash Name</th>
+                        <th>Description</th>
                         <th width="180" class="text-end">Total Budget</th>
                         <th width="120" class="text-center">Aksi</th>
                     </tr>
@@ -61,9 +61,9 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
             <div class="modal-body p-4" id="modal-crud-body">
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Memuat...</span>
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2 text-muted fw-semibold">Memuat data...</p>
+                    <p class="mt-2 text-muted fw-semibold">Loading data...</p>
                 </div>
             </div>
         </div>
@@ -139,9 +139,9 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
     function data_add() {
         $('#modal-icon-wrapper').css('background-color', 'rgba(13, 110, 253, 0.1)');
         $('#modal-crud-icon').attr('class', 'fa fa-plus text-primary');
-        $('#modal-crud-label').text('Tambah Master Petty Cash');
-        $('#modal-crud-sub').text('Tambahkan master petty cash baru dan tentukan alokasi COA');
-        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat formulir...</p></div>');
+        $('#modal-crud-label').text('Add Petty Cash Master');
+        $('#modal-crud-sub').text('Add a new petty cash master and set its COA allocation');
+        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading form...</p></div>');
         $('#modal-crud').modal('show');
 
         $.ajax({
@@ -155,7 +155,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'Gagal menghubungi server',
+                    text: 'Failed to contact the server',
                     timer: 3000
                 });
             }
@@ -170,8 +170,8 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
         $('#modal-icon-wrapper').css('background-color', 'rgba(255, 193, 7, 0.15)');
         $('#modal-crud-icon').attr('class', 'fa fa-pencil text-warning');
         $('#modal-crud-label').text('Edit Master Petty Cash');
-        $('#modal-crud-sub').text('Perbarui informasi master petty cash dan rincian alokasi COA');
-        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat data...</p></div>');
+        $('#modal-crud-sub').text('Update the petty cash master information and COA allocation details');
+        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading data...</p></div>');
         $('#modal-crud').modal('show');
 
         $.ajax({
@@ -185,7 +185,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'Gagal menghubungi server',
+                    text: 'Failed to contact the server',
                     timer: 3000
                 });
             }
@@ -199,9 +199,9 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
     function data_view(id) {
         $('#modal-icon-wrapper').css('background-color', 'rgba(13, 202, 240, 0.15)');
         $('#modal-crud-icon').attr('class', 'fa fa-eye text-info');
-        $('#modal-crud-label').text('Detail Master Petty Cash');
-        $('#modal-crud-sub').text('Informasi rincian master petty cash dan daftar alokasi COA');
-        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Memuat rincian...</p></div>');
+        $('#modal-crud-label').text('Petty Cash Master Detail');
+        $('#modal-crud-sub').text('Petty cash master details and COA allocation list');
+        $('#modal-crud-body').html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><p class="mt-2 text-muted fw-semibold">Loading details...</p></div>');
         $('#modal-crud').modal('show');
 
         $.ajax({
@@ -215,7 +215,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'Gagal menghubungi server',
+                    text: 'Failed to contact the server',
                     timer: 3000
                 });
             }
@@ -228,14 +228,14 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
      */
     function data_delete(id) {
         Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: 'Data yang sudah dihapus tidak dapat dikembalikan!',
+            title: 'Are you sure?',
+            text: 'Data that has been deleted cannot be restored!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fa fa-trash me-1"></i> Ya, Hapus!',
-            cancelButtonText: '<i class="fa fa-times me-1"></i> Batal'
+            confirmButtonText: '<i class="fa fa-trash me-1"></i> Yes, Delete!',
+            cancelButtonText: '<i class="fa fa-times me-1"></i> Cancel'
         }).then(function(result) {
             if (result.isConfirmed) {
                 $.ajax({
@@ -246,7 +246,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                         if (response.status == '1') {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: response.msg,
                                 timer: 2500,
                                 showConfirmButton: false
@@ -256,7 +256,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                         } else {
                             Swal.fire({
                                 icon: 'warning',
-                                title: 'Gagal!',
+                                title: 'Failed!',
                                 text: response.msg,
                                 timer: 3000
                             });
@@ -266,7 +266,7 @@ $ENABLE_ADD = isset($addPermission) ? $addPermission : false;
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: 'Gagal menghubungi server',
+                            text: 'Failed to contact the server',
                             timer: 3000
                         });
                     }

@@ -12,7 +12,7 @@
             </div>
             <div class="row g-2 mt-2">
                 <div class="col-sm-6">
-                    <small class="text-muted d-block">Tanggal PO</small>
+                    <small class="text-muted d-block">PO Date</small>
                     <span class="fw-semibold text-dark"><?= !empty($header->tanggal) ? date('d F Y', strtotime((string) $header->tanggal)) : '-'; ?></span>
                 </div>
                 <div class="col-sm-6">
@@ -37,12 +37,12 @@
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
                 <div class="col-4">
-                    <small class="text-muted d-block">Total Diterima</small>
+                    <small class="text-muted d-block">Total Received</small>
                     <span class="fw-bold text-success"><?= number_format((float) $total_diterima, 2); ?></span>
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
                 <div class="col-4">
-                    <small class="text-muted d-block">Sisa Belum Dikirim</small>
+                    <small class="text-muted d-block">Remaining Undelivered Quantity</small>
                     <span class="fw-bold <?= ($sisa_qty < 0) ? 'text-danger' : 'text-primary'; ?>"><?= number_format((float) $sisa_qty, 2); ?></span>
                     <small class="text-xs text-muted d-block">Kg</small>
                 </div>
@@ -50,7 +50,7 @@
 
             <div class="mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <small class="text-muted fw-semibold">Progres Pengiriman</small>
+                    <small class="text-muted fw-semibold">Delivery Progress</small>
                     <span class="fw-bold small text-primary"><?= $progress; ?>%</span>
                 </div>
                 <div class="progress" style="height: 8px;">
@@ -99,7 +99,7 @@
                     <?php endforeach; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-2">Tidak ada data item material</td>
+                        <td colspan="4" class="text-center text-muted py-2">No item data material</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -127,10 +127,10 @@
                         <th style="width: 140px;">No. PO</th>
                         <th>Item / Spek Material</th>
                         <th style="width: 150px;">No. Incoming</th>
-                        <th class="text-center" style="width: 110px;">Tanggal Terima</th>
-                        <th class="text-end" style="width: 140px;">Qty Diterima (Kg)</th>
-                        <th class="text-end" style="width: 150px;">Kumulatif Diterima (Kg)</th>
-                        <th class="text-end" style="width: 160px;">Sisa Qty Setelah Ini (Kg)</th>
+                        <th class="text-center" style="width: 110px;">Received Date</th>
+                        <th class="text-end" style="width: 140px;">Quantity Received (Kg)</th>
+                        <th class="text-end" style="width: 150px;">Cumulative Quantity Received (Kg)</th>
+                        <th class="text-end" style="width: 160px;">Remaining Quantity After Receipt (Kg)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -178,7 +178,7 @@
                 </tbody>
                 <tfoot class="table-light fw-bold">
                     <tr>
-                        <td colspan="5" class="text-end">Total Akhir Diterima:</td>
+                        <td colspan="5" class="text-end">Total Quantity Received:</td>
                         <td class="text-end text-success"><?= number_format((float) $total_diterima, 2); ?> Kg</td>
                         <td class="text-end text-dark"><?= number_format((float) $total_diterima, 2); ?> Kg</td>
                         <td class="text-end <?= ($sisa_qty < 0) ? 'text-danger' : 'text-primary'; ?>">
@@ -192,8 +192,8 @@
         <div class="alert alert-secondary d-flex align-items-center py-4 my-2">
             <i class="ti ti-info-circle fs-2 text-secondary me-3"></i>
             <div>
-                <h6 class="alert-heading fw-bold mb-1">Belum Ada Riwayat Penerimaan</h6>
-                <p class="mb-0 small text-muted">Belum ada transaksi kedatangan (Incoming) yang tercatat untuk PO ini di sistem. Status PO saat ini adalah <strong>Belum Mulai</strong>.</p>
+                <h6 class="alert-heading fw-bold mb-1">No Receipt History Yet</h6>
+                <p class="mb-0 small text-muted">No incoming deliveries have been recorded for this PO. Its current status is <strong>Not Started</strong>.</p>
             </div>
         </div>
     <?php endif; ?>

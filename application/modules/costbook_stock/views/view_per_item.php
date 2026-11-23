@@ -7,11 +7,11 @@ $nm_gudang   = (!empty($results['nm_gudang'])) ? $results['nm_gudang'] : '-';
     <div class="card-body p-3">
         <div class="row g-2 align-items-center">
             <div class="col-md-6 col-12">
-                <span class="text-muted d-block small">Nama Barang:</span>
+                <span class="text-muted d-block small">Item Name:</span>
                 <span class="fw-bold fs-6 text-dark"><i class="fa fa-box text-primary me-1"></i> <?= strtoupper((string) $nm_material) ?></span>
             </div>
             <div class="col-md-6 col-12 text-md-end">
-                <span class="text-muted d-block small">Gudang Penyimpanan:</span>
+                <span class="text-muted d-block small">Storage Warehouse:</span>
                 <span class="badge bg-secondary bg-opacity-10 text-dark border px-2 py-1 fs-6"><i class="fa fa-warehouse text-primary me-1"></i> <?= strtoupper((string) $nm_gudang) ?></span>
             </div>
         </div>
@@ -22,13 +22,13 @@ $nm_gudang   = (!empty($results['nm_gudang'])) ? $results['nm_gudang'] : '-';
     <table class="table table-bordered table-striped align-middle table-sm" id="table_detail_trans" style="width:100%; font-size: 0.88rem;">
         <thead class="table-primary text-center">
             <tr>
-                <th width="11%">Tanggal</th>
-                <th class="text-start">Jenis Transaksi</th>
-                <th width="11%" class="text-end">Qty Transaksi</th>
+                <th width="11%">Date</th>
+                <th class="text-start">Transaction Type</th>
+                <th width="11%" class="text-end">Transaction Qty</th>
                 <th width="10%" class="text-end">Qty Akhir</th>
-                <th width="12%" class="text-end">Nilai In</th>
+                <th width="12%" class="text-end">In Value</th>
                 <th width="12%" class="text-end">CostBook</th>
-                <th width="13%" class="text-end">Value Transaksi</th>
+                <th width="13%" class="text-end">Transaction Value</th>
                 <th width="13%" class="text-end">Value Neraca</th>
             </tr>
         </thead>

@@ -14,8 +14,8 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
 				<i class="fa fa-clipboard-check fs-5"></i>
 			</div>
 			<div>
-				<h5 class="card-title mb-0 fw-bold text-dark">Persetujuan Management Penggantian Transport</h5>
-				<small class="text-muted">Daftar pengajuan transport yang menunggu persetujuan manajemen</small>
+				<h5 class="card-title mb-0 fw-bold text-dark">Transport Reimbursement Management Approval</h5>
+				<small class="text-muted">List of transport requests awaiting management approval</small>
 			</div>
 		</div>
 	</div>
@@ -25,11 +25,11 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
 				<thead class="table-light">
 					<tr>
 						<th width="40" class="text-center">#</th>
-						<th>No. Dokumen</th>
-						<th>Tanggal</th>
-						<th>Nama Karyawan</th>
-						<th>Departemen</th>
-						<th class="text-end">Total Pengajuan</th>
+						<th>Document No.</th>
+						<th>Date</th>
+						<th>Employee Name</th>
+						<th>Department</th>
+						<th class="text-end">Total Request</th>
 						<th class="text-center">Status</th>
 						<th width="120" class="text-center">Aksi</th>
 					</tr>
@@ -97,12 +97,12 @@ $ENABLE_DELETE  = has_permission('Pengajuan_Transportasi_Approval.Delete');
 	function data_view(id) {
 		if (id != "") {
 			$('#card-list, .box').hide();
-			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Memuat detail data...</div></div>');
+			$('#form-data').show().html('<div class="text-center py-5"><div class="spinner-border text-info" role="status"></div><div class="mt-2 text-muted">Loading data details...</div></div>');
 			$('#form-data').load(url_view + id + '/_mgt', function(response, status, xhr) {
 				if (status == "error") {
 					swal({
 						title: "Error!",
-						text: "Gagal memuat detail data: " + xhr.status + " " + xhr.statusText,
+						text: "Failed to load details data: " + xhr.status + " " + xhr.statusText,
 						type: "error"
 					});
 					list_view();

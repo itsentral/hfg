@@ -9,7 +9,7 @@
 
 <?php
 $is_edit = isset($do) && $do;
-$form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery Order Baru';
+$form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Create New Delivery Order';
 ?>
 
 <div class="card">
@@ -27,15 +27,15 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                     <label class="form-label">Customer <span class="text-danger">*</span></label>
                     <input type="text" name="customer" class="form-control"
                            value="<?= $is_edit ? htmlspecialchars((string) $do->customer) : '' ?>"
-                           placeholder="Nama customer" required>
+                           placeholder="Customer name" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Delivery <span class="text-danger">*</span></label>
+                    <label class="form-label">Delivery Date <span class="text-danger">*</span></label>
                     <input type="date" name="tgl_delivery" class="form-control"
                            value="<?= $is_edit ? $do->tgl_delivery : date('Y-m-d') ?>" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Keterangan</label>
+                    <label class="form-label">Description</label>
                     <input type="text" name="keterangan" class="form-control"
                            value="<?= $is_edit && $do->keterangan ? htmlspecialchars((string) $do->keterangan) : '' ?>"
                            placeholder="Opsional">
@@ -56,10 +56,10 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                             <thead class="table-light">
                                 <tr>
                                     <th width="30%">Produk FG</th>
-                                    <th width="20%">Qty Kirim</th>
-                                    <th width="20%">Berat Referensi (kg)</th>
-                                    <th width="20%">Estimasi Berat (kg)</th>
-                                    <th width="10%" class="text-center">Hapus</th>
+                                    <th width="20%">Delivery Qty</th>
+                                    <th width="20%">Reference Weight (kg)</th>
+                                    <th width="20%">Estimated Weight (kg)</th>
+                                    <th width="10%" class="text-center">Delete</th>
                                 </tr>
                             </thead>
                             <tbody id="item-rows">
@@ -68,7 +68,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                                     <tr>
                                         <td>
                                             <select name="produk_fg[]" class="form-select produk-select" required onchange="onProdukChange(this)">
-                                                <option value="">-- Pilih Produk --</option>
+                                                <option value="">-- Select Product --</option>
                                             </select>
                                             <input type="hidden" name="nm_produk_fg[]" class="nm-produk" value="<?= htmlspecialchars((string) $d->nm_produk_fg) ?>">
                                             <input type="hidden" class="selected-produk" value="<?= $d->produk_fg ?>">
@@ -99,7 +99,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                             </tbody>
                             <tfoot>
                                 <tr class="table-light">
-                                    <td colspan="3" class="text-end fw-bold">Total Estimasi Berat:</td>
+                                    <td colspan="3" class="text-end fw-bold">Total Estimated Weight:</td>
                                     <td><span id="total-estimasi">0.000</span> kg</td>
                                     <td></td>
                                 </tr>
@@ -114,7 +114,7 @@ $form_title = $is_edit ? 'Edit Delivery Order: ' . $do->do_no : 'Buat Delivery O
                     <i class="fa fa-save"></i> Simpan DO
                 </button>
                 <a href="<?= base_url('delivery_fg') ?>" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Batal
+                    <i class="fa fa-arrow-left"></i> Cancel
                 </a>
             </div>
         </form>
@@ -148,7 +148,7 @@ $(document).ready(function () {
 
 function populateSelect(selectEl, selectedVal) {
     var $sel = $(selectEl);
-    $sel.empty().append('<option value="">-- Pilih Produk --</option>');
+    $sel.empty().append('<option value="">-- Select Product --</option>');
     stokFG.forEach(function (s) {
         var opt = $('<option>')
             .val(s.produk_fg)
@@ -177,7 +177,7 @@ function addRow() {
     var row = '<tr>' +
         '<td>' +
             '<select name="produk_fg[]" class="form-select produk-select" required onchange="onProdukChange(this)">' +
-                '<option value="">-- Pilih Produk --</option>' +
+                '<option value="">-- Select Product --</option>' +
             '</select>' +
             '<input type="hidden" name="nm_produk_fg[]" class="nm-produk" value="">' +
             '<input type="hidden" class="selected-produk" value="">' +
@@ -196,7 +196,7 @@ function addRow() {
 
 function removeRow(btn) {
     if ($('#item-rows tr').length <= 1) {
-        Swal.fire({ title: 'Perhatian', text: 'Minimal satu item harus ada', icon: 'warning', confirmButtonText: 'OK' });
+        Swal.fire({ title: 'Attention', text: 'At least one item is required', icon: 'warning', confirmButtonText: 'OK' });
         return;
     }
     $(btn).closest('tr').remove();

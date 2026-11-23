@@ -72,10 +72,10 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                         ?>
                     </select>
                 </div>
-                <label class='label-control col-sm-2'><b>Post Penyusutan </b></label>
+                <label class='label-control col-sm-2'><b>Depreciation Post </b></label>
                 <div class='col-sm-4'>
                     <select name='coa_akum' id='coa_akum' class='form-control input-md' <?= $disabled; ?>>
-                        <option value='0'>Select An Post Penyusutan</option>
+                        <option value='0'>Select a Depreciation Post</option>
                         <?php
                         foreach ($penyusutan as $val => $valx) {
                             $cc = ($valx['no_perkiraan'] == $coa_akum) ? 'selected' : '';
@@ -86,13 +86,13 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                 </div>
             </div>
             <div class='form-group row'>
-                <label class='label-control col-sm-2'><b>Nama Asset</b></label>
+                <label class='label-control col-sm-2'><b>Asset Name</b></label>
                 <div class='col-sm-4'>
                     <?php
-                    echo form_input(array('id' => 'nama_asset', 'name' => 'nama_asset', 'class' => 'form-control input-md', 'placeholder' => 'Nama Assets'), $nama_asset);
+                    echo form_input(array('id' => 'nama_asset', 'name' => 'nama_asset', 'class' => 'form-control input-md', 'placeholder' => 'Asset Name'), $nama_asset);
                     ?>
                 </div>
-                <label class='label-control col-sm-2'><b>Bulan Tahun <span class='text-red'>*</span></b></label>
+                <label class='label-control col-sm-2'><b>Month Year <span class='text-red'>*</span></b></label>
                 <div class='col-sm-2'>
                     <select name='bulan' id='bulan' class='form-control input-md' <?= $disabled2; ?>>
                         <?php
@@ -139,10 +139,10 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                     echo form_input(array('id' => 'qty', 'name' => 'qty', 'class' => 'form-control input-md maskM', 'placeholder' => 'Qty', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => ''), $qty);
                     ?>
                 </div>
-                <label class='label-control col-sm-2'><b>Keterangan</b></label>
+                <label class='label-control col-sm-2'><b>Description</b></label>
                 <div class='col-sm-4'>
                     <?php
-                    echo form_textarea(array('id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control input-md', 'rows' => '2', 'cols' => '75', 'placeholder' => 'Keterangan'), $keterangan);
+                    echo form_textarea(array('id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control input-md', 'rows' => '2', 'cols' => '75', 'placeholder' => 'Description'), $keterangan);
                     ?>
                 </div>
             </div>
@@ -156,13 +156,13 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                 if ($approve == 'view') {
             ?>
                     <div class='form-group row'>
-                        <label class='label-control col-sm-2'><b> Rev Nama Asset</b></label>
+                        <label class='label-control col-sm-2'><b> Rev Asset Name</b></label>
                         <div class='col-sm-4'>
                             <?php
-                            echo form_input(array('id' => 'rev_nama_asset', 'name' => 'rev_nama_asset', 'class' => 'form-control input-md', 'placeholder' => 'Nama Assets'), $rev_nama_asset);
+                            echo form_input(array('id' => 'rev_nama_asset', 'name' => 'rev_nama_asset', 'class' => 'form-control input-md', 'placeholder' => 'Asset Name'), $rev_nama_asset);
                             ?>
                         </div>
-                        <label class='label-control col-sm-2'><b>Rev Bulan Tahun</b></label>
+                        <label class='label-control col-sm-2'><b>Rev Month Year</b></label>
                         <div class='col-sm-2'>
                             <select name='rev_bulan' id='rev_bulan' class='form-control input-md' <?= $disabled2; ?>>
                                 <?php
@@ -209,10 +209,10 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                             echo form_input(array('id' => 'rev_qty', 'name' => 'rev_qty', 'class' => 'form-control input-md maskM', 'placeholder' => 'Qty', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => ''), $rev_qty);
                             ?>
                         </div>
-                        <label class='label-control col-sm-2'><b>Rev Keterangan</b></label>
+                        <label class='label-control col-sm-2'><b>Rev Description</b></label>
                         <div class='col-sm-4'>
                             <?php
-                            echo form_textarea(array('id' => 'rev_keterangan', 'name' => 'rev_keterangan', 'class' => 'form-control input-md', 'rows' => '2', 'cols' => '75', 'placeholder' => 'Keterangan'), $rev_keterangan);
+                            echo form_textarea(array('id' => 'rev_keterangan', 'name' => 'rev_keterangan', 'class' => 'form-control input-md', 'rows' => '2', 'cols' => '75', 'placeholder' => 'Description'), $rev_keterangan);
                             ?>
                         </div>
                     </div>
@@ -220,13 +220,13 @@ $rev_keterangan     = (!empty($header)) ? strtoupper((string) $header[0]->rev_ke
                 }
                 ?>
                 <div class='form-group row'>
-                    <label class='label-control col-sm-2'><b>Sisa Budget PR <span class='text-red'>*</span></b></label>
+                    <label class='label-control col-sm-2'><b>Remaining PR Budget <span class='text-red'>*</span></b></label>
                     <div class='col-sm-4'>
                         <?php
                         echo form_input(array('id' => 'budget_pr', 'name' => 'budget_pr', 'class' => 'form-control input-md maskM', 'placeholder' => 'Budget PR', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => ''), $budget);
                         ?>
                     </div>
-                    <label class='label-control col-sm-2'><b>Sisa Budget PO <span class='text-red'>*</span></b></label>
+                    <label class='label-control col-sm-2'><b>Remaining PO Budget <span class='text-red'>*</span></b></label>
                     <div class='col-sm-4'>
                         <?php
                         echo form_input(array('id' => 'budget_po', 'name' => 'budget_po', 'class' => 'form-control input-md maskM', 'placeholder' => 'Budget PO', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => ''), $budget);

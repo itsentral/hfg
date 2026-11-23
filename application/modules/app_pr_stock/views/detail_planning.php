@@ -8,13 +8,13 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
     <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
             <h5 class="card-title mb-0 fw-bold text-primary">
-                <i class="fa fa-info-circle me-2"></i>Detail PR Stock
+                <i class="fa fa-info-circle me-2"></i>PR Stock Detail
             </h5>
-            <small class="text-muted">Nomor Request / SO: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
+            <small class="text-muted">Request / SO Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $header[0]['so_number']) ?></span></small>
         </div>
         <div>
             <button type="button" class="btn btn-outline-secondary btn-sm px-3 shadow-sm" id="back">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </button>
         </div>
     </div>
@@ -45,13 +45,13 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
-                    <span class="text-muted small fw-semibold text-uppercase">Perbandingan Nilai</span>
+                    <span class="text-muted small fw-semibold text-uppercase">Value Comparison</span>
                     <div class="d-flex justify-content-between align-items-center mt-1">
                         <small class="text-muted">Budget:</small>
                         <span class="fw-bold text-dark">Rp <?= number_format((float) $header[0]['nilai_budget']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Pengajuan:</small>
+                        <small class="text-muted">Request:</small>
                         <span class="fw-bold text-primary">Rp <?= number_format((float) $ttl_pengajuan_pr) ?></span>
                     </div>
                 </div>
@@ -59,13 +59,13 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
         </div>
 
         <!-- Detail Barang Table -->
-        <h6 class="fw-bold text-primary mb-2"><i class="fa fa-list me-1"></i>Rincian Barang</h6>
+        <h6 class="fw-bold text-primary mb-2"><i class="fa fa-list me-1"></i>Item Details</h6>
         <div class="table-responsive mb-4">
             <table class="table table-striped table-bordered table-hover align-middle w-100">
                 <thead class="table-light text-center small">
                     <tr>
                         <th width="4%" class="text-center">#</th>
-                        <th>Barang</th>
+                        <th>Item</th>
                         <th width="11%" class="text-end">Kebutuhan / Bln</th>
                         <th width="10%" class="text-end">Max</th>
                         <th width="10%" class="text-end">Stock</th>
@@ -109,7 +109,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="7" class="text-end fw-bold">Total Price Pengajuan:</th>
+                        <th colspan="7" class="text-end fw-bold">Total Request Price:</th>
                         <th class="text-end fw-bold text-primary fs-6">Rp <?= number_format((float) $grand_total_price) ?></th>
                     </tr>
                 </tfoot>
@@ -118,7 +118,7 @@ $tgl_dibutuhkan = (!empty($header[0]['tgl_dibutuhkan'])) ? date('d F Y', strtoti
 
         <div class="d-flex justify-content-end">
             <button type="button" class="btn btn-secondary px-4 shadow-sm" id="back_bottom">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </button>
         </div>
     </div>

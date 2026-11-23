@@ -185,7 +185,7 @@
       <div class="col-md-6">
         <label class="form-label d-flex justify-content-between align-items-center mb-1">
           <span>Order <span class="text-danger">*</span></span>
-          <span id="order_suggest_badge" class="badge bg-light-primary text-primary" style="cursor: pointer; display: none;" title="Klik untuk menerapkan angka rekomendasi">
+          <span id="order_suggest_badge" class="badge bg-light-primary text-primary" style="cursor: pointer; display: none;" title="Click to apply the recommended number">
             <i class="ti ti-sparkles me-1"></i> Rekomendasi: <b id="order_suggest_val">1</b>
           </span>
         </label>
@@ -201,7 +201,7 @@
             value="<?= set_value('order', isset($data->order) ? $data->order : '') ?>"
             placeholder="order menu"
             required />
-          <button type="button" class="btn btn-outline-primary" id="btn_apply_recommendation" style="display: none;" title="Terapkan nomor rekomendasi">
+          <button type="button" class="btn btn-outline-primary" id="btn_apply_recommendation" style="display: none;" title="Apply recommended number">
             <i class="ti ti-check me-1"></i> Gunakan
           </button>
         </div>
@@ -267,7 +267,7 @@
       parentId = 0;
     }
 
-    $('#order_info_container').html('<div class="text-muted small py-1"><i class="fa fa-spinner fa-spin me-1 text-primary"></i> Memuat rekomendasi urutan...</div>');
+    $('#order_info_container').html('<div class="text-muted small py-1"><i class="fa fa-spinner fa-spin me-1 text-primary"></i> Loading sequence recommendation...</div>');
 
     $.ajax({
       url: siteurl + "menus/get_order_recommendation",
@@ -346,7 +346,7 @@
       $('#order').addClass('is-invalid');
       $('#submit').prop('disabled', true).addClass('disabled');
       var warnHtml = '<div id="order_collision_warn" class="alert alert-danger py-1 px-2 mt-2 mb-0 small rounded">' +
-        '<i class="ti ti-circle-x me-1"></i> <b>Tidak dapat disimpan:</b> Nomor urut <b>' + inputVal + '</b> sudah digunakan oleh menu <b>\'' + usedBy.title + '\'</b>. Silakan gunakan nomor urut yang berbeda.' +
+        '<i class="ti ti-circle-x me-1"></i> <b>Cannot be saved:</b> Sequence number <b>' + inputVal + '</b> is already used by menu <b>\'' + usedBy.title + '\'</b>. Please use a different sequence number.' +
         '</div>';
       $('#order_info_container').append(warnHtml);
     } else {
@@ -361,13 +361,13 @@
     var html = '';
     if (data.total_siblings === 0) {
       html = '<div class="alert alert-light-primary border-primary border-opacity-25 py-2 px-3 mb-0 small rounded">' +
-        '<i class="ti ti-info-circle me-1 text-primary"></i> Belum ada menu di bawah parent ini. Rekomendasi urutan pertama: <b>1</b>.' +
+        '<i class="ti ti-info-circle me-1 text-primary"></i> There are no menus under this parent yet. Recommended first sequence: <b>1</b>.' +
         '</div>';
     } else {
       html = '<div class="p-2 border rounded bg-light small">';
       html += '<div class="d-flex justify-content-between align-items-center">';
-      html += '<span><i class="ti ti-list-numbers me-1 text-primary"></i> <b>' + data.total_siblings + '</b> menu ada di parent ini</span>';
-      html += '<a href="javascript:void(0)" id="btn_toggle_siblings" class="text-primary text-decoration-none fw-semibold"><i class="ti ti-list-details me-1"></i>Lihat Urutan</a>';
+      html += '<span><i class="ti ti-list-numbers me-1 text-primary"></i> <b>' + data.total_siblings + '</b> menus under this parent</span>';
+      html += '<a href="javascript:void(0)" id="btn_toggle_siblings" class="text-primary text-decoration-none fw-semibold"><i class="ti ti-list-details me-1"></i>View Sequence</a>';
       html += '</div>';
 
       // Daftar siblings
@@ -376,7 +376,7 @@
       for (var i = 0; i < data.siblings.length; i++) {
         var s = data.siblings[i];
         var badgeClass = s.is_current ? 'bg-primary text-white shadow-sm' : 'bg-white border text-dark';
-        var currentBadge = s.is_current ? ' <span class="badge bg-light text-primary ms-1">Menu Ini</span>' : '';
+        var currentBadge = s.is_current ? ' <span class="badge bg-light text-primary ms-1">This Menu</span>' : '';
         html += '<span class="badge ' + badgeClass + ' py-1 px-2" title="' + s.title + '">' +
           '#' + s.order + ' ' + s.title + currentBadge +
           '</span>';
@@ -399,7 +399,7 @@
       var $box = $('#siblings_list_box');
       if ($box.is(':visible')) {
         $box.slideUp(150);
-        $(this).html('<i class="ti ti-list-details me-1"></i>Lihat Urutan');
+        $(this).html('<i class="ti ti-list-details me-1"></i>View Sequence');
       } else {
         $box.slideDown(150);
         $(this).html('<i class="ti ti-chevron-up me-1"></i>Sembunyikan');
@@ -452,8 +452,8 @@
     // Validasi tabrakan nomor urut di frontend
     if (isOrderCollision) {
       swal({
-        title: "Nomor Urut Sama!",
-        text: "Nomor urut " + $('#order').val() + " sudah digunakan oleh menu '" + collisionMenuTitle + "'. Silakan gunakan nomor urut yang berbeda sebelum menyimpan.",
+        title: "Duplicate Sequence Number!",
+        text: "Sequence number " + $('#order').val() + " is already used by menu '" + collisionMenuTitle + "'. Please use a different sequence number before saving.",
         type: "error"
       });
       $('#order').focus();
@@ -470,8 +470,8 @@
       success: function(msg) {
         if (msg['save'] == '1') {
           swal({
-            title: "Sukses!",
-            text: "Data Berhasil Di Simpan",
+            title: "Success!",
+            text: "Data saved successfully",
             type: "success",
             timer: 1500,
             showConfirmButton: false
@@ -480,16 +480,16 @@
           window.location.reload();
         } else {
           swal({
-            title: "Gagal Menyimpan!",
-            text: msg['msg'] || "Data Gagal Di Simpan",
+            title: "Failed to Save!",
+            text: msg['msg'] || "Failed to save data",
             type: "error"
           });
         }
       },
       error: function() {
         swal({
-          title: "Gagal!",
-          text: "Ajax Data Gagal Di Proses",
+          title: "Failed!",
+          text: "Ajax request failed to process.",
           type: "error",
           timer: 1500,
           showConfirmButton: false
@@ -499,8 +499,8 @@
   });
       error: function() {
         swal({
-          title: "Gagal!",
-          text: "Ajax Data Gagal Di Proses",
+          title: "Failed!",
+          text: "Ajax request failed to process.",
           type: "error",
           timer: 1500,
           showConfirmButton: false

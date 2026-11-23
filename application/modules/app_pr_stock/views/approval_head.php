@@ -56,10 +56,10 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
             <thead>
                 <tr>
                     <th class='text-center'>#</th>
-                    <th>Asal Permintaan</th>
+                    <th>Request Origin</th>
                     <th>No. Req/No SO</th>
                     <th class='text-center'>No. PR</th>
-                    <th>Untuk Kebutuhan</th>
+                    <th>Purpose</th>
                     <th>Request By</th>
                     <th>Request Date</th>
                     <th>Status</th>
@@ -116,13 +116,13 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
             var so_number = $(this).data('so_number');
             // alert(id);
             swal({
-                    title: "Anda Yakin?",
+                    title: "Are you sure?",
                     text: "Process Booking Material & PR !",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonClass: "btn-info",
                     confirmButtonText: "Ya!",
-                    cancelButtonText: "Batal",
+                    cancelButtonText: "Cancel",
                     closeOnConfirm: false
                 },
                 function(isConfirm) {
@@ -139,7 +139,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
                         success: function(result) {
                             if (result.status == '1') {
                                 swal({
-                                        title: "Sukses",
+                                        title: "Success",
                                         text: result.pesan,
                                         type: "success"
                                     },
@@ -158,7 +158,7 @@ $ENABLE_DELETE  = has_permission('Approval_PR_Stok_Head.Delete');
                         error: function() {
                             swal({
                                 title: "Error",
-                                text: "Data error. Gagal request Ajax",
+                                text: "Data error. Ajax request failed.",
                                 type: "error"
                             })
                         }

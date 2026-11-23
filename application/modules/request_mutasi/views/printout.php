@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Request Mutasi <?= isset($data->kd_mutasi) ? htmlspecialchars((string) $data->kd_mutasi) : '' ?></title>
+    <title>Mutation Request <?= isset($data->kd_mutasi) ? htmlspecialchars((string) $data->kd_mutasi) : '' ?></title>
     <style>
         @page {
             size: A4;
@@ -231,9 +231,9 @@
 
     <?php if (!isset($data) || empty($data)): ?>
         <div class="no-print" style="padding:20px; color:#721c24; background-color:#f8d7da; border:1px solid #f5c6cb; border-radius:4px; margin-bottom:15px;">
-            <strong>Error:</strong> Data request mutasi tidak ditemukan.
+            <strong>Error:</strong> Mutation request data not found.
         </div>
-        <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Kembali</button>
+        <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Back</button>
 </body>
 
 </html>
@@ -242,8 +242,8 @@
 
 <!-- Tombol Print -->
 <div class="no-print" style="margin-bottom:12px;">
-    <button class="btn-print" onclick="window.print()">&#128438; Cetak</button>
-    <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Kembali</button>
+    <button class="btn-print" onclick="window.print()">&#128438; Print</button>
+    <button class="btn-print" style="background:#555;" onclick="history.back()">&#8592; Back</button>
 </div>
 
 <!-- ===== HEADER ===== -->
@@ -263,7 +263,7 @@
         <?php endif; ?>
     </div>
     <div class="header-title">
-        <h2>Request Mutasi Bank</h2>
+        <h2>Bank Mutation Request</h2>
         <div class="doc-no">No: <strong><?= htmlspecialchars($data->kd_mutasi ?? '') ?></strong></div>
     </div>
 </div>
@@ -304,22 +304,22 @@ if (!empty($data->nama_mata_uang)) {
         </td>
     </tr>
     <tr>
-        <td>Tanggal Request</td>
+        <td>Request Date</td>
         <td>:</td>
         <td><?= $tgl_req ?></td>
         <td></td>
-        <td style="font-weight:bold;">Mata Uang</td>
+        <td style="font-weight:bold;">Currency</td>
         <td>:</td>
         <td><?= htmlspecialchars((string) $data->mata_uang) ?></td>
     </tr>
     <tr>
-        <td>Keterangan</td>
+        <td>Description</td>
         <td>:</td>
         <td colspan="5"><?= htmlspecialchars($data->keterangan ?? '-') ?></td>
     </tr>
     <?php if ($st == '2' && !empty($data->alasan)): ?>
         <tr>
-            <td>Alasan Ditolak</td>
+            <td>Rejection Reason</td>
             <td>:</td>
             <td colspan="5" style="color:#c0392b;"><?= htmlspecialchars((string) $data->alasan) ?></td>
         </tr>
@@ -331,10 +331,10 @@ if (!empty($data->nama_mata_uang)) {
     <thead>
         <tr>
             <th class="text-center" width="5%">No</th>
-            <th width="35%">Keterangan</th>
+            <th width="35%">Description</th>
             <th width="25%">Bank Asal</th>
-            <th width="25%">Bank Tujuan</th>
-            <th class="text-right" width="10%">Nilai Request</th>
+            <th width="25%">Destination Bank</th>
+            <th class="text-right" width="10%">Request Value</th>
         </tr>
     </thead>
     <tbody>
@@ -381,7 +381,7 @@ if (!empty($data->terbilang)) {
 <?php if ($st == '1' && !empty($data->approved_by)): ?>
     <table class="no-border info-table" style="margin-top:8px;">
         <tr>
-            <td>Disetujui Oleh</td>
+            <td>Approved By</td>
             <td>:</td>
             <td><?= htmlspecialchars((string) $data->approved_by) ?> &mdash; <?= !empty($data->approved_on) ? date('d/m/Y H:i', strtotime((string) $data->approved_on)) : '-' ?></td>
         </tr>
@@ -391,9 +391,9 @@ if (!empty($data->terbilang)) {
 <!-- ===== TANDA TANGAN ===== -->
 <table class="sign-table" style="margin-top:35px; width:100%;">
     <tr>
-        <td class="text-center">Dibuat Oleh</td>
-        <td class="text-center">Diperiksa Oleh</td>
-        <td class="text-center">Disetujui Oleh</td>
+        <td class="text-center">Created By</td>
+        <td class="text-center">Checked By</td>
+        <td class="text-center">Approved By</td>
     </tr>
     <tr>
         <td class="sign-line"></td>

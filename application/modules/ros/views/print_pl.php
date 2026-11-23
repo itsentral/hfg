@@ -145,7 +145,7 @@
     }
 
     $no_ros        = isset($header_ros['id'])            ? $header_ros['id']            : '-';
-    $no_po         = isset($header_ros['no_po'])         ? str_replace(',', ', ', $header_ros['no_po']) : '-';
+    $no_po         = isset($header_ros['no_po'])         ? str_replace(',', ', ', $header_ros['no_po'] ?? '') : '-';
     $no_surat      = isset($header_ros['no_surat'])      ? $header_ros['no_surat']      : '-';
     $nm_supplier   = isset($header_ros['nm_supplier'])   ? $header_ros['nm_supplier']   : '-';
     $awb_number    = isset($header_ros['awb_bl_number']) && $header_ros['awb_bl_number'] !== '' ? $header_ros['awb_bl_number'] : '-';
@@ -240,13 +240,13 @@
         <thead>
             <tr>
                 <th style="width: 20px;">No.</th>
-                <th style="width: 200px;">Nama Barang</th>
-                <th style="width: 30px;">Satuan</th>
+                <th style="width: 200px;">Item Name</th>
+                <th style="width: 30px;">Unit</th>
                 <th style="width: 80px;">Length</th>
                 <th style="width: 100px;">No. Coil</th>
-                <th style="width: 100px;">Kode Internal</th>
-                <th style="width: 100px;">Berat Kotor (kg)</th>
-                <th style="width: 100px;">Berat Bersih (kg)</th>
+                <th style="width: 100px;">Internal Code</th>
+                <th style="width: 100px;">Gross Weight (kg)</th>
+                <th style="width: 100px;">Net Weight (kg)</th>
             </tr>
         </thead>
         <tbody>
@@ -285,7 +285,7 @@
 
     <!-- Footer Cetak -->
     <div style="margin-top: 40px; display: flex; justify-content: flex-end; font-size: 12px; color: #888;">
-        <span>Dicetak pada: <?= date('d-M-Y H:i') ?></span>
+        <span>Printed on: <?= date('d-M-Y H:i') ?></span>
     </div>
 
     <script>

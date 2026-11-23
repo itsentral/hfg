@@ -23,8 +23,8 @@ $this->load->view('include/side_menu');
 					<th class="text-center">Supplier</th>
 					<th class="text-center">No PO</th>
 					<th class="text-center">No Invoice</th>
-					<th class="text-center">Nilai</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Value</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">Request payment</th>
 					<th class="text-center">Request By</th>
 					<th class="text-center">Approve By</th>
@@ -83,8 +83,8 @@ $this->load->view('include/side_menu');
 					<th class="text-center">Supplier</th>
 					<th class="text-center">No PO</th>
 					<th class="text-center">No Invoice</th>
-					<th class="text-center">Nilai</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Value</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">Request payment</th>
 					<th class="text-center">Request By</th>
 					<th class="text-center">Approve By</th>
@@ -153,12 +153,12 @@ $(".divide").divide();
   	});
 	function data_delete(id,tipe){
 		swal({
-		  title: "Anda Yakin?",
-		  text: "Data Akan Dihapus!",
+		  title: "Are you sure?",
+		  text: "The Data Will Be Deleted!",
 		  type: "info",
 		  showCancelButton: true,
-		  confirmButtonText: "Ya, setuju!",
-		  cancelButtonText: "Tidak!",
+		  confirmButtonText: "Yes, approve!",
+		  cancelButtonText: "No!",
 		  closeOnConfirm: false,
 		  closeOnCancel: true
 		},
@@ -171,8 +171,8 @@ $(".divide").divide();
 				success: function(msg){
 					if(msg['save']=='1'){
 						swal({
-							title: "Sukses!",
-							text: "Data Berhasil Di hapus",
+							title: "Success!",
+							text: "Data Deleted Successfully",
 							type: "success",
 							timer: 1500,
 							showConfirmButton: false
@@ -180,8 +180,8 @@ $(".divide").divide();
 						window.location.reload();
 					} else {
 						swal({
-							title: "Gagal!",
-							text: "Data Gagal Di hapus",
+							title: "Failed!",
+							text: "Data Failed to Delete",
 							type: "error",
 							timer: 1500,
 							showConfirmButton: false
@@ -191,8 +191,8 @@ $(".divide").divide();
 				},
 				error: function(msg){
 					swal({
-						title: "Gagal!",
-						text: "Ajax Data Gagal Di Proses",
+						title: "Failed!",
+						text: "Ajax request failed to process.",
 						type: "error",
 						timer: 1500,
 						showConfirmButton: false

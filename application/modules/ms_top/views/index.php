@@ -22,8 +22,8 @@ $ENABLE_DELETE  = has_permission('TOP.Delete');
 				<thead class="table-light">
 					<tr>
 						<th style="width:60px;" class="text-center">#</th>
-						<th class="text-center">Nama</th>
-						<th class="text-center">Nilai</th>
+						<th class="text-center">Name</th>
+						<th class="text-center">Value</th>
 						<th style="width:160px;" class="text-end">Option</th>
 					</tr>
 				</thead>
@@ -121,7 +121,7 @@ $ENABLE_DELETE  = has_permission('TOP.Delete');
 		if (!data1) {
 			swal({
 				title: "Error Message!",
-				text: "Nilai Empty",
+				text: "Value is empty",
 				type: "warning"
 			});
 			return false;

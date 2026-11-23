@@ -178,16 +178,16 @@ if(!empty($ArrJurnal)) {
 			// echo form_input(array('type'=>'text','id'=>'tgl_jurnal','name'=>'tgl_jurnal','class'=>'form-control input-sm', 'style'=>'width:150px;','autocomplete'=>'off','placeholder'=>'Tanggal', 'readonly'=>'readonly'));											
 			// echo "<br>";
 		?>
-		<h4><b>Next Depresiasi Jurnal Bulan <?=date('F',strtotime('2000-'.$BULAN.'-01'));?> <?=$TAHUN;?> </b></h4>
+		<h4><b>Next Depreciation Journal Month <?=date('F',strtotime('2000-'.$BULAN.'-01'));?> <?=$TAHUN;?> </b></h4>
 		<table id="example1" class="table table-bordered table-striped" width='100%'>
 			<thead>
 				<tr class='bg-blue' >
-				<th class="text-center">Cabang</th>
-					<th class="text-center">Kategori</th>
-					<th class="text-center">Tanggal</th>
+				<th class="text-center">Branch</th>
+					<th class="text-center">Category</th>
+					<th class="text-center">Date</th>
 					<th class="text-center">Tipe</th>
 					<th class="text-center">No Perkiraan</th>
-					<th class="text-center">Keterangan</th>
+					<th class="text-center">Description</th>
 					<th class="text-center">Debet</th>
 					<th class="text-center">Kredit</th>
 					
@@ -226,7 +226,7 @@ if(!empty($ArrJurnal)) {
 						echo "</tr>";
 					}
 					echo "<tr style='background-color:#36cdfb'>";
-						echo "<td colspan='6'><b>TOTAL PENYUSUTAN</b></td>";
+						echo "<td colspan='6'><b>TOTAL DEPRECIATION</b></td>";
 						echo "<td align='right'><b>".number_format((float) $totD)."</b></td>";
 						echo "<td align='right'><b>".number_format((float) $totK)."</b></td>";
 					echo "</tr>";

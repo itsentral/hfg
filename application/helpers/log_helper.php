@@ -104,8 +104,8 @@ if (!function_exists('calculate_log_diff')) {
                 }
 
                 // Normalisasi numerik (hilangkan koma ribuan)
-                $cleanOld = str_replace(',', '', $oldStr);
-                $cleanNew = str_replace(',', '', $newStr);
+                $cleanOld = str_replace(',', '', $oldStr ?? '');
+                $cleanNew = str_replace(',', '', $newStr ?? '');
 
                 // 1. Keduanya berupa nilai numerik
                 if (is_numeric($cleanOld) && is_numeric($cleanNew)) {
@@ -224,14 +224,14 @@ if (!function_exists('write_log')) {
                     }
                 }
 
-                if (preg_match('/(?:PO|No PO|no_po)[:\s]+([A-Za-z0-9\-\/]+)/i', $message, $matches)) {
+                if (preg_match('/(?:PO|No PO|no_po)[:\s]+([A-Za-z0-9\-\/]+)/i', $message ?? '', $matches)) {
                     $poCandidates[] = trim((string) $matches[1]);
                 }
 
                 foreach (array_unique($poCandidates ?? []) as $candidatePo) {
                     $noSurat = get_po_no_surat($candidatePo);
                     if (!empty($noSurat) && $noSurat !== $candidatePo) {
-                        $message = str_replace($candidatePo, $noSurat, $message);
+                        $message = str_replace($candidatePo, $noSurat, $message ?? '');
                     }
                 }
             }

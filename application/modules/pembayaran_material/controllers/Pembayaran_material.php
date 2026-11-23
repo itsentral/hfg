@@ -1040,13 +1040,13 @@ class Pembayaran_material extends Admin_Controller
 				}
 			}
 			if (empty($id_req_arr)) {
-				throw new Exception('Data request payment tidak ditemukan.');
+				throw new Exception('Request payment data not found.');
 			}
 
 			// Ambil data request_payment untuk referensi
 			$req_payment_rows = $this->db->where_in('id', $id_req_arr)->get('request_payment')->result();
 			if (empty($req_payment_rows)) {
-				throw new Exception('Data request payment tidak valid.');
+				throw new Exception('Invalid request payment data.');
 			}
 			$first_req = $req_payment_rows[0];
 			$tipe_payment = $first_req->tipe; // invoice_dp, invoice_import, invoice_local
@@ -1251,7 +1251,7 @@ class Pembayaran_material extends Admin_Controller
 			$row_lengkap = $this->db->get_where('payment_approve', ['no_doc' => $no_doc_payment])->row_array();
 
 			if (empty($row_lengkap)) {
-				throw new Exception('Gagal mengambil data payment_approve yang baru disimpan (no_doc: ' . $no_doc_payment . ').');
+				throw new Exception('Failed to fetch the newly saved payment_approve data (no_doc: ' . $no_doc_payment . ').');
 			}
 
 			$this->load->model('gl_interface/Gl_interface_model');
@@ -1289,7 +1289,7 @@ class Pembayaran_material extends Admin_Controller
 			$id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $row_lengkap);
 
 			if ($id_gl === false) {
-				throw new Exception('Gagal generate jurnal: template ' . $kode_jurnal . ' tidak ditemukan/kosong');
+				throw new Exception('Failed to generate journal: template ' . $kode_jurnal . ' not found/empty');
 			}
 
 			$this->db->trans_commit();
@@ -1298,7 +1298,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 1,
-				'pesan'  => 'Payment berhasil disimpan.'
+				'pesan'  => 'Payment saved successfully.'
 			]);
 			exit;
 		} catch (Exception $e) {
@@ -1308,7 +1308,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 0,
-				'pesan'  => 'Gagal: ' . $e->getMessage()
+				'pesan'  => 'Failed: ' . $e->getMessage()
 			]);
 			exit;
 		}
@@ -1348,12 +1348,12 @@ class Pembayaran_material extends Admin_Controller
 				}
 			}
 			if (empty($id_req_arr)) {
-				throw new Exception('Data request payment tidak ditemukan.');
+				throw new Exception('Request payment data not found.');
 			}
 
 			$req_payment_rows = $this->db->where_in('id', $id_req_arr)->get('request_payment')->result();
 			if (empty($req_payment_rows)) {
-				throw new Exception('Data request payment tidak valid.');
+				throw new Exception('Invalid request payment data.');
 			}
 			$first_req    = $req_payment_rows[0];
 			$tipe_payment = $first_req->tipe; // ros_bm / ros_ls / ros_insurance / ros_other_cost
@@ -1528,7 +1528,7 @@ class Pembayaran_material extends Admin_Controller
 			// ── Generate Jurnal via ms_jurnal_mapping ──
 			$row_lengkap = $this->db->get_where('payment_approve', ['no_doc' => $no_doc_payment])->row_array();
 			if (empty($row_lengkap)) {
-				throw new Exception('Gagal mengambil data payment_approve yang baru disimpan (no_doc: ' . $no_doc_payment . ').');
+				throw new Exception('Failed to fetch the newly saved payment_approve data (no_doc: ' . $no_doc_payment . ').');
 			}
 
 			$this->load->model('gl_interface/Gl_interface_model');
@@ -1543,13 +1543,13 @@ class Pembayaran_material extends Admin_Controller
 
 			$mapping = $this->db->get_where('ms_jurnal_mapping', ['menu' => 'Pembayaran Material', 'action' => $action_jurnal])->row();
 			if (!$mapping) {
-				throw new Exception('Template jurnal untuk ' . $action_jurnal . ' belum dikonfigurasi di Master Jurnal Mapping.');
+				throw new Exception('Journal template for ' . $action_jurnal . ' has not been configured in Master Jurnal Mapping.');
 			}
 			$kode_jurnal = $mapping->kode_master_jurnal;
 			$id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $row_lengkap);
 
 			if ($id_gl === false) {
-				throw new Exception('Gagal generate jurnal: template ' . $kode_jurnal . ' tidak ditemukan/kosong.');
+				throw new Exception('Failed to generate journal: template ' . $kode_jurnal . ' not found/empty.');
 			}
 
 			$this->db->trans_commit();
@@ -1558,7 +1558,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 1,
-				'pesan'  => 'Payment Document Import berhasil disimpan.'
+				'pesan'  => 'Payment Document Import saved successfully.'
 			]);
 			exit;
 		} catch (Exception $e) {
@@ -1568,7 +1568,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 0,
-				'pesan'  => 'Gagal: ' . $e->getMessage()
+				'pesan'  => 'Failed: ' . $e->getMessage()
 			]);
 			exit;
 		}
@@ -1608,13 +1608,13 @@ class Pembayaran_material extends Admin_Controller
 				}
 			}
 			if (empty($id_req_arr)) {
-				throw new Exception('Data request payment tidak ditemukan.');
+				throw new Exception('Request payment data not found.');
 			}
 
 			// Ambil data request_payment untuk referensi
 			$req_payment_rows = $this->db->where_in('id', $id_req_arr)->get('request_payment')->result();
 			if (empty($req_payment_rows)) {
-				throw new Exception('Data request payment tidak valid.');
+				throw new Exception('Invalid request payment data.');
 			}
 			$first_req = $req_payment_rows[0];
 			$tipe_payment = $first_req->tipe; // invoice_local
@@ -1806,7 +1806,7 @@ class Pembayaran_material extends Admin_Controller
 			$row_lengkap = $this->db->get_where('payment_approve', ['no_doc' => $no_doc_payment])->row_array();
 
 			if (empty($row_lengkap)) {
-				throw new Exception('Gagal mengambil data payment_approve yang baru disimpan (no_doc: ' . $no_doc_payment . ').');
+				throw new Exception('Failed to fetch the newly saved payment_approve data (no_doc: ' . $no_doc_payment . ').');
 			}
 
 			$this->load->model('gl_interface/Gl_interface_model');
@@ -1817,7 +1817,7 @@ class Pembayaran_material extends Admin_Controller
 			$id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $row_lengkap);
 
 			if ($id_gl === false) {
-				throw new Exception('Gagal generate jurnal: template ' . $kode_jurnal . ' tidak ditemukan/kosong');
+				throw new Exception('Failed to generate journal: template ' . $kode_jurnal . ' not found/empty');
 			}
 
 			$this->db->trans_commit();
@@ -1826,7 +1826,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 1,
-				'pesan'  => 'Payment berhasil disimpan.'
+				'pesan'  => 'Payment saved successfully.'
 			]);
 			exit;
 		} catch (Exception $e) {
@@ -1836,7 +1836,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 0,
-				'pesan'  => 'Gagal: ' . $e->getMessage()
+				'pesan'  => 'Failed: ' . $e->getMessage()
 			]);
 			exit;
 		}
@@ -2145,13 +2145,13 @@ class Pembayaran_material extends Admin_Controller
 				}
 			}
 			if (empty($id_req_arr)) {
-				throw new Exception('Data request payment tidak ditemukan.');
+				throw new Exception('Request payment data not found.');
 			}
 
 			// Ambil data request_payment untuk referensi
 			$req_payment_rows = $this->db->where_in('id', $id_req_arr)->get('request_payment')->result();
 			if (empty($req_payment_rows)) {
-				throw new Exception('Data request payment tidak valid.');
+				throw new Exception('Invalid request payment data.');
 			}
 			$first_req = $req_payment_rows[0];
 
@@ -2344,7 +2344,7 @@ class Pembayaran_material extends Admin_Controller
 			$kode_jurnal = $mapping ? $mapping->kode_master_jurnal : 'BUK002'; // fallback
 			$id_gl = $this->Gl_interface_model->generate_jurnal_dari_template($kode_jurnal, $row_lengkap);
 			if ($id_gl === false) {
-				throw new Exception('Gagal generate jurnal: template BUK002 tidak ditemukan/kosong');
+				throw new Exception('Failed to generate journal: template BUK002 not found/empty');
 			}
 
 			$this->db->trans_commit();
@@ -2352,7 +2352,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 1,
-				'pesan'  => 'Payment Import berhasil disimpan.'
+				'pesan'  => 'Payment Import saved successfully.'
 			]);
 			exit;
 		} catch (Exception $e) {
@@ -2360,7 +2360,7 @@ class Pembayaran_material extends Admin_Controller
 			header('Content-Type: application/json');
 			echo json_encode([
 				'status' => 0,
-				'pesan'  => 'Gagal: ' . $e->getMessage()
+				'pesan'  => 'Failed: ' . $e->getMessage()
 			]);
 			exit;
 		}
@@ -2974,7 +2974,7 @@ class Pembayaran_material extends Admin_Controller
 
 			$insert_payment_paid = $this->db->insert('tr_payment_paid', [
 				'id' => $id_payment_paid,
-				'bank_charge' => str_replace(',', '', $post['bank_charge']),
+				'bank_charge' => str_replace(',', '', $post['bank_charge'] ?? ''),
 				'created_by' => $this->auth->user_id(),
 				'created_on' => date('Y-m-d H:i:s')
 			]);
@@ -2991,14 +2991,14 @@ class Pembayaran_material extends Admin_Controller
 				'coa_bank' => $post['bank'],
 				'nm_coa_bank' => $nm_coa_bank,
 				'mata_uang' => $post['mata_uang'],
-				'payment_bank' => str_replace(',', '', $post['payment_bank']),
+				'payment_bank' => str_replace(',', '', $post['payment_bank'] ?? ''),
 				'total_payment' => $post['total_payment'],
-				'selisih' => ($post['total_payment'] - (float) str_replace(',', '', $post['payment_bank'])),
+				'selisih' => ($post['total_payment'] - (float) str_replace(',', '', $post['payment_bank'] ?? '')),
 				'status' => 2,
 				'link_doc' => $filenames,
 				'id_supplier' => $post['supplier_input'],
 				'nm_supplier' => $post['nm_supplier_input'],
-				'kurs_payment' => str_replace(',', '', $post['kurs_payment'])
+				'kurs_payment' => str_replace(',', '', $post['kurs_payment'] ?? '')
 			]);
 			if (!$update_payment1) {
 				throw new Exception($this->db->error($update_payment1));
@@ -3010,8 +3010,8 @@ class Pembayaran_material extends Admin_Controller
 
 					$this->db->where('id', $detail['id_payment']);
 					$update_payment_detail = $this->db->update('payment_approve', [
-						'total_ppn' => str_replace(',', '', $detail['nilai_ppn']),
-						'total_pph' => str_replace(',', '', $detail['nilai_pph']),
+						'total_ppn' => str_replace(',', '', $detail['nilai_ppn'] ?? ''),
+						'total_pph' => str_replace(',', '', $detail['nilai_pph'] ?? ''),
 						'tipe_pph' => $tipe_pph
 					]);
 
@@ -3062,7 +3062,7 @@ class Pembayaran_material extends Admin_Controller
 			// if (!empty($arr_jurnal)) {
 			$insert_jurnal = $this->db->insert_batch('tr_jurnal', $arr_jurnal);
 			if (!$insert_jurnal) {
-				throw new Exception('Data jurnal gagal dibuat !');
+				throw new Exception('Journal data failed to create!');
 			}
 
 			$no_payment = $post['id_payment'];
@@ -3071,20 +3071,20 @@ class Pembayaran_material extends Admin_Controller
 				$jenis_jurnal = 'BUK001';
 				$kurs         = 1;
 				$selisih      = 0;
-				$hutang       = ((float) str_replace(',', '', $post['total_payment']) * $kurs) + ((float) str_replace(',', '', $detail['nilai_ppn']) * $kurs);
+				$hutang       = ((float) str_replace(',', '', $post['total_payment'] ?? '') * $kurs) + ((float) str_replace(',', '', $detail['nilai_ppn'] ?? '') * $kurs);
 			} else {
 				$jenis_jurnal = 'BUK004';
-				$kurs         = str_replace(',', '', $post['kurs_payment']);
+				$kurs         = str_replace(',', '', $post['kurs_payment'] ?? '');
 				$selisih      = $kurs - $kurs_invoice;
-				$hutang       = ((float) str_replace(',', '', $post['total_payment']) * $kurs_invoice) + ((float) str_replace(',', '', $detail['nilai_ppn']) * $kurs_invoice);
+				$hutang       = ((float) str_replace(',', '', $post['total_payment'] ?? '') * $kurs_invoice) + ((float) str_replace(',', '', $detail['nilai_ppn'] ?? '') * $kurs_invoice);
 			}
 
 			$bank_coa     = $post['bank'];
 			$no_request   = $post['id_payment'];
 			$keterangan   = $post['keterangan_pembayaran'];
-			$bankcharge   = (str_replace(',', '', $post['bank_charge'])) * $kurs;
-			$bank_nilai   = (str_replace(',', '', $post['payment_bank'])) * $kurs;
-			$ap           = str_replace(',', '', $post['total_payment']);
+			$bankcharge   = (str_replace(',', '', $post['bank_charge'] ?? '')) * $kurs;
+			$bank_nilai   = (str_replace(',', '', $post['payment_bank'] ?? '')) * $kurs;
+			$ap           = str_replace(',', '', $post['total_payment'] ?? '');
 			$selisihkurs  = $selisih * $ap;
 
 			if ($selisihkurs < 0) {
@@ -3176,7 +3176,7 @@ class Pembayaran_material extends Admin_Controller
 			}
 			$insert_jurnal_tras = $this->db->insert_batch('jurnaltras', $det_Jurnaltes1);
 			if (!$insert_jurnal_tras) {
-				throw new Exception('Input JurnalTras gagal !');
+				throw new Exception('JurnalTras input failed!');
 			}
 
 			//auto jurnal
@@ -3199,7 +3199,7 @@ class Pembayaran_material extends Admin_Controller
 				$total = ($total + $vals['debet']);
 				$insert_jurnal_det = $this->db->insert(DBACC . '.jurnal', $datadetail);
 				if (!$insert_jurnal_det) {
-					throw new Exception('Input Jurnal Detail gagal !');
+					throw new Exception('Journal Detail input failed!');
 				}
 			}
 
@@ -3241,7 +3241,7 @@ class Pembayaran_material extends Admin_Controller
 			);
 			$insert_kartu_hutang = $this->db->insert('tr_kartu_hutang', $datahutang);
 			if (!$insert_kartu_hutang) {
-				throw new Exception('Insert Kartu Hutang gagal !');
+				throw new Exception('Payable Card insert failed!');
 			}
 
 			//end auto jurnal
@@ -3249,7 +3249,7 @@ class Pembayaran_material extends Admin_Controller
 			// }
 
 			$valid = 1;
-			$pesan = 'Selamat, data telah berhasil dibayar !';
+			$pesan = 'Congratulations, the data has been paid successfully!';
 			// }
 			$this->db->trans_commit();
 			echo json_encode([

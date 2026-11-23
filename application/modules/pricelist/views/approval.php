@@ -64,7 +64,7 @@ if (!empty($status_filter)) {
                     <i class="fa fa-check-circle me-2"></i>Approval Pricelist
                 </h5>
                 <small class="text-muted">
-                    Management / GM memeriksa pengajuan dokumen Pricelist dari Sales. Menyetujui akan otomatis merilis harga ke <strong>Product Catalog</strong> dan mencatat riwayat ke <strong>History Price List</strong>.
+                    Management / GM reviews Pricelist document submissions from Sales. Approving releases the prices to the <strong>Product Catalog</strong> automatically and records the history in <strong>History Price List</strong>.
                 </small>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -78,7 +78,7 @@ if (!empty($status_filter)) {
         <ul class="nav nav-tabs card-header-tabs" id="appStatusTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link app-tab-btn <?= ($active_tab === 'pending') ? 'active' : '' ?>" id="tab-btn-app-pending" data-bs-toggle="tab" data-bs-target="#tab-pane-app-pending" data-tab="pending" type="button" role="tab" aria-controls="tab-pane-app-pending" aria-selected="<?= ($active_tab === 'pending') ? 'true' : 'false' ?>">
-                    <i class="fa fa-clock-o me-1 text-warning"></i> Menunggu Approval
+                    <i class="fa fa-clock-o me-1 text-warning"></i> Awaiting Approval
                     <span class="badge rounded-pill bg-warning text-dark ms-1" id="app-count-pending"><?= $counts['Menunggu Approval'] ?? 0 ?></span>
                 </button>
             </li>
@@ -147,7 +147,7 @@ if (!empty($status_filter)) {
     </div>
 </div>
 
-<!-- Modal Periksa & Putuskan Dokumen Pricelist -->
+<!-- Modal Review & Decide Dokumen Pricelist -->
 <div class="modal fade" id="modal-app-doc" tabindex="-1" aria-labelledby="modalAppDocLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow border-0">
@@ -163,11 +163,11 @@ if (!empty($status_filter)) {
                 <div class="modal-body p-4" id="app-doc-body" style="max-height: 65vh; overflow: auto;">
                     <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <div class="mt-2 text-muted">Memuat dokumen pricelist...</div>
+                        <div class="mt-2 text-muted">Loading pricelist document...</div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light" id="app-doc-footer">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
@@ -196,7 +196,7 @@ if (!empty($status_filter)) {
             content.data('loaded', true);
         }).fail(function() {
             skeleton.hide();
-            content.html('<div class="alert alert-danger my-3">Gagal memuat data tabel. Silakan refresh halaman.</div>').show();
+            content.html('<div class="alert alert-danger my-3">Failed to load table data. Please refresh the page.</div>').show();
         });
     }
 
@@ -226,15 +226,15 @@ if (!empty($status_filter)) {
             loadAppTab(tab);
         });
 
-        // Open Modal Periksa & Putuskan / View
+        // Open Modal Review & Decide / View
         $(document).on('click', '.btn-decide-pl, .btn-view-app-pl', function() {
             var id = $(this).data('id');
             var isDecide = $(this).hasClass('btn-decide-pl');
 
             $('#app_pl_id').val(id);
-            $('#modalAppDocLabel').html('<i class="fa fa-gavel me-2"></i>' + (isDecide ? 'Periksa & Putuskan Pricelist' : 'Detail Dokumen Pricelist'));
+            $('#modalAppDocLabel').html('<i class="fa fa-gavel me-2"></i>' + (isDecide ? 'Review & Decide Pricelist' : 'Pricelist Document Detail'));
             $('#modal-app-doc').modal('show');
-            $('#app-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Memuat dokumen pricelist...</div></div>');
+            $('#app-doc-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Loading pricelist document...</div></div>');
 
             $.ajax({
                 url: BASE_URL + '/view_doc',
@@ -255,7 +255,7 @@ if (!empty($status_filter)) {
                         });
                     };
 
-                    $('#modalAppDocLabel').html('<i class="fa fa-gavel me-2"></i>' + (isDecide ? 'Periksa Dokumen' : 'Detail Dokumen') + ' — ' + h.no_pricelist);
+                    $('#modalAppDocLabel').html('<i class="fa fa-gavel me-2"></i>' + (isDecide ? 'Review Document' : 'Document Detail') + ' — ' + h.no_pricelist);
 
                     var badgeClass = h.status === 'Approved' ? 'bg-success' : (h.status === 'Rejected' ? 'bg-danger' : (h.status === 'Menunggu Approval' ? 'bg-warning text-dark' : 'bg-secondary'));
 
@@ -268,16 +268,16 @@ if (!empty($status_filter)) {
                                     <strong class="fs-6 text-primary">${h.no_pricelist}</strong>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Status Saat Ini</small>
+                                    <small class="text-muted d-block">Current Status</small>
                                     <span class="badge ${badgeClass} fs-6">${h.status}</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Diajukan Oleh</small>
+                                    <small class="text-muted d-block">Requested By</small>
                                     <strong>${h.submitted_by_name || 'Sales'}</strong>
                                     <div class="text-muted small">${h.submitted_at || '—'}</div>
                                 </div>
                                 <div class="col-md-3">
-                                    <small class="text-muted d-block">Jumlah Varian</small>
+                                    <small class="text-muted d-block">Variant Count</small>
                                     <strong class="fs-6">${details.length} Varian BOM</strong>
                                 </div>
                             </div>
@@ -350,31 +350,31 @@ if (!empty($status_filter)) {
                                 </div>
                             </div>
                             <div class="form-text text-muted mt-2" id="app-decision-hint">
-                                Approve: Harga akan dirilis ke Product Catalog dan menjadi harga aktif resmi perusahaan.
+                                Approve: The price will be released to the Product Catalog and become the company's official active price.
                             </div>
                         </div>
 
                         <div class="mb-3 d-none" id="group-app-reason">
                             <label class="form-label fw-bold text-danger">Alasan Penolakan (Reject) <span class="text-danger">*</span></label>
                             <textarea class="form-control" name="reject_reason" id="app_reject_reason" rows="3" placeholder="Tuliskan alasan penolakan untuk Sales..."></textarea>
-                            <div class="form-text text-danger">Alasan penolakan wajib diisi untuk panduan revisi oleh Sales.</div>
+                            <div class="form-text text-danger">A rejection reason is required as revision guidance for Sales.</div>
                         </div>
                     `;
 
                         $('#app-doc-footer').html(`
-                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary px-4" id="btn-save-decision">
-                            <i class="fa fa-save me-1"></i> Simpan Keputusan
+                            <i class="fa fa-save me-1"></i> Save Decision
                         </button>
                     `);
                     } else {
-                        $('#app-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Tutup</button>`);
+                        $('#app-doc-footer').html(`<button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Close</button>`);
                     }
 
                     $('#app-doc-body').html(html);
                 },
                 error: function(xhr) {
-                    $('#app-doc-body').html('<div class="alert alert-danger">Gagal memuat dokumen (Status: ' + xhr.status + ')</div>');
+                    $('#app-doc-body').html('<div class="alert alert-danger">Failed to load document (Status: ' + xhr.status + ')</div>');
                 }
             });
         });
@@ -384,11 +384,11 @@ if (!empty($status_filter)) {
             if ($(this).val() === 'Reject') {
                 $('#group-app-reason').removeClass('d-none');
                 $('#app_reject_reason').prop('required', true);
-                $('#app-decision-hint').text('Reject: Pengajuan dikembalikan ke Sales dengan alasan penolakan.');
+                $('#app-decision-hint').text('Reject: The request is returned to Sales with the rejection reason.');
             } else {
                 $('#group-app-reason').addClass('d-none');
                 $('#app_reject_reason').prop('required', false);
-                $('#app-decision-hint').text('Approve: Harga akan dirilis ke Product Catalog dan menjadi harga aktif resmi perusahaan.');
+                $('#app-decision-hint').text('Approve: The price will be released to the Product Catalog and become the company\'s official active price.');
             }
         });
 
@@ -402,7 +402,7 @@ if (!empty($status_filter)) {
             if (decision === 'Reject' && !reason.trim()) {
                 Swal.fire({
                     title: 'Validasi',
-                    text: 'Alasan penolakan (Reject) wajib diisi.',
+                    text: 'Rejection reason is required.',
                     icon: 'warning'
                 });
                 return;
@@ -412,13 +412,13 @@ if (!empty($status_filter)) {
             var actionUrl = isApprove ? (BASE_URL + '/approve') : (BASE_URL + '/reject');
 
             Swal.fire({
-                title: isApprove ? 'Setujui Pricelist Ini?' : 'Tolak Pricelist Ini?',
-                text: isApprove ? 'Pricelist akan berstatus Approved dan otomatis dirilis ke Product Catalog.' : 'Pricelist akan ditolak dan dikembalikan ke Sales.',
+                title: isApprove ? 'Approve This Pricelist?' : 'Reject This Pricelist?',
+                text: isApprove ? 'The pricelist will have status Approved and be released to the Product Catalog automatically.' : 'The pricelist will be rejected and returned to Sales.',
                 icon: isApprove ? 'question' : 'warning',
                 showCancelButton: true,
                 confirmButtonColor: isApprove ? '#28a745' : '#dc3545',
-                confirmButtonText: isApprove ? 'Ya, Setujui!' : 'Ya, Tolak!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: isApprove ? 'Yes, Approve!' : 'Yes, Reject!',
+                cancelButtonText: 'Cancel'
             }).then(function(res) {
                 if (!res.isConfirmed) return;
 
@@ -433,11 +433,11 @@ if (!empty($status_filter)) {
                         reject_reason: reason
                     },
                     success: function(resp) {
-                        $('#btn-save-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Keputusan');
+                        $('#btn-save-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Decision');
                         if (resp.status == 1) {
                             $('#modal-app-doc').modal('hide');
                             Swal.fire({
-                                title: 'Berhasil!',
+                                title: 'Success!',
                                 text: resp.pesan,
                                 icon: 'success',
                                 timer: 1800,
@@ -446,11 +446,11 @@ if (!empty($status_filter)) {
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire({ title: 'Gagal!', text: resp.pesan, icon: 'error' });
+                            Swal.fire({ title: 'Failed!', text: resp.pesan, icon: 'error' });
                         }
                     },
                     error: function(xhr) {
-                        $('#btn-save-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Simpan Keputusan');
+                        $('#btn-save-decision').prop('disabled', false).html('<i class="fa fa-save me-1"></i> Save Decision');
                         Swal.fire({ title: 'Error!', text: 'Request error: ' + xhr.status, icon: 'error' });
                     }
                 });

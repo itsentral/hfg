@@ -29,11 +29,11 @@
                     <tr>
                         <th nowrap>No</th>
                         <th nowrap>Tgl</th>
-                        <th nowrap>Barang / Jasa</th>
-                        <th nowrap>Keterangan</th>
+                        <th nowrap>Goods / Services</th>
+                        <th nowrap>Description</th>
                         <th nowrap>Jml</th>
-                        <th nowrap>Perkiraan Biaya Satuan</th>
-                        <th nowrap>Total Biaya</th>
+                        <th nowrap>Estimated Unit Cost</th>
+                        <th nowrap>Total Cost</th>
                     </tr>
                     <?php $total_expense = 0;
                     $total_tol = 0;

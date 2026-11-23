@@ -15,7 +15,7 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Daftar Production Plan</h5>
+        <h5 class="mb-0">Production Plan List</h5>
         <a href="<?= base_url('production_planning/add') ?>" class="btn btn-success btn-sm">
             <i class="fa fa-plus"></i> Buat Plan Baru
         </a>
@@ -79,12 +79,12 @@
             var plan_no = $(this).data('plan');
             Swal.fire({
                 title: 'Release Plan?',
-                text: 'Plan akan diubah ke status Released dan tidak bisa diedit lagi.',
+                text: 'The plan will be changed to status Released and can no longer be edited.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
-                confirmButtonText: 'Ya, Release',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Yes, Release',
+                cancelButtonText: 'Cancel'
             }).then(function(result) {
                 if (!result.isConfirmed) return;
                 $.ajax({
@@ -94,8 +94,8 @@
                     success: function(res) {
                         if (res.success) {
                             Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: 'Plan berhasil di-release.',
+                                    title: 'Success!',
+                                    text: 'Plan released successfully.',
                                     icon: 'success',
                                     timer: 1500,
                                     showConfirmButton: false
@@ -105,8 +105,8 @@
                                 });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
-                                text: res.message || 'Terjadi kesalahan.',
+                                title: 'Failed!',
+                                text: res.message || 'An error occurred.',
                                 icon: 'error',
                                 confirmButtonText: 'OK'
                             });
@@ -115,7 +115,7 @@
                     error: function(xhr) {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Request gagal: ' + xhr.status,
+                            text: 'Request failed: ' + xhr.status,
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -129,12 +129,12 @@
             var plan_no = $(this).data('plan');
             Swal.fire({
                 title: 'Batalkan Plan?',
-                text: 'Plan akan dibatalkan dan tidak dapat diproses lebih lanjut.',
+                text: 'The plan will be cancelled and cannot be processed further.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
-                confirmButtonText: 'Ya, Batalkan',
-                cancelButtonText: 'Tidak'
+                confirmButtonText: 'Yes, Cancel',
+                cancelButtonText: 'No'
             }).then(function(result) {
                 if (!result.isConfirmed) return;
                 $.ajax({
@@ -144,8 +144,8 @@
                     success: function(res) {
                         if (res.success) {
                             Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: 'Plan berhasil dibatalkan.',
+                                    title: 'Success!',
+                                    text: 'Plan cancelled successfully.',
                                     icon: 'success',
                                     timer: 1500,
                                     showConfirmButton: false
@@ -155,8 +155,8 @@
                                 });
                         } else {
                             Swal.fire({
-                                title: 'Gagal!',
-                                text: res.message || 'Terjadi kesalahan.',
+                                title: 'Failed!',
+                                text: res.message || 'An error occurred.',
                                 icon: 'error',
                                 confirmButtonText: 'OK'
                             });
@@ -165,7 +165,7 @@
                     error: function(xhr) {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Request gagal: ' + xhr.status,
+                            text: 'Request failed: ' + xhr.status,
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });

@@ -112,7 +112,7 @@
 		</tr>
 		<tr>
 			<td align='center'><b>
-					<h2>TANDA TERIMA BARANG</h2>
+					<h2>GOODS RECEIPT</h2>
 				</b></td>
 		</tr>
 	</table>
@@ -121,7 +121,7 @@
 	<table class="gridtable2" width="100%" border='0'>
 		<thead>
 			<tr>
-				<td class="mid">No Transaksi</td>
+				<td class="mid">Transaction No.</td>
 				<td class="mid">:</td>
 				<td class="mid" colspan='4'><?= $kode_trans; ?></td>
 			</tr>
@@ -134,7 +134,7 @@
 				<td class="mid" width='33%'></td>
 			</tr>
 			<tr>
-				<td class="mid">Tanggal Terima</td>
+				<td class="mid">Received Date</td>
 				<td class="mid">:</td>
 				<td class="mid"><?= date('d F Y', strtotime((string) $rest_data[0]['created_date'])); ?></td>
 				<td class="mid"></td>

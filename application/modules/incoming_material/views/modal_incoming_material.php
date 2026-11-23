@@ -4,7 +4,7 @@
 <div class="col-md-6 mb-3">
     <div class="form-group row mb-2">
         <div class="col-md-3">
-            <label>Nomor PO</label>
+            <label>PO Number</label>
         </div>
         <div class="col-md-9">
             <input type="text" class="form-control" readonly value="<?= $no_surat ?>">
@@ -12,7 +12,7 @@
     </div>
     <div class="form-group row mb-2">
         <div class="col-md-3">
-            <label>Nomor PR</label>
+            <label>PR Number</label>
         </div>
         <div class="col-md-9">
             <input type="text" class="form-control" readonly value="<?= $no_pr ?>">
@@ -55,10 +55,10 @@ if (!empty($no_ros)) {
                     <th class="text-center">Material Name</th>
                     <th class="text-center" width='10%'>Qty Order</th>
                     <th class="text-center" width='10%'>UoM Order</th>
-                    <th class="text-center" width='13%'>Qty belum dikirim</th>
+                    <th class="text-center" width='13%'>Qty not yet sent</th>
                     <th class="text-center" width='13%'>Qty NG</th>
-                    <th class="text-center" width='7%'>Qty Diterima</th>
-                    <th class="text-center" width='17%'>Keterangan</th>
+                    <th class="text-center" width='7%'>Received Qty</th>
+                    <th class="text-center" width='17%'>Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -141,7 +141,7 @@ if (!empty($no_ros)) {
                 <?php
                 } else {
                     echo "<tr>";
-                    echo "<td colspan='3'>Data aktual belum di update, silahkan update data terlebih dahulu.</td>";
+                    echo "<td colspan='3'>Actual data has not been updated, please update the data first.</td>";
                     echo "</tr>";
                 }
                 ?>

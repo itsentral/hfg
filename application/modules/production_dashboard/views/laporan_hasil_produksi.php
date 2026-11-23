@@ -2,7 +2,7 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Laporan Hasil Produksi</h5>
+        <h5 class="mb-0"><i class="fa fa-filter"></i> Filter Production Output Report</h5>
     </div>
     <div class="card-body">
         <form method="get" action="<?= base_url('production_dashboard/laporan_hasil_produksi') ?>">
@@ -20,16 +20,16 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Dari</label>
+                    <label class="form-label">Date From</label>
                     <input type="date" name="tgl_dari" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_dari']) ?>">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Tanggal Sampai</label>
+                    <label class="form-label">Date To</label>
                     <input type="date" name="tgl_sampai" class="form-control" value="<?= htmlspecialchars((string) $filter['tgl_sampai']) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fa fa-search"></i> Tampilkan
+                        <i class="fa fa-search"></i> Show
                     </button>
                 </div>
             </div>
@@ -39,9 +39,9 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Laporan Hasil Produksi — Breakdown Yield per Kategori</h5>
+        <h5 class="mb-0">Production Output Report — Yield Breakdown per Category</h5>
         <a href="<?= base_url('production_dashboard') ?>" class="btn btn-sm btn-outline-secondary">
-            <i class="fa fa-arrow-left"></i> Kembali
+            <i class="fa fa-arrow-left"></i> Back
         </a>
     </div>
     <div class="card-body">
@@ -50,10 +50,10 @@
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" rowspan="2">No</th>
-                        <th rowspan="2">No Laporan</th>
+                        <th rowspan="2">Report No</th>
                         <th rowspan="2">No SPK</th>
                         <th rowspan="2">Barcode Coil</th>
-                        <th class="text-end" rowspan="2">Total Berat Coil (kg)</th>
+                        <th class="text-end" rowspan="2">Total Coil Weight (kg)</th>
                         <th class="text-center" colspan="2">FG</th>
                         <th class="text-center" colspan="2">KW2 Internal</th>
                         <th class="text-center" colspan="2">KW2 Supplier</th>
@@ -76,7 +76,7 @@
                 <tbody>
                     <?php if (empty($data_laporan)): ?>
                         <tr>
-                            <td colspan="17" class="text-center text-muted py-3">Tidak ada data untuk filter yang dipilih</td>
+                            <td colspan="17" class="text-center text-muted py-3">No data for the selected filter</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($data_laporan as $i => $row): ?>

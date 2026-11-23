@@ -7,12 +7,12 @@ header("Content-Disposition: attachment; filename=Request Payment (" . date('d-m
     <thead>
         <tr>
             <th style="text-align: center">#</th>
-            <th style="text-align: center">No. Dokumen</th>
+            <th style="text-align: center">Document No.</th>
             <th style="text-align: center">Request By</th>
-            <th style="text-align: center">Tanggal</th>
+            <th style="text-align: center">Date</th>
             <th style="text-align: center">Keperluan</th>
-            <th style="text-align: center">Kategori</th>
-            <th style="text-align: center">Nilai Pengajuan</th>
+            <th style="text-align: center">Category</th>
+            <th style="text-align: center">Request Value</th>
         </tr>
     </thead>
     <tbody>

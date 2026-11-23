@@ -19,7 +19,7 @@
                         <th rowspan='2'>Product ID</th>
                         <th rowspan='2' style="min-width: 200px;">Product</th>
                         <th colspan='3' class="text-center">AWAL</th>
-                        <th colspan='2' class="text-center">TRANSAKSI</th>
+                        <th colspan='2' class="text-center">TRANSACTION</th>
                         <th colspan='3' class="text-center">AKHIR</th>
 
                     </tr>

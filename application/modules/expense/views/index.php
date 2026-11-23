@@ -12,14 +12,14 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 			<h5 class="card-title mb-0 fw-bold text-primary">
 				<i class="fa fa-cubes me-2"></i>Daftar Laporan & Pertanggungjawaban Expense
 			</h5>
-			<small class="text-muted">Kelola pengajuan biaya operasional langsung dan pertanggungjawaban kasbon</small>
+			<small class="text-muted">Manage direct operational expense requests and cash advance accountability</small>
 		</div>
 		<?php if ($ENABLE_ADD) : ?>
 			<div class="d-flex flex-wrap align-items-center gap-2">
-				<button class="btn btn-success btn-sm shadow-sm px-3" type="button" onclick="data_add()" title="Buat Pengeluaran Langsung / Manual">
+				<button class="btn btn-success btn-sm shadow-sm px-3" type="button" onclick="data_add()" title="Create Direct / Manual Expense">
 					<i class="fa fa-plus me-1"></i> Tambah Expense
 				</button>
-				<button class="btn btn-primary btn-sm shadow-sm px-3" type="button" onclick="data_add_report()" title="Pertanggungjawaban Kasbon">
+				<button class="btn btn-primary btn-sm shadow-sm px-3" type="button" onclick="data_add_report()" title="Cash Advance Accountability">
 					<i class="fa fa-ticket me-1"></i> Tambah Expense Report
 				</button>
 			</div>
@@ -32,13 +32,13 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 				<thead class="table-light text-center">
 					<tr>
 						<th width="4%" class="text-center">#</th>
-						<th class="text-center" width="13%">No Dokumen</th>
-						<th class="text-center" width="9%">Tanggal</th>
-						<th class="text-center" width="12%">Nama Pemohon</th>
+						<th class="text-center" width="13%">Document No.</th>
+						<th class="text-center" width="9%">Date</th>
+						<th class="text-center" width="12%">Requester Name</th>
 						<th class="text-end" width="12%">Total Realisasi</th>
 						<th class="text-center" width="10%">Approval</th>
 						<th class="text-center" width="10%">Approval Date</th>
-						<th class="text-center">Keterangan</th>
+						<th class="text-center">Description</th>
 						<th class="text-center" width="11%">Status</th>
 						<th class="text-center text-nowrap" width="9%">Aksi</th>
 					</tr>
@@ -58,7 +58,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 		<div class="modal-content border-0 shadow rounded-3">
 			<div class="modal-header border-bottom py-3">
 				<h5 class="modal-title fw-bold text-dark fs-6" id="modalKasbonLabel">
-					<i class="fa fa-ticket text-primary me-2"></i>Pilih Kasbon untuk Dibuatkan Expense Report
+					<i class="fa fa-ticket text-primary me-2"></i>Select a Cash Advance to Create an Expense Report
 				</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
 			</div>
@@ -68,11 +68,11 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 						<thead class="table-light text-center">
 							<tr>
 								<th width="5%" class="text-center">#</th>
-								<th width="16%">No. Kasbon</th>
-								<th width="11%">Tanggal</th>
+								<th width="16%">Cash Advance No.</th>
+								<th width="11%">Date</th>
 								<th>Keperluan</th>
-								<th>Keterangan</th>
-								<th width="14%" class="text-end">Jumlah (Rp)</th>
+								<th>Description</th>
+								<th width="14%" class="text-end">Amount (Rp)</th>
 								<th width="14%" class="text-center">Aksi</th>
 							</tr>
 						</thead>
@@ -82,7 +82,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 				</div>
 			</div>
 			<div class="modal-footer border-top py-2">
-				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-dismiss="modal">Tutup</button>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -135,7 +135,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 						tbody += '</tr>';
 					}
 				} else {
-					tbody = '<tr><td colspan="7" class="text-center text-muted py-3">Tidak ada data kasbon yang tersedia untuk dilaporkan</td></tr>';
+					tbody = '<tr><td colspan="7" class="text-center text-muted py-3">There is no cash advance data available to report</td></tr>';
 				}
 				$('#tableKasbon tbody').html(tbody);
 				$('#tableKasbon').DataTable({
@@ -157,12 +157,12 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 			error: function() {
 				if (typeof Swal !== 'undefined') {
 					Swal.fire({
-						title: "Gagal!",
-						text: 'Gagal mengambil data kasbon dari server.',
+						title: "Failed!",
+						text: 'Failed to fetch cash advance data from the server.',
 						icon: "warning"
 					});
 				} else {
-					alert('Gagal mengambil data kasbon dari server.');
+					alert('Failed to fetch cash advance data from the server.');
 				}
 			}
 		});
@@ -211,16 +211,16 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 			$.post(url_delete + id, function(res) {
 				if (res.delete === true || res.delete == '1' || res.status == '1') {
 					if (typeof Swal !== 'undefined') {
-						Swal.fire('Terhapus!', 'Dokumen expense telah berhasil dihapus.', 'success');
+						Swal.fire('Deleted!', 'The expense document has been deleted successfully.', 'success');
 					} else {
-						alert('Dokumen expense telah berhasil dihapus.');
+						alert('The expense document has been deleted successfully.');
 					}
 					datatables();
 				} else {
 					if (typeof Swal !== 'undefined') {
-						Swal.fire('Gagal!', res.msg || 'Gagal menghapus dokumen expense.', 'error');
+						Swal.fire('Failed!', res.msg || 'Failed to delete the expense document.', 'error');
 					} else {
-						alert(res.msg || 'Gagal menghapus dokumen expense.');
+						alert(res.msg || 'Failed to delete the expense document.');
 					}
 				}
 			}, 'json');
@@ -228,12 +228,12 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 
 		if (typeof Swal !== 'undefined') {
 			Swal.fire({
-				title: 'Hapus Dokumen Expense?',
-				text: 'Data yang dihapus tidak dapat dikembalikan!',
+				title: 'Delete Expense Document?',
+				text: 'Deleted data cannot be restored!',
 				icon: 'warning',
 				showCancelButton: true,
-				confirmButtonText: 'Ya, Hapus!',
-				cancelButtonText: 'Batal',
+				confirmButtonText: 'Yes, Delete!',
+				cancelButtonText: 'Cancel',
 				confirmButtonColor: '#dc3545'
 			}).then((result) => {
 				if (result.isConfirmed) {
@@ -241,7 +241,7 @@ $ENABLE_DELETE  = has_permission('Expense.Delete');
 				}
 			});
 		} else {
-			if (confirm('Apakah Anda yakin ingin menghapus dokumen Expense ini?')) {
+			if (confirm('Are you sure you want to delete this Expense document?')) {
 				deleteAction();
 			}
 		}

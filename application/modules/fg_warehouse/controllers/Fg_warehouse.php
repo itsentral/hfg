@@ -32,7 +32,7 @@ class Fg_warehouse extends Admin_Controller
     {
         $receipt = $this->Fg_warehouse_model->get_receipt($fg_receipt_no);
         if (!$receipt) {
-            $this->session->set_flashdata('error', 'FG Receipt tidak ditemukan');
+            $this->session->set_flashdata('error', 'FG Receipt not found');
             redirect('fg_warehouse');
         }
 
@@ -97,13 +97,13 @@ class Fg_warehouse extends Admin_Controller
         $this->load->library('PHPExcel');
         $objPHPExcel = new PHPExcel();
         $sheet       = $objPHPExcel->getActiveSheet();
-        $sheet->setTitle('Stok FG');
+        $sheet->setTitle('FG Stock');
 
-        $sheet->setCellValue('A1', 'LAPORAN STOK FINISH GOOD (FG)');
-        $sheet->setCellValue('A2', 'Waktu Cetak: ' . date('d-m-Y H:i:s'));
+        $sheet->setCellValue('A1', 'FINISH GOOD (FG) STOCK REPORT');
+        $sheet->setCellValue('A2', 'Print Time: ' . date('d-m-Y H:i:s'));
 
         $row = 4;
-        $headers = ['A' => 'No', 'B' => 'Kode Produk', 'C' => 'Nama Produk', 'D' => 'Qty Stok (pcs)', 'E' => 'Total Berat (kg)', 'F' => 'Berat Ref (kg/pcs)', 'G' => 'Costbook (Rp)', 'H' => 'Total Nilai (Rp)', 'I' => 'Last Update'];
+        $headers = ['A' => 'No', 'B' => 'Product Code', 'C' => 'Product Name', 'D' => 'Stock Qty (pcs)', 'E' => 'Total Weight (kg)', 'F' => 'Ref Weight (kg/pcs)', 'G' => 'Costbook (Rp)', 'H' => 'Total Value (Rp)', 'I' => 'Last Update'];
         foreach ($headers as $col => $t) {
             $sheet->setCellValue($col . $row, $t);
         }
@@ -188,14 +188,14 @@ class Fg_warehouse extends Admin_Controller
         $this->load->library('PHPExcel');
         $objPHPExcel = new PHPExcel();
         $sheet       = $objPHPExcel->getActiveSheet();
-        $sheet->setTitle('Kartu Stok');
+        $sheet->setTitle('Stock Card');
 
-        $sheet->setCellValue('A1', 'KARTU STOK FINISH GOOD: ' . $produk_fg);
-        $sheet->setCellValue('A2', 'Nama: ' . ($stok_info ? $stok_info->nm_produk_fg : '-'));
+        $sheet->setCellValue('A1', 'FINISH GOOD STOCK CARD: ' . $produk_fg);
+        $sheet->setCellValue('A2', 'Name: ' . ($stok_info ? $stok_info->nm_produk_fg : '-'));
         $sheet->setCellValue('A3', 'Periode: ' . ($tgl_dari ? $tgl_dari : 'Awal') . ' s/d ' . ($tgl_sampai ? $tgl_sampai : 'Sekarang'));
 
         $row = 5;
-        $headers = ['A' => 'No', 'B' => 'Tgl', 'C' => 'No Ref', 'D' => 'No SPK', 'E' => 'Kategori', 'F' => 'Jenis', 'G' => 'Qty IN', 'H' => 'Qty OUT', 'I' => 'Saldo Qty', 'J' => 'Brt IN (kg)', 'K' => 'Brt OUT (kg)', 'L' => 'Saldo Brt (kg)', 'M' => 'Costbook', 'N' => 'Nilai Transaksi', 'O' => 'Saldo Nilai', 'P' => 'Keterangan'];
+        $headers = ['A' => 'No', 'B' => 'Tgl', 'C' => 'No Ref', 'D' => 'No SPK', 'E' => 'Category', 'F' => 'Type', 'G' => 'Qty IN', 'H' => 'Qty OUT', 'I' => 'Qty Balance', 'J' => 'Brt IN (kg)', 'K' => 'Brt OUT (kg)', 'L' => 'Saldo Brt (kg)', 'M' => 'Costbook', 'N' => 'Nilai Transaksi', 'O' => 'Saldo Nilai', 'P' => 'Description'];
         foreach ($headers as $col => $t) {
             $sheet->setCellValue($col . $row, $t);
         }
@@ -230,7 +230,7 @@ class Fg_warehouse extends Admin_Controller
             $sheet->getColumnDimension($colID)->setAutoSize(true);
         }
 
-        $clean = preg_replace('/[^A-Za-z0-9_\-]/', '_', $produk_fg);
+        $clean = preg_replace('/[^A-Za-z0-9_\-]/', '_', $produk_fg ?? '');
         $filename = 'Kartu_Stok_' . $clean . '_' . date('Ymd_His') . '.xls';
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         while (ob_get_level()) { ob_end_clean(); }

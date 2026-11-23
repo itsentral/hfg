@@ -26,7 +26,7 @@ if (!function_exists('coil_barcode_parse')) {
             return [
                 'success' => false,
                 'data'    => null,
-                'message' => 'Barcode tidak boleh kosong. Format yang diharapkan: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}',
+                'message' => 'Barcode is required. Expected format: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}',
             ];
         }
 
@@ -41,8 +41,8 @@ if (!function_exists('coil_barcode_parse')) {
             return [
                 'success' => false,
                 'data'    => null,
-                'message' => 'Format barcode tidak valid. Format yang diharapkan: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}. '
-                           . 'Barcode yang diterima: "' . $barcode_string . '"',
+                'message' => 'Invalid barcode format. Expected format: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}. '
+                           . 'Received barcode: "' . $barcode_string . '"',
             ];
         }
 
@@ -55,8 +55,8 @@ if (!function_exists('coil_barcode_parse')) {
             return [
                 'success' => false,
                 'data'    => null,
-                'message' => 'Salah satu komponen barcode kosong. Format yang diharapkan: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}. '
-                           . 'Barcode yang diterima: "' . $barcode_string . '"',
+                'message' => 'A barcode component is empty. Expected format: {KODE_COIL}-{NOMOR_HEAT}-{KODE_SUPPLIER}. '
+                           . 'Received barcode: "' . $barcode_string . '"',
             ];
         }
 
@@ -97,7 +97,7 @@ if (!function_exists('coil_barcode_format')) {
             return [
                 'success' => false,
                 'barcode' => null,
-                'message' => 'kode_coil, nomor_heat, dan kode_supplier tidak boleh kosong',
+                'message' => 'kode_coil, nomor_heat, and kode_supplier are required',
             ];
         }
 

@@ -234,7 +234,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -242,7 +242,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -511,7 +511,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -519,7 +519,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -610,7 +610,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -618,7 +618,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -939,7 +939,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -947,7 +947,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -1169,7 +1169,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -1177,7 +1177,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -1366,7 +1366,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -1374,7 +1374,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }
@@ -1562,7 +1562,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 0,
-                'msg' => "GAGAL, simpan data..!!!",
+                'msg' => "FAILED, save data..!!!",
 
             );
         } else {
@@ -1570,7 +1570,7 @@ class Jurnal_fn extends CI_Controller
 
             $param = array(
                 'save' => 1,
-                'msg' => "SUKSES, simpan data..!!!",
+                'msg' => "SUCCESS, save data..!!!",
 
             );
         }

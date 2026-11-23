@@ -14,12 +14,12 @@
         
         <div class="row g-3 mb-4">
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nomor PO</label>
+                <label class="form-label fw-semibold small text-muted">PO Number</label>
                 <input type="text" name="nomor_po" class="form-control bg-light nomor_po" value="<?= $data_invoice['id'] ?>" readonly>
             </div>
             
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nama Supplier</label>
+                <label class="form-label fw-semibold small text-muted">Supplier Name</label>
                 <input type="text" name="nm_supplier" class="form-control bg-light" value="<?= $data_invoice['nm_supplier'] ?>" readonly>
             </div>
 
@@ -34,17 +34,17 @@
             </div>
 
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nomor Invoice</label>
+                <label class="form-label fw-semibold small text-muted">Invoice Number</label>
                 <input type="text" name="nomor_invoice" class="form-control bg-light nomor_invoice" value="<?= $data_invoice['invoice_no'] ?>" readonly>
             </div>
 
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nomor Faktur Pajak</label>
+                <label class="form-label fw-semibold small text-muted">Tax Invoice Number</label>
                 <input type="text" name="nomor_faktur_pajak" class="form-control bg-light nomor_faktur_pajak" value="<?= $data_invoice['no_faktur_pajak'] ?>" readonly>
             </div>
             
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Tanggal Faktur Pajak</label>
+                <label class="form-label fw-semibold small text-muted">Tax Invoice Date</label>
                 <input type="date" name="tanggal_faktur_pajak" class="form-control bg-light tanggal_faktur_pajak" value="<?= $data_invoice['tanggal_faktur_pajak'] ?>" readonly>
             </div>
         </div>
@@ -79,12 +79,12 @@
             </div>
             
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nilai Disc</label>
+                <label class="form-label fw-semibold small text-muted">Discount Value</label>
                 <input type="text" name="nilai_disc" class="form-control bg-light text-end auto_num nilai_disc" value="<?= number_format((float) $nilai_disc, 2) ?>" readonly>
             </div>
 
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold small text-muted">Nilai PPN</label>
+                <label class="form-label fw-semibold small text-muted">VAT Value</label>
                 <input type="text" name="nilai_ppn" class="form-control bg-light text-end auto_num nilai_ppn" value="<?= number_format((float) $nilai_ppn, 2) ?>" readonly>
             </div>
             
@@ -117,11 +117,11 @@
                     <input type="text" name="bank" class="form-control bg-white" value="<?= $data_invoice['bank'] ?>" readonly>
                 </div>
                 <div class="col-12 col-md-4">
-                    <label class="form-label text-muted m-0 small">No. Rekening</label>
+                    <label class="form-label text-muted m-0 small">Account Number</label>
                     <input type="text" name="no_bank" class="form-control bg-white" value="<?= $data_invoice['no_bank'] ?>" readonly>
                 </div>
                 <div class="col-12 col-md-4">
-                    <label class="form-label text-muted m-0 small">Atas Nama (Acc)</label>
+                    <label class="form-label text-muted m-0 small">Account Name (Acc)</label>
                     <input type="text" name="nm_acc_bank" class="form-control bg-white" value="<?= $data_invoice['nm_acc_bank'] ?>" readonly>
                 </div>
             </div>

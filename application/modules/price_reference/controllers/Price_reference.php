@@ -64,13 +64,13 @@ class Price_reference extends Admin_Controller
     public function get_detail($id)
     {
         if (!$this->check_perm($this->viewPermission)) {
-            echo json_encode(['status' => 0, 'pesan' => 'Akses ditolak']);
+            echo json_encode(['status' => 0, 'pesan' => 'Access denied']);
             return;
         }
 
         $material = $this->model_pr->get_material_by_id($id);
         if (!$material) {
-            echo json_encode(['status' => 0, 'pesan' => 'Material tidak ditemukan']);
+            echo json_encode(['status' => 0, 'pesan' => 'Material not found']);
             return;
         }
 

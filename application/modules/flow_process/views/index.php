@@ -30,7 +30,7 @@ $fmt = function ($v, $dec = 6) {
 					<tr>
 						<th>#</th>
 						<th>Product Category</th>
-						<th class="text-end">Jumlah Proses</th>
+						<th class="text-end">Process Count</th>
 						<th class="text-end">Cycletime Total (menit/meter)</th>
 						<th class="text-end">Total Man Hour (jam/meter)</th>
 						<th>Last Update</th>
@@ -196,7 +196,7 @@ $fmt = function ($v, $dec = 6) {
 				error: function() {
 					swal({
 						title: "Error",
-						text: "Gagal memuat data!",
+						text: "Failed to load data!",
 						type: "error"
 					});
 				}
@@ -257,7 +257,7 @@ $fmt = function ($v, $dec = 6) {
 			if ($('#code_lv2').length && $('#code_lv2').val() == '0') {
 				swal({
 					title: "Error Message!",
-					text: 'Product Category belum dipilih.',
+					text: 'Product Category has not been selected.',
 					type: "warning"
 				});
 				return false;
@@ -275,7 +275,7 @@ $fmt = function ($v, $dec = 6) {
 			if (!adaProses || !valid) {
 				swal({
 					title: "Error Message!",
-					text: 'Isi minimal satu proses dengan Process Name, Cycletime (angka, titik untuk desimal), dan Man Power (bilangan bulat).',
+					text: 'Fill in at least one process with Process Name, Cycletime (number, dot for decimals), and Man Power (whole number).',
 					type: "warning"
 				});
 				return false;
@@ -287,8 +287,8 @@ $fmt = function ($v, $dec = 6) {
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-info",
-				confirmButtonText: "Ya, Simpan!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Save!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false,
 				closeOnCancel: true
 			}, function(isConfirm) {
@@ -333,12 +333,12 @@ $fmt = function ($v, $dec = 6) {
 			var id = $(this).data('id');
 			swal({
 				title: "Are you sure?",
-				text: "Flow Process beserta seluruh prosesnya akan dihapus.",
+				text: "The Flow Process and all its processes will be deleted.",
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonClass: "btn-danger",
-				confirmButtonText: "Ya, Hapus!",
-				cancelButtonText: "Batal",
+				confirmButtonText: "Yes, Delete!",
+				cancelButtonText: "Cancel",
 				closeOnConfirm: false,
 				closeOnCancel: true
 			}, function(isConfirm) {

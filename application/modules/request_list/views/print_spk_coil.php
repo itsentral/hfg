@@ -233,7 +233,7 @@
 
         <table class="info-table right">
             <tr>
-                <td class="info-label">Tanggal</td>
+                <td class="info-label">Date</td>
                 <td class="info-separator">:</td>
                 <td><?php echo date('d-m-Y', strtotime((string) $request['request_date'])); ?></td>
             </tr>
@@ -250,11 +250,11 @@
             <thead>
                 <tr>
                     <th width="5%" class="text-center">No</th>
-                    <th width="16%">Kode Internal</th>
+                    <th width="16%">Internal Code</th>
                     <th width="13%">No Coil</th>
                     <th width="27%">Material</th>
                     <th width="15%" class="text-right">Net Weight (Kg)</th>
-                    <th width="14%" class="text-center">Sumber Gudang</th>
+                    <th width="14%" class="text-center">Source Warehouse</th>
                 </tr>
             </thead>
             <tbody>
@@ -271,7 +271,7 @@
                         <td class="text-center">
                             <?php
                             if ($coil['id_gudang_sumber'] == 1) {
-                                echo 'Gudang Coil';
+                                echo 'Coil Warehouse';
                             } elseif ($coil['id_gudang_sumber'] == 4) {
                                 echo 'WIP';
                             } else {
@@ -306,7 +306,7 @@
                 </td>
                 <td width="50%">
                     <div class="signature-box">
-                        <span class="signature-title">Dibuat oleh,</span>
+                        <span class="signature-title">Created by,</span>
                         <span class="signature-name">&nbsp;</span>
                         <span class="signature-date"><?php echo date('d-m-Y', strtotime((string) $request['request_date'])); ?></span>
                     </div>

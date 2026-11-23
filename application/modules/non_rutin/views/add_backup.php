@@ -98,13 +98,13 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
                 </div>
             </div>
             <div class='form-group row'>
-                <label class='label-control col-sm-2'><b>Nilai Budget</b></label>
+                <label class='label-control col-sm-2'><b>Budget Value</b></label>
                 <div class='col-sm-4'>
                     <?php
                     echo form_input(array('id' => 'budget', 'name' => 'budget', 'class' => 'form-control input-md maskM', 'placeholder' => '0', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => '', 'readonly' => 'readonly'), $budget);
                     ?>
                 </div>
-                <label class='label-control col-sm-2'><b>Sisa Budget</b></label>
+                <label class='label-control col-sm-2'><b>Remaining Budget</b></label>
                 <div class='col-sm-4'>
                     <?php
                     echo form_input(array('id' => 'sisa_budget', 'name' => 'sisa_budget', 'class' => 'form-control input-md maskM', 'placeholder' => '0', 'data-decimal' => '.', 'data-thousand' => '', 'data-precision' => '0', 'data-allow-zero' => '', 'readonly' => 'readonly'), $sisa_budget);
@@ -140,14 +140,14 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
                 <thead>
                     <tr class='bg-blue'>
                         <th class='text-center' style='width: 3%;'>#</th>
-                        <th class='text-center'>Nama Barang/Jasa</th>
+                        <th class='text-center'>Item/Service Name</th>
                         <th class='text-center' style='width: 13%;'>Spec/ Requirement</th>
                         <th class='text-center' style='width: 7%;'>Qty</th>
-                        <th class='text-center' style='width: 8%;'>Satuan</th>
-                        <th class='text-center' style='width: 9%;'>Est Harga</th>
-                        <th class='text-center' style='width: 9%;'>Est Total Harga</th>
-                        <th class='text-center' style='width: 9%;'>Tanggal Dibutuhkan</th>
-                        <th class='text-center' style='width: 15%;'>Keterangan</th>
+                        <th class='text-center' style='width: 8%;'>Unit</th>
+                        <th class='text-center' style='width: 9%;'>Est. Price</th>
+                        <th class='text-center' style='width: 9%;'>Est. Total Price</th>
+                        <th class='text-center' style='width: 9%;'>Required Date</th>
+                        <th class='text-center' style='width: 15%;'>Description</th>
                         <?php
                         if (empty($approve)) {
                         ?>
@@ -168,7 +168,7 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
                             echo "<td align='left'><input type='text' " . $disabled2 . " id='qty_" . $nomor . "' name='detail[" . $nomor . "][qty]' class='form-control input-md text-right autoNumeric2 sum_tot' value='" . $valx['qty'] . "'></td>";
                             echo "<td align='left'>
 									<select name='detail[" . $nomor . "][satuan]' class='form-control wajib' " . $disabled2 . " required>";
-                            echo "<option value=''>Pilih</option>";
+                            echo "<option value=''>Select</option>";
                             foreach ($satuan as $key => $value) {
                                 $selected = ($value['id_satuan'] == $valx['satuan']) ? 'selected' : '';
                                 echo "<option value='" . $value['id_satuan'] . "' " . $selected . ">" . $value['kode_satuan'] . "</option>";
@@ -189,7 +189,7 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
                     ?>
                         <tr id='add_<?= $nomor; ?>'>
                             <td align='center'></td>
-                            <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Barang'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Barang</button></td>
+                            <td align='left'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type='button' class='btn btn-sm btn-warning addPart' title='Add Item'><i class='fa fa-plus'></i>&nbsp;&nbsp;Add Item</button></td>
                             <td align='center' colspan='8'></td>
                         </tr>
                     <?php } ?>
@@ -383,7 +383,7 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
         if (FALIDASIwajib === false) {
             swal({
                 title: "Error Message!",
-                text: 'Satuan wajib diisi !',
+                text: 'Unit is required!',
                 type: "warning"
             });
 
@@ -404,7 +404,7 @@ $disabled3        = ($approve == 'view') ? 'readonly' : '';
         if (FALIDASI === false) {
             swal({
                 title: "Error Message!",
-                text: 'Tgl dibutuhkan wajib diisi !',
+                text: 'Required date is required!',
                 type: "warning"
             });
 

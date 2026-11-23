@@ -49,7 +49,7 @@
 						value="<?= set_value('password'); ?>" />
 				</div>
 				<?= form_error('password', '<div class="invalid-feedback d-block">', '</div>'); ?>
-				<small class="text-muted d-block mt-1">Kosongkan jika tidak ingin mengubah password (saat edit).</small>
+				<small class="text-muted d-block mt-1">Leave blank if you do not want to change the password (when editing).</small>
 			</div>
 
 			<!-- Re Password -->
@@ -163,11 +163,11 @@
 
 			<!-- Cabang (Hidden as original) -->
 			<div class="col-md-6 d-none">
-				<label class="form-label fw-semibold">Cabang</label>
+				<label class="form-label fw-semibold">Branch</label>
 				<div class="input-group">
 					<span class="input-group-text"><i class="ti ti-briefcase"></i></span>
 					<select name="kdcab" id="kdcab" class="form-select">
-						<option value="">Pilih Cabang</option>
+						<option value="">Select Branch</option>
 						<?php
 						foreach ($cabang as $k => $v) {
 							$selected = '';

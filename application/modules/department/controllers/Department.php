@@ -144,7 +144,7 @@ class Department extends Admin_Controller
     echo json_encode([
       'status' => $status,
       'new_status' => $new_status,
-      'message' => $keterangan
+      'message' => ($status == 1 ? 'Status changed successfully to ' . ($new_status == 1 ? 'Active' : 'Inactive') . '.' : 'Failed to change status.')
     ]);
   }
 

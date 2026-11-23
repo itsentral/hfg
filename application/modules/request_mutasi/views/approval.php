@@ -17,11 +17,11 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
             <h5 class="card-title mb-0 fw-bold text-primary">
                 <i class="fa fa-check-circle me-2"></i>Review Approval Request Mutasi
             </h5>
-            <small class="text-muted">Nomor Dokumen: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
+            <small class="text-muted">Document Number: <span class="fw-bold text-dark"><?= htmlspecialchars((string) $kd_mutasi) ?></span></small>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?= site_url('request_mutasi/approval_mutasi') ?>" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Back
             </a>
         </div>
     </div>
@@ -40,26 +40,26 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
-                        <span class="text-muted small fw-semibold text-uppercase">Tanggal Pengajuan</span>
+                        <span class="text-muted small fw-semibold text-uppercase">Request Date</span>
                         <h6 class="fw-bold text-dark mb-0 mt-1"><i class="fa fa-calendar me-1 text-muted"></i><?= date('d/m/Y', strtotime((string) $tanggal)) ?></h6>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
-                        <span class="text-muted small fw-semibold text-uppercase">Mata Uang</span>
+                        <span class="text-muted small fw-semibold text-uppercase">Currency</span>
                         <h6 class="fw-bold text-dark mb-0 mt-1"><?= htmlspecialchars((string) $matauang) ?></h6>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded-3 border">
-                        <span class="text-muted small fw-semibold text-uppercase">Nilai Pengajuan</span>
+                        <span class="text-muted small fw-semibold text-uppercase">Request Value</span>
                         <h5 class="fw-bold text-success mb-0 mt-1">Rp <?= number_format((float) $nilai, 0, ',', '.') ?></h5>
                     </div>
                 </div>
             </div>
 
             <div class="card border border-light-subtle rounded-3 bg-light p-3 mb-4">
-                <h6 class="fw-bold text-dark mb-2"><i class="fa fa-info-circle me-1 text-primary"></i>Keterangan / Keperluan:</h6>
+                <h6 class="fw-bold text-dark mb-2"><i class="fa fa-info-circle me-1 text-primary"></i>Description / Purpose:</h6>
                 <p class="mb-0 text-dark"><?= nl2br(htmlspecialchars((string) $keterangan)) ?></p>
             </div>
 
@@ -67,10 +67,10 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                 <table class="table table-bordered table-striped align-middle w-100">
                     <thead class="table-light text-center">
                         <tr>
-                            <th width="15%">Tanggal Request</th>
-                            <th>Bank Asal (Sumber Dana)</th>
-                            <th>Bank Tujuan (Penerima)</th>
-                            <th width="20%" class="text-end">Nilai Transfer</th>
+                            <th width="15%">Request Date</th>
+                            <th>Source Bank (Fund Source)</th>
+                            <th>Destination Bank (Recipient)</th>
+                            <th width="20%" class="text-end">Transfer Value</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,15 +88,15 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
             <div class="card border border-primary-subtle rounded-3 p-3 bg-white shadow-sm">
                 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                     <div>
-                        <h6 class="fw-bold mb-1 text-dark">Keputusan Persetujuan (Approval)</h6>
-                        <small class="text-muted">Setujui pengajuan mutasi ini agar dapat diproses realisasinya oleh kasir/finance.</small>
+                        <h6 class="fw-bold mb-1 text-dark">Approval Decision</h6>
+                        <small class="text-muted">Approve this mutation request so the cashier/finance can process its realization.</small>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <button type="button" class="btn btn-outline-danger px-4 reject" data-bs-toggle="modal" data-bs-target="#dialog-popup">
-                            <i class="fa fa-times me-1"></i> Tolak (Reject)
+                            <i class="fa fa-times me-1"></i> Reject
                         </button>
                         <button type="button" class="btn btn-success px-4 shadow-sm approve">
-                            <i class="fa fa-check me-1"></i> Setujui (Approve)
+                            <i class="fa fa-check me-1"></i> Approve
                         </button>
                     </div>
                 </div>
@@ -122,7 +122,7 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                     <textarea class="form-control" name="alasan" id="alasan" rows="4" placeholder="Tuliskan alasan penolakan secara jelas..." required></textarea>
                 </div>
                 <div class="modal-footer bg-light py-2">
-                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger btn-sm px-3 reject_request">
                         <i class="fa fa-ban me-1"></i> Tolak Sekarang
                     </button>
@@ -139,19 +139,19 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
         // Approve
         $(document).on('click', '.approve', function() {
             Swal.fire({
-                title: "Setujui Request Mutasi?",
-                text: "Pengajuan mutasi <?= htmlspecialchars((string) $kd_mutasi) ?> akan disetujui untuk proses realisasi.",
+                title: "Approve Mutation Request?",
+                text: "Mutation request <?= htmlspecialchars((string) $kd_mutasi) ?> will be approved for realization.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#198754",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-check me-1'></i> Ya, Setujui!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-check me-1'></i> Yes, Approve!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Memproses...",
-                        text: "Sedang menyetujui request mutasi",
+                        text: "Approving mutation request",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -164,18 +164,18 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
-                                    text: data.pesan || "Request mutasi berhasil disetujui.",
+                                    title: "Success!",
+                                    text: data.pesan || "Mutation request approved successfully.",
                                     icon: "success"
                                 }).then(function() {
                                     window.location.href = base_url + 'request_mutasi/approval_mutasi';
                                 });
                             } else {
-                                Swal.fire("Gagal!", data.pesan || "Gagal menyetujui request mutasi.", "error");
+                                Swal.fire("Failed!", data.pesan || "Failed to approve the mutation request.", "error");
                             }
                         },
                         error: function() {
-                            Swal.fire("Error!", "Terjadi kesalahan sistem.", "error");
+                            Swal.fire("Error!", "A system error occurred.", "error");
                         }
                     });
                 }
@@ -186,25 +186,25 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
         $(document).on('click', '.reject_request', function() {
             var alasan = $('#alasan').val();
             if (!alasan || !$.trim(alasan)) {
-                Swal.fire("Alasan Kosong!", "Silakan isi alasan penolakan terlebih dahulu.", "warning");
+                Swal.fire("Reason Is Empty!", "Please fill in the rejection reason first.", "warning");
                 $('#alasan').focus();
                 return;
             }
 
             Swal.fire({
-                title: "Tolak Request Mutasi?",
-                text: "Pengajuan ini akan ditolak dengan alasan yang telah diisi.",
+                title: "Reject Mutation Request?",
+                text: "This request will be rejected with the entered reason.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#dc3545",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "<i class='fa fa-ban me-1'></i> Ya, Tolak!",
-                cancelButtonText: "Batal"
+                confirmButtonText: "<i class='fa fa-ban me-1'></i> Yes, Reject!",
+                cancelButtonText: "Cancel"
             }).then(function(result) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Memproses...",
-                        text: "Sedang menolak request mutasi",
+                        text: "Rejecting mutation request",
                         allowOutsideClick: false,
                         didOpen: function() { Swal.showLoading(); }
                     });
@@ -217,18 +217,18 @@ $matauang   = $record ? $record->mata_uang : 'IDR';
                         success: function(data) {
                             if (data.status == 1) {
                                 Swal.fire({
-                                    title: "Berhasil!",
-                                    text: data.pesan || "Request mutasi berhasil ditolak.",
+                                    title: "Success!",
+                                    text: data.pesan || "Mutation request rejected successfully.",
                                     icon: "success"
                                 }).then(function() {
                                     window.location.href = base_url + 'request_mutasi/approval_mutasi';
                                 });
                             } else {
-                                Swal.fire("Gagal!", data.pesan || "Gagal menolak request mutasi.", "error");
+                                Swal.fire("Failed!", data.pesan || "Failed to reject the mutation request.", "error");
                             }
                         },
                         error: function() {
-                            Swal.fire("Error!", "Terjadi kesalahan sistem saat menolak request.", "error");
+                            Swal.fire("Error!", "A system error occurred saat menolak request.", "error");
                         }
                     });
                 }

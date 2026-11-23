@@ -24,7 +24,7 @@
 			echo form_input(array('id'=>'request_date','name'=>'request_date','class'=>'form-control input-md datepicker','placeholder'=>'Request Date','readonly'=>'readonly'), $REQ_DATE);
 			?>
 		</div>
-		<label class='label-control col-sm-1'><b>Harga Pembelian</b></label>
+		<label class='label-control col-sm-1'><b>Purchase Price</b></label>
 		<div class='col-sm-2'>
 			<select id='current' name='current' class='form-control input-sm chosen_select'>
 				<?php
@@ -80,12 +80,12 @@
 		</div>
 	</div>
 	<div class='form-group row'>
-		<label class='label-control col-sm-1'>Detail Barang</label>
+		<label class='label-control col-sm-1'>Item Detail</label>
 		<div class='col-sm-11'>
 			<table id="my-grid" class="table table-striped table-bordered table-hover table-condensed" width="100%">
 				<thead id='head_table'>
 					<tr class='bg-blue'>
-						<th class="text-center">Nama Barang</th>
+						<th class="text-center">Item Name</th>
 						<th class="text-center" width='10%'>Qty</th>
 						<th class="text-center" width='20%'>Price/Unit</th>
 						<th class="text-center" width='20%'>Total Price</th>
@@ -130,7 +130,7 @@
 						<th class="text-center" width='8%'>Progress (%)</th>
 						<th class="text-center" width='11%'>Value (USD)</th>
 						<th class="text-center" width='11%'>Value (IDR)</th>
-						<th class="text-center" width='25%'>Keterangan</th>
+						<th class="text-center" width='25%'>Description</th>
 						<th class="text-center" width='10%'>Est Jatuh Tempo</th>
 						<th class="text-center" width='25%'>Persyaratan</th>
 						<th class="text-center" width='5%'>#</th>

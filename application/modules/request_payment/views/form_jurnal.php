@@ -31,7 +31,7 @@ $ENABLE_DELETE  = has_permission('Payment_Jurnal.Delete');
 					<thead>
 						<tr>
 							<th>COA</th>
-							<th>Keterangan</th>
+							<th>Description</th>
 							<th>Debet</th>
 							<th>Kredit</th>
 						</tr>
@@ -75,7 +75,7 @@ $ENABLE_DELETE  = has_permission('Payment_Jurnal.Delete');
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
 						<button type="submit" name="simpan-com" class="btn btn-success btn-sm stsview" id="simpan-com"><i class="fa fa-save">&nbsp;</i>Submit</button>
-						<a href="<?= base_url("request_payment/payment_jurnal_list") ?>" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Kembali</a>
+						<a href="<?= base_url("request_payment/payment_jurnal_list") ?>" class="btn btn-warning btn-sm"><i class="fa fa-reply">&nbsp;</i>Back</a>
 					</div>
 				</div>
 			</div>

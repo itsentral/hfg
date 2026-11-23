@@ -48,14 +48,14 @@ if (!empty($data)) {
                     <h5 class="card-title fw-bold text-dark mb-0">
                         Detail Alokasi Budget Tahunan (<?= $tahun_val ?>)
                     </h5>
-                    <small class="text-muted">Rincian alokasi budget per akun perkiraan untuk 12 periode bulan</small>
+                    <small class="text-muted">Budget allocation details per account for 12 monthly periods</small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
                     <i class="fa fa-calendar me-1"></i> Tahun: <strong><?= $tahun_val ?></strong>
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Tutup Detail">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancel()" title="Close Detail">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -68,7 +68,7 @@ if (!empty($data)) {
             <div class="col-md-4 col-sm-6">
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="fa fa-search"></i></span>
-                    <input type="text" id="quick_filter_detail" class="form-control" placeholder="Cari kode / nama COA...">
+                    <input type="text" id="quick_filter_detail" class="form-control" placeholder="Search COA code / name...">
                 </div>
             </div>
             <div class="col-md-8 col-sm-6 text-md-end">
@@ -91,8 +91,8 @@ if (!empty($data)) {
                         <th width="50" class="text-center">#</th>
                         <th width="220">Akun COA</th>
                         <th width="150">Penanggung Jawab</th>
-                        <th width="130">Kategori</th>
-                        <th width="140" class="text-end bg-primary-subtle text-primary">Budget Tahun</th>
+                        <th width="130">Category</th>
+                        <th width="140" class="text-end bg-primary-subtle text-primary">Year Budget</th>
                         <?php
                         $bulan_labels = array(
                             1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
@@ -150,7 +150,7 @@ if (!empty($data)) {
                         ?>
                         <tr>
                             <td colspan="17" class="text-center py-4 text-muted">
-                                Tidak ada data budget ditemukan.
+                                No budget data found.
                             </td>
                         </tr>
                     <?php } ?>
